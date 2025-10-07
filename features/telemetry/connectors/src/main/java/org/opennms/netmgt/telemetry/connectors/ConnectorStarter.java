@@ -26,6 +26,7 @@ import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -39,6 +40,7 @@ import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,9 +51,10 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Dictionary;
 import java.util.Objects;
+import java.util.Collections;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.Collections;
 
 public class ConnectorStarter implements ManagedService {
 
@@ -79,16 +82,14 @@ public class ConnectorStarter implements ManagedService {
     // This is used just to  track dispatchers by queue name to avoid duplicate registration
     private AsyncDispatcher<TelemetryMessage> sharedQueueDispatcher = null;
 
-    // We are using shared dispatcher so if there are multiple connector  with one dispatcher then on stop/disable node flow
-    // we should not remove the shared dispatcher . This is used to track it
-    private final AtomicInteger queueReferenceCount = new AtomicInteger(0);
+    private String currentQueueName;
 
-    public ConnectorStarter() {
-    }
 
     public void start() {
         final PropertyTree definition = PropertyTree.from(configMap);
         baseDef = new MapBasedConnectorDef(definition);
+        currentQueueName = baseDef.getQueueName();
+        // incase of calling "initializeDispatcherForQueue" here this star() is executed before the telemetryd which causing issue
     }
 
     public void stop() {
@@ -96,9 +97,12 @@ public class ConnectorStarter implements ManagedService {
         try {
             twinSubscription.close();
         } catch (IOException e) {
-            LOG.error("Failed to  stop twin subscription: error '{}' ",e.getMessage());
+            LOG.error("Failed to  stop twin subscription: error '{}' ", e.getMessage());
         }
-        this.entities.keySet().forEach(this::delete);
+
+        new ArrayList<>(this.entities.keySet()).forEach(this::delete);
+
+        cleanupDispatcher();
     }
 
     public void delete(String key) {
@@ -111,25 +115,6 @@ public class ConnectorStarter implements ManagedService {
                 }
             } catch (IOException e) {
                 LOG.error("Failed to close connector for key: {}", key, e);
-            }
-
-            // Decrement reference count and cleanup if no more references of connectors exist or not using the shared dispatcher
-            if (entity.queueName != null) {
-                if (queueReferenceCount.decrementAndGet() <= 0) {
-                    if (sharedQueueDispatcher != null) {
-                        try {
-                            sharedQueueDispatcher.close();
-                        } catch (Exception ex) {
-                            LOG.error("Failed to close shared dispatcher for queue: {}", entity.queueName, ex);
-                        } finally {
-                            sharedQueueDispatcher = null;
-                        }
-                    }
-                    // remove from telemetry registry for this queue name
-                    telemetryRegistry.removeDispatcher(entity.queueName);
-                    // reset counter to 0 just to be safe
-                    queueReferenceCount.set(0);
-                }
             }
         }
     }
@@ -146,9 +131,16 @@ public class ConnectorStarter implements ManagedService {
             newConfigMap.put(key, properties.get(key).toString());
         }
 
-        // TODO Not sure when the configs are update then connectors which is running with old configs should be restarted or not
-    }
+        boolean needsRestart = hasQueueNameChanged(newConfigMap);
 
+        baseDef = new MapBasedConnectorDef(PropertyTree.from(configMap));
+
+        if (needsRestart) {
+            LOG.info("Critical configuration changed, restarting all connectors with new dispatcher");
+            restartAllConnectorsWithNewDispatcher();
+        }
+
+    }
 
     public void subscribe() {
         twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::handleTwinUpdate);
@@ -159,9 +151,7 @@ public class ConnectorStarter implements ManagedService {
             LOG.info("Got connectors config update - reloading");
             synchronized (configuredLock) {
 
-                Set<String> newConfigKeys = request.getConfigurations().stream()
-                        .map(ConnectorTwinConfig.ConnectorConfig::getNodeConnectorKey)
-                        .collect(Collectors.toSet());
+                Set<String> newConfigKeys = request.getConfigurations().stream().map(ConnectorTwinConfig.ConnectorConfig::getConnectionKey).collect(Collectors.toSet());
                 // Remove connectors that are no longer present in the new configuration
                 Set<String> currentKeys = new HashSet<>(entities.keySet());
                 for (String existingKey : currentKeys) {
@@ -170,8 +160,10 @@ public class ConnectorStarter implements ManagedService {
                     }
                 }
 
+                initializeDispatcherForQueue(currentQueueName);
+
                 for (ConnectorTwinConfig.ConnectorConfig config : request.getConfigurations()) {
-                    LOG.debug("Processing connector config: {}", config.getNodeConnectorKey());
+                    LOG.debug("Processing connector config: {}", config.getConnectionKey());
                     processConfig(config);
                 }
             }
@@ -179,7 +171,7 @@ public class ConnectorStarter implements ManagedService {
     }
 
     private void processConfig(ConnectorTwinConfig.ConnectorConfig config) {
-        String key = config.getNodeConnectorKey();
+        String key = config.getConnectionKey();
         Entity existing = entities.get(key);
         // start new connector
         if (existing == null) {
@@ -187,7 +179,6 @@ public class ConnectorStarter implements ManagedService {
             return;
         }
 
-        // if config are not changed
         if (!hasConfigChanged(existing.config, config)) {
             LOG.debug("No change for key: {}, skipping start", key);
             return;
@@ -201,31 +192,25 @@ public class ConnectorStarter implements ManagedService {
 
     private void startConnector(ConnectorTwinConfig.ConnectorConfig config) {
         try {
+
             final Entity entity = new Entity();
             entity.config = config;
-            final String queueName = Objects.requireNonNull(baseDef.getQueueName());
-            ensureDispatcherForQueue(queueName);
-            queueReferenceCount.incrementAndGet();
-            entity.queueName = queueName;
+            entity.queueName = currentQueueName;
             entity.connector = telemetryRegistry.getConnector(baseDef);
 
-            InetAddress ip = InetAddress.getByName(config.getIpAddress());
+            InetAddress ip = InetAddressUtils.addr(config.getIpAddress());
             entity.connector.stream(config.getNodeId(), ip, config.getParameters());
 
-            entities.put(config.getNodeConnectorKey(), entity);
-            LOG.info("Started connector for key: {}", config.getNodeConnectorKey());
+            entities.put(config.getConnectionKey(), entity);
+            LOG.info("Started connector for key: {}", config.getConnectionKey());
         } catch (Exception e) {
-            LOG.error("Failed to start connector for key: {}", config.getNodeConnectorKey(), e);
+            LOG.error("Failed to start connector for key: {}", config.getConnectionKey(), e);
         }
     }
 
-    private void ensureDispatcherForQueue(String queueName) {
+    private void initializeDispatcherForQueue(String queueName) {
 
-        AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(queueName);
-        if (dispatcher != null) {
-            sharedQueueDispatcher = dispatcher;
-            return;
-        }
+        sharedQueueDispatcher = telemetryRegistry.getDispatcher(currentQueueName);
 
         if (sharedQueueDispatcher == null) {
             TelemetrySinkModule sinkModule = new TelemetrySinkModule(baseDef);
@@ -236,13 +221,56 @@ public class ConnectorStarter implements ManagedService {
 
     }
 
-    private boolean hasConfigChanged(ConnectorTwinConfig.ConnectorConfig oldConfig,
-                                     ConnectorTwinConfig.ConnectorConfig newConfig) {
-        return !Objects.equals(oldConfig.getNodeId(), newConfig.getNodeId()) ||
-                !Objects.equals(oldConfig.getIpAddress(), newConfig.getIpAddress()) ||
-                !Objects.equals(oldConfig.getParameters(), newConfig.getParameters());
+    private boolean hasConfigChanged(ConnectorTwinConfig.ConnectorConfig oldConfig, ConnectorTwinConfig.ConnectorConfig newConfig) {
+        return !Objects.equals(oldConfig.getNodeId(), newConfig.getNodeId()) || !Objects.equals(oldConfig.getIpAddress(), newConfig.getIpAddress()) || !Objects.equals(oldConfig.getParameters(), newConfig.getParameters());
     }
 
+    private boolean hasQueueNameChanged(Map<String, String> newConfig) {
+
+        String newQueueName = newConfig.get("queue");
+        if (!Objects.equals(currentQueueName, newQueueName)) {
+            LOG.info("Queue name changed from {} to {}", currentQueueName, newQueueName);
+            configMap.put("queue",newQueueName);
+            return true;
+        }
+        return false;
+    }
+
+    private void restartAllConnectorsWithNewDispatcher() {
+        // Store current entities configuration
+        Map<String, ConnectorTwinConfig.ConnectorConfig> savedConfigs = new HashMap<>();
+        for (Map.Entry<String, Entity> entry : entities.entrySet()) {
+            savedConfigs.put(entry.getKey(), entry.getValue().config);
+        }
+
+        new ArrayList<>(this.entities.keySet()).forEach(this::delete);
+
+        cleanupDispatcher();
+
+        currentQueueName = baseDef.getQueueName();
+
+        initializeDispatcherForQueue(currentQueueName);
+
+        for (Map.Entry<String, ConnectorTwinConfig.ConnectorConfig> entry : savedConfigs.entrySet()) {
+            startConnector(entry.getValue());
+        }
+
+        LOG.info("All connectors restarted with new dispatcher for queue: {}", currentQueueName);
+    }
+
+    private void cleanupDispatcher() {
+        if (sharedQueueDispatcher != null) {
+            try {
+                sharedQueueDispatcher.close();
+            } catch (Exception ex) {
+                LOG.error("Failed to close dispatcher.", ex);
+            } finally {
+                if (currentQueueName != null) {
+                    telemetryRegistry.removeDispatcher(currentQueueName);
+                }
+            }
+        }
+    }
 
     public void bind(TwinSubscriber twinSubscriber) {
         this.twinSubscriber = twinSubscriber;

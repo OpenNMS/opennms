@@ -60,7 +60,7 @@ public class LocationPublisher {
     public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
         lock.lock();
         try {
-            configs.put(cfg.getNodeConnectorKey(), cfg);
+            configs.put(cfg.getConnectionKey(), cfg);
             publishCurrentConfigs();
         } finally {
             lock.unlock();

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 public class ConnectorTwinConfig {
     public static String CONNECTOR_KEY = "telemetry.connector.config";
 
@@ -53,7 +54,7 @@ public class ConnectorTwinConfig {
         private int nodeId;
         private String ipAddress;
         private List<Map<String, String>> parameters;
-        private String nodeConnectorKey;
+        private String connectionKey;
 
         public ConnectorConfig() {
         }
@@ -62,12 +63,12 @@ public class ConnectorTwinConfig {
         public ConnectorConfig(
                 @JsonProperty("nodeId") int nodeId,
                 @JsonProperty("ipAddress") String ipAddress,
-                @JsonProperty("nodeConnectorKey") String connectionKey,
+                @JsonProperty("connectionKey") String connectionKey,
                 @JsonProperty("parameters") List<Map<String, String>> parameters) {
 
             this.nodeId = nodeId;
             this.ipAddress = ipAddress;
-            this.nodeConnectorKey = connectionKey;
+            this.connectionKey = connectionKey;
             this.parameters = parameters != null
                     ? Collections.unmodifiableList(new ArrayList<>(parameters))
                     : Collections.emptyList();
@@ -77,13 +78,12 @@ public class ConnectorTwinConfig {
         public int getNodeId() { return nodeId; }
 
         @JsonProperty("connectionKey")
-        public String getNodeConnectorKey() { return nodeConnectorKey; }
+        public String getConnectionKey() { return connectionKey; }
 
         @JsonProperty("ipAddress")
         public String getIpAddress() { return ipAddress; }
 
         @JsonProperty("parameters")
         public List<Map<String, String>> getParameters() { return parameters; }
-
     }
 }
