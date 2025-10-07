@@ -22,6 +22,10 @@
         <constructor-arg ref="openConfigClientFactory"/>
     </bean>
 
+
+    <bean id="messageDispatcherFactory" class="org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory" />
+
+
     <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory" ref="connectorFactory" />
 
     <bean id="locationPublisherManager"
@@ -65,6 +69,7 @@
         </property>
         <property name="distPollerDao" ref="distPollerDao" />
         <property name="telemetryRegistry" ref="telemetryRegistry" />
+        <property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
     </bean>
 
 </beans>

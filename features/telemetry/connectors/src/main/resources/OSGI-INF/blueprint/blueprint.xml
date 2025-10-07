@@ -9,7 +9,7 @@
         http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd">
 
     <cm:property-placeholder persistent-id="org.opennms.netmgt.telemetry.protocols.openconfig"
-                             update-strategy="reload">
+                             update-strategy="none">
         <cm:default-properties>
             <cm:property name="connectorName" value="OpenConfig"/>
             <cm:property name="className" value="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"/>

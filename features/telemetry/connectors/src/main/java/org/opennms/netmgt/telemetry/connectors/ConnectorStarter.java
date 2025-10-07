@@ -160,7 +160,7 @@ public class ConnectorStarter implements ManagedService {
                     }
                 }
 
-                initializeDispatcherForQueue(currentQueueName);
+                initializeOrGetDispatcherForQueue(currentQueueName);
 
                 for (ConnectorTwinConfig.ConnectorConfig config : request.getConfigurations()) {
                     LOG.debug("Processing connector config: {}", config.getConnectionKey());
@@ -208,7 +208,7 @@ public class ConnectorStarter implements ManagedService {
         }
     }
 
-    private void initializeDispatcherForQueue(String queueName) {
+    private void initializeOrGetDispatcherForQueue(String queueName) {
 
         sharedQueueDispatcher = telemetryRegistry.getDispatcher(currentQueueName);
 
@@ -231,6 +231,7 @@ public class ConnectorStarter implements ManagedService {
         if (!Objects.equals(currentQueueName, newQueueName)) {
             LOG.info("Queue name changed from {} to {}", currentQueueName, newQueueName);
             configMap.put("queue",newQueueName);
+            configMap.put("name",newQueueName);
             return true;
         }
         return false;
@@ -249,7 +250,7 @@ public class ConnectorStarter implements ManagedService {
 
         currentQueueName = baseDef.getQueueName();
 
-        initializeDispatcherForQueue(currentQueueName);
+        initializeOrGetDispatcherForQueue(currentQueueName);
 
         for (Map.Entry<String, ConnectorTwinConfig.ConnectorConfig> entry : savedConfigs.entrySet()) {
             startConnector(entry.getValue());
@@ -286,7 +287,7 @@ public class ConnectorStarter implements ManagedService {
         return entities;
     }
 
-    private static class Entity {
+    public static class Entity {
         private ConnectorTwinConfig.ConnectorConfig config;
         private Connector connector;
         private String queueName;
@@ -330,5 +331,10 @@ public class ConnectorStarter implements ManagedService {
     public void setTwinSubscriber(TwinSubscriber twinSubscriber) {
         this.twinSubscriber = twinSubscriber;
         subscribe();
+    }
+
+    @VisibleForTesting
+    public TelemetryRegistry getTelemetryRegistry() {
+        return telemetryRegistry;
     }
 }
