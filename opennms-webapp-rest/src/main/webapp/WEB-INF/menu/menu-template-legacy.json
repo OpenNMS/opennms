@@ -15,6 +15,11 @@
   "version": "",
   "menus": [
     {
+      "id": "emptyHeader",
+      "name": "",
+      "type": "header"
+    },
+    {
       "id": "searchMenu",
       "name": "Search",
       "url": "#",
@@ -36,7 +41,7 @@
       "name": "Info",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/Server",
+      "icon": "network/Inventory",
       "roles": null,
       "items": [
         {
@@ -302,7 +307,7 @@
       "name": "Administration",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ManageProfile",
+      "icon": "network/Configuration",
       "roles": null,
       "items": [
         {

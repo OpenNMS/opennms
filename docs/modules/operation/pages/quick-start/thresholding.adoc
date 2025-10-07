@@ -19,7 +19,7 @@ This Quick Start guide shows how to create both kinds of threshold.
 This procedure describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users.
 This threshold tells {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two.
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Performance Measurement, click *Configure Thresholds*.
 A list of preconfigured threshold groups appears.
 +
@@ -174,3 +174,4 @@ Refer to xref:deep-dive/thresholds/thresholding.adoc[] in the Deep Dive section 
 * <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Using metadata in a threshold>>.
 * <<deep-dive/thresholds/thresh-group.adoc#threshold-group, Creating a threshold group>>.
 * <<deep-dive/thresholds/troubleshoot.adoc#troubleshoot-thresholds, Troubleshooting and managing thresholds>>.
+* <<deep-dive/thresholds/datasource.adoc#thresholding-response-times, Thresholding on response times from polled services>>.

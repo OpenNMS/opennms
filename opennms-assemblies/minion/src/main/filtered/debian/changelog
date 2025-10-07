@@ -1,3 +1,12 @@
+opennms-minion (34.0.2-1) stable; urgency=low
+
+  * Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Oct 2025 13:49:36 -0400
+
 opennms-minion (34.0.1-1) stable; urgency=low
 
   * Release 34.0.1 contains bug fixes, enhancements and a new feature.

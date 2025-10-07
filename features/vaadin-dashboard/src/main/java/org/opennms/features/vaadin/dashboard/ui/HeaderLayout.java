@@ -54,7 +54,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
      * Default constructor.
      */
     public HeaderLayout() {
-        /**
+       /**
          * Setting up the layout
          */
         addStyleName("header");

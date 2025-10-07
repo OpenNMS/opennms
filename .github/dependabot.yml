@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "foundation-2024"
+    target-branch: "foundation-2025"
     reviewers:
       - "OpenNMS/dependabot-reviewers-node"
     labels:

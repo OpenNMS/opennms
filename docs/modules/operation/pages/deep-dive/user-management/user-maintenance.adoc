@@ -13,7 +13,8 @@ This page describes additional tasks and information related to user accounts.
 === Set a new password for any user
 
 . Log in as a user with admin permissions.
-. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users].
+. Click menu:User Management[Manage Users] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 . Click the *Modify* icon next to an existing user and select *Reset Password*.
 . Type a new password, confirm it, and click *OK*.
 . Click *Finish* to apply the changes.
@@ -29,7 +30,9 @@ This page describes additional tasks and information related to user accounts.
 == Delete users and groups
 
 . Log in as a user with admin permissions.
-. Click the *Gear* symbol at the top-right of the screen, and choose menu:Configure OpenNMS[Configure Users, Groups and On-Call Roles > Configure Users] or *Configure Groups*.
+
+. Click menu:User Management[Manage Users] or menu:User Management[Manage Groups] in the side menu, as appropriate.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users] or *Configure Groups*, as appropriate.
 . Click the *Delete* symbol beside the user or group that you want to delete.
 . Click *OK* to confirm deletion.
 

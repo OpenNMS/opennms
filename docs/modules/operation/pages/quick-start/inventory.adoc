@@ -28,7 +28,7 @@ This ensures that {page-component-title} can immediately scan newly discovered d
 This procedure illustrates a very basic SNMP configuration using the default parameters.
 You can customize these values for your own network's needs, although the default settings are sufficient for a basic {page-component-title} setup:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Provisioning, click *Configure SNMP Community Names by IP Address*.
 . Configure the community names as appropriate for your environment:
 ** Enter a valid IP address in the *IP Address* box, and click *Look Up*.
@@ -65,8 +65,8 @@ Doing this will process all additions, changes, and deletions at once.
 
 This procedure describes how to create an empty requisition using the default foreign source definition:
 
-. Click the *gear* symbol in the top-right of the screen.
-. Under Provisioning, click *Manage Provisioning Requisitions*.
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click *Manage Provisioning Requisitions*.
 . Click *Add Requisition*, type a name (for example, "QuickStartRequisition"), and click *OK*.
 
 NOTE: The requisition's entry in the Requisitions list remains red until you synchronize it with the database.
@@ -95,7 +95,7 @@ You can customize these for your own needs.
 
 To configure discovery, follow these steps:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Provisioning, click *Configure Discovery*.
 . In the General Settings section, select the requisition that you just created from the *Requisition* list.
 ** (Optional) Change the default values, as desired.

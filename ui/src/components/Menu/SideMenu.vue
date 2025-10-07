@@ -2,6 +2,7 @@
   <div id="opennms-sidemenu-vue-container">
     <FeatherSidenav
       id="opennms-sidebar-control"
+      :hoverMode="true"
       :items="topPanels"
       v-model="isExpanded"
       @update:modelValue="(val: any) => isExpanded = !!val"
@@ -186,8 +187,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
   // Plugins menu
   if (plugins.value && plugins.value.length > 0) {
     allMenus.push(createPluginsMenu(false))
-  } else {
-    allMenus.push(createPluginsMenu(true))
   }
 
   return allMenus.map(i => createTopMenuListEntry(i) as MenuListEntry)
@@ -245,6 +244,13 @@ const topPanels = computed<MenuListEntry[]>(() => {
       .feather-list-item.hover.focus.disabled.li-separator {
         height: 1.25em;
         padding: 0 0.5rem;
+      }
+
+      // tighten vertical space between expand/collapse button and first actual menu item
+      // note, menu-template.json has a "dummy" first menu item of type="header" so the the
+      // hard-coded "Menu" header is not emitted. This overrides the min-height of the empty li
+      li:first-child.feather-list-header {
+        min-height: 0.1rem;
       }
     }
 

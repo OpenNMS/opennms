@@ -219,7 +219,7 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
                     }
                 }
 
-                LOG.info("Loading asset data from {}", r);
+                LOG.debug("Loading asset data from {}", r);
                 byte[] bdata = FileCopyUtils.copyToByteArray(r.getInputStream());
 
                 final String json = new String(bdata, StandardCharsets.UTF_8);
