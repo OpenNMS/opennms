@@ -1,6 +1,6 @@
 {
     "name": "opennms-core-web-assets",
-    "version": "34.0.1",
+    "version": "34.0.2",
     "description": "JavaScript Web Components for OpenNMS",
     "license": "AGPL-3.0",
     "repository": {
