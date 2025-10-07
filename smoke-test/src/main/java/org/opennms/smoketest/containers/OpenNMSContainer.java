@@ -195,9 +195,16 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 // User/pass are hardcoded in PostgreSQLContainer but are not exposed
                 .withEnv("POSTGRES_USER", "test")
                 .withEnv("POSTGRES_PASSWORD", "test")
+                // Database connection details - using env vars for NMS-18531 validation
                 .withEnv("OPENNMS_DBNAME", "opennms")
                 .withEnv("OPENNMS_DBUSER", "opennms")
-                .withEnv("OPENNMS_DBPASS", "opennms")
+                .withEnv("OPENNMS_DBPASS", "wrong_password")
+                // Connection pool settings for NMS-18531 validation
+                .withEnv("OPENNMS_DB_IDLE_TIMEOUT", "300")
+                .withEnv("OPENNMS_DB_LOGIN_TIMEOUT", "5")
+                .withEnv("OPENNMS_DB_MIN_POOL", "10")
+                .withEnv("OPENNMS_DB_MAX_POOL", "25")
+                .withEnv("OPENNMS_DB_MAX_SIZE", "25")
                 // These are expected to be set when using Newts
                 // We also set the corresponding properties explicitly in our overlay
                 .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
