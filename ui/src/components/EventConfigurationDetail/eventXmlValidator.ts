@@ -1,5 +1,6 @@
 import { EventConfigEvent } from '@/types/eventConfig'
 import { XMLValidator } from 'fast-xml-parser'
+import { Severity } from './constants'
 
 export const validateEventDetailsJson = (
   event: EventConfigEvent,
@@ -92,6 +93,9 @@ export const validateEventDetailsXml = (
     if (!severity) {
       isValid = false
       error.push('Missing <severity>')
+    } else if (Severity[severity as keyof typeof Severity] === undefined) {
+      isValid = false
+      error.push('Invalid <severity> value')
     }
     if (!description) {
       isValid = false

@@ -2,7 +2,6 @@
   <FeatherDrawer
     id="column-selection-drawer"
     data-test="column-selection-drawer"
-    @shown="() => store.eventModificationDrawerState.visible"
     @hidden="store.closeEventModificationDrawer()"
     v-model="store.eventModificationDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
@@ -37,7 +36,6 @@
         v-if="selected === EventConfigurationDocType.Json"
         class="drawer-content"
       >
-        <div class="spacer-large"></div>
         <FeatherInput
           label="Event UEI"
           type="search"
@@ -84,7 +82,6 @@
           :options="editorOptions"
         />
         <div class="spacer-large"></div>
-        <div class="spacer-large"></div>
       </div>
       <div
         v-if="selected === EventConfigurationDocType.Xml"
@@ -98,7 +95,6 @@
           class="editor"
           :options="editorOptions"
         />
-        <div class="spacer-large"></div>
         <div class="spacer-large"></div>
       </div>
       <div>
@@ -216,7 +212,7 @@ const handleSaveJsonFormat = async () => {
     const newEvent = mapEventConfigEventToServer(event)
     let response
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
-      response = await updateEventConfigEventByIdJson(newEvent, event.id)
+      response = await updateEventConfigEventByIdJson(newEvent, store.selectedSource.id, event.id, event.enabled, selected.value)
     }
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
       response = await createEventConfigEventJson(newEvent, store.selectedSource.id)
@@ -250,7 +246,13 @@ const handleSaveXmlFormat = async () => {
 
     let response
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
-      response = await updateEventConfigEventByIdXml(beautifiedXml, store.eventModificationDrawerState.eventConfigEvent.id)
+      response = await updateEventConfigEventByIdXml(
+        beautifiedXml,
+        store.selectedSource.id,
+        store.eventModificationDrawerState.eventConfigEvent.id,
+        store.eventModificationDrawerState.eventConfigEvent.enabled,
+        selected.value
+      )
     }
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
       response = await createEventConfigEventXml(beautifiedXml, store.selectedSource.id)

@@ -1,4 +1,5 @@
 import {
+  mapEventConfEventEditRequest,
   mapEventConfigEventsResponseFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer
@@ -66,10 +67,13 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
  */
 export const updateEventConfigEventByIdJson = async (
   event: EventConfigEventRequest,
-  eventId: number
+  sourceId: number,
+  eventId: number,
+  status: boolean,
+  objType: string
 ): Promise<boolean> => {
-  const endpoint = `/eventconf/sources/events/${eventId}`
-  const payload = { ...event }
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
+  const payload = mapEventConfEventEditRequest(event, status, objType)
   try {
     const response = await v2.put(endpoint, payload)
     return response.status === 200
@@ -108,10 +112,11 @@ export const createEventConfigEventJson = async (
  * @param eventId The ID of the event configuration event to update.
  * @returns A promise that resolves to a boolean indicating whether the event was updated successfully.
  */
-export const updateEventConfigEventByIdXml = async (eventXml: string, eventId: number): Promise<boolean> => {
-  const endpoint = `/eventconf/sources/events/${eventId}`
+export const updateEventConfigEventByIdXml = async (eventXml: string, sourceId: number, eventId: number, status: boolean, objType: string): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
+  const payload = mapEventConfEventEditRequest(eventXml, status, objType)
   try {
-    const response = await v2.put(endpoint, eventXml, { headers: { 'Content-Type': 'application/xml' } })
+    const response = await v2.put(endpoint, payload, { headers: { 'Content-Type': 'application/xml' } })
     return response.status === 200
   } catch (error) {
     console.error('Error Updating event config source:', error)
