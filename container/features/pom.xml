@@ -900,11 +900,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.newts</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.topologies</groupId>
       <artifactId>org.opennms.features.topologies.service.api</artifactId>
       <version>${project.version}</version>

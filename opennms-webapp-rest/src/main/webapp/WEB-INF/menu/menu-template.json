@@ -15,6 +15,11 @@
   "version": "",
   "menus": [
     {
+      "id": "emptyHeader",
+      "name": "",
+      "type": "header"
+    },
+    {
       "id": "dashboardsMenu",
       "name": "Dashboards",
       "url": "#",
@@ -85,7 +90,7 @@
       "name": "Inventory",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/Server",
+      "icon": "network/Inventory",
       "roles": null,
       "items": [
         {
@@ -130,7 +135,7 @@
       "name": "Monitoring",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/View",
+      "icon": "network/Monitoring",
       "roles": null,
       "items": [
         {
@@ -222,7 +227,7 @@
       "name": "Distributed Monitoring",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ViewDetails",
+      "icon": "network/DistributedMonitoring",
       "roles": null,
       "items": [
         {
@@ -253,7 +258,7 @@
       "name": "Manage Inventory",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/Server",
+      "icon": "network/InventoryAlt",
       "roles": null,
       "items": [
         {
@@ -439,7 +444,7 @@
       "name": "Administration",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/Workflow",
+      "icon": "network/Configuration",
       "roles": null,
       "items": [
         {
@@ -534,7 +539,7 @@
       "url": "#",
       "locationMatch": null,
       "icon": "network/LogsAlt",
-      "roles": null,
+      "roles": ["ROLE_ADMIN"],
       "items": [
         {
           "id": "logViewer",
@@ -560,7 +565,7 @@
       "name": "API Documentation",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/ApiEndpoints",
+      "icon": "network/ApiConfig",
       "roles": null,
       "items": [
         {

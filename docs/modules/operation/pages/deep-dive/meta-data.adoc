@@ -139,8 +139,8 @@ The key used in this context must consist of the alias and the attribute of the 
 
 Follow these steps to edit the `requisition` context in the web UI:
 
-. Click the *gear* symbol in the top-right of the page.
-. Under Provisioning, select *Manage Provisioning Requisitions*.
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click *Manage Provisioning Requisitions*.
 . Click *Edit* beside the requisition that you want to modify.
 . Click *Edit* beside the node that you want to modify.
 . Navigate to the *Meta-Data* tab, and click *Add Meta-Data*.

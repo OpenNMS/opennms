@@ -48,8 +48,8 @@ It publishes them to an aggregated list of statistics from all participating use
 To view the full list of data points, follow these steps:
 
 . Sign in to {page-component-title}.
-. Click the *gear* symbol at the top-right of the page.
-. Under Additional Tools, click *Usage Statistics Sharing*.
+. Click menu:Administration[Usage Statistics Sharing] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *Usage Statistics Sharing*.
 . Scroll through the list.
 . Click *Copy JSON* to copy a JSON representation of collected data points to your clipboard.
 
@@ -61,8 +61,8 @@ Statistics will still be collected and you can view them locally, which is usefu
 
 To enable or disable usage statistics sharing, follow these steps:
 
-. Click the *gear* symbol at the top-right of the page.
-. Under Additional Tools, click *Usage Statistics Sharing*.
+. Click menu:Administration[Usage Statistics Sharing] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *Usage Statistics Sharing*.
 . Select either *Enable* or *Disable*, as desired.
 
 The usage statistics collection settings are updated.

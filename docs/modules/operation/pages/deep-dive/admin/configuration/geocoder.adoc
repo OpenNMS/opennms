@@ -16,8 +16,8 @@ Resolved coordinates are stored in the database as node asset fields, but the ge
 
 To enable or configure the geocoder service, use the web-based configuration tool:
 
-. In the {page-component-title} web UI, click the *gear* symbol in the top-right of the page.
-. Under Provisioning, select *Configure Geocoder Service*.
+. Click menu:Integrations[Geocoding Services] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Provisioning*, click *Configure Geocoder Service*.
 . You can use one of three geocoder services: Google, MapQuest, or Nominatim.
 To enable one, toggle the corresponding switch to *On*.
 . Navigate to the appropriate tab and configure the service:
