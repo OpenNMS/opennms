@@ -19,7 +19,7 @@
         <FeatherButton @click="store.hideDeleteEventConfigEventDialog()"> Cancel </FeatherButton>
         <FeatherButton
           primary
-          @click="deleteEventConfigEvent()"
+          @click="deleteEventConfigEvent(store.deleteEventConfigEventDialogState?.eventConfigEvent?.id)"
         >
           Delete
         </FeatherButton>
@@ -30,6 +30,7 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
+import { deleteEventConfigEventBySourceId } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
@@ -40,20 +41,29 @@ const labels = {
   title: 'Delete Event Configuration Event'
 }
 
-const deleteEventConfigEvent = async () => {
-  try {
-    // TODO: Call API to delete the event configuration source
-    // await api.deleteEventConfigSource(store.deleteEventConfigSourceModalState.eventConfigSource.id);
+const deleteEventConfigEvent = async (id?: number) => {
+  if (!id || !store.selectedSource?.id) {
+    showSnackBar({ msg: 'Missing source or event ID', error: true })
+    return
+  }
 
-    // After successful deletion, hide the modal and refresh the list
-    store.hideDeleteEventConfigEventDialog()
-    store.resetEventsPagination()
-    await store.fetchEventsBySourceId()
+  try {
+    const result = await deleteEventConfigEventBySourceId(store.selectedSource.id, [id])
+    if (result) {
+      store.hideDeleteEventConfigEventDialog()
+      store.resetEventsPagination()
+      await store.fetchEventsBySourceId()
+    } else {
+      showSnackBar({ msg: 'Failed to delete event configuration event', error: true })
+    }
   } catch (error) {
-    console.error('Error deleting event configuration source:', error)
+    console.error('Error deleting event configuration event:', error)
     showSnackBar({ msg: 'Failed to delete event configuration event', error: true })
   }
 }
+
+
+
 </script>
 
 <style scoped lang="scss"></style>
