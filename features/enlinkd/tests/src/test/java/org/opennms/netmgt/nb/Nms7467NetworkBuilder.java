@@ -90,7 +90,7 @@ public class Nms7467NetworkBuilder extends NmsNetworkBuilder {
 
     public static final String WORKSTATION_NAME         = "workstation";
     public static final String WORKSTATION_IP           = "192.0.2.101";
-    public static final String WORKSTATION_MAC          = "60334b0817a8";
+    public static final String WORKSTATION_MAC          = "60334.0.3-SNAPSHOT7a8";
 
     public static final String ACCESSPOINT_NAME         = "mrgarrison.internal.opennms.com";
     public static final String ACCESSPOINT_IP           = "192.0.2.5";

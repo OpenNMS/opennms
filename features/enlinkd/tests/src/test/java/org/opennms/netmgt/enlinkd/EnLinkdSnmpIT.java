@@ -1755,7 +1755,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                     assertEquals(InetAddressUtils.addr("192.168.0.14"), row.getNetAddress());
                     assertEquals(2, row.getSourceIfIndex().intValue());
                     break;
-                case "60334b0817a8":
+                case "60334.0.3-SNAPSHOT7a8":
                     assertEquals(InetAddressUtils.addr("192.168.0.16"), row.getNetAddress());
                     assertEquals(2, row.getSourceIfIndex().intValue());
                     break;

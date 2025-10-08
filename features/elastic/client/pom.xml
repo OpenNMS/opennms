@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.elastic</artifactId>
-        <version>34.0.2</version>
+        <version>34.0.3-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.elastic</groupId>
     <artifactId>org.opennms.features.elastic.client</artifactId>

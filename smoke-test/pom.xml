@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>34.0.2</version>
+  <version>34.0.3-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
