@@ -19,6 +19,7 @@
       >
         <FeatherButton
           primary
+          data-test="add-event"
           @click="store.openEventModificationDrawer(CreateEditMode.Create, getDefaultEventConfigEvent())"
         >
           Add Event
