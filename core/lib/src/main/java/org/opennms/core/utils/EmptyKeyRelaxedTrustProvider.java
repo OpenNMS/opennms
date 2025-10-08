@@ -28,7 +28,7 @@ import java.security.Provider;
 
 
 public final class EmptyKeyRelaxedTrustProvider extends Provider {
-    private static final long serialVersionUID = -54334.0.3-SNAPSHOT655585769L;
+    private static final long serialVersionUID = -543349021655585769L;
 
     public EmptyKeyRelaxedTrustProvider() {
         super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
