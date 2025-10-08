@@ -47,13 +47,13 @@ const isValidIPAddress = function(ip) {
 
 const checkIpRange = function(ip1, ip2){
     if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
-        const a = new Address4(ip1).bigInteger();
-        const b = new Address4(ip2).bigInteger();
+        const a = new Address4(ip1).bigInt();
+        const b = new Address4(ip2).bigInt();
         return b >= a;
     }
     if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
-        const a = new Address6(ip1).bigInteger();
-        const b = new Address6(ip2).bigInteger();
+        const a = new Address6(ip1).bigInt();
+        const b = new Address6(ip2).bigInt();
         return b.compareTo(a) >= 0;
     }
     return false;
