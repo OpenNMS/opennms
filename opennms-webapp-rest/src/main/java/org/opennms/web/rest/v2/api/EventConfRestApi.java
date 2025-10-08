@@ -102,17 +102,22 @@ public interface EventConfRestApi {
     @Path("filter/{sourceId}/events")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
-            summary = "Filter EventConfEvent Records by Source Id",
-            description = "Fetch EventConf records based on sourceId.",
+            summary = "Get EventConfEvents by Source ID with filtering and sorting",
+            description = """
+        Retrieves EventConfEvent records for the given source ID with optional filtering, sorting, and pagination.
+        - `eventFilter`: case-insensitive match on UEI, Event Label, or Description.
+        - `eventSortBy`: sort field `uei`, `eventLabel`, `description`, `enabled` defaults to `createdTime` if invalid.
+        - `eventOrder`: `asc` or `desc` (default: `desc`).
+        - `offset` and `limit`: for pagination.""",
             operationId = "filterConfEventBySourceId"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
-                    content = @Content),
-            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
-                    content = @Content),
-            @ApiResponse(responseCode = "204", description = "No matching EventConfEvent records found for the given criteria",
-                    content = @Content)
+        @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                content = @Content),
+        @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                content = @Content),
+        @ApiResponse(responseCode = "204", description = "No matching EventConfEvent record found for the given criteria",
+                content = @Content)
     })
     Response filterConfEventsBySourceId(
             @PathParam("sourceId") Long sourceId,
