@@ -36,18 +36,6 @@ CentOS/RHEL 9::
 include::centos-rhel9/install-sentinel.adoc[]
 --
 
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-sentinel.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-sentinel.adoc[]
---
-
 ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +

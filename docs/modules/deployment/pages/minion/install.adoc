@@ -38,17 +38,6 @@ CentOS/RHEL 9::
 --
 include::centos-rhel9/install-minion.adoc[]
 --
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-minion.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-minion.adoc[]
---
 
 Docker::
 +
@@ -156,6 +145,6 @@ trapd.listen.port=162
 == Check Minion in the core web UI
 
 . Log in to the web UI as an administrative user.
-. Click the menu:gears icon[Distributed Monitoring > Manage Minions].
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Distributed Monitoring[Manage Minions].
 
 After a few minutes your Minion should be provisioned automatically and the status should be "up".

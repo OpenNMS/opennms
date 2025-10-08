@@ -40,7 +40,8 @@ import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 
-import IconLogo from '@/assets/LogoHorizon.vue'
+// see vite.config.ts, resolve.alias for the actual logo file that is imported
+import IconLogo from './src/assets/ProductLogo.vue'
 import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
@@ -220,6 +221,8 @@ onMounted(async () => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
+  font-family: var(--feather-header-font-family);
+  font-size: 0.875rem;
   margin-right: 1em;
 
   .date-formatted-date {
@@ -231,7 +234,6 @@ onMounted(async () => {
     display: flex;
     justify-content: right;
     font-weight: 800;
-    font-size: 1em;
   }
 }
 </style>

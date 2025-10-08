@@ -101,10 +101,16 @@ public class LldpRemTableTracker extends TableTracker {
 		}
 
 	    public Integer getLldpRemLocalPortNum() {
-	    	return getInstance().getSubIdAt(1);
+                return getInstance().getSubIdAt(1);
+
 	    }
         public Integer getLldpRemIndex() {
-            return getInstance().getSubIdAt(2);
+            LOG.debug("getLldpRemIndex: instance: {}", getInstance());
+            if (getInstance().getIds().length == 3) {
+                return getInstance().getSubIdAt(2);
+            }
+            LOG.warn("getLldpRemIndex: lldpRemIndex: forced to 0, instance {}", getInstance());
+            return 0;
         }
 
         public Integer getLldpRemChassisidSubtype() {

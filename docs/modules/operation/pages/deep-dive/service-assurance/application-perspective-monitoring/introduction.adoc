@@ -21,8 +21,8 @@ Application Perspective Monitoring requires at least one {page-component-title} 
 To configure Application Perspective Monitoring, you must first create an application and associate a set of services and perspectives from which to monitor them:
 
 . Log in to the {page-component-title} web UI.
-. Click the *gear* symbol at the top-left of the screen.
-. Select *Manage Applications*.
+. Click menu:Distributed Monitoring[Manage Applications] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then click *Manage Applications*.
 . Specify a name for the application and click *Add New Application*.
 . Click the *Edit* symbol beside your new application.
 ** Select the services that you want to monitor from the *Available Services* list, and click *Add >>* to add them to the application.

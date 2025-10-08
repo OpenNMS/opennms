@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>coordination-parent</artifactId>
-        <version>34.0.1</version>
+        <version>34.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>coordination-zookeeper</artifactId>
@@ -88,10 +88,6 @@
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.test-api</groupId>
-            <artifactId>org.opennms.core.test-api.lib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>

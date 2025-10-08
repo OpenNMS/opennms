@@ -16,8 +16,8 @@ Make sure you complete the tasks in xref:quick-start/inventory.adoc[] before add
 Before adding nodes to a requisition, you must <<quick-start/inventory.adoc#requisition-create, create a requisition>>.
 
 . Log in to the {page-component-title} web UI.
-. Click the *gear* symbol in the top-right of the screen.
-. Under Provisioning, click *Manage Provisioning Requisitions*.
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click *Manage Provisioning Requisitions*.
 . Find the requisition that you want to add nodes to and click *Edit* beside its name.
 . Click *Add Node*.
 {page-component-title} automatically generates the foreign ID used to identify the node.

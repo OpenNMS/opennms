@@ -88,7 +88,6 @@
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ContentCopy from '@featherds/icon/action/ContentCopy'
-import { v4 as uuidv4 } from 'uuid'
 import { useRoute } from 'vue-router'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import useSnackbar from '@/composables/useSnackbar'

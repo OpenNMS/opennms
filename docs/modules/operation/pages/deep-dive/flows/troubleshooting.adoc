@@ -52,7 +52,7 @@ To persist only raw flows or only aggregated flows, set either `alwaysUseRawForQ
 
 == Verify flows by device
 
-To verify flows by device, click menu:Info[Nodes] in the web UI's top menu bar.
+To verify flows by device, click menu:Inventory[Nodes] in the web UI's side menu.
 The *flows indicator* symbol on the Nodes page shows flows data for each device, with SNMP details and the direction of flows.
 
 == Replay flows from packet capture

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.bsm</groupId>
     <artifactId>org.opennms.features.bsm.rest</artifactId>
-    <version>34.0.1</version>
+    <version>34.0.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <scope>${onmsLibScope}</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

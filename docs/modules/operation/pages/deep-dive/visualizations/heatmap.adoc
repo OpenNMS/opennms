@@ -8,6 +8,8 @@ You can apply the visualization to categories, foreign sources, or node services
 The size of an entity is calculated by counting the services inside of the entity.
 Thus, a node with fewer services is displayed as a smaller box than one with more services.
 
+You can view the heatmap by clicking menu:Dashboards[Heatmap] in the side menu.
+
 .Heatmap visualization of outages
 image::visualizations/heatmap.png[{page-component-title} UI displaying an outage heatmap. The smallest entity reports an ongoing outage."]
 

@@ -19,7 +19,6 @@ Path outage checking is disabled by default.
 
 You can configure a path outage for an individual node by setting a parent on the node in a requisition or by doing the following:
 
-. Click the *gear* symbol in the top-right of the screen.
-. Under Event Management, click menu:Configure Notifications[Configure Path Outages].
+. Click menu:Administration[Configure OpenNMS] in the side menu, then under Event Management, click menu:Configure Notifications[Configure Path Outages].
 . Enter the critical path IP address, select a critical path service, and click *Validate Rule Results*.
 . Click *Next* to save the configuration.
