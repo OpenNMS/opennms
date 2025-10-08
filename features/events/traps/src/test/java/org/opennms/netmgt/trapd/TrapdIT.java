@@ -26,14 +26,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -46,10 +45,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.netmgt.config.EventConfUtil;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scriptd.helper.EventForwarder;
 import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
@@ -64,6 +66,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.snmp4j.security.SecurityLevel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -124,14 +127,24 @@ public class TrapdIT {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
-    private final InetAddress localAddr = InetAddressUtils.getLocalHostAddress();
+    @Autowired
+    private EventConfDao eventConfDao;
+
+    private final InetAddress localAddr = InetAddressUtils.getLocalLoopbackAddress().get();
     private final String localhost = InetAddressUtils.toIpAddrString(localAddr);
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+
+        List<EventConfEvent> events = EventConfUtil.parseResourcesAsEventConfEvents(
+                new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        // Load into DB
+        eventConfDao.loadEventsFromDB(events);
+
         m_mockEventIpcManager.setSynchronous(true);
         m_trapd.setSecureCredentialsVault(new MockSecureCredentialsVault());
         m_trapd.onStart();
+
     }
 
     @After

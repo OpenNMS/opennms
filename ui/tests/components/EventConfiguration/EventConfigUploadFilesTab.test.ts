@@ -1068,5 +1068,94 @@ describe('EventConfigUploadFilesTab', () => {
     expect(wrapper.findComponent(FeatherTooltip).vm.title).toContain('No <event> entries found within <events> element')
     expect(snackbar.showSnackBar).toHaveBeenCalledTimes(1) // only one error
   })
+  
+  // NEW: Upload with mixed success/errors in response
+  it('handles upload response with partial success and errors', async () => {
+    const validFile = mockFile('valid.events.xml')
+    const invalidFile = mockFile('invalid.events.xml') // But filter skips it
+    await wrapper.vm.eventFiles.push(
+      { file: validFile, isValid: true, errors: [], isDuplicate: false },
+      { file: invalidFile, isValid: false, errors: ['Invalid'], isDuplicate: false }
+    )
+    await wrapper.vm.$nextTick()
+    await wrapper.find('[data-test="upload-button"]').trigger('click')
+    await flushPromises()
+    expect(uploadEventConfigFiles).not.toHaveBeenCalled()
+    expect(store.uploadedEventConfigFilesReportDialogState.visible).toBe(false)
+  })
+
+  it('handles drag on empty or single file list without changes', async () => {
+    // Empty: no drag possible
+    expect(wrapper.findComponent(Draggable).exists()).toBe(false)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.eventFiles.length).toBe(0)    
+    
+    // Single: drag should no-op
+    const file = { file: mockFile('single.events.xml'), isValid: true, errors: [], isDuplicate: false }
+    await wrapper.vm.eventFiles.push(file)
+    await wrapper.vm.$nextTick()
+    const draggable = wrapper.findComponent(Draggable)
+    draggable.vm.$emit('update:modelValue', [file]) // Same order
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.eventFiles).toEqual([file])
+  })
+
+  it('re-validates renamed file with non-XML type', async () => {
+    const nonXmlFile = mockFile('test.txt', 'text/plain') // Bypass via manual push
+    await wrapper.vm.eventFiles.push({
+      file: nonXmlFile,
+      isValid: true, // Initial mock
+      errors: [],
+      isDuplicate: true
+    })
+    wrapper.vm.selectedIndex = 0
+    wrapper.vm.displayRenameDialog = true
+    vi.mocked(validateEventConfigFile).mockResolvedValueOnce({
+      isValid: false,
+      errors: ['File does not appear to be an event configuration file (expected .events.xml extension)']
+    })
+    await wrapper.vm.renameFile('renamed.events.xml')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.eventFiles[0].file.name).toBe('renamed.events.xml')
+    expect(wrapper.vm.eventFiles[0].file.type).toBe('text/plain') // Preserves type
+    expect(wrapper.vm.eventFiles[0].isValid).toBe(false)
+    expect(wrapper.vm.eventFiles[0].errors).toEqual(['File does not appear to be an event configuration file (expected .events.xml extension)'])
+  })
+
+  it('updates duplicates reactively during ongoing upload', async () => {
+    const file = mockFile('test.events.xml')
+    await wrapper.vm.eventFiles.push({ file, isValid: true, errors: [], isDuplicate: false })
+    wrapper.vm.isLoading = true // Simulate upload start
+    store.uploadedSourceNames = ['test.events.xml'] // Trigger watch
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.eventFiles[0].isDuplicate).toBe(true) // Updates even mid-upload
+    wrapper.vm.isLoading = false // End upload
+    expect(wrapper.find('[data-test="upload-button"]').attributes('aria-disabled')).toBe('true') // Still disabled due to dupe
+  })
+
+  it('shows blank tooltip for invalid file with no errors', async () => {
+    const file = mockFile('noerror.events.xml')
+    await wrapper.vm.eventFiles.push({
+      file,
+      isValid: false,
+      errors: [], // Empty
+      isDuplicate: false
+    })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.error-icon').exists()).toBe(true)
+    const tooltip = wrapper.findComponent(FeatherTooltip)
+    expect(tooltip.vm.title).toBe('') // Joins empty → blank; could enhance code to 'Validation failed' if needed
+  })
+
+  it('logs error on invalid index in rename/overwrite', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    wrapper.vm.selectedIndex = -1 // Invalid
+    wrapper.vm.displayRenameDialog = true
+    await wrapper.vm.renameFile('new.events.xml')
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Invalid index for renaming file')
+    await wrapper.vm.overwriteFile()
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Invalid index for overwriting file')
+    consoleErrorSpy.mockRestore()
+  })
 })
 

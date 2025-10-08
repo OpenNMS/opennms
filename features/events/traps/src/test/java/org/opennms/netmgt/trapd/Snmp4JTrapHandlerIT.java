@@ -22,16 +22,23 @@
 package org.opennms.netmgt.trapd;
 
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -43,9 +50,21 @@ import static org.opennms.core.utils.InetAddressUtils.str;
  */
 public class Snmp4JTrapHandlerIT extends TrapHandlerITCase {
 
+    @Autowired
+    private EventConfDao eventConfDao;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        List<EventConfEvent> events = EventConfUtil.parseResourcesAsEventConfEvents(
+                new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        // Load into DB
+        eventConfDao.loadEventsFromDB(events);
+        super.setUp();
     }
 
     @Override

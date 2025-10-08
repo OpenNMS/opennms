@@ -1,4 +1,5 @@
 import { UploadEventFileType } from '@/types/eventConfig'
+import { XMLValidator } from 'fast-xml-parser'
 
 export const MAX_FILES_UPLOAD = 10
 
@@ -21,7 +22,12 @@ export const validateEventConfigFile = async (file: File) => {
     if (validationErrors.length === 0) {
       const parser = new DOMParser()
       const xmlDoc = parser.parseFromString(text, 'application/xml')
+      const result = XMLValidator.validate(text)
       if (xmlDoc.querySelector('parsererror')) {
+        validationErrors.push('Invalid XML format - file contains syntax errors')
+        return { isValid: false, errors: validationErrors }
+      }
+      if (!result) {
         validationErrors.push('Invalid XML format - file contains syntax errors')
         return { isValid: false, errors: validationErrors }
       }
@@ -30,12 +36,11 @@ export const validateEventConfigFile = async (file: File) => {
       if (!eventsElement) {
         validationErrors.push('Missing <events> root element')
         return { isValid: false, errors: validationErrors }
-      } else {
-        const xmlns = eventsElement.getAttribute('xmlns') || ''
-        if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
-          validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
-          return { isValid: false, errors: validationErrors }
-        }
+      }
+      const xmlns = eventsElement.getAttribute('xmlns') || ''
+      if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
+        validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
+        return { isValid: false, errors: validationErrors }
       }
 
       const eventElements = eventsElement.querySelectorAll('event')
@@ -73,6 +78,7 @@ export const validateEventElement = (event: Element, eventNumber: number): strin
   const uei = event.querySelector('uei')?.textContent?.trim()
   const label = event.querySelector('event-label')?.textContent?.trim()
   const severity = event.querySelector('severity')?.textContent?.trim()
+  const description = event.querySelector('descr')?.textContent?.trim()
 
   if (!uei) {
     return `Event ${eventNumber}: missing <uei>`
@@ -83,6 +89,10 @@ export const validateEventElement = (event: Element, eventNumber: number): strin
   if (!severity) {
     return `Event ${eventNumber}: missing <severity>`
   }
+  if (!description) {
+    return `Event ${eventNumber}: missing <descr>`
+  }
+
   return ''
 }
 

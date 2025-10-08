@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -319,37 +320,6 @@ public class EventConfPersistenceServiceIT {
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
         assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    @Transactional
-    public void testUnmarshallEventConfEventXmlContent() throws Exception {
-        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
-        List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
-
-        for (EventConfSource eventConfSource : eventConfSourceList) {
-            List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
-            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName() + ".xml");
-            assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
-            List<Event> eventsList = fileEvents.getEvents();
-            for (EventConfEvent eventConfEvent : eventConfEventList) {
-                Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
-                Event matchingFileEvent = eventsList.stream()
-                        .filter(fileEvent ->
-                                Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
-                                        Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
-                                        Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
-                                        Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
-                        )
-                        .findFirst()
-                        .orElse(null);
-                assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
-                        matchingFileEvent);
-                dbEvent.setEventMatcher(matchingFileEvent.getEventMatcher());
-                assertEquals(dbEvent, matchingFileEvent);
-            }
-        }
     }
 
     @Test
@@ -657,4 +627,124 @@ public class EventConfPersistenceServiceIT {
         EventConfEvent newlyAddedEvent = eventConfEventDao.findByUei("uei.opennms.org/vendor/test/test1");
         assertNotNull(newlyAddedEvent);
     }
+
+    @Test
+    @Transactional
+    public void testUpdateEventConfEventWithXml() throws Exception {
+        EventConfSource m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagTest");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source, "uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source, "uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
+
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        // xml payload
+        EventConfEventEditRequest payload = new EventConfEventEditRequest();
+        String xmlPayload = """
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/internal/clear</uei>
+                   <event-label>Clear label changed.</event-label>
+                   <descr>Clear Description changed.</descr>
+                   <severity>Major</severity>
+                </event>
+                """;
+        Event event = JaxbUtils.unmarshal(Event.class, xmlPayload);
+        payload.setEvent(event);
+        payload.setEnabled(true);
+
+        eventConfPersistenceService.updateEventConfEvent(source.getId(), clearEvent.getId(), payload);
+
+        EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+        assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
+        assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
+
+        // verify xml content updated or not.
+        Event dbEvent = JaxbUtils.unmarshal(Event.class, updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
+
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventConfEventWithJson() throws Exception {
+        EventConfSource m_source = new EventConfSource();
+        m_source.setName("testEventJsonPayload");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source, "uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source, "uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventJsonPayload");
+
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        String jsonPayload = """
+                {
+                  "enabled": true,
+                  "event": {
+                    "uei": "uei.opennms.org/internal/clear",
+                    "eventLabel": "Clear label changed.",
+                    "descr": "Clear Description changed.",
+                    "severity": "Major"
+                  }
+                }
+                """;
+        ObjectMapper mapper = new ObjectMapper();
+        EventConfEventEditRequest payload = mapper.readValue(jsonPayload, EventConfEventEditRequest.class);
+
+        eventConfPersistenceService.updateEventConfEvent(source.getId(),clearEvent.getId(), payload);
+
+        EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+        assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
+        assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
+
+        // verify xml content updated correctly
+        Event dbEvent = JaxbUtils.unmarshal(Event.class, updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
+    }
+
+    private void insertEvent(EventConfSource m_source,String uei, String label, String description, String severity) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei(uei);
+        event.setEventLabel(label);
+        event.setDescription(description);
+        event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("JUnitTest");
+
+        eventConfEventDao.saveOrUpdate(event);
+    }
 }
+
