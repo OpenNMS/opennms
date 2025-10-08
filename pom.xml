@@ -1697,10 +1697,10 @@
 
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
-    <install.database.user>${scv:postgres:username|opennms}</install.database.user>
-    <install.database.password>${scv:postgres:password|opennms}</install.database.password>
-    <install.database.admin.user>${scv:postgres-admin:username|postgres}</install.database.admin.user>
-    <install.database.admin.password>${scv:postgres-admin:password|}</install.database.admin.password>
+    <install.database.user>${scv:postgres:username|env:OPENNMS_DBUSER|opennms}</install.database.user>
+    <install.database.password>${scv:postgres:password|env:OPENNMS_DBPASS|opennms}</install.database.password>
+    <install.database.admin.user>${scv:postgres-admin:username|env:POSTGRES_USER|postgres}</install.database.admin.user>
+    <install.database.admin.password>${scv:postgres-admin:password|env:POSTGRES_PASSWORD|}</install.database.admin.password>
     <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
