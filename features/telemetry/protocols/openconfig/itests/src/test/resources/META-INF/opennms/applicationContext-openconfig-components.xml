@@ -23,7 +23,7 @@
     </bean>
 
 
-    <bean id="messageDispatcherFactory" class="org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory" />
+    <bean id="messageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.client.CamelLocalMessageDispatcherFactory" />
 
 
     <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory" ref="connectorFactory" />
