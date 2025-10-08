@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources
+  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+
+  <!--
+    This overlay file tests environment variable interpolation for NMS-18531.
+    Environment variables are set by OpenNMSContainer:
+    - POSTGRES_HOST=db
+    - POSTGRES_PORT=5432
+    - OPENNMS_DBNAME=opennms
+    - OPENNMS_DBUSER=opennms
+    - OPENNMS_DBPASS=opennms
+  -->
+
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
+    idleTimeout="${env:OPENNMS_DB_IDLE_TIMEOUT|600}"
+    loginTimeout="${env:OPENNMS_DB_LOGIN_TIMEOUT|3}"
+    minPool="${env:OPENNMS_DB_MIN_POOL|25}"
+    maxPool="${env:OPENNMS_DB_MAX_POOL|50}"
+    maxSize="${env:OPENNMS_DB_MAX_SIZE|50}" />
+
+  <jdbc-data-source name="opennms"
+                    database-name="${env:OPENNMS_DBNAME|opennms}"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://${env:POSTGRES_HOST|localhost}:${env:POSTGRES_PORT|5432}/${env:OPENNMS_DBNAME|opennms}"
+                    user-name="${env:OPENNMS_DBUSER|opennms}"
+                    password="${env:OPENNMS_DBPASS|opennms}" />
+
+  <jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://${env:POSTGRES_HOST|localhost}:${env:POSTGRES_PORT|5432}/template1"
+                    user-name="${env:POSTGRES_USER|test}"
+                    password="${env:POSTGRES_PASSWORD|test}">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
+
+  <jdbc-data-source name="opennms-monitor"
+                    database-name="postgres"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://${env:POSTGRES_HOST|localhost}:${env:POSTGRES_PORT|5432}/postgres"
+                    user-name="${env:POSTGRES_USER|test}"
+                    password="${env:POSTGRES_PASSWORD|test}">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
+
+</datasource-configuration>

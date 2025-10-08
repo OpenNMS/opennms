@@ -30,6 +30,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.mate.api.EnvironmentScope;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+
 /**
  * Database connection pool configuration.
  * 
@@ -52,31 +59,31 @@ public class ConnectionPool implements java.io.Serializable {
      * removed.
      */
     @XmlAttribute(name = "idleTimeout")
-    private Integer idleTimeout;
+    private String rawIdleTimeout;
 
     /**
      * How long, in seconds, to attempt to make a connection to the database.
      */
     @XmlAttribute(name = "loginTimeout")
-    private Integer loginTimeout;
+    private String rawLoginTimeout;
 
     /**
      * The minimum number of pooled connections to retain.
      */
     @XmlAttribute(name = "minPool")
-    private Integer minPool;
+    private String rawMinPool;
 
     /**
      * The maximum number of pooled connections to retain.
      */
     @XmlAttribute(name = "maxPool")
-    private Integer maxPool;
+    private String rawMaxPool;
 
     /**
      * The maximum number of connections that can be created.
      */
     @XmlAttribute(name = "maxSize")
-    private Integer maxSize;
+    private String rawMaxSize;
 
     public ConnectionPool() {
         setFactory("org.opennms.core.db.HikariCPConnectionFactory");
@@ -85,36 +92,36 @@ public class ConnectionPool implements java.io.Serializable {
     /**
      */
     public void deleteIdleTimeout() {
-        this.idleTimeout= null;
+        this.rawIdleTimeout = null;
     }
 
     /**
      */
     public void deleteLoginTimeout() {
-        this.loginTimeout= null;
+        this.rawLoginTimeout = null;
     }
 
     /**
      */
     public void deleteMaxPool() {
-        this.maxPool= null;
+        this.rawMaxPool = null;
     }
 
     /**
      */
     public void deleteMaxSize() {
-        this.maxSize= null;
+        this.rawMaxSize = null;
     }
 
     /**
      */
     public void deleteMinPool() {
-        this.minPool= null;
+        this.rawMinPool = null;
     }
 
     /**
      * Overrides the Object.equals method.
-     * 
+     *
      * @param obj
      * @return true if the objects are equal.
      */
@@ -123,18 +130,34 @@ public class ConnectionPool implements java.io.Serializable {
         if ( this == obj ) {
             return true;
         }
-        
+
         if (obj instanceof ConnectionPool) {
             ConnectionPool temp = (ConnectionPool)obj;
             boolean equals = Objects.equals(temp.factory, factory)
-                && Objects.equals(temp.idleTimeout, idleTimeout)
-                && Objects.equals(temp.loginTimeout, loginTimeout)
-                && Objects.equals(temp.minPool, minPool)
-                && Objects.equals(temp.maxPool, maxPool)
-                && Objects.equals(temp.maxSize, maxSize);
+                && Objects.equals(temp.rawIdleTimeout, rawIdleTimeout)
+                && Objects.equals(temp.rawLoginTimeout, rawLoginTimeout)
+                && Objects.equals(temp.rawMinPool, rawMinPool)
+                && Objects.equals(temp.rawMaxPool, rawMaxPool)
+                && Objects.equals(temp.rawMaxSize, rawMaxSize);
             return equals;
         }
         return false;
+    }
+
+    private String interpolateAttribute(final String value) {
+        return interpolateAttribute(value, JCEKSSecureCredentialsVault.defaultScv());
+    }
+
+    private String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
+        if (value == null) {
+            return null;
+        }
+        final Interpolator.Result result = Interpolator.interpolate(value,
+            new FallbackScope(
+                new SecureCredentialsVaultScope(secureCredentialsVault),
+                new EnvironmentScope()
+            ));
+        return result.output;
     }
 
     /**
@@ -155,93 +178,98 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'IdleTimeout'.
      */
     public Integer getIdleTimeout() {
-        return this.idleTimeout != null ? this.idleTimeout : Integer.valueOf("600");
+        String interpolated = interpolateAttribute(this.rawIdleTimeout);
+        return interpolated != null ? Integer.parseInt(interpolated) : 600;
     }
 
     /**
      * Returns the value of field 'loginTimeout'. The field 'loginTimeout' has the
      * following description: How long, in seconds, to attempt to make a
      * connection to the database.
-     * 
+     *
      * @return the value of field 'LoginTimeout'.
      */
     public Integer getLoginTimeout() {
-        return this.loginTimeout != null ? this.loginTimeout : Integer.valueOf("3");
+        String interpolated = interpolateAttribute(this.rawLoginTimeout);
+        return interpolated != null ? Integer.parseInt(interpolated) : 3;
     }
 
     /**
      * Returns the value of field 'maxPool'. The field 'maxPool' has the following
      * description: The maximum number of pooled connections to retain.
-     * 
+     *
      * @return the value of field 'MaxPool'.
      */
     public Integer getMaxPool() {
-        return this.maxPool != null ? this.maxPool : Integer.valueOf("50");
+        String interpolated = interpolateAttribute(this.rawMaxPool);
+        return interpolated != null ? Integer.parseInt(interpolated) : 50;
     }
 
     /**
      * Returns the value of field 'maxSize'. The field 'maxSize' has the following
      * description: The maximum number of connections that can be created.
-     * 
+     *
      * @return the value of field 'MaxSize'.
      */
     public Integer getMaxSize() {
-        return this.maxSize != null ? this.maxSize : Integer.valueOf("500");
+        String interpolated = interpolateAttribute(this.rawMaxSize);
+        return interpolated != null ? Integer.parseInt(interpolated) : 500;
     }
 
     /**
      * Returns the value of field 'minPool'. The field 'minPool' has the following
      * description: The minimum number of pooled connections to retain.
-     * 
+     *
      * @return the value of field 'MinPool'.
      */
     public Integer getMinPool() {
-        return this.minPool != null ? this.minPool : Integer.valueOf("10");
+        String interpolated = interpolateAttribute(this.rawMinPool);
+        return interpolated != null ? Integer.parseInt(interpolated) : 10;
     }
 
     /**
      * Method hasIdleTimeout.
-     * 
+     *
      * @return true if at least one IdleTimeout has been added
      */
     public boolean hasIdleTimeout() {
-        return this.idleTimeout != null;
+        return this.rawIdleTimeout != null;
     }
 
     /**
      * Method hasLoginTimeout.
-     * 
+     *
      * @return true if at least one LoginTimeout has been added
      */
     public boolean hasLoginTimeout() {
-        return this.loginTimeout != null;
+        return this.rawLoginTimeout != null;
     }
 
     /**
      * Method hasMaxPool.
-     * 
+     *
      * @return true if at least one MaxPool has been added
      */
     public boolean hasMaxPool() {
-        return this.maxPool != null;
+        return this.rawMaxPool != null;
     }
 
     /**
      * Method hasMaxSize.
-     * 
+     *
      * @return true if at least one MaxSize has been added
      */
     public boolean hasMaxSize() {
-        return this.maxSize != null;
+        return this.rawMaxSize != null;
     }
 
     /**
      * Method hasMinPool.
-     * 
+     *
      * @return true if at least one MinPool has been added
      */
     public boolean hasMinPool() {
-        return this.minPool != null;
+        return this.rawMinPool != null;
     }
 
     /**
@@ -250,14 +278,13 @@ public class ConnectionPool implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             factory,
-            idleTimeout,
-            loginTimeout,
-            minPool,
-            maxPool,
-            maxSize);
-        return hash;
+            rawIdleTimeout,
+            rawLoginTimeout,
+            rawMinPool,
+            rawMaxPool,
+            rawMaxSize);
     }
 
     /**
@@ -278,48 +305,100 @@ public class ConnectionPool implements java.io.Serializable {
      * @param idleTimeout the value of field 'idleTimeout'.
      */
     public void setIdleTimeout(final Integer idleTimeout) {
-        this.idleTimeout = idleTimeout;
+        this.rawIdleTimeout = idleTimeout != null ? idleTimeout.toString() : null;
+    }
+
+    /**
+     * Sets the value of field 'idleTimeout'. The field 'idleTimeout' has the
+     * following description: How long, in seconds, an idle connection is kept in
+     * the pool before it is removed.
+     *
+     * @param idleTimeout the raw string value of field 'idleTimeout'.
+     */
+    public void setIdleTimeout(final String idleTimeout) {
+        this.rawIdleTimeout = idleTimeout;
     }
 
     /**
      * Sets the value of field 'loginTimeout'. The field 'loginTimeout' has the
      * following description: How long, in seconds, to attempt to make a
      * connection to the database.
-     * 
+     *
      * @param loginTimeout the value of field 'loginTimeout'.
      */
     public void setLoginTimeout(final Integer loginTimeout) {
-        this.loginTimeout = loginTimeout;
+        this.rawLoginTimeout = loginTimeout != null ? loginTimeout.toString() : null;
+    }
+
+    /**
+     * Sets the value of field 'loginTimeout'. The field 'loginTimeout' has the
+     * following description: How long, in seconds, to attempt to make a
+     * connection to the database.
+     *
+     * @param loginTimeout the raw string value of field 'loginTimeout'.
+     */
+    public void setLoginTimeout(final String loginTimeout) {
+        this.rawLoginTimeout = loginTimeout;
     }
 
     /**
      * Sets the value of field 'maxPool'. The field 'maxPool' has the following
      * description: The maximum number of pooled connections to retain.
-     * 
+     *
      * @param maxPool the value of field 'maxPool'.
      */
     public void setMaxPool(final Integer maxPool) {
-        this.maxPool = maxPool;
+        this.rawMaxPool = maxPool != null ? maxPool.toString() : null;
+    }
+
+    /**
+     * Sets the value of field 'maxPool'. The field 'maxPool' has the following
+     * description: The maximum number of pooled connections to retain.
+     *
+     * @param maxPool the raw string value of field 'maxPool'.
+     */
+    public void setMaxPool(final String maxPool) {
+        this.rawMaxPool = maxPool;
     }
 
     /**
      * Sets the value of field 'maxSize'. The field 'maxSize' has the following
      * description: The maximum number of connections that can be created.
-     * 
+     *
      * @param maxSize the value of field 'maxSize'.
      */
     public void setMaxSize(final Integer maxSize) {
-        this.maxSize = maxSize;
+        this.rawMaxSize = maxSize != null ? maxSize.toString() : null;
+    }
+
+    /**
+     * Sets the value of field 'maxSize'. The field 'maxSize' has the following
+     * description: The maximum number of connections that can be created.
+     *
+     * @param maxSize the raw string value of field 'maxSize'.
+     */
+    public void setMaxSize(final String maxSize) {
+        this.rawMaxSize = maxSize;
     }
 
     /**
      * Sets the value of field 'minPool'. The field 'minPool' has the following
      * description: The minimum number of pooled connections to retain.
-     * 
+     *
      * @param minPool the value of field 'minPool'.
      */
     public void setMinPool(final Integer minPool) {
-        this.minPool = minPool;
+        this.rawMinPool = minPool != null ? minPool.toString() : null;
+    }
+
+    /**
+     * Sets the value of field 'minPool'. The field 'minPool' has the following
+     * description: The minimum number of pooled connections to retain.
+     *
+     * @param minPool the raw string value of field 'minPool'.
+     */
+    public void setMinPool(final String minPool) {
+        this.rawMinPool = minPool;
     }
 
     public static ConnectionPool merge(final ConnectionPool a,
@@ -334,11 +413,11 @@ public class ConnectionPool implements java.io.Serializable {
 
         final var pool = new ConnectionPool();
         pool.factory = MoreObjects.firstNonNull(a.factory, b.factory);
-        pool.idleTimeout = MoreObjects.firstNonNull(a.idleTimeout, b.idleTimeout);
-        pool.loginTimeout = MoreObjects.firstNonNull(a.loginTimeout, b.loginTimeout);
-        pool.minPool = MoreObjects.firstNonNull(a.minPool, b.minPool);
-        pool.maxPool = MoreObjects.firstNonNull(a.maxPool, b.maxPool);
-        pool.maxSize = MoreObjects.firstNonNull(a.maxSize, b.maxSize);
+        pool.rawIdleTimeout = MoreObjects.firstNonNull(a.rawIdleTimeout, b.rawIdleTimeout);
+        pool.rawLoginTimeout = MoreObjects.firstNonNull(a.rawLoginTimeout, b.rawLoginTimeout);
+        pool.rawMinPool = MoreObjects.firstNonNull(a.rawMinPool, b.rawMinPool);
+        pool.rawMaxPool = MoreObjects.firstNonNull(a.rawMaxPool, b.rawMaxPool);
+        pool.rawMaxSize = MoreObjects.firstNonNull(a.rawMaxSize, b.rawMaxSize);
 
         return pool;
     }
