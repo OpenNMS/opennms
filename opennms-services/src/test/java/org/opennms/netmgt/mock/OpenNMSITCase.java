@@ -37,6 +37,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfUtil;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.mock.JdbcEventdServiceManager;
 import org.opennms.netmgt.eventd.AbstractEventUtil;
@@ -52,6 +53,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockUtil;
@@ -165,8 +167,8 @@ public class OpenNMSITCase {
                  */
                 File configFile = ConfigurationTestUtils.getFileForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
                 DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-                eventConfDao.setConfigResource(new FileSystemResource(configFile));
-                eventConfDao.afterPropertiesSet();
+                List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(configFile));
+                eventConfDao.loadEventsFromDB(eventConfEventList);
                 
                 EventExpander eventExpander = new EventExpander(m_registry);
                 eventExpander.setEventConfDao(eventConfDao);

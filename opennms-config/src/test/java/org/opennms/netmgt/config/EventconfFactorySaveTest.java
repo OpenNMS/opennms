@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -71,10 +72,16 @@ public class EventconfFactorySaveTest extends TestCase {
         createTempCopy(m_fa, origEvents, tempEvents, "Standard.events.xml");
         createTempCopy(m_fa, origEvents, tempEvents, "Syslog.test.events.xml");
         createTempCopy(m_fa, origEvents, tempEvents, "Syslog.LoadTest.events.xml");
-        
+
+        m_fa.expecting(tempEvents, "Syslog.test.events");
+        m_fa.expecting(tempEvents, "Syslog.LoadTest.events");
+        m_fa.expecting(tempEvents, "Standard.events");
+        m_fa.expecting(tempEtc, "eventconf");
+
         m_eventConfDao = new DefaultEventConfDao();
         m_eventConfDao.setConfigResource(new FileSystemResource(eventConf));
-        m_eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventConf));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList);
     }
 
     @Override

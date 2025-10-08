@@ -130,6 +130,27 @@ public class EventConfEventDaoHibernate
         return Map.of("totalRecords", resultCount, "eventConfEventList", eventConfEventList);
     }
 
+    @Override
+    public void saveAll(Collection<EventConfEvent> events) {
+        if (events == null || events.isEmpty()) {
+            return;
+        }
+
+        int batchSize = 50;
+        int i = 0;
+        for (EventConfEvent event : events) {
+            getHibernateTemplate().save(event);
+            i++;
+            if (i % batchSize == 0) {
+                getHibernateTemplate().flush();
+                getHibernateTemplate().clear();
+            }
+
+        }
+        getHibernateTemplate().flush();
+        getHibernateTemplate().clear();
+    }
+
     /**
      * Escapes special characters (% , _ , \, ., /, [, ]) in a string
      * to make it safe for SQL LIKE queries.
@@ -184,6 +205,8 @@ public class EventConfEventDaoHibernate
         LOG.info("Updated {} events (enabled={}) for sourceId={}", updatedCount, enabled, sourceId);
     }
 
-
-
+    @Override
+    public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
+        return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
+    }
 }

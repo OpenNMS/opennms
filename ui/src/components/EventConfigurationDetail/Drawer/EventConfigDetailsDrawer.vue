@@ -13,17 +13,27 @@
       v-if="store.eventModificationDrawerState.eventConfigEvent"
     >
       <section>
-        <h3>Customize the Event Details</h3>
+        <h3>
+          {{ store.eventModificationDrawerState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
+        </h3>
       </section>
       <div class="spacer-large"></div>
       <div class="drawer-content">
+        <FeatherInput
+          label="Event UEI"
+          type="search"
+          data-test="event-label"
+          v-model.trim="eventUei"
+        ></FeatherInput>
+        <div class="spacer-medium"></div>
+        <div class="spacer-medium"></div>
         <FeatherInput
           label="Event Label"
           type="search"
           data-test="event-label"
           v-model.trim="eventLabel"
-          clear="false"
-        ></FeatherInput>
+        >
+        </FeatherInput>
         <div class="spacer-medium"></div>
         <div class="spacer-medium"></div>
         <FeatherTextarea
@@ -32,14 +42,15 @@
           placeholder="Type your event description here..."
           rows="10"
           cols="40"
+          auto
+          clear
         ></FeatherTextarea>
         <div class="spacer-medium"></div>
         <div class="spacer-medium"></div>
         <FeatherSelect
-          label="Select Status"
-          :options="statusOptions"
-          v-model="selectedEventStatus"
-          clear="Clear Selection"
+          label="Select Severity"
+          :options="severityOptions"
+          v-model="selectedEventSeverity"
         >
           <FeatherIcon :icon="MoreVert" />
         </FeatherSelect>
@@ -65,8 +76,11 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
-import { updateEventConfigEventById } from '@/services/eventConfigService'
+import { mapEventConfigEventToServer } from '@/mappers/eventConfig.mapper'
+import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { CreateEditMode } from '@/types'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
@@ -74,24 +88,25 @@ import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
+import { Severity, severityOptions } from '../constants'
 
-const statusOptions: ISelectItemType[] = [
-  { _text: 'Enable', _value: 'enable' },
-  { _text: 'Disable', _value: 'disable' }
-]
 const snackbar = useSnackbar()
 const store = useEventConfigDetailStore()
-console.log('eventConfigEvent', store.eventModificationDrawerState.eventConfigEvent)
 const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent?.description || '')
 const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
-const selectedEventStatus = ref<ISelectItemType>({
-  _text: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'Enable' : 'Disable',
-  _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'enable' : 'disable'
+const eventUei = ref(store.eventModificationDrawerState.eventConfigEvent?.uei || '')
+const selectedEventSeverity = ref<ISelectItemType>({
+  _text: store.eventModificationDrawerState.eventConfigEvent?.severity ? Severity[store.eventModificationDrawerState.eventConfigEvent?.severity as keyof typeof Severity] : '',
+  _value: store.eventModificationDrawerState.eventConfigEvent?.severity ? Severity[store.eventModificationDrawerState.eventConfigEvent?.severity as keyof typeof Severity] : ''
 })
 
 const validateEventDetails = (): boolean => {
   if (!store.eventModificationDrawerState.eventConfigEvent) {
     snackbar.showSnackBar({ msg: 'No event selected', error: true })
+    return false
+  }
+  if (!eventUei.value) {
+    snackbar.showSnackBar({ msg: 'Event UEI is required', error: true })
     return false
   }
   if (!eventLabel.value) {
@@ -102,15 +117,15 @@ const validateEventDetails = (): boolean => {
     snackbar.showSnackBar({ msg: 'Event description is required', error: true })
     return false
   }
-  if (selectedEventStatus.value === undefined) {
-    snackbar.showSnackBar({ msg: 'Event status is required', error: true })
+  if (!selectedEventSeverity.value._value) {
+    snackbar.showSnackBar({ msg: 'Event severity is required', error: true })
     return false
   }
   return true
 }
 
 const handleSave = async () => {
-  if (!store.eventModificationDrawerState.eventConfigEvent) {
+  if (!store.eventModificationDrawerState.eventConfigEvent || !store.selectedSource) {
     return
   }
 
@@ -118,15 +133,25 @@ const handleSave = async () => {
     return
   }
 
-  const response = await updateEventConfigEventById(
-    store.eventModificationDrawerState.eventConfigEvent.id,
-    eventLabel.value,
-    eventDescription.value,
-    selectedEventStatus.value._value === 'enable'
-  )
+  const event = {
+    ...store.eventModificationDrawerState.eventConfigEvent,
+    uei: eventUei.value,
+    eventLabel: eventLabel.value,
+    description: eventDescription.value,
+    severity: selectedEventSeverity.value._value
+  } as EventConfigEvent
+
+  const newEvent = mapEventConfigEventToServer(event)
+  let response
+  if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
+    response = await updateEventConfigEventById(newEvent, event.id)
+  }
+  if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
+    response = await createEventConfigEvent(newEvent, store.selectedSource.id)
+  }
 
   if (response) {
-    snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
+    snackbar.showSnackBar({ msg: store.eventModificationDrawerState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
     await store.fetchEventsBySourceId()
     store.closeEventModificationDrawer()
   } else {
@@ -139,15 +164,17 @@ watch(
   (newVal) => {
     if (newVal) {
       eventDescription.value = newVal.description || ''
+      eventUei.value = newVal.uei || ''
       eventLabel.value = newVal.eventLabel || ''
-      selectedEventStatus.value = {
-        _text: newVal.enabled ? 'Enable' : 'Disable',
-        _value: newVal.enabled ? 'enable' : 'disable'
+      selectedEventSeverity.value = {
+        _text: newVal.severity ? Severity[newVal.severity as keyof typeof Severity] : '',
+        _value: newVal.enabled ? Severity[newVal.severity as keyof typeof Severity] : ''
       }
     } else {
-      eventDescription.value = ''
+      eventUei.value = ''
       eventLabel.value = ''
-      selectedEventStatus.value = { _text: '', _value: '' }
+      eventDescription.value = ''
+      selectedEventSeverity.value = { _text: '', _value: '' }
     }
   }, { immediate: true, deep: true }
 )
