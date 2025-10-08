@@ -1770,6 +1770,11 @@
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-10.0.0.tgz#e9c07fe50da0f53dc24970cca94d619ff03f6f6d"
   integrity sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==
 
+"@types/vkbeautify@^0.99.4":
+  version "0.99.4"
+  resolved "https://registry.yarnpkg.com/@types/vkbeautify/-/vkbeautify-0.99.4.tgz#485911b787e55aaa5a238b4038833f43c3f13f4b"
+  integrity sha512-IB/vC9R2BPQJDbKaBwG6B8nnBKeu/RMYKVgVBoSiMjj3CmePsRqHaFNLiYov7sBn+CiGe6eqY9UslPv+TEyjvA==
+
 "@types/web-bluetooth@^0.0.14":
   version "0.0.14"
   resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.14.tgz#94e175b53623384bff1f354cdb3197a8d63cdbe5"
@@ -3165,6 +3170,13 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
+fast-xml-parser@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-5.3.0.tgz#ae388d5a0f6ed31c8ce9e413c1ac89c8e57e7b07"
+  integrity sha512-gkWGshjYcQCF+6qtlrqBqELqNqnt4CxruY6UVAWWnqb3DQ6qaNFEIKqzYep1XzHLM/QtrHVCxyPOtTk4LTQ7Aw==
+  dependencies:
+    strnum "^2.1.0"
+
 fastq@^1.6.0:
   version "1.19.1"
   resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.19.1.tgz#d50eaba803c8846a883c16492821ebcd2cda55f5"
@@ -4381,6 +4393,11 @@ strip-literal@^2.1.1:
   dependencies:
     js-tokens "^9.0.1"
 
+strnum@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/strnum/-/strnum-2.1.1.tgz#cf2a6e0cf903728b8b2c4b971b7e36b4e82d46ab"
+  integrity sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw==
+
 super-regex@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/super-regex/-/super-regex-0.2.0.tgz#dc1e071e55cdcf56930eb6271f73653a655b2642"
@@ -4732,6 +4749,11 @@ vitest@^2.1.9:
     vite "^5.0.0"
     vite-node "2.1.9"
     why-is-node-running "^2.3.0"
+
+vkbeautify@^0.99.3:
+  version "0.99.3"
+  resolved "https://registry.yarnpkg.com/vkbeautify/-/vkbeautify-0.99.3.tgz#4769b3238c5d772c6ea967545dd1df5582f23297"
+  integrity sha512-2ozZEFfmVvQcHWoHLNuiKlUfDKlhh4KGsy54U0UrlLMR1SO+XKAIDqBxtBwHgNrekurlJwE8A9K6L49T78ZQ9Q==
 
 vue-component-type-helpers@^2.0.0:
   version "2.2.12"

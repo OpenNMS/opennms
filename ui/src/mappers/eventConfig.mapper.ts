@@ -1,3 +1,4 @@
+import { EventConfigurationDocType } from '@/components/EventConfigurationDetail/constants'
 import {
   EventConfigEvent,
   EventConfigEventRequest,
@@ -6,6 +7,7 @@ import {
   EventConfigSource,
   EventConfigSourcesResponse
 } from '@/types/eventConfig'
+import vkbeautify from 'vkbeautify'
 
 export const mapUploadedEventConfigFilesResponseFromServer = (response: any): EventConfigFilesUploadResponse => {
   return {
@@ -95,5 +97,19 @@ export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfi
   }
 
   return newEvent as EventConfigEventRequest
+}
+
+export const mapEventConfEventEditRequest = (content: any, status: boolean, objType: string): string | { enabled: boolean, event: EventConfigEventRequest } | null => {
+  if (objType === EventConfigurationDocType.Json) {
+    return {
+      enabled: status,
+      event: content as EventConfigEventRequest
+    }
+  }
+  if (objType === EventConfigurationDocType.Xml) {
+    return vkbeautify.xml(`<eventEdit><enabled>${status}</enabled>${content as string}</eventEdit>`)
+  }
+
+  return null
 }
 

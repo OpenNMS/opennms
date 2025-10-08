@@ -159,7 +159,7 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigDetailsDrawer />
+  <EventConfigEventEditDrawer />
 </template>
 
 <script setup lang="ts">
@@ -184,7 +184,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
-import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
+import EventConfigEventEditDrawer from './Drawer/EventConfigEventEditDrawer.vue'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
