@@ -22,12 +22,15 @@
 package org.opennms.features.vaadin.events;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.springframework.core.io.FileSystemResource;
@@ -57,8 +60,8 @@ public class EventFormTest {
         File config = new File(ConfigurationTestUtils.getDaemonEtcDirectory(), "events/MPLS.events.xml");
         Assert.assertTrue(config.exists());
         dao = new DefaultEventConfDao();
-        dao.setConfigResource(new FileSystemResource(config));
-        dao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(config));
+        dao.loadEventsFromDB(eventConfEventList);
     }
 
     /**

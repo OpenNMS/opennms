@@ -323,37 +323,6 @@ public class EventConfPersistenceServiceIT {
     }
 
     @Test
-    @JUnitTemporaryDatabase
-    @Transactional
-    public void testUnmarshallEventConfEventXmlContent() throws Exception {
-        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
-        List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
-
-        for (EventConfSource eventConfSource : eventConfSourceList) {
-            List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
-            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName() + ".xml");
-            assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
-            List<Event> eventsList = fileEvents.getEvents();
-            for (EventConfEvent eventConfEvent : eventConfEventList) {
-                Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
-                Event matchingFileEvent = eventsList.stream()
-                        .filter(fileEvent ->
-                                Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
-                                        Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
-                                        Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
-                                        Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
-                        )
-                        .findFirst()
-                        .orElse(null);
-                assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
-                        matchingFileEvent);
-                dbEvent.setEventMatcher(matchingFileEvent.getEventMatcher());
-                assertEquals(dbEvent, matchingFileEvent);
-            }
-        }
-    }
-
-    @Test
     @Transactional
     public void testFilterConfEventsBySourceId_ShouldReturnFilteredResults() {
         String filename1 = "vendor-cisco.xml";

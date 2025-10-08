@@ -77,6 +77,12 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private ConfigReloadContainer<Events> m_extContainer;
 
+    public DefaultEventConfDao() {
+        m_events = new Events();
+        m_partition = new EnterpriseIdPartition();
+        m_events.initialize(m_partition, new EventOrdering());
+    }
+
 	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
 	}
@@ -102,12 +108,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void reload() throws DataAccessException {
-		validateConfig(m_configResource);
-		try {
-		    reloadConfig();
-		} catch (Exception e) {
-			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
-		}
+		// Reload happens whenever DB gets updated, no need for explicit reload
 	}
 
 	@Override
@@ -320,8 +321,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
-		loadConfig();
-        initExtensions();
+		// Event Conf gets loaded by loadEventsFromDB.
+		// Since this Class can't access DB at bean creation time, this is delegated to EventConfPersistenceService
 	}
 
 	private static class EnterpriseIdPartition implements Partition {

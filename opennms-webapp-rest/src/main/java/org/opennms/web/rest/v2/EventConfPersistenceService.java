@@ -77,8 +77,7 @@ public class EventConfPersistenceService {
     @PostConstruct
     public void init() {
         // Asynchronously load events from DB in order to not to block startup
-        // TODO: Uncomment when we are ready to disable loading from filesystem
-        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -87,7 +86,7 @@ public class EventConfPersistenceService {
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
         // Asynchronously load event conf from DB.
-        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     @Transactional
@@ -97,7 +96,7 @@ public class EventConfPersistenceService {
         saveEvent(eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
         // Asynchronously load event conf from DB.
-        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        eventConfExecutor.execute(this::reloadEventsFromDB);
         return eventConfSourceDao.save(eventConfSource);
     }
 

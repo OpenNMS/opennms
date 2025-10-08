@@ -22,7 +22,15 @@
 package org.opennms.netmgt.trapd;
 
 
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+
+import java.util.List;
 
 /**
  * {@link TrapHandlerITCase} which uses the snmp strategy {@link org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy}.
@@ -31,9 +39,21 @@ import org.junit.BeforeClass;
  */
 public class JoeSnmpTrapHandlerIT extends TrapHandlerITCase {
 
+    @Autowired
+    private EventConfDao eventConfDao;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        List<EventConfEvent> events = EventConfUtil.parseResourcesAsEventConfEvents(
+                new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        // Load into DB
+        eventConfDao.loadEventsFromDB(events);
+        super.setUp();
     }
 
 }
