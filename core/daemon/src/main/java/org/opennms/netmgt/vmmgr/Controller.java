@@ -41,6 +41,8 @@ import javax.management.remote.JMXServiceURL;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.mate.api.EnvironmentScope;
+import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
@@ -196,15 +198,19 @@ public class Controller {
             }
         }
 
-        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+        final Scope scope = new FallbackScope(
+            new SecureCredentialsVaultScope(secureCredentialsVault),
+            new EnvironmentScope()
+        );
 
         for(final Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null || !(entry.getValue() instanceof String)) {
                 continue;
             }
-            // Since we are only interpolating scv related properties, we restrict this to interpolating only scv related properties.
-            if (((String) entry.getValue()).contains("${scv:")) {
-                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
+            // Interpolate scv and env related properties
+            final String value = (String) entry.getValue();
+            if (value.contains("${scv:") || value.contains("${env:")) {
+                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(value, scope).output);
             }
         }
     }
