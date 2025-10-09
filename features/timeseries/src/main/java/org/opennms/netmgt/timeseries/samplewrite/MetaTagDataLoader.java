@@ -156,7 +156,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         tags.add(new ImmutableTag("cat_" + catName, catName));
                         catList.add(catName);
                     });
-            if (! catList.isEmpty() ) {
+            if (!catList.isEmpty() ) {
                 Collections.sort(catList);
                 String categories = String.join(",", catList);
                 tags.add(new ImmutableTag("categories", categories));
