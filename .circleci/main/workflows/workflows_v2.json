@@ -108,7 +108,7 @@
         },
         "trivy-test": {
             "extends": [
-                "trivy-test"
+                "trivy-test-individual"
             ]
         },
         "trivy-analyze": {
@@ -120,7 +120,7 @@
         },
         "experimental": {
             "extends": [
-                "trivy-test"
+                "trivy-test-individual"
             ]
         }
     },
@@ -296,7 +296,7 @@
                 "tarball-assembly-only"
             ]
         },
-        "trivy-test":{
+        "trivy-test-individual":{
             "context": [
                 "CircleCI"
             ],
