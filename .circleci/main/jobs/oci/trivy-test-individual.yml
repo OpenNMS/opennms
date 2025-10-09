@@ -1,0 +1,6 @@
+jobs:
+  trivy-test-individual:
+    executor: base-executor
+    resource_class: medium
+    steps:
+      - trivy-test

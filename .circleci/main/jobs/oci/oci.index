@@ -10,3 +10,4 @@
   #jobs:oci/sentinel-image-single-arch-linux-amd64#
   #jobs:oci/sentinel-image-single-arch-linux-amd64-trivy#
   #jobs:oci/sentinel-image-single-arch-linux-amd64-trivy-analyze#
+  #jobs:oci/trivy-test-individual#
