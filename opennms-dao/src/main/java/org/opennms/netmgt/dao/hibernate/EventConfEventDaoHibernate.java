@@ -121,7 +121,7 @@ public class EventConfEventDaoHibernate
 
             Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "enabled");
 
-            if (!allowedSortFields.contains(eventSortBy)) {
+            if (eventSortBy == null || !allowedSortFields.contains(eventSortBy)) {
                 sortField = "createdTime";
             }
 
