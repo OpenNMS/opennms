@@ -120,6 +120,7 @@
         },
         "experimental": {
             "extends": [
+                "build",
                 "trivy-test"
             ]
         }
