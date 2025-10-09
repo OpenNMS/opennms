@@ -86,6 +86,21 @@ commands:
           path: ~/project/artifacts
           destination: trivy-reports
 
+  trivy-test:
+    steps:
+      - download-download-artifacts
+      - cached-checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Verify Python script exists
+          command: |
+            echo "Workspace contents:"
+            cd ~/project/
+            find . -name "*_filtered_vulnerabilities.json"
+            find . -name "*_report.json"
+            
+    
   trivy-analyze:
     steps:
       - download-download-artifacts
