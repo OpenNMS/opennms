@@ -120,7 +120,7 @@
         },
         "experimental": {
             "extends": [
-                "trivy-test-individual"
+                "trivy-test"
             ]
         }
     },
