@@ -1,4 +1,5 @@
 import {
+  mapEventConfEventEditRequest,
   mapEventConfigEventsResponseFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer
@@ -61,11 +62,18 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
  * Makes a PUT request to the REST endpoint to update an event configuration event.
  *
  * @param event The event configuration event to update, represented as an `EventConfigEventRequest`.
+ * @param eventId The ID of the event configuration event to update.
  * @returns A promise that resolves to a boolean indicating whether the event was updated successfully.
  */
-export const updateEventConfigEventById = async (event: EventConfigEventRequest, eventId: number): Promise<boolean> => {
-  const endpoint = `/eventconf/sources/events/${eventId}`
-  const payload = { ...event }
+export const updateEventConfigEventByIdJson = async (
+  event: EventConfigEventRequest,
+  sourceId: number,
+  eventId: number,
+  status: boolean,
+  objType: string
+): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
+  const payload = mapEventConfEventEditRequest(event, status, objType)
   try {
     const response = await v2.put(endpoint, payload)
     return response.status === 200
@@ -76,17 +84,57 @@ export const updateEventConfigEventById = async (event: EventConfigEventRequest,
 }
 
 /**
- * Makes a POST request to the REST endpoint to create an event configuration event.
+ * Makes a POST request to the REST endpoint to create a new event configuration event.
  *
  * @param event The event configuration event to create, represented as an `EventConfigEventRequest`.
- * @param sourceId The ID of the event configuration source to create the event in.
+ * @param sourceId The ID of the event configuration source under which the event should be created.
  * @returns A promise that resolves to a boolean indicating whether the event was created successfully.
  */
-export const createEventConfigEvent = async (event: EventConfigEventRequest, sourceId: number): Promise<boolean> => {
+export const createEventConfigEventJson = async (
+  event: EventConfigEventRequest,
+  sourceId: number
+): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events`
   const payload = { ...event }
   try {
     const response = await v2.post(endpoint, payload)
+    return response.status === 200 || response.status === 201
+  } catch (error) {
+    console.error('Error Creating event config source:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a PUT request to the REST endpoint to update an event configuration event from an XML string.
+ *
+ * @param eventXml The XML string representing the event configuration event to update.
+ * @param eventId The ID of the event configuration event to update.
+ * @returns A promise that resolves to a boolean indicating whether the event was updated successfully.
+ */
+export const updateEventConfigEventByIdXml = async (eventXml: string, sourceId: number, eventId: number, status: boolean, objType: string): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
+  const payload = mapEventConfEventEditRequest(eventXml, status, objType)
+  try {
+    const response = await v2.put(endpoint, payload, { headers: { 'Content-Type': 'application/xml' } })
+    return response.status === 200
+  } catch (error) {
+    console.error('Error Updating event config source:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a POST request to the REST endpoint to create a new event configuration event from an XML string.
+ *
+ * @param eventXml The XML string representing the event configuration event to create.
+ * @param sourceId The ID of the event configuration source under which the event should be created.
+ * @returns A promise that resolves to a boolean indicating whether the event was created successfully.
+ */
+export const createEventConfigEventXml = async (eventXml: string, sourceId: number): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events`
+  try {
+    const response = await v2.post(endpoint, eventXml, { headers: { 'Content-Type': 'application/xml' } })
     return response.status === 200 || response.status === 201
   } catch (error) {
     console.error('Error Creating event config source:', error)
@@ -259,4 +307,5 @@ export const deleteEventConfigEventBySourceId = async (sourceId: number, eventId
     return false
   }
 }
+
 
