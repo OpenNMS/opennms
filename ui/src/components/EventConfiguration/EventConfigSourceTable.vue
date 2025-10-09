@@ -23,6 +23,7 @@
           <FeatherButton
             primary
             icon="Refresh"
+            data-test="refresh-button"
             @click="store.refreshEventsSources()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
@@ -105,7 +106,10 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination" v-if="store.sources.length">
+      <div
+        class="alerts-pagination"
+        v-if="store.sources.length"
+      >
         <FeatherPagination
           :modelValue="store.sourcesPagination.page"
           :pageSize="store.sourcesPagination.pageSize"
@@ -163,10 +167,9 @@ const columns = computed(() => [
 ])
 
 const sort = reactive({
-  fileName: SORT.NONE,
-  description: SORT.NONE,
-  fileOrder: SORT.NONE,
+  name: SORT.NONE,
   vendor: SORT.NONE,
+  description: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
 
