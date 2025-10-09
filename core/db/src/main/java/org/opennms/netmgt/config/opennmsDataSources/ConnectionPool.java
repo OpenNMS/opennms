@@ -167,7 +167,7 @@ public class ConnectionPool implements java.io.Serializable {
      * @return the value of field 'Factory'.
      */
     public String getFactory() {
-        return this.factory;
+        return this.factory != null ? this.factory : "org.opennms.core.db.HikariCPConnectionFactory";
     }
 
     /**
@@ -278,20 +278,19 @@ public class ConnectionPool implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             factory,
             rawIdleTimeout,
             rawLoginTimeout,
             rawMinPool,
             rawMaxPool,
             rawMaxSize);
-        return hash;
     }
 
     /**
      * Sets the value of field 'factory'. The field 'factory' has the following
      * description: The connection pool implementation to use.
-     * 
+     *
      * @param factory the value of field 'factory'.
      */
     public void setFactory(final String factory) {
