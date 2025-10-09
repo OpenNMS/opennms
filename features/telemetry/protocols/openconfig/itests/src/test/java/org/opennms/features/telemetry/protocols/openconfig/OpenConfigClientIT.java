@@ -22,12 +22,13 @@
 package org.opennms.features.telemetry.protocols.openconfig;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.greaterThan;
+
+import static org.junit.Assert.fail;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,30 @@ public class OpenConfigClientIT {
     }
 
     @Test
+    public void testOpenConfigJTIAfterClientShutdown_collectionBased() throws Exception {
+        List<Map<String, String>> params = getParams(true);
+        InetAddress host = InetAddress.getLocalHost();
+        OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
+        openConfigClient.subscribe(new DataHandler(true));
+        // Wait till at least 2 data streams received.
+        await().atMost(15, TimeUnit.SECONDS).until(jtiData::size, is(greaterThan(1)));
+
+        openConfigClient.shutdown();
+
+        final int beforeShutdown = gnmiData.size();
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (System.nanoTime() < deadline) {
+            if (gnmiData.size() > beforeShutdown) {
+                fail("Received data after shutdown: before=" + beforeShutdown + " now=" + gnmiData.size());
+            }
+        }
+
+    }
+
+
+
+    @Test
     public void testOpenConfigGnmi() throws Exception {
 
         List<Map<String, String>> params = getParams(false);
@@ -84,6 +109,32 @@ public class OpenConfigClientIT {
         await().atMost(15, TimeUnit.SECONDS).until(gnmiData::size, is(greaterThan(1)));
 
     }
+
+    @Test
+    public void testOpenConfigGnmiAfterClientShutdown_collectionBased() throws Exception {
+        List<Map<String, String>> params = getParams(false);
+        InetAddress host = InetAddress.getLocalHost();
+        OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
+
+        openConfigClient.subscribe(new DataHandler(false));
+
+        // Wait until we have at least 2 messages
+        await().atMost(15, TimeUnit.SECONDS).until(gnmiData::size, greaterThan(1));
+
+        openConfigClient.shutdown();
+
+        final int beforeShutdown = gnmiData.size();
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (System.nanoTime() < deadline) {
+            if (gnmiData.size() > beforeShutdown) {
+                fail("Received data after shutdown: before=" + beforeShutdown + " now=" + gnmiData.size());
+            }
+        }
+
+    }
+
+
 
     @Test
     public void testOpenConfigScheduling() throws Exception {
