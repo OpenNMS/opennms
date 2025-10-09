@@ -120,7 +120,9 @@ public class LocationPublisher {
     public void setQueueName(String queueName) {
         lock.lock();
         try {
-            if (queueName != null) this.queueName = queueName;
+            if (queueName != null) {
+                this.queueName = queueName;
+            }
         } finally {
             lock.unlock();
         }

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface OpenConfigTwinPublisher {
-    void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList,String nodeConnectorKey,String queueName) throws IOException;
+    void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList, String nodeConnectorKey, String queueName) throws IOException;
     void removeConfig(ServiceRef serviceRef,String nodeConnectorKey) throws IOException;
 
     void close() throws IOException;

@@ -47,7 +47,7 @@ public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
     }
 
     @Override
-    public void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList,String nodeConnectorKey,String queueName) throws IOException {
+    public void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList, String nodeConnectorKey, String queueName) throws IOException {
         ConnectorTwinConfig.ConnectorConfig twinConfig = createTwinConfig(serviceRef,interpolatedMapList,nodeConnectorKey);
         LocationPublisher locationPublisher = locationPublisherManager.getOrCreate(serviceRef.getLocation());
         locationPublisher.setQueueName(queueName);

@@ -43,7 +43,7 @@ public class ConnectorTwinConfig {
     public ConnectorTwinConfig(
             @JsonProperty("configurations") List<ConnectorConfig> configurations) {
         this.configurations = configurations != null
-                ? Collections.unmodifiableList(new ArrayList<>(configurations))
+                ? configurations
                 : Collections.emptyList();
     }
 
@@ -51,7 +51,7 @@ public class ConnectorTwinConfig {
                                    @JsonProperty("configurations") List<ConnectorConfig> configurations) {
         this.queueName = queueName;
         this.configurations = configurations != null
-                ? Collections.unmodifiableList(new ArrayList<>(configurations))
+                ? configurations
                 : Collections.emptyList();
 
     }
@@ -66,7 +66,7 @@ public class ConnectorTwinConfig {
         return queueName;
     }
 
-    public Map<String, String> getConficInMap() {
+    public Map<String, String> getQueueInMap() {
         Map<String, String> map = new HashMap<>();
         map.put("queue", queueName);
         return map;

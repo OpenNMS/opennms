@@ -160,7 +160,7 @@ public class ConnectorStarter implements ManagedService {
                     }
                 }
 
-                boolean needsRestart =  hasQueueNameChanged(request.getConficInMap());
+                boolean needsRestart =  hasQueueNameChanged(request.getQueueInMap());
 
                 baseDef = new MapBasedConnectorDef(PropertyTree.from(configMap));
                 if (needsRestart) {
@@ -169,7 +169,7 @@ public class ConnectorStarter implements ManagedService {
                 }
 
                 // in case first request if the  queuename is same then we have to initialize the dispatcher
-                if(sharedQueueDispatcher == null) {
+                if (sharedQueueDispatcher == null) {
                     initializeOrGetDispatcherForQueue(currentQueueName);
                 }
 
