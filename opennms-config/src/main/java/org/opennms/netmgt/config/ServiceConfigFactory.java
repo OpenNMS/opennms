@@ -79,7 +79,9 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
             LOG.debug("ServiceConfigFactory.init: config file path {}", cfgFile.getPath());
-            m_config = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
+            ServiceConfiguration userConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
+            m_config = ServiceConfiguration.mergeWithDefaults(userConfig);
+            LOG.info("Merged user service configuration with defaults");
         } catch (IOException e) {
             // Should never happen
             LOG.error("Could not open configuration file: " + ConfigFileConstants.SERVICE_CONF_FILE_NAME, e);
