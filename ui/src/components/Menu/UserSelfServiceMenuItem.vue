@@ -1,7 +1,7 @@
 <template>
   <FeatherDropdown
     class="self-service-menubar-dropdown"
-    :modelValue="displayMenu"
+    :modelValue="expanded"
     @update:modelValue="(val: any) => updateDisplay(val)"
   >
     <template v-slot:trigger="{ attrs, on }">
@@ -61,22 +61,28 @@ import {
 } from '@/types/mainMenu'
 
 const menuStore = useMenuStore()
-const displayMenu = ref(false)
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
-const updateDisplay = (val: any) => {
-  displayMenu.value = val === true
-}
+defineProps({
+  expanded: {
+    required: true,
+    type: Boolean
+  }
+})
 
-const hideMenu = () => {
-  displayMenu.value = false
+const emit = defineEmits(['menu-show', 'menu-hide'])
+
+const updateDisplay = (val: any) => {
+  if (val === true) {
+    emit('menu-show')
+  } else {
+    emit('menu-hide')
+  }
 }
 
 const showMenu = () => {
-  displayMenu.value = true
+  emit('menu-show')
 }
-
-defineExpose({ hideMenu, showMenu })
 
 const menuItems = computed<MenuItem[]>(() => {
   const helpMenu = mainMenu.value.helpMenu?.items?.find(m => m.id === 'helpMain')
