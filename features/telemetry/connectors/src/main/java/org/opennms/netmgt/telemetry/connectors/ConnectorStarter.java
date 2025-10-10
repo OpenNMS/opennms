@@ -208,9 +208,9 @@ public class ConnectorStarter implements ManagedService {
         }
     }
 
-    private void initializeOrGetDispatcherForQueue(String queueName) {
+    private synchronized void initializeOrGetDispatcherForQueue(String queueName) {
 
-        sharedQueueDispatcher = telemetryRegistry.getDispatcher(currentQueueName);
+        sharedQueueDispatcher = telemetryRegistry.getDispatcher(queueName);
 
         if (sharedQueueDispatcher == null) {
             TelemetrySinkModule sinkModule = new TelemetrySinkModule(baseDef);
