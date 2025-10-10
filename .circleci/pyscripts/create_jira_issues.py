@@ -118,7 +118,7 @@ def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
     
     try:
         response = requests.get(
-            f"{JIRA_URL}/rest/api/2/search",
+            f"{JIRA_URL}/rest/api/3/search/jql",
             params={'jql': jql, 'maxResults': 1},
             auth=(JIRA_USER, JIRA_API_TOKEN)
         )
