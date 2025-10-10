@@ -386,24 +386,51 @@ public class EventConfRestServiceIT {
     @Test
     @Transactional
     public void testFilterEventConfEventBySourceId_ShouldReturnBADRequest() {
-        // Invalid Source Id
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, 0, 0, 10, securityContext);
+        // Invalid Source ID
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, "", "", "", 0, 0, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
-        // Invalid offset
-        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, -1, 10, securityContext);
+        // Null Source ID
+        resp = eventConfRestApi.filterConfEventsBySourceId(null, "", "", "", 0, 0, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
-        // Invalid limit
-        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, 0, 0, securityContext);
+        // Invalid offset (negative)
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, "", "", "", 0, -5, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Invalid limit (zero)
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, "", "", "", 0, 0, 0, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Invalid limit (negative)
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, "", "", "", 0, 0, -1, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
     }
 
     @Test
     @Transactional
-    public void testFilterEventConfEventBySourceId_ShouldReturnNoContent() {
-        // Source Id not exits
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(15200L, 0, 0, 10, securityContext);
+    public void testFilterEventConfEventBySourceId_ShouldReturnNoContent() throws Exception {
+        // Create a source with no events
+        EventConfSource source = new EventConfSource();
+        source.setName("emptySource");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setFileOrder(1);
+        source.setDescription("Source with no events");
+        source.setVendor("TestVendor");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        source.setLastModified(new Date());
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        // Valid sourceId but no matching records
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(source.getId(), "NonExistingFilter", "", "", 0, 0, 10, securityContext);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
+
+        // Source ID not found
+        resp = eventConfRestApi.filterConfEventsBySourceId(99999L, "", "", "", 0, 0, 10, securityContext);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
     }
 
@@ -435,7 +462,7 @@ public class EventConfRestServiceIT {
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         // Valid Source Id
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10, securityContext);
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(eventConfSource.getId(), "","","",0, 0, 10, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
     }
 
@@ -625,5 +652,4 @@ public class EventConfRestServiceIT {
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
     }
-
 }
