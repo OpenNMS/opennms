@@ -20,6 +20,7 @@ commands:
       - restore-maven-cache
       - run:
           name: Smoke Tests
+          max_auto_reruns: 3
           no_output_timeout: 30m
           command: |
             .circleci/scripts/smoke.sh << parameters.suite >>
