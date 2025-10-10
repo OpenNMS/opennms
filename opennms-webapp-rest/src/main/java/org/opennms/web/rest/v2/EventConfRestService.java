@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
@@ -170,8 +171,9 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
-                                               SecurityContext securityContext) {
+    public Response filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,
+                                               String eventOrder, Integer totalRecords, Integer offset,
+                                               Integer limit, SecurityContext securityContext) {
 
         // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
         if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
@@ -182,8 +184,8 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         // Call service to fetch results
-        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, totalRecords,
-                offset, limit);
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, eventFilter,
+                eventSortBy, eventOrder, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
