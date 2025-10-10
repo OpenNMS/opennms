@@ -115,6 +115,7 @@ public class EventConfRestService implements EventConfRestApi {
                 errorList.add(buildErrorResponse(fileName, e));
             }
         }
+        eventConfPersistenceService.reloadEventsIntoMemory();
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
     }
@@ -158,6 +159,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         try {
             eventConfPersistenceService.updateSourceAndEventEnabled(payload);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConf sources updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -241,6 +243,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         try {
             eventConfPersistenceService.deleteEventConfSources(payload);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConf sources deleted successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -264,6 +267,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         try {
             eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConfEvents updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -289,6 +293,7 @@ public class EventConfRestService implements EventConfRestApi {
             validateAddEvent(sourceId,event);
             final String username = getUsername(securityContext);
             final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId,username, event);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response
                     .status(Response.Status.CREATED)
                     .entity(id)
@@ -315,6 +320,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
         try {
             eventConfPersistenceService.updateEventConfEvent(sourceId,eventId, payload);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConfEvent updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -336,6 +342,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         try {
             eventConfPersistenceService.deleteEventsForSource(sourceId, payload);
+            eventConfPersistenceService.reloadEventsIntoMemory();
             return Response.ok().entity("EventConf events deleted successfully.").build();
 
         } catch (EntityNotFoundException ex) {
