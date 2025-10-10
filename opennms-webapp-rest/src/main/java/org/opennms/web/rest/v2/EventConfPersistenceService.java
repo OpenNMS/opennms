@@ -43,6 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
@@ -89,7 +91,7 @@ public class EventConfPersistenceService {
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
         // Asynchronously load event conf from DB.
-        eventConfExecutor.execute(this::reloadEventsFromDB);
+        reloadEventsIntoMemory();
     }
 
     @Transactional
@@ -99,7 +101,7 @@ public class EventConfPersistenceService {
         saveEvent(eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
         // Asynchronously load event conf from DB.
-        eventConfExecutor.execute(this::reloadEventsFromDB);
+        reloadEventsIntoMemory();
         return eventConfSourceDao.save(eventConfSource);
     }
 
@@ -110,18 +112,22 @@ public class EventConfPersistenceService {
     @Transactional
     public void updateSourceAndEventEnabled(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload) {
         eventConfSourceDao.updateEnabledFlag(eventConfSrcEnableDisablePayload.getSourceIds(),eventConfSrcEnableDisablePayload.getEnabled(),eventConfSrcEnableDisablePayload.getCascadeToEvents());
+        reloadEventsIntoMemory();
     }
 
 
     @Transactional
     public void deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload) throws Exception {
         eventConfSourceDao.deleteBySourceIds(eventConfSourceDeletePayload.getSourceIds());
+        reloadEventsIntoMemory();
     }
 
     @Transactional
     public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
 
         eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
+        reloadEventsIntoMemory();
+
     }
 
 
@@ -142,7 +148,7 @@ public class EventConfPersistenceService {
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
             // Asynchronously load event conf from DB.
-            //eventConfExecutor.execute(this::reloadEventsFromDB);
+            reloadEventsIntoMemory();
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
@@ -234,6 +240,16 @@ public class EventConfPersistenceService {
         }
     }
 
+    private void reloadEventsIntoMemory() {
+        // Schedule reload only AFTER transaction commits
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                eventConfExecutor.execute(EventConfPersistenceService.this::reloadEventsFromDB);
+            }
+        });
+    }
+
     public Map<String, Object> filterConfEventsBySourceId(Long sourceId, Integer totalRecords,  Integer offset, Integer limit) {
         return eventConfEventDao.findBySourceId(sourceId, totalRecords,  offset, limit);
     }
@@ -277,5 +293,6 @@ public class EventConfPersistenceService {
             source.setEventCount(currentCount - deleteCount);
             eventConfSourceDao.saveOrUpdate(source);
         }
+        reloadEventsIntoMemory();
     }
 }
