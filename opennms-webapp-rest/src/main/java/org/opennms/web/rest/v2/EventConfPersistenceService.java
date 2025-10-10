@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +50,12 @@ import javax.annotation.PreDestroy;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EventConfPersistenceService {
@@ -239,4 +242,40 @@ public class EventConfPersistenceService {
         return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 
+    @Transactional
+    public void deleteEventsForSource(final Long sourceId, final EventConfEventDeletePayload eventConfEventDeletePayload) throws Exception {
+        if (eventConfEventDeletePayload.getEventIds() == null || eventConfEventDeletePayload.getEventIds().isEmpty()) {
+            throw new IllegalArgumentException("Event IDs to delete must not be empty");
+        }
+
+        EventConfSource source = eventConfSourceDao.get(sourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
+        final Set<Long> databaseEventIds = source.getEvents()
+                .stream()
+                .map(EventConfEvent::getId)
+                .collect(Collectors.toSet());
+
+        final var requestEventIds = eventConfEventDeletePayload.getEventIds();
+        final var existingEventIds = requestEventIds.stream()
+                .filter(databaseEventIds::contains)
+                .toList();
+
+        if (existingEventIds.isEmpty()) {
+            throw new EntityNotFoundException("No matching events found in database for deletion. Request IDs: " + requestEventIds);
+        }
+        final var currentCount = source.getEventCount();
+        final int deleteCount = existingEventIds.size();
+
+        if (deleteCount >= currentCount) {
+            LOG.info("Deleting entire sourceId={} as all {} events are removed.", sourceId, deleteCount);
+            eventConfSourceDao.delete(source);
+        } else {
+            LOG.info("Deleting {} events from sourceId={} (remaining count={})", deleteCount, sourceId, currentCount - deleteCount);
+            eventConfEventDao.deleteByEventIds(sourceId, existingEventIds);
+            source.setEventCount(currentCount - deleteCount);
+            eventConfSourceDao.saveOrUpdate(source);
+        }
+    }
 }

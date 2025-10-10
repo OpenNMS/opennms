@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -320,6 +321,29 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.NOT_FOUND).entity("eventConfEvent were not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response deleteEventsForSource(Long sourceId, EventConfEventDeletePayload payload, SecurityContext securityContext) throws Exception {
+        if (sourceId == null || sourceId <= 0) {
+            throw new IllegalArgumentException("Invalid sourceId: must be a positive number");
+        }
+
+        if (payload == null || payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
+            throw new IllegalArgumentException("Event IDs to delete must not be null or empty");
+        }
+
+        try {
+            eventConfPersistenceService.deleteEventsForSource(sourceId, payload);
+            return Response.ok().entity("EventConf events deleted successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more eventIds were not found: " + ex.getMessage())
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
         }
     }
 
