@@ -15,6 +15,7 @@ commands:
       - run:
           name: Integration Tests
           no_output_timeout: 15m
+          max_auto_reruns: 3
           command: |
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
