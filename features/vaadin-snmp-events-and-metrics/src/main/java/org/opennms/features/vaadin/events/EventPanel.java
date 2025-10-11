@@ -21,12 +21,17 @@
  */
 package org.opennms.features.vaadin.events;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
@@ -40,10 +45,7 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Property.ValueChangeEvent;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.v7.ui.HorizontalLayout;
@@ -172,46 +174,46 @@ public abstract class EventPanel extends Panel {
         };
         bottomToolbar.setVisible(false);
 
-        eventTable.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
-                    eventTable.select(selectedEventId);
-                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
-                } else {
-                    Object eventId = eventTable.getValue();
-                    if (eventId != null) {
-                        selectedEventId = eventId;
-                        eventForm.setEvent(eventTable.getEvent(eventId));
-                    }
-                    eventForm.setReadOnly(true);
-                    eventForm.setVisible(eventId != null);
-                    bottomToolbar.setReadOnly(true);
-                    bottomToolbar.setVisible(eventId != null);
-                }
-            }
-        });   
+//        eventTable.addValueChangeListener(new Property.ValueChangeListener() {
+//            @Override
+//            public void valueChange(ValueChangeEvent event) {
+//                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
+//                    eventTable.select(selectedEventId);
+//                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+//                } else {
+//                    Object eventId = eventTable.getValue();
+//                    if (eventId != null) {
+//                        selectedEventId = eventId;
+//                        eventForm.setEvent(eventTable.getEvent(eventId));
+//                    }
+//                    eventForm.setReadOnly(true);
+//                    eventForm.setVisible(eventId != null);
+//                    bottomToolbar.setReadOnly(true);
+//                    bottomToolbar.setVisible(eventId != null);
+//                }
+//            }
+//        });
 
-        final Button add = new Button("Add Event", new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                eventTable.addEvent(eventForm.createBasicEvent());
-                eventForm.setReadOnly(false);
-                bottomToolbar.setReadOnly(false);
-                setIsNew(true);
-            }
-        });
+       final Button add = new Button("Add Event", new Button.ClickListener() {
+           @Override
+           public void buttonClick(ClickEvent event) {
+               eventTable.addEvent(eventForm.createBasicEvent());
+               eventForm.setReadOnly(false);
+               bottomToolbar.setReadOnly(false);
+               setIsNew(true);
+           }
+       });
 
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         mainLayout.addComponent(topToolbar);
         mainLayout.addComponent(eventTable);
-        mainLayout.addComponent(add);
-        mainLayout.addComponent(eventForm);
-        mainLayout.addComponent(bottomToolbar);
-        mainLayout.setComponentAlignment(topToolbar, Alignment.MIDDLE_RIGHT);
-        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
+//        mainLayout.addComponent(add);
+        // mainLayout.addComponent(eventForm);
+        // mainLayout.addComponent(bottomToolbar);
+        // mainLayout.setComponentAlignment(topToolbar, Alignment.MIDDLE_RIGHT);
+//        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         setContent(mainLayout);
     }
@@ -320,25 +322,26 @@ public abstract class EventPanel extends Panel {
                 }
             }
             // Save the XML of the new events
-            saveEvents(baseEventsObject, file, logger);
+//            saveEvents(baseEventsObject, file, logger);
+            uploadFileToApi(baseEventsObject, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
-            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
-            final Events rootEvents = eventConfDao.getRootEvents();
-            final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            if (baseEventsObject.getEvents().size() > 0) {
-                if (!rootEvents.getEventFiles().contains(fileName)) {
-                    logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
-                    rootEvents.getEventFiles().add(0, fileName);
-                    saveEvents(rootEvents, rootFile, logger);
-                }
-            } else {
-                // If a reference to an empty events file exist, it should be removed.
-                if (rootEvents.getEventFiles().contains(fileName)) {
-                    logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
-                    rootEvents.getEventFiles().remove(fileName);
-                    saveEvents(rootEvents, rootFile, logger);
-                }
-            }
+//            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
+//            final Events rootEvents = eventConfDao.getRootEvents();
+//            final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+//            if (baseEventsObject.getEvents().size() > 0) {
+//                if (!rootEvents.getEventFiles().contains(fileName)) {
+//                    logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
+//                    rootEvents.getEventFiles().add(0, fileName);
+//                    saveEvents(rootEvents, rootFile, logger);
+//                }
+//            } else {
+//                // If a reference to an empty events file exist, it should be removed.
+//                if (rootEvents.getEventFiles().contains(fileName)) {
+//                    logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
+//                    rootEvents.getEventFiles().remove(fileName);
+//                    saveEvents(rootEvents, rootFile, logger);
+//                }
+//            }
             EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
             eventProxy.send(eb.getEvent());
             logger.info("The event's configuration reload operation is being performed.");
@@ -368,5 +371,36 @@ public abstract class EventPanel extends Panel {
         FileWriter writer = new FileWriter(eventFile);
         JaxbUtils.marshal(events, writer);
         writer.close();
+    }
+
+    private void uploadFileToApi(final Events events, final File file, final Logger logger) throws IOException {
+        logger.info("Saving event.xml file in DB");
+        JaxbUtils.marshal(events, new FileWriter(file));
+        String apiUrl = "http://localhost:8980/opennms/api/v2/eventconf/upload"; // replace with actual endpoint
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost uploadRequest = new HttpPost(apiUrl);
+
+            // Build multipart/form-data body directly with file
+            HttpEntity multipart = MultipartEntityBuilder.create()
+                    .addBinaryBody("upload", file, ContentType.APPLICATION_XML, file.getName())
+                    .build();
+
+            uploadRequest.setEntity(multipart);
+
+            try (CloseableHttpResponse response = httpClient.execute(uploadRequest)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                String responseBody = EntityUtils.toString(response.getEntity());
+                if (statusCode == 200) {
+                    logger.info("File successfully uploaded to API.");
+                    logger.debug("Response: " + responseBody);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to upload events file");
+                throw new RuntimeException(e);
+            }
+        } catch (Exception e) {
+            logger.error("Error uploading file to API: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }
