@@ -21,10 +21,22 @@
  */
 package org.opennms.features.vaadin.events;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -32,6 +44,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
@@ -45,7 +58,10 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
 import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.v7.ui.HorizontalLayout;
@@ -53,10 +69,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.v7.ui.VerticalLayout;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * The Class Event Panel.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @SuppressWarnings("serial")
 public abstract class EventPanel extends Panel {
@@ -131,78 +150,78 @@ public abstract class EventPanel extends Panel {
         final EventForm eventForm = new EventForm();
         eventForm.setVisible(false);
 
-        final EditorToolbar bottomToolbar = new EditorToolbar() {
-            @Override
-            public boolean save() {
-                org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
-                logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
-                try {
-                    eventForm.commit();
-                    eventForm.setReadOnly(true);
-                    eventTable.refreshRowCache();
-                } catch (CommitException e) {
-                    String msg = "Can't save the changes: " + e.getMessage();
-                    logger.error(msg);
-                    Notification.show(msg, Notification.Type.ERROR_MESSAGE);
-                    return false;
-                }
-                return true;
-            }
-            @Override
-            public boolean delete() {
-                Object eventId = eventTable.getValue();
-                if (eventId != null) {
-                    org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
-                    logger.info("Event " + event.getUei() + " has been removed.");
-                    eventTable.select(null);
-                    eventTable.removeItem(eventId);
-                    eventTable.refreshRowCache();
-                }
-                return true;
-            }
-            @Override
-            public boolean edit() {
-                eventForm.setReadOnly(false);
-                return true;
-            }
-            @Override
-            public boolean cancel() {
-                eventForm.discard();
-                eventForm.setReadOnly(true);
-                return true;
-            }
-        };
-        bottomToolbar.setVisible(false);
-
-//        eventTable.addValueChangeListener(new Property.ValueChangeListener() {
+//        final EditorToolbar bottomToolbar = new EditorToolbar() {
 //            @Override
-//            public void valueChange(ValueChangeEvent event) {
-//                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
-//                    eventTable.select(selectedEventId);
-//                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
-//                } else {
-//                    Object eventId = eventTable.getValue();
-//                    if (eventId != null) {
-//                        selectedEventId = eventId;
-//                        eventForm.setEvent(eventTable.getEvent(eventId));
-//                    }
+//            public boolean save() {
+//                org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
+//                logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
+//                try {
+//                    eventForm.commit();
 //                    eventForm.setReadOnly(true);
-//                    eventForm.setVisible(eventId != null);
+//                    eventTable.refreshRowCache();
+//                } catch (CommitException e) {
+//                    String msg = "Can't save the changes: " + e.getMessage();
+//                    logger.error(msg);
+//                    Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+//                    return false;
+//                }
+//                return true;
+//            }
+//            @Override
+//            public boolean delete() {
+//                Object eventId = eventTable.getValue();
+//                if (eventId != null) {
+//                    org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
+//                    logger.info("Event " + event.getUei() + " has been removed.");
+//                    eventTable.select(null);
+//                    eventTable.removeItem(eventId);
+//                    eventTable.refreshRowCache();
+//                }
+//                return true;
+//            }
+//            @Override
+//            public boolean edit() {
+//                eventForm.setReadOnly(false);
+//                return true;
+//            }
+//            @Override
+//            public boolean cancel() {
+//                eventForm.discard();
+//                eventForm.setReadOnly(true);
+//                return true;
+//            }
+//        };
+//        bottomToolbar.setVisible(false);
+
+        eventTable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
+                    eventTable.select(selectedEventId);
+                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object eventId = eventTable.getValue();
+                    if (eventId != null) {
+                        selectedEventId = eventId;
+                        eventForm.setEvent(eventTable.getEvent(eventId));
+                    }
+                    eventForm.setReadOnly(true);
+                    eventForm.setVisible(eventId != null);
 //                    bottomToolbar.setReadOnly(true);
 //                    bottomToolbar.setVisible(eventId != null);
-//                }
-//            }
-//        });
+                }
+            }
+        });
 
-       final Button add = new Button("Add Event", new Button.ClickListener() {
-           @Override
-           public void buttonClick(ClickEvent event) {
-               eventTable.addEvent(eventForm.createBasicEvent());
-               eventForm.setReadOnly(false);
-               bottomToolbar.setReadOnly(false);
-               setIsNew(true);
-           }
-       });
+//       final Button add = new Button("Add Event", new Button.ClickListener() {
+//           @Override
+//           public void buttonClick(ClickEvent event) {
+//               eventTable.addEvent(eventForm.createBasicEvent());
+//               eventForm.setReadOnly(false);
+//               bottomToolbar.setReadOnly(false);
+//               setIsNew(true);
+//           }
+//       });
 
         final VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
@@ -210,9 +229,9 @@ public abstract class EventPanel extends Panel {
         mainLayout.addComponent(topToolbar);
         mainLayout.addComponent(eventTable);
 //        mainLayout.addComponent(add);
-        // mainLayout.addComponent(eventForm);
-        // mainLayout.addComponent(bottomToolbar);
-        // mainLayout.setComponentAlignment(topToolbar, Alignment.MIDDLE_RIGHT);
+        mainLayout.addComponent(eventForm);
+//        mainLayout.addComponent(bottomToolbar);
+        mainLayout.setComponentAlignment(topToolbar, Alignment.MIDDLE_RIGHT);
 //        mainLayout.setComponentAlignment(add, Alignment.MIDDLE_RIGHT);
 
         setContent(mainLayout);
@@ -250,10 +269,12 @@ public abstract class EventPanel extends Panel {
      * @param logger the logger
      */
     public void processEvents(final Logger logger) {
-        if (eventFile.exists()) {
+        String fileName = eventFile.getName().replaceFirst("\\.xml$", "");
+        List<String> names = this.getUploadedSourceNames(logger);
+        if (names.contains(fileName)) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               "Do you really want to override the existig file?\nAll current information will be lost.",
+                               "Do you really want to override the existing file?\nAll current information will be lost.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
@@ -266,6 +287,22 @@ public abstract class EventPanel extends Panel {
         } else {
             validateFile(eventFile, logger);
         }
+//        if (eventFile.exists()) {
+//            ConfirmDialog.show(getUI(),
+//                               "Are you sure?",
+//                               "Do you really want to override the existig file?\nAll current information will be lost.",
+//                               "Yes",
+//                               "No",
+//                               new ConfirmDialog.Listener() {
+//                public void onClose(ConfirmDialog dialog) {
+//                    if (dialog.isConfirmed()) {
+//                        validateFile(eventFile, logger);
+//                    }
+//                }
+//            });
+//        } else {
+//            validateFile(eventFile, logger);
+//        }
     }
 
     /**
@@ -323,7 +360,7 @@ public abstract class EventPanel extends Panel {
             }
             // Save the XML of the new events
 //            saveEvents(baseEventsObject, file, logger);
-            uploadFileToApi(baseEventsObject, file, logger);
+            boolean response = uploadFileToApi(baseEventsObject, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
 //            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
 //            final Events rootEvents = eventConfDao.getRootEvents();
@@ -342,10 +379,15 @@ public abstract class EventPanel extends Panel {
 //                    saveEvents(rootEvents, rootFile, logger);
 //                }
 //            }
-            EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
-            eventProxy.send(eb.getEvent());
-            logger.info("The event's configuration reload operation is being performed.");
-            success();
+            if (response) {
+                EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+                eventProxy.send(eb.getEvent());
+                logger.info("The event's configuration reload operation is being performed.");
+                success();
+            } else {
+                logger.error("Failed to upload event.xml file");
+                failure("Failed to upload event.xml file");
+            }
         } catch (Exception e) {
             logger.error(e.getClass() + ": " + (e.getMessage() == null ? "[No Details]" : e.getMessage()));
             if (e.getMessage() == null) {
@@ -373,33 +415,90 @@ public abstract class EventPanel extends Panel {
         writer.close();
     }
 
-    private void uploadFileToApi(final Events events, final File file, final Logger logger) throws IOException {
+    private boolean uploadFileToApi(final Events events, final File eventFile, final Logger logger) throws IOException {
         logger.info("Saving event.xml file in DB");
-        JaxbUtils.marshal(events, new FileWriter(file));
-        String apiUrl = "http://localhost:8980/opennms/api/v2/eventconf/upload"; // replace with actual endpoint
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JaxbUtils.marshal(events, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost uploadRequest = new HttpPost(apiUrl);
-
-            // Build multipart/form-data body directly with file
             HttpEntity multipart = MultipartEntityBuilder.create()
-                    .addBinaryBody("upload", file, ContentType.APPLICATION_XML, file.getName())
+                    .addBinaryBody("upload", outputStream.toByteArray(), ContentType.APPLICATION_XML, eventFile.getName())
                     .build();
-
+            String apiUrl = getApiUrl("/api/v2/eventconf/upload");
+            HttpPost uploadRequest = new HttpPost(apiUrl);
+            uploadRequest.setHeader("Cookie", getCookie(logger));
             uploadRequest.setEntity(multipart);
-
-            try (CloseableHttpResponse response = httpClient.execute(uploadRequest)) {
-                int statusCode = response.getStatusLine().getStatusCode();
-                String responseBody = EntityUtils.toString(response.getEntity());
-                if (statusCode == 200) {
-                    logger.info("File successfully uploaded to API.");
-                    logger.debug("Response: " + responseBody);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to upload events file");
-                throw new RuntimeException(e);
+            CloseableHttpResponse response = httpClient.execute(uploadRequest);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String responseBody = EntityUtils.toString(response.getEntity());
+            if (statusCode == 200) {
+                logger.info("File successfully uploaded to API" + statusCode);
+                logger.debug("Response: " + responseBody);
+                /**
+                 * In the `Customise Event Configuration` module, uncommenting this line will delete the file
+                 * loaded from the file system once it has been successfully saved to the database.
+                 *
+                 * However, in the `SNMP MiB Compiler` module, the file exists only in memory and is not
+                 * persisted to disk — so this line should remain commented out.
+                 */
+//                eventFile.delete();
+                return true;
+            } else {
+                logger.error("Upload Failed: " + statusCode);
+                logger.debug("Response: " + responseBody);
+                return false;
             }
         } catch (Exception e) {
             logger.error("Error uploading file to API: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getApiUrl(final String api) {
+        VaadinServletRequest vaadinServletRequest = (VaadinServletRequest) VaadinService.getCurrentRequest();
+        HttpServletRequest httpRequest = vaadinServletRequest.getHttpServletRequest();
+        String baseUrl = httpRequest.getRequestURL().toString()
+                .replace(httpRequest.getRequestURI(), "")
+                + httpRequest.getContextPath();
+        return baseUrl + api;
+    }
+
+    private String getCookie(final Logger logger) {
+        Cookie[] servletCookies = VaadinService.getCurrentRequest().getCookies();
+        String sessionId = null;
+        if (servletCookies != null) {
+            for (Cookie c : servletCookies) {
+                if ("JSESSIONID".equalsIgnoreCase(c.getName())) {
+                    sessionId = "JSESSIONID=" + c.getValue();
+                    break;
+                }
+            }
+            return sessionId;
+        } else {
+            logger.error("No session found");
+            throw new RuntimeException("No session found");
+        }
+    }
+
+    private List<String> getUploadedSourceNames(final Logger logger) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            String apiUrl = getApiUrl("/api/v2/eventconf/sources/names");
+            HttpGet getRequest = new HttpGet(apiUrl);
+            getRequest.setHeader("Cookie", getCookie(logger));
+            CloseableHttpResponse response = httpClient.execute(getRequest);
+            int statusCode = response.getStatusLine().getStatusCode();
+            String responseBody = EntityUtils.toString(response.getEntity());
+            if (statusCode == 200) {
+                logger.info("Successfully fetch uploaded source names");
+                // Parse JSON array into List<String>
+                ObjectMapper mapper = new ObjectMapper();
+                String[] names = mapper.readValue(responseBody, String[].class);
+                return Arrays.asList(names);
+            } else {
+                logger.error("Error getting uploaded source names: " + statusCode);
+                throw new RuntimeException("Error getting uploaded source names: " + statusCode);
+            }
+        } catch (Exception e) {
+            logger.error("Error getting uploaded source names: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
