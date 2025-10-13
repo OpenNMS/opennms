@@ -106,7 +106,7 @@ public class OpenConfigLocationPublisherTest {
         List<Map<String, String>> params = Collections.singletonList(Collections.singletonMap("k", "v"));
         String nodeConnectorKey = "nk-xyz";
 
-        openConfigTwinPublisher.publishConfig(srv, params, nodeConnectorKey);
+        openConfigTwinPublisher.publishConfig(srv, params, nodeConnectorKey, "OpenConfig");
 
         LocationPublisher lp = locationPublisherManager.getOrCreate("LOC-TEST");
         assertNotNull(lp);

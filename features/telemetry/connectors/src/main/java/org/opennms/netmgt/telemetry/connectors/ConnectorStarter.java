@@ -160,7 +160,18 @@ public class ConnectorStarter implements ManagedService {
                     }
                 }
 
-                initializeOrGetDispatcherForQueue(currentQueueName);
+                boolean needsRestart =  hasQueueNameChanged(request.getQueueInMap());
+
+                baseDef = new MapBasedConnectorDef(PropertyTree.from(configMap));
+                if (needsRestart) {
+                    LOG.info("Critical configuration changed, restarting all connectors with new dispatcher");
+                    restartAllConnectorsWithNewDispatcher();
+                }
+
+                // in case first request if the  queuename is same then we have to initialize the dispatcher
+                if (sharedQueueDispatcher == null) {
+                    initializeOrGetDispatcherForQueue(currentQueueName);
+                }
 
                 for (ConnectorTwinConfig.ConnectorConfig config : request.getConfigurations()) {
                     LOG.debug("Processing connector config: {}", config.getConnectionKey());

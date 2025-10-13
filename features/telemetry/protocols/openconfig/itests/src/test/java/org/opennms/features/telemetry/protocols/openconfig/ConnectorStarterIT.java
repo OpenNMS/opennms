@@ -24,8 +24,12 @@ package org.opennms.features.telemetry.protocols.openconfig;
 
 
 import static org.junit.Assert.*;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations={
+@ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -132,4 +136,66 @@ public class ConnectorStarterIT {
             connectorStarter.getEntities().keySet().forEach(connectorStarter::delete);
         }
     }
+
+    @Test
+    public void testConnectorLifecycleManagement() throws Exception {
+
+        String connectionKey = "test-node:1234";
+        assertNotNull("ConnectorStarter should not be null", connectorStarter);
+        Field configMapField = ConnectorStarter.class.getDeclaredField("configMap");
+        configMapField.setAccessible(true);
+        Map<String, String> configMap = (Map<String, String>) configMapField.get(connectorStarter);
+        System.out.println("ConfigMap: " + configMap);
+
+        Field currentQueueField = ConnectorStarter.class.getDeclaredField("currentQueueName");
+        currentQueueField.setAccessible(true);
+        String currentQueue = (String) currentQueueField.get(connectorStarter);
+        assertNotNull(currentQueue);
+
+        List<Map<String, String>> parameters = Arrays.asList(
+                Collections.singletonMap("port", "50051"),
+                Collections.singletonMap("mode", "gnmi")
+        );
+
+        ConnectorTwinConfig.ConnectorConfig config = createTestConnectorConfig(
+                connectionKey, "127.0.0.1", 1, parameters);
+
+        List<ConnectorTwinConfig.ConnectorConfig> configurations = Collections.singletonList(config);
+        ConnectorTwinConfig twinConfig = new ConnectorTwinConfig("OpenConfig", configurations);
+
+        invokeHandleTwinUpdate(connectorStarter, twinConfig);
+
+        Map<String, ConnectorStarter.Entity> entities = connectorStarter.getEntities();
+
+        assertTrue("Connector should be added to entities via handleTwinUpdate. Current entities: " + entities.keySet(),
+                entities.containsKey(connectionKey));
+
+        ConnectorTwinConfig emptyTwinConfig = new ConnectorTwinConfig("OpenConfig", Collections.emptyList());
+        invokeHandleTwinUpdate(connectorStarter, emptyTwinConfig);
+
+        assertFalse("Connector should be removed from entities after empty twin update",
+                entities.containsKey(connectionKey));
+
+    }
+
+
+    private ConnectorTwinConfig.ConnectorConfig createTestConnectorConfig(String connectionKey, String ipAddress, int nodeId, List<Map<String, String>> parameters) {
+        return new ConnectorTwinConfig.ConnectorConfig(
+                nodeId,
+                ipAddress,
+                connectionKey,
+                parameters
+        );
+    }
+
+    private void invokeHandleTwinUpdate(ConnectorStarter starter, ConnectorTwinConfig twinConfig) {
+        try {
+            Method method = ConnectorStarter.class.getDeclaredMethod("handleTwinUpdate", ConnectorTwinConfig.class);
+            method.setAccessible(true);
+            method.invoke(starter, twinConfig);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to invoke handleTwinUpdate", e);
+        }
+    }
+
 }

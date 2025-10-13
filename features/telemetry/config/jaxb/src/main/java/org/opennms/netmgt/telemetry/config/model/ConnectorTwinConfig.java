@@ -28,11 +28,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 public class ConnectorTwinConfig {
     public static String CONNECTOR_KEY = "telemetry.connector.config";
 
     private List<ConnectorConfig> configurations = new ArrayList<>();
+    private String queueName;
 
     public ConnectorTwinConfig() {
     }
@@ -41,13 +43,33 @@ public class ConnectorTwinConfig {
     public ConnectorTwinConfig(
             @JsonProperty("configurations") List<ConnectorConfig> configurations) {
         this.configurations = configurations != null
-                ? Collections.unmodifiableList(new ArrayList<>(configurations))
+                ? configurations
                 : Collections.emptyList();
+    }
+
+    public <E> ConnectorTwinConfig(@JsonProperty("queueName") String queueName,
+                                   @JsonProperty("configurations") List<ConnectorConfig> configurations) {
+        this.queueName = queueName;
+        this.configurations = configurations != null
+                ? configurations
+                : Collections.emptyList();
+
     }
 
     @JsonProperty("configurations")
     public List<ConnectorConfig> getConfigurations() {
         return configurations;
+    }
+
+    @JsonProperty("queueName")
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public Map<String, String> getQueueInMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("queue", queueName);
+        return map;
     }
 
     public static class ConnectorConfig {
@@ -75,15 +97,23 @@ public class ConnectorTwinConfig {
         }
 
         @JsonProperty("nodeId")
-        public int getNodeId() { return nodeId; }
+        public int getNodeId() {
+            return nodeId;
+        }
 
         @JsonProperty("connectionKey")
-        public String getConnectionKey() { return connectionKey; }
+        public String getConnectionKey() {
+            return connectionKey;
+        }
 
         @JsonProperty("ipAddress")
-        public String getIpAddress() { return ipAddress; }
+        public String getIpAddress() {
+            return ipAddress;
+        }
 
         @JsonProperty("parameters")
-        public List<Map<String, String>> getParameters() { return parameters; }
+        public List<Map<String, String>> getParameters() {
+            return parameters;
+        }
     }
 }

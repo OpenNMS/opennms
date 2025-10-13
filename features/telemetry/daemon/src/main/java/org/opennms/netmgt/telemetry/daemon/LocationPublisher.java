@@ -39,6 +39,7 @@ public class LocationPublisher {
     private final ReentrantLock lock = new ReentrantLock();
     private TwinPublisher.Session<ConnectorTwinConfig> session;
     private final Map<String, ConnectorTwinConfig.ConnectorConfig> configs = new HashMap<>();
+    private String queueName;
 
     public LocationPublisher(String location, TwinPublisher twinPublisher) {
         this.location = location;
@@ -54,7 +55,6 @@ public class LocationPublisher {
                 LOG.error("Failed to create  session for {}: {}", location, e.getMessage(), e);
             }
         }
-
     }
 
     public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
@@ -82,7 +82,11 @@ public class LocationPublisher {
     }
 
     private void publishCurrentConfigs() throws IOException {
-        session.publish(new ConnectorTwinConfig(new ArrayList<>(configs.values())));
+        ConnectorTwinConfig confReq = new ConnectorTwinConfig(
+                queueName,
+                new ArrayList<>(configs.values())
+        );
+        session.publish(confReq);
     }
 
     private void closeSession() throws IOException {
@@ -108,6 +112,17 @@ public class LocationPublisher {
         lock.lock();
         try {
             return !configs.isEmpty();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void setQueueName(String queueName) {
+        lock.lock();
+        try {
+            if (queueName != null) {
+                this.queueName = queueName;
+            }
         } finally {
             lock.unlock();
         }
