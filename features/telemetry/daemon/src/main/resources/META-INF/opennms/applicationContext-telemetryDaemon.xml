@@ -31,4 +31,14 @@
 
   <onmsgi:service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="daemon" />
 
+    <bean id="locationPublisherManager"
+          class="org.opennms.netmgt.telemetry.daemon.LocationPublisherManager"/>
+
+
+    <bean id="openConfigTwinPublisher"
+          class="org.opennms.netmgt.telemetry.daemon.OpenConfigTwinPublisherImpl">
+        <constructor-arg ref="locationPublisherManager"/>
+    </bean>
+
+
 </beans>
