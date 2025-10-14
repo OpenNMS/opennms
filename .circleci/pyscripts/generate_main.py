@@ -174,7 +174,9 @@ for e in main_yml_content:
             workflow_path.append(common_library.create_space(level) + "max_auto_reruns: 3")
             print(level,workflow_path)
             workflow_path.append(common_library.create_space(level) + "jobs:")
+            print(level,workflow_path)
             level += 2
+            print(level,workflow_path)
             job_entry_spaces = level
 
             if (
