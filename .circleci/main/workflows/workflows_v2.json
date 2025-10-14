@@ -209,6 +209,7 @@
                 "CircleCI",
                 "docker-publish-account"
             ],
+            "max_auto_reruns":3,
             "requires": [
                 "build"
             ]
@@ -218,6 +219,7 @@
                 "CircleCI",
                 "docker-publish-account"
             ],
+            "max_auto_reruns":3,
             "requires": [
                 "horizon-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64",
@@ -229,6 +231,7 @@
                 "CircleCI",
                 "docker-publish-account"
             ],
+            "max_auto_reruns":3,
             "requires": [
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
@@ -240,6 +243,7 @@
                 "CircleCI",
                 "docker-publish-account"
             ],
+            "max_auto_reruns":3,
             "requires": [
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
