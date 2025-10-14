@@ -171,8 +171,9 @@ for e in main_yml_content:
             )
 
             level += 2
+            tmo=level
             workflow_path.append(common_library.create_space(level) + "jobs:")
-            workflow_path.append(common_library.create_space(level) + "jobs:")
+            workflow_path.append(common_library.create_space(tmo) + "jobs:")
             level += 2
             job_entry_spaces = level
 
