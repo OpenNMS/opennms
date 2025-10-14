@@ -144,8 +144,6 @@ for e in main_yml_content:
                 workflow_path.append(common_library.create_space(level) + "workflows:")
 
             level = level + 2
-            print(workflow_path)
-            workflow_path.append(common_library.create_space(level) +"max_auto_reruns: 3")
 
             enabled_components = []
             for component in build_components:
@@ -172,6 +170,7 @@ for e in main_yml_content:
             workflow_path.append(
                 common_library.create_space(level) + workflow_name + ":"
             )
+            workflow_path.append(common_library.create_space(level) +"max_auto_reruns: 3")
 
             level += 2
             workflow_path.append(common_library.create_space(level) + "jobs:")
