@@ -142,7 +142,10 @@ for e in main_yml_content:
             level = 0
             if "workflows:" not in workflow_path:
                 workflow_path.append(common_library.create_space(level) + "workflows:")
+
             level = level + 2
+            print(workflow_path)
+            workflow_path.append(common_library.create_space(level) +  + "max_auto_reruns: 3")
 
             enabled_components = []
             for component in build_components:
