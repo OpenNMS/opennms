@@ -1,4 +1,3 @@
- max_auto_reruns: 3
  jobs:
   smoke-test-core:
     executor: smoke-test-executor

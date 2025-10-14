@@ -1,4 +1,3 @@
-max_auto_reruns: 3
 jobs:
   integration-test:
     executor: integration-test-executor

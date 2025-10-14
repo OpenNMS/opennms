@@ -209,6 +209,7 @@
                 "CircleCI",
                 "docker-publish-account"
             ],
+            "max_auto_reruns": 3,
             "requires": [
                 "build"
             ]
