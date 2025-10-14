@@ -82,7 +82,7 @@ class workflow:
 
         workflow_jobs = set()
         if "integration" in interested_workflow or "smoke" in interested_workflow:
-            workflow_jobs.add("max_auto_reruns: 3")
+            tmp_output.append("max_auto_reruns: 3")
         # Let's find all the jobs we depend on (or need)
         for dependency in workflow_dependency:
             print("\t", "Processing", dependency)
