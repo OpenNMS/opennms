@@ -45,9 +45,7 @@ class workflow:
                         workflow_key
                     ]:
                         if "requires" in workflow_property:
-                            for entry in self._internal_workflow[workflow_type][
-                                workflow_key
-                            ][workflow_property]:
+                            for entry in self._internal_workflow[workflow_type][workflow_key][workflow_property]:
                                 output_list.append(entry)
                         elif "extends" in workflow_property:
                             for extended_workflow in self._internal_workflow[
@@ -58,6 +56,10 @@ class workflow:
                                     output_list.extend(_output)
                                 else:
                                     output_list.append(_output)
+                        elif "max_auto_reruns" in workflow_property:
+                            output_list.append("max_auto_reruns: "+str(self._internal_workflow[workflow_type][workflow_key][workflow_property]))
+
+                            
         return output_list
 
     def find(self, interested_workflow) -> dict:
