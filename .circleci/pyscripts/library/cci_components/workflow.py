@@ -193,7 +193,7 @@ class workflow:
                         )
                 elif "max_auto_reruns" in element:
                     tmp_output.append(self._common_library.create_space(leading_space + 4)
-                                    + f"max_auto_reruns: {tmp_output_elements["max_auto_reruns"]}"
+                                    + f"max_auto_reruns: {tmp_output_elements['max_auto_reruns']}"
                                 )
                 elif "requires" in element:
                     tmp_output.append(
