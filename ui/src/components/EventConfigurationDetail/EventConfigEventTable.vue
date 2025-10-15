@@ -127,7 +127,7 @@
               v-if="expandedRows.includes(event.id)"
               class="expanded-content"
             >
-              <td :colspan="4">
+              <td :colspan="5">
                 <h6>Description:</h6>
                 <p v-html="event.description"></p>
               </td>

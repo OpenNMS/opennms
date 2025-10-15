@@ -134,9 +134,10 @@ import 'ace-builds/src-noconflict/ext-language_tools'
 import 'ace-builds/src-noconflict/mode-xml'
 import 'ace-builds/src-noconflict/theme-chrome'
 import { XMLValidator } from 'fast-xml-parser'
+import { unescape } from 'lodash'
 import vkbeautify from 'vkbeautify'
 import { VAceEditor } from 'vue3-ace-editor'
-import { EventConfigurationDocTypes, Severity, severityOptions, EventConfigurationDocType } from '../constants'
+import { EventConfigurationDocType, EventConfigurationDocTypes, Severity, severityOptions } from '../constants'
 import { validateEventDetailsJson, validateEventDetailsXml } from '../eventXmlValidator'
 
 const snackbar = useSnackbar()
@@ -276,7 +277,7 @@ const loadInitialValues = (val: any) => {
     eventDescription.value = val.description || ''
     eventUei.value = val.uei || ''
     eventLabel.value = val.eventLabel || ''
-    xmlContent.value = vkbeautify.xml(val.xmlContent.trim().replaceAll('&lt;', '<').replaceAll('&gt;', '>')) || ''
+    xmlContent.value = vkbeautify.xml(unescape(val.xmlContent.trim())) || ''
     selectedEventSeverity.value = {
       _text: val.severity ? Severity[val.severity as keyof typeof Severity] : '',
       _value: val.enabled ? Severity[val.severity as keyof typeof Severity] : ''

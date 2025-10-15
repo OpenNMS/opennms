@@ -247,9 +247,9 @@ export const filterEventConfigEvents = async (
   sourceId: number,
   offset: number,
   limit: number,
-  filter: string,
-  sortBy: string,
-  order: string
+  eventFilter: string,
+  eventSortBy: string,
+  eventOrder: string
 ): Promise<EventConfigEventsResponse> => {
   const endpoint = `/eventconf/filter/${sourceId}/events`
   try {
@@ -257,9 +257,9 @@ export const filterEventConfigEvents = async (
       params: {
         offset,
         limit,
-        filter,
-        sortBy,
-        order
+        eventFilter,
+        eventSortBy,
+        eventOrder
       }
     })
     if (response.status === 200) {
