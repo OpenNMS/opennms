@@ -21,14 +21,16 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+             "max_auto_reruns":3
         },
         "rpms": {
             "extends": [
                 "build",
                 "build-rpm",
                 "integration-test"
-            ]
+            ],
+            "max_auto_reruns":3
         },
         "debs": {
             "extends": [
