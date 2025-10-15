@@ -172,7 +172,8 @@ for e in main_yml_content:
             )
 
             level += 2
-            workflow_path.append(common_library.create_space(level) + "jobs:")
+            workflow_path.append(common_library.create_space(level) + "max_auto_reruns: 3\n"+common_library.create_space(level)+"jobs:")
+            # workflow_path.append(common_library.create_space(level) + "jobs:")
             level += 2
             job_entry_spaces = level
 
