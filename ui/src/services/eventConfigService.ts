@@ -293,3 +293,19 @@ export const getAllSourceNames = async (): Promise<string[]> => {
   }
 }
 
+export const deleteEventConfigEventBySourceId = async (sourceId: number, eventIds: number[]): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events`
+  const payload = {
+    eventIds
+  }
+
+  try {
+    const response = await v2.delete(endpoint, { data: payload })
+    return response.status === 200
+  } catch (error) {
+    console.error('Error deleting event config events:', error)
+    return false
+  }
+}
+
+

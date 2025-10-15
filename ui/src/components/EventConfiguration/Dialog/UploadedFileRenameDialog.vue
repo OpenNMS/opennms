@@ -5,6 +5,7 @@
       :labels="labels"
       hide-close
       @hidden="handleDialogHidden"
+      data-test="dialog-title"
     >
       <div class="modal-body">
         <p>
@@ -34,6 +35,7 @@
           :error-message="error || ''"
           placeholder="Enter new file name (must end with .events.xml)"
           @update:model-value="onChangeFileName"
+          data-test="file-name"
         />
       </div>
       <template v-slot:footer>
@@ -42,6 +44,7 @@
           primary
           :disabled="shouldRemainDisabled"
           @click="saveChanges"
+          data-test="save-button"
         >
           Save Changes
         </FeatherButton>
