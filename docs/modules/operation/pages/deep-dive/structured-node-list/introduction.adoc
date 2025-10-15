@@ -5,6 +5,8 @@
 
 The structured node list is a Vue-based page that displays node information and lets the user perform enhanced data display, search, filter, and export data.
 
+To access this page, click menu:Inventory[Structured Node List] in the side menu.
+
 The main display shows a paginated table of nodes corresponding to the current search and filtering parameters.
 You can sort most of the columns in ascending or descending order.
 

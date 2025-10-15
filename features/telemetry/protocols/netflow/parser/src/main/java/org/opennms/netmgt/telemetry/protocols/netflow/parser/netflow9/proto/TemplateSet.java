@@ -31,12 +31,14 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 
 public final class TemplateSet extends FlowSet<TemplateRecord> {
 
     public final List<TemplateRecord> records;
 
-    public TemplateSet(final Packet packet,
+    public TemplateSet(final InformationElementDatabase informationElementDatabase,
+                       final Packet packet,
                        final FlowSetHeader header,
                        final ByteBuf buffer) throws InvalidPacketException {
         super(packet, header);
@@ -44,7 +46,7 @@ public final class TemplateSet extends FlowSet<TemplateRecord> {
         final List<TemplateRecord> records = new LinkedList();
         while (buffer.isReadable(TemplateRecordHeader.SIZE)) {
             final TemplateRecordHeader recordHeader = new TemplateRecordHeader(buffer);
-            records.add(new TemplateRecord(this, recordHeader, buffer));
+            records.add(new TemplateRecord(informationElementDatabase, this, recordHeader, buffer));
         }
 
         if (records.size() == 0) {

@@ -4,23 +4,20 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
-  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
-    idleTimeout="600"
+  <connection-pool idleTimeout="600"
     loginTimeout="3"
     minPool="25"
     maxPool="50"
     maxSize="50" />
 
-  <jdbc-data-source name="opennms" 
-                    database-name="${install.database.name}" 
-                    class-name="${install.database.driver}" 
+  <jdbc-data-source name="opennms"
+                    database-name="${install.database.name}"
                     url="jdbc:postgresql://localhost:5432/${install.database.name}"
                     user-name="${install.database.user}"
                     password="${install.database.password}" />
 
-  <jdbc-data-source name="opennms-admin" 
-                    database-name="template1" 
-                    class-name="${install.database.driver}" 
+  <jdbc-data-source name="opennms-admin"
+                    database-name="template1"
                     url="jdbc:postgresql://localhost:5432/template1"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}">
@@ -29,10 +26,9 @@
                      maxPool="10"
                      maxSize="50" />
   </jdbc-data-source>
-  
-  <jdbc-data-source name="opennms-monitor" 
-                    database-name="postgres" 
-                    class-name="${install.database.driver}" 
+
+  <jdbc-data-source name="opennms-monitor"
+                    database-name="postgres"
                     url="jdbc:postgresql://localhost:5432/postgres"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}">

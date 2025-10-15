@@ -1422,6 +1422,7 @@
             <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
+            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
@@ -1449,6 +1450,7 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
+            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
@@ -1499,12 +1501,6 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${maven.karaf.plugin.version}</version>
-        <extensions>true</extensions>
       </plugin>
     </plugins>
  </build>
@@ -1743,7 +1739,7 @@
     <args4jVersion>2.33</args4jVersion>
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
-    <activemqVersion>5.15.16</activemqVersion>
+    <activemqVersion>5.16.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
@@ -1784,7 +1780,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.6</cxfVersion>
+    <cxfVersion>3.6.8</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1921,7 +1917,7 @@
     <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.100.Final</netty4Version>
+    <netty4Version>4.1.124.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>

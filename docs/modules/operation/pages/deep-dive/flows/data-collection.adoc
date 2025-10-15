@@ -7,7 +7,7 @@ OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on t
 It gives you the possibility of profiling the network throughput by an application.
 
 NOTE: The flow classification engine includes a predefined set of rules, which defines over 6200 applications for basic communication protocols.
-If you don't want to collect this kind of data, in the UI, click the gears icon in the top right and under *Flow Management* click *Manage Flow Classification*.
+If you don't want to collect this kind of data, in the UI, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Flow Management[Manage Flow Classification].
 In the *Settings* tab, disable predefined rules.
 
 == Configure data collection

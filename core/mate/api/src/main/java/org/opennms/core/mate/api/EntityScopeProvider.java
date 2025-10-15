@@ -34,6 +34,8 @@ public interface EntityScopeProvider {
 
     Scope getScopeForScv();
 
+    Scope getScopeForEnv();
+
     Scope getScopeForNode(final Integer nodeId);
 
     Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
@@ -44,6 +46,10 @@ public interface EntityScopeProvider {
 
     default ScopeProvider getScopeProviderForScv() {
         return () -> getScopeForScv();
+    }
+
+    default ScopeProvider getScopeProviderForEnv() {
+        return () -> getScopeForEnv();
     }
 
     default ScopeProvider getScopeProviderForNode(final Integer nodeId) {

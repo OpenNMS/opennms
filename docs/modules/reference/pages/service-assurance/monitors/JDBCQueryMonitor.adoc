@@ -26,10 +26,6 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 
 3+|*Required*
 
-| driver
-| JDBC driver class to use.
-| org.postgresql.Driver
-
 | url kbd:[{}]
 | JDBC URL to connect to.
 | jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/opennms
@@ -72,6 +68,30 @@ Both operands and the operator are added to the message.
 | retries
 | How many retries to perform before failing the test.
 | 0
+
+| include-query
+| Whether or not to include the query executed in the message used if the service is unavailable.
+| false
+
+| include-first-result
+| Whether or not to include the first row of results from the query executed in the message used when the service is unavailable.
+| false
+
+| include-all-results
+| Whether or not to include all rows of results from the query executed in the message used when the service is unavailable.
+| false
+
+| line-separator
+| The string to use to separate lines in the message used when the service is unavailable.
+| "\n"
+
+| column-separator
+| The string to use to separate columns in query results of the message used when the service is unavailable.
+| "; "
+
+| column-key-separator
+| The string to use to separate the column key from the column value in query results of the message used when the service is unavailable.
+| ": "
 |===
 
 kbd:[{}] _indicates the parameter supports <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution>>._
@@ -99,9 +119,14 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 | compare_int
 | Compares an integer from a column of the first result row.
 | 1
+
+| compare_bool
+| Compares an integer from a column of the first result row.
+The operator is ignored for this action with equality assumed.
+| true
 |===
 
-.Available operand parameters
+.Available operator parameter values
 [options="header, autowidth"]
 [cols="1,1"]
 |===
@@ -151,7 +176,6 @@ Note that you must include the `monitor` section in your definition.
 [source, xml]
 ----
 <service name="OpenNMS-DB-Event-Limit" interval="30000" user-defined="true" status="on">
-  <parameter key="driver" value="org.postgresql.Driver"/> <1>
   <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/> <2>
   <parameter key="user" value="opennms"/> <3>
   <parameter key="password" value="opennms"/> <4>
@@ -164,16 +188,15 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <10>
 ----
-<1> JDBC driver class to use.
-<2> JDBC URL to connect to.
-<3> Database user.
-<4> Database password.
-<5> The SQL query to run.
-<6> The evaluation action to perform.
-<7> The operand to compare against the SQL query result.
-<8> Operator to use for the evaluation.
-<9> The message to use if the service is down.
-<10> Required *monitor* section.
+<1> JDBC URL to connect to.
+<2> Database user.
+<3> Database password.
+<4> The SQL query to run.
+<5> The evaluation action to perform.
+<6> The operand to compare against the SQL query result.
+<7> Operator to use for the evaluation.
+<8> The message to use if the service is down.
+<9> Required *monitor* section.
 
 === String comparison
 
@@ -184,7 +207,6 @@ Note that you must include the `monitor` section in your definition.
 [source, xml]
 ----
 <service name="MariaDB-Galera" interval="300000" user-defined="false" status="on">
-  <parameter key="driver" value="org.mariadb.jdbc.Driver"/> <1>
   <parameter key="user" value="opennms"/> <2>
   <parameter key="password" value="********"/> <3>
   <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/> <4>
@@ -198,14 +220,13 @@ Note that you must include the `monitor` section in your definition.
 
 <monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <11>
 ----
-<1> JDBC driver class to use.
-<2> Database user.
-<3> Database password.
-<4> JDBC URL to connect to.
-<5> The SQL query to run.
-<6> The result column to evaluate against when using *compare_string* method.
-<7> The evaluation action to perform.
-<8> Operator to use for the evaluation.
-<9> The operand to compare against the SQL query result.
-<10> The message to use if the service is down.
-<11> Required *monitor* section.
+<1> Database user.
+<2> Database password.
+<3> JDBC URL to connect to.
+<4> The SQL query to run.
+<5> The result column to evaluate against when using *compare_string* method.
+<6> The evaluation action to perform.
+<7> Operator to use for the evaluation.
+<8> The operand to compare against the SQL query result.
+<9> The message to use if the service is down.
+<10> Required *monitor* section.

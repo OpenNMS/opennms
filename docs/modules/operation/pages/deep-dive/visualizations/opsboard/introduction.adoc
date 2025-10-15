@@ -28,8 +28,8 @@ After you create an operator board, you can specify how the information will be 
 
 Follow these steps to create a new operator board:
 
-. Click the *gear* symbol at the top-right of the page.
-. Under Additional Tools, click *Ops Board Configuration*.
+. Click menu:Administration[Wallboard Configuration] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *Ops Board Configuration*.
 . Click the *plus* symbol (*+*) beside the Overview tab, type a name for the new ops board, and click *Save*.
 . Click *Add Dashlet*, select a dashlet from the *Dashlet* list, and configure its settings:
 ** *Title:* Dashlet name to display in the operator board.

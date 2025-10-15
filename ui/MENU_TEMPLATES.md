@@ -4,7 +4,7 @@
 
 The side menu organization is configured by the use of JSON menu templates.
 
-Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF` folder in your installation.
+Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF/menu` folder in your installation.
 
 The `menu-template.json` file controls the menu configuration.
 
@@ -41,8 +41,7 @@ The menu template structure can be found in the Java code in: `org.opennms.web.r
   <tr>
     <td>baseHref, homeUrl, formattedDateTime, formattedDate, formattedTime,
   noticeStatus, username, baseNodeUrl, zenithConnectEnabled, zenithConnectBaseUrl,
-  zenithConnectRelativeUrl, copyrightDates, version,
-  userTileProviders</td>
+  zenithConnectRelativeUrl, copyrightDates, version</td>
     <td>These are filled in at runtime with values. Any values you enter will be ignored.</td>
   </tr>
   <tr>
@@ -87,12 +86,18 @@ Within the `menus` array, each item is a top-level menu item for the side menu.
   <tr>
     <td>url</td>
     <td>The URL that the top-level menu links to.
-    Generally this is <code>"#"</code> since the actual links are in the menu items.
-    This will be used in the future to link directly from a top-level menu item (in which
-    case it should not have any <code>items</code>).
+    This can be empty or left as <code>"#"</code> if there are subitems.
+    If you want clicking on the top level menu item to directly link to a page or URL, set <code>url</code>
+    and also add an <code>action</code> property: <code>"action": "link"</code>. Also leave <code>items</code> as <code>null</code>.
+    If you want this to link to an external URL outside of OpenNMS, set this property: <code>"isExternalLink": true</code>.
+    You cannot set this link and have submenu items at the same time.
     </td>
   </tr>
   <tr>
+    <td>action</td>
+    <td>See <code>url</code>, this treat the top-level menu item as a link.</td>
+  </tr>
+   <tr>
     <td>locationMatch</td>
     <td>Used by the Search feature.</td>
   </tr>

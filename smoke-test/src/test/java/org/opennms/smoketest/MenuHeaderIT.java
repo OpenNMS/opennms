@@ -62,9 +62,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         WebElement foundElement = null;
 
         // Dashboards Menu
-        clickMenuItem("dashboardsMenu", "Dashboards");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS Dashboards']")));
-
         clickMenuItem("dashboardsMenu", "Wallboard");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmsvaadinwallboard-')]")));
 
@@ -286,9 +283,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
 
+        // Omitting for now - need to fix!
         // Vaadin Topology page
         frontPage();
-        clickMenuItem("topologiesMenu", "Topology");
+        clickTopMenuItem("topologiesMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
 
@@ -322,9 +320,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Logs']")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='logs-sidebar']")));
 
+        // Omitting for now - need to fix!
         // Geographical map page
         frontPage();
-        clickMenuItem("mapsMenu", "Geographical");
+        clickTopMenuItem("mapsMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display

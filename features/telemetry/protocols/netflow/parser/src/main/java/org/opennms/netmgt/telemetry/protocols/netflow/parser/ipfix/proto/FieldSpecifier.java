@@ -63,9 +63,12 @@ public final class FieldSpecifier implements Field, Scope {
 
     public final InformationElement informationElement;
 
-    public FieldSpecifier(final ByteBuf buffer) throws InvalidPacketException {
+    final InformationElementDatabase informationElementDatabase;
+
+    public FieldSpecifier(final InformationElementDatabase informationElementDatabase, final ByteBuf buffer) throws InvalidPacketException {
         final int elementId = uint16(buffer);
 
+        this.informationElementDatabase = informationElementDatabase;
         this.informationElementId = elementId & 0x7FFF;
         this.fieldLength = uint16(buffer);
 
@@ -76,7 +79,7 @@ public final class FieldSpecifier implements Field, Scope {
             this.enterpriseNumber = Optional.of(enterpriseNumber);
         }
 
-        this.informationElement = InformationElementDatabase.instance
+        this.informationElement = informationElementDatabase
                 .lookup(Protocol.IPFIX, this.enterpriseNumber, this.informationElementId).orElseGet(() -> {
                     LOG.warn("Undeclared information element: {}", UndeclaredValue.nameFor(this.enterpriseNumber, this.informationElementId));
                     return UndeclaredValue.parser(this.enterpriseNumber, this.informationElementId);
@@ -94,7 +97,7 @@ public final class FieldSpecifier implements Field, Scope {
     @Override
     public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         try {
-            return this.informationElement.parse(resolver, buffer);
+            return this.informationElement.parse(informationElementDatabase, resolver, buffer);
         } catch (final InvalidPacketException e) {
             throw new InvalidPacketException(e, "Failed to parse IPFix information element: enterpriseNumber=%s informationElementId=%d", this.enterpriseNumber, this.informationElementId);
         }

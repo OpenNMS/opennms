@@ -14,7 +14,8 @@ To classify a flow, you must define a rule.
 A rule includes at least a name for the classified flows and additional parameters that must match for successful classification.
 
 Use the Classification UI to define new rules:
-menu:Gears icon[Flow Management > Manage Flow Classification].
+
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Flow Management[Manage Flow Classification]
 
 == Flows classification example
 
@@ -99,7 +100,7 @@ A flows classification rule must include at least a name and one definition for 
 By default, rules that a user creates appear in the "user-defined rules" group.
 You can <<rule-groups, create other groups>> as needed and assign rules to those groups.
 
-. Click the gears icon, and click *Manage Flow Classification*.
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Flow Management[Manage Flow Classification]
 . In the *User-defined Rules* tab, click the plus sign.
 . Type a name for the rule in the *Application Name* field.
 . Specify a value in at least one of the following fields:
@@ -152,7 +153,7 @@ Note that you cannot edit or delete the "pre-defined" group or its rules.
 
 To add a rule group, follow these steps:
 
-. Click the gears icon and click *Manage Flow Classification*.
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click *Manage Flow Classification*.
 . In the *Settings* tab, click the plus sign.
 . In the *Position* field, choose a number for the order you want the group to be evaluated.
 +
