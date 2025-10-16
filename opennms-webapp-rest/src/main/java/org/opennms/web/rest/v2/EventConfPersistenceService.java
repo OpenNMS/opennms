@@ -88,8 +88,6 @@ public class EventConfPersistenceService {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
-        // Asynchronously load event conf from DB.
-        eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     @Transactional
@@ -98,8 +96,6 @@ public class EventConfPersistenceService {
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
         saveEvent(eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
-        // Asynchronously load event conf from DB.
-        eventConfExecutor.execute(this::reloadEventsFromDB);
         return eventConfSourceDao.save(eventConfSource);
     }
 
@@ -120,7 +116,6 @@ public class EventConfPersistenceService {
 
     @Transactional
     public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
-
         eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
     }
 
@@ -141,8 +136,6 @@ public class EventConfPersistenceService {
             eventConfEvent.setLastModified(new Date());
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
-            // Asynchronously load event conf from DB.
-            //eventConfExecutor.execute(this::reloadEventsFromDB);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
@@ -232,6 +225,11 @@ public class EventConfPersistenceService {
                 persistEventConfFile(events, metadataDto);
             }
         }
+    }
+
+    public  void reloadEventsIntoMemory() {
+        // Schedule reload only AFTER transaction commits
+        eventConfExecutor.execute(EventConfPersistenceService.this::reloadEventsFromDB);
     }
 
     public Map<String, Object> filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,
