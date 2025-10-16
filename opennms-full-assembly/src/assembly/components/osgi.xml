@@ -34,10 +34,6 @@
         <exclude>**/zookeeper/3.4.14/*</exclude>
         <exclude>/org/eclipse/jetty/**/9.4.52.v20230823</exclude>
         <exclude>/org/eclipse/jetty/**/9.4.52.v20230823/*</exclude>
-        <exclude>com/fasterxml/jackson/core/jackson-core/2.13.*</exclude>
-        <exclude>com/fasterxml/jackson/core/jackson-core/2.13.*/*</exclude>
-        <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*</exclude>
-        <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>
