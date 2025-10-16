@@ -14,8 +14,9 @@ Configuring discovery specifies the parameters that {page-component-title} uses 
 To configure discovery for a requisition, follow these steps:
 
 . Log in to the {page-component-title} web UI as a user with admin permissions.
-. Click the *gear* symbol in the top-right of the page.
-. Under Provisioning, click *Configure Discovery*.
+
+. Click menu:Manage Inventory[Scheduled Node Discovery] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click *Configure Discovery*.
 +
 NOTE: To configure a discovery scan to run only once, click *Run Single Discovery Scan* instead, and configure it as appropriate.
 
@@ -49,8 +50,9 @@ Any discovered nodes will be added to this requisition upon discovery.
 
 After the discovery process is finished, navigate to the requisition that you specified to view the nodes that were found:
 
-. Click the *gear* symbol in the top-right of the page.
-. Under Provisioning, click *Manage Provisioning Requisitions* and find the requisition that you specified for the discovery process.
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu, then click *Edit Default FS*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click *Manage Provisioning Requisitions*.
+. Find the requisition that you specified for the discovery process.
 . (Optional) Click *Edit* beside the requisition's name to manage its nodes.
 ** Click *Edit* beside a node's name to update its information.
 ** Click *Delete* beside a node's name to remove it from the requisition.

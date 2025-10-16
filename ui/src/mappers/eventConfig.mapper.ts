@@ -99,7 +99,11 @@ export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfi
   return newEvent as EventConfigEventRequest
 }
 
-export const mapEventConfEventEditRequest = (content: any, status: boolean, objType: string): string | { enabled: boolean, event: EventConfigEventRequest } | null => {
+export const mapEventConfEventEditRequest = (
+  content: any,
+  status: boolean,
+  objType: string
+): string | { enabled: boolean; event: EventConfigEventRequest } | null => {
   if (objType === EventConfigurationDocType.Json) {
     return {
       enabled: status,
@@ -107,7 +111,21 @@ export const mapEventConfEventEditRequest = (content: any, status: boolean, objT
     }
   }
   if (objType === EventConfigurationDocType.Xml) {
-    return vkbeautify.xml(`<eventEdit><enabled>${status}</enabled>${content as string}</eventEdit>`)
+    const parser = new DOMParser()
+    const xmlDoc = parser.parseFromString(content, 'application/xml')
+    const tagsToUnescape = ['descr', 'logmsg']
+    for (const tag of tagsToUnescape) {
+      const el = xmlDoc.getElementsByTagName(tag)[0]
+      if (el) {
+        const inner = el.innerHTML.trim()
+        while (el.firstChild) el.removeChild(el.firstChild)
+        const cdata = xmlDoc.createCDATASection(inner)
+        el.appendChild(cdata)
+      }
+    }
+    const serializer = new XMLSerializer()
+    const updatedContent = serializer.serializeToString(xmlDoc)
+    return vkbeautify.xml(`<eventEdit><enabled>${status}</enabled>${updatedContent as string}</eventEdit>`)
   }
 
   return null

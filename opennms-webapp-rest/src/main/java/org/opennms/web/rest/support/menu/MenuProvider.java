@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DatabindException;
@@ -34,7 +33,6 @@ import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
-import org.opennms.web.rest.support.menu.model.TileProviderItem;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
@@ -67,19 +65,12 @@ public class MenuProvider {
     /** Context that must be set before using the MenuProvider. */
     private MenuRequestContext menuRequestContext;
 
-    public MenuProvider(String dispatcherServletPath, String menuTemplateFilePath) {
+    public MenuProvider(String menuTemplateFilePath) {
         this.menuTemplateFilePath = menuTemplateFilePath;
     }
 
     public void setMenuRequestContext(MenuRequestContext context) {
         this.menuRequestContext = context;
-    }
-
-    public String getDispatcherServletPath() {
-        return "";
-    }
-
-    public void setDispatcherServletPath(String path) {
     }
 
     public String getMenuTemplateFilePath() {
@@ -111,73 +102,62 @@ public class MenuProvider {
             return null;
         }
 
-        try {
-            // The following should be set by the template. We do not override them here.
-            // templateName, displayAddNodeButton, sideMenuInitialExpand
+        // The following should be set by the template. We do not override them here.
+        // templateName, displayAddNodeButton, sideMenuInitialExpand
 
-            mainMenu.baseHref = menuRequestContext.calculateUrlBase();
-            mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
-            mainMenu.formattedDateTime = menuRequestContext.getFormattedDateTime();
-            mainMenu.formattedDate = menuRequestContext.getFormattedDate();
-            mainMenu.formattedTime = menuRequestContext.getFormattedTime();
-            mainMenu.username = menuRequestContext.getRemoteUser();
-            // for navigating to a specific node id
-            mainMenu.baseNodeUrl = "element/node.jsp?node=";
+        mainMenu.baseHref = menuRequestContext.calculateUrlBase();
+        mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
+        mainMenu.formattedDateTime = menuRequestContext.getFormattedDateTime();
+        mainMenu.formattedDate = menuRequestContext.getFormattedDate();
+        mainMenu.formattedTime = menuRequestContext.getFormattedTime();
+        mainMenu.username = menuRequestContext.getRemoteUser();
+        // for navigating to a specific node id
+        mainMenu.baseNodeUrl = "element/node.jsp?node=";
 
-            mainMenu.zenithConnectEnabled =
-                    Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");
-            mainMenu.zenithConnectBaseUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_BASE_URL_KEY, "");
-            mainMenu.zenithConnectRelativeUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_RELATIVE_URL_KEY, "");
+        mainMenu.zenithConnectEnabled =
+                Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");
+        mainMenu.zenithConnectBaseUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_BASE_URL_KEY, "");
+        mainMenu.zenithConnectRelativeUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_RELATIVE_URL_KEY, "");
 
-            mainMenu.noticeStatus = menuRequestContext.getNoticeStatus();
+        mainMenu.noticeStatus = menuRequestContext.getNoticeStatus();
 
-            mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
-            mainMenu.version = Vault.getProperty("version.display");
+        mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
+        mainMenu.version = Vault.getProperty("version.display");
 
-            var tileProviders = getTileProviders();
+        // Remove any MenuEntry items marked as RoleBased where user does not have any required role
+        List<MenuEntry> filteredTopMenuEntries = filterMenuEntriesByRole(mainMenu.menus);
+        filteredTopMenuEntries = filterMenuEntriesBySystemProperties(filteredTopMenuEntries);
 
-            if (!tileProviders.isEmpty()) {
-                mainMenu.userTileProviders.clear();
-                mainMenu.userTileProviders.addAll(tileProviders);
-            }
+        mainMenu.menus.clear();
+        mainMenu.menus.addAll(filteredTopMenuEntries);
 
-            // Remove any MenuEntry items marked as RoleBased where user does not have any required role
-            List<MenuEntry> filteredTopMenuEntries = filterMenuEntriesByRole(mainMenu.menus);
-            filteredTopMenuEntries = filterMenuEntriesBySystemProperties(filteredTopMenuEntries);
+        // These are mostly in the template now
+        // May have to remove some depending on Admin role, etc.
+        mainMenu.helpMenu.items = filterMenuEntriesByRole(mainMenu.helpMenu.items);
 
-            mainMenu.menus.clear();
-            mainMenu.menus.addAll(filteredTopMenuEntries);
+        mainMenu.selfServiceMenu.name = menuRequestContext.getRemoteUser();
 
-            // These are mostly in the template now
-            // May have to remove some depending on Admin role, etc.
-            mainMenu.helpMenu.items = filterMenuEntriesByRole(mainMenu.helpMenu.items);
+        // User notification User menu needs the username in the url
+        // TODO: user should be url encoded
+        MenuEntry userMenu = mainMenu.userNotificationMenu.items.stream()
+                .filter(i -> i.id != null && i.id.equals("userNotificationUser"))
+                .findFirst().orElse(null);
 
-            mainMenu.selfServiceMenu.name = menuRequestContext.getRemoteUser();
+        if (userMenu != null && userMenu.url != null) {
+            userMenu.url = userMenu.url.replace("$USER", menuRequestContext.getRemoteUser());
+        }
 
-            // User notification User menu needs the username in the url
-            // TODO: user should be url encoded
-            MenuEntry userMenu = mainMenu.userNotificationMenu.items.stream()
-                    .filter(i -> i.id != null && i.id.equals("userNotificationUser"))
-                    .findFirst().orElse(null);
+        // Template should include ROLE_ADMIN and ROLE_PROVISION
+        if (!evaluateRoleBasedMenuEntry(mainMenu.provisionMenu)) {
+            mainMenu.provisionMenu = null;
+        }
 
-            if (userMenu != null && userMenu.url != null) {
-                userMenu.url = userMenu.url.replace("$USER", menuRequestContext.getRemoteUser());
-            }
+        if (!evaluateRoleBasedMenuEntry(mainMenu.flowsMenu)) {
+            mainMenu.flowsMenu = null;
+        }
 
-            // Template should include ROLE_ADMIN and ROLE_PROVISION
-            if (!evaluateRoleBasedMenuEntry(mainMenu.provisionMenu)) {
-                mainMenu.provisionMenu = null;
-            }
-
-            if (!evaluateRoleBasedMenuEntry(mainMenu.flowsMenu)) {
-                mainMenu.flowsMenu = null;
-            }
-
-            if (!evaluateRoleBasedMenuEntry(mainMenu.configurationMenu)) {
-                mainMenu.configurationMenu = null;
-            }
-        } catch (IOException ioe) {
-            throw ioe;
+        if (!evaluateRoleBasedMenuEntry(mainMenu.configurationMenu)) {
+            mainMenu.configurationMenu = null;
         }
 
         return mainMenu;
@@ -275,35 +255,5 @@ public class MenuProvider {
         }
 
         return true;
-    }
-
-    /**
-     * Get a list of user-defined Tile Providers. Currently we only actually support a single user-defined one.
-     * These are specified in the `opennms/etc/opennms.properties' file.
-     * The tile providers are used in the Vue Geographical Map, for example if the user wants to specify
-     * a map tile provider server in their own private network.
-     * If 'userDefinedAsDefault' is true, the user-defined tile provider will appear first on the Geographical Map
-     * and be loaded by default.
-     */
-    private List<TileProviderItem> getTileProviders() throws Exception {
-        ensureContext();
-
-        final var list = new ArrayList<TileProviderItem>();
-        final String name = menuRequestContext.getSystemProperty("gwt.openlayers.name", "");
-        final String url = menuRequestContext.getSystemProperty("gwt.openlayers.url", "");
-        final String attribution = menuRequestContext.getSystemProperty("gwt.openlayers.options.attribution", "");
-        final String userDefinedAsDefault = menuRequestContext.getSystemProperty("gwt.openlayers.userDefinedAsDefault", "");
-
-        if (!Strings.isNullOrEmpty(url)) {
-            var item = new TileProviderItem();
-            item.name = !Strings.isNullOrEmpty(name) ? name : "User-Defined";
-            item.url = url;
-            item.attribution = !Strings.isNullOrEmpty(attribution) ? attribution : "";
-            item.userDefinedAsDefault = !Strings.isNullOrEmpty(userDefinedAsDefault) && userDefinedAsDefault.equals("true");
-
-            list.add(item);
-        }
-
-        return list;
     }
 }

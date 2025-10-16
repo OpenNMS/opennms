@@ -102,7 +102,7 @@ jobs:
               -DpublishingServerId="central-portal" \
               -DskipPublishing=true \
               install \
-              org.sonatype.central:central-publishing-maven-plugin:publish \
+              org.sonatype.central:central-publishing-maven-plugin:0.8.0:publish \
               || exit 1
 
             sudo apt update

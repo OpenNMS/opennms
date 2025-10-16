@@ -35,15 +35,16 @@
 | `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
 | `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
 | `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
-| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
 | `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
 | `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -
-| `OPENNMS_DATABASE_CONNECTION_POOLFACTORY`  | Database connection pool factory                                                  | optional | `org.opennms.core.db.HikariCPConnectionFactory`
-| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Database connection pool idle timeout                                             | optional | `600`
-| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Database connection pool login timeout                                            | optional | `3`
-| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Minimal connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Maximum connections                                                               | optional | `50`
+| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
+| `POSTGRES_SSL_MODE`                        | Encryption for database communication                                             | optional | `prefer`
+| `POSTGRES_SSL_FACTORY`                     | PostgreSQL SSL factory for certificate validation                                 | optional | `org.postgresql.ssl.LibPQFactory`
+| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Global database connection pool idle timeout                                      | optional | `600`
+| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Global database connection pool login timeout                                     | optional | `3`
+| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Global minimal connection pool size                                               | optional | `25`
+| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Global maximum connection pool size                                               | optional | `50`
+| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Global maximum connections                                                        | optional | `50`
 |===
 
 .Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
@@ -60,14 +61,14 @@
 .SNMP Trap receiver configuration in trapd-configuration.xml
 [options="header, %autowidth"]
 |===
-| Environment variable              | Description                                                       | Required | Default value
-| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                 | optional | `*`
-| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                   | optional | `1162`
+| Environment variable              | Description                                                        | Required | Default value
+| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                    | optional | `*`
+| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                      | optional | `1162`
 | `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event-based trap recipient for unknown devices. | optional | `false`
-| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                             | optional | `false`
+| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                               | optional | `false`
 | `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP traps.                     | optional | `0`
-| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                      | optional | `10000`
-| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                         | optional | `1000`
+| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                        | optional | `10000`
+| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                           | optional | `1000`
 | `OPENNMS_TRAPD_BATCHINTERVAL`     | Set batch processing interval in milliseconds.                     | optional | `500`
 |===
 
@@ -82,14 +83,14 @@
 .Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
 [options="header, %autowidth"]
 |===
-| Environment variable          | Description                                                                       | Required | Default value
-| `REPLICATION_FACTOR`          | Set Cassandra replication factor for the newts keyspace if Newts is used.      | optional | `1`
-| `OPENNMS_CASSANDRA_HOSTNAME`  | A comma-separated list with Cassandra hosts for Newts                         | optional | `localhost`
-| `OPENNMS_CASSANDRA_KEYSPACE`  | Name of the keyspace used by Newts                                              | optional | `newts`
-| `OPENNMS_CASSANDRA_PORT`      | Cassandra server port                                                           | optional | `9042`
-| `OPENNMS_CASSANDRA_USERNAME`  | Username with access to Cassandra                                              | optional | `cassandra`
-| `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to Cassandra                                      | optional | `cassandra`
-| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance        | optional | `datacenter1`
+| Environment variable           | Description                                                               | Required | Default value
+| `REPLICATION_FACTOR`           | Set Cassandra replication factor for the newts keyspace if Newts is used. | optional | `1`
+| `OPENNMS_CASSANDRA_HOSTNAME`   | A comma-separated list with Cassandra hosts for Newts                     | optional | `localhost`
+| `OPENNMS_CASSANDRA_KEYSPACE`   | Name of the keyspace used by Newts                                        | optional | `newts`
+| `OPENNMS_CASSANDRA_PORT`       | Cassandra server port                                                     | optional | `9042`
+| `OPENNMS_CASSANDRA_USERNAME`   | Username with access to Cassandra                                         | optional | `cassandra`
+| `OPENNMS_CASSANDRA_PASSWORD`   | Password for user with access to Cassandra                                | optional | `cassandra`
+| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance   | optional | `datacenter1`
 |===
 
 == Directory conventions

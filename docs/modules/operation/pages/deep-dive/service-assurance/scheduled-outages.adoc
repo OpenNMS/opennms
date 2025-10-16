@@ -52,8 +52,8 @@ During the scheduled outage, any nodes and interfaces that match the outage defi
 
 You can create a scheduled outage in the {page-component-title} web UI:
 
-. Click the *gear* symbol at the top-right of the page.
-. Under Service Monitoring, select *Configure Scheduled Outages*.
+. Click menu:Administration[Scheduled Outages] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Service Monitoring, click *Configure Scheduled Outages*.
 . Type a name for the outage in the *New Name* box and click the *add* symbol.
 . Under Node Labels, select a node to include in the scheduled outage and click *Add*.
 . Under Interfaces, select a node interface to include in the scheduled outage and click *Add*.
@@ -78,7 +78,7 @@ This type of scheduled outage occurs only once during the specified period of ti
 
 You can create a scheduled outage for a specific node in {page-component-title}:
 
-. Click menu:Info[Nodes] in the top menu bar.
+. Click menu:Inventory[Nodes] in the side menu.
 . Click on the Node that needs a scheduled outage.
 . Click *Schedule Outage*.
 . <<scheduled-outage-create, Create an outage>> for the node [starting at step 5 since any outage created within a node will be named after the node]

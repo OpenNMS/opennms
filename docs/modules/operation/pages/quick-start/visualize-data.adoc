@@ -17,7 +17,7 @@ For more information, see xref:deep-dive/visualizations/grafana-dashboard-box.ad
 [[qs-visualize-dashboard]]
 == Dashboard
 
-You can view the default dashboard by clicking menu:Dashboards[Dashboard] in the top menu bar.
+You can view the default dashboard by clicking menu:Dashboards[Surveillance Dashboard] in the side menu.
 The dashboard compiles network environment data to generate an overview of monitored components.
 This information can often be a useful starting point for more detailed analysis of issues.
 
@@ -49,7 +49,7 @@ You can create custom surveillance categories to define specific data that you w
 
 Follow these steps to create a surveillance category that monitors the `localhost` node:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Provisioning, click *Manage Surveillance Categories*.
 . Type a name for the new category in the *Category Name* box.
 For this example, we use "localhost-category".
@@ -60,7 +60,7 @@ Your changes are automatically saved.
 
 You can now create a Surveillance View to visualize `localhost` in your production environment:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Additional Tools, click *Surveillance Views Configuration*.
 A list of configured Surveillance Views is displayed.
 . Click *Add*, and define the view's title.
@@ -83,14 +83,14 @@ Its default visualization is defined separately from the Surveillance View itsel
 
 You can use the heatmap to display either unacknowledged alarms or ongoing node outages.
 Each visualization can be applied to categories, foreign sources, or node services.
-Click menu:Status[Heatmap] in the top menu bar to view the heatmap.
+Click menu:Dashboards[Heatmap] in the side menu to view the heatmap.
 
 For more information, see xref:deep-dive/visualizations/heatmap.adoc[] in the Deep Dive section.
 
 == Trend
 
 The Trend page displays small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
-Click menu:Status[Trend] in the top menu bar to view it.
+Click menu:Dashboards[Trends] in the side menu to view it.
 
 For more information, see xref:deep-dive/visualizations/trends.adoc[] in the Deep Dive section.
 

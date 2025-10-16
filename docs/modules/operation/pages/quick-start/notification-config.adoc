@@ -26,7 +26,7 @@ It is possible to define multiple notifications for the same UEI to use differen
 
 Follow these steps to configure event notifications:
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Event Management, click menu:Configure Notifications[Configure Event Notifications].
 A list of events that are configured for notifications is displayed.
 . Click *Add New Event Notification*, select the UEI that will trigger a notification, and click *Next*.

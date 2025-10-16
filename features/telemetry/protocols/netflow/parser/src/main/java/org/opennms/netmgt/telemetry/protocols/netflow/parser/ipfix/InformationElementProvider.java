@@ -93,6 +93,18 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
             .put("subTemplateMultiList", ListValue::parserWithSubTemplateMultiList)
             .build();
 
+    private InformationElementDatabase database;
+
+    @Override
+    public InformationElementDatabase getDatabase() {
+        return database;
+    }
+
+    @Override
+    public void setDatabase(InformationElementDatabase database) {
+        this.database = database;
+    }
+
     @Override
     public void load(final InformationElementDatabase.Adder adder) {
         try (final Reader r = new InputStreamReader(this.getClass().getResourceAsStream("/ipfix-information-elements.csv"))) {
@@ -114,7 +126,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
 
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(record.get(COLUMN_SEMANTICS)));
 
-                adder.add(Protocol.IPFIX, id, valueParserFactory, name, semantics);
+                adder.add(Protocol.IPFIX, id, valueParserFactory, name, semantics, this.database);
             }
         } catch (final IOException e) {
             // TODO: Log me

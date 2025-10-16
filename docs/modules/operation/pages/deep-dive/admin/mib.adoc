@@ -22,8 +22,9 @@ To import a MIB file and create event definitions, follow these steps:
 
 . Save the vendor MIB file to a location available to your local workstation.
 The MIB file does not need to be accessible by the server.
-. In {page-component-title}, click the *gears* icon at the top-right of the page.
-. Under Additional Tools, select *SNMP MIB Compiler*.
+. Go to the web UI.
+. Click menu:Tools[SNMP MIB Compiler] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *SNMP MIB Compiler*.
 . Click *Upload MIB*.
 . Select the MIB file and click *Open*.
 . Right-click the file and choose *Compile MIB*.

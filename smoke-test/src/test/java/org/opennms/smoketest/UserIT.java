@@ -86,7 +86,8 @@ public class UserIT extends OpenNMSSeleniumIT {
         enterText(By.id("pass2"), "SmokeTestPassword");
         findElementByXpath("//button[@type='submit' and text()='OK']").click();
 
-        findElementById("saveUserButton").click();
+        WebElement saveUserButton = scrollToElement(By.id("saveUserButton"));
+        clickElementUsingScript(saveUserButton);
         findElementById("users(" + USER_NAME + ").doDetails");
 
         adminPage();

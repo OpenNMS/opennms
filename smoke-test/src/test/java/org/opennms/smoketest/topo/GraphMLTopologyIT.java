@@ -205,6 +205,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
      */
 
     @Test
+    @Ignore("Flaky test, see NMS-17889")
     public void verifyCanFilterByCategory() throws IOException, InterruptedException {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();

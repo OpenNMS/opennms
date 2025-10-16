@@ -10,7 +10,7 @@ Once you have set up device configuration backups, you can do the following in t
 
 To manage device configuration backups, follow these steps:
 
-. Click the gear icon and choose *Device Configs* to view a list of devices.
+. Click menu:Inventory[Device Configs] in the side menu to view a list of devices.
 +
 NOTE: Backups appear according to their schedule.
 

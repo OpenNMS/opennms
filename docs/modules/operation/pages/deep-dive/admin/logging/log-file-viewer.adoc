@@ -3,7 +3,7 @@
 :description: Learn how to view log files in the {page-component-title} web UI.
 
 You can view log files in the {page-component-title} web UI.
-To do so, click menu:Info[Logs] in the top menu bar.
+To do so, click menu:Internal Logs[Log Viewer] in the side menu.
 
 .Log file viewer
 image::logging/log-file-viewer.png["{page-component-title} UI displaying the log file viewer.", 700]

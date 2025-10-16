@@ -21,6 +21,7 @@ includeObjectNames:
   - "org.opennms.newts:name=ring-buffer*"
   - "org.opennms.newts:name=repository.samples-inserted*"
   - "org.opennms.core.ipc.rpc:*"
+  - "com.zaxxer.hikari:*"
 {{end -}}
 
 {{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
@@ -39,6 +40,7 @@ excludeObjectNameAttributes:
     - "Schedule"
 
 rules:
+  - pattern: "java.lang.*"
   - pattern: "OpenNMS.*"
   - pattern: "org.opennms.*"
   - pattern: "com.zaxxer.hikari.*"

@@ -23,8 +23,8 @@ The start page uses the `rtc` profile to communicate with the xref:development:r
 To create a new user account, follow these steps:
 
 . Log in as a user with admin permissions.
-. Click the *gear* symbol at the top-right of the screen.
-. Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
+. Click menu:User Management[Manage Users] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 . Click *Add New User* and specify a username and password, confirm the password, and click *OK*.
 +
 NOTE: You cannot use angle brackets (`<>`), single (`'`) and double quotation marks (`"`), or the ampersand symbol (`&`) in a username.
@@ -59,8 +59,8 @@ Notifications sent to users in groups are different, depending on the scenario:
 To add a duty schedule for a user or group of users, follow these steps:
 
 . Log in as a user with admin permissions.
-. Click the *gear* symbol at the top-right of the screen.
-. Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users] or *Configure Groups*, as appropriate.
+. Click menu:User Management[Manage Users] or menu:User Management[Manage Groups] in the side menu, as appropriate.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users] or *Configure Groups*, as appropriate.
 . Choose the user or group that you want to modify.
 . In the *Duty Schedule* area, choose the number of schedules you want to add from the list and click *Add Schedule*.
 . Specify the days and times during which you want the user or group to receive notifications.
