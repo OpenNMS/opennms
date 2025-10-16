@@ -484,9 +484,9 @@ public class Poller extends AbstractServiceDaemon {
         criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
 
         final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+        final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
         for (OnmsMonitoredService service : services) {
-            Set<OnmsOutage> outages = service.getCurrentOutages();
-            scheduleService(service, outages);
+            scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
         }
         return services.size();
     }
