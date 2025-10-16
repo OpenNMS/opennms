@@ -227,7 +227,6 @@ public class EventConfPersistenceService {
         }
     }
 
-    @Transactional
     public  void reloadEventsIntoMemory() {
         // Schedule reload only AFTER transaction commits
         eventConfExecutor.execute(EventConfPersistenceService.this::reloadEventsFromDB);
