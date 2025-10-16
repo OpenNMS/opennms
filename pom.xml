@@ -1805,6 +1805,7 @@
     <grpcVersion>1.75.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
+    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>

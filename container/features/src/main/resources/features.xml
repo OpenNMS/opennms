@@ -1987,6 +1987,17 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.rest/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-newts-api" description="OpenNMS :: Newts API" version="${project.version}">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/failureaccess/${guavaFailureaccessVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-jexl3/${commonsJexl3Version}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-api/${newtsVersion}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-aggregate/${newtsVersion}</bundle>
+    </feature>
+
     <feature name="opennms-timeseries-api" description="OpenNMS :: Timeseries Storage API" version="${project.version}">
         <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
@@ -1997,7 +2008,7 @@
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <feature>opennms-mate-impl</feature>
-        <feature>newts-api</feature>
+        <feature>opennms-newts-api</feature>
 
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:net.agkn/hll/${hllVersion}</bundle>
