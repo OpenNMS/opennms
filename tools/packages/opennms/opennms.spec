@@ -9,7 +9,7 @@
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
 # This is where the "share" directory will link on RPM-based systems
-%{!?sharedir:%define sharedir /var/opennms}
+# %{!?sharedir:%define sharedir /var/opennms}
 # This is where the "logs" directory will link on RPM-based systems
 %{!?logdir:%define logdir /var/log/opennms}
 # Where the OpenNMS Jetty webapp lives
