@@ -1036,7 +1036,6 @@
         <feature>opennms-dao</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-util</feature>
-        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
