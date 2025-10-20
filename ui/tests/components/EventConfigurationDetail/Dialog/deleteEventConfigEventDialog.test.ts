@@ -16,7 +16,6 @@ vi.mock('@featherds/dialog', () => ({
   }
 }))
 
-// ✅ Mock snackbar composable
 vi.mock('@/composables/useSnackbar', () => ({
   default: () => ({
     showSnackBar: vi.fn()
@@ -35,7 +34,6 @@ describe('DeleteEventConfigEventDialog', () => {
 
     store = useEventConfigDetailStore()
 
-    // ✅ Properly mock store state
     store.$state = {
       deleteEventConfigEventDialogState: {
         visible: true,
