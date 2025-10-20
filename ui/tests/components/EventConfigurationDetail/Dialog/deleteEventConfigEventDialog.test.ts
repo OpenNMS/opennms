@@ -8,7 +8,6 @@ import { FeatherDialog } from '@featherds/dialog'
 import DeleteEventConfigEventDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigEventDialog.vue'
 import type { EventConfigSource } from '@/types/eventConfig'
 
-// ✅ Mock FeatherDialog
 vi.mock('@featherds/dialog', () => ({
   FeatherDialog: {
     name: 'FeatherDialog',
