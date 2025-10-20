@@ -80,7 +80,7 @@ public class EventconfFactorySaveTest extends TestCase {
 
         m_eventConfDao = new DefaultEventConfDao();
         m_eventConfDao.setConfigResource(new FileSystemResource(eventConf));
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventConf));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventConf));
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
     }
 

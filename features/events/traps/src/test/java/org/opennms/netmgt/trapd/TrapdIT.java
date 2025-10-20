@@ -45,7 +45,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
@@ -136,7 +136,7 @@ public class TrapdIT {
     @Before
     public void setUp() throws Exception {
 
-        List<EventConfEvent> events = EventConfUtil.parseResourcesAsEventConfEvents(
+        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
                 new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
         // Load into DB
         eventConfDao.loadEventsFromDB(events);

@@ -54,7 +54,7 @@ public class EventConfPriorityTest {
 
     @Test
     public void canFindHigherPriorityInFile() throws Exception {
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
 
         Assert.assertEquals(3, eventConfDao.getAllEvents().size());
@@ -72,7 +72,7 @@ public class EventConfPriorityTest {
 
     @Test
     public void canFindHigherPriorityInLaterFile() throws Exception {
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
@@ -89,7 +89,7 @@ public class EventConfPriorityTest {
 
     @Test
     public void canUseHighestPriorityDefnWhenInRoot() throws Exception {
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
@@ -106,7 +106,7 @@ public class EventConfPriorityTest {
 
     @Test
     public void doesNotDuplicateWhenGettingByUEI() throws Exception {
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
