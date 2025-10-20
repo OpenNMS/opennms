@@ -192,7 +192,7 @@ base64-arraybuffer@0.1.2:
 
 base64id@0.1.0:
   version "0.1.0"
-  resolved "https://registry.yarnpkg.com/base64id/-/base64id-0.1.0.tgz#02ce0fdeee0cef4f40080e1e73e834f0b1bfce3f"
+  resolved "https://registry.yarnpkg.com/base64id/-/base64id-0.1.0.tgz#02ce0fdeee0cef4f40080e1e73e834.0.3-SNAPSHOTbfce3f"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.0"
