@@ -19,7 +19,7 @@ Make sure to reference your current https://www.postgresql.org/download/linux/re
 sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
 sudo dnf -qy module disable postgresql
 sudo dnf install -y postgresql{postgresql-version}-server
-sudo /usr/pgsql-15/bin/postgresql-15-setup initdb
+sudo /usr/pgsql-{postgresql-version}/bin/postgresql-{postgresql-version}-setup initdb
 sudo systemctl enable postgresql-{postgresql-version}
 sudo systemctl start postgresql-{postgresql-version}
 ----
