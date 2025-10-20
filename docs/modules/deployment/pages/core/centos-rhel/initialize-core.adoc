@@ -3,7 +3,7 @@
 You can store your PostgreSQL credentials in the secure credentials vault.
 To do this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`:
 
-IMPORTANT: Don't remove the prefixed space before the command. Otherwise, the password will be stored in the history.
+NOTE: Adding a space before the command prevents the password from being recorded in your shell history.
 
 . Create encrypted credentials for the PostgreSQL database connections:
 +
