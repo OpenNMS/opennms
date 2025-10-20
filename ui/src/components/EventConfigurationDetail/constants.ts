@@ -15,7 +15,7 @@ export enum Severity {
   Cleared = 'Cleared'
 }
 
-export const severityOptions: ISelectItemType[] = [
+export const SeverityOptions: ISelectItemType[] = [
   { _text: Severity.Critical, _value: Severity.Critical },
   { _text: Severity.Major, _value: Severity.Major },
   { _text: Severity.Minor, _value: Severity.Minor },

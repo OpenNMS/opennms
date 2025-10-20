@@ -66,7 +66,7 @@
         <div class="spacer-medium"></div>
         <FeatherSelect
           label="Select Severity"
-          :options="severityOptions"
+          :options="SeverityOptions"
           v-model="selectedEventSeverity"
         >
           <FeatherIcon :icon="MoreVert" />
@@ -137,7 +137,7 @@ import { XMLValidator } from 'fast-xml-parser'
 import { unescape } from 'lodash'
 import vkbeautify from 'vkbeautify'
 import { VAceEditor } from 'vue3-ace-editor'
-import { EventConfigurationDocType, EventConfigurationDocTypes, Severity, severityOptions } from '../constants'
+import { EventConfigurationDocType, EventConfigurationDocTypes, Severity, SeverityOptions } from '../constants'
 import { validateEventDetailsJson, validateEventDetailsXml } from '../eventXmlValidator'
 
 const snackbar = useSnackbar()

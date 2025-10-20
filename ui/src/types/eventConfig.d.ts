@@ -123,3 +123,19 @@ export type UploadEventFileType = {
   isDuplicate: boolean
 }
 
+export type EventModificationStoreState = {
+  selectedSource: EventConfigSource | null
+  eventModificationState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+    eventConfigEvent: EventConfigEvent | null
+  }
+}
+
+export type EventFormErrors = {
+  uei?: string
+  eventLabel?: string
+  description?: string
+  severity?: string
+  logmsg?: string
+}
