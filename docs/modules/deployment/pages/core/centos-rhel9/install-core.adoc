@@ -1,4 +1,8 @@
 ifeval::["{page-component-title}" == "Horizon"]
+include::../centos-rhel/adoptium.adoc[]
+endif::[]
+
+ifeval::["{page-component-title}" == "Horizon"]
 include::../../repos/rhel-centos/horizon-rhel9.adoc[]
 endif::[]
 
@@ -20,7 +24,7 @@ We recommend that you exclude the {page-component-title} packages from updates e
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --disable opennms-stable opennms-common
+sudo dnf config-manager --disable opennms-repo-stable-*
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 sudo dnf config-manager --disable meridian

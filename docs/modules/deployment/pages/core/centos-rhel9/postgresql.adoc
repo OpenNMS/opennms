@@ -8,10 +8,6 @@ sudo dnf makecache
 sudo dnf update -y
 ----
 
-
-NOTE: The commands below install a specific PostgreSQL version.
-Make sure to reference your current https://www.postgresql.org/download/linux/redhat/[PostgreSQL version].
-
 .Install PostgreSQL
 [source, console]
 [subs="verbatim,attributes"]

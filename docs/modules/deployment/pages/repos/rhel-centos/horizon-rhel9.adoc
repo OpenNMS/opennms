@@ -1,15 +1,6 @@
-.Add common repository from https://cloudsmith.io/~opennms/repos/common/setup/#formats-rpm[Cloudsmith]
+.Add repository and import GPG key
 [source, console]
 ----
-curl -1sLf \
-  'https://packages.opennms.com/public/common/setup.rpm.sh' \
-  | sudo -E bash
-----
-
-.Add stable repository from https://cloudsmith.io/~opennms/repos/stable/setup/#formats-rpm[Cloudsmith]
-
-----
-curl -1sLf \
-  'https://packages.opennms.com/public/stable/setup.rpm.sh' \
-  | sudo -E bash
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel9.noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
