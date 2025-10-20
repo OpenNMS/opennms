@@ -91,7 +91,7 @@ Use it at your own discretion.
 CentOS 9::
 +
 --
-include::centos-rhel9/postgresql.adoc[]
+include::centos9/postgresql.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
@@ -120,7 +120,7 @@ Do not expose the web console or sign in pages directly to the Internet without 
 CentOS 9::
 +
 --
-include::centos-rhel9/install-core.adoc[]
+include::centos9/install-core.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
@@ -152,7 +152,7 @@ endif::[]
 CentOS 9::
 +
 --
-include::centos-rhel/initialize-core.adoc[]
+include::centos/initialize-core.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
