@@ -23,6 +23,7 @@ package org.opennms.features.telemetry.protocols.openconfig;
 
 import static org.awaitility.Awaitility.await;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThan;
@@ -87,12 +88,13 @@ public class OpenConfigClientIT {
 
         final int beforeShutdown = gnmiData.size();
 
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (System.nanoTime() < deadline) {
-            if (gnmiData.size() > beforeShutdown) {
-                fail("Received data after shutdown: before=" + beforeShutdown + " now=" + gnmiData.size());
-            }
-        }
+        await().pollInterval(100, TimeUnit.MILLISECONDS)
+                .during(5, TimeUnit.SECONDS)
+                .atMost(6, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertThat(gnmiData.size(), is(beforeShutdown));
+                });
+
 
     }
 
@@ -125,12 +127,12 @@ public class OpenConfigClientIT {
 
         final int beforeShutdown = gnmiData.size();
 
-        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
-        while (System.nanoTime() < deadline) {
-            if (gnmiData.size() > beforeShutdown) {
-                fail("Received data after shutdown: before=" + beforeShutdown + " now=" + gnmiData.size());
-            }
-        }
+        await().pollInterval(100, TimeUnit.MILLISECONDS)
+                .during(5, TimeUnit.SECONDS)
+                .atMost(6, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    assertThat(gnmiData.size(), is(beforeShutdown));
+                });
 
     }
 
