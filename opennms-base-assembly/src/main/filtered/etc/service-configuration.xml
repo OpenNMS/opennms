@@ -1,34 +1,35 @@
 <?xml version="1.0"?>
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
-  <!-- WARNING: The first 3 services (Manager, TestLoadLibraries, and Eventd) must never be disabled.
-       It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence. -->
-  <service><name>OpenNMS:Name=Manager</name></service>
-  <service><name>OpenNMS:Name=TestLoadLibraries</name></service>
-  <service><name>OpenNMS:Name=Eventd</name></service>
-  <service><name>OpenNMS:Name=Alarmd</name></service>
-  <service><name>OpenNMS:Name=Bsmd</name></service>
-  <service><name>OpenNMS:Name=Ticketer</name></service>
+  <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
+  Note that omitting the enabled attribute will default to enabled = true -->
+  <service enabled="true"><name>OpenNMS:Name=Manager</name></service>
+  <service enabled="true"><name>OpenNMS:Name=TestLoadLibraries</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Eventd</name></service>
+  <!-- WARNING: The first 3 services (Manager, TestLoadLibraries, and Eventd) must never be disabled. -->
+  <service enabled="true"><name>OpenNMS:Name=Alarmd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Bsmd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Ticketer</name></service>
   <service enabled="false"><name>OpenNMS:Name=Correlator</name></service>
-  <service><name>OpenNMS:Name=Queued</name></service>
-  <service><name>OpenNMS:Name=Actiond</name></service>
-  <service><name>OpenNMS:Name=Notifd</name></service>
-  <service><name>OpenNMS:Name=Scriptd</name></service>
-  <service><name>OpenNMS:Name=Rtcd</name></service>
-  <service><name>OpenNMS:Name=Pollerd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Queued</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Actiond</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Notifd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Scriptd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Rtcd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Pollerd</name></service>
   <service enabled="false"><name>OpenNMS:Name=SnmpPoller</name></service>
-  <service><name>OpenNMS:Name=EnhancedLinkd</name></service>
-  <service><name>OpenNMS:Name=Collectd</name></service>
-  <service><name>OpenNMS:Name=Discovery</name></service>
-  <service><name>OpenNMS:Name=Vacuumd</name></service>
-  <service><name>OpenNMS:Name=EventTranslator</name></service>
-  <service><name>OpenNMS:Name=PassiveStatusd</name></service>
-  <service><name>OpenNMS:Name=Statsd</name></service>
-  <service><name>OpenNMS:Name=Provisiond</name></service>
-  <service><name>OpenNMS:Name=Ackd</name></service>
-  <service><name>OpenNMS:Name=JettyServer</name></service>
-  <service><name>OpenNMS:Name=KarafStartupMonitor</name></service>
+  <service enabled="true"><name>OpenNMS:Name=EnhancedLinkd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Collectd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Discovery</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Vacuumd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=EventTranslator</name></service>
+  <service enabled="true"><name>OpenNMS:Name=PassiveStatusd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Statsd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Provisiond</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Ackd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=JettyServer</name></service>
+  <service enabled="true"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
   <service enabled="false"><name>OpenNMS:Name=Syslogd</name></service>
-  <service><name>OpenNMS:Name=Telemetryd</name></service>
-  <service><name>OpenNMS:Name=Trapd</name></service>
-  <service><name>OpenNMS:Name=PerspectivePoller</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Telemetryd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=Trapd</name></service>
+  <service enabled="true"><name>OpenNMS:Name=PerspectivePoller</name></service>
 </service-configuration>
