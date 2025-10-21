@@ -349,6 +349,19 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+    @Override
+    public Response getEventConfSourceIdByName(String sourceName, SecurityContext securityContext) throws Exception {
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName(sourceName);
+        if (eventConfSource == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No EventConf source found with name: " + sourceName)
+                    .build();
+        }
+
+        return Response.ok(Map.of("sourceId", eventConfSource.getId())).build();
+    }
+
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
 

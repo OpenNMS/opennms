@@ -21,6 +21,11 @@
  */
 package org.opennms.web.controller.admin.thresholds;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,11 +34,30 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
@@ -50,6 +74,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.api.Util;
@@ -83,6 +108,7 @@ public class ThresholdController extends AbstractController implements Initializ
     private static final String UPDATE_BUTTON_TITLE = "Update";
     private static final String MOVEUP_BUTTON_TITLE = "Up";
     private static final String MOVEDOWN_BUTTON_TITLE = "Down";
+    private static final String EVENT_CONFIG_UPLOAD_URL = "/api/v2/eventconf/upload";
 
     private ResourceDao m_resourceDao;
 
@@ -522,7 +548,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         if (eventConfChanged) {
             try {
-                m_eventConfDao.saveCurrent();
+               // m_eventConfDao.saveCurrent();
                 sendNotifEvent(createEventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI).getEvent());
             } catch (Throwable e) {
                 throw new ServletException("Could not save the changes to the event configuration because " + e.getMessage(), e);
@@ -632,7 +658,7 @@ public class ThresholdController extends AbstractController implements Initializ
                 clearKey = source.getAlarmData().getReductionKey().replace("%uei%", triggeredUEI);
             }
             baseDef.setTriggeredUEI(triggeredUEI);
-            this.ensureUEIInEventConf(source, triggeredUEI, baseDef.getType(), null, true);
+            this.ensureUEIInEventConf(source, triggeredUEI, baseDef.getType(), null, true,request);
         }
 
         String rearmedUEI = request.getParameter("rearmedUEI");
@@ -642,7 +668,7 @@ public class ThresholdController extends AbstractController implements Initializ
         else {
             org.opennms.netmgt.xml.eventconf.Event source = getSourceEvent(baseDef.getType(), false);
             baseDef.setRearmedUEI(rearmedUEI);
-            this.ensureUEIInEventConf(source, rearmedUEI, baseDef.getType(), clearKey, false);
+            this.ensureUEIInEventConf(source, rearmedUEI, baseDef.getType(), clearKey, false,request);
         }
     }
     
@@ -675,7 +701,7 @@ public class ThresholdController extends AbstractController implements Initializ
         return null;
     }
 
-    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, ThresholdType thresholdType, String clearKey, boolean isTrigger) {
+    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, ThresholdType thresholdType, String clearKey, boolean isTrigger,HttpServletRequest request) {
         List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(targetUei);
         if (eventsForUEI == null || eventsForUEI.size() == 0) {
             String typeDesc = isTrigger ? "exceeded" : "rearmed";
@@ -708,8 +734,18 @@ public class ThresholdController extends AbstractController implements Initializ
                     event.setAlarmData(alarmData);
                 }
             }
-            m_eventConfDao.addEventToProgrammaticStore(event);
-            eventConfChanged = true;
+            //m_eventConfDao.addEventToProgrammaticStore(event);
+            final var sourceId = getEventConfSourceIdByName(request);
+            if (sourceId != null && sourceId > 0) {
+                addEventToSource(sourceId,event,request);
+                eventConfChanged = true;
+            } else {
+                Events events = new Events();
+                events.addEvent(event);
+               uploadFileToApi(events,request);
+                eventConfChanged = true;
+            }
+
         }
     }
 
@@ -870,4 +906,171 @@ public class ThresholdController extends AbstractController implements Initializ
         m_eventConfDao = eventConfDao;
     }
 
+
+
+
+    private boolean uploadFileToApi(final Events events,HttpServletRequest request) {
+        logger.info("Saving event source file to database.");
+        // Marshal the Events object into a byte array
+        byte[] eventData;
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JaxbUtils.marshal(events, new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+            eventData = outputStream.toByteArray();
+        } catch (IOException e) {
+            logger.error("Failed to serialize Events object: " + e.getMessage());
+            throw new RuntimeException("Error serializing Events object", e);
+        }
+        String baseUrl = getBaseUrl(request);
+        HttpPost uploadRequest = new HttpPost(baseUrl + EVENT_CONFIG_UPLOAD_URL);
+        uploadRequest.setHeader("Cookie", getCookie(request));
+        HttpEntity multipart = MultipartEntityBuilder.create()
+                .addBinaryBody("upload", eventData, ContentType.APPLICATION_XML, "programmatic.events.xml")
+                .build();
+        uploadRequest.setEntity(multipart);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(uploadRequest)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            if (statusCode == HttpStatus.SC_OK) {
+                logger.info("File successfully uploaded via API: " + statusCode);
+                logger.debug("Response: " + responseBody);
+                return true;
+            } else {
+                logger.error("Upload failed: " + statusCode);
+                logger.debug("Response: " + responseBody);
+                return false;
+            }
+        } catch (IOException e) {
+            logger.error("I/O error during file upload: " + e.getMessage());
+            throw new RuntimeException("I/O error during file upload", e);
+        } catch (Exception e) {
+            logger.error("Unexpected error during file upload: " + e.getMessage());
+            throw new RuntimeException("Unexpected error during file upload", e);
+        }
+    }
+
+    private Long getEventConfSourceIdByName(final HttpServletRequest request) {
+        String baseUrl = getBaseUrl(request);
+        String url = baseUrl + "/api/v2/eventconf/sources/" + "programmatic.events";
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Cookie", getCookie(request));
+        httpGet.setHeader("Accept", "application/json");
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(httpGet)) {
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+            if (statusCode == HttpStatus.SC_OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(responseBody);
+                Long sourceId = jsonNode.path("sourceId").asLong();
+
+                if (sourceId == 0) {
+                    logger.warn("No valid sourceId found in response");
+                    return null;
+                }
+
+                return sourceId;
+
+            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                logger.warn("EventConf source not found for name:"+ "programmatic.events");
+                return null;
+            } else {
+                logger.error("Failed to fetch sourceId."+ responseBody);
+                return null;
+            }
+
+        } catch (IOException e) {
+            logger.error("I/O error while fetching sourceId"+ e.getMessage());
+            throw new RuntimeException("I/O error during sourceId lookup", e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while fetching sourceId"+ e.getMessage());
+            throw new RuntimeException("Unexpected error during sourceId lookup", e);
+        }
+    }
+
+    private boolean addEventToSource(final Long sourceId,
+                                     final org.opennms.netmgt.xml.eventconf.Event event,
+                                     final HttpServletRequest request) {
+        String baseUrl = getBaseUrl(request);
+        String url = baseUrl + "/api/v2/eventconf/sources/" + sourceId + "/events";
+
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Cookie", getCookie(request));
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-Type", "application/xml");
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+
+            // ✅ Convert Event object to XML using JAXB
+            JAXBContext jaxbContext = JAXBContext.newInstance(org.opennms.netmgt.xml.eventconf.Event.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(event, writer);
+            String eventXml = writer.toString();
+
+            // ✅ Attach XML to HTTP request
+            httpPost.setEntity(new StringEntity(eventXml, ContentType.APPLICATION_XML));
+
+            try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+                if (statusCode == HttpStatus.SC_CREATED) {
+                    logger.info("✅ Event created successfully for sourceId=" + sourceId);
+                    return true;
+                } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("⚠️ EventConf source not found for sourceId=" + sourceId);
+                    return false;
+                } else if (statusCode == HttpStatus.SC_BAD_REQUEST) {
+                    logger.error("❌ Invalid event data. Response: " + responseBody);
+                    return false;
+                } else {
+                    logger.error("⚠️ Unexpected response while adding event: HTTP " + statusCode + ", Body: " + responseBody);
+                    return false;
+                }
+            }
+
+        } catch (IOException e) {
+            logger.error("I/O error while adding event: " + e.getMessage(), e);
+            throw new RuntimeException("I/O error during event creation", e);
+        } catch (JAXBException e) {
+            logger.error("Error marshalling Event object to XML: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to marshal Event object", e);
+        } catch (Exception e) {
+            logger.error("Unexpected error while adding event: " + e.getMessage(), e);
+            throw new RuntimeException("Unexpected error during event creation", e);
+        }
+    }
+
+
+
+    private String getBaseUrl(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+        String contextPath = request.getContextPath();
+        return scheme + "://" + serverName + ":" + serverPort + contextPath;
+    }
+
+    private String getCookie(HttpServletRequest request) {
+        Cookie[] servletCookies = request.getCookies();
+        String sessionId = null;
+        if (servletCookies != null) {
+            for (Cookie c : servletCookies) {
+                if ("JSESSIONID".equalsIgnoreCase(c.getName())) {
+                    sessionId = "JSESSIONID=" + c.getValue();
+                    break;
+                }
+            }
+            return sessionId;
+        } else {
+            logger.error("No session found");
+            throw new RuntimeException("No session found");
+        }
+    }
 }

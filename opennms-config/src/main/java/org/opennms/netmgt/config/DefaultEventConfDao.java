@@ -65,17 +65,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private Events m_events;
 
-	private Resource m_configResource;
-
 	private Partition m_partition;
-
-    /**
-     * Used to keep track of the last modified time for the loaded event files.
-     * See the reloadConfig() for details.
-     */
-    private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
-
-	private ConfigReloadContainer<Events> m_extContainer;
 
     public DefaultEventConfDao() {
         m_events = new Events();
@@ -89,21 +79,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
 		m_programmaticStoreRelativePath = programmaticStoreRelativeUrl;
-	}
-
-	void validateConfig(final Resource resource) throws DataAccessException {
-		final Events events;
-
-		try {
-			events = JaxbUtils.unmarshal(Events.class, resource, true);
-		} catch (Exception e) {
-			LOG.error("Eventd configuration validation failed! Cannot parse file {}", resource.getFilename(), e);
-			throw new DataRetrievalFailureException("Eventd configuration validation failed! Cannot parse file " + resource.getFilename());
-		}
-
-		for (final String eventFilename : events.getEventFiles()) {
-			validateConfig(Events.getRelative(m_configResource, eventFilename));
-		}
 	}
 
 	@Override
@@ -167,7 +142,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void saveCurrent() {
-		m_events.save(m_configResource);
+		//m_events.save(m_configResource);
 	}
 
 	public List<Event> getAllEvents() {
@@ -315,10 +290,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 	}
 
-	public void setConfigResource(Resource configResource) throws IOException {
-		m_configResource = configResource;
-	}
-
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
 		// Event Conf gets loaded by loadEventsFromDB.
@@ -349,68 +320,5 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 
 	}
-
-    private synchronized void reloadConfig() throws DataAccessException {
-        try {
-            // Load the root event file
-            Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-            // Insert events exposed via the service registry
-            m_extContainer.reload();
-            Events extEvents = m_extContainer.getObject();
-            if (extEvents != null) {
-                // Prioritize events loaded from the registry along with any loaded from the root config
-                events.getEvents().addAll(0, extEvents.getEvents());
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()
-                        .map(Event::getUei)
-                        .collect(Collectors.joining(",")));
-                }
-            }
-
-            // Hash the list of event files for efficient lookup
-            Set<String> eventFiles = new HashSet<>();
-            eventFiles.addAll(events.getEventFiles());
-
-            // Copy the loaded event files from the current root to the new root
-            // if and only if they exist in the new root
-            for (String eventFile : m_events.getEventFiles()) {
-                if (!eventFiles.contains(eventFile)) {
-                    m_lastModifiedEventFiles.remove(eventFile);
-                    continue;
-                }
-                events.addLoadedEventFile(eventFile, m_events.getLoadEventsByFile(eventFile));
-            }
-
-            // Load/reload the event files as necessary
-            events.loadEventFilesIfModified(m_configResource, m_lastModifiedEventFiles);
-
-            // Order the events for efficient searching
-            events.initialize(m_partition, new EventOrdering());
-
-            m_events = events;
-        } catch (Exception e) {
-            throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
-        }
-    }
-
-	private synchronized void loadConfig() throws DataAccessException {
-		try {
-			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-			m_lastModifiedEventFiles = events.loadEventFiles(m_configResource);
-
-			m_partition = new EnterpriseIdPartition();
-			events.initialize(m_partition, new EventOrdering());
-
-			m_events = events;
-		} catch (Exception e) {
-			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
-		}
-	}
-
-    private void initExtensions() {
-        m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
-				.withFolder((accumulator, next) -> accumulator.getEvents().addAll(next.getEvents()))
-                .build();
-    }
 }
 

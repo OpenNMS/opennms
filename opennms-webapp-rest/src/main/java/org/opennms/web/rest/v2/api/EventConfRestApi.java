@@ -259,4 +259,25 @@ public interface EventConfRestApi {
     ) throws Exception;
 
 
+    @GET
+    @Path("/sources/{sourceName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConf Source ID by Name",
+            description = "Retrieve the unique sourceId of an EventConf source by its sourceName.",
+            operationId = "getEventConfSourceIdByName"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved source ID"),
+            @ApiResponse(responseCode = "400", description = "Missing or invalid sourceName parameter"),
+            @ApiResponse(responseCode = "404", description = "EventConf source not found for the given name"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventConfSourceIdByName(
+            @PathParam("sourceName") String sourceName,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+
+
 }

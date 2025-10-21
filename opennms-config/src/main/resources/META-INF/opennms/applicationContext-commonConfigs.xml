@@ -60,12 +60,12 @@
 	<bean id="wmiPeerFactory" class="org.opennms.netmgt.config.WmiPeerFactory" depends-on="init-wmiPeerFactory" factory-method="getInstance"/>
 
 	<!-- This is shared by eventd and trapd. -->
-	<bean id="eventConfResourceLocation" class="java.lang.String">
-	  <constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />
-	</bean>
+<!--	<bean id="eventConfResourceLocation" class="java.lang.String">-->
+<!--	  <constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />-->
+<!--	</bean>-->
 	
 	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
-		<property name="configResource" ref="eventConfResourceLocation"/>
+<!--		<property name="configResource" ref="eventConfResourceLocation"/>-->
 	</bean>
 
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
