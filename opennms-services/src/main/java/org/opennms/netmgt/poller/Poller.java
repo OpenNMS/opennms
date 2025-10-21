@@ -30,9 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -282,7 +284,7 @@ public class Poller extends AbstractServiceDaemon {
     public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
         this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
-
+    
     /**
      * <p>onInit</p>
      */
@@ -303,15 +305,20 @@ public class Poller extends AbstractServiceDaemon {
         }
 
 
-        // Schedule the interfaces currently in the database
+        // Schedule the interfaces currently in the database asynchronously
+        // to avoid blocking daemon initialization
         //
-        try {
-            LOG.debug("start: Scheduling existing interfaces");
-
-            scheduleExistingServices();
-        } catch (Throwable sqlE) {
-            LOG.error("start: Failed to schedule existing interfaces", sqlE);
-        }
+        ExecutorService executor = getExecutorService();
+        executor.execute(() -> {
+            Logging.withPrefix(LOG4J_CATEGORY, () -> {
+                try {
+                    LOG.debug("start: Scheduling existing interfaces");
+                    scheduleExistingServices();
+                } catch (Throwable sqlE) {
+                    LOG.error("start: Failed to schedule existing interfaces", sqlE);
+                }
+            });
+        });
 
         // Create an event receiver. The receiver will
         // receive events, process them, creates network
@@ -396,7 +403,12 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private void scheduleExistingServices() throws Exception {
-        scheduleServices();
+        m_transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                scheduleServices();
+            }
+        });
 
         getNetwork().recalculateStatus();
         getNetwork().propagateInitialCause();
@@ -471,17 +483,12 @@ public class Poller extends AbstractServiceDaemon {
         final Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
 
-        return m_transactionTemplate.execute(new TransactionCallback<Integer>() {
-            @Override
-            public Integer doInTransaction(TransactionStatus arg0) {
-                final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
-                final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
-                for (OnmsMonitoredService service : services) {
-                    scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
-                }
-                return services.size();
-            }
-        });
+        final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+        final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
+        for (OnmsMonitoredService service : services) {
+            scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
+        }
+        return services.size();
     }
 
     private boolean scheduleService(OnmsMonitoredService service, Set<OnmsOutage> outages) {
@@ -615,5 +622,9 @@ public class Poller extends AbstractServiceDaemon {
 
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
+    }
+
+    private ExecutorService getExecutorService() {
+        return m_scheduler.getRunner();
     }
 }

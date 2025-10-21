@@ -102,7 +102,6 @@ import org.springframework.transaction.support.TransactionTemplate;
         "activemq.data=" + PollerRpcTimeoutIT.ACTIVEMQ_STORAGE_DIRECTORY
 })
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
-@Transactional
 public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> {
 
     public static final String ACTIVEMQ_STORAGE_DIRECTORY = "target/activemq";
@@ -173,6 +172,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
     }
 
     @Before
+    @Transactional
     public void setUp() throws Exception {
 
         MockUtil.println("------------ Begin Test  --------------------------");
@@ -195,8 +195,9 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         // Update all of the nodes to have the nonexistent location
         for (OnmsNode node : m_nodeDao.findAll()) {
             node.setLocation(location);
-            m_nodeDao.save(node);
+            m_nodeDao.saveOrUpdate(node);
         }
+        m_nodeDao.flush();
 
         InputStream is = new FileInputStream(new File("src/test/resources/etc/rpctimeout-poller-configuration.xml"));
         PollerConfigFactory factory = new PollerConfigFactory(0, is);
@@ -232,6 +233,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         m_poller.setPollerConfig(factory);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
         m_poller.setPollOutagesDao(m_pollOutagesDao);
+        m_poller.setServiceMonitorAdaptor((service, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 

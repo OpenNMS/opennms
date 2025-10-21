@@ -23,6 +23,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.utils.ParameterMap;
@@ -201,19 +202,25 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        
+
         createScheduler();
-        
-        // Schedule the interfaces currently in the database
-        try {
-            LOG.debug("onInit: Scheduling existing SNMP interfaces polling");
-            scheduleExistingSnmpInterfaces();
-        } catch (Throwable sqlE) {
-            LOG.error("onInit: Failed to schedule existing interfaces", sqlE);
-        }
+
+        // Schedule the interfaces currently in the database asynchronously
+        // to avoid blocking daemon initialization
+        ExecutorService executor = getExecutorService();
+        executor.execute(() -> {
+            Logging.withPrefix("snmp-poller", () -> {
+                try {
+                    LOG.debug("onInit: Scheduling existing SNMP interfaces polling");
+                    scheduleExistingSnmpInterfaces();
+                } catch (Throwable sqlE) {
+                    LOG.error("onInit: Failed to schedule existing interfaces", sqlE);
+                }
+            });
+        });
 
         m_initialized = true;
-        
+
     }
         
     /**
