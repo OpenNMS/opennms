@@ -1,11 +1,12 @@
-import { mount, VueWrapper } from '@vue/test-utils'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createPinia, setActivePinia } from 'pinia'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfigSource } from '@/types/eventConfig'
-import { CreateEditMode } from '@/types'
-import { VENDOR_OPENNMS } from '@/lib/utils'
 import EventConfigurationDetail from '@/containers/EventConfigurationDetail.vue'
+import { VENDOR_OPENNMS } from '@/lib/utils'
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
+import { CreateEditMode } from '@/types'
+import { EventConfigSource } from '@/types/eventConfig'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/utils', () => ({
   VENDOR_OPENNMS: 'OpenNMS'
@@ -47,6 +48,7 @@ vi.mock('vue-router', () => ({
 describe('EventConfigurationDetail.vue', () => {
   let wrapper: VueWrapper
   let store: ReturnType<typeof useEventConfigDetailStore>
+  let modificationStore: ReturnType<typeof useEventModificationStore>
 
   const mockConfig: EventConfigSource = {
     id: 1,
@@ -64,6 +66,7 @@ describe('EventConfigurationDetail.vue', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     store = useEventConfigDetailStore()
+    modificationStore = useEventModificationStore()
     vi.clearAllMocks()
   })
 
@@ -104,20 +107,19 @@ describe('EventConfigurationDetail.vue', () => {
     expect(configBox.text()).toContain('5')
   })
 
-  it('should call openEventModificationDrawer when "Add Event" button is clicked', async () => {
+  it('should call setSelectedEventConfigSource when "Add Event" button is clicked', async () => {
     wrapper = createWrapper()
     await wrapper.vm.$nextTick()
-
-    store.openEventModificationDrawer = vi.fn()
-
-    store.selectedSource = { ...mockConfig, vendor: 'SomeOtherVendor' }
-
-    await wrapper.vm.$nextTick()
-
+    modificationStore.setSelectedEventConfigSource = vi.fn()
     const addEventButton = wrapper.get('[data-test="add-event"]')
     await addEventButton.trigger('click')
-    expect(store.openEventModificationDrawer).toHaveBeenCalledTimes(1)
-    expect(store.openEventModificationDrawer).toHaveBeenCalledWith(CreateEditMode.Create, expect.any(Object))
+
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledTimes(1)
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(
+      store.selectedSource,
+      CreateEditMode.Create,
+      expect.any(Object)
+    )
   })
 
   it('should display "Disabled" status when config is disabled', async () => {
@@ -188,14 +190,15 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should open event modification drawer when Add Event is clicked', async () => {
-    store.openEventModificationDrawer = vi.fn()
+    modificationStore.setSelectedEventConfigSource = vi.fn()
     wrapper = createWrapper()
     await wrapper.vm.$nextTick()
 
     const addButton = wrapper.findAll('button').find((btn) => btn.text().includes('Add Event'))
     await addButton?.trigger('click')
 
-    expect(store.openEventModificationDrawer).toHaveBeenCalledWith(
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(
+      store.selectedSource,
       CreateEditMode.Create,
       expect.objectContaining({
         uei: '',
@@ -203,6 +206,7 @@ describe('EventConfigurationDetail.vue', () => {
         description: ''
       })
     )
+    expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration New' })
   })
 
   it('should show change status dialog when Disable/Enable Source is clicked', async () => {
@@ -239,7 +243,6 @@ describe('EventConfigurationDetail.vue', () => {
     const differentConfig = { ...mockConfig, id: 999 }
     store.selectedSource = differentConfig
     store.fetchEventsBySourceId = vi.fn()
-
     wrapper = mount(EventConfigurationDetail, {
       global: {
         stubs: {
@@ -252,8 +255,8 @@ describe('EventConfigurationDetail.vue', () => {
       }
     })
     await wrapper.vm.$nextTick()
-
-    expect(store.fetchEventsBySourceId).not.toHaveBeenCalled()
+    expect(store.fetchEventsBySourceId).toHaveBeenCalledTimes(1)
+    expect(store.fetchEventsBySourceId).toHaveBeenCalledWith()
   })
 
   it('should render EventConfigEventTable component', async () => {
