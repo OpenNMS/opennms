@@ -5,6 +5,7 @@ export const validateEvent = (
   eventLabel: string,
   description: string,
   severity: string,
+  dest: string,
   logmsg: string
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
@@ -23,6 +24,10 @@ export const validateEvent = (
 
   if (!logmsg || logmsg.trim() === '') {
     errors.logmsg = 'Log Message is required.'
+  }
+
+  if (!dest || dest.trim() === '') {
+    errors.dest = 'Destination is required.'
   }
 
   if (!severity || severity.trim() === '') {

@@ -116,6 +116,7 @@
 </template>
 
 <script lang="ts" setup>
+import { Severity, SeverityOptions } from '@/components/EventConfigEventCreate/constants'
 import useSnackbar from '@/composables/useSnackbar'
 import { mapEventConfigEventToServer } from '@/mappers/eventConfig.mapper'
 import { createEventConfigEventJson, createEventConfigEventXml, updateEventConfigEventByIdJson, updateEventConfigEventByIdXml } from '@/services/eventConfigService'
@@ -137,7 +138,7 @@ import { XMLValidator } from 'fast-xml-parser'
 import { unescape } from 'lodash'
 import vkbeautify from 'vkbeautify'
 import { VAceEditor } from 'vue3-ace-editor'
-import { EventConfigurationDocType, EventConfigurationDocTypes, Severity, SeverityOptions } from '../constants'
+import { EventConfigurationDocType, EventConfigurationDocTypes } from '../constants'
 import { validateEventDetailsJson, validateEventDetailsXml } from '../eventXmlValidator'
 
 const snackbar = useSnackbar()

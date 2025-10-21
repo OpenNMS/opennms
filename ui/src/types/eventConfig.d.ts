@@ -138,4 +138,5 @@ export type EventFormErrors = {
   description?: string
   severity?: string
   logmsg?: string
+  dest?: string
 }
