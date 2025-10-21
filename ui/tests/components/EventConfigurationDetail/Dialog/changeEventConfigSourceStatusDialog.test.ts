@@ -9,7 +9,7 @@ import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration
 // mock feather components so we can actually render the buttons
 vi.mock('@featherds/button', () => ({
   FeatherButton: {
-    template: `<button @click="$emit('click')"><slot /></button>`
+    template: '<button @click="$emit(\'click\')"><slot /></button>'
   }
 }))
 
