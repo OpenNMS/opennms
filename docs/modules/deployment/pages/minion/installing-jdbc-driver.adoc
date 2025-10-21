@@ -121,6 +121,6 @@ mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-ver
     </feature>
 </features>
 ----
-. The Oracle JDBC driver jar must be renamed to `jdbc-${VERSION}.jar` in order to be resolved.
+. The Oracle JDBC driver jar must be renamed to `jdbc-$\{VERSION}.jar` in order to be resolved.
 +
-The repository path for current Oracle JDBC is `com/oracle/jdbc/jdbc/${VERSION}/jdbc-${VERSION}.jar`
+The repository path for current Oracle JDBC is `com/oracle/jdbc/jdbc/$\{VERSION}/jdbc-$\{VERSION}.jar`
