@@ -36,4 +36,8 @@ The superuser is required to be able to initialize and change the database schem
 
 .Set a password for PostgreSQL superuser
 [source, console]
- sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+----
+sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+history -d $((HISTCMD-1)) && history -w <1>
+----
+<1> Remove previous command with sensitive information from bash history

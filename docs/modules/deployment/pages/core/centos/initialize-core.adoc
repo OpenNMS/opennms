@@ -7,10 +7,13 @@ To do this, use the `scvcli` command line utility to add the credentials, and re
 +
 [source, console]
 ----
- sudo -u opennms /opt/opennms/bin/scvcli set postgres opennms password <1>
- sudo -u opennms /opt/opennms/bin/scvcli set postgres-admin postgres password <1>
+sudo -u opennms /opt/opennms/bin/scvcli set postgres opennms password <1>
+history -d $((HISTCMD-1)) && history -w <2>
+sudo -u opennms /opt/opennms/bin/scvcli set postgres-admin postgres password <1>
+history -d $((HISTCMD-1)) && history -w <2>
 ----
 <1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
+<2> Remove previous command with sensitive information from bash history
 
 .Detect and assign Java environment and persist in /opt/opennms/etc/java.conf
 [source, console]
