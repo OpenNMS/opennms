@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import org.apache.http.HttpEntity;
@@ -372,20 +373,21 @@ public abstract class EventPanel extends Panel {
     }
 
     private String getCookie(final Logger logger) {
-        Cookie[] servletCookies = VaadinService.getCurrentRequest().getCookies();
-        String sessionId = null;
-        if (servletCookies != null) {
-            for (Cookie c : servletCookies) {
+        VaadinRequest request = VaadinService.getCurrentRequest();
+        if (request == null) {
+            logger.error("No current request found");
+            throw new RuntimeException("No current request found");
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
                 if ("JSESSIONID".equalsIgnoreCase(c.getName())) {
-                    sessionId = "JSESSIONID=" + c.getValue();
-                    break;
+                    return "JSESSIONID=" + c.getValue();
                 }
             }
-            return sessionId;
-        } else {
-            logger.error("No session found");
-            throw new RuntimeException("No session found");
         }
+        logger.error("JSESSIONID cookie not found");
+        throw new RuntimeException("No JSESSIONID cookie found");
     }
 
     private List<String> getUploadedSourceNames(final Logger logger) {
