@@ -5,6 +5,7 @@
       :labels="labels"
       hide-close
       @hidden="store.hideChangeEventConfigSourceStatusDialog()"
+      data-test="feather-dialog"
     >
       <div class="modal-body">
         <p v-html="getMessage()"></p>
