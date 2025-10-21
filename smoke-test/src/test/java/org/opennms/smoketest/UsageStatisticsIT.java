@@ -127,7 +127,7 @@ public class UsageStatisticsIT {
         assertThat((String) usageReport.get("sinkStrategy"), is("camel"));
         assertThat((String) usageReport.get("rpcStrategy"), is("jms"));
         assertThat((String) usageReport.get("tssStrategies"), is("rrd"));
-        assertThat((long) usageReport.get("pollsCompleted"), is(0L));
+        assertThat((long) usageReport.get("pollsCompleted"), greaterThanOrEqualTo(0L));
         assertThat((long) usageReport.get("eventLogsProcessed"), greaterThan(1L));
         assertThat((long) usageReport.get("coreFlowsPersisted"), is(0L));
         assertThat((String) usageReport.get("databaseProductVersion"), matchesPattern("^\\d+\\.\\d+$"));

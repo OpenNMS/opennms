@@ -65,7 +65,7 @@
     <node id="n3">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="68.83893401489257" width="56.983342011769615" x="828.2078008726753" y="-134.02157854895967"/>
+          <y:Geometry height="68.83893401489257" width="56.98334.0.3-SNAPSHOT769615" x="828.2078008726753" y="-134.0.3-SNAPSHOT57854895967"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.979999542236328" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="40.01199722290039" x="8.485672394434573" y="72.83893401489257">Minion</y:NodeLabel>
