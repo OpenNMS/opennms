@@ -244,4 +244,5 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
+    <bean name="eventConfApiClient" class="org.opennms.web.services.EventConfApiClient"/>
 </beans>
