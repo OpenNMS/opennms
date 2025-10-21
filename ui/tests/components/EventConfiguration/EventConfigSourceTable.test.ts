@@ -21,8 +21,8 @@ vi.mock('vue-router', () => ({
 
 describe('EventConfigSourceTable.vue', () => {
   let wrapper: VueWrapper<any>
-  let store: any
-  let detailStore: any
+  let store: ReturnType<typeof useEventConfigStore>
+  let detailStore: ReturnType<typeof useEventConfigDetailStore>
   let mockSource: EventConfigSource
   let openNMSMockSource: EventConfigSource
 
