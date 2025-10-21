@@ -11,8 +11,8 @@ describe('UploadedFileRenameDialog.vue', () => {
       file: mockFile,
       isValid: true,
       errors: [],
-      isDuplicate: false,
-    },
+      isDuplicate: false
+    }
   ]
 
   const createWrapper = (visible = true) =>
@@ -21,12 +21,12 @@ describe('UploadedFileRenameDialog.vue', () => {
         visible,
         index: 0,
         fileBucket,
-        alreadyExistsNames: [],
+        alreadyExistsNames: []
       },
       global: {
         mocks: {
         }
-      },
+      }
     })
 
   beforeEach(() => {

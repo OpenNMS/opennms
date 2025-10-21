@@ -1,4 +1,4 @@
-import { Severity } from '@/components/EventConfigurationDetail/constants'
+import { Severity } from '@/components/EventConfigEventCreate/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,

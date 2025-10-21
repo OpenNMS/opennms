@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
-import { useEventConfigDetailStore, getDefaultEventConfigEvent } from '@/stores/eventConfigDetailStore'
+import { Severity } from '@/components/EventConfigEventCreate/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents
 } from '@/services/eventConfigService'
-import { EventConfigSource, EventConfigEvent } from '@/types/eventConfig'
-import { Severity } from '@/components/EventConfigurationDetail/constants'
+import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { CreateEditMode } from '@/types'
+import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import { createPinia, setActivePinia } from 'pinia'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigEventStatus: vi.fn(),
