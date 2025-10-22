@@ -5,7 +5,6 @@ maintained
 -->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service><name>OpenNMS:Name=Manager</name></service>
-  <service><name>OpenNMS:Name=TestLoadLibraries</name></service>
   <service><name>OpenNMS:Name=Eventd</name></service>
   <service><name>OpenNMS:Name=Alarmd</name></service>
   <service><name>OpenNMS:Name=Bsmd</name></service>

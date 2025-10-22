@@ -2,10 +2,9 @@
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
   Note that omitting the enabled attribute will default to enabled = true -->
-  <!-- WARNING: The first 3 services (Manager, TestLoadLibraries, and Eventd) must never be disabled. -->
+  <!-- WARNING: The first 2 services (Manager and Eventd) must never be disabled. -->
 
   <service enabled="true"><name>OpenNMS:Name=Manager</name></service>
-  <service enabled="true"><name>OpenNMS:Name=TestLoadLibraries</name></service>
   <service enabled="true"><name>OpenNMS:Name=Eventd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Alarmd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Bsmd</name></service>
