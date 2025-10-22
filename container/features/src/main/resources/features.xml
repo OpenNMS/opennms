@@ -17,6 +17,18 @@
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
         <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
+
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-http</feature>
@@ -306,7 +318,7 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
-        <feature prerequisite="true" version="${netty4Version}">netty</feature>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
         <feature>camel-netty4</feature>
