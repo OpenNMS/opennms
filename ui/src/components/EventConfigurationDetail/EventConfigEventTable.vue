@@ -65,7 +65,10 @@
               <td>{{ event.uei }}</td>
               <td>{{ event.eventLabel }}</td>
               <td>
-                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">{{ event.severity }}</FeatherChip>
+                <FeatherChip
+                  :class="`${event.severity.toLowerCase()}-color severity`"
+                  >{{ event.severity }}</FeatherChip
+                >
               </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
               <td>
@@ -74,7 +77,7 @@
                     icon="Edit"
                     :title="`Edit ${event.eventLabel}`"
                     data-test="edit-button"
-                    @click="store.openEventModificationDrawer(CreateEditMode.Edit, event)"
+                    @click="onEditEvent(event)"
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
@@ -165,7 +168,9 @@
 <script setup lang="ts">
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -187,6 +192,7 @@ import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.
 import EventConfigEventEditDrawer from './Drawer/EventConfigEventEditDrawer.vue'
 
 const store = useEventConfigDetailStore()
+const router = useRouter()
 const emptyListContent = {
   msg: 'No results found.'
 }
@@ -221,6 +227,16 @@ const toggleExpand = (id: number) => {
     expandedRows.value.push(id)
   } else {
     expandedRows.value.splice(index, 1)
+  }
+}
+
+const onEditEvent = (event: EventConfigEvent) => {
+  if (store.selectedSource) {
+    const modificationStore = useEventModificationStore()
+    modificationStore.setSelectedEventConfigSource(store.selectedSource, CreateEditMode.Edit, event)
+    router.push({
+      name: 'Event Configuration New'
+    })
   }
 }
 

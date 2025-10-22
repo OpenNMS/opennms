@@ -26,7 +26,7 @@ export const SeverityOptions: ISelectItemType[] = [
 ]
 
 export enum Destination {
-  LogAndDisplay = 'loganddisplay',
+  LogAndDisplay = 'logndisplay',
   LogOnly = 'logonly',
   Suppress = 'suppress',
   DoNotPersist = 'donotpersist',
@@ -40,3 +40,16 @@ export const DestinationOptions: ISelectItemType[] = [
   { _text: Destination.DoNotPersist, _value: Destination.DoNotPersist },
   { _text: Destination.DiscardTraps, _value: Destination.DiscardTraps }
 ]
+
+export enum AlarmType {
+  One = '1',
+  Two = '2',
+  Three = '3'
+}
+
+export const AlarmTypeOptions: ISelectItemType[] = [
+  { _text: AlarmType.One, _value: AlarmType.One },
+  { _text: AlarmType.Two, _value: AlarmType.Two },
+  { _text: AlarmType.Three, _value: AlarmType.Three }
+]
+
