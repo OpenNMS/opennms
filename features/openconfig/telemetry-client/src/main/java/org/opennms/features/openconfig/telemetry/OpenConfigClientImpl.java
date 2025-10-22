@@ -322,7 +322,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(OpenConfigData value) {
-            handler.accept(host, port, value.toByteArray());
+            if (!closed.get()) {
+                handler.accept(host, port, value.toByteArray());
+            }
         }
 
         @Override
@@ -330,7 +332,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
 
         @Override
@@ -338,7 +342,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
     }
 
@@ -357,7 +363,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(Gnmi.SubscribeResponse subscribeResponse) {
-            if(subscribeResponse != null) {
+            if(subscribeResponse != null && !closed.get()) {
                 handler.accept(host, port, subscribeResponse.toByteArray());
             }
         }
@@ -367,7 +373,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
 
         @Override
@@ -375,7 +383,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
     }
 
