@@ -53,6 +53,7 @@ import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.web.api.Util;
+import org.opennms.web.services.EventConfProgrammaticService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -88,7 +89,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private EventConfDao m_eventConfDao;
 
-    private boolean eventConfChanged = false;
+    private EventConfProgrammaticService eventConfProgrammaticService;
 
     @Autowired
     private WriteableThresholdingDao thresholdingDao;
@@ -519,8 +520,6 @@ public class ThresholdController extends AbstractController implements Initializ
         } catch (Throwable e) {
             throw new ServletException("Could not save the changes to the threshold because " + e.getMessage(), e);
         }
-        // TODO: NMS-19041
-
     }
 
     private ModelAndView deleteThreshold(String thresholdIndexString, String groupName) throws ServletException {
@@ -699,8 +698,8 @@ public class ThresholdController extends AbstractController implements Initializ
                     event.setAlarmData(alarmData);
                 }
             }
-            // TODO: NMS-19041
-            eventConfChanged = true;
+            // Save the event to DB and reload events into memory
+            eventConfProgrammaticService.saveEventToDB(event, "Web UI");
         }
     }
 
@@ -859,6 +858,15 @@ public class ThresholdController extends AbstractController implements Initializ
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         m_eventConfDao = eventConfDao;
+    }
+
+    /**
+     * <p>setEventConfProgrammaticService</p>
+     *
+     * @param eventConfProgrammaticService a {@link EventConfProgrammaticService} object.
+     */
+    public void setEventConfProgrammaticService(EventConfProgrammaticService eventConfProgrammaticService) {
+        this.eventConfProgrammaticService = eventConfProgrammaticService;
     }
 
 }
