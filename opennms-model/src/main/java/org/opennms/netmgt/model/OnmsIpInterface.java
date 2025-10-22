@@ -667,7 +667,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         for (OnmsMonitoredService svc : scannedIface.getMonitoredServices()) {
             serviceTypeMap.put(svc.getServiceType(), svc);
         }
-    
+
         // for each service in the database
         for (Iterator<OnmsMonitoredService> it = getMonitoredServices().iterator(); it.hasNext();) {
             OnmsMonitoredService svc = it.next();
@@ -675,7 +675,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             // find the corresponding scanned service
             OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
             if (imported == null) {
-                if (deleteMissing) {
+                if (deleteMissing  || isExplicitlyAdded(svc)) {
                     // there is no scanned service... delete it from the database 
                     it.remove();
                     svc.visit(new DeleteEventVisitor(eventForwarder));
@@ -696,9 +696,21 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         for (OnmsMonitoredService svc : newServices) {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
+            svc.addMetaData("context", "explicitlyAdded", "true");
             svc.visit(new AddEventVisitor(eventForwarder));
         }
     }
+
+    private boolean isExplicitlyAdded(OnmsMonitoredService svc) {
+        if (svc.getMetaData() == null) {
+            return false;
+        }
+        Optional<OnmsMetaData> meta = svc.getMetaData().stream()
+                .filter(x -> "explicitlyAdded".equalsIgnoreCase(x.getKey()))
+                .findFirst();
+        return meta.map(x -> Boolean.parseBoolean(x.getValue())).orElse(false);
+    }
+
 
     public void mergeMetaData(OnmsIpInterface scanned) {
         if (!getMetaData().equals(scanned.getMetaData())) {
