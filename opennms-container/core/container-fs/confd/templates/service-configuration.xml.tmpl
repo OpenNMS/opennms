@@ -95,7 +95,7 @@
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="{{getv (print $servicesPath "/scribd/enabled") "true"}}">
+  <service enabled="{{getv (print $servicesPath "/scriptd/enabled") "true"}}">
     <name>OpenNMS:Name=Scriptd</name>
     <class-name>org.opennms.netmgt.scriptd.jmx.Scriptd</class-name>
     <invoke at="start" pass="0" method="init"/>
