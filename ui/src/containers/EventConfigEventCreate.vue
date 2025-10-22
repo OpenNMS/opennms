@@ -4,6 +4,7 @@
     v-if="detailStore.selectedSource && store.selectedSource"
   >
     <BasicInformation />
+    <MaskElements/>
   </div>
   <div
     v-else
@@ -21,6 +22,7 @@
 
 <script setup lang="ts">
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
+import MaskElements from '@/components/EventConfigEventCreate/MaskElements.vue'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { FeatherButton } from '@featherds/button'

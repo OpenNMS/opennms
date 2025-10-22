@@ -40,3 +40,34 @@ export const DestinationOptions: ISelectItemType[] = [
   { _text: Destination.DoNotPersist, _value: Destination.DoNotPersist },
   { _text: Destination.DiscardTraps, _value: Destination.DiscardTraps }
 ]
+
+export enum MaskElementName {
+  Uei = 'uei',
+  Source = 'source',
+  NodeId = 'nodeid',
+  Host = 'host',
+  Interface = 'interface',
+  SnmpHost = 'snmphost',
+  Service = 'service',
+  Id = 'id',
+  Specific = 'specific',
+  Generic = 'generic',
+  Community = 'community',
+  Trapoid = 'trapoid'
+}
+
+export const MaskElementNameOptions: ISelectItemType[] = [
+  { _text: MaskElementName.Uei, _value: MaskElementName.Uei },
+  { _text: MaskElementName.Source, _value: MaskElementName.Source },
+  { _text: MaskElementName.NodeId, _value: MaskElementName.NodeId },
+  { _text: MaskElementName.Host, _value: MaskElementName.Host },
+  { _text: MaskElementName.Interface, _value: MaskElementName.Interface },
+  { _text: MaskElementName.SnmpHost, _value: MaskElementName.SnmpHost },
+  { _text: MaskElementName.Service, _value: MaskElementName.Service },
+  { _text: MaskElementName.Id, _value: MaskElementName.Id },
+  { _text: MaskElementName.Specific, _value: MaskElementName.Specific },
+  { _text: MaskElementName.Generic, _value: MaskElementName.Generic },
+  { _text: MaskElementName.Community, _value: MaskElementName.Community },
+  { _text: MaskElementName.Trapoid, _value: MaskElementName.Trapoid },
+
+]
