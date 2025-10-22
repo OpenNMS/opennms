@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
-<!--
-When splitting services to run on mutiple VMs, the order of the services should be
-maintained
--->
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service><name>OpenNMS:Name=Manager</name></service>
   <service><name>OpenNMS:Name=Eventd</name></service>
