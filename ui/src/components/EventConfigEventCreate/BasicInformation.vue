@@ -45,15 +45,6 @@
         >
         </FeatherTextarea>
         <div class="spacer"></div>
-        <FeatherInput
-          label="Log Message"
-          :error="errors.logmsg"
-          type="search"
-          data-test="log-message"
-          v-model.trim="logMessage"
-        >
-        </FeatherInput>
-        <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
             label="Destination"
@@ -65,6 +56,15 @@
             <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
+        <div class="spacer"></div>
+        <FeatherInput
+          label="Log Message"
+          :error="errors.logmsg"
+          type="search"
+          data-test="log-message"
+          v-model.trim="logMessage"
+        >
+        </FeatherInput>
         <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect

@@ -1,5 +1,9 @@
 <template>
   <div class="alarm-data-info">
+    <div>
+      <h3>Alarm Information</h3>
+    </div>
+    <div class="spacer"></div>
     <div class="alarm-check">
       <FeatherCheckbox
         :model-value="enableAlarmData"
