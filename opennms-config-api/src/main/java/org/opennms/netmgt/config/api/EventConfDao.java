@@ -101,6 +101,7 @@ public interface EventConfDao {
      *
      * @param event The fully configured Event object to add.
      */
+    @Deprecated
     void addEventToProgrammaticStore(Event event);
 
     /**
@@ -112,6 +113,7 @@ public interface EventConfDao {
      * @returns true if the event was removed, false if it wasn't found (either not in the programmatic store, or the store didn't exist)
      * @return a boolean.
      */
+    @Deprecated
     boolean removeEventFromProgrammaticStore(Event event);
 
     /**
