@@ -519,16 +519,7 @@ public class ThresholdController extends AbstractController implements Initializ
         } catch (Throwable e) {
             throw new ServletException("Could not save the changes to the threshold because " + e.getMessage(), e);
         }
-
-        if (eventConfChanged) {
-            try {
-                m_eventConfDao.saveCurrent();
-                sendNotifEvent(createEventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI).getEvent());
-            } catch (Throwable e) {
-                throw new ServletException("Could not save the changes to the event configuration because " + e.getMessage(), e);
-            }
-            eventConfChanged = false;
-        }
+        // TODO: NMS-19041
 
     }
 
@@ -708,7 +699,7 @@ public class ThresholdController extends AbstractController implements Initializ
                     event.setAlarmData(alarmData);
                 }
             }
-            m_eventConfDao.addEventToProgrammaticStore(event);
+            // TODO: NMS-19041
             eventConfChanged = true;
         }
     }

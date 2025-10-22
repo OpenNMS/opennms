@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,7 +45,6 @@ import org.opennms.netmgt.xml.eventconf.Partition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
 public class DefaultEventConfDao implements EventConfDao, InitializingBean {
@@ -54,8 +52,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventConfDao.class);
 
 	private Events m_events;
-
-	private Resource m_configResource;
 
 	private Partition m_partition;
 
@@ -125,11 +121,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		return event == null ? null : event.getEventLabel();
 	}
 
-	@Override
-	public void saveCurrent() {
-		m_events.save(m_configResource);
-	}
-
 	public List<Event> getAllEvents() {
 		return m_events.forEachEvent(new ArrayList<>(), (EventCallback<List<Event>>) (accum, event) -> {
 					accum.add(event);
@@ -158,16 +149,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	public void addEvent(Event event) {
 		m_events.addEvent(event);
 		m_events.initialize(m_partition, new EventOrdering());
-	}
-
-	@Override
-	public void addEventToProgrammaticStore(Event event) {
-
-	}
-
-	@Override
-	public boolean removeEventFromProgrammaticStore(Event event) {
-		return false;
 	}
 
 	@Override
@@ -257,9 +238,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 	}
 
-	public void setConfigResource(Resource configResource) throws IOException {
-		m_configResource = configResource;
-	}
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {

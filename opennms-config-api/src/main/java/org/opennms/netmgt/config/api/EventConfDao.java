@@ -75,11 +75,6 @@ public interface EventConfDao {
     String getEventLabel(String uei);
 
     /**
-     * <p>saveCurrent</p>
-     */
-    void saveCurrent();
-
-    /**
      * <p>getEventsByLabel</p>
      *
      * @return a {@link java.util.List} object.
@@ -87,34 +82,11 @@ public interface EventConfDao {
     List<Event> getEventsByLabel();
 
     /**
-     * Adds the event to the root level event config storage (file).
-     * Does not save (you must save independently with saveCurrent)
+     * Adds the event to the root level event config storage.
      *
      * @param event The fully configured Event object to add.
      */
     void addEvent(Event event);
-
-    /**
-     * Adds the given event to the programmatic event store.  This store currently implemented as a file (referenced from eventconf.xml)
-     * The programmatic store is a separate storage area, so that incidental programmatic editing of events (e.g. custom UEIs for thresholds, edited
-     * through the Web-UI) does not clutter up the otherwise carefully maintained event files.  This method does not save (persist) the changes
-     *
-     * @param event The fully configured Event object to add.
-     */
-    @Deprecated
-    void addEventToProgrammaticStore(Event event);
-
-    /**
-     * Removes the given event from the programmatic event store.  This store currently implemented as a file (referenced from eventconf.xml)
-     * The programmatic store is a separate storage area, so that incidental programmatic editing of events (e.g. custom UEIs for thresholds, edited
-     * through the Web-UI) does not clutter up the otherwise carefully maintained event files.  This method does not save (persist) the changes
-     *
-     * @param event The fully configured Event object to remove.
-     * @returns true if the event was removed, false if it wasn't found (either not in the programmatic store, or the store didn't exist)
-     * @return a boolean.
-     */
-    @Deprecated
-    boolean removeEventFromProgrammaticStore(Event event);
 
     /**
      * <p>isSecureTag</p>
