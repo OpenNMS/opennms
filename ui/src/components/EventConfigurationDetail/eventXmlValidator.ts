@@ -1,6 +1,6 @@
 import { EventConfigEvent } from '@/types/eventConfig'
 import { XMLValidator } from 'fast-xml-parser'
-import { Severity } from './constants'
+import { Severity } from '../EventConfigEventCreate/constants'
 
 export const validateEventDetailsJson = (
   event: EventConfigEvent,

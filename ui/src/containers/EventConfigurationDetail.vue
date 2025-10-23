@@ -6,7 +6,11 @@
     <div class="header">
       <div class="title-container">
         <div>
-          <FeatherBackButton data-test="back-button"  @click="router.push({ name: 'Event Configuration' })">Go Back</FeatherBackButton>
+          <FeatherBackButton
+            data-test="back-button"
+            @click="router.push({ name: 'Event Configuration' })"
+            >Go Back</FeatherBackButton
+          >
         </div>
         <div>
           <h1>Event Configuration Details</h1>
@@ -20,7 +24,7 @@
         <FeatherButton
           primary
           data-test="add-event"
-          @click="store.openEventModificationDrawer(CreateEditMode.Create, getDefaultEventConfigEvent())"
+          @click="onAddEventClick(config)"
         >
           Add Event
         </FeatherButton>
@@ -39,7 +43,10 @@
       </div>
     </div>
 
-    <div class="config-details-box" data-test="config-box">
+    <div
+      class="config-details-box"
+      data-test="config-box"
+    >
       <div class="config-row">
         <div class="config-field name-field">
           <span class="field-label">Name:</span>
@@ -94,18 +101,26 @@ import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
-const route = useRoute()
 const router = useRouter()
 const config = ref<EventConfigSource>()
 
+const onAddEventClick = (source: EventConfigSource) => {
+  const modificationStore = useEventModificationStore()
+  modificationStore.setSelectedEventConfigSource(source, CreateEditMode.Create, getDefaultEventConfigEvent())
+  router.push({
+    name: 'Event Configuration New'
+  })
+}
+
 onMounted(async () => {
-  if (Number(route.params.id) === store.selectedSource?.id) {
+  if (store.selectedSource?.id) {
     config.value = store.selectedSource
     await store.fetchEventsBySourceId()
   }
