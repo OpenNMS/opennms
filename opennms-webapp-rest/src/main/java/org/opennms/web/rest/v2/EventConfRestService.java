@@ -43,9 +43,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -96,7 +96,7 @@ public class EventConfRestService implements EventConfRestApi {
 
             Events fileEvents;
             try (InputStream stream = attachment.getObject(InputStream.class)) {
-                fileEvents = parseEventFile(stream);
+                fileEvents = parseEventFile(new ByteArrayInputStream(stream.readAllBytes()));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
                 continue;
