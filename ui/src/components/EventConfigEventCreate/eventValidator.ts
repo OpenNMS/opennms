@@ -6,7 +6,12 @@ export const validateEvent = (
   description: string,
   severity: string,
   dest: string,
-  logmsg: string
+  logmsg: string,
+  addAlarmData: boolean,
+  reductionKey: string,
+  alarmType: string,
+  autoClean: boolean,
+  clearKey: string
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
 
@@ -32,6 +37,22 @@ export const validateEvent = (
 
   if (!severity || severity.trim() === '') {
     errors.severity = 'Severity is required.'
+  }
+
+  if (addAlarmData) {
+    if (!reductionKey || reductionKey.trim() === '') {
+      errors.reductionKey = 'Reduction Key is required when Alarm Data is added.'
+    }
+
+    if (!alarmType || alarmType.trim() === '') {
+      errors.alarmType = 'Alarm Type is required when Alarm Data is added.'
+    }
+
+    if (autoClean) {
+      if (!clearKey || clearKey.trim() === '') {
+        errors.clearKey = 'Clear Key is required when Auto Clean is enabled.'
+      }
+    }
   }
 
   return errors

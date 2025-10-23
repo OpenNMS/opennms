@@ -5,7 +5,7 @@
   >
     <div>
       <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event' }}
+        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
       </h3>
     </div>
     <div class="spacer"></div>
@@ -45,6 +45,18 @@
         >
         </FeatherTextarea>
         <div class="spacer"></div>
+        <div class="dropdown">
+          <FeatherSelect
+            label="Destination"
+            data-test="event-destination"
+            :error="errors.dest"
+            :options="DestinationOptions"
+            v-model="destination"
+          >
+            <FeatherIcon :icon="MoreVert" />
+          </FeatherSelect>
+        </div>
+        <div class="spacer"></div>
         <FeatherInput
           label="Log Message"
           :error="errors.logmsg"
@@ -56,26 +68,27 @@
         <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
-            label="Destination"
-            data-test="event-destination"
-            :error="errors.dest"
-            :options="DestinationOptions"
-            v-model="selectedEventDestination"
+            label="Severity"
+            data-test="event-severity"
+            :error="errors.severity"
+            :options="SeverityOptions"
+            v-model="severity"
           >
             <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
         <div class="spacer"></div>
-        <div class="dropdown">
-          <FeatherSelect
-            label="Severity"
-            data-test="event-severity"
-            :error="errors.severity"
-            :options="SeverityOptions"
-            v-model="selectedEventSeverity"
-          >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
+        <div>
+          <AlarmDataInfo
+            data-test="alarm-data-info"
+            :errors="errors"
+            :addAlarmData="addAlarmData"
+            :reductionKey="reductionKey"
+            :alarmType="alarmType"
+            :autoClean="autoClean"
+            :clearKey="clearKey"
+            @setAlarmData="setAlarmData"
+          />
         </div>
         <div class="spacer"></div>
         <div class="action-container">
@@ -113,7 +126,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
-import { DestinationOptions, Severity, SeverityOptions } from './constants'
+import AlarmDataInfo from './AlarmDataInfo.vue'
+import { DestinationOptions, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 
 const router = useRouter()
@@ -125,8 +139,13 @@ const logMessage = ref('')
 const errors = ref<EventFormErrors>({})
 const isValid = ref(false)
 const snackbar = useSnackbar()
-const selectedEventDestination = ref<ISelectItemType>({ _text: '', _value: '' })
-const selectedEventSeverity = ref<ISelectItemType>({ _text: '', _value: '' })
+const destination = ref<ISelectItemType>({ _text: '', _value: '' })
+const severity = ref<ISelectItemType>({ _text: '', _value: '' })
+const alarmType = ref<ISelectItemType>({ _text: '', _value: '' })
+const addAlarmData = ref(false)
+const reductionKey = ref('')
+const autoClean = ref(false)
+const clearKey = ref('')
 
 const xmlContent = computed(() => {
   return vkbeautify.xml(
@@ -134,8 +153,14 @@ const xmlContent = computed(() => {
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
-        <logmsg dest="${selectedEventDestination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
-        <severity>${selectedEventSeverity.value._value}</severity>
+        <logmsg dest="${destination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
+        <severity>${severity.value._value}</severity>
+        ${addAlarmData.value ? `<alarm-data
+          reduction-key="${reductionKey.value}"
+          alarm-type="${alarmType.value._value}"
+          auto-clean="${autoClean.value}"
+          ${clearKey.value ? `clear-key="${clearKey.value}"` : ''}
+        />` : ''}
     </event>`.trim()
   )
 })
@@ -147,22 +172,70 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
     const logmsgElement = xmlDoc.getElementsByTagName('logmsg')[0]
     logMessage.value = logmsgElement ? logmsgElement.textContent || '' : ''
     const destAttr = logmsgElement?.getAttribute('dest') || ''
-    selectedEventDestination.value = {
+    destination.value = {
       _text: destAttr,
       _value: destAttr
     }
     eventDescription.value = val.description || ''
     eventUei.value = val.uei || ''
     eventLabel.value = val.eventLabel || ''
-    selectedEventSeverity.value = {
-      _text: val.severity ? Severity[val.severity as keyof typeof Severity] : '',
-      _value: val.enabled ? Severity[val.severity as keyof typeof Severity] : ''
+    severity.value = {
+      _text: val.severity || '',
+      _value: val.severity || ''
+    }
+    addAlarmData.value = xmlDoc.getElementsByTagName('alarm-data')[0] ? true : false
+    if (addAlarmData.value) {
+      const alarmDataElement = xmlDoc.getElementsByTagName('alarm-data')[0]
+      reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
+      alarmType.value = {
+        _text: alarmDataElement?.getAttribute('alarm-type') || '',
+        _value: alarmDataElement?.getAttribute('alarm-type') || ''
+      }
+      autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
+      clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
     }
   } else {
     eventUei.value = ''
     eventLabel.value = ''
     eventDescription.value = ''
-    selectedEventSeverity.value = { _text: '', _value: '' }
+    severity.value = { _text: '', _value: '' }
+    destination.value = { _text: '', _value: '' }
+    logMessage.value = ''
+    addAlarmData.value = false
+    reductionKey.value = ''
+    alarmType.value = { _text: '', _value: '' }
+    autoClean.value = false
+    clearKey.value = ''
+  }
+}
+
+const setAlarmData = (key: string, value: any) => {
+  if (key === 'addAlarmData') {
+    addAlarmData.value = value
+    if ((value as boolean) === false) {
+      reductionKey.value = ''
+      alarmType.value = { _text: '', _value: '' }
+      autoClean.value = false
+    }
+  }
+
+  if (key === 'reductionKey') {
+    reductionKey.value = value
+  }
+
+  if (key === 'alarmType') {
+    alarmType.value = {
+      _text: value._text,
+      _value: value._value
+    }
+  }
+
+  if (key === 'autoClean') {
+    autoClean.value = value
+  }
+
+  if (key === 'clearKey') {
+    clearKey.value = value
   }
 }
 
@@ -176,7 +249,7 @@ const handleSaveEvent = async () => {
       return
     }
 
-    let response
+    let response = null
     // if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
     //   response = await updateEventConfigEventByIdXml(
     //     beautifiedXml,
@@ -216,9 +289,14 @@ watchEffect(() => {
     eventUei.value,
     eventLabel.value,
     eventDescription.value,
-    selectedEventSeverity.value._value as string,
-    selectedEventDestination.value._value as string,
-    logMessage.value
+    severity.value._value as string,
+    destination.value._value as string,
+    logMessage.value,
+    addAlarmData.value,
+    reductionKey.value,
+    alarmType.value._value as string,
+    autoClean.value,
+    clearKey.value
   )
   isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as EventFormErrors
