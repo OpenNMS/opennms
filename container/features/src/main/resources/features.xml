@@ -21,6 +21,7 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
