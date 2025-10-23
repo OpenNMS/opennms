@@ -52,12 +52,8 @@
   <service>
     <name>OpenNMS:Name=Manager</name>
     <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
+    <invoke at="start" pass="0" method="init"/>
     <invoke at="stop" pass="1" method="doSystemExit"/>
-  </service>
-  <service>
-    <name>OpenNMS:Name=TestLoadLibraries</name>
-    <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
-    <invoke at="start" pass="0" method="doTestLoadLibraries"/>
   </service>
   <service>
     <name>OpenNMS:Name=Eventd</name>
