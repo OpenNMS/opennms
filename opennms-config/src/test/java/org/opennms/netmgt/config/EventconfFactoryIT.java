@@ -91,7 +91,7 @@ public class EventconfFactoryIT {
     @Before
     public void setUp() throws Exception {
        m_eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource("etc/eventconf.xml"));
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
     }
 
@@ -596,7 +596,7 @@ public class EventconfFactoryIT {
      */
     @Test
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
-        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
+        File eventConfFile = new ClassPathResource("etc/eventconf.xml").getFile();
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
@@ -637,7 +637,7 @@ public class EventconfFactoryIT {
     @Test
     public void testLoadStandardConfiguration() throws Exception {
         DefaultEventConfDao dao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource("etc/eventconf.xml"));
         dao.loadEventsFromDB(eventConfEventList);
     }
 

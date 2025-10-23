@@ -21,19 +21,15 @@
  */
 package org.opennms.netmgt.config;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -49,33 +45,15 @@ import org.opennms.netmgt.xml.eventconf.Partition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataRetrievalFailureException;
 
 public class DefaultEventConfDao implements EventConfDao, InitializingBean {
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventConfDao.class);
-	private static final String DEFAULT_PROGRAMMATIC_STORE_RELATIVE_PATH = "events/programmatic.events.xml";
 
-    /**
-     * Relative URL for the programmatic store configuration, relative to the
-     * root configuration resource (which must be resolvable to a URL).
-     */
-    private String m_programmaticStoreRelativePath = DEFAULT_PROGRAMMATIC_STORE_RELATIVE_PATH;
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventConfDao.class);
 
 	private Events m_events;
 
-	private Resource m_configResource;
-
 	private Partition m_partition;
-
-    /**
-     * Used to keep track of the last modified time for the loaded event files.
-     * See the reloadConfig() for details.
-     */
-    private Map<String, Long> m_lastModifiedEventFiles = new LinkedHashMap<String, Long>();
-
-	private ConfigReloadContainer<Events> m_extContainer;
 
     public DefaultEventConfDao() {
         m_events = new Events();
@@ -83,28 +61,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
         m_events.initialize(m_partition, new EventOrdering());
     }
 
-	public String getProgrammaticStoreRelativeUrl() {
-		return m_programmaticStoreRelativePath;
-	}
-
-	public void setProgrammaticStoreRelativeUrl(String programmaticStoreRelativeUrl) {
-		m_programmaticStoreRelativePath = programmaticStoreRelativeUrl;
-	}
-
-	void validateConfig(final Resource resource) throws DataAccessException {
-		final Events events;
-
-		try {
-			events = JaxbUtils.unmarshal(Events.class, resource, true);
-		} catch (Exception e) {
-			LOG.error("Eventd configuration validation failed! Cannot parse file {}", resource.getFilename(), e);
-			throw new DataRetrievalFailureException("Eventd configuration validation failed! Cannot parse file " + resource.getFilename());
-		}
-
-		for (final String eventFilename : events.getEventFiles()) {
-			validateConfig(Events.getRelative(m_configResource, eventFilename));
-		}
-	}
 
 	@Override
 	public void reload() throws DataAccessException {
@@ -165,11 +121,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		return event == null ? null : event.getEventLabel();
 	}
 
-	@Override
-	public void saveCurrent() {
-		m_events.save(m_configResource);
-	}
-
 	public List<Event> getAllEvents() {
 		return m_events.forEachEvent(new ArrayList<>(), (EventCallback<List<Event>>) (accum, event) -> {
 					accum.add(event);
@@ -198,34 +149,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	public void addEvent(Event event) {
 		m_events.addEvent(event);
 		m_events.initialize(m_partition, new EventOrdering());
-	}
-
-	@Override
-	public void addEventToProgrammaticStore(Event event) {
-		Events programmaticEvents = m_events.getLoadEventsByFile(m_programmaticStoreRelativePath);
-		if (programmaticEvents == null) {
-			programmaticEvents = new Events();
-			m_events.addLoadedEventFile(m_programmaticStoreRelativePath, programmaticEvents);
-		}
-
-		programmaticEvents.addEvent(event);
-		m_events.initialize(m_partition, new EventOrdering());
-
-	}
-
-	@Override
-	public boolean removeEventFromProgrammaticStore(Event event) {
-		Events programmaticEvents = m_events.getLoadEventsByFile(m_programmaticStoreRelativePath);
-		if (programmaticEvents == null) return false;
-
-		programmaticEvents.removeEvent(event);
-		if (programmaticEvents.getEvents().size() <= 0) {
-			m_events.removeLoadedEventFile(m_programmaticStoreRelativePath);
-		}
-
-		m_events.initialize(m_partition, new EventOrdering());
-
-		return true;
 	}
 
 	@Override
@@ -315,9 +238,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 	}
 
-	public void setConfigResource(Resource configResource) throws IOException {
-		m_configResource = configResource;
-	}
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
@@ -350,67 +270,5 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	}
 
-    private synchronized void reloadConfig() throws DataAccessException {
-        try {
-            // Load the root event file
-            Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-            // Insert events exposed via the service registry
-            m_extContainer.reload();
-            Events extEvents = m_extContainer.getObject();
-            if (extEvents != null) {
-                // Prioritize events loaded from the registry along with any loaded from the root config
-                events.getEvents().addAll(0, extEvents.getEvents());
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Events with the following UEIs are contributed by one or more extensions: {}", extEvents.getEvents().stream()
-                        .map(Event::getUei)
-                        .collect(Collectors.joining(",")));
-                }
-            }
-
-            // Hash the list of event files for efficient lookup
-            Set<String> eventFiles = new HashSet<>();
-            eventFiles.addAll(events.getEventFiles());
-
-            // Copy the loaded event files from the current root to the new root
-            // if and only if they exist in the new root
-            for (String eventFile : m_events.getEventFiles()) {
-                if (!eventFiles.contains(eventFile)) {
-                    m_lastModifiedEventFiles.remove(eventFile);
-                    continue;
-                }
-                events.addLoadedEventFile(eventFile, m_events.getLoadEventsByFile(eventFile));
-            }
-
-            // Load/reload the event files as necessary
-            events.loadEventFilesIfModified(m_configResource, m_lastModifiedEventFiles);
-
-            // Order the events for efficient searching
-            events.initialize(m_partition, new EventOrdering());
-
-            m_events = events;
-        } catch (Exception e) {
-            throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
-        }
-    }
-
-	private synchronized void loadConfig() throws DataAccessException {
-		try {
-			Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
-			m_lastModifiedEventFiles = events.loadEventFiles(m_configResource);
-
-			m_partition = new EnterpriseIdPartition();
-			events.initialize(m_partition, new EventOrdering());
-
-			m_events = events;
-		} catch (Exception e) {
-			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
-		}
-	}
-
-    private void initExtensions() {
-        m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
-				.withFolder((accumulator, next) -> accumulator.getEvents().addAll(next.getEvents()))
-                .build();
-    }
 }
 
