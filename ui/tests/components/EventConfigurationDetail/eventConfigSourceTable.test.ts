@@ -129,8 +129,7 @@ describe('EventConfigSourceTable.vue', () => {
 
     expect(detailStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockSource)
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail',
-      params: { id: 1 }
+      name: 'Event Configuration Detail'
     })
   })
 
@@ -216,8 +215,7 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.get('[data-test="view-button"]').trigger('click')
     expect(detailStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockSource)
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail',
-      params: { id: 1 }
+      name: 'Event Configuration Detail'
     })
   })
 
