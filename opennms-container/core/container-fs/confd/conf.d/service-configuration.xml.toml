@@ -1,0 +1,6 @@
+[template]
+src = "service-configuration.xml.tmpl"
+dest = "/opt/opennms/etc/service-configuration.xml"
+keys = [
+    "/core/service"
+]
