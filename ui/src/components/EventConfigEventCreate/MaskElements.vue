@@ -1,49 +1,51 @@
 <template>
   <div
-    class="main-content"
+    class="mask-elements"
     v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
   >
-    <div class="basic-info">
-      <div class="section-content">
-        <h3>Mask Elements</h3>
+    <div class="section-content">
+      <h3 class="mask-elements-header">
+        Mask Elements
+        <FeatherIcon
+          :icon="Add"
+          class="icon-size add-icon heading-add-icon"
+          @click="addMaskRow"
+        />
+      </h3>
 
-        <div
-          v-for="(row, index) in maskElements"
-          :key="index"
-          class="form-row"
-        >
-          <div class="dropdown">
-            <FeatherSelect
-              label="Element Name"
-              :options="availableMaskOptions(index)"
-              :modelValue="MaskElementNameOptions.find((o: ISelectItemType) => o._value === row.name._value)"
-              @update:modelValue="(val?: ISelectItemType) => handleSelectChange(val, index)"
-              data-test="mask-element-name"
-            />
-          </div>
+      <div
+        v-for="(row, index) in maskElements"
+        :key="index"
+        class="form-row"
+      >
+        <div class="dropdown">
+          <FeatherSelect
+            label="Element Name"
+            :options="availableMaskOptions(index)"
+            :modelValue="MaskElementNameOptions.find(
+              (o: ISelectItemType) => o._value === row.name._value
+            )"
+            @update:modelValue="(val?: ISelectItemType) => handleSelectChange(val, index)"
+            data-test="mask-element-name"
+          />
+        </div>
 
-          <div class="input-field">
-            <FeatherInput
-              label="Element Value"
-              v-model.trim="row.value"
-              @input="(event: InputEvent) => handleInputChange(event, index)"
-              data-test="mask-element-value"
-            />
-          </div>
+        <div class="input-field">
+          <FeatherInput
+            label="Element Value"
+            v-model.trim="row.value"
+            @input="(event: InputEvent) => handleInputChange(event, index)"
+            data-test="mask-element-value"
+          />
+        </div>
 
-          <div class="rule-icon-buttons">
-            <FeatherIcon
-              :icon="Add"
-              class="icon-size add-icon"
-              @click="addMaskRow"
-            />
-            <FeatherIcon
-              v-if="maskElements.length > 1"
-              :icon="Cancel"
-              class="icon-size remove-icon"
-              @click="removeMaskRow(index)"
-            />
-          </div>
+        <div class="rule-icon-buttons">
+          <FeatherIcon
+            v-if="maskElements.length > 1"
+            :icon="Cancel"
+            class="icon-size remove-icon"
+            @click="removeMaskRow(index)"
+          />
         </div>
       </div>
     </div>
@@ -81,29 +83,11 @@ const handleSelectChange = (val?: ISelectItemType, index?: number) => {
   if (index === undefined) return
   maskElements.value[index].name = val || { _text: '', _value: '' }
   maskElements.value[index].value = ''
-
-  console.log(
-    `%c[Row ${index}] Dropdown Changed → Input Cleared`,
-    'color: #ff9100; font-weight: bold;',
-    {
-      name: maskElements.value[index].name._text,
-      value: maskElements.value[index].value
-    }
-  )
 }
 
 const handleInputChange = (event: InputEvent, index: number) => {
   const value = (event.target as HTMLInputElement).value
   maskElements.value[index].value = value
-
-  console.log(
-    `%c[Row ${index}] Updated Object:`,
-    'color: #2962ff; font-weight: bold;',
-    {
-      name: maskElements.value[index].name._text,
-      value: maskElements.value[index].value
-    }
-  )
 }
 
 const availableMaskOptions = (index: number): ISelectItemType[] => {
@@ -118,55 +102,61 @@ const availableMaskOptions = (index: number): ISelectItemType[] => {
 }
 </script>
 
-
-
-
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 
-.main-content {
-  padding: 30px;
-  margin: 30px;
-  border-radius: 8px;
-  background-color: #ffffff;
+.mask-elements {
+  .mask-elements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-weight: 600;
 
-  .basic-info {
-    border: 1px solid var(variables.$border-on-surface);
-    padding: 20px;
-    border-radius: 8px;
+    .heading-add-icon {
+      cursor: pointer;
+      font-size: 1.4rem;
 
-    .section-content {
-      width: 50%;
-
-      h3 {
-        margin-bottom: 1rem;
-        @include typography.headline4;
-      }
-
-      .form-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 20px;
-        flex-wrap: wrap;
-
-        .dropdown,
-        .input-field {
-          flex: 1;
-          min-width: 200px;
-        }
+      &:hover {
+        color: #0039cb;
       }
     }
   }
-    .rule-icon-buttons {
+
+  .form-row {
     display: flex;
-    gap: 10px;
-    padding-top: 3px;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+
+    .dropdown,
+    .input-field {
+      flex: 1;
+      min-width: 200px;
+    }
+  }
+
+  .rule-icon-buttons {
+    display: flex;
+    align-items: center;
+    padding-top: 5px;
 
     .icon-size {
       font-size: 1.5rem;
     }
+
+    .remove-icon {
+      color: #d32f2f;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #b71c1c;
+      }
+    }
   }
 }
-</style>
 
+</style>

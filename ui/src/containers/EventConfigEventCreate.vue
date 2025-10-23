@@ -4,7 +4,6 @@
     v-if="detailStore.selectedSource && store.selectedSource"
   >
     <BasicInformation />
-    <MaskElements/>
   </div>
   <div
     v-else

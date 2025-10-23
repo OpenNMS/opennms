@@ -77,6 +77,10 @@
             <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
+                <div class="spacer"></div>
+
+        <MaskElements />
+
         <div class="spacer"></div>
         <div class="action-container">
           <FeatherButton
@@ -97,6 +101,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -115,6 +120,7 @@ import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import { DestinationOptions, Severity, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
+import MaskElements from './MaskElements.vue'
 
 const router = useRouter()
 const store = useEventModificationStore()
