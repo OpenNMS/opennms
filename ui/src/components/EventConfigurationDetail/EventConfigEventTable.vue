@@ -132,7 +132,7 @@
             >
               <td :colspan="5">
                 <h6>Description:</h6>
-                <p v-html="event.description"></p>
+                <p class="description" v-html="event.description"></p>
               </td>
             </tr>
           </template>
@@ -332,6 +332,11 @@ const onChangeSearchTerm = debounce(async (value: string) => {
               }
             }
           }
+        }
+
+        .description {
+          margin: 0;
+          white-space: normal;
         }
       }
     }
