@@ -41,10 +41,9 @@ sudo vi deploy/jdbc-mysql.xml
   </feature>
 </features>
 -----
-
-. The version should match your {page-component-title} Core version.
-. The bundle is named `mysql-bundle`, and the version number is set to `8.0.30`.
-. Bundle to download version `8.0.30` with Maven from official repositories.
+<1> The version should match your {page-component-title} Core version.
+<2> The bundle is named `mysql-bundle`, and the version number is set to `8.0.30`.
+<3> Bundle to download version `8.0.30` with Maven from official repositories.
 
 As soon you write the file, Karaf picks up the feature and tries to install it.
 You can troubleshoot the installation using `$\{MINION_HOME}/data/log/karaf.log`.
@@ -87,8 +86,7 @@ mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-ver
   </feature>
 </features>
 ----
-
-. The MSSQL JDBC driver has an additional dependency on `org.osgi.service.jdbc/1.1.0`
+<1> The MSSQL JDBC driver has an additional dependency on `org.osgi.service.jdbc/1.1.0`
 
 .MariaDB using version 3.5.4
 [source, console]
@@ -121,6 +119,6 @@ mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-ver
     </feature>
 </features>
 ----
-. The Oracle JDBC driver jar must be renamed to `jdbc-${VERSION}.jar` in order to be resolved.
+<1> The Oracle JDBC driver jar must be renamed to `jdbc-$\{VERSION}.jar` in order to be resolved.
 +
-The repository path for current Oracle JDBC is `com/oracle/jdbc/jdbc/${VERSION}/jdbc-${VERSION}.jar`
+The repository path for current Oracle JDBC is `com/oracle/jdbc/jdbc/$\{VERSION}/jdbc-$\{VERSION}.jar`
