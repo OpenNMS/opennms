@@ -698,8 +698,9 @@ public class ThresholdController extends AbstractController implements Initializ
                     event.setAlarmData(alarmData);
                 }
             }
-            // Save the event to DB and reload events into memory
+            // Save the event to DB
             eventConfProgrammaticService.saveEventToDB(event, "Web UI");
+            eventConfProgrammaticService.reloadEventsFromDB();
         }
     }
 

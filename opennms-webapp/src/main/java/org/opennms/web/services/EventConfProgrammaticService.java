@@ -23,7 +23,11 @@ package org.opennms.web.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
@@ -50,6 +54,12 @@ public class EventConfProgrammaticService {
     private EventConfSourceDao eventConfSourceDao;
     private EventConfEventDao eventConfEventDao;
     private EventConfDao eventConfDao;
+
+    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("load-eventConf-programmatic-%d")
+            .build();
+
+    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
 
     /**
      * Saves an event to the programmatic events source in the database.
@@ -125,12 +135,12 @@ public class EventConfProgrammaticService {
     /**
      * Reloads all enabled events from the database into memory.
      */
-    private void reloadEventsFromDB() {
-        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        if (!dbEvents.isEmpty()) {
-            LOG.debug("Reloading {} events from database into memory", dbEvents.size());
+    public void reloadEventsFromDB() {
+        eventConfExecutor.execute(() -> {
+            List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+            LOG.info("Reloading {} events from database into memory", dbEvents.size());
             eventConfDao.loadEventsFromDB(dbEvents);
-        }
+        });
     }
 
     /**
@@ -158,5 +168,9 @@ public class EventConfProgrammaticService {
      */
     public void setEventConfDao(EventConfDao eventConfDao) {
         this.eventConfDao = eventConfDao;
+    }
+
+    public void shutdown() {
+        eventConfExecutor.shutdown();
     }
 }
