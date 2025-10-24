@@ -146,4 +146,7 @@ export type EventFormErrors = {
 export interface MaskElement { 
   name: ISelectItemType 
   value: string 
+  reductionKey?: string
+  alarmType?: string
+  clearKey?: string
 }

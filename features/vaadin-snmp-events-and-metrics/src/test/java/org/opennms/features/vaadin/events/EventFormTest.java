@@ -57,10 +57,9 @@ public class EventFormTest {
      */
     @Before
     public void setUp() throws Exception {
-        File config = new File(ConfigurationTestUtils.getDaemonEtcDirectory(), "events/MPLS.events.xml");
-        Assert.assertTrue(config.exists());
         dao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(config));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(
+            new org.springframework.core.io.ClassPathResource("etc/events/MPLS.events.xml"));
         dao.loadEventsFromDB(eventConfEventList);
     }
 

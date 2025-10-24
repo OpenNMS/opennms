@@ -242,6 +242,18 @@ onMounted(async () => {
             display: none !important;
           }
         }
+        :deep(.feather-input-wrapper-container) {
+          position: relative;
+          max-width: 100%;
+        }
+
+        :deep(.feather-input-label) {
+          display: block;
+          position: absolute;
+          white-space: normal;
+          word-wrap: break-word;
+          line-height: 1.2;
+        }
       }
     }
   }

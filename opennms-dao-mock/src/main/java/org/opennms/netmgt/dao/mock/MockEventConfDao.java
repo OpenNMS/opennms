@@ -134,11 +134,6 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     }
 
     @Override
-    public void saveCurrent() {
-            m_events.save(m_resource);
-    }
-
-    @Override
     public List<Event> getEventsByLabel() {
         SortedSet<Event> events = m_events.forEachEvent(new TreeSet<Event>(new EventLabelComparator()), new EventCallback<SortedSet<Event>>() {
             @Override
@@ -153,16 +148,6 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     @Override
     public void addEvent(final Event event) {
         m_events.addEvent(event);
-    }
-
-    @Override
-    public void addEventToProgrammaticStore(final Event event) {
-        m_events.addEvent(event);
-    }
-
-    @Override
-    public boolean removeEventFromProgrammaticStore(final Event event) {
-        return m_events.removeEvent(event);
     }
 
     @Override
