@@ -21,6 +21,7 @@
  */
 package org.opennms.smoketest.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -44,6 +45,8 @@ import javax.ws.rs.core.Response;
 
 import joptsimple.internal.Strings;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
@@ -430,5 +433,35 @@ public class RestClient {
         }
 
         return new ObjectMapper().readTree(result);
+    }
+
+    public Response uploadEventConfFile(File file) {
+        // Point to your REST API endpoint, e.g. /api/v2/eventconf/upload
+        final WebTarget target = getMultipartTarget().path("upload");
+
+        // Create multipart body
+        try (FormDataMultiPart multipart = new FormDataMultiPart()) {
+            FileDataBodyPart filePart = new FileDataBodyPart("upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+            multipart.bodyPart(filePart);
+
+            Invocation.Builder builder = getBuilder(target)
+                    .header("Accept", MediaType.APPLICATION_JSON);
+
+            return builder.post(Entity.entity(multipart, multipart.getMediaType()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private WebTarget getMultipartTarget() {
+        final Client client = ClientBuilder.newBuilder()
+                .register(org.glassfish.jersey.media.multipart.MultiPartFeature.class) // important
+                .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
+                .build();
+
+        return client.target(url.toString())
+                .path("opennms")
+                .path("api")
+                .path("v2")
+                .path("eventconf");
     }
 }
