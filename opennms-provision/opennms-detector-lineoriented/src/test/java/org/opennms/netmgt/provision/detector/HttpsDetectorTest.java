@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -92,6 +93,14 @@ public class HttpsDetectorTest {
         m_detector.setCheckRetCode(false);
         m_detector.setMaxRetCode(500);
         m_detector.setRetries(0);
+    }
+
+    @After
+    public void tearDown() {
+        if(m_detector != null) {
+            m_detector.dispose();
+            m_detector = null;
+        }
     }
 
     @Test(timeout=20000)
