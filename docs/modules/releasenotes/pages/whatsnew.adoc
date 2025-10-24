@@ -15,3 +15,11 @@
 === Simplified Datasource Configuration
 The `opennms-datasources.xml` configuration file has been simplified by making the `factory` and `class-name` attributes optional with sensible defaults. The `factory` attribute now defaults to `org.opennms.core.db.HikariCPConnectionFactory` and the `class-name` attribute defaults to `org.postgresql.Driver`. Existing configurations with these attributes explicitly set will continue to work unchanged. New installations and users updating their configurations can omit these attributes for cleaner, more maintainable configuration files.
 
+=== Simplified Service Configuration
+
+The `service-configuration.xml` configuration file has been simplified by moving service implementation details (class names, attributes, and invoke methods) to defaults in the classpath. Users now only need to specify the service name and enabled status. A complete reference configuration is available in `etc/examples/service-configuration.xml.default`. Existing configurations continue to work unchanged.
+
+=== Removed TestLoadLibraries Service
+
+The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
+

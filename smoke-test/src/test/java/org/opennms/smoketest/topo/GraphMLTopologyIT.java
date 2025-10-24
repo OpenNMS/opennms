@@ -141,6 +141,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore("Flapping, see NMS-17889")
     public void verifySwitchesLayerOnSearchProperly() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         TopologyIT.TopologyUISearchResults searchResult = topologyUIPage.search("South");
@@ -153,6 +154,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore("Flapping, see NMS-17889")
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();
@@ -281,6 +283,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
     // See NMS-10451
     @Test
+    @Ignore("Flapping, see NMS-17889")
     public void verifyCanSelectNonVisibleVertex() {
         // Ensure nothing is visible for now
         Assert.assertEquals(0, topologyUIPage.getVisibleVertices().size());
