@@ -29,7 +29,7 @@ public class EventConfRestIT {
     public void setUp() {
         RestAssured.baseURI = stack.opennms().getBaseUrlExternal().toString();
         RestAssured.port = stack.opennms().getWebPort();
-        RestAssured.basePath = "/opennms/api/v2";
+        RestAssured.basePath = "/opennms";
         RestAssured.authentication = preemptive()
                 .basic(AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME,
                         AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD);
