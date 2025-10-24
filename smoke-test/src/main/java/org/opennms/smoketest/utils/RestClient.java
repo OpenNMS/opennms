@@ -439,12 +439,6 @@ public class RestClient {
         // Point to your REST API endpoint, e.g. /api/v2/eventconf/upload
         final WebTarget target = getMultipartTarget().path("upload");
 
-        // Log the full URL for debugging
-        System.out.println("==== DEBUG: Upload Target URL ====");
-        System.out.println("Final upload URL: " + target.getUri());
-        System.out.println("Uploading file: " + file.getAbsolutePath());
-        System.out.println("===================================");
-
         // Create multipart body
         try (FormDataMultiPart multipart = new FormDataMultiPart()) {
             FileDataBodyPart filePart = new FileDataBodyPart("upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
@@ -453,31 +447,20 @@ public class RestClient {
             Invocation.Builder builder = getBuilder(target)
                     .header("Accept", MediaType.APPLICATION_JSON);
 
-            // Log before sending request
-            System.out.println("Sending POST request to: " + target.getUri());
-            Response response = builder.post(Entity.entity(multipart, multipart.getMediaType()));
-            System.out.println("Received response status: " + response.getStatus());
-            return response;
+            return builder.post(Entity.entity(multipart, multipart.getMediaType()));
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-
     private WebTarget getMultipartTarget() {
         final Client client = ClientBuilder.newBuilder()
                 .register(org.glassfish.jersey.media.multipart.MultiPartFeature.class) // important
                 .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
                 .build();
 
-        WebTarget target = client.target(url.toString())
+        return client.target(url.toString())
                 .path("api")
                 .path("v2")
                 .path("eventconf");
-
-        // Log intermediate base URL
-        System.out.println("Base multipart target URL: " + target.getUri());
-        return target;
     }
-
 }
