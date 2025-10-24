@@ -51,7 +51,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.Date;
 import java.util.Optional;
@@ -82,8 +81,7 @@ public class EventConfRestService implements EventConfRestApi {
                         LinkedHashMap::new
                 ));
 
-        final Attachment eventConfXml = fileMap.remove("eventconf");
-        final List<String> orderedFiles = determineFileOrder(eventConfXml, fileMap.keySet());
+        List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
         final List<Map<String, Object>> successList = new ArrayList<>();
         final List<Map<String, Object>> errorList = new ArrayList<>();
@@ -355,44 +353,8 @@ public class EventConfRestService implements EventConfRestApi {
                     .build();
         }
     }
-
-    private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
-        List<String> ordered = new ArrayList<>();
-
-        if (eventconfXmlAttachment != null) {
-            try (InputStream stream = eventconfXmlAttachment.getObject(InputStream.class)) {
-                List<String> fromXmlRaw = parseOrderingFromEventconfXml(stream);
-                List<String> fromXml = fromXmlRaw.stream()
-                        .map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
-
-                // Identify files not listed in eventconf.xml
-                List<String> extraFiles = uploadedFiles
-                        .stream()
-                        .filter(f -> !fromXml.contains(f))
-                        .collect(Collectors.toList());
-
-                // Add extra files first, then the ones in eventconf.xml
-                ordered.addAll(extraFiles);
-                ordered.addAll(fromXml);
-            } catch (Exception e) {
-                throw new RuntimeException("Invalid eventconf.xml format", e);
-            }
-        } else {
-            // No eventconf.xml, preserve uploaded file order
-            ordered.addAll(uploadedFiles);
-        }
-
-        return ordered;
-    }
-
-
     private Events parseEventFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(Events.class, inputStream);
-    }
-
-    private List<String> parseOrderingFromEventconfXml(final InputStream xmlStream) throws Exception {
-        Events events = JaxbUtils.unmarshal(Events.class, xmlStream);
-        return events.getEventFiles();
     }
 
     private String getUsername(final SecurityContext context) {

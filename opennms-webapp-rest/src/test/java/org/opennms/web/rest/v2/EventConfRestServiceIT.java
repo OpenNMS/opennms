@@ -104,44 +104,6 @@ public class EventConfRestServiceIT {
         securityContext = mock(SecurityContext.class);
         when(securityContext.getUserPrincipal()).thenReturn(principal);
     }
-
-    @Test
-    @Transactional
-    public void testEventsConfWithEventConfXMLFiles() throws Exception {
-        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
-        List<Attachment> attachments = new ArrayList<>();
-
-        for (final var name : filenames) {
-            final var path = "/EVENTS-CONF/" + name;
-            final var is = getClass().getResourceAsStream(path);
-            assertNotNull("Resource not found: " + path, is);
-            Attachment att = mock(Attachment.class);
-            ContentDisposition cd = mock(ContentDisposition.class);
-            when(cd.getParameter("filename")).thenReturn(name);
-            when(att.getContentDisposition()).thenReturn(cd);
-            when(att.getObject(InputStream.class)).thenReturn(is);
-
-            attachments.add(att);
-        }
-
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
-        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
-        @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
-        @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
-
-        assertTrue("eventconf should be excluded", success.stream().noneMatch(m -> "eventconf".equals(m.get("file"))));
-        assertEquals(2, success.size());
-        assertEquals("opennms.alarm.events", success.get(0).get("file"));
-        assertEquals(3, success.get(0).get("eventCount"));
-        assertEquals("opennms", success.get(0).get("vendor"));
-        assertEquals("Cisco.airespace", success.get(1).get("file"));
-        assertEquals(101, success.get(1).get("eventCount"));
-        assertEquals("Cisco", success.get(1).get("vendor"));
-        assertTrue(errors.isEmpty());
-    }
-
-
     @Test
     @Transactional
     public void testEventsConfWithoutEventConfXMLFiles() throws Exception {
