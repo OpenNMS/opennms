@@ -48,7 +48,7 @@ public class EventConfRestIT {
     }
 
     private static File copyResourceToTempFile(String resourcePath) throws IOException {
-        try (InputStream is = TestEventConf.class.getResourceAsStream(resourcePath)) {
+        try (InputStream is = EventConfRestIT.class.getResourceAsStream(resourcePath)) {
             if (is == null) {
                 throw new IllegalArgumentException("Resource not found: " + resourcePath);
             }
