@@ -141,6 +141,9 @@ export type EventFormErrors = {
   dest?: string
   maskElement?: string
   maskValue?: string
+   reductionKey?: string
+  alarmType?: string
+  clearKey?: string
 }
 
 export interface MaskElement { 
