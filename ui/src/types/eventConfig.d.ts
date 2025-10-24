@@ -139,4 +139,7 @@ export type EventFormErrors = {
   severity?: string
   logmsg?: string
   dest?: string
+  reductionKey?: string
+  alarmType?: string
+  clearKey?: string
 }

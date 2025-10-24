@@ -315,7 +315,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 
         // Add all event files
-        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "examples/events"),
                                                    new String[] { "xml" },
                                                    true)) {
             addFile(Source.ABSOLUTE, file.getPath(), Events.class, false, null);
