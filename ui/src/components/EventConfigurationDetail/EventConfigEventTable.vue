@@ -65,10 +65,9 @@
               <td>{{ event.uei }}</td>
               <td>{{ event.eventLabel }}</td>
               <td>
-                <FeatherChip
-                  :class="`${event.severity.toLowerCase()}-color severity`"
-                  >{{ event.severity }}</FeatherChip
-                >
+                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">
+                  {{ event.severity }}
+                </FeatherChip>
               </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
               <td>
@@ -109,8 +108,8 @@
                   <FeatherButton
                     primary
                     :icon="`${expandedRows.includes(event.id)
-                      ? 'Expand Less'
-                      : 'Expand More'
+                    ? 'Expand Less'
+                    : 'Expand More'
                     }`"
                     @click="toggleExpand(event.id)"
                   >
@@ -132,7 +131,10 @@
             >
               <td :colspan="5">
                 <h6>Description:</h6>
-                <p class="description" v-html="event.description"></p>
+                <p
+                  class="description"
+                  v-html="event.description"
+                ></p>
               </td>
             </tr>
           </template>
@@ -162,7 +164,6 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigEventEditDrawer />
 </template>
 
 <script setup lang="ts">
@@ -189,7 +190,6 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
-import EventConfigEventEditDrawer from './Drawer/EventConfigEventEditDrawer.vue'
 
 const store = useEventConfigDetailStore()
 const router = useRouter()
