@@ -4,8 +4,7 @@ import {
   changeEventConfigSourceStatus,
   filterEventConfigEvents
 } from '@/services/eventConfigService'
-import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { CreateEditMode } from '@/types'
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -93,11 +92,6 @@ describe('useEventConfigDetailStore', () => {
       sortKey: 'createdTime'
     })
     expect(store.selectedSource).toBeNull()
-    expect(store.eventModificationDrawerState).toEqual({
-      visible: false,
-      isEditMode: 0,
-      eventConfigEvent: null
-    })
     expect(store.isLoading).toBe(false)
     expect(store.deleteEventConfigEventDialogState).toEqual({
       visible: false,
@@ -461,10 +455,11 @@ describe('useEventConfigDetailStore', () => {
   it('should log error when disabling source with no source id', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await store.disableEventConfigSource(0)
+    await expect(store.disableEventConfigSource(0)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
+
     consoleErrorSpy.mockRestore()
   })
 
@@ -472,7 +467,7 @@ describe('useEventConfigDetailStore', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     store.selectedSource = null
 
-    await store.disableEventConfigSource(1)
+    await expect(store.disableEventConfigSource(1)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
@@ -482,7 +477,7 @@ describe('useEventConfigDetailStore', () => {
   it('should log error when enabling source with no source id', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await store.enableEventConfigSource(0)
+    await expect(store.enableEventConfigSource(0)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
@@ -493,46 +488,11 @@ describe('useEventConfigDetailStore', () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     store.selectedSource = null
 
-    await store.enableEventConfigSource(1)
+    await expect(store.enableEventConfigSource(1)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
     consoleErrorSpy.mockRestore()
-  })
-
-  it('should open drawer in create mode', () => {
-    const defaultEvent = getDefaultEventConfigEvent()
-
-    store.openEventModificationDrawer(CreateEditMode.Create, defaultEvent)
-
-    expect(store.eventModificationDrawerState.visible).toBe(true)
-    expect(store.eventModificationDrawerState.isEditMode).toBe(CreateEditMode.Create)
-    expect(store.eventModificationDrawerState.eventConfigEvent).toEqual(defaultEvent)
-  })
-
-  it('should open drawer in edit mode', () => {
-    const mockEvent = mockEvents[0]
-
-    store.openEventModificationDrawer(CreateEditMode.Edit, mockEvent)
-
-    expect(store.eventModificationDrawerState.visible).toBe(true)
-    expect(store.eventModificationDrawerState.isEditMode).toBe(CreateEditMode.Edit)
-    expect(store.eventModificationDrawerState.eventConfigEvent).toEqual(mockEvent)
-  })
-
-  it('should close drawer and reset state', () => {
-    const mockEvent = mockEvents[0]
-    store.eventModificationDrawerState = {
-      visible: true,
-      isEditMode: CreateEditMode.Edit,
-      eventConfigEvent: mockEvent
-    }
-
-    store.closeEventModificationDrawer()
-
-    expect(store.eventModificationDrawerState.visible).toBe(false)
-    expect(store.eventModificationDrawerState.isEditMode).toBe(0)
-    expect(store.eventModificationDrawerState.eventConfigEvent).toBeNull()
   })
 
   it('should handle multiple consecutive fetches correctly', async () => {

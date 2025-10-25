@@ -16,40 +16,63 @@
           <h3>Basic Information</h3>
         </div>
         <div class="spacer"></div>
+        <label class="label">Event UEI:</label>
+        <div class="spacer"></div>
         <FeatherInput
-          label="Event UEI"
+          label=""
           data-test="event-uei"
           :error="errors.uei"
           v-model.trim="eventUei"
+          hint="e.g., 'uei.opennms.org/vendor/application/eventname'"
         >
         </FeatherInput>
         <div class="spacer"></div>
+        <label class="label">Event Label:</label>
+        <div class="spacer"></div>        
         <FeatherInput
-          label="Event Label"
+          label=""
           data-test="event-label"
           :error="errors.eventLabel"
           v-model.trim="eventLabel"
+          hint="e.g., 'Vendor Application Event Name'"
         >
         </FeatherInput>
+        <div class="spacer"></div>
+        <label class="label">Event Description:</label>
         <div class="spacer"></div>
         <FeatherTextarea
           v-model.trim="eventDescription"
           :error="errors.description"
           data-test="event-description"
-          label="Event Description"
-          placeholder="Type your event description here..."
+          label=""
+          hint="Provide a detailed description of the event."
           rows="10"
-          cols="40"
           auto
           clear
         >
         </FeatherTextarea>
+        <div class="spacer"></div>
+        <label class="label">Operator Instructions:</label>
+        <div class="spacer"></div>
+        <FeatherTextarea
+          v-model.trim="operatorInstructions"
+          data-test="operator-instructions"
+          label=""
+          hint="Instructions for operators when this event occurs."
+          rows="5"
+          auto
+          clear
+        >
+        </FeatherTextarea>
+        <div class="spacer"></div>
+        <label class="label">Log Message Destination:</label>
         <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
             label="Destination"
             data-test="event-destination"
             :error="errors.dest"
+            hint="Select the destination for the log message."
             :options="DestinationOptions"
             v-model="destination"
           >
@@ -57,19 +80,27 @@
           </FeatherSelect>
         </div>
         <div class="spacer"></div>
-        <FeatherInput
-          label="Log Message"
-          :error="errors.logmsg"
-          type="search"
-          data-test="log-message"
+        <label class="label">Log Message:</label>
+        <div class="spacer"></div>
+        <FeatherTextarea
           v-model.trim="logMessage"
+          :error="errors.logmsg"
+          data-test="log-message"
+          label=""
+          hint="Provide the log message for this event."
+          rows="5"
+          auto
+          clear
         >
-        </FeatherInput>
+        </FeatherTextarea>
+        <div class="spacer"></div>
+        <label class="label">Severity:</label>
         <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
             label="Severity"
             data-test="event-severity"
+            hint="Select the severity of the event."
             :error="errors.severity"
             :options="SeverityOptions"
             v-model="severity"
@@ -120,7 +151,7 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { createEventConfigEventXml } from '@/services/eventConfigService'
+import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
@@ -141,6 +172,7 @@ const store = useEventModificationStore()
 const eventUei = ref('')
 const eventLabel = ref('')
 const eventDescription = ref('')
+const operatorInstructions = ref('')
 const logMessage = ref('')
 const errors = ref<EventFormErrors>({})
 const isValid = ref(false)
@@ -159,6 +191,7 @@ const xmlContent = computed(() => {
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
+        <operinstruct><![CDATA[${operatorInstructions.value}]]></operinstruct>
         <logmsg dest="${destination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
         <severity>${severity.value._value}</severity>
         ${addAlarmData.value ? `<alarm-data
@@ -170,6 +203,20 @@ const xmlContent = computed(() => {
     </event>`.trim()
   )
 })
+
+const resetValues = () => {
+  eventUei.value = ''
+  eventLabel.value = ''
+  eventDescription.value = ''
+  severity.value = { _text: '', _value: '' }
+  destination.value = { _text: '', _value: '' }
+  logMessage.value = ''
+  addAlarmData.value = false
+  reductionKey.value = ''
+  alarmType.value = { _text: '', _value: '' }
+  autoClean.value = false
+  clearKey.value = ''
+}
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
   if (val) {
@@ -183,6 +230,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       _value: destAttr
     }
     eventDescription.value = val.description || ''
+    operatorInstructions.value = xmlDoc.getElementsByTagName('operinstruct')[0]?.textContent || ''
     eventUei.value = val.uei || ''
     eventLabel.value = val.eventLabel || ''
     severity.value = {
@@ -201,17 +249,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
     }
   } else {
-    eventUei.value = ''
-    eventLabel.value = ''
-    eventDescription.value = ''
-    severity.value = { _text: '', _value: '' }
-    destination.value = { _text: '', _value: '' }
-    logMessage.value = ''
-    addAlarmData.value = false
-    reductionKey.value = ''
-    alarmType.value = { _text: '', _value: '' }
-    autoClean.value = false
-    clearKey.value = ''
+    resetValues()
   }
 }
 
@@ -256,21 +294,22 @@ const handleSaveEvent = async () => {
     }
 
     let response = null
-    // if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
-    //   response = await updateEventConfigEventByIdXml(
-    //     beautifiedXml,
-    //     store.selectedSource.id,
-    //     store.eventModificationState.eventConfigEvent.id,
-    //     store.eventModificationState.eventConfigEvent.enabled,
-    //     selected.value
-    //   )
-    // }
+    if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
+      response = await updateEventConfigEventById(
+        xmlContent.value,
+        store.selectedSource.id,
+        store.eventModificationState.eventConfigEvent.id,
+        store.eventModificationState.eventConfigEvent.enabled
+      )
+    }
     if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEventXml(xmlContent.value, store.selectedSource.id)
+      response = await createEventConfigEvent(xmlContent.value, store.selectedSource.id)
     }
 
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
+      resetValues()
+      store.resetEventModificationState()
       router.push({
         name: 'Event Configuration Detail'
       })
@@ -330,6 +369,10 @@ onMounted(() => {
     border-color: var(variables.$border-on-surface);
     padding: 20px;
     border-radius: 8px;
+
+    .label {
+      font-weight: 600;
+    }
 
     .section-content {
       width: 50%;
