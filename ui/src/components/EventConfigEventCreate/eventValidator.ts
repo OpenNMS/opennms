@@ -11,7 +11,8 @@ export const validateEvent = (
   reductionKey: string,
   alarmType: string,
   autoClean: boolean,
-  clearKey: string
+  clearKey: string,
+  maskElements: Array<{ name?: { _text?: string; _value?: string }; value?: string }>
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
 
@@ -53,6 +54,29 @@ export const validateEvent = (
         errors.clearKey = 'Clear Key is required when Auto Clean is enabled.'
       }
     }
+  }
+
+  const maskElementErrors: Array<{ name?: string; value?: string }> = []
+  const namesSet = new Set<string>()
+  maskElements.forEach((element, index) => {
+    const elementErrors: { name?: string; value?: string } = {}
+    if (!element.name?._value || element.name?._value.trim() === '') {
+      elementErrors.name = 'Mask Element Name is required.'
+    } else if (namesSet.has(element.name._value)) {
+      elementErrors.name = 'Mask Element Name must be unique.'
+    } else {
+      namesSet.add(element.name._value)
+    }
+
+    if (!element.value || element.value.trim() === '') {
+      elementErrors.value = 'Mask Element Value is required.'
+    }
+
+    maskElementErrors[index] = elementErrors
+  })
+
+  if (maskElementErrors.some(err => Object.keys(err).length > 0)) {
+    errors.maskElements = maskElementErrors
   }
 
   return errors

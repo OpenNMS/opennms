@@ -1,5 +1,7 @@
 import { ISelectItemType } from '@featherds/select'
 
+export const MAX_MASK_ELEMENTS = 12
+
 export const statusOptions: ISelectItemType[] = [
   { _text: 'Enable', _value: 'enable' },
   { _text: 'Disable', _value: 'disable' }
@@ -68,8 +70,7 @@ export const MaskElementNameOptions: ISelectItemType[] = [
   { _text: MaskElementName.Specific, _value: MaskElementName.Specific },
   { _text: MaskElementName.Generic, _value: MaskElementName.Generic },
   { _text: MaskElementName.Community, _value: MaskElementName.Community },
-  { _text: MaskElementName.Trapoid, _value: MaskElementName.Trapoid },
-
+  { _text: MaskElementName.Trapoid, _value: MaskElementName.Trapoid }
 ]
 
 export enum AlarmType {

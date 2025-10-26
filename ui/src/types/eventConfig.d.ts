@@ -133,17 +133,9 @@ export type EventFormErrors = {
   severity?: string
   logmsg?: string
   dest?: string
-  maskElement?: string
-  maskValue?: string
-   reductionKey?: string
-  alarmType?: string
-  clearKey?: string
-}
-
-export interface MaskElement { 
-  name: ISelectItemType 
-  value: string 
+  maskElements?: Array<{ name?: string; value?: string }>
   reductionKey?: string
   alarmType?: string
   clearKey?: string
 }
+
