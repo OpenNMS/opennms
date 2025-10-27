@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by Event UEI or Event Label"
+            label="Search"
             type="search"
             data-test="search-input"
             v-model.trim="store.eventsSearchTerm"
-            placeholder="Search by UEI or Event Label"
+            :hint="'Search by Event UEI, Event Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
