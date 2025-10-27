@@ -47,9 +47,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,6 +66,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -613,5 +618,80 @@ public class EventConfRestServiceIT {
         assertEquals("Clear label changed.", dbEvent.getEventLabel());
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId() throws Exception {
+        EventConfSource m_source = new EventConfSource();
+        m_source.setName("testxmdownloadevents");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("test");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger",
+                "Trigger configuration changed testing",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Normal");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/clear",
+                "Clear discovery failed testing",
+                "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.",
+                "Minor");
+
+        final var eventConfSource = eventConfSourceDao.findByName("testxmdownloadevents");
+        final var response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
+
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
+
+        Object entity = response.getEntity();
+        assertNotNull("Response entity should not be null", entity);
+
+        String xmlContent = "";
+        
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            xmlContent = baos.toString(StandardCharsets.UTF_8);
+        } else if (entity instanceof InputStream) {
+            xmlContent = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        } else if (entity instanceof String) {
+            xmlContent = (String) entity;
+        } else {
+            fail("Unexpected entity type: " + entity.getClass());
+        }
+
+        assertFalse("XML content should not be empty", xmlContent.isEmpty());
+
+        assertTrue("XML should contain first event UEI",
+                xmlContent.contains("uei.opennms.org/internal/trigger"));
+        assertTrue("XML should contain second event UEI",
+                xmlContent.contains("uei.opennms.org/internal/clear"));
+
+        assertTrue("XML should end with </events>", xmlContent.trim().endsWith("</events>"));
+
+    }
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId_BadRequest() {
+        try {
+            final var response = eventConfRestApi.downloadEventConfXmlBySourceId(null, securityContext);
+            assertNotNull("Response should not be null", response);
+            assertEquals("Expected HTTP 400 Bad Request", 400, response.getStatus());
+        } catch (Exception e) {
+            assertTrue("Expected BadRequestException or similar",
+                    e instanceof BadRequestException || e.getMessage().contains("Bad Request"));
+        }
     }
 }

@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
@@ -43,11 +44,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -65,6 +67,9 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
+
+    @Autowired
+    private EventConfEventDao eventConfEventDao;
 
     @Override
     @Transactional
@@ -353,6 +358,58 @@ public class EventConfRestService implements EventConfRestApi {
                     .build();
         }
     }
+
+    @Override
+    public Response downloadEventConfXmlBySourceId(final Long sourceId, SecurityContext securityContext) {
+        if (sourceId == null || sourceId <= 0) {
+            return buildXmlError(Response.Status.BAD_REQUEST, "Invalid source ID");
+        }
+
+        final var eventConfEvents = eventConfEventDao.findBySourceId(sourceId);
+
+        if (eventConfEvents == null || eventConfEvents.isEmpty()) {
+            return buildXmlError(Response.Status.NOT_FOUND, "No events found for source ID: " + sourceId);
+        }
+
+        StreamingOutput stream = output -> {
+            try (var writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
+                writer.write("""
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                    """);
+
+                eventConfEvents.stream()
+                        .filter(Objects::nonNull)
+                        .map(EventConfEvent::getXmlContent)
+                        .filter(content -> content != null && !content.isBlank())
+                        .map(String::trim)
+                        .forEach(content -> {
+                            try {
+                                writer.write(content);
+                                writer.write(System.lineSeparator());
+                            } catch (IOException e) {
+                                throw new UncheckedIOException(e);
+                            }
+                        });
+
+                writer.write("</events>");
+            }
+        };
+
+        return Response.ok(stream)
+                .type(MediaType.APPLICATION_XML)
+                .header("Content-Disposition", "attachment; filename=\"eventconf-source-%d.xml\"".formatted(sourceId))
+                .build();
+    }
+
+    private Response buildXmlError(Response.Status status, String message) {
+        return Response.status(status)
+                .entity("<error>%s</error>".formatted(message))
+                .type(MediaType.APPLICATION_XML)
+                .build();
+    }
+
+
     private Events parseEventFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(Events.class, inputStream);
     }
