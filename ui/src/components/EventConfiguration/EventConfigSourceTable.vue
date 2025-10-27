@@ -236,12 +236,6 @@ onMounted(async () => {
 
       .search-container {
         width: 80%;
-
-        .feather-input-container {
-          :deep(.feather-input-sub-text) {
-            display: none !important;
-          }
-        }
       }
     }
   }
