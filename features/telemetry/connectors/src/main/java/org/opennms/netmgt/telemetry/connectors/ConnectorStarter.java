@@ -94,12 +94,13 @@ public class ConnectorStarter implements ManagedService {
 
     public void stop() {
         LOG.info("ConnectorListener stopping…");
-        try {
-            twinSubscription.close();
-        } catch (IOException e) {
-            LOG.error("Failed to  stop twin subscription: error '{}' ", e.getMessage());
+        if (twinSubscription != null) {
+            try {
+                twinSubscription.close();
+            } catch (IOException e) {
+                LOG.error("Failed to  stop twin subscription: error '{}' ", e.getMessage());
+            }
         }
-
         new ArrayList<>(this.entities.keySet()).forEach(this::delete);
 
         cleanupDispatcher();
