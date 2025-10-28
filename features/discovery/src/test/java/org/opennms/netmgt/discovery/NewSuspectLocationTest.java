@@ -51,7 +51,7 @@ public class NewSuspectLocationTest {
     @Before
     public void setUp() throws Exception {
         m_eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/eventconf.xml"));
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
 
         m_eventExpander = new EventExpander(new MetricRegistry());

@@ -265,9 +265,16 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
+    <bean id="eventConfProgrammaticService" class="org.opennms.web.services.EventConfProgrammaticService" destroy-method="shutdown">
+        <property name="eventConfSourceDao" ref="eventConfSourceDao"/>
+        <property name="eventConfEventDao" ref="eventConfEventDao"/>
+        <property name="eventConfDao" ref="eventConfDao"/>
+    </bean>
+
     <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
         <property name="resourceDao" ref="resourceDao"/>
         <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="eventConfProgrammaticService" ref="eventConfProgrammaticService"/>
     </bean>
 
     <bean name="/newsfeed/newsFeedPanel.htm" class="org.opennms.web.controller.newsfeed.NewsFeedController">

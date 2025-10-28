@@ -5,7 +5,7 @@
   >
     <div>
       <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event' }}
+        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
       </h3>
     </div>
     <div class="spacer"></div>
@@ -16,66 +16,119 @@
           <h3>Basic Information</h3>
         </div>
         <div class="spacer"></div>
+        <label class="label">Event UEI:</label>
+        <div class="spacer"></div>
         <FeatherInput
-          label="Event UEI"
+          label=""
           data-test="event-uei"
           :error="errors.uei"
           v-model.trim="eventUei"
+          hint="e.g., 'uei.opennms.org/vendor/application/eventname'"
         >
         </FeatherInput>
         <div class="spacer"></div>
+        <label class="label">Event Label:</label>
+        <div class="spacer"></div>
         <FeatherInput
-          label="Event Label"
+          label=""
           data-test="event-label"
           :error="errors.eventLabel"
           v-model.trim="eventLabel"
+          hint="e.g., 'Vendor Application Event Name'"
         >
         </FeatherInput>
+        <div class="spacer"></div>
+        <label class="label">Event Description:</label>
         <div class="spacer"></div>
         <FeatherTextarea
           v-model.trim="eventDescription"
           :error="errors.description"
           data-test="event-description"
-          label="Event Description"
-          placeholder="Type your event description here..."
+          label=""
+          hint="Provide a detailed description of the event."
           rows="10"
-          cols="40"
           auto
           clear
         >
         </FeatherTextarea>
         <div class="spacer"></div>
-        <FeatherInput
-          label="Log Message"
-          :error="errors.logmsg"
-          type="search"
-          data-test="log-message"
-          v-model.trim="logMessage"
+        <label class="label">Operator Instructions:</label>
+        <div class="spacer"></div>
+        <FeatherTextarea
+          v-model.trim="operatorInstructions"
+          data-test="operator-instructions"
+          label=""
+          hint="Instructions for operators when this event occurs."
+          rows="5"
+          auto
+          clear
         >
-        </FeatherInput>
+        </FeatherTextarea>
+        <div class="spacer"></div>
+        <label class="label">Log Message Destination:</label>
         <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
             label="Destination"
             data-test="event-destination"
             :error="errors.dest"
+            hint="Select the destination for the log message."
             :options="DestinationOptions"
-            v-model="selectedEventDestination"
+            v-model="destination"
           >
             <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
         <div class="spacer"></div>
+        <label class="label">Log Message:</label>
+        <div class="spacer"></div>
+        <FeatherTextarea
+          v-model.trim="logMessage"
+          :error="errors.logmsg"
+          data-test="log-message"
+          label=""
+          hint="Provide the log message for this event."
+          rows="5"
+          auto
+          clear
+        >
+        </FeatherTextarea>
+        <div class="spacer"></div>
+        <label class="label">Severity:</label>
+        <div class="spacer"></div>
         <div class="dropdown">
           <FeatherSelect
             label="Severity"
             data-test="event-severity"
+            hint="Select the severity of the event."
             :error="errors.severity"
             :options="SeverityOptions"
-            v-model="selectedEventSeverity"
+            v-model="severity"
           >
             <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
+        </div>
+        <div class="spacer"></div>
+        <div>
+          <AlarmDataInfo
+            data-test="alarm-data-info"
+            :errors="errors"
+            :addAlarmData="addAlarmData"
+            :reductionKey="reductionKey"
+            :alarmType="alarmType"
+            :autoClean="autoClean"
+            :clearKey="clearKey"
+            @setAlarmData="setAlarmData"
+          />
+        </div>
+        <div class="spacer"></div>
+        <div>
+          <MaskElements
+            data-test="mask-elements"
+            @setMaskElements="setMaskElements"
+            :maskElements="maskElements"
+            :errors="errors"
+          />
         </div>
         <div class="spacer"></div>
         <div class="action-container">
@@ -102,7 +155,7 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { createEventConfigEventXml } from '@/services/eventConfigService'
+import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
@@ -113,32 +166,71 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
-import { DestinationOptions, Severity, SeverityOptions } from './constants'
+import AlarmDataInfo from './AlarmDataInfo.vue'
+import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
+import MaskElements from './MaskElements.vue'
 
 const router = useRouter()
 const store = useEventModificationStore()
 const eventUei = ref('')
 const eventLabel = ref('')
 const eventDescription = ref('')
+const operatorInstructions = ref('')
 const logMessage = ref('')
 const errors = ref<EventFormErrors>({})
 const isValid = ref(false)
 const snackbar = useSnackbar()
-const selectedEventDestination = ref<ISelectItemType>({ _text: '', _value: '' })
-const selectedEventSeverity = ref<ISelectItemType>({ _text: '', _value: '' })
+const destination = ref<ISelectItemType>({ _text: '', _value: '' })
+const severity = ref<ISelectItemType>({ _text: '', _value: '' })
+const alarmType = ref<ISelectItemType>({ _text: '', _value: '' })
+const maskElements = ref<Array<{ name: ISelectItemType; value: string }>>([
+  { name: { _text: '', _value: '' }, value: '' }
+])
+const addAlarmData = ref(false)
+const reductionKey = ref('')
+const autoClean = ref(false)
+const clearKey = ref('')
 
 const xmlContent = computed(() => {
   return vkbeautify.xml(
     `<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+        ${maskElements.value.length > 0 ? `<mask>${maskElements.value.map((me) => `<maskelement>
+        <mename>${me.name._value}</mename>
+        <mevalue>${me.value}</mevalue>
+        </maskelement>`).join('')}</mask>` : ''}
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
-        <logmsg dest="${selectedEventDestination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
-        <severity>${selectedEventSeverity.value._value}</severity>
+        <operinstruct><![CDATA[${operatorInstructions.value}]]></operinstruct>
+        <logmsg dest="${destination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
+        <severity>${severity.value._value}</severity>
+        ${addAlarmData.value ? `<alarm-data
+          reduction-key="${reductionKey.value}"
+          alarm-type="${alarmType.value._value}"
+          auto-clean="${autoClean.value}"
+          ${clearKey.value ? `clear-key="${clearKey.value}"` : ''}
+        />` : ''}
     </event>`.trim()
   )
 })
+
+const resetValues = () => {
+  eventUei.value = ''
+  eventLabel.value = ''
+  eventDescription.value = ''
+  severity.value = { _text: '', _value: '' }
+  destination.value = { _text: '', _value: '' }
+  logMessage.value = ''
+  addAlarmData.value = false
+  reductionKey.value = ''
+  alarmType.value = { _text: '', _value: '' }
+  autoClean.value = false
+  clearKey.value = ''
+  maskElements.value = [
+    { name: { _text: '', _value: '' }, value: '' }
+  ]
+}
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
   if (val) {
@@ -147,22 +239,101 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
     const logmsgElement = xmlDoc.getElementsByTagName('logmsg')[0]
     logMessage.value = logmsgElement ? logmsgElement.textContent || '' : ''
     const destAttr = logmsgElement?.getAttribute('dest') || ''
-    selectedEventDestination.value = {
+    destination.value = {
       _text: destAttr,
       _value: destAttr
     }
     eventDescription.value = val.description || ''
+    operatorInstructions.value = xmlDoc.getElementsByTagName('operinstruct')[0]?.textContent || ''
     eventUei.value = val.uei || ''
     eventLabel.value = val.eventLabel || ''
-    selectedEventSeverity.value = {
-      _text: val.severity ? Severity[val.severity as keyof typeof Severity] : '',
-      _value: val.enabled ? Severity[val.severity as keyof typeof Severity] : ''
+    severity.value = {
+      _text: val.severity || '',
+      _value: val.severity || ''
+    }
+    addAlarmData.value = xmlDoc.getElementsByTagName('alarm-data')[0] ? true : false
+    if (addAlarmData.value) {
+      const alarmDataElement = xmlDoc.getElementsByTagName('alarm-data')[0]
+      reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
+      alarmType.value = {
+        _text: alarmDataElement?.getAttribute('alarm-type') || '',
+        _value: alarmDataElement?.getAttribute('alarm-type') || ''
+      }
+      autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
+      clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
+    }
+    const maskElementList = xmlDoc.getElementsByTagName('maskelement')
+    maskElements.value = []
+    for (let i = 0; i < maskElementList.length; i++) {
+      maskElements.value.push({
+        name: {
+          _text: maskElementList[i].getElementsByTagName('mename')[0].textContent || '',
+          _value: maskElementList[i].getElementsByTagName('mename')[0].textContent || ''
+        },
+        value: maskElementList[i].getElementsByTagName('mevalue')[0].textContent || ''
+      })
     }
   } else {
-    eventUei.value = ''
-    eventLabel.value = ''
-    eventDescription.value = ''
-    selectedEventSeverity.value = { _text: '', _value: '' }
+    resetValues()
+  }
+}
+
+const setAlarmData = (key: string, value: any) => {
+  if (key === 'addAlarmData') {
+    addAlarmData.value = value
+    if ((value as boolean) === false) {
+      reductionKey.value = ''
+      alarmType.value = { _text: '', _value: '' }
+      autoClean.value = false
+    }
+  }
+
+  if (key === 'reductionKey') {
+    reductionKey.value = value
+  }
+
+  if (key === 'alarmType') {
+    alarmType.value = {
+      _text: value._text,
+      _value: value._value
+    }
+  }
+
+  if (key === 'autoClean') {
+    autoClean.value = value
+  }
+
+  if (key === 'clearKey') {
+    clearKey.value = value
+  }
+}
+
+const setMaskElements = (key: string, value: any, index: number) => {
+  if (index === undefined) {
+    return
+  }
+
+  if (key === 'setName') {
+    maskElements.value[index].name = value
+  }
+
+  if (key === 'setValue') {
+    maskElements.value[index].value = value
+  }
+
+  if (key === 'addMaskRow') {
+    if (maskElements.value.length < MAX_MASK_ELEMENTS) {
+      maskElements.value.push({
+        name: { _text: '', _value: '' },
+        value: ''
+      })
+    } else {
+      snackbar.showSnackBar({ msg: `Maximum of ${MAX_MASK_ELEMENTS} mask elements allowed.`, error: true })
+    }
+  }
+
+  if (key === 'removeMaskRow') {
+    maskElements.value.splice(index, 1)
   }
 }
 
@@ -176,22 +347,23 @@ const handleSaveEvent = async () => {
       return
     }
 
-    let response
-    // if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
-    //   response = await updateEventConfigEventByIdXml(
-    //     beautifiedXml,
-    //     store.selectedSource.id,
-    //     store.eventModificationState.eventConfigEvent.id,
-    //     store.eventModificationState.eventConfigEvent.enabled,
-    //     selected.value
-    //   )
-    // }
+    let response = null
+    if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
+      response = await updateEventConfigEventById(
+        xmlContent.value,
+        store.selectedSource.id,
+        store.eventModificationState.eventConfigEvent.id,
+        store.eventModificationState.eventConfigEvent.enabled
+      )
+    }
     if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEventXml(xmlContent.value, store.selectedSource.id)
+      response = await createEventConfigEvent(xmlContent.value, store.selectedSource.id)
     }
 
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
+      resetValues()
+      store.resetEventModificationState()
       router.push({
         name: 'Event Configuration Detail'
       })
@@ -216,9 +388,15 @@ watchEffect(() => {
     eventUei.value,
     eventLabel.value,
     eventDescription.value,
-    selectedEventSeverity.value._value as string,
-    selectedEventDestination.value._value as string,
-    logMessage.value
+    severity.value._value as string,
+    destination.value._value as string,
+    logMessage.value,
+    addAlarmData.value,
+    reductionKey.value,
+    alarmType.value._value as string,
+    autoClean.value,
+    clearKey.value,
+    maskElements.value
   )
   isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as EventFormErrors
@@ -246,6 +424,10 @@ onMounted(() => {
     border-color: var(variables.$border-on-surface);
     padding: 20px;
     border-radius: 8px;
+
+    .label {
+      font-weight: 600;
+    }
 
     .section-content {
       width: 50%;

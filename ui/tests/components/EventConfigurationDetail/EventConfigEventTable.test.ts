@@ -11,10 +11,6 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('ace-builds/src-noconflict/ext-language_tools', () => ({}))
-vi.mock('ace-builds/src-noconflict/mode-xml', () => ({}))
-vi.mock('ace-builds/src-noconflict/theme-chrome', () => ({}))
-
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -47,7 +43,6 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsPageSizeChange = vi.fn().mockResolvedValue(undefined)
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showDeleteEventConfigEventDialog = vi.fn()
-    store.openEventModificationDrawer = vi.fn()
     store.showChangeEventConfigEventStatusDialog = vi.fn()
 
     wrapper = mount(EventConfigEventTable, {

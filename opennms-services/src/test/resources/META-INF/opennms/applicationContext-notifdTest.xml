@@ -58,12 +58,25 @@
 
     <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
 
-    <bean id="eventConfResourceLocation" class="java.lang.String">
-      <constructor-arg value="file:src/test/resources/org/opennms/netmgt/notifd/eventconf.xml" />
-	</bean>
-
     <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
-      <property name="configResource" ref="eventConfResourceLocation" />
+    </bean>
+
+    <bean id="eventConfTestResource" class="org.springframework.core.io.ClassPathResource">
+      <constructor-arg value="org/opennms/netmgt/notifd/eventconf.xml"/>
+    </bean>
+
+    <bean id="eventConfEventList" class="org.opennms.netmgt.config.EventConfUtil" factory-method="parseResourcesAsEventConfEvents">
+      <constructor-arg ref="eventConfTestResource"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventConfDao">
+      <property name="targetObject" ref="eventConfDao"/>
+      <property name="targetMethod" value="loadEventsFromDB"/>
+      <property name="arguments">
+        <list>
+          <ref bean="eventConfEventList"/>
+        </list>
+      </property>
     </bean>
 
     <bean id="broadcastEventProcessor" class="org.opennms.netmgt.notifd.BroadcastEventProcessor">

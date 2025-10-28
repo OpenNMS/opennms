@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by Event UEI or Event Label"
+            label="Search"
             type="search"
             data-test="search-input"
             v-model.trim="store.eventsSearchTerm"
-            placeholder="Search by UEI or Event Label"
+            :hint="'Search by Event UEI, Event Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -65,7 +65,9 @@
               <td>{{ event.uei }}</td>
               <td>{{ event.eventLabel }}</td>
               <td>
-                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">{{ event.severity }}</FeatherChip>
+                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">
+                  {{ event.severity }}
+                </FeatherChip>
               </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
               <td>
@@ -74,7 +76,7 @@
                     icon="Edit"
                     :title="`Edit ${event.eventLabel}`"
                     data-test="edit-button"
-                    @click="store.openEventModificationDrawer(CreateEditMode.Edit, event)"
+                    @click="onEditEvent(event)"
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
@@ -106,8 +108,8 @@
                   <FeatherButton
                     primary
                     :icon="`${expandedRows.includes(event.id)
-                      ? 'Expand Less'
-                      : 'Expand More'
+                    ? 'Expand Less'
+                    : 'Expand More'
                     }`"
                     @click="toggleExpand(event.id)"
                   >
@@ -129,7 +131,10 @@
             >
               <td :colspan="5">
                 <h6>Description:</h6>
-                <p v-html="event.description"></p>
+                <p
+                  class="description"
+                  v-html="event.description"
+                ></p>
               </td>
             </tr>
           </template>
@@ -159,13 +164,14 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigEventEditDrawer />
 </template>
 
 <script setup lang="ts">
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -184,9 +190,9 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
-import EventConfigEventEditDrawer from './Drawer/EventConfigEventEditDrawer.vue'
 
 const store = useEventConfigDetailStore()
+const router = useRouter()
 const emptyListContent = {
   msg: 'No results found.'
 }
@@ -221,6 +227,16 @@ const toggleExpand = (id: number) => {
     expandedRows.value.push(id)
   } else {
     expandedRows.value.splice(index, 1)
+  }
+}
+
+const onEditEvent = (event: EventConfigEvent) => {
+  if (store.selectedSource) {
+    const modificationStore = useEventModificationStore()
+    modificationStore.setSelectedEventConfigSource(store.selectedSource, CreateEditMode.Edit, event)
+    router.push({
+      name: 'Event Configuration New'
+    })
   }
 }
 
@@ -263,12 +279,6 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 
       .search-container {
         width: 80%;
-
-        .feather-input-container {
-          :deep(.feather-input-sub-text) {
-            display: none !important;
-          }
-        }
       }
     }
   }
@@ -316,6 +326,11 @@ const onChangeSearchTerm = debounce(async (value: string) => {
               }
             }
           }
+        }
+
+        .description {
+          margin: 0;
+          white-space: normal;
         }
       }
     }
