@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -428,6 +429,7 @@ public class EventConfPersistenceServiceIT {
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testLoadingOfEventsInMemory() {
 
         // Call loadEventsFromDB directly
@@ -444,6 +446,7 @@ public class EventConfPersistenceServiceIT {
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testDeleteEventConfSources() throws Exception {
         String username = "test_user";
         Date now = new Date();
@@ -630,7 +633,7 @@ public class EventConfPersistenceServiceIT {
     }
 
     @Test
-    @JUnitTemporaryDatabase
+    @Transactional
     public void testUpdateEventConfEventWithXml() throws Exception {
         EventConfSource m_source = new EventConfSource();
         m_source.setName("testEventEnabledFlagTest");
@@ -683,7 +686,7 @@ public class EventConfPersistenceServiceIT {
     }
 
     @Test
-    @JUnitTemporaryDatabase
+    @Transactional
     public void testUpdateEventConfEventWithJson() throws Exception {
         EventConfSource m_source = new EventConfSource();
         m_source.setName("testEventJsonPayload");
@@ -749,6 +752,7 @@ public class EventConfPersistenceServiceIT {
     }
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
     public void testDeleteEventsForSource() throws Exception {
         String username = "test_user";
         Date now = new Date();
