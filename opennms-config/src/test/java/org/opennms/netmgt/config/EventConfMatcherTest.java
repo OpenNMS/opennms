@@ -48,7 +48,7 @@ public class EventConfMatcherTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
         eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
         Assert.assertEquals(9, eventConfDao.getAllEvents().size());
     }

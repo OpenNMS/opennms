@@ -24,7 +24,7 @@ package org.opennms.netmgt.trapd;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class JoeSnmpTrapHandlerIT extends TrapHandlerITCase {
 
     @Before
     public void setUp() throws Exception {
-        List<EventConfEvent> events = EventConfUtil.parseResourcesAsEventConfEvents(
+        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
                 new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
         // Load into DB
         eventConfDao.loadEventsFromDB(events);
