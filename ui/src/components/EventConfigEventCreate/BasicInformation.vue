@@ -28,7 +28,7 @@
         </FeatherInput>
         <div class="spacer"></div>
         <label class="label">Event Label:</label>
-        <div class="spacer"></div>        
+        <div class="spacer"></div>
         <FeatherInput
           label=""
           data-test="event-label"
@@ -122,6 +122,15 @@
           />
         </div>
         <div class="spacer"></div>
+        <div>
+          <MaskElements
+            data-test="mask-elements"
+            @setMaskElements="setMaskElements"
+            :maskElements="maskElements"
+            :errors="errors"
+          />
+        </div>
+        <div class="spacer"></div>
         <div class="action-container">
           <FeatherButton
             secondary
@@ -158,8 +167,9 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { DestinationOptions, SeverityOptions } from './constants'
+import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
+import MaskElements from './MaskElements.vue'
 
 const router = useRouter()
 const store = useEventModificationStore()
@@ -174,6 +184,9 @@ const snackbar = useSnackbar()
 const destination = ref<ISelectItemType>({ _text: '', _value: '' })
 const severity = ref<ISelectItemType>({ _text: '', _value: '' })
 const alarmType = ref<ISelectItemType>({ _text: '', _value: '' })
+const maskElements = ref<Array<{ name: ISelectItemType; value: string }>>([
+  { name: { _text: '', _value: '' }, value: '' }
+])
 const addAlarmData = ref(false)
 const reductionKey = ref('')
 const autoClean = ref(false)
@@ -182,6 +195,10 @@ const clearKey = ref('')
 const xmlContent = computed(() => {
   return vkbeautify.xml(
     `<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+        ${maskElements.value.length > 0 ? `<mask>${maskElements.value.map((me) => `<maskelement>
+        <mename>${me.name._value}</mename>
+        <mevalue>${me.value}</mevalue>
+        </maskelement>`).join('')}</mask>` : ''}
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
@@ -210,6 +227,9 @@ const resetValues = () => {
   alarmType.value = { _text: '', _value: '' }
   autoClean.value = false
   clearKey.value = ''
+  maskElements.value = [
+    { name: { _text: '', _value: '' }, value: '' }
+  ]
 }
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
@@ -241,6 +261,17 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       }
       autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
       clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
+    }
+    const maskElementList = xmlDoc.getElementsByTagName('maskelement')
+    maskElements.value = []
+    for (let i = 0; i < maskElementList.length; i++) {
+      maskElements.value.push({
+        name: {
+          _text: maskElementList[i].getElementsByTagName('mename')[0].textContent || '',
+          _value: maskElementList[i].getElementsByTagName('mename')[0].textContent || ''
+        },
+        value: maskElementList[i].getElementsByTagName('mevalue')[0].textContent || ''
+      })
     }
   } else {
     resetValues()
@@ -274,6 +305,35 @@ const setAlarmData = (key: string, value: any) => {
 
   if (key === 'clearKey') {
     clearKey.value = value
+  }
+}
+
+const setMaskElements = (key: string, value: any, index: number) => {
+  if (index === undefined) {
+    return
+  }
+
+  if (key === 'setName') {
+    maskElements.value[index].name = value
+  }
+
+  if (key === 'setValue') {
+    maskElements.value[index].value = value
+  }
+
+  if (key === 'addMaskRow') {
+    if (maskElements.value.length < MAX_MASK_ELEMENTS) {
+      maskElements.value.push({
+        name: { _text: '', _value: '' },
+        value: ''
+      })
+    } else {
+      snackbar.showSnackBar({ msg: `Maximum of ${MAX_MASK_ELEMENTS} mask elements allowed.`, error: true })
+    }
+  }
+
+  if (key === 'removeMaskRow') {
+    maskElements.value.splice(index, 1)
   }
 }
 
@@ -335,7 +395,8 @@ watchEffect(() => {
     reductionKey.value,
     alarmType.value._value as string,
     autoClean.value,
-    clearKey.value
+    clearKey.value,
+    maskElements.value
   )
   isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as EventFormErrors

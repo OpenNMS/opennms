@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by Name, Vendor or Description"
+            label="Search"
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
-            placeholder="Search by Name, Vendor or Description"
+            :hint="'Search by Name, Vendor, Description'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -236,24 +236,6 @@ onMounted(async () => {
 
       .search-container {
         width: 80%;
-
-        .feather-input-container {
-          :deep(.feather-input-sub-text) {
-            display: none !important;
-          }
-        }
-        :deep(.feather-input-wrapper-container) {
-          position: relative;
-          max-width: 100%;
-        }
-
-        :deep(.feather-input-label) {
-          display: block;
-          position: absolute;
-          white-space: normal;
-          word-wrap: break-word;
-          line-height: 1.2;
-        }
       }
     }
   }
