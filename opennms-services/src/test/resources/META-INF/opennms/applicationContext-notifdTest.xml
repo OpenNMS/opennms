@@ -65,7 +65,7 @@
       <constructor-arg value="org/opennms/netmgt/notifd/eventconf.xml"/>
     </bean>
 
-    <bean id="eventConfEventList" class="org.opennms.netmgt.config.EventConfTestUtil" factory-method="parseResourcesAsEventConfEvents">
+    <bean id="eventConfEventList" class="org.opennms.netmgt.config.EventConfUtil" factory-method="parseResourcesAsEventConfEvents">
       <constructor-arg ref="eventConfTestResource"/>
     </bean>
 

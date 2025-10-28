@@ -440,7 +440,7 @@ public class EventconfFactoryIT {
     public void testReload() throws Exception {
 		//m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
 
-        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
         String newUEI="uei.opennms.org/custom/newTestUEI";
         List<Event> events=m_eventConfDao.getEvents(knownUEI1);
@@ -458,7 +458,7 @@ public class EventconfFactoryIT {
         //Now reload without saving - should not find the new one, but should find the old one
         try {
            // m_eventConfDao.reload();
-            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+            eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
             m_eventConfDao.loadEventsFromDB(eventConfEventList);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -596,7 +596,7 @@ public class EventconfFactoryIT {
      */
     @Test
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
-        File eventConfFile = new ClassPathResource("etc/eventconf.xml").getFile();
+        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
@@ -637,7 +637,7 @@ public class EventconfFactoryIT {
     @Test
     public void testLoadStandardConfiguration() throws Exception {
         DefaultEventConfDao dao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
         dao.loadEventsFromDB(eventConfEventList);
     }
 
@@ -650,9 +650,9 @@ public class EventconfFactoryIT {
         List<EventConfEvent> eventConfEventList = new ArrayList<>();
         if (passFile) {
             URL url = getUrlForRelativeResourcePath(relativeResourcePath);
-            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
         } else {
-            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
         }
 
         dao.loadEventsFromDB(eventConfEventList);
