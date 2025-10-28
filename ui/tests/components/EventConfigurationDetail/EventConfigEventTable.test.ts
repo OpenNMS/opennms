@@ -1,12 +1,19 @@
+import EmptyList from '@/components/Common/EmptyList.vue'
+import ChangeEventConfigEventStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigEventStatusDialog.vue'
+import DeleteEventConfigEventDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigEventDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
+import { CreateEditMode } from '@/types'
+import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader } from '@featherds/table'
+import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -18,9 +25,23 @@ vi.mock('vue-router', () => ({
   })
 }))
 
+const mockSource: EventConfigSource = {
+  id: 1,
+  vendor: 'opennms',
+  name: 'Test Source',
+  description: 'A test event config source',
+  enabled: true,
+  createdTime: new Date(),
+  lastModified: new Date(),
+  eventCount: 0,
+  fileOrder: 0,
+  uploadedBy: ''
+}
+
 describe('EventConfigEventTable.vue', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigDetailStore>
+  let modificationStore: ReturnType<typeof useEventModificationStore>
 
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -32,10 +53,16 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     store = useEventConfigDetailStore(pinia)
+    modificationStore = useEventModificationStore(pinia)
 
+    // Reset store state
+    store.$reset()
     store.events = []
     store.eventsSearchTerm = ''
     store.eventsPagination = { page: 1, pageSize: 10, total: 0 }
+    store.selectedSource = mockSource
+
+    // Mock store methods
     store.fetchEventsBySourceId = vi.fn().mockResolvedValue(undefined)
     store.refreshEventConfigEvents = vi.fn().mockResolvedValue(undefined)
     store.onChangeEventsSearchTerm = vi.fn().mockResolvedValue(undefined)
@@ -44,6 +71,8 @@ describe('EventConfigEventTable.vue', () => {
     store.onEventsSortChange = vi.fn().mockResolvedValue(undefined)
     store.showDeleteEventConfigEventDialog = vi.fn()
     store.showChangeEventConfigEventStatusDialog = vi.fn()
+
+    modificationStore.setSelectedEventConfigSource = vi.fn()
 
     wrapper = mount(EventConfigEventTable, {
       global: {
@@ -73,4 +102,449 @@ describe('EventConfigEventTable.vue', () => {
   it('mounts', () => {
     expect(wrapper.exists()).toBe(true)
   })
+
+  describe('Rendering', () => {
+    it('renders the component correctly', () => {
+      expect(wrapper.find('.event-config-event-table').exists()).toBe(true)
+    })
+
+    it('renders the component title correctly', () => {
+      expect(wrapper.find('.title').text()).toBe('Events')
+    })
+
+    it('renders search input with correct label and hint', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('label')).toBe('Search')
+      expect(searchInput.props('hint')).toBe('Search by Event UEI, Event Label')
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
+    })
+
+    it('renders refresh button', () => {
+      const refreshButtons = wrapper.findAllComponents(FeatherButton)
+      const refreshButton = refreshButtons.find((btn) => btn.props('icon') === 'Refresh')
+      expect(refreshButton).toBeDefined()
+    })
+
+    it('renders table headers correctly when events exist', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Label1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc1',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      const headers = wrapper.findAllComponents(FeatherSortHeader)
+      expect(headers.length).toBe(2)
+      expect(wrapper.find('thead tr').text()).toContain('Event UEI')
+      expect(wrapper.find('thead tr').text()).toContain('Event Label')
+      expect(wrapper.find('thead tr').text()).toContain('Severity')
+      expect(wrapper.find('thead tr').text()).toContain('Status')
+      expect(wrapper.find('thead tr').text()).toContain('Actions')
+    })
+
+    it('renders empty list when no events', () => {
+      expect(wrapper.findComponent(EmptyList).exists()).toBe(true)
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+    })
+
+    it('renders pagination when events exist', async () => {
+      store.events = new Array(15).fill(0).map((_, i) => ({
+        id: i,
+        uei: `uei${i}`,
+        eventLabel: `Label${i}`,
+        severity: 'High',
+        enabled: true,
+        description: 'Desc',
+        xmlContent: '',
+        createdTime: new Date(),
+        lastModified: new Date(),
+        modifiedBy: '',
+        sourceName: '',
+        vendor: '',
+        fileOrder: 0
+      }))
+      store.eventsPagination.total = 15
+      await nextTick()
+      expect(wrapper.findComponent(FeatherPagination).exists()).toBe(true)
+      expect(wrapper.find('[data-test="FeatherPagination"]').exists()).toBe(true)
+    })
+
+    it('renders dialogs', () => {
+      expect(wrapper.findComponent(DeleteEventConfigEventDialog).exists()).toBe(true)
+      expect(wrapper.findComponent(ChangeEventConfigEventStatusDialog).exists()).toBe(true)
+    })
+  })
+
+  describe('Search Functionality', () => {
+    it('updates search term on input and debounces call to store', async () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      await searchInput.vm.$emit('update:modelValue', 'test search')
+      await nextTick()
+
+      // Advance timers for debounce
+      vi.advanceTimersByTime(500)
+      await flushPromises()
+
+      expect(store.eventsSearchTerm).toBe('test search')
+      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('test search')
+    })
+
+    it('trims search term on update', async () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      await searchInput.vm.$emit('update:modelValue', '  trimmed  ')
+      await nextTick()
+      vi.advanceTimersByTime(500)
+      await flushPromises()
+      expect(store.eventsSearchTerm).toBe('trimmed')
+      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('trimmed')
+    })
+
+    it('does not call store immediately on input (debounce)', async () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      await searchInput.vm.$emit('update:modelValue', 'test')
+      await nextTick()
+      // Before debounce time
+      expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
+    })
+
+    it('calls store on empty search after debounce', async () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      await searchInput.vm.$emit('update:modelValue', '')
+      await nextTick()
+      vi.advanceTimersByTime(500)
+      await flushPromises()
+      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('')
+    })
+  })
+
+  describe('Refresh Button', () => {
+    it('calls store refresh on button click', async () => {
+      const refreshButton = wrapper.findAllComponents(FeatherButton).find((btn) => btn.props('icon') === 'Refresh')
+      await refreshButton?.trigger('click')
+      await nextTick()
+      expect(store.refreshEventConfigEvents).toHaveBeenCalled()
+    })
+  })
+
+  describe('Sorting', () => {
+    beforeEach(async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Label1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+    })
+
+    it('calls sort-changed on header and updates store', async () => {
+      const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
+      await ueiHeader.vm.$emit('sort-changed', { property: 'uei', value: SORT.ASCENDING })
+      await nextTick()
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('uei', SORT.ASCENDING)
+    })
+
+    it('resets other sort states to NONE when sorting a column', async () => {
+      const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
+      await ueiHeader.vm.$emit('sort-changed', { property: 'uei', value: SORT.ASCENDING })
+      await nextTick()
+      // Access via wrapper.vm
+      expect(wrapper.vm.sort.uei).toBe(SORT.ASCENDING)
+      expect(wrapper.vm.sort.eventLabel).toBe(SORT.NONE)
+    })
+
+    it('defaults to createdTime desc when sort value is NONE', async () => {
+      const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
+      await ueiHeader.vm.$emit('sort-changed', { property: 'uei', value: SORT.NONE })
+      await nextTick()
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('createdTime', 'desc')
+    })
+
+    it('handles desc sort correctly', async () => {
+      const eventLabelHeader = wrapper.findAllComponents(FeatherSortHeader)[1]
+      await eventLabelHeader.vm.$emit('sort-changed', { property: 'eventLabel', value: SORT.DESCENDING })
+      await nextTick()
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('eventLabel', SORT.DESCENDING)
+      expect(wrapper.vm.sort.eventLabel).toBe(SORT.DESCENDING)
+      expect(wrapper.vm.sort.uei).toBe(SORT.NONE)
+    })
+  })
+
+  describe('Table Rows', () => {
+    beforeEach(async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'Critical',
+          enabled: true,
+          description: '<p>HTML <b>desc</b></p>',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+    })
+
+    it('displays event data in table cells', () => {
+      const tds = wrapper.findAll('td')
+      expect(tds[0].text()).toContain('UEI-1')
+      expect(tds[1].text()).toContain('Event 1')
+      expect(tds[3].text()).toContain('Enabled')
+    })
+
+    it('renders severity chip with correct text and class', () => {
+      const chip = wrapper.findComponent(FeatherChip)
+      expect(chip.text()).toBe('Critical')
+      const chipElement = chip.element as Element
+      expect(chipElement.classList.contains('critical-color')).toBe(true)
+      expect(chipElement.classList.contains('severity')).toBe(true)
+    })
+
+    it('toggles status text based on enabled flag', async () => {
+      store.events[0].enabled = false
+      await nextTick()
+      expect(wrapper.findAll('td')[3].text()).toContain('Disabled')
+    })
+
+    it('renders description with HTML in expanded row', async () => {
+      const expandButton = wrapper
+        .find('table')
+        .findAllComponents(FeatherButton)
+        .filter((btn: any) => btn.props('primary'))[0]
+      expect(expandButton).toBeDefined()
+      await expandButton.trigger('click')
+      await nextTick()
+      const expandedRow = wrapper.find('.expanded-content')
+      expect(expandedRow.exists()).toBe(true)
+      expect(expandedRow.text()).toContain('Description:')
+      // v-html should render <b>desc</b> as bold, but in test, check innerHTML
+      expect(expandedRow.find('p.description').html()).toContain('<b>desc</b>')
+    })
+  })
+
+  describe('Actions', () => {
+    beforeEach(async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'Critical',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      store.selectedSource = mockSource
+      store.selectedSource.vendor = 'SomeVendor'
+      await nextTick()
+    })
+
+    it('renders edit button and calls onEditEvent on click', async () => {
+      const editButton = wrapper.find('[data-test="edit-button"]').findComponent(FeatherButton)
+      await editButton.trigger('click')
+      await nextTick()
+      expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(
+        store.selectedSource,
+        CreateEditMode.Edit,
+        store.events[0]
+      )
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration New' })
+    })
+
+    it('renders dropdown only if vendor is not OpenNMS', () => {
+      expect(wrapper.findComponent(FeatherDropdown).exists()).toBe(true)
+    })
+
+    it('does not render dropdown if vendor is OpenNMS', async () => {
+      store.selectedSource = {
+        id: 1,
+        vendor: VENDOR_OPENNMS,
+        name: 'Test Source',
+        description: 'A test event config source',
+        enabled: true,
+        eventCount: 0,
+        fileOrder: 0,
+        uploadedBy: '',
+        createdTime: new Date(),
+        lastModified: new Date()
+      }
+      await nextTick()
+      expect(wrapper.findComponent(FeatherDropdown).exists()).toBe(false)
+    })
+
+    it('calls showChangeEventConfigEventStatusDialog on dropdown item click', async () => {
+      const spy = vi.spyOn(store, 'showChangeEventConfigEventStatusDialog')
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+
+      // Find the more options button (trigger)
+      const moreButton = buttons1[1]
+      expect(moreButton).toBeDefined()
+
+      await moreButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Now find the dropdown items in the whole wrapper
+      const dropdownItems = wrapper.findAllComponents(FeatherDropdownItem)
+      expect(dropdownItems).toHaveLength(2)
+      expect(dropdownItems[0].text()).toBe('Disable Event')
+      expect(dropdownItems[1].text()).toBe('Delete Event')
+      const statusItem = dropdownItems[0].find('a')
+      await statusItem.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(store.events[0])
+    })
+
+    it('updates dropdown item text based on enabled status', async () => {
+      store.events[0].enabled = false
+      const spy = vi.spyOn(store, 'showChangeEventConfigEventStatusDialog')
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+
+      // Find the more options button (trigger)
+      const moreButton = buttons1[1]
+      expect(moreButton).toBeDefined()
+
+      await moreButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Now find the dropdown items in the whole wrapper
+      const dropdownItems = wrapper.findAllComponents(FeatherDropdownItem)
+      expect(dropdownItems).toHaveLength(2)
+      expect(dropdownItems[0].text()).toBe('Enable Event')
+      expect(dropdownItems[1].text()).toBe('Delete Event')
+      const statusItem = dropdownItems[0].find('a')
+      await statusItem.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(store.events[0])
+    })
+
+    it('calls showDeleteEventConfigEventDialog on dropdown item click', async () => {
+      const spy = vi.spyOn(store, 'showDeleteEventConfigEventDialog')
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+
+      // Find the more options button (trigger)
+      const moreButton = buttons1[1]
+      expect(moreButton).toBeDefined()
+
+      await moreButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Now find the dropdown items in the whole wrapper
+      const dropdownItems = wrapper.findAllComponents(FeatherDropdownItem)
+      expect(dropdownItems).toHaveLength(2)
+      expect(dropdownItems[0].text()).toBe('Disable Event')
+      expect(dropdownItems[1].text()).toBe('Delete Event')
+      const statusItem = dropdownItems[1].find('a')
+      await statusItem.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(store.events[0])
+    })
+
+    it('toggles expand/collapse on button click', async () => {
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+      expect(wrapper.vm.expandedRows).toEqual([])
+
+      const expandButton = buttons1[2]
+      await expandButton?.trigger('click')
+      await nextTick()
+      expect(wrapper.vm.expandedRows).toEqual([1])
+      // Icon should change, but since prop, check if triggered
+      await expandButton?.trigger('click')
+      await nextTick()
+      expect(wrapper.vm.expandedRows).toEqual([])
+    })
+
+    it('handles multiple expanded rows', async () => {
+      store.events.push({
+        id: 2,
+        uei: 'UEI-2',
+        eventLabel: 'Test Event 2',
+        severity: 'Critical',
+        enabled: true,
+        description: 'A test event 2',
+        xmlContent: '',
+        createdTime: new Date(),
+        lastModified: new Date(),
+        modifiedBy: '',
+        sourceName: '',
+        vendor: 'opennms',
+        fileOrder: 0
+      })
+      await nextTick()
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(2)
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+      const buttons2 = rows[1].findAll('button')
+      expect(buttons2.length).toBe(3)
+
+      expect(wrapper.vm.expandedRows).toEqual([])
+
+      const expandButton1 = buttons1[2]
+      await expandButton1?.trigger('click')
+
+      const expandButton2 = buttons2[2]
+      await expandButton2?.trigger('click')
+      await nextTick()
+      expect(wrapper.vm.expandedRows).toEqual([1, 2])
+    })
+  })
 })
+
