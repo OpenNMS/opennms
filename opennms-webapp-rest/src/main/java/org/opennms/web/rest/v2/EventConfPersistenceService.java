@@ -90,7 +90,7 @@ public class EventConfPersistenceService {
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public Long addEventConfSourceEvent(final Long sourceId,final String userName, Event event) {
         final Date now = new Date();
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
@@ -103,24 +103,24 @@ public class EventConfPersistenceService {
         return eventConfEventDao.filterEventConf(uei, vendor, sourceName, offset, limit);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void updateSourceAndEventEnabled(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload) {
         eventConfSourceDao.updateEnabledFlag(eventConfSrcEnableDisablePayload.getSourceIds(),eventConfSrcEnableDisablePayload.getEnabled(),eventConfSrcEnableDisablePayload.getCascadeToEvents());
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload) throws Exception {
         eventConfSourceDao.deleteBySourceIds(eventConfSourceDeletePayload.getSourceIds());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
         eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload) {
 
         try {
@@ -242,7 +242,7 @@ public class EventConfPersistenceService {
         return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void deleteEventsForSource(final Long sourceId, final EventConfEventDeletePayload eventConfEventDeletePayload) throws Exception {
         if (eventConfEventDeletePayload.getEventIds() == null || eventConfEventDeletePayload.getEventIds().isEmpty()) {
             throw new IllegalArgumentException("Event IDs to delete must not be empty");
