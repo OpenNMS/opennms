@@ -15,8 +15,11 @@
     <div class="spacer"></div>
     <div v-if="enableAlarmData">
       <div class="dropdown">
+        <label class="label">Alarm Type:</label>
+        <div class="spacer"></div>
         <FeatherSelect
           label="Alarm Type"
+          hint="Select the alarm type."
           data-test="alarm-type"
           :error="errors.alarmType"
           :options="AlarmTypeOptions"
@@ -34,16 +37,22 @@
         Auto Clean
       </FeatherCheckbox>
       <div class="spacer"></div>
+      <div class="label">Alarm Reduction Key:</div>
+      <div class="spacer"></div>
       <FeatherInput
-        label="Reduction Key"
+        label=""
+        hint="Provide the reduction key for the alarm."
         :model-value="alarmReductionKey"
         data-test="alarm-reduction-key"
         @update:model-value="$emit('setAlarmData', 'reductionKey', $event)"
         :error="errors?.reductionKey"
       />
       <div class="spacer"></div>
+      <div class="label">Alarm Clear Key:</div>
+      <div class="spacer"></div>
       <FeatherInput
-        label="Clear Key"
+        label=""
+        hint="Provide the clear key for the alarm."
         :model-value="alarmClearKey"
         data-test="alarm-clear-key"
         @update:model-value="$emit('setAlarmData', 'clearKey', $event)"
@@ -57,20 +66,20 @@
 <script setup lang="ts">
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherCheckbox } from '@featherds/checkbox'
+import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
-import { AlarmTypeOptions } from './constants'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { FeatherIcon } from '@featherds/icon'
+import { AlarmTypeOptions } from './constants'
 
 defineEmits<{ (e: 'setAlarmData', key: string, value: any): void }>()
 const props = defineProps<{
-    addAlarmData: boolean,
-    reductionKey: string,
-    alarmType: ISelectItemType
-    autoClean: boolean,
-    clearKey: string,
-    errors: EventFormErrors
+  addAlarmData: boolean,
+  reductionKey: string,
+  alarmType: ISelectItemType
+  autoClean: boolean,
+  clearKey: string,
+  errors: EventFormErrors
 }>()
 const enableAlarmData = ref(false)
 const enableAutoClean = ref(false)
@@ -92,13 +101,17 @@ watch(() => props, (newVal) => {
 
 <style scoped lang="scss">
 .alarm-data-info {
-    .spacer {
-        min-height: 0.5em;
-    }
+  .label {
+    font-weight: 600;
+  }
 
-    .dropdown {
-        width: 50%;
-    }
+  .spacer {
+    min-height: 0.5em;
+  }
+
+  .dropdown {
+    width: 50%;
+  }
 }
 </style>
 

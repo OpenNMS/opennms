@@ -80,6 +80,7 @@ public class Manager implements ManagerMBean {
      */
     public void init() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> { LOG.info("got sigterm, stopping"); stop(); }));
+        doTestLoadLibraries();
     }
 
     /**

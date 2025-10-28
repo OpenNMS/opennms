@@ -333,20 +333,22 @@ describe('useEventConfigStore', () => {
   it('should log error when disabling with no source id', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await store.disableEventConfigSource(0)
+    await expect(store.disableEventConfigSource(0)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
+
     consoleErrorSpy.mockRestore()
   })
 
   it('should log error when enabling with no source id', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await store.enableEventConfigSource(0)
+    await expect(store.disableEventConfigSource(0)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
+
     consoleErrorSpy.mockRestore()
   })
 
@@ -405,3 +407,4 @@ describe('useEventConfigStore', () => {
     expect(store.isLoading).toBe(false)
   })
 })
+

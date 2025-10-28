@@ -123,6 +123,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         }
       } else {
         console.error('No source selected')
+        throw new Error('No source selected')
       }
     },
     async enableEventConfigSource(sourceId: number) {
@@ -133,6 +134,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         }
       } else {
         console.error('No source selected')
+        throw new Error('No source selected')
       }
     }
   }

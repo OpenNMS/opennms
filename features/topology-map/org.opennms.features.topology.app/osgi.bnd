@@ -6,8 +6,8 @@
 Vaadin-Package-Version: 1
 Vaadin-Widgetsets: org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet
 #Export-Package: org.opennms.*
-Embed-Dependency: jung*|colt|concurrent|collections-generic,*;groupId=ch.obermuhlner|com.googlecode.java-ipv6|com.google.re2j|com.hubspot.jinjava|de.odysseus.juel|org.javassist
+Embed-Dependency: jung*|colt|concurrent|collections-generic,*;groupId=ch.obermuhlner|com.googlecode.java-ipv6|com.google.re2j|com.hubspot.*|de.odysseus.juel|org.javassist
 Embed-Directory: dependencies
 Embed-Transitive: true
-Import-Package: !com.sun.jdi.*,!com.sun.tools.attach,!jdk.internal.module,*
+Import-Package: !javax.annotation.meta,!com.hubspot.*,!com.sun.jdi.*,!com.sun.tools.attach,!jdk.internal.module,*
 OnmsAutoExportServices: true
