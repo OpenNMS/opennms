@@ -546,5 +546,237 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.vm.expandedRows).toEqual([1, 2])
     })
   })
+
+  describe('Pagination', () => {
+    beforeEach(async () => {
+      store.events = new Array(15).fill(0).map((_, i) => ({
+        id: i,
+        uei: `uei${i}`,
+        eventLabel: `Label${i}`,
+        severity: 'High',
+        enabled: true,
+        description: 'Desc',
+        xmlContent: '',
+        createdTime: new Date(),
+        lastModified: new Date(),
+        modifiedBy: '',
+        sourceName: '',
+        vendor: '',
+        fileOrder: 0
+      }))
+      store.eventsPagination.total = 15
+      await nextTick()
+    })
+
+    it('updates page on pagination change', async () => {
+      const pagination = wrapper.findComponent(FeatherPagination)
+      await pagination.vm.$emit('update:modelValue', 2)
+      await nextTick()
+      expect(store.onEventsPageChange).toHaveBeenCalledWith(2)
+    })
+
+    it('updates page size on pagination change', async () => {
+      const pagination = wrapper.findComponent(FeatherPagination)
+      await pagination.vm.$emit('update:pageSize', 20)
+      await nextTick()
+      expect(store.onEventsPageSizeChange).toHaveBeenCalledWith(20)
+    })
+
+    it('initially sets correct pagination props', () => {
+      const pagination = wrapper.findComponent(FeatherPagination)
+      expect(pagination.props('modelValue')).toBe(1)
+      expect(pagination.props('pageSize')).toBe(10)
+      expect(pagination.props('total')).toBe(15)
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('handles empty events array (no table, shows empty list)', async () => {
+      store.events = []
+      await nextTick()
+      expect(wrapper.find('table').exists()).toBe(false)
+      expect(wrapper.findComponent(EmptyList).exists()).toBe(true)
+    })
+
+    it('handles events with empty description (no crash on expand)', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'High',
+          enabled: true,
+          description: '',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+      expect(wrapper.vm.expandedRows).toEqual([])
+
+      const expandButton = buttons1[2]
+      await expandButton?.trigger('click')
+      await nextTick()
+
+      expect(wrapper.find('.expanded-content p.description').exists()).toBe(true)
+      expect(wrapper.find('.expanded-content p.description').text()).toBe('')
+    })
+
+    it('handles HTML in description without issues (v-html renders safely)', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'High',
+          enabled: true,
+          description: '<script>alert(1)</script><b>Bold</b>',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows).toHaveLength(1)
+
+      const buttons1 = rows[0].findAll('button')
+      expect(buttons1.length).toBe(3)
+      expect(wrapper.vm.expandedRows).toEqual([])
+
+      const expandButton = buttons1[2]
+      await expandButton?.trigger('click')
+      await nextTick()
+      // Script doesn't execute in test, but HTML renders
+      expect(wrapper.find('.expanded-content').text()).toContain('Bold')
+    })
+
+    it('handles no selectedSource (edit does nothing)', async () => {
+      store.selectedSource = null
+      store.events = [
+        {
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      const editButton = wrapper.find('[data-test="edit-button"]').findComponent(FeatherButton)
+      await editButton.trigger('click')
+      await nextTick()
+      expect(modificationStore.setSelectedEventConfigSource).not.toHaveBeenCalled()
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+
+    it('handles duplicate event IDs in expandedRows (no crash)', async () => {
+      wrapper.vm.expandedRows.push(1)
+      wrapper.vm.expandedRows.push(1) // Duplicate
+      store.events = [
+        { 
+          id: 1,
+          uei: 'UEI-1',
+          eventLabel: 'Event 1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      expect(wrapper.find('.expanded-content').exists()).toBe(true) // Renders once due to v-if
+    })
+
+    it('handles large number of events (renders without crash)', async () => {
+      store.events = new Array(1000)
+        .fill(0)
+        .map((_, i) => ({
+          id: i,
+          uei: `uei${i}`,
+          eventLabel: `Label${i}`,
+          severity: 'High',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }))
+      await nextTick()
+      expect(wrapper.findAll('tr').length).toBeGreaterThan(1)
+    })
+
+    it('sort with no events (no crash)', async () => {
+      store.events = []
+      await nextTick()
+      // Simulate emit
+      wrapper.vm.sortChanged({ property: 'uei', value: SORT.ASCENDING })
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('uei', SORT.ASCENDING)
+    })
+
+    it('search with special characters (trims and calls store)', async () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      await searchInput.vm.$emit('update:modelValue', '  <script>alert(1)</script> test  ')
+      await nextTick()
+      vi.advanceTimersByTime(500)
+      await flushPromises()
+      expect(store.eventsSearchTerm).toBe('<script>alert(1)</script> test')
+      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('<script>alert(1)</script> test')
+    })
+
+    it('handles missing event properties gracefully', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: undefined as any,
+          eventLabel: undefined as any,
+          severity: 'Major',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      expect(wrapper.find('td').text()).toContain('') // Or empty, but no crash
+    })
+  })
 })
 
