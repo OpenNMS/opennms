@@ -24,7 +24,6 @@ package org.opennms.web.rest.v2;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
-import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,9 +89,6 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
-
-    @Autowired
-    private SessionFactory sessionFactory;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -281,7 +277,6 @@ public class EventConfRestServiceIT {
 
 
     @Test
-    @Transactional
     public void testEnableDisableEventConfSourcesEvents() throws Exception {
         EventConfSource  m_source = new EventConfSource();
         m_source.setName("testEventEnabledFlagTest");
@@ -312,8 +307,6 @@ public class EventConfRestServiceIT {
         disablePayload.setEnable(false);
 
         eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), disablePayload, securityContext);
-        sessionFactory.getCurrentSession().flush();
-        sessionFactory.getCurrentSession().clear();
         // Verify disabled state
         EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
         EventConfEvent disabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
@@ -327,8 +320,6 @@ public class EventConfRestServiceIT {
         enablePayload.setEnable(true);
 
         eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), enablePayload, securityContext);
-        sessionFactory.getCurrentSession().flush();
-        sessionFactory.getCurrentSession().clear();
         // Verify enabled state
         EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
         EventConfEvent enabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
@@ -566,7 +557,6 @@ public class EventConfRestServiceIT {
     }
 
     @Test
-    @Transactional
     public void testUpdateEventConfEvent() throws Exception {
         EventConfSource  m_source = new EventConfSource();
         m_source.setName("testEventEnabledFlagTest");
