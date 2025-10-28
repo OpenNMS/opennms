@@ -6,8 +6,8 @@
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <service enabled="true"><name>OpenNMS:Name=Manager</name></service>
   <service enabled="true"><name>OpenNMS:Name=Eventd</name></service>
-  <service enabled="{{getv (print $servicesPath "/alarmd/enabled") "true"}}><name>OpenNMS:Name=Alarmd</name></service>
-  <service enabled="{{getv (print $servicesPath "/bsmd/enabled") "true"><name>OpenNMS:Name=Bsmd</name></service>
+  <service enabled="{{getv (print $servicesPath "/alarmd/enabled") "true"}}"><name>OpenNMS:Name=Alarmd</name></service>
+  <service enabled="{{getv (print $servicesPath "/bsmd/enabled") "true"}}"><name>OpenNMS:Name=Bsmd</name></service>
   <service enabled="{{getv (print $servicesPath "/ticketer/enabled") "true"}}"><name>OpenNMS:Name=Ticketer</name></service>
   <service enabled="{{getv (print $servicesPath "/correlator/enabled") "false"}}"><name>OpenNMS:Name=Correlator</name></service>
   <service enabled="{{getv (print $servicesPath "/queued/enabled") "true"}}"><name>OpenNMS:Name=Queued</name></service>
