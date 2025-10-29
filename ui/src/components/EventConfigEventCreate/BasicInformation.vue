@@ -5,7 +5,8 @@
   >
     <div>
       <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
+        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details'
+        }}
       </h3>
     </div>
     <div class="spacer"></div>
@@ -130,6 +131,15 @@
             :errors="errors"
           />
         </div>
+        <div>
+          <MaskVarbinds
+            data-test="mask-varbinds"
+            :varbinds="varbinds"
+            :maskElements="maskElements"
+            :errors="errors"
+            @setVarbinds="setVarbinds"
+          />
+        </div>
         <div class="spacer"></div>
         <div class="action-container">
           <FeatherButton
@@ -170,6 +180,7 @@ import AlarmDataInfo from './AlarmDataInfo.vue'
 import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
+import MaskVarbinds from './MaskVarbinds.vue'
 
 const router = useRouter()
 const store = useEventModificationStore()
@@ -191,21 +202,38 @@ const addAlarmData = ref(false)
 const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
+const varbinds = ref<Array<{ index: number; value: string }>>([
+  { index: 0, value: '' }
+])
 
 const xmlContent = computed(() => {
   return vkbeautify.xml(
     `<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
-        ${maskElements.value.length > 0 ? `<mask>${maskElements.value.map((me) => `<maskelement>
-        <mename>${me.name._value}</mename>
-        <mevalue>${me.value}</mevalue>
-        </maskelement>`).join('')}</mask>` : ''}
+        ${maskElements.value.length > 0 ? `
+        <mask>
+          ${maskElements.value.map(me => `
+            <maskelement>
+              <mename>${me.name._value}</mename>
+              <mevalue>${me.value}</mevalue>
+            </maskelement>`).join('')}
+        </mask>` : ''}
+
+        ${varbinds.value.length > 0 ? `
+        <varbindsdecode>
+          ${varbinds.value.map(vb => `
+            <parmid>${vb.index}</parmid>
+            <decode varbindvalue="${vb.index}" varbinddecodedstring="${vb.value}" />
+          `).join('')}
+        </varbindsdecode>` : ''}
+
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
         <operinstruct><![CDATA[${operatorInstructions.value}]]></operinstruct>
         <logmsg dest="${destination.value._value}"><![CDATA[${logMessage.value}]]></logmsg>
         <severity>${severity.value._value}</severity>
-        ${addAlarmData.value ? `<alarm-data
+        ${addAlarmData.value ? `
+        <alarm-data
           reduction-key="${reductionKey.value}"
           alarm-type="${alarmType.value._value}"
           auto-clean="${autoClean.value}"
@@ -214,6 +242,9 @@ const xmlContent = computed(() => {
     </event>`.trim()
   )
 })
+
+
+
 
 const resetValues = () => {
   eventUei.value = ''
@@ -273,6 +304,25 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
         value: maskElementList[i].getElementsByTagName('mevalue')[0].textContent || ''
       })
     }
+    const varbindDecodeList = xmlDoc.getElementsByTagName('varbindsdecode')
+    varbinds.value = []
+
+    if (varbindDecodeList.length > 0) {
+      for (let v = 0; v < varbindDecodeList.length; v++) {
+        const decodeElements = varbindDecodeList[v].getElementsByTagName('decode')
+
+        for (let i = 0; i < decodeElements.length; i++) {
+          const varbindValue = decodeElements[i].getAttribute('varbindvalue')?.trim() || ''
+          const decodedString = decodeElements[i].getAttribute('varbinddecodedstring')?.trim() || ''
+
+          varbinds.value.push({
+            index: Number(varbindValue),
+            value: decodedString
+          })
+        }
+      }
+    }
+
   } else {
     resetValues()
   }
@@ -334,6 +384,28 @@ const setMaskElements = (key: string, value: any, index: number) => {
 
   if (key === 'removeMaskRow') {
     maskElements.value.splice(index, 1)
+  }
+}
+
+const setVarbinds = (key: string, value: any, index: number) => {
+  if (key === 'setIndex') {
+    varbinds.value[index].index = Number(value)
+  }
+
+  if (key === 'setValue') {
+    varbinds.value[index].value = value
+  }
+
+  if (key === 'addVarbindRow') {
+    varbinds.value.push({ index: varbinds.value.length, value: '' })
+  }
+
+  if (key === 'removeVarbindRow') {
+    varbinds.value.splice(index, 1)
+  }
+
+  if (key === 'clearAllVarbinds') {
+    varbinds.value = []
   }
 }
 
