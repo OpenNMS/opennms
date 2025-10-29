@@ -696,7 +696,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         for (OnmsMonitoredService svc : newServices) {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
-            svc.addMetaData("system-explicit", "explicitlyAdded", "true");
             svc.visit(new AddEventVisitor(eventForwarder));
         }
     }
@@ -706,8 +705,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             return false;
         }
         Optional<OnmsMetaData> meta = svc.getMetaData().stream()
-                .filter(x -> "system-explicit".equalsIgnoreCase(x.getContext()))
-                .filter(x -> "explicitlyAdded".equalsIgnoreCase(x.getKey()))
+                .filter(x -> "requisition".equalsIgnoreCase(x.getContext()))
+                .filter(x -> "user-added".equalsIgnoreCase(x.getKey()))
                 .findFirst();
         return meta.map(x -> Boolean.parseBoolean(x.getValue())).orElse(false);
     }
