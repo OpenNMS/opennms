@@ -60,8 +60,8 @@ RUN microdnf -y install ${REQUIRED_RPMS} && \
 ##
 FROM sentinel-base
 
-# If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
-# We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
+# If you copy from /opt/sentinel to /opt/sentinel the permissions are not preserved
+# We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /opt/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
 SHELL ["/bin/bash", "-c"]
@@ -74,7 +74,7 @@ RUN groupadd \
         --system \
         --uid 10001 \
         --gid 10001 \
-        --home-dir /usr/share/sentinel \
+        --home-dir /opt/sentinel \
         --no-create-home \
         --shell /usr/bin/bash \
         sentinel
@@ -89,11 +89,11 @@ RUN  getent passwd sentinel
 # Install any spare packages and create some compatibility links
 RUN install -d -o 10001 -g 0 -m 775 \
         /var/lib/sentinel \
-        /usr/share/sentinel/data/{log,tmp} && \
-    ln -s /usr/share/sentinel/data /var/lib/sentinel/data && \
-    ln -s /usr/share/sentinel/deploy /var/lib/sentinel/deploy && \
-    ln -s /usr/share/sentinel/etc /etc/sentinel && \
-    ln -s /usr/share/sentinel /opt/sentinel
+        /opt/sentinel/data/{log,tmp} && \
+    ln -s /opt/sentinel/data /var/lib/sentinel/data && \
+    ln -s /opt/sentinel/deploy /var/lib/sentinel/deploy && \
+    ln -s /opt/sentinel/etc /etc/sentinel && \
+    ln -s /opt/sentinel /opt/sentinel
 
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
@@ -106,9 +106,9 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 COPY ./container-fs/confd/ /opt/sentinel/confd/
 RUN chmod +x /opt/sentinel/confd/scripts/*
 
-VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
+VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
-WORKDIR /usr/share/sentinel
+WORKDIR /opt/sentinel
 
 ### Containers should NOT run as root as a good practice
 USER 10001
@@ -144,7 +144,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
 ### Runtime information and not relevant at build time
 
 # TODO MVR SENTINEL_LOCATION is not used at the moment
-ENV SENTINEL_HOME="/usr/share/sentinel" \
+ENV SENTINEL_HOME="/opt/sentinel" \
     SENTINEL_ID="" \
     SENTINEL_LOCATION="SENTINEL" \
     OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \

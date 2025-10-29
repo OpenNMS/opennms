@@ -3,7 +3,7 @@
 set -e
 
 MINIONUSER="minion"
-MINIONHOME="/usr/share/minion"
+MINIONHOME="/opt/minion"
 
 if ! getent group "$MINIONUSER" >/dev/null; then
 	addgroup --system "$MINIONUSER"

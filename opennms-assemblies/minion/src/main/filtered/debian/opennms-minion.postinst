@@ -4,7 +4,7 @@ set -e
 
 ETCDIR="/etc/minion"
 MINIONUSER="minion"
-MINIONHOME="/usr/share/minion"
+MINIONHOME="/opt/minion"
 MINIONDATA="/var/lib/minion"
 MINIONLOG="/var/log/minion"
 

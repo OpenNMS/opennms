@@ -3,7 +3,7 @@
 set -e
 
 ETCDIR="/etc/minion"
-MINIONHOME="/usr/share/minion"
+MINIONHOME="/opt/minion"
 
 if [ "$1" = "purge" ]; then
 	rm -rf "${MINIONHOME}" || true

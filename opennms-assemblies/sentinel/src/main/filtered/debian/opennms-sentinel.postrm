@@ -3,7 +3,7 @@
 set -e
 
 ETCDIR="/etc/sentinel"
-SENTINELHOME="/usr/share/sentinel"
+SENTINELHOME="/opt/sentinel"
 
 if [ "$1" = "purge" ]; then
 	rm -rf "${SENTINELHOME}" || true
