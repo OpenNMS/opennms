@@ -50,7 +50,7 @@
             </FeatherSortHeader>
             <th>Severity</th>
             <th>Status</th>
-            <th v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS">Actions</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <TransitionGroup
@@ -70,9 +70,10 @@
                 </FeatherChip>
               </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
-              <td v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS">
+              <td>
                 <div class="action-container">
                   <FeatherButton
+                    v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS"
                     icon="Edit"
                     :title="`Edit ${event.eventLabel}`"
                     data-test="edit-button"

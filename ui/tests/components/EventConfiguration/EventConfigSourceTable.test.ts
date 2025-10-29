@@ -1,5 +1,6 @@
 import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigSourceTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
+import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
@@ -259,7 +260,7 @@ describe('EventConfigSourceTable.vue', () => {
 
     const row = wrapper.find('transition-group-stub tr')
     expect(row.exists()).toBe(true)
-    expect(row.findAll('button')).toHaveLength(1)
+    expect(row.findAll('button')).toHaveLength(2)
 
     expect(row.findAllComponents(FeatherDropdown)).toHaveLength(0)
     expect(row.findAllComponents(FeatherDropdownItem)).toHaveLength(0)
@@ -274,7 +275,7 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows).toHaveLength(2)
 
     const buttons1 = rows[0].findAll('button')
-    expect(buttons1.length).toBe(2)
+    expect(buttons1.length).toBe(3)
 
     await buttons1[1].trigger('click')
     await wrapper.vm.$nextTick()
@@ -284,13 +285,13 @@ describe('EventConfigSourceTable.vue', () => {
     expect(dropdown1[1].text()).toBe('Delete Source')
 
     const buttons2 = rows[1].findAll('button')
-    expect(buttons2.length).toBe(2)
+    expect(buttons2.length).toBe(3)
 
     await buttons2[1].trigger('click')
     await wrapper.vm.$nextTick()
 
     const dropdown2 = rows[1].findAllComponents(FeatherDropdownItem)
-    expect(buttons1.length).toBe(2)
+    expect(buttons1.length).toBe(3)
 
     expect(dropdown2[0].text()).toBe('Enable Source')
     expect(dropdown2[1].text()).toBe('Delete Source')
@@ -304,10 +305,27 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows).toHaveLength(1)
 
     await rows[0].findAll('button')[1].trigger('click')
+    expect(rows[0].findAll('button')).toHaveLength(3)
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="change-status-button"]').trigger('click')
     expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
+  })
+
+  it('clicks download from dropdown and calls downloadEventConfXmlBySourceId', async () => {
+    store.sources = [mockSource]
+    const svc = await import('@/services/eventConfigService')
+    vi.spyOn(svc, 'downloadEventConfXmlBySourceId').mockResolvedValue(false)
+    await wrapper.vm.$nextTick()
+
+    const rows = wrapper.findAll('transition-group-stub tr')
+    expect(rows).toHaveLength(1)
+
+    await rows[0].findAll('button')[2].trigger('click')
+    await wrapper.vm.$nextTick()
+    
+    expect(downloadEventConfXmlBySourceId).toHaveBeenCalled()
+    expect(svc.downloadEventConfXmlBySourceId).toHaveBeenCalledWith(mockSource.id)
   })
 
   it('clicks delete from dropdown and calls showDeleteEventConfigSourceModal', async () => {

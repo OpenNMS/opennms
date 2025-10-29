@@ -69,7 +69,6 @@
             <td>
               <div class="action-container">
                 <FeatherButton
-                  primary
                   icon="View Details"
                   data-test="view-button"
                   @click="onEventClick(config)"
@@ -101,6 +100,13 @@
                     Delete Source
                   </FeatherDropdownItem>
                 </FeatherDropdown>
+                <FeatherButton
+                  icon="Download XML"
+                  data-test="download-button"
+                  @click="downloadEventConfXmlBySourceId(config.id)"
+                >
+                  <FeatherIcon :icon="Download"> </FeatherIcon>
+                </FeatherButton>
               </div>
             </td>
           </tr>
@@ -142,6 +148,7 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
+import Download from '@featherds/icon/action/DownloadFile'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
@@ -152,6 +159,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
+import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 
 const router = useRouter()
 const store = useEventConfigStore()

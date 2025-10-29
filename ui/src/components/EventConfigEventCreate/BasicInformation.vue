@@ -217,7 +217,6 @@ const xmlContent = computed(() => {
               <mevalue>${me.value}</mevalue>
             </maskelement>`).join('')}
         </mask>` : ''}
-
         ${varbinds.value.length > 0 ? `
         <varbindsdecode>
           ${varbinds.value.map(vb => `
@@ -225,7 +224,6 @@ const xmlContent = computed(() => {
             <decode varbindvalue="${vb.index}" varbinddecodedstring="${vb.value}" />
           `).join('')}
         </varbindsdecode>` : ''}
-
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
@@ -242,9 +240,6 @@ const xmlContent = computed(() => {
     </event>`.trim()
   )
 })
-
-
-
 
 const resetValues = () => {
   eventUei.value = ''
