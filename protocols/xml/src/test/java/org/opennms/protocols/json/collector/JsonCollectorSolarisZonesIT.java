@@ -92,24 +92,24 @@ public class JsonCollectorSolarisZonesIT extends JsonCollectorITCase {
         parameters.put("handler-class", "org.opennms.protocols.json.collector.MockDefaultJsonCollectionHandler");
         // Files expected: one JRB for each zone: global, zone1 and zone2 (3 in total)
         executeCollectorTest(parameters, 3);
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/global/solaris-zone-stats.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone1/solaris-zone-stats.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone2/solaris-zone-stats.jrb").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/global/solaris-zone-stats.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone1/solaris-zone-stats.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone2/solaris-zone-stats.rrd").exists());
         // Checking data from Global Zone.
-        File file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/global/solaris-zone-stats.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/global/solaris-zone-stats.rrd");
         String[] dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
         Double[] dsvalues = new Double[] { 245.0, 1455.0, 2646864.0, 1851072.0, 0.7, 0.24 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
         // Checking data from Zone 1
-        file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone1/solaris-zone-stats.jrb");
+        file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone1/solaris-zone-stats.rrd");
         dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
         dsvalues = new Double[] { 24.0, 328.0, 1671128.0, 1193240.0, 0.4, 0.07 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
         // Checking data from Zone 2
-        file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone2/solaris-zone-stats.jrb");
+        file = new File(getSnmpRootDirectory(), "1/solarisZoneStats/zone2/solaris-zone-stats.rrd");
         dsnames = new String[] { "nproc", "nlwp", "pr_size", "pr_rssize", "pctmem", "pctcpu" };
         dsvalues = new Double[] { 124.0, 1328.0, 1571128.0, 193240.0, 0.5, 0.06 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
     }
 
 }

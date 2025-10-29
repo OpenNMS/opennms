@@ -33,7 +33,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.rrd.rrdtool.RrdCreationTimeProvider;
 
 /**
  * The Test class for XML Collector for 3GPP Statistics
@@ -58,6 +60,15 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
         return "src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        RrdCreationTimeProvider.setProvider(new RrdCreationTimeProvider.ProviderInterface() {
+            @Override
+            public long currentTimeMillis() {
+                return 1319521500000L;
+            }
+        });
+    }
     /**
      * Test time parser.
      *
@@ -91,10 +102,10 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 147);
         // Test a JRB.
-        File file = new File(getSnmpRootDirectory(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.rrd");
         String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
         Double[] dsvalues = new Double[] { 1.0, 18.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
     }
 
 }

@@ -77,8 +77,26 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <artifactId>opennms-rrd-api</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrrd-dependencies</artifactId>
+        <scope>provided</scope>
+        <type>pom</type>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jrrd2-dependencies</artifactId>
+        <scope>provided</scope>
+        <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>

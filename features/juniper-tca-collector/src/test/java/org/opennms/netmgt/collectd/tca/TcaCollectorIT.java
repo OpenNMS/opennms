@@ -32,11 +32,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jrobin.core.Robin;
-import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,6 +74,9 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.model.Row;
+import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.rrdtool.RrdCreationTimeProvider;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -106,7 +108,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // These tests rely on JRobin to verify the values
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy",
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy",
         "org.opennms.rrd.usequeue=false"
 })
 @JUnitTemporaryDatabase(reuseDatabase=false)
@@ -175,6 +177,15 @@ public class TcaCollectorIT implements InitializingBean {
 	@Before
 	public void setUp() throws Exception {
 		MockLogAppender.setupLogging();
+
+        RrdCreationTimeProvider.setProvider(new RrdCreationTimeProvider.ProviderInterface() {
+            @Override
+            public long currentTimeMillis() {
+                return 1327441762;
+            }
+        });
+
+        System.setProperty("rrd.binary", "rrdtool");
 
 		m_tempFolder.newFolder("snmp");
 		m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
@@ -314,21 +325,23 @@ public class TcaCollectorIT implements InitializingBean {
 		collectionSet.visit(persister);
 
 		// Validate Persisted Data
-		Path pathToJrbFile = getSnmpRoot().toPath().resolve(Paths.get("1", TcaCollectionHandler.RESOURCE_TYPE_NAME,
+		Path pathToRrdFile = getSnmpRoot().toPath().resolve(Paths.get("1", TcaCollectionHandler.RESOURCE_TYPE_NAME,
 		        "171.19.37.60", TcaCollectionHandler.INBOUND_DELAY + m_rrdStrategy.getDefaultFileExtension()));
-		RrdDb jrb = new RrdDb(pathToJrbFile.toString());
+
+        var rrd = RrdConvertUtils.dumpRrd(new File(pathToRrdFile.toString()));
 
 		// According with the Fixed Step
-		Assert.assertEquals(1, jrb.getArchive(0).getArcStep());
+		Assert.assertEquals(Long.valueOf(1), rrd.getStep());
 
 		// According with the Sample Data
-		Assert.assertEquals(ts - 1, jrb.getArchive(0).getEndTime());
-		Robin inboundDelay = jrb.getArchive(0).getRobin(0);
-		for (int i = inboundDelay.getSize() - 49; i < inboundDelay.getSize() - 25; i++) {
-			Assert.assertEquals(Double.valueOf(11), Double.valueOf(inboundDelay.getValue(i)));
+		Assert.assertEquals(Long.valueOf(ts - 1), rrd.getEndTimestamp(rrd.getRras().get(0)));
+
+		List<Row> inboundDelay = rrd.getRras().get(0).getRows();
+		for (int i = inboundDelay.size() - 49; i < inboundDelay.size() - 25; i++) {
+			Assert.assertEquals(Double.valueOf(11), Double.valueOf(inboundDelay.get(i).getValues().get(0)));
 		}
-		for (int i = inboundDelay.getSize() - 24; i < inboundDelay.getSize(); i++) {
-			Assert.assertEquals(Double.valueOf(12), Double.valueOf(inboundDelay.getValue(i)));
+		for (int i = inboundDelay.size() - 24; i < inboundDelay.size(); i++) {
+			Assert.assertEquals(Double.valueOf(12), Double.valueOf(inboundDelay.get(i).getValues().get(0)));
 		}
 
 		verify(m_configDao, atLeastOnce()).getConfig();

@@ -65,14 +65,14 @@ public class JsonCollectorArrayIT extends JsonCollectorITCase {
         parameters.put("handler-class", "org.opennms.protocols.json.collector.MockDefaultJsonCollectionHandler");
 
         executeCollectorTest(parameters, 4);
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/foo/json-array-stats.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/bar/json-array-stats.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/baz/json-array-stats.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/works/json-array-stats.jrb").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/foo/json-array-stats.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/bar/json-array-stats.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/baz/json-array-stats.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/jsonArrayStats/works/json-array-stats.rrd").exists());
 
-        validateJrb(new File(getSnmpRootDirectory(), "1/jsonArrayStats/foo/json-array-stats.jrb"), new String[] {"val"}, new Double[] {0.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/jsonArrayStats/bar/json-array-stats.jrb"), new String[] {"val"}, new Double[] {1.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/jsonArrayStats/baz/json-array-stats.jrb"), new String[] {"val"}, new Double[] {2.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/jsonArrayStats/works/json-array-stats.jrb"), new String[] {"val"}, new Double[] {1337.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/jsonArrayStats/foo/json-array-stats.rrd"), new String[] {"val"}, new Double[] {0.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/jsonArrayStats/bar/json-array-stats.rrd"), new String[] {"val"}, new Double[] {1.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/jsonArrayStats/baz/json-array-stats.rrd"), new String[] {"val"}, new Double[] {2.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/jsonArrayStats/works/json-array-stats.rrd"), new String[] {"val"}, new Double[] {1337.0});
     }
 }

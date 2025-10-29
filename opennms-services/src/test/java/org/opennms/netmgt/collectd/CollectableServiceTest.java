@@ -63,7 +63,8 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -82,9 +83,11 @@ public class CollectableServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("rrd.binary", "rrdtool");
+
         MockLogAppender.setupLogging();
 
-        rrdStrategy = new JRobinRrdStrategy();
+        rrdStrategy = new MultithreadedJniRrdStrategy();
         fileAnticipator = new FileAnticipator();
 
         MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
@@ -195,7 +198,7 @@ public class CollectableServiceTest {
         });
 
         File nodeDir = fileAnticipator.expecting(getSnmpRrdDirectory(), "1");
-        File jrbFile = fileAnticipator.expecting(nodeDir, "myCounter" + rrdStrategy.getDefaultFileExtension());
+        File rrdFile = fileAnticipator.expecting(nodeDir, "myCounter" + rrdStrategy.getDefaultFileExtension());
         fileAnticipator.expecting(nodeDir, "myCounter" + ".meta");
 
         long beforeInMs = System.currentTimeMillis();
@@ -206,8 +209,8 @@ public class CollectableServiceTest {
                 beforeInMs - afterInMs), afterInMs - beforeInMs >= collectionDelayInSecs * 1000);
 
         // Verify the last update time match the start of the collection time
-        RrdDb rrdDb = new RrdDb(jrbFile);
-        long lastUpdateTimeInSecs = rrdDb.getLastUpdateTime();
+        var rrd = RrdConvertUtils.dumpRrd(rrdFile);
+        long lastUpdateTimeInSecs = rrd.getLastUpdate();
         long beforeInSecs = Math.floorDiv(beforeInMs, 1000);
         long afterInSecs = Math.floorDiv(afterInMs, 1000) + 1;
 

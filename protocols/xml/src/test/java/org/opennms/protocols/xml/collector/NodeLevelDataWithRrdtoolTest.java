@@ -69,26 +69,6 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
     }
 
     /**
-     * Validates a RRD.
-     * <p>It assumes storeByGroup=true</p>
-     * 
-     * @param file the RRD file instance
-     * @param dsnames the array of data source names
-     * @param dsvalues the array of data source values
-     * @throws Exception the exception
-     */
-    protected void validateRrd(File file, String[] dsnames, Double[] dsvalues) throws Exception {
-        Assert.assertTrue(file.exists());
-        RRDv3 rrd = RrdConvertUtils.dumpRrd(file);
-        Assert.assertEquals(dsnames.length, rrd.getDataSources().size());
-        for (int i = 0; i < dsnames.length; i++) {
-            Assert.assertEquals(dsvalues[i], Double.valueOf(rrd.getDataSource(i).getLastDs()));
-            List<Row> rows = rrd.getRras().get(0).getRows();
-            Assert.assertFalse(rows.get(rows.size() - 1).isNan()); // All the last values stored on the RRA must be valid numbers
-        }
-    }
-
-    /**
      * Sets the RRD binary.
      */
     protected void setRrdBinary() {

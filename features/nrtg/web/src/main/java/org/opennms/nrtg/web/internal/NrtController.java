@@ -335,7 +335,7 @@ public class NrtController {
                 }
                 pathToMetaFile = ResourcePath.get(path.split(":"));
             } else {
-                final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+                final String knownExtensions[] = new String[]{".rrd"};
                 String metaFileNameWithoutExtension = attr.getRrdFile();
                 for (final String ext : knownExtensions) {
                     if (metaFileNameWithoutExtension.endsWith(ext)) {

@@ -23,12 +23,13 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.jrobin.core.Datasource;
-import org.jrobin.core.RrdDb;
+import org.jrobin.core.RrdException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,11 +48,20 @@ import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.model.v3.DS;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
 
 /**
  * The Abstract Class for Testing the XML Collector.
@@ -104,7 +114,7 @@ public class NodeLevelDataOnMultipleNodesTest {
     }
 
     protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
-        return new JRobinRrdStrategy();
+        return new MultithreadedJniRrdStrategy();
     }
 
     /**
@@ -129,22 +139,22 @@ public class NodeLevelDataOnMultipleNodesTest {
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
 
         executeCollectorTest(1, "127.0.0.1", "src/test/resources/node-level.xml", parameters, 1);
-        File file = new File(getSnmpRoot(), "1/node-level-stats.jrb");
+        File file = new File(getSnmpRoot(), "1/node-level-stats.rrd");
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
 
         executeCollectorTest(2, "127.0.0.2", "src/test/resources/node-level-2.xml", parameters, 1);
-        file = new File(getSnmpRoot(), "2/node-level-stats.jrb");
+        file = new File(getSnmpRoot(), "2/node-level-stats.rrd");
         dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         dsvalues = new Double[] { 20.0, 21.0, 22.0, 23.0, 24.0, 25.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
 
         executeCollectorTest(3, "127.0.0.3", "src/test/resources/node-level-3.xml", parameters, 1);
-        file = new File(getSnmpRoot(), "3/node-level-stats.jrb");
+        file = new File(getSnmpRoot(), "3/node-level-stats.rrd");
         dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         dsvalues = new Double[] { 30.0, 31.0, 32.0, 33.0, 34.0, 35.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
     }
 
     /**
@@ -153,7 +163,7 @@ public class NodeLevelDataOnMultipleNodesTest {
      * @return the RRD extension
      */
     protected String getRrdExtension() {
-        return "jrb";
+        return "rrd";
     }
 
     /**
@@ -201,22 +211,34 @@ public class NodeLevelDataOnMultipleNodesTest {
     }
 
     /**
-     * Validates a JRB.
+     * Validates a RRD.
      * <p>It assumes storeByGroup=true</p>
      * 
-     * @param file the JRB file instance
+     * @param file the RRD file instance
      * @param dsnames the array of data source names
      * @param dsvalues the array of data source values
      * @throws Exception the exception
      */
-    public void validateJrb(File file, String[] dsnames, Double[] dsvalues) throws Exception {
+    public void validateRrd(File file, String[] dsnames, Double[] dsvalues) throws Exception {
         Assert.assertTrue(file.exists());
-        RrdDb jrb = new RrdDb(file);
-        Assert.assertEquals(dsnames.length, jrb.getDsCount());
-        for (int i = 0; i < dsnames.length; i++) {
-            Datasource ds = jrb.getDatasource(dsnames[i]);
-            Assert.assertNotNull(ds);
-            Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
+        try {
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            Process process = Runtime.getRuntime().exec(new String[] {"rrdtool", "dump", file.getAbsolutePath()});
+            SAXSource source = new SAXSource(xmlReader, new InputSource(new InputStreamReader(process.getInputStream())));
+            JAXBContext jc = JAXBContext.newInstance(RRDv3.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            final RRDv3 rrdv3 = (RRDv3) u.unmarshal(source);
+
+            Assert.assertEquals(dsnames.length, rrdv3.getDataSources().size());
+            for (int i = 0; i < dsnames.length; i++) {
+                final String dsname = dsnames[i];
+                final Optional<DS> ds = rrdv3.getDataSources().stream().filter(d -> dsname.equals(d.getName())).findAny();
+                Assert.assertTrue(ds.isPresent());
+                Assert.assertEquals(dsvalues[i], ds.get().getLastDs());
+            }
+        } catch (Exception e) {
+            throw new RrdException("Can't parse RRD Dump", e);
         }
     }
 

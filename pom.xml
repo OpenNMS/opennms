@@ -1396,6 +1396,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.testing.plugin.version}</version>
         <configuration>
+            <argLine>${argLineAllowReflection}</argLine>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
@@ -1422,7 +1423,6 @@
             <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
-            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
@@ -1450,7 +1450,6 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
-            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
@@ -3568,6 +3567,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-jrobin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-rrdtool</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
