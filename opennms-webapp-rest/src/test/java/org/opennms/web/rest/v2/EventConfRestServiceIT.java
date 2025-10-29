@@ -178,6 +178,7 @@ public class EventConfRestServiceIT {
     }
 
     @Test
+    @Transactional
     public void testMalformedEventFile_ShouldAppearInErrors() throws Exception {
         String filename = "test.invalid.xml";
         InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
@@ -246,6 +247,7 @@ public class EventConfRestServiceIT {
 
 
     @Test
+    @Transactional
     public void testEventConfSourcesEnabledDisabled() throws Exception {
         String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
         List<Attachment> attachments = new ArrayList<>();
@@ -265,7 +267,9 @@ public class EventConfRestServiceIT {
         // Disable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
         eventConfRestApi.enableDisableEventConfSources(eventConfSrcDisablePayload, securityContext);
-        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        List<EventConfSource> eventConfSources  = eventConfSourceDao.findAll();
         assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
         assertTrue(eventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
@@ -273,6 +277,8 @@ public class EventConfRestServiceIT {
         // Enable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
         eventConfRestApi.enableDisableEventConfSources(eventConfSrcEnablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
         List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
@@ -430,6 +436,7 @@ public class EventConfRestServiceIT {
 
 
     @Test
+    @Transactional
     public void testDeleteEventConfSources_Success() throws Exception {
         String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
         List<Attachment> attachments = new ArrayList<>();

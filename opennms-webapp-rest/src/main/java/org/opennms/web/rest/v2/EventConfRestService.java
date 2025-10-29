@@ -40,7 +40,6 @@ import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
@@ -67,7 +66,6 @@ public class EventConfRestService implements EventConfRestApi {
     private EventConfSourceDao eventConfSourceDao;
 
     @Override
-    @Transactional
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
@@ -141,7 +139,6 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    @Transactional
     public Response enableDisableEventConfSources(final EventConfSrcEnableDisablePayload payload, SecurityContext securityContext) throws Exception {
 
         if (payload == null) {
@@ -312,7 +309,7 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
 
-    @Transactional
+    
     @Override
     public Response updateEventConfEvent(Long sourceId, Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
         if (payload == null) {
