@@ -1,7 +1,7 @@
 Enable tracing with Jaeger on Sentinel by installing the `opennms-core-tracing-jaeger` feature.
 
 NOTE: Configurations has to be made in the `etc` directory relative to the Sentinel home directory.
-      Depending on your operating system the home directory is in `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+      Depending on your operating system the home directory is in `/opt/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
 
 .Create a file to load the tracing feature on startup
 [source, console]

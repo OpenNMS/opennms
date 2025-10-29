@@ -24,7 +24,7 @@ Make sure you have the following:
 * Credentials for authentication configured for the message broker, Elasticsearch, and the PostgreSQL database
 
 NOTE: You must set configuration in the `etc` directory relative to the {page-component-title} Sentinel home directory `$\{SENTINEL_HOME}`.
-Depending on your operating system, the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/opt/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
 
 Repeat the following steps on each Sentinel node.
 

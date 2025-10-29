@@ -143,7 +143,7 @@ EOF
 export JAVA_OPTS=-javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
 ----
 
-TIP: Replace `$\{MINION_HOME}` with `/opt/minion` on RPM and `/usr/share/minion` on Debian-based Linux distributions.
+TIP: Replace `$\{MINION_HOME}` with `/opt/minion` on RPM and `/opt/minion` on Debian-based Linux distributions.
 
 .Step 4: Restart the Minion
 [source]
@@ -208,7 +208,7 @@ EOF
 export JAVA_OPTS=-javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
 ----
 
-TIP: Replace `$\{SENTINEL_HOME}` with `/opt/sentinel` on RPM and `/usr/share/sentinel` on Debian-based Linux distributions.
+TIP: Replace `$\{SENTINEL_HOME}` with `/opt/sentinel` on RPM and `/opt/sentinel` on Debian-based Linux distributions.
 
 .Step 4: Restart the Sentinel
 [source]
