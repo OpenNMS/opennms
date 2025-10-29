@@ -59,7 +59,7 @@ import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
@@ -503,7 +503,7 @@ public class BsmdIT {
     public void verifyStartupWithoutAlarmData() throws Exception {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
         eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // Remove Alarm Data
@@ -526,7 +526,7 @@ public class BsmdIT {
     public void verifyStartupWithChangedReductionKey() throws Exception {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
         eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // change reduction key

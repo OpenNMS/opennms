@@ -55,7 +55,7 @@ public class EventConfDataTest {
         MockLogAppender.setupLogging(false);
 
         eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
         eventConfDao.loadEventsFromDB(eventConfEventList);
 
     }

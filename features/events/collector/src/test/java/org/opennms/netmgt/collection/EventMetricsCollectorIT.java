@@ -34,7 +34,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
@@ -91,7 +91,7 @@ public class EventMetricsCollectorIT {
     private EventMetricsCollector getCollector(Persister persister) throws IOException {
         // load testing eventconf
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/events/collection.events.xml"));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/events/collection.events.xml"));
         eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // fake interface info

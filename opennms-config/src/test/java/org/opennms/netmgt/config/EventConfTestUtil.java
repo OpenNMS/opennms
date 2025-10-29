@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.config;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -33,18 +32,16 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class EventConfUtil {
+public final class EventConfTestUtil {
 
     private static final AtomicLong sourceIdGenerator = new AtomicLong();
     private static final AtomicLong eventIdGenerator = new AtomicLong();
 
-    @VisibleForTesting
-    // This method should only be used in tests.
     public static List<EventConfEvent> parseResourcesAsEventConfEvents(Resource configResource) throws IOException {
         List<EventConfEvent> eventConfEventList = new ArrayList<>();
 
