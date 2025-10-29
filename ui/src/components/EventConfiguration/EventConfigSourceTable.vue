@@ -75,6 +75,13 @@
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
+                <FeatherButton
+                  icon="Download XML"
+                  data-test="download-button"
+                  @click="downloadEventConfXmlBySourceId(config.id)"
+                >
+                  <FeatherIcon :icon="Download"> </FeatherIcon>
+                </FeatherButton>
                 <FeatherDropdown v-if="config.vendor !== VENDOR_OPENNMS">
                   <template v-slot:trigger="{ attrs, on }">
                     <FeatherButton
@@ -100,13 +107,6 @@
                     Delete Source
                   </FeatherDropdownItem>
                 </FeatherDropdown>
-                <FeatherButton
-                  icon="Download XML"
-                  data-test="download-button"
-                  @click="downloadEventConfXmlBySourceId(config.id)"
-                >
-                  <FeatherIcon :icon="Download"> </FeatherIcon>
-                </FeatherButton>
               </div>
             </td>
           </tr>

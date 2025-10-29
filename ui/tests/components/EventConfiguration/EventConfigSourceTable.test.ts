@@ -277,17 +277,18 @@ describe('EventConfigSourceTable.vue', () => {
     const buttons1 = rows[0].findAll('button')
     expect(buttons1.length).toBe(3)
 
-    await buttons1[1].trigger('click')
+    await buttons1[2].trigger('click')
     await wrapper.vm.$nextTick()
 
     const dropdown1 = rows[0].findAllComponents(FeatherDropdownItem)
+    
     expect(dropdown1[0].text()).toBe('Disable Source')
     expect(dropdown1[1].text()).toBe('Delete Source')
 
     const buttons2 = rows[1].findAll('button')
     expect(buttons2.length).toBe(3)
 
-    await buttons2[1].trigger('click')
+    await buttons2[2].trigger('click')
     await wrapper.vm.$nextTick()
 
     const dropdown2 = rows[1].findAllComponents(FeatherDropdownItem)
@@ -304,7 +305,7 @@ describe('EventConfigSourceTable.vue', () => {
     const rows = wrapper.findAll('transition-group-stub tr')
     expect(rows).toHaveLength(1)
 
-    await rows[0].findAll('button')[1].trigger('click')
+    await rows[0].findAll('button')[2].trigger('click')
     expect(rows[0].findAll('button')).toHaveLength(3)
     await wrapper.vm.$nextTick()
 
@@ -321,7 +322,7 @@ describe('EventConfigSourceTable.vue', () => {
     const rows = wrapper.findAll('transition-group-stub tr')
     expect(rows).toHaveLength(1)
 
-    await rows[0].findAll('button')[2].trigger('click')
+    await rows[0].findAll('button')[1].trigger('click')
     await wrapper.vm.$nextTick()
     
     expect(downloadEventConfXmlBySourceId).toHaveBeenCalled()
@@ -335,7 +336,7 @@ describe('EventConfigSourceTable.vue', () => {
     const rows = wrapper.findAll('transition-group-stub tr')
     expect(rows).toHaveLength(1)
 
-    await rows[0].findAll('button')[1].trigger('click')
+    await rows[0].findAll('button')[2].trigger('click')
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="delete-source-button"]').trigger('click')
