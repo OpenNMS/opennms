@@ -36,6 +36,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigDetailStore()
+const router = useRouter()
 const { showSnackBar } = useSnackbar()
 const labels = {
   title: 'Delete Event Configuration Event'
@@ -50,9 +51,14 @@ const deleteEventConfigEvent = async (id?: number) => {
   try {
     const result = await deleteEventConfigEventBySourceId(store.selectedSource.id, [id])
     if (result) {
+      showSnackBar({ msg: 'Event configuration event deleted successfully', error: false })
       store.hideDeleteEventConfigEventDialog()
-      store.resetEventsPagination()
-      await store.fetchEventsBySourceId()
+      store.resetFilters()
+      if (store.selectedSource.eventCount === 0) {
+        router.push({ name: 'Event Configuration' })
+      } else {
+        await store.fetchEventsBySourceId()
+      }
     } else {
       showSnackBar({ msg: 'Failed to delete event configuration event', error: true })
     }
@@ -61,9 +67,6 @@ const deleteEventConfigEvent = async (id?: number) => {
     showSnackBar({ msg: 'Failed to delete event configuration event', error: true })
   }
 }
-
-
-
 </script>
 
 <style scoped lang="scss"></style>
