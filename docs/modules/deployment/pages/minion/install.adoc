@@ -7,7 +7,7 @@
 == Objectives
 
 * Install a {page-component-title} Minion on one of the supported <<minion/system-requirements.adoc#operating-systems-Core, operating systems>>.
-* Secure access to the Karaf shell with encrypted passwords.
+* Secure access to the xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] with encrypted passwords.
 * Configure connection to message broker for communication with the {page-component-title} core instance.
 * Verify the setup.
 

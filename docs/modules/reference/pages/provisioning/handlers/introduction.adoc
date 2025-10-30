@@ -44,7 +44,7 @@ In addition to type-specific parameters, all handlers support the following para
 | 20000
 |===
 
-Use the `opennms:show-import` command, available via the Karaf shell, to show the results of an import without persisting or triggering the import:
+Use the `opennms:show-import` command, available via the xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell], to show the results of an import without persisting or triggering the import:
 
 [source, console]
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml

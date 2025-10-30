@@ -2,7 +2,7 @@
 = Shell Commands
 :description: Overview of Karaf shell commands in {page-component-title} to help administer and diagnose issues related to performance data collection.
 
-A number of Karaf Shell commands are made available to help administer and diagnose issues related to performance data collection.
+A number of xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] commands are made available to help administer and diagnose issues related to performance data collection.
 
 To use the commands, log into the Karaf Shell on your system using:
 
