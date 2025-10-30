@@ -3,7 +3,7 @@
 = Measurements & Resources
 :description: Karaf Shell command in {page-component-title} that help enumerate, view, and manage measurement-related resources.
 
-The following Karaf Shell commands are made available to help enumerate, view, and manage measurement-related resources.
+The following xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] commands are made available to help enumerate, view, and manage measurement-related resources.
 
 The `opennms:show-measurement-resources` command can be used to enumerate or lookup resources:
 
