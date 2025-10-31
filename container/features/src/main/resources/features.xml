@@ -1403,6 +1403,7 @@
         <feature>jackson-dataformat-yaml</feature>
         <feature>jung</feature>
         <feature prerequisite="true">vaadin</feature>
+        <feature>jackson-datatype-jdk8</feature>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.history/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>

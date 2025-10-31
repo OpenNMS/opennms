@@ -3,7 +3,7 @@
 = Structured Node List
 :description: Learn about the structured node list in OpenNMS Horizon/Meridian, which lets users perform enhanced data display, search, filter, and export node information.
 
-The structured node list is a Vue-based page that displays node information and lets the user perform enhanced data display, search, filter, and export data.
+The Structured Node List page displays node information and lets the user configure enhanced data display, perform searching and filtering, and to download/export data.
 
 To access this page, click menu:Inventory[Structured Node List] in the side menu.
 
@@ -17,18 +17,31 @@ image::structured-node-list/node-structure-overview.png["{page-component-title} 
 
 The first column of each node has an Action menu where the user can do the following:
 
-* Choose various actions, including **Info...** to open a dialog that displays details about the node.
+* Click the 3 vertical dots to choose various actions, including **Info...** to open a dialog that displays details about the node.
 * Navigate to various relevant pages (Alarms, Events, and so on).
 * Perform other actions (rescan, schedule an outage, and so on).
 
-The **Export** symbol image:structured-node-list/node-export-button.png[width=32] lets you export the current data in either CSV or JSON format.
+.Node Actions
+image::structured-node-list/node-action-menu.png[width=360]["{page-component-title} Node action menu."]
 
-A *gear* symbol image:structured-node-list/node-preferences-button.png[width=32] opens the Node Preferences window that allows you to configure the columns displayed and their order.
+* Click the Edit symbol image:structured-node-list/node-edit-button.png[width=32] to navigate to the node details page for that node.
+
+The **Download** symbol image:structured-node-list/node-export-button.png[width=32] lets you download the current data in either CSV or JSON format.
+
+The **Customize Columns** button opens the Customize Columns window that allows you to configure the columns displayed and their order.
 Saving this configuration also saves the current search and filtering options.
 
-An input field above the table lets you search by node label.
+The **Clear Filters** button will clear all search filters.
 
-The Filtering and Extended Search panel on the left lets you filter and search by various parameters.
+.Download, Customize Columns and Clear Filters buttons
+image::structured-node-list/node-customize-columns-button.png[width=360]["{page-component-title} Download, Customize Columns and Clear Filters buttons."]
+
+An input field above the table lets you search by node label or IP address.
+
+The Filter button opens a window that lets you filter by various parameters.
+
+.Search input and Filter button
+image::structured-node-list/node-list-search-filter.png[width=360]["{page-component-title} Search input and filter button."]
 
 == Node table
 
@@ -41,9 +54,18 @@ A tooltip will also display more information about the interface; for example, i
 
 The Flows field contains arrows denoting whether Ingress and/or Egress flow information is available, with a tooltip to provide more detail.
 
+There is an arrow to the right or left of the column headers to allow you to view the next or previous set of columns, if there are more columns that can be displayed on a single screen.
+
+.Node header with Next Columns button
+image::structured-node-list/node-header-with-next.png["{page-component-title} Node header with Next Columns button."]
+
+.Node header with Previous Columns button
+image::structured-node-list/node-header-with-prev.png["{page-component-title} Node header with Previous Columns button."]
+
+
 == Action menu
 
-The Action menu next to each node provides options to display the Node Details dialog and navigate to the following pages:
+The Action menu next to each node provides options to display the Node Details dialog (*Info...*) and navigate to the following pages:
 
 * Events
 * Alarms
@@ -71,37 +93,41 @@ image::structured-node-list/node-details.png["{page-component-title} Node Detail
 
 == Download current node data
 
-Click the **download** symbol to export the current node data (depending on search and filter configuration) in either CSV or JSON format.
+Click the **Download** symbol to export the current node data (depending on search and filter configuration) in either CSV or JSON format.
 
 .Download/Export
 image::structured-node-list/node-download-menu.png["{page-component-title} Node download/export menu."]
 
-== Node preferences
+== Customize Columns
 
-Node preferences let you specify the order in which the columns of data appear in the UI.
+Customize Columns let you specify which columns and the order in which the columns of data appear in the UI.
 These preferences are stored in your browser's local storage, and so apply to anyone using the machine on which that browser runs, which may not be the OpenNMS user you are logged in as.
 The preferences will be retained unless cleared by your browser's policy.
+You can also click the *Clear Filters* button to clear them.
 Your preferences are not available on different machines or the same machine using a different web browser.
 
-Click the **gear** symbol to open the Node Preferences dialog.
+Click the **Customize Columns** button to open the Customize Columns panel.
 
-.Node Preferences
-image::structured-node-list/node-preferences.png["{page-component-title} Node Preferences dialog." width=400]
+.Customize Columns panel
+image::structured-node-list/node-preferences.png["{page-component-title} Customize Columns panel." width=400]
 
-Click **Default** to reset all displayed columns to the default list visibility and order.
+Click **Reset Columns** to reset all displayed columns to the default list visibility and order.
 
-Click the checkbox next to each column name to display or hide that column.
-Note that changes take effect immediately.
+Click the *X* next to any column to remove that column from the display.
 
-Click the up and down arrows to reorder the columns.
+Click **Add Column** to add a column.
 
-Click **Save and Close** to save your settings and your current search and filtering configuration.
+Click in the dropdown to choose which column to display.
 
-Click the "X" to close without saving to local storage.
+Click and drag the dotted box next to a column to reorder it.
+
+Click **Customize Table** to save your settings.
+
+Click the *X* in the upper right corner to close without saving to local storage.
 
 == Filter and search
 
-You can filter and search via the Filtering and Extended Search sections in the left panel, and by the **Search node label** search box above the node table.
+You can filter and search via the Filtering panel using the **Filter** button image:structured-node-list/node-filter-button.png[width=32], and by the **Search node label or full IP address** search box above the node table.
 Note that searches combine the results of all configured filters and search parameters.
 For example, you can search by `Category + Location + Extended Search Term + Node Label search term` in any combination.
 
@@ -111,24 +137,26 @@ The input box above the Node Table lets you search by node label.
 This is a case-sensitive wildcard search.
 Entering `cal` will match nodes have the label `localhost` as well as `california`, but not `California`.
 
+=== IP Address search
+
+The input box above the Node Table lets you search by a full or partial IP address.
+
+
 === Filtering
 
 You can filter by category (for example, surveillance category), flows, and monitoring locations.
 
-Click on an item to filter by that item.
+Click on the image:structured-node-list/node-filter-button.png[width=32] Filter button to open the **Advanced Filters** panel.
+Click on a dropdown for *Categories*, *Flows* or *Locations* to filter by that item.
 You can select more than one item per section.
 
-As you choose items, the number of items selected for that section will display.
-A check symbol lets you clear the selected items for that section.
+As you choose items, a "chip" will appear showing your selection.
+To remove a filter, click the *X* inside the chip.
 
-Use **Clear All** to clear all filters and search parameters.
+.Advanced Filters panel
+image::structured-node-list/node-advanced-filters-panel.png[width=640]["{page-component-title} Advanced Filters panel."]
 
-Use **Match All** in the Categories section to display only nodes corresponding to all the selected categories.
-
-For example, you could filter on nodes that are in both the *Routers* and *Production* categories.
-
-.Category Filter
-image::structured-node-list/category-filter-match-all.png["{page-component-title} Node Category Filter." width=400]
+Use **Clear Filters** on the main Node List page to clear all filters and search parameters.
 
 === Extended search
 
@@ -184,6 +212,3 @@ It will not search on wildcard or partial addresses.
 | SNMP Type
 | Performs an exact search by SNMP type.
 |===
-
-.Extended Search
-image::structured-node-list/node-extended-search.png["{page-component-title} Node Extended Search" width=400]
