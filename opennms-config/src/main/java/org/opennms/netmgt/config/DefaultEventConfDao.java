@@ -211,7 +211,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 				.sorted(Map.Entry.comparingByValue((events1, events2) -> {
 					Integer order1 = events1.get(0).getSource().getFileOrder();
 					Integer order2 = events2.get(0).getSource().getFileOrder();
-					return Integer.compare(order1 != null ? order1 : 0, order2 != null ? order2 : 0);
+					return Integer.compare(order2 != null ? order2 : 0, order1 != null ? order1 : 0);
 				}))
 				.toList();
 	}

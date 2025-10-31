@@ -91,12 +91,13 @@ public class EventConfPersistenceService {
     }
 
     @Transactional
-    public Long addEventConfSourceEvent(final Long sourceId,final String userName, Event event) {
+    public Long addEventConfSourceEvent(final Long sourceId, final String userName, Event event) {
         final Date now = new Date();
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
-        saveEvent(eventConfSource, event, userName, now);
+        Long eventConfId = saveEvent(eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
-        return eventConfSourceDao.save(eventConfSource);
+        eventConfSourceDao.saveOrUpdate(eventConfSource);
+        return eventConfId;
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -178,7 +179,7 @@ public class EventConfPersistenceService {
         eventConfEventDao.saveAll(eventEntities);
     }
 
-    private void saveEvent(EventConfSource source, Event event, String username, Date now) {
+    private Long saveEvent(EventConfSource source, Event event, String username, Date now) {
         EventConfEvent eventConfEvent = new EventConfEvent();
         eventConfEvent.setSource(source);
         eventConfEvent.setUei(event.getUei());
@@ -189,14 +190,11 @@ public class EventConfPersistenceService {
         eventConfEvent.setCreatedTime(now);
         eventConfEvent.setLastModified(now);
         eventConfEvent.setModifiedBy(username);
-        eventConfEventDao.save(eventConfEvent);
+        return eventConfEventDao.save(eventConfEvent);
     }
 
     protected void reloadEventsFromDB() {
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        if (dbEvents.isEmpty()) {
-            return;
-        }
         eventConfDao.loadEventsFromDB(dbEvents);
     }
 

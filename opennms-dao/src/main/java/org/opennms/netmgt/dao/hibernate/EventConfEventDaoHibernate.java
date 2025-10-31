@@ -177,7 +177,7 @@ public class EventConfEventDaoHibernate
 
     @Override
     public List<EventConfEvent> findEnabledEvents() {
-        return find("from EventConfEvent e where e.enabled = true order by e.createdTime desc");
+        return find("from EventConfEvent e where e.enabled = true order by e.id asc");
     }
 
     @Override

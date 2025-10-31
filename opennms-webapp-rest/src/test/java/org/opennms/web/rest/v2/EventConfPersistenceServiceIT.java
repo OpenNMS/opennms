@@ -122,7 +122,7 @@ public class EventConfPersistenceServiceIT {
 
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
-        EventConfEvent persistedEvent = dbEvents.get(0);
+        EventConfEvent persistedEvent = dbEvents.get(defaultEventConfEventSize);
         assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
         assertEquals("IT Event", persistedEvent.getEventLabel());
         assertEquals("This is an integration test event.", persistedEvent.getDescription());
@@ -168,7 +168,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(0, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
-        EventConfEvent finalEvent = updatedDbEvents.get(0);
+        EventConfEvent finalEvent = updatedDbEvents.get(defaultEventConfEventSize);
         assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
         assertEquals("Updated Description", finalEvent.getDescription());
     }

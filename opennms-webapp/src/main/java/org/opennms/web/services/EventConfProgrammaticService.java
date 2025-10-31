@@ -76,9 +76,6 @@ public class EventConfProgrammaticService {
         // Update event count
         source.setEventCount(source.getEventCount() + 1);
         eventConfSourceDao.save(source);
-
-        // Reload events into memory
-        reloadEventsFromDB();
     }
 
     /**
