@@ -52,9 +52,7 @@ import java.io.OutputStreamWriter;
 import java.io.InputStream;
 import java.io.BufferedWriter;
 import java.io.Serializable;
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.List;
@@ -380,24 +378,20 @@ public class EventConfRestService implements EventConfRestApi {
         StreamingOutput stream = output -> {
             try (var writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
                 writer.write("""
-                    <?xml version="1.0" encoding="UTF-8"?>
-                    <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-                    """);
+                <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                """);
+                for (var eventConfEvent : eventConfEvents) {
+                    if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) continue;
 
-                eventConfEvents.stream()
-                        .filter(Objects::nonNull)
-                        .map(EventConfEvent::getXmlContent)
-                        .filter(content -> content != null && !content.isBlank())
-                        .map(String::trim)
-                        .forEach(content -> {
-                            try {
-                                writer.write(content);
-                                writer.write(System.lineSeparator());
-                            } catch (IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        });
+                    String xml = eventConfEvent.getXmlContent().trim();
+                    if (xml.startsWith("<?xml")) {
+                        xml = xml.substring(xml.indexOf("?>") + 2).trim();
+                    }
+                    xml = xml.replaceAll("\\s+xmlns(:[a-zA-Z0-9_-]+)?=\"[^\"]*\"", "");
 
+                    writer.write(xml);
+                    writer.write(System.lineSeparator());
+                }
                 writer.write("</events>");
             }
         };
@@ -407,6 +401,7 @@ public class EventConfRestService implements EventConfRestApi {
                 .header("Content-Disposition", "attachment; filename=\"eventconf-source-%d.xml\"".formatted(sourceId))
                 .build();
     }
+
 
     private Response buildXmlError(Response.Status status, String message) {
         return Response.status(status)

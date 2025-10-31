@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,14 +54,17 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -620,37 +624,28 @@ public class EventConfRestServiceIT {
 
     }
 
+
     @Test
     @Transactional
     public void testDownloadEventConfXmlBySourceId() throws Exception {
-        EventConfSource m_source = new EventConfSource();
-        m_source.setName("testxmdownloadevents");
-        m_source.setEnabled(true);
-        m_source.setCreatedTime(new Date());
-        m_source.setFileOrder(1);
-        m_source.setDescription("Test event source");
-        m_source.setVendor("TestVendor1");
-        m_source.setUploadedBy("test");
-        m_source.setEventCount(2);
-        m_source.setLastModified(new Date());
+        String filename = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + filename;
 
-        eventConfSourceDao.saveOrUpdate(m_source);
-        eventConfSourceDao.flush();
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
 
-        insertEvent(m_source,
-                "uei.opennms.org/internal/trigger",
-                "Trigger configuration changed testing",
-                "The Trigger configuration has been changed and should be reloaded",
-                "Normal");
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
 
-        insertEvent(m_source,
-                "uei.opennms.org/internal/clear",
-                "Clear discovery failed testing",
-                "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.",
-                "Minor");
+        List<Attachment> attachments = List.of(attachment);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
-        final var eventConfSource = eventConfSourceDao.findByName("testxmdownloadevents");
-        final var response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
 
         assertNotNull("Response should not be null", response);
         assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
@@ -658,30 +653,44 @@ public class EventConfRestServiceIT {
         Object entity = response.getEntity();
         assertNotNull("Response entity should not be null", entity);
 
-        String xmlContent = "";
-        
+        String downloadedXml;
         if (entity instanceof StreamingOutput) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ((StreamingOutput) entity).write(baos);
-            xmlContent = baos.toString(StandardCharsets.UTF_8);
+            downloadedXml = baos.toString(StandardCharsets.UTF_8);
         } else if (entity instanceof InputStream) {
-            xmlContent = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+            downloadedXml = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
         } else if (entity instanceof String) {
-            xmlContent = (String) entity;
+            downloadedXml = (String) entity;
         } else {
             fail("Unexpected entity type: " + entity.getClass());
+            return;
         }
 
-        assertFalse("XML content should not be empty", xmlContent.isEmpty());
+        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+        assertTrue("XML should end with </events>", downloadedXml.trim().endsWith("</events>"));
 
-        assertTrue("XML should contain first event UEI",
-                xmlContent.contains("uei.opennms.org/internal/trigger"));
-        assertTrue("XML should contain second event UEI",
-                xmlContent.contains("uei.opennms.org/internal/clear"));
+        is = getClass().getResourceAsStream(path);
+        String uploadedXml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 
-        assertTrue("XML should end with </events>", xmlContent.trim().endsWith("</events>"));
+        Events uploaded = JaxbUtils.unmarshal(Events.class, new StringReader(uploadedXml));
+        Events downloaded = JaxbUtils.unmarshal(Events.class, new StringReader(downloadedXml));
 
+        assertEquals(uploaded.getEvents().size(), downloaded.getEvents().size());
+        System.out.println(eventSignature(uploaded.getEvents().get(0)));
+        Set<String> uploadedEventSignatures = uploaded
+                .getEvents()
+                .stream()
+                .map(e -> eventSignature(e)).collect(Collectors.toSet());
+
+        Set<String> downloadedEventSignatures = downloaded
+                .getEvents()
+                .stream()
+                .map(e -> eventSignature(e)).collect(Collectors.toSet());
+
+        assertEquals("Event content differs between uploaded and downloaded XMLs", uploadedEventSignatures, downloadedEventSignatures);
     }
+
     @Test
     @Transactional
     public void testDownloadEventConfXmlBySourceId_BadRequest() {
@@ -693,5 +702,21 @@ public class EventConfRestServiceIT {
             assertTrue("Expected BadRequestException or similar",
                     e instanceof BadRequestException || e.getMessage().contains("Bad Request"));
         }
+    }
+    private String eventSignature(Event e) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("uei=").append(e.getUei());
+        sb.append("|label=").append(e.getEventLabel());
+        sb.append("|descr=").append(e.getDescr());
+        if (e.getMask() != null && e.getMask().getMaskelements() != null) {
+            e.getMask().getMaskelements().forEach(m -> {
+                sb.append("|mask:")
+                        .append(m.getMename())
+                        .append("=")
+                        .append(m.getMevalues());
+            });
+        }
+
+        return sb.toString();
     }
 }
