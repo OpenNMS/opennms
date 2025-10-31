@@ -1,0 +1,22 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/correlation/serviceFlapping</uei>
+      <event-label>OpenNMS-defined correlator event: A service has been detected to be in a flapping state</event-label>
+      <descr>This event is sent when a correlation rule has detected that a service is flapping.</descr>
+      <logmsg dest="logndisplay">
+            The service: %service% has been correlated to indicate a flapping state.
+        </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/droolsEngineException</uei>
+      <event-label>OpenNMS-defined Drools Engine Encountered Exception</event-label>
+      <descr>Drools engine encountered an exception while running rules</descr>
+      <logmsg dest="logndisplay">
+            Drools engine rule %parm[enginename]% has encountered an exception : %parm[stacktrace]%.
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%parm[enginename]%" alarm-type="3"/>
+   </event>
+</events>

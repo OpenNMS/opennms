@@ -1,0 +1,22 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/internal/topology/linkDown</uei>
+      <event-label>OpenNMS-defined topology event: linkDown</event-label>
+      <descr>&lt;p>node: %nodeid% with ifindex: %ifindex% is down &lt;/p></descr>
+      <logmsg dest="donotpersist">
+            node: %nodeid% with ifindex: %ifindex% is down
+        </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%ifindex%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/topology/linkUp</uei>
+      <event-label>OpenNMS-defined topology event: linkUp</event-label>
+      <descr>&lt;p>node: %nodeid% with ifindex: %ifindex% is up &lt;/p></descr>
+      <logmsg dest="donotpersist">
+            node: %nodeid% with ifindex: %ifindex% is up
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%ifindex%" alarm-type="2" clear-key="uei.opennms.org/internal/topology/linkDown:%nodeid%:%ifindex%" auto-clean="false"/>
+   </event>
+</events>

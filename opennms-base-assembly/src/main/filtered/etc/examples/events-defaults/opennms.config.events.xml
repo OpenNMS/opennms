@@ -1,0 +1,136 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
+      <descr>&lt;p>The administrator has changed the ScriptD configuration.
+            ScriptD will load the new configuration.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The ScriptD configuration files have changed.&lt;/p>
+        </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadVacuumdConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadVacuumdConfig</event-label>
+      <descr>&lt;p>The administrator has changed the Vacuumd
+            configuration. Vacuumd will load the new configuration.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The Vacuumd configuration files have changed.&lt;/p>
+        </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadSnmpPollerConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadSnmpPollerConfig</event-label>
+      <descr>&lt;p>The administrator has changed the SnmpPoller
+            configuration. SnmpPoller will load the new configuration.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The SnmpPoller configuration files have changed.&lt;/p>
+        </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadDaemonConfig</uei>
+      <event-label>OpenNMS-defined internal event: reload specified daemon configuration</event-label>
+      <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]%
+            configuration files and requests the configuration to be re-marshaled and applied.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The daemon: %parm[daemonName]% configuration files has changed.&lt;/p>
+        </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadDaemonConfigFailed</uei>
+      <event-label>OpenNMS-defined internal event: reload specified daemon configuration failed</event-label>
+      <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]%
+            configuration files and the request for the configuration to be re-marshaled and applied
+            has failed because of the following condition %parm[reason]%.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The daemon: %parm[daemonName]% configuration changes have failed to be
+            applied.&lt;/p>
+        </logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%parm[daemonName]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadDaemonConfigSuccessful</uei>
+      <event-label>OpenNMS-defined internal event: reload specified daemon configuration successful</event-label>
+      <descr>&lt;p>The administrator has changed the daemon: %parm[daemonName]%
+            configuration files and the request for the configuration to be re-marshaled and applied
+            has succeeded.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The daemon: %parm[daemonName]% configuration changes have successfully been
+            applied.&lt;/p>
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/thresholdConfigChange</uei>
+      <event-label>OpenNMS-defined internal event: threshold configuration changed</event-label>
+      <descr>This event is sent by the WebUI or the user when threshold configuration has changed and should be reloaded</descr>
+      <logmsg dest="logndisplay">
+            The thresholds configuration has been changed and should be reloaded
+        </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/eventsConfigChange</uei>
+      <event-label>OpenNMS-defined internal event: event configuration changed</event-label>
+      <descr>This event is sent by the WebUI or the user when event configuration has changed and should be reloaded</descr>
+      <logmsg dest="logndisplay">
+            The events configuration has been changed and should be reloaded
+        </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/reloadPollerConfig</uei>
+      <event-label>OpenNMS-defined internal event: reloadPollerConfig</event-label>
+      <descr>&lt;p>The administrator has changed the poller
+            configuration files. The pollers and related services will
+            now restart to detect the changes.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The poller configuration files have
+            changed.&lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/syslogdConfigChange</uei>
+      <event-label>OpenNMS-defined internal event: Syslogd configuration changed</event-label>
+      <descr>This event is sent by the WebUI or the user when the Syslogd configuration has changed and should be
+            reloaded</descr>
+      <logmsg dest="logndisplay">
+            The Syslogd configuration has been changed and should be reloaded
+        </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/configureSNMP</uei>
+      <event-label>OpenNMS-defined internal event: configureSNMP</event-label>
+      <descr>&lt;p>SNMP definition for IP address
+            %parm[firstIPAddress]%-%parm[lastIPAddress]% has been
+            updated with community string
+            &quot;%parm[communityString]%&quot;&lt;/p></descr>
+      <logmsg dest="logonly">
+            &lt;p>SNMP community string
+            &quot;%parm[communityString]%&quot; has been defined
+            for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/translator/entityConfigChanged</uei>
+      <event-label>OpenNMS defined event: A trap based event was received indicating a configuration change on a
+            device and has been translated to this generic event</event-label>
+      <descr>This is a translated entity configuration change event.&lt;p>
+
+            &lt;p>Source: %parm[configSource]% &lt;/p>
+            &lt;p>User: %parm[configUser]% &lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>&quot;%parm[configUser]%&quot; changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a>&lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+   </event>
+</events>

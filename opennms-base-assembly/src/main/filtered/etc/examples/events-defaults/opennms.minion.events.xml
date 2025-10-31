@@ -1,0 +1,34 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+          <maskelement>
+              <mename>parm[toState]</mename>
+	      <mevalue>~OPEN|HALF_OPEN|FORCED_OPEN</mevalue>
+          </maskelement>
+      </mask>
+      <uei>uei.opennms.org/circuitBreaker/stateChange</uei>
+      <event-label>OpenNMS-defined event: Circuit breaker has changed state</event-label>
+      <descr>A cirtcuit breaker named %parm[name]% on %dpname% has changed state from %parm[fromState]% to %parm[toState]%.</descr>
+      <logmsg dest="logndisplay">Circuit breaker %parm[name]% on %dpname% changed state to %parm[toState]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%parm[name]%" alarm-type="3" auto-clean="false">
+         <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
+   </event>
+   <event>
+      <mask>
+          <maskelement>
+              <mename>parm[toState]</mename>
+              <mevalue>~CLOSED|DISABLED</mevalue>
+          </maskelement>
+      </mask>
+      <uei>uei.opennms.org/circuitBreaker/stateChange</uei>
+      <event-label>OpenNMS-defined event: Circuit breaker has changed state</event-label>
+      <descr>A cirtcuit breaker named %parm[name]% on %dpname% has changed state from %parm[fromState]% to %parm[toState]%.</descr>
+      <logmsg dest="logndisplay">Circuit breaker %parm[name]% on %dpname% changed state to: %parm[toState]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%parm[name]%" alarm-type="3" auto-clean="false">
+         <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
+   </event>
+</events>

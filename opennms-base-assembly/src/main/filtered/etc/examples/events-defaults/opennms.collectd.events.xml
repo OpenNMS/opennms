@@ -1,0 +1,18 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
+      <event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
+      <descr>&lt;p>%service% data collection on interface %interface% failed because of the following condition: '%parm[reason]%'.&lt;/p></descr>
+      <logmsg dest="logndisplay">%service% data collection on interface %interface% failed.</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false" />
+   </event>
+   <event>
+      <uei>uei.opennms.org/nodes/dataCollectionSucceeded</uei>
+      <event-label>OpenNMS-defined node event: dataCollectionSucceeded</event-label>
+      <descr>&lt;p>%service% data collection on interface %interface% previously failed and has been restored.&lt;/p></descr>
+      <logmsg dest="logndisplay">%service% data collection on interface %interface% previously failed and has been restored.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false" />
+   </event>
+</events>
