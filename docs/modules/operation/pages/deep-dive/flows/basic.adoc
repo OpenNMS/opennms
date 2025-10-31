@@ -26,7 +26,7 @@ We recommend using the https://www.elastic.co/guide/en/elasticsearch/client/cura
 
 {page-component-title} must be set up to communicate with Elasticsearch and persist the collected flows data in a defined directory:
 
-. Connect to your {page-component-title} xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell]:
+. Connect to your {page-component-title} xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 +
 [source, console]
 ----
