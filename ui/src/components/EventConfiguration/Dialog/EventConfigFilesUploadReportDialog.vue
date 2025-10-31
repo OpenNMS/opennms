@@ -9,20 +9,22 @@
       <h4>Message:</h4>
       <p>{{ getUploadReportStatus() }}</p>
       <h4>Details:</h4>
-      <ul>
-        <li
-          v-for="(file, index) in report.success"
-          :key="'success-' + index"
-        >
-          <span class="text-success">{{ file.file }}</span> - Successfully uploaded
-        </li>
-        <li
-          v-for="(file, index) in report.errors"
-          :key="'error-' + index"
-        >
-          <span class="text-danger">{{ file.file }}</span> - Failed to upload
-        </li>
-      </ul>
+       <div class="upload-report-scroll">
+    <ul>
+      <li
+        v-for="(file, index) in report.success"
+        :key="'success-' + index"
+      >
+        <span class="text-success">{{ file.file }}</span> - Successfully uploaded
+      </li>
+      <li
+        v-for="(file, index) in report.errors"
+        :key="'error-' + index"
+      >
+        <span class="text-danger">{{ file.file }}</span> - Failed to upload
+      </li>
+    </ul>
+  </div>
     </div>
     <template v-slot:footer>
       <FeatherButton @click="closeDialog"> Close </FeatherButton>
@@ -74,10 +76,34 @@ const gotoViewTab = async () => {
 </script>
 
 <style scoped lang="scss">
+@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/typography';
 @import "@featherds/styles/themes/variables";
- 
+@import "@featherds/styles/mixins/typography";
+
 .text-danger {
   color: var($error);
+}
+.upload-report-scroll {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid var(variables.$border-on-surface);
+}
+
+:deep(.feather-dialog-content) {
+  max-height: 70vh; 
+  overflow-y: auto;
+}
+
+.text-danger {
+  color: var($error);
+}
+
+.text-success {
+  color: var($success);
 }
 </style>
 

@@ -93,11 +93,25 @@
             data-test="event-conf-upload-input"
             ref="eventConfFileInput"
           />
+          <input
+            type="file"
+            multiple
+            webkitdirectory
+            directory
+            @change="handleFolderUpload"
+            ref="eventFolderInput"
+          />
           <FeatherButton
             @click="openFileDialog"
             :disabled="isLoading"
           >
             Choose files to upload
+          </FeatherButton>
+          <FeatherButton
+            @click="openFolderDialog"
+            :disabled="isLoading"
+          >
+            Choose folder to upload
           </FeatherButton>
           <FeatherButton
             primary
@@ -177,6 +191,7 @@ import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadR
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 
+const eventFolderInput = ref<HTMLInputElement | null>(null)
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
 const store = useEventConfigStore()
@@ -193,6 +208,67 @@ const shouldUploadDisabled = computed(() => {
     eventFiles.value.some(f => f.isDuplicate)
   )
 })
+
+const openFolderDialog = () => {
+  eventFolderInput.value?.click()
+}
+
+const handleFolderUpload = async (e: Event) => {
+  const input = e.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) {
+    console.warn("No folder selected")
+    return
+  }
+
+  const files = Array.from(input.files).filter(f =>
+    f.name.endsWith(".events.xml")
+  )
+
+  if (files.length === 0) {
+    snackbar.showSnackBar({
+      msg: "Folder contains no .events.xml files",
+      error: true
+    })
+    return
+  }
+
+  for (const file of files) {
+    try {
+      if (isDuplicateFile(file.name, eventFiles.value)) continue
+
+      const isAlreadyUploaded = store.uploadedSourceNames
+        .map(name => name.replace('.xml', '').toLowerCase())
+        .includes(file.name.replace('.xml', '').toLowerCase())
+
+      if (isAlreadyUploaded) continue
+
+      const validationResult = await validateEventConfigFile(file)
+
+      eventFiles.value.push({
+        file,
+        isValid: validationResult.isValid,
+        errors: validationResult.errors,
+        isDuplicate: false
+      })
+
+      if (!validationResult.isValid) {
+        snackbar.showSnackBar({
+          msg: `Error processing ${file.name}`,
+          error: true
+        })
+      }
+
+    } catch (err) {
+      snackbar.showSnackBar({
+        msg: `Error reading ${file.name}`,
+        error: true
+      })
+    }
+  }
+
+  input.value = ''
+}
+
 
 const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
