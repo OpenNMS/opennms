@@ -57,13 +57,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -676,19 +671,22 @@ public class EventConfRestServiceIT {
         Events uploaded = JaxbUtils.unmarshal(Events.class, new StringReader(uploadedXml));
         Events downloaded = JaxbUtils.unmarshal(Events.class, new StringReader(downloadedXml));
 
-        assertEquals(uploaded.getEvents().size(), downloaded.getEvents().size());
-        System.out.println(eventSignature(uploaded.getEvents().get(0)));
-        Set<String> uploadedEventSignatures = uploaded
-                .getEvents()
-                .stream()
-                .map(e -> eventSignature(e)).collect(Collectors.toSet());
+        final var uploadedEvents = new ArrayList<>(uploaded.getEvents());
+        final var downloadedEvents = new ArrayList<>(downloaded.getEvents());
 
-        Set<String> downloadedEventSignatures = downloaded
-                .getEvents()
-                .stream()
-                .map(e -> eventSignature(e)).collect(Collectors.toSet());
+        Comparator<Event> eventComparator = Comparator
+                .comparing(Event::getUei, Comparator.nullsLast(String::compareTo))
+                .thenComparing(Event::getEventLabel, Comparator.nullsLast(String::compareTo))
+                .thenComparing(Event::getDescr, Comparator.nullsLast(String::compareTo));
 
-        assertEquals("Event content differs between uploaded and downloaded XMLs", uploadedEventSignatures, downloadedEventSignatures);
+        uploadedEvents.sort(eventComparator);
+        downloadedEvents.sort(eventComparator);
+
+        assertEquals(uploadedEvents.size(), downloadedEvents.size());
+
+        for (int i = 0; i < uploadedEvents.size(); i++) {
+            assertEquals(uploadedEvents.get(i), downloadedEvents.get(i));
+        }
     }
 
     @Test
