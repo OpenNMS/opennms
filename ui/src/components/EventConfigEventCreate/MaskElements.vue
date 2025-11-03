@@ -67,6 +67,7 @@ import { MaskElementNameOptions } from './constants'
 defineEmits<{
   (e: 'setMaskElements', key: string, value: any, index: number): void
 }>()
+
 const props = defineProps<{
   maskElements: Array<{ name: ISelectItemType; value: string }>
   errors: EventFormErrors
