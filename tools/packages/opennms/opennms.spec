@@ -9,7 +9,7 @@
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
 # This is where the "share" directory will link on RPM-based systems
-%{!?sharedir:%define sharedir /var/opennms}
+# %{!?sharedir:%define sharedir /var/opennms}
 # This is where the "logs" directory will link on RPM-based systems
 %{!?logdir:%define logdir /var/log/opennms}
 # Where the OpenNMS Jetty webapp lives
@@ -937,7 +937,7 @@ if [ -e "${ROOT_INST}/etc/java.conf" ]; then
 fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
-"${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
+"${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /opt/opennms/bin/ensure-user-ping.sh manually."
 
 echo ""
 echo " *** Thanks for using OpenNMS!”

@@ -4,7 +4,7 @@ set -e
 
 ETCDIR="/etc/sentinel"
 SENTINELUSER="sentinel"
-SENTINELHOME="/usr/share/sentinel"
+SENTINELHOME="/opt/sentinel"
 SENTINELDATA="/var/lib/sentinel"
 SENTINELLOG="/var/log/sentinel"
 
