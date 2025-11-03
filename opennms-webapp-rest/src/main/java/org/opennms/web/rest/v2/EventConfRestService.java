@@ -350,6 +350,39 @@ public class EventConfRestService implements EventConfRestApi {
                     .build();
         }
     }
+
+    @Override
+    public Response getEventConfSourceById(Long sourceId, SecurityContext securityContext) {
+        try {
+            if (sourceId == null || sourceId <= 0) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "Invalid sourceId provided"))
+                        .build();
+            }
+
+            final var eventConfSource = eventConfSourceDao.get(sourceId);
+
+            if (eventConfSource == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("error", "EventConfSource not found for id: " + sourceId))
+                        .build();
+            }
+
+            eventConfSource.setEvents(null);
+            return Response.ok(eventConfSource).build();
+
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", "Unexpected error occurred: " + e.getMessage()))
+                    .build();
+        }
+    }
+
+
     private Events parseEventFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(Events.class, inputStream);
     }

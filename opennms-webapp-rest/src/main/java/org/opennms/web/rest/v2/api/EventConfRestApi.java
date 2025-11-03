@@ -258,5 +258,22 @@ public interface EventConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
+    @GET
+    @Path("/sources/{sourceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConfSource by ID",
+            description = "Retrieve an EventConfSource by its unique identifier.",
+            operationId = "getEventConfSourceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConfSource retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found")
+    })
+    Response getEventConfSourceById(
+            @PathParam("sourceId") Long sourceId,
+            @Context SecurityContext securityContext
+    );
+
 
 }

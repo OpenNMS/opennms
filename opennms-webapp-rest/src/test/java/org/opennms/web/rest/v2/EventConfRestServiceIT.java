@@ -621,4 +621,42 @@ public class EventConfRestServiceIT {
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
     }
+    @Test
+    @Transactional
+    public void testGetEventConfSourceById_ShouldReturnExpectedResponses() throws Exception {
+        EventConfSource source = new EventConfSource();
+        source.setName("testGetSource");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setFileOrder(1);
+        source.setDescription("Test source for get by ID");
+        source.setVendor("Cisco");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        source.setLastModified(new Date());
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        Response resp = eventConfRestApi.getEventConfSourceById(source.getId(), securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        EventConfSource fetchedSource = (EventConfSource) resp.getEntity();
+        assertNotNull(fetchedSource);
+        assertEquals(source.getId(), fetchedSource.getId());
+        assertEquals("testGetSource", fetchedSource.getName());
+        assertEquals("Cisco", fetchedSource.getVendor());
+
+        resp = eventConfRestApi.getEventConfSourceById(-1L, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        Map<String, String> badRequestBody = (Map<String, String>) resp.getEntity();
+        assertTrue(badRequestBody.get("error").contains("Invalid sourceId"));
+
+        resp = eventConfRestApi.getEventConfSourceById(99999L, securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+
+        Map<String, String> notFoundBody = (Map<String, String>) resp.getEntity();
+        assertTrue(notFoundBody.get("error").contains("not found"));
+    }
+
 }
