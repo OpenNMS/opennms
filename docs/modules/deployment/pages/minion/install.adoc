@@ -94,7 +94,7 @@ If you have a firewall running on your host, allow `8201/tcp` to grant access to
 
 Set configuration settings in the Minion `etc` directory.
 We reference `etc` relative to the OpenNMS Minion home directory.
-Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu or `/opt/minion` for CentOS and RHEL.
+Depending on your operating system, the home directory is `/opt/minion`.
 
 NOTE: If you are deploying in a container, this step should have been completed as part of the container definition.
 
