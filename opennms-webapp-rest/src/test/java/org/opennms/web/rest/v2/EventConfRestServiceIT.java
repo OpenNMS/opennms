@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -620,5 +624,187 @@ public class EventConfRestServiceIT {
         assertEquals("Clear label changed.", dbEvent.getEventLabel());
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId_SmallFile() throws Exception {
+        // Upload a small test file
+        String filename = "opennms.alarm.events.xml";
+        String path = "/EVENTS-CONF/" + filename;
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        // Get the source ID
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("opennms.alarm.events");
+        assertNotNull("Event source should exist after upload", eventConfSource);
+
+        // Download the XML
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
+
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Verify Content-Disposition header with source name
+        String contentDisposition = (String) response.getHeaders().getFirst("Content-Disposition");
+        assertNotNull("Content-Disposition header should be present", contentDisposition);
+        assertTrue("Content-Disposition should contain source name in filename",
+                   contentDisposition.contains("opennms.alarm.events.xml"));
+
+        // Extract and verify the downloaded XML
+        Object entity = response.getEntity();
+        assertNotNull("Response entity should not be null", entity);
+        assertTrue("Entity should be StreamingOutput", entity instanceof StreamingOutput);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ((StreamingOutput) entity).write(baos);
+        String downloadedXml = baos.toString(StandardCharsets.UTF_8);
+
+        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+        assertTrue("XML should contain events element",
+                   downloadedXml.contains("<events") || downloadedXml.contains("<?xml"));
+        assertTrue("XML should end with </events>", downloadedXml.trim().endsWith("</events>"));
+
+        // Unmarshal and validate structure
+        Events downloaded = JaxbUtils.unmarshal(Events.class, downloadedXml);
+        assertNotNull("Downloaded events should not be null", downloaded);
+        assertNotNull("Downloaded events list should not be null", downloaded.getEvents());
+        assertEquals("Should have 3 events", 3, downloaded.getEvents().size());
+
+        // Verify round-trip: upload original, download, compare
+        is = getClass().getResourceAsStream(path);
+        Events uploaded = JaxbUtils.unmarshal(Events.class, is);
+
+        List<Event> uploadedEvents = uploaded.getEvents();
+        List<Event> downloadedEvents = downloaded.getEvents();
+
+        assertEquals("Event counts should match", uploadedEvents.size(), downloadedEvents.size());
+
+        // Use equals() for comprehensive field-by-field comparison
+        // Verify each uploaded event exists in downloaded events (order-independent)
+        for (Event uploadedEvent : uploadedEvents) {
+            assertTrue("Downloaded events should contain event with UEI: " + uploadedEvent.getUei(),
+                      downloadedEvents.contains(uploadedEvent));
+        }
+
+        // Verify no extra events in downloaded
+        for (Event downloadedEvent : downloadedEvents) {
+            assertTrue("Uploaded events should contain event with UEI: " + downloadedEvent.getUei(),
+                      uploadedEvents.contains(downloadedEvent));
+        }
+    }
+
+    @Test
+    @Transactional
+        public void testDownloadEventConfXmlBySourceId_LargeFile() throws Exception {
+        // Upload a large test file (101 events)
+        String filename = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + filename;
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        // Get the source ID
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
+        assertNotNull("Event source should exist after upload", eventConfSource);
+
+        // Download the XML
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
+
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Verify Content-Disposition header with source name
+        String contentDisposition = (String) response.getHeaders().getFirst("Content-Disposition");
+        assertNotNull("Content-Disposition header should be present", contentDisposition);
+        assertTrue("Content-Disposition should contain source name in filename",
+                   contentDisposition.contains("Cisco.airespace.xml"));
+
+        // Extract and verify the downloaded XML
+        Object entity = response.getEntity();
+        assertTrue("Entity should be StreamingOutput", entity instanceof StreamingOutput);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ((StreamingOutput) entity).write(baos);
+        String downloadedXml = baos.toString(StandardCharsets.UTF_8);
+
+        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+
+        // Unmarshal and validate structure
+        Events downloaded = JaxbUtils.unmarshal(Events.class, downloadedXml);
+        assertNotNull("Downloaded events should not be null", downloaded);
+        assertNotNull("Downloaded events list should not be null", downloaded.getEvents());
+        assertEquals("Should have 101 events", 101, downloaded.getEvents().size());
+
+        // Verify round-trip: upload original, download, compare all fields using equals()
+        is = getClass().getResourceAsStream(path);
+        Events uploaded = JaxbUtils.unmarshal(Events.class, is);
+
+        List<Event> uploadedEvents = uploaded.getEvents();
+        List<Event> downloadedEvents = downloaded.getEvents();
+
+        assertEquals("Event counts should match", uploadedEvents.size(), downloadedEvents.size());
+
+        // Use equals() for comprehensive field-by-field comparison of all 101 events
+        // Verify each uploaded event exists in downloaded events (order-independent)
+        for (Event uploadedEvent : uploadedEvents) {
+            assertTrue("Downloaded events should contain event with UEI: " + uploadedEvent.getUei(),
+                      downloadedEvents.contains(uploadedEvent));
+        }
+
+        // Verify no extra events in downloaded
+        for (Event downloadedEvent : downloadedEvents) {
+            assertTrue("Uploaded events should contain event with UEI: " + downloadedEvent.getUei(),
+                      uploadedEvents.contains(downloadedEvent));
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId_InvalidSourceId() throws Exception {
+        // Test with null sourceId
+        Response response1 = eventConfRestApi.downloadEventConfXmlBySourceId(null, securityContext);
+        assertEquals("Expected HTTP 400 for null sourceId",
+                     Response.Status.BAD_REQUEST.getStatusCode(), response1.getStatus());
+
+        // Test with zero sourceId
+        Response response2 = eventConfRestApi.downloadEventConfXmlBySourceId(0L, securityContext);
+        assertEquals("Expected HTTP 400 for zero sourceId",
+                     Response.Status.BAD_REQUEST.getStatusCode(), response2.getStatus());
+
+        // Test with negative sourceId
+        Response response3 = eventConfRestApi.downloadEventConfXmlBySourceId(-1L, securityContext);
+        assertEquals("Expected HTTP 400 for negative sourceId",
+                     Response.Status.BAD_REQUEST.getStatusCode(), response3.getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId_NonExistentSource() throws Exception {
+        // Test with a sourceId that doesn't exist
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(99999L, securityContext);
+        assertEquals("Expected HTTP 404 for non-existent sourceId",
+                     Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }

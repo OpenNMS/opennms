@@ -258,5 +258,23 @@ public interface EventConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
+    @GET
+    @Path("/sources/{sourceId}/events/download")
+    @Produces(MediaType.APPLICATION_XML)
+    @Operation(
+            summary = "Download EventConf XML for a Source",
+            description = "Downloads all EventConf events associated with the specified source ID as an XML file.",
+            operationId = "downloadEventConfXmlBySourceId"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf XML downloaded successfully",
+                    content = @Content(mediaType = "application/xml")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing source ID"),
+            @ApiResponse(responseCode = "404", description = "No events found for the specified source ID")
+    })
+    Response downloadEventConfXmlBySourceId(
+            @PathParam("sourceId") Long sourceId,
+            @Context SecurityContext securityContext
+    ) throws Exception;
 
 }
