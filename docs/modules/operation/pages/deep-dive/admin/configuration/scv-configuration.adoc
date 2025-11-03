@@ -68,7 +68,7 @@ You can access entries in the secure credentials vault from metadata using the `
 
 === Karaf commands
 
-You can access and update entries in the secure credentials vault from the Karaf shell.
+You can access and update entries in the secure credentials vault from the xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell].
 To do so, follow these steps:
 
 . Open an SSH session:

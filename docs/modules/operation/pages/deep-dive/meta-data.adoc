@@ -225,7 +225,7 @@ ${scv:${requisition:credentials|node:label}:password}
 
 === Test an expression
 
-Test an expression using the following Karaf shell command:
+Test an expression using the following xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] command:
 
 [source, karaf]
 admin@opennms> opennms:metadata-test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'

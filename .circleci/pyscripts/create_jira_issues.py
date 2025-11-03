@@ -230,6 +230,11 @@ def create_issue_for_package(package_name, vulnerabilities):
                 "name": SECURITY_LEVEL
             },
             "labels": ["trivy"],
+            "fixVersions": [
+               {
+                "name": "Next"
+               }
+            ],
             
             EPIC_LINK_FIELD: EPIC_KEY  # Link to epic
         }

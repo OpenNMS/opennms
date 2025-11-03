@@ -1808,9 +1808,10 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
-    <grpcVersion>1.71.0</grpcVersion>
+    <grpcVersion>1.75.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
+    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
     <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
@@ -1917,7 +1918,7 @@
     <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.124.Final</netty4Version>
+    <netty4Version>4.1.128.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
