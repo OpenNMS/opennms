@@ -63,6 +63,8 @@ import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.opennms.core.time.CentralizedDateTimeFormat.LOG;
+
 @Component
 public class EventConfRestService implements EventConfRestApi {
 
@@ -369,37 +371,35 @@ public class EventConfRestService implements EventConfRestApi {
             return buildXmlError(Response.Status.BAD_REQUEST, "Invalid source ID");
         }
 
-        final var eventConfEvents = eventConfEventDao.findBySourceId(sourceId);
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
 
-        if (eventConfEvents == null || eventConfEvents.isEmpty()) {
+        if (eventConfSource == null || eventConfSource.getEvents().isEmpty()) {
             return buildXmlError(Response.Status.NOT_FOUND, "No events found for source ID: " + sourceId);
         }
 
+        final var eventConfEvents = eventConfEventDao.findBySourceId(sourceId);
+
         StreamingOutput stream = output -> {
-            try (var writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
-                writer.write("""
-                <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-                """);
-                for (var eventConfEvent : eventConfEvents) {
-                    if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) continue;
-
-                    String xml = eventConfEvent.getXmlContent().trim();
-                    if (xml.startsWith("<?xml")) {
-                        xml = xml.substring(xml.indexOf("?>") + 2).trim();
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
+                Events events = new Events();
+                for (EventConfEvent eventConfEvent : eventConfEvents) {
+                    if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) {
+                        continue;
                     }
-                    xml = xml.replaceAll("\\s+xmlns(:[a-zA-Z0-9_-]+)?=\"[^\"]*\"", "");
-
-                    writer.write(xml);
-                    writer.write(System.lineSeparator());
+                    try {
+                        Event event = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
+                        events.addEvent(event);
+                    } catch (Exception e) {
+                        LOG.error("Failed to parse event XML for source {}: {}", sourceId, e.getMessage());
+                    }
                 }
-                writer.write("</events>");
+                JaxbUtils.marshal(events, writer);
             }
         };
 
-        return Response.ok(stream)
-                .type(MediaType.APPLICATION_XML)
-                .header("Content-Disposition", "attachment; filename=\"eventconf-source-%d.xml\"".formatted(sourceId))
-                .build();
+        return Response.ok(stream).type(MediaType.APPLICATION_XML)
+                .header("Content-Disposition", "attachment; filename=\"%s.xml\""
+                        .formatted(eventConfSource.getName())).build();
     }
 
 
