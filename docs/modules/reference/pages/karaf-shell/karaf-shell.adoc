@@ -14,7 +14,7 @@ Accessing the Karaf shell on {page-component-title} is commonly demonstrated as:
 ssh -p 8101 admin@localhost
 ----
 
-User authentication is performed with the same back-end as the WebUI, however, access to the Karaf shell is limited to users with xref:deep-dive/user-management/security-roles.adoc#built-in-security-roles[ROLE_ADMIN].
+User authentication is performed with the same back-end as the WebUI, however, access to the Karaf shell is limited to users with xref:operation:deep-dive/user-management/security-roles.adoc#built-in-security-roles[ROLE_ADMIN].
 The Karaf shell accepts `ssh` connections on a known port which is unique per {page-component-title} component.
 [caption=]
 [options="autowidth"]
@@ -303,7 +303,7 @@ This list is not exhaustive and only covers the most commonly used commands.
 |Enabled By Default
 |opennms:enlinkd-discovery-bridge-domain
 |Execute bridge topology discovery algorithm
-|xref:deep-dive/topology/enlinkd/shell/introduction.adoc[opennms-enlinkd-shell]
+|xref:operation:deep-dive/topology/enlinkd/shell/introduction.adoc[opennms-enlinkd-shell]
 |opennms:enlinkd-reload
 |Triggers a restart of the enlinkd daemon
 |opennms-enlinkd-shell
@@ -375,7 +375,7 @@ This list is not exhaustive and only covers the most commonly used commands.
 |jira-troubleticketer
 |opennms:kafka-evaluate-filter
 |Compiles the given expression and optionally test it against an object
-|xref:deep-dive/kafka-producer/kafka-producer.adoc[opennms-kafka-producer]
+|xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[opennms-kafka-producer]
 |opennms:kafka-push-topology-edges
 |Pushes all of the related topology edges to the configured topic
 |opennms-kafka-producer
@@ -572,4 +572,3 @@ This list is not exhaustive and only covers the most commonly used commands.
 
 == External Documentation
 Documentation on Karaf and its features, including the Karaf shell interface, is maintained by the Apache Software Foundation and can be found at link:https://karaf.apache.org/manual/latest/[]
-

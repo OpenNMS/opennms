@@ -2,7 +2,7 @@
 = Shell Commands
 :description: Overview of Karaf shell commands to help administer and diagnose issues related to service assurance with {page-component-title}.
 
-A number of xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] commands are available to help administer and diagnose issues related to service assurance.
+A number of xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] commands are available to help administer and diagnose issues related to service assurance.
 
 To use the commands, log into the Karaf Shell on your system using:
 
