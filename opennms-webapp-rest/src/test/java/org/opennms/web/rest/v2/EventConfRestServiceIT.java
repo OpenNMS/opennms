@@ -57,9 +57,13 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.*;
 
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -700,21 +704,5 @@ public class EventConfRestServiceIT {
             assertTrue("Expected BadRequestException or similar",
                     e instanceof BadRequestException || e.getMessage().contains("Bad Request"));
         }
-    }
-    private String eventSignature(Event e) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("uei=").append(e.getUei());
-        sb.append("|label=").append(e.getEventLabel());
-        sb.append("|descr=").append(e.getDescr());
-        if (e.getMask() != null && e.getMask().getMaskelements() != null) {
-            e.getMask().getMaskelements().forEach(m -> {
-                sb.append("|mask:")
-                        .append(m.getMename())
-                        .append("=")
-                        .append(m.getMevalues());
-            });
-        }
-
-        return sb.toString();
     }
 }

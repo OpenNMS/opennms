@@ -39,6 +39,8 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,8 +65,6 @@ import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.opennms.core.time.CentralizedDateTimeFormat.LOG;
-
 @Component
 public class EventConfRestService implements EventConfRestApi {
 
@@ -76,6 +76,8 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
 
     @Override
     @Transactional
@@ -382,7 +384,7 @@ public class EventConfRestService implements EventConfRestApi {
         StreamingOutput stream = output -> {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
                 Events events = new Events();
-                for (EventConfEvent eventConfEvent : eventConfEvents) {
+                for (final var  eventConfEvent : eventConfEvents) {
                     if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) {
                         continue;
                     }
