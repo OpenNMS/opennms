@@ -37,6 +37,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,7 @@ public class EventConfRestService implements EventConfRestApi {
         final List<Map<String, Object>> successList = new ArrayList<>();
         final List<Map<String, Object>> errorList = new ArrayList<>();
 
+        final long dbStartTime = System.currentTimeMillis();
         for (final String fileName : orderedFiles) {
             final Attachment attachment = fileMap.get(fileName);
             if (attachment == null) {
@@ -128,6 +130,9 @@ public class EventConfRestService implements EventConfRestApi {
                 errorList.add(buildErrorResponse(fileName, e));
             }
         }
+        final long dbEndTime = System.currentTimeMillis();
+        LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
+
         eventConfPersistenceService.reloadEventsIntoMemory();
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
