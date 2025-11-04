@@ -73,7 +73,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         final Map<String, Attachment> fileMap = attachments.stream()
                 .collect(Collectors.toMap(
-                        a -> stripExtension(a.getContentDisposition().getParameter("filename")),
+                        a -> stripPathAndExtension(a.getContentDisposition().getParameter("filename")),
                         a -> a,
                         (a1, a2) -> a1, // keep first if duplicate
                         LinkedHashMap::new
@@ -393,10 +393,19 @@ public class EventConfRestService implements EventConfRestApi {
                 .build();
     }
 
-    private String stripExtension(final String filename) {
+    private String stripPathAndExtension(final String filename) {
         if (filename == null) return null;
-        int dotIndex = filename.lastIndexOf('.');
-        return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
+
+        // Strip folder paths (handle both / and \ separators)
+        String basename = filename;
+        int lastSlash = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        if (lastSlash != -1) {
+            basename = filename.substring(lastSlash + 1);
+        }
+
+        // Strip extension
+        int dotIndex = basename.lastIndexOf('.');
+        return (dotIndex == -1) ? basename : basename.substring(0, dotIndex);
     }
 
     private void validateAddEvent(Long sourceId, Event event) {

@@ -621,4 +621,64 @@ public class EventConfRestServiceIT {
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
     }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithFolderPath() throws Exception {
+        // Test that folder paths are properly stripped from filenames during upload
+        String realXmlFile = "opennms.alarm.events.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "subfolder/nested/test-unix-path.events.xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals("Upload should succeed with folder path in filename",
+                    Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Verify source was created with basename only (no folder path)
+        EventConfSource source = eventConfSourceDao.findByName("test-unix-path.events");
+        assertNotNull("Source should be created with basename 'test-unix-path.events', not 'subfolder/nested/test-unix-path.events'", source);
+        assertEquals("test-unix-path.events", source.getName());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithWindowsPath() throws Exception {
+        // Test Windows-style backslash paths
+        String realXmlFile = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "folder\\subfolder\\test-windows-path.events.xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals("Upload should succeed with Windows path in filename",
+                    Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Verify source was created with basename only (no folder path)
+        EventConfSource source = eventConfSourceDao.findByName("test-windows-path.events");
+        assertNotNull("Source should be created with basename 'test-windows-path.events', not 'folder\\subfolder\\test-windows-path.events'", source);
+        assertEquals("test-windows-path.events", source.getName());
+    }
 }
