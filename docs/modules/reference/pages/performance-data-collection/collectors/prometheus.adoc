@@ -84,7 +84,7 @@ INFO[0000]  - zfs                                        source="node_exporter.g
 INFO[0000] Listening on :9100                            source="node_exporter.go:170"
 ----
 
-From the xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell], you can now issue an ad hoc collection request against the `node_exporter` process
+From the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell], you can now issue an ad hoc collection request against the `node_exporter` process
 [source, console]
 ----
 admin@opennms> opennms:collect org.opennms.netmgt.collectd.prometheus.PrometheusCollector 127.0.0.1 collection=node_exporter url='http://127.0.0.1:9100/metrics'
