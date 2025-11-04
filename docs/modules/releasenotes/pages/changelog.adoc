@@ -64,11 +64,11 @@ Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
 
 * FE: Hover over menu items opens flyout menu (Issue https://opennms.atlassian.net/browse/NMS-18287[NMS-18287])
 
-[[releasenotes-changelog-34.0.3-SNAPSHOT]]
+[[releasenotes-changelog-34.0.1]]
 
-== Release 34.0.3-SNAPSHOT
+== Release 34.0.1
 
-Release 34.0.3-SNAPSHOT contains a couple of bug fixes, enhancements and a new feature.
+Release 34.0.1 contains a couple of bug fixes, enhancements and a new feature.
 
 === Bug
 

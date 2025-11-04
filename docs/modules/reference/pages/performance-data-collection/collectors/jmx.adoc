@@ -124,7 +124,7 @@ This snippet provides a collection definition named 'opennms-poller':
 </jmx-collection>
 ----
 
-Once added to `etc/jmx-datacollection-config.xml` you can use the `collect` command available in the Karaf Shell to test it:
+Once added to `etc/jmx-datacollection-config.xml` you can use the `collect` command available in the xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] to test it:
 
 [source, console]
 ----

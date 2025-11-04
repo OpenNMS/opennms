@@ -26,7 +26,7 @@ We recommend using the https://www.elastic.co/guide/en/elasticsearch/client/cura
 
 {page-component-title} must be set up to communicate with Elasticsearch and persist the collected flows data in a defined directory:
 
-. Connect to your {page-component-title} Karaf shell:
+. Connect to your {page-component-title} xref:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell]:
 +
 [source, console]
 ----
@@ -60,7 +60,8 @@ elasticIndexStrategy=daily
 
 == Configuring NetFlow Composable Templates
 
-OpenNMS supports [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates) for more flexible and modular management of Elasticsearch index settings. To enable composable templates for NetFlow data, update below configuration in Karaf:
+OpenNMS supports [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates) for more flexible and modular management of Elasticsearch index settings.
+To enable composable templates for NetFlow data, update below configuration in Karaf:
 
 [source, karaf]
 ----
@@ -73,7 +74,7 @@ config:update
 
 NetFlow component and index templates can be managed from the following directory:
 
-`${OPENNMS_HOME}/etc/netflow-templates`
+`$\{OPENNMS_HOME}/etc/netflow-templates`
 
 You can customize existing templates, add new ones, or define Index Lifecycle Management (ILM) policies within this folder. Any valid Elasticsearch template or ILM JSON placed here will be picked up and applied by the system.
 
