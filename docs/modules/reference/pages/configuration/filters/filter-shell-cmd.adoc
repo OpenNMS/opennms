@@ -2,7 +2,7 @@
 [filter-shell-command]
 = Testing filters
 
-You can test filters on the fly using the `opennms:filter` xref:operation:deep-dive/karaf-shell/karaf-shell.adoc[Karaf shell] command.
+You can test filters on the fly using the `opennms:filter` xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command.
 
 [source,console]
 ----

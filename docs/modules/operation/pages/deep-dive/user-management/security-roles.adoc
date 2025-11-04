@@ -11,6 +11,7 @@ In a distributed installation, Minion instances require an account that is assig
 You can create one account for all Minions to share, or one account per Minion.
 endif::opennms-prime[]
 
+[[built-in-security-roles]]
 == Built-in security roles
 
 The following security roles are built in to {page-component-title} by default.
