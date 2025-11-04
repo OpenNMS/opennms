@@ -625,11 +625,11 @@ public class EventConfRestServiceIT {
     @Test
     @Transactional
     public void testUploadEventConfFiles_WithFolderPath() throws Exception {
-        // Test that folder paths are properly stripped from filenames during upload
+        // Test that folder paths are stripped and whitespace is trimmed
         String realXmlFile = "opennms.alarm.events.xml";
         String path = "/EVENTS-CONF/" + realXmlFile;
 
-        String filenameWithPath = "subfolder/nested/test-unix-path.events.xml";
+        String filenameWithPath = "subfolder/nested/test-unix-path.events .xml";
 
         InputStream is = getClass().getResourceAsStream(path);
         assertNotNull("Resource not found: " + path, is);
@@ -643,12 +643,10 @@ public class EventConfRestServiceIT {
         List<Attachment> attachments = List.of(attachment);
         Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
 
-        assertEquals("Upload should succeed with folder path in filename",
-                    Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Verify source was created with basename only (no folder path)
         EventConfSource source = eventConfSourceDao.findByName("test-unix-path.events");
-        assertNotNull("Source should be created with basename 'test-unix-path.events', not 'subfolder/nested/test-unix-path.events'", source);
+        assertNotNull(source);
         assertEquals("test-unix-path.events", source.getName());
     }
 
@@ -673,12 +671,10 @@ public class EventConfRestServiceIT {
         List<Attachment> attachments = List.of(attachment);
         Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
 
-        assertEquals("Upload should succeed with Windows path in filename",
-                    Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        // Verify source was created with basename only (no folder path)
         EventConfSource source = eventConfSourceDao.findByName("test-windows-path.events");
-        assertNotNull("Source should be created with basename 'test-windows-path.events', not 'folder\\subfolder\\test-windows-path.events'", source);
+        assertNotNull(source);
         assertEquals("test-windows-path.events", source.getName());
     }
 }
