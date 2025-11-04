@@ -194,6 +194,12 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         console.error('No source selected')
         throw new Error('No source selected')
       }
+    },
+    resetFilters() {
+      this.resetEventsPagination()
+      this.eventsSearchTerm = ''
+      this.eventsSorting.sortKey = 'createdTime'
+      this.eventsSorting.sortOrder = 'desc'
     }
   }
 })

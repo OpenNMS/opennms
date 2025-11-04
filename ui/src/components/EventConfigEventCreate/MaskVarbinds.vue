@@ -145,11 +145,11 @@ watch(
       align-items: flex-start;
       gap: 10px;
 
-      > div {
+      >div {
         flex: 1;
       }
 
-      > button {
+      >button {
         min-width: 40px !important;
         height: 40px !important;
         display: flex;
@@ -168,3 +168,4 @@ watch(
   }
 }
 </style>
+
