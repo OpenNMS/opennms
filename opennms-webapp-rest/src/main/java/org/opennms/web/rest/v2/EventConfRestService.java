@@ -388,9 +388,8 @@ public class EventConfRestService implements EventConfRestApi {
                         .entity(Map.of("error", "EventConfSource not found for id: " + sourceId))
                         .build();
             }
-
-            eventConfSource.setEvents(null);
-            return Response.ok(eventConfSource).build();
+            EventConfSourceDto eventConfSourceDto = EventConfSourceDto.fromEntity(eventConfSource);
+            return Response.ok(eventConfSourceDto).build();
 
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)

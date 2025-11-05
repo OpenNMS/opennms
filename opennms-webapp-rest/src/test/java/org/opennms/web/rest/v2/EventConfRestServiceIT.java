@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -697,7 +698,7 @@ public class EventConfRestServiceIT {
         Response resp = eventConfRestApi.getEventConfSourceById(source.getId(), securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
-        EventConfSource fetchedSource = (EventConfSource) resp.getEntity();
+        EventConfSourceDto fetchedSource = (EventConfSourceDto) resp.getEntity();
         assertNotNull(fetchedSource);
         assertEquals(source.getId(), fetchedSource.getId());
         assertEquals("testGetSource", fetchedSource.getName());
