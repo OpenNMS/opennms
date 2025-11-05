@@ -8,6 +8,9 @@
     >
       <div class="modal-body">
         <p v-html="getMessage()"></p>
+        <p v-if="store.changeEventConfigSourceStatusDialogState.eventConfigSource?.vendor === VENDOR_OPENNMS">
+          <strong>Note: Changing the status of an OpenNMS event configuration source may effect the OpenNMS system functionality. </strong>
+        </p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
       <template v-slot:footer>
@@ -24,6 +27,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'

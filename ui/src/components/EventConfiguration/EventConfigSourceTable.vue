@@ -82,7 +82,7 @@
                 >
                   <FeatherIcon :icon="Download"> </FeatherIcon>
                 </FeatherButton>
-                <FeatherDropdown v-if="config.vendor !== VENDOR_OPENNMS">
+                <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
                     <FeatherButton
                       link
@@ -103,6 +103,7 @@
                   <FeatherDropdownItem
                     @click="store.showDeleteEventConfigSourceModal(config)"
                     data-test="delete-source-button"
+                    v-if="config.vendor !== VENDOR_OPENNMS"
                   >
                     Delete Source
                   </FeatherDropdownItem>

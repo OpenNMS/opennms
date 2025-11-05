@@ -9,18 +9,15 @@
           <FeatherBackButton
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
-            >Go Back</FeatherBackButton
-          >
+            >Go Back
+          </FeatherBackButton>
         </div>
         <div>
           <h1>Event Configuration Details</h1>
         </div>
       </div>
 
-      <div
-        class="action-container"
-        v-if="config.vendor !== VENDOR_OPENNMS"
-      >
+      <div class="action-container">
         <FeatherButton
           primary
           data-test="add-event"
@@ -31,12 +28,15 @@
         <FeatherButton
           primary
           @click="store.showChangeEventConfigSourceStatusDialog(config)"
+          data-test="enable-disable-source"
         >
           {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
         <FeatherButton
           primary
           @click="store.showDeleteEventConfigSourceDialog(config)"
+          data-test="delete-source"
+          v-if="config.vendor !== VENDOR_OPENNMS"
         >
           Delete Source
         </FeatherButton>
