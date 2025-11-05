@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpObjIdXmlAdapter;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.SnmpValueXmlAdapter;
 
 @XmlRootElement(name="snmp-set-request")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -56,7 +57,7 @@ public class SnmpSetRequestDTO {
     private List<SnmpObjId> oids = new ArrayList<>(0);
 
     @XmlElement(name="value")
-    @XmlJavaTypeAdapter(SnmpObjIdXmlAdapter.class)
+    @XmlJavaTypeAdapter(SnmpValueXmlAdapter.class)
     private List<SnmpValue> values = new ArrayList<>(0);
 
     public String getCorrelationId() {

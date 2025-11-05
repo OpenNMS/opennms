@@ -1,7 +1,7 @@
 
 [[ga-performance-mgmt-adhoc-collection]]
 = Ad hoc collection
-:description: Ad hoc collection commands in Horizon/Meridian via Karaf shell to perform a collection on any available collectors for troubleshooting and testing.
+:description: Ad hoc collection commands in Horizon/Meridian via xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] to perform a collection on any available collectors for troubleshooting and testing.
 
 The `opennms:collect` Karaf Shell command can be used to trigger and perform a collection on any of the available collectors.
 

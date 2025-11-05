@@ -7,12 +7,12 @@ opennms (34.0.2-1) stable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Oct 2025 13:49:36 -0400
 
-opennms (34.0.3-SNAPSHOT-1) stable; urgency=low
+opennms (34.0.1-1) stable; urgency=low
 
-  * Release 34.0.3-SNAPSHOT contains bug fixes, enhancements and a new feature.
+  * Release 34.0.1 contains bug fixes, enhancements and a new feature.
 
     For details on what has changed, see:
-    https://docs.opennms.com/horizon/34.0.3-SNAPSHOT/index.html
+    https://docs.opennms.com/horizon/34.0.1/index.html
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Sep 2025 13:20:00 -0500
 

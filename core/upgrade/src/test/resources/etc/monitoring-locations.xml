@@ -5691,7 +5691,7 @@
         <tag name="even"/>
       </ns956:tags>
     </location-def>
-    <location-def location-name="00957" monitoring-area="SC" polling-package-name="storemon" geolocation="957 Open St., Network, MS 00957" coordinates="34.0.3-SNAPSHOT6,-80.9956" priority="100">
+    <location-def location-name="00957" monitoring-area="SC" polling-package-name="storemon" geolocation="957 Open St., Network, MS 00957" coordinates="34.0116,-80.9956" priority="100">
       <ns957:tags xmlns:ns957="http://xmlns.opennms.org/xsd/config/tags">
         <tag name="odd"/>
         <tag name="divisbileBy3"/>
@@ -5972,7 +5972,7 @@
         <tag name="divisibleBy17"/>
       </ns1003:tags>
     </location-def>
-    <location-def location-name="01004" monitoring-area="AL" polling-package-name="storemon" geolocation="1004 Open St., Network, MS 01004" coordinates="34.0.3-SNAPSHOT2,-86.9346" priority="100">
+    <location-def location-name="01004" monitoring-area="AL" polling-package-name="storemon" geolocation="1004 Open St., Network, MS 01004" coordinates="34.0612,-86.9346" priority="100">
       <ns1004:tags xmlns:ns1004="http://xmlns.opennms.org/xsd/config/tags">
         <tag name="even"/>
       </ns1004:tags>
@@ -9259,7 +9259,7 @@
         <tag name="divisibleBy5"/>
       </ns1555:tags>
     </location-def>
-    <location-def location-name="01556" monitoring-area="NC" polling-package-name="storemon" geolocation="1556 Open St., Network, MS 01556" coordinates="34.0.3-SNAPSHOT5,-78.0336" priority="100">
+    <location-def location-name="01556" monitoring-area="NC" polling-package-name="storemon" geolocation="1556 Open St., Network, MS 01556" coordinates="34.0915,-78.0336" priority="100">
       <ns1556:tags xmlns:ns1556="http://xmlns.opennms.org/xsd/config/tags">
         <tag name="even"/>
       </ns1556:tags>
@@ -10183,7 +10183,7 @@
         <tag name="divisibleBy19"/>
       </ns1710:tags>
     </location-def>
-    <location-def location-name="01711" monitoring-area="CA" polling-package-name="storemon" geolocation="1711 Open St., Network, MS 01711" coordinates="34.0.3-SNAPSHOT3,-117.468" priority="100">
+    <location-def location-name="01711" monitoring-area="CA" polling-package-name="storemon" geolocation="1711 Open St., Network, MS 01711" coordinates="34.0213,-117.468" priority="100">
       <ns1711:tags xmlns:ns1711="http://xmlns.opennms.org/xsd/config/tags">
         <tag name="odd"/>
       </ns1711:tags>
