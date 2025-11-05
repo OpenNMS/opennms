@@ -11,7 +11,6 @@
   <name>OpenNMS :: RRD</name>
   <modules>
     <module>opennms-rrd-api</module>
-    <module>opennms-rrd-jrobin</module>
     <module>opennms-rrd-rrdtool</module>
     <module>opennms-rrd-tcp</module>
     <module>opennms-rrd-model</module>
