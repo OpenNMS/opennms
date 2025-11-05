@@ -5,8 +5,7 @@
   >
     <div>
       <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details'
-        }}
+        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
       </h3>
     </div>
     <div class="spacer"></div>
