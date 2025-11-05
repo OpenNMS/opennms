@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,8 +195,11 @@ public class EventConfPersistenceService {
     }
 
     protected void reloadEventsFromDB() {
+        final long startTime = System.currentTimeMillis();
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         eventConfDao.loadEventsFromDB(dbEvents);
+        final long endTime = System.currentTimeMillis();
+        LOG.info("Time to reload events from DB: {} ms", (endTime - startTime));
     }
 
     @PreDestroy
