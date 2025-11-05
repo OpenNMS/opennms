@@ -77,7 +77,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
-    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300 * 10^9; // 5mins in nano seconds
+    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300L * 1_000_000_000L; // 5 min in ns
+    // 5mins in nano seconds
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
     private static final String PORT = "port";
     private static final String HOSTNAME = "hostname";
@@ -321,7 +322,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(OpenConfigData value) {
-            handler.accept(host, port, value.toByteArray());
+            if (!closed.get()) {
+                handler.accept(host, port, value.toByteArray());
+            }
         }
 
         @Override
@@ -329,7 +332,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
 
         @Override
@@ -337,7 +342,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
     }
 
@@ -356,7 +363,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(Gnmi.SubscribeResponse subscribeResponse) {
-            if(subscribeResponse != null) {
+            if(subscribeResponse != null && !closed.get()) {
                 handler.accept(host, port, subscribeResponse.toByteArray());
             }
         }
@@ -366,7 +373,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
 
         @Override
@@ -374,7 +383,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            executor.execute(() -> scheduleSubscription(handler));
+            if (!closed.get()) {
+                executor.execute(() -> scheduleSubscription(handler));
+            }
         }
     }
 
