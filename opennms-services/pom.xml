@@ -499,6 +499,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.device-config.persistence</groupId>
       <artifactId>org.opennms.features.device-config.persistence.impl</artifactId>
       <version>${project.version}</version>

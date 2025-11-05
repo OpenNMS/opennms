@@ -23,16 +23,12 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.model.Row;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
-import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 
 /**

@@ -19,14 +19,13 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rrd.model;
+package org.opennms.netmgt.rrd.util;
 
 import java.io.File;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 
@@ -44,9 +43,8 @@ public class RrdConvertUtilsIT {
      */
     @Test
     public void testJrobinParse() throws Exception {
-        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
+        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("../opennms-rrd-model/src/test/resources/tempA.jrb"));
         Assert.assertNotNull(jrb);
-
     }
 
     /**
@@ -56,7 +54,7 @@ public class RrdConvertUtilsIT {
      */
     @Test
     public void testJrobinRestore() throws Exception {
-        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
+        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("../opennms-rrd-model/src/test/resources/tempA.jrb"));
         File target = new File("target/tempA-converted.jrb");
         RrdConvertUtils.restoreJrb(jrb, target);
         Assert.assertTrue(target.exists());
@@ -69,7 +67,7 @@ public class RrdConvertUtilsIT {
      */
     @Test
     public void testConvertJrbIntoRrd() throws Exception {
-        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("src/test/resources/tempA.jrb"));
+        RRDv1 jrb = RrdConvertUtils.dumpJrb(new File("../opennms-rrd-model/src/test/resources/tempA.jrb"));
         RRDv3 rrd = RrdConvertUtils.convert(jrb);
         Assert.assertNotNull(rrd);
     }
@@ -81,7 +79,7 @@ public class RrdConvertUtilsIT {
      */
     @Test
     public void testConvertRrdIntoJrb() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("../opennms-rrd-model/src/test/resources/rrd-dump.xml"));
         RRDv1 jrb = RrdConvertUtils.convert(rrd);
         Assert.assertNotNull(jrb);
     }
@@ -93,7 +91,7 @@ public class RrdConvertUtilsIT {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testConvertAdvRrdIntoJrb1() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("../opennms-rrd-model/src/test/resources/rrd-dump-compute-ds.xml"));
         RRDv1 jrb = RrdConvertUtils.convert(rrd);
         Assert.assertNull(jrb);
     }
@@ -105,7 +103,7 @@ public class RrdConvertUtilsIT {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testConvertAdvRrdIntoJrb2() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
+        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("../opennms-rrd-model/src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
         RRDv1 jrb = RrdConvertUtils.convert(rrd);
         Assert.assertNull(jrb);
     }

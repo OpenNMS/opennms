@@ -204,6 +204,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+       <groupId>org.opennms</groupId>
+       <artifactId>opennms-rrd-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-tcp</artifactId>
       <scope>test</scope>

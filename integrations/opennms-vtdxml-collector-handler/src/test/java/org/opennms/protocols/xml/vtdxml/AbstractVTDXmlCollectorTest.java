@@ -40,7 +40,7 @@ import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v3.DS;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;

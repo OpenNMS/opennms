@@ -31,15 +31,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.JexlEngine;
-import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
-import org.opennms.core.utils.jexl.OnmsJexlSandbox;
-import org.opennms.core.utils.jexl.OnmsJexlUberspect;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.api.GraphResultsService;
 import org.opennms.web.svclayer.model.GraphResults;
@@ -148,13 +147,8 @@ public class GraphResultsController extends AbstractController implements Initia
         	
         	if(!endIsInteger || !startIsInteger) {        	
         		//One or both of start/end aren't integers, so we need to do full parsing using TimeParser
-        		TimeParser startParser = new TimeParser(start);
-        		TimeParser endParser = new TimeParser(end);
 	            try {
-	
-	            	TimeSpec specStart = startParser.parse();
-	            	TimeSpec specEnd = endParser.parse();
-	            	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
+	            	long[] results = RrdConvertUtils.getTimestamps(start, end);
 	            	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  
 	            	startLong = results[0]*1000;
 	            	endLong = results[1]*1000;

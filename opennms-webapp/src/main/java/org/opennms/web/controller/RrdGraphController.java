@@ -21,11 +21,10 @@
  */
 package org.opennms.web.controller;
 
-import org.jrobin.core.RrdException;
-import org.jrobin.core.timespec.TimeParser;
-import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
@@ -183,13 +182,8 @@ public class RrdGraphController extends AbstractController {
     		endTime = "" +(end/1000);
     	}
     	
-    	TimeParser startParser = new TimeParser(startTime);
-    	TimeParser endParser = new TimeParser(endTime);
         try {
-
-        	TimeSpec specStart = startParser.parse();
-        	TimeSpec specEnd = endParser.parse();
-        	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
+        	long[] results = RrdConvertUtils.getTimestamps(startTime, endTime);
         	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  Gah.  
         	results[0] = results[0]*1000;
         	results[1] = results[1]*1000;
