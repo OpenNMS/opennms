@@ -42,6 +42,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -50,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -122,7 +122,7 @@ public class EventConfPersistenceServiceIT {
 
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
-        EventConfEvent persistedEvent = dbEvents.get(0);
+        EventConfEvent persistedEvent = dbEvents.get(defaultEventConfEventSize);
         assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
         assertEquals("IT Event", persistedEvent.getEventLabel());
         assertEquals("This is an integration test event.", persistedEvent.getDescription());
@@ -168,7 +168,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(0, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
-        EventConfEvent finalEvent = updatedDbEvents.get(0);
+        EventConfEvent finalEvent = updatedDbEvents.get(defaultEventConfEventSize);
         assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
         assertEquals("Updated Description", finalEvent.getDescription());
     }

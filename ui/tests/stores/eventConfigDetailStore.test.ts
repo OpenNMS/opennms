@@ -532,4 +532,15 @@ describe('useEventConfigDetailStore', () => {
     expect(store.events).toEqual(mockEvents)
   })
 
+  it('should handle reset filter', async () => {
+    store.selectedSource = mockSource
+    vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
+
+    store.resetFilters()
+
+    expect(store.eventsSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
+    expect(store.eventsSearchTerm).toBe('')
+    expect(store.eventsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
+  })
+
 })

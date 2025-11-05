@@ -51,7 +51,7 @@ public final class EventConfTestUtil {
             unmarshalEvents.getLoadedEventFiles().put(configResource.getFilename(), unmarshalEvents);
 
             Map<String, Events> fileEventsMap = unmarshalEvents.getLoadedEventFiles();
-            int fileOrder = 1;
+            int fileOrder = fileEventsMap.size();
 
             for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
                 String fileName = entry.getKey() == null ? "" : entry.getKey();
@@ -68,7 +68,7 @@ public final class EventConfTestUtil {
                         .username("system")
                         .description("")
                         .eventCount(events.getEvents().size())
-                        .fileOrder(fileOrder++)
+                        .fileOrder(fileOrder--)
                         .build();
 
                 EventConfSource source = createSource(metadataDto);

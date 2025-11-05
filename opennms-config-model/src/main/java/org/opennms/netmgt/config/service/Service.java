@@ -48,7 +48,7 @@ public class Service implements Serializable {
     @XmlElement(name = "name", required = true)
     private String m_name;
 
-    @XmlElement(name = "class-name", required = true)
+    @XmlElement(name = "class-name", required = false)
     private String m_className;
 
     @XmlElement(name = "attribute")

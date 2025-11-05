@@ -42,6 +42,7 @@ import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -620,6 +621,62 @@ public class EventConfRestServiceIT {
         assertEquals("Clear label changed.", dbEvent.getEventLabel());
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithFolderPath() throws Exception {
+        // Test that folder paths are stripped and whitespace is trimmed
+        String realXmlFile = "opennms.alarm.events.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "subfolder/nested/test-unix-path.events .xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfSource source = eventConfSourceDao.findByName("test-unix-path.events");
+        assertNotNull(source);
+        assertEquals("test-unix-path.events", source.getName());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithWindowsPath() throws Exception {
+        // Test Windows-style backslash paths
+        String realXmlFile = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "folder\\subfolder\\test-windows-path.events.xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfSource source = eventConfSourceDao.findByName("test-windows-path.events");
+        assertNotNull(source);
+        assertEquals("test-windows-path.events", source.getName());
     }
     @Test
     @Transactional

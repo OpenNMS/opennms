@@ -252,6 +252,13 @@ export const getAllSourceNames = async (): Promise<string[]> => {
   }
 }
 
+/**
+ * Makes a DELETE request to the REST endpoint to delete one or more event configuration events for a source.
+ *
+ * @param sourceId The ID of the event configuration source to delete events from.
+ * @param eventIds An array of event IDs to delete.
+ * @returns A promise that resolves to a boolean indicating whether the event configuration events were deleted successfully.
+ */
 export const deleteEventConfigEventBySourceId = async (sourceId: number, eventIds: number[]): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events`
   const payload = {
@@ -267,3 +274,58 @@ export const deleteEventConfigEventBySourceId = async (sourceId: number, eventId
   }
 }
 
+
+/**
+ * Downloads the EventConf XML for the given sourceId.
+ * 
+ * @param sourceId The ID of the event configuration source to download the XML for.
+ * @returns A promise that resolves to a boolean indicating whether the XML was downloaded successfully.
+ */
+export const downloadEventConfXmlBySourceId = async (sourceId: number): Promise<boolean> => {
+  if (!sourceId || sourceId <= 0) {
+    console.error('Invalid sourceId', sourceId)
+    return false
+  }
+
+  const endpoint = `/eventconf/sources/${sourceId}/events/download`
+  try {
+    const response = await v2.get(endpoint, { responseType: 'blob' })
+    if (response.status !== 200) return false
+
+    const filename = extractFilenameFromContentDisposition(response.headers, `eventconf-source-${sourceId}.xml`)
+    const blob = response.data as Blob
+
+    saveBlobAsFile(blob, filename)
+
+    return true
+  } catch (error) {
+    console.error('Error downloading EventConf XML for sourceId', sourceId, error)
+    return false
+  }
+}
+
+const extractFilenameFromContentDisposition = (headers: Record<string, any> | undefined, defaultName: string): string => {
+  const contentDisposition = headers && (headers['content-disposition'] || headers['Content-Disposition']) as string | undefined
+  if (!contentDisposition) return defaultName
+
+  const match = /filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/.exec(contentDisposition)
+  if (match && match[1]) {
+    try {
+      return decodeURIComponent(match[1])
+    } catch {
+      return match[1]
+    }
+  }
+  return defaultName
+}
+
+const saveBlobAsFile = (blob: Blob, filename: string): void => {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}

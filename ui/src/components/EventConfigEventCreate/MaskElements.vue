@@ -26,8 +26,8 @@
             :options="availableMaskOptions(index)"
             :error="errors.maskElements?.[index]?.name"
             :modelValue="MaskElementNameOptions.find(
-            (o: ISelectItemType) => o._value === row.name._value
-          )"
+              (o: ISelectItemType) => o._value === row.name._value
+            )"
             @update:modelValue="$emit('setMaskElements', 'setName', $event, index)"
             data-test="mask-element-name"
           />
@@ -67,9 +67,10 @@ import { MaskElementNameOptions } from './constants'
 defineEmits<{
   (e: 'setMaskElements', key: string, value: any, index: number): void
 }>()
+
 const props = defineProps<{
   maskElements: Array<{ name: ISelectItemType; value: string }>
-    errors: EventFormErrors
+  errors: EventFormErrors
 }>()
 
 const store = useEventModificationStore()

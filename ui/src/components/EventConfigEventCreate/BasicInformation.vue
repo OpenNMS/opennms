@@ -5,8 +5,7 @@
   >
     <div>
       <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details'
-        }}
+        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
       </h3>
     </div>
     <div class="spacer"></div>
@@ -131,6 +130,7 @@
             :errors="errors"
           />
         </div>
+        <div class="spacer"></div>
         <div>
           <MaskVarbinds
             data-test="mask-varbinds"
@@ -138,6 +138,15 @@
             :maskElements="maskElements"
             :errors="errors"
             @setVarbinds="setVarbinds"
+          />
+        </div>
+        <div class="spacer"></div>
+        <div>
+          <VarbindsDecode
+            data-test="varbind-decodes"
+            :varbindsDecode="varbindsDecode"
+            @setVarbindsDecode="setVarbindsDecode"
+            :errors="errors"
           />
         </div>
         <div class="spacer"></div>
@@ -181,6 +190,7 @@ import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './consta
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
+import VarbindsDecode from './VarbindsDecode.vue'
 
 const router = useRouter()
 const store = useEventModificationStore()
@@ -202,9 +212,10 @@ const addAlarmData = ref(false)
 const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
-const varbinds = ref<Array<{ index: number; value: string }>>([
-  { index: 0, value: '' }
+const varbinds = ref<Array<{ index: string; value: string }>>([
+  { index: '0', value: '' }
 ])
+const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
 
 const xmlContent = computed(() => {
   return vkbeautify.xml(
@@ -216,16 +227,18 @@ const xmlContent = computed(() => {
               <mename>${me.name._value}</mename>
               <mevalue>${me.value}</mevalue>
             </maskelement>`).join('')}
-        </mask>` : ''}
-
-        ${varbinds.value.length > 0 ? `
-        <varbindsdecode>
           ${varbinds.value.map(vb => `
-            <parmid>${vb.index}</parmid>
-            <decode varbindvalue="${vb.index}" varbinddecodedstring="${vb.value}" />
-          `).join('')}
-        </varbindsdecode>` : ''}
-
+            <varbind>
+              <vbnumber>${vb.index}</vbnumber>
+              <vbvalue>${vb.value}</vbvalue>
+            </varbind>`).join('')}
+        </mask>` : ''}
+        ${varbindsDecode.value.map(vb => `
+            <varbindsdecode>
+              <parmid>${vb.parmId}</parmid>
+              ${vb.decode.map(d => `
+                <decode varbinddecodedstring="${d.key}" varbindvalue="${d.value}" />`).join('')}
+            </varbindsdecode>`).join('')}
         <uei>${eventUei.value}</uei>
         <event-label>${eventLabel.value}</event-label>
         <descr><![CDATA[${eventDescription.value}]]></descr>
@@ -243,9 +256,6 @@ const xmlContent = computed(() => {
   )
 })
 
-
-
-
 const resetValues = () => {
   eventUei.value = ''
   eventLabel.value = ''
@@ -258,9 +268,9 @@ const resetValues = () => {
   alarmType.value = { _text: '', _value: '' }
   autoClean.value = false
   clearKey.value = ''
-  maskElements.value = [
-    { name: { _text: '', _value: '' }, value: '' }
-  ]
+  maskElements.value = []
+  varbinds.value = []
+  varbindsDecode.value = []
 }
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
@@ -304,25 +314,29 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
         value: maskElementList[i].getElementsByTagName('mevalue')[0].textContent || ''
       })
     }
-    const varbindDecodeList = xmlDoc.getElementsByTagName('varbindsdecode')
+    const varbindList = xmlDoc.getElementsByTagName('varbind')
     varbinds.value = []
-
-    if (varbindDecodeList.length > 0) {
-      for (let v = 0; v < varbindDecodeList.length; v++) {
-        const decodeElements = varbindDecodeList[v].getElementsByTagName('decode')
-
-        for (let i = 0; i < decodeElements.length; i++) {
-          const varbindValue = decodeElements[i].getAttribute('varbindvalue')?.trim() || ''
-          const decodedString = decodeElements[i].getAttribute('varbinddecodedstring')?.trim() || ''
-
-          varbinds.value.push({
-            index: Number(varbindValue),
-            value: decodedString
-          })
-        }
+    for (let i = 0; i < varbindList.length; i++) {
+      varbinds.value.push({
+        index: varbindList[i].getElementsByTagName('vbnumber')[0].textContent || '',
+        value: varbindList[i].getElementsByTagName('vbvalue')[0].textContent || ''
+      })
+    }
+    const varbindsDecodeList = xmlDoc.getElementsByTagName('varbindsdecode')
+    varbindsDecode.value = []
+    for (let i = 0; i < varbindsDecodeList.length; i++) {
+      const decodeList = varbindsDecodeList[i].getElementsByTagName('decode')
+      varbindsDecode.value.push({
+        parmId: varbindsDecodeList[i].getElementsByTagName('parmid')[0].textContent || '',
+        decode: []
+      })
+      for (let j = 0; j < decodeList.length; j++) {
+        varbindsDecode.value[i].decode.push({
+          key: decodeList[j].getAttribute('varbinddecodedstring') || '',
+          value: decodeList[j].getAttribute('varbindvalue') || ''
+        })
       }
     }
-
   } else {
     resetValues()
   }
@@ -388,8 +402,12 @@ const setMaskElements = (key: string, value: any, index: number) => {
 }
 
 const setVarbinds = (key: string, value: any, index: number) => {
-  if (key === 'setIndex') {
-    varbinds.value[index].index = Number(value)
+  if (index === undefined) {
+    return
+  }
+
+  if (key === 'setIndex' && Number(value)) {
+    varbinds.value[index].index = value
   }
 
   if (key === 'setValue') {
@@ -397,7 +415,7 @@ const setVarbinds = (key: string, value: any, index: number) => {
   }
 
   if (key === 'addVarbindRow') {
-    varbinds.value.push({ index: varbinds.value.length, value: '' })
+    varbinds.value.push({ index: '0', value: '' })
   }
 
   if (key === 'removeVarbindRow') {
@@ -406,6 +424,40 @@ const setVarbinds = (key: string, value: any, index: number) => {
 
   if (key === 'clearAllVarbinds') {
     varbinds.value = []
+  }
+}
+
+const setVarbindsDecode = (key: string, value: any, index: number, decodeIndex: number) => {
+  if (index === undefined) {
+    return
+  }
+
+  if (key === 'setParmId') {
+    varbindsDecode.value[index].parmId = value
+  }
+
+  if (key === 'addVarbindDecodeRow') {
+    varbindsDecode.value.push({ parmId: '', decode: [] })
+  }
+
+  if (key === 'removeVarbindDecodeRow') {
+    varbindsDecode.value.splice(index, 1)
+  }
+
+  if (key === 'addDecodeRow') {
+    varbindsDecode.value[index].decode.push({ key: '', value: '' })
+  }
+
+  if (key === 'removeDecodeRow') {
+    varbindsDecode.value[index].decode.splice(decodeIndex, 1)
+  }
+
+  if (key === 'setDecodeKey') {
+    varbindsDecode.value[index].decode[decodeIndex].key = value
+  }
+
+  if (key === 'setDecodeValue') {
+    varbindsDecode.value[index].decode[decodeIndex].value = value
   }
 }
 
@@ -468,7 +520,9 @@ watchEffect(() => {
     alarmType.value._value as string,
     autoClean.value,
     clearKey.value,
-    maskElements.value
+    maskElements.value,
+    varbinds.value,
+    varbindsDecode.value
   )
   isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as EventFormErrors
@@ -494,7 +548,7 @@ onMounted(() => {
     border-width: 1px;
     border-style: solid;
     border-color: var(variables.$border-on-surface);
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
 
     .label {

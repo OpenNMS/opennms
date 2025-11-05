@@ -73,6 +73,7 @@
               <td>
                 <div class="action-container">
                   <FeatherButton
+                    v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS"
                     icon="Edit"
                     :title="`Edit ${event.eventLabel}`"
                     data-test="edit-button"

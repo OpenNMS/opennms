@@ -134,6 +134,8 @@ export type EventFormErrors = {
   logmsg?: string
   dest?: string
   maskElements?: Array<{ name?: string; value?: string }>
+  varbinds?: Array<{ index?: string; value?: string }>
+  varbindsDecode?: Array<{ parmId?: string; decode?: Array<{ key?: string; value?: string }> }>
   reductionKey?: string
   alarmType?: string
   clearKey?: string
