@@ -38,6 +38,8 @@ import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +61,8 @@ import java.util.stream.Collectors;
 @Component
 public class EventConfRestService implements EventConfRestApi {
 
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
+
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
 
@@ -71,13 +75,25 @@ public class EventConfRestService implements EventConfRestApi {
         final Date now = new Date();
         int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
 
-        final Map<String, Attachment> fileMap = attachments.stream()
-                .collect(Collectors.toMap(
-                        a -> stripExtension(a.getContentDisposition().getParameter("filename")),
-                        a -> a,
-                        (a1, a2) -> a1, // keep first if duplicate
-                        LinkedHashMap::new
-                ));
+        final Map<String, Attachment> fileMap = new LinkedHashMap<>();
+        for (Attachment attachment : attachments) {
+            String filename = attachment.getContentDisposition().getParameter("filename");
+            String basename = stripPathAndExtension(filename);
+
+            if (basename == null || basename.isEmpty()) {
+                LOG.warn("Skipping attachment with invalid filename: {}", filename);
+                continue;
+            }
+
+            if (fileMap.containsKey(basename)) {
+                String existingFilename = fileMap.get(basename).getContentDisposition().getParameter("filename");
+                LOG.warn("Duplicate basename detected: '{}' and '{}' resolve to same name '{}'. Keeping first file.",
+                        existingFilename, filename, basename);
+                continue;
+            }
+
+            fileMap.put(basename, attachment);
+        }
 
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
@@ -393,10 +409,22 @@ public class EventConfRestService implements EventConfRestApi {
                 .build();
     }
 
-    private String stripExtension(final String filename) {
+    private String stripPathAndExtension(final String filename) {
         if (filename == null) return null;
-        int dotIndex = filename.lastIndexOf('.');
-        return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
+
+        // Strip folder paths (handle both / and \ separators)
+        String basename = filename;
+        int lastSlash = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        if (lastSlash != -1) {
+            basename = filename.substring(lastSlash + 1);
+        }
+
+        // Strip extension
+        int dotIndex = basename.lastIndexOf('.');
+        String result = (dotIndex == -1) ? basename : basename.substring(0, dotIndex);
+
+        // Trim trailing/leading whitespace from result
+        return result.trim();
     }
 
     private void validateAddEvent(Long sourceId, Event event) {
