@@ -122,6 +122,7 @@ const onAddEventClick = (source: EventConfigSource) => {
 onMounted(async () => {
   if (store.selectedSource?.id) {
     config.value = store.selectedSource
+    store.resetFilters()
     await store.fetchEventsBySourceId()
   }
 })

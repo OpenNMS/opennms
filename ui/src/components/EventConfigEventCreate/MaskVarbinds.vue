@@ -8,17 +8,16 @@
         <h3>Mask Varbinds</h3>
         <FeatherButton
           secondary
-          @click="handleAddVarbind"
+          @click="$emit('setVarbinds', 'addVarbindRow', null, -1)"
           data-test="add-varbind-row-button"
-          :disabled="!canAddVarbind"
+          :disabled="!hasMaskElements"
         >
           <FeatherIcon :icon="Add" />
           Add
         </FeatherButton>
       </div>
-
       <div
-        v-for="(row, index) in varbinds"
+        v-for="(row, index) in maskVarbinds"
         :key="index"
         class="form-row"
       >
@@ -28,23 +27,23 @@
             label="Varbind Index"
             min="0"
             :model-value="row.index"
-            @update:model-value="emit('setVarbinds', 'setIndex', $event, index)"
+            @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
             data-test="varbind-index-input"
+            :error="errors.varbinds?.[index]?.index"
           />
         </div>
-
         <div class="input-field">
           <FeatherInput
             label="Varbind Value"
             :model-value="row.value"
-            @update:model-value="emit('setVarbinds', 'setValue', $event, index)"
+            @update:model-value="$emit('setVarbinds', 'setValue', $event, index)"
             data-test="varbind-value-input"
+            :error="errors.varbinds?.[index]?.value"
           />
-
           <FeatherButton
             secondary
             data-test="remove-varbind-row-button"
-            @click="emit('setVarbinds', 'removeVarbindRow', null, index)"
+            @click="$emit('setVarbinds', 'removeVarbindRow', null, index)"
           >
             <FeatherIcon :icon="Delete" />
           </FeatherButton>
@@ -55,7 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
@@ -63,57 +61,32 @@ import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import { FeatherInput } from '@featherds/input'
+import { ISelectItemType } from '@featherds/select'
 
 const emit = defineEmits<{
   (e: 'setVarbinds', key: string, value: any, index: number): void
 }>()
 
 const props = defineProps<{
-  varbinds: Array<{ index: number; value: string }>
-  maskElements: Array<{ name: any; value: string }>
+  varbinds: Array<{ index: string; value: string }>
+  maskElements: Array<{ name: ISelectItemType; value: string }>
   errors: EventFormErrors
 }>()
 
 const store = useEventModificationStore()
+const { varbinds, maskElements, errors } = toRefs(props)
+const maskVarbinds = ref<Array<{ index: string; value: string }>>([])
+const hasMaskElements = computed(() => maskElements.value.length > 0)
 
-const hasValidMaskElement = computed(() => {
-  return props.maskElements.some(
-    (mask) =>
-      mask.name &&
-      mask.name._value &&
-      mask.name._value.trim() !== '' &&
-      mask.value &&
-      mask.value.trim() !== ''
-  )
-})
+watch(() => varbinds, (newVarbinds) => {
+  maskVarbinds.value = [...newVarbinds.value]
+}, { deep: true, immediate: true })
 
-const canAddVarbind = computed(() => {
-  return hasValidMaskElement.value
-})
-
-const handleAddVarbind = () => {
-  if (!canAddVarbind.value) return
-  emit('setVarbinds', 'addVarbindRow', null, -1)
-}
-
-watch(
-  () => props.maskElements,
-  (newMaskElements) => {
-    const hasAnyValid = newMaskElements.some(
-      (mask) =>
-        mask.name &&
-        mask.name._value &&
-        mask.name._value.trim() !== '' &&
-        mask.value &&
-        mask.value.trim() !== ''
-    )
-
-    if (!hasAnyValid && props.varbinds.length > 0) {
-      emit('setVarbinds', 'clearAllVarbinds', null, -1)
-    }
-  },
-  { deep: true, immediate: true }
-)
+watch(() => maskElements, (newMaskElements) => {
+  if (newMaskElements.value.length === 0) {
+    emit('setVarbinds', 'clearAllVarbinds', null, -1)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped lang="scss">
@@ -145,11 +118,11 @@ watch(
       align-items: flex-start;
       gap: 10px;
 
-      > div {
+      >div {
         flex: 1;
       }
 
-      > button {
+      >button {
         min-width: 40px !important;
         height: 40px !important;
         display: flex;
@@ -168,3 +141,4 @@ watch(
   }
 }
 </style>
+
