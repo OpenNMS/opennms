@@ -107,7 +107,21 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
-    <!-- Allow certain actions for the ROLE_USER role -->
+      <intercept-url pattern="/rest/cm/provisiond//**" method="GET" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond//**" method="DELETE" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond//**" method="POST" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond//**" method="PUT" access="ROLE_ADMIN"/>
+
+      <!-- classifications should be admin-only -->
+      <intercept-url pattern="/rest/classifications/**" method="GET" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_ADMIN"/>
+
+
+
+
+      <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
     <!-- read-only calls should be allowed for any user -->
