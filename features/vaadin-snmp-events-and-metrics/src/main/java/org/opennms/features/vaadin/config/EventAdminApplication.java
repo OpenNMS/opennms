@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.vaadin.utils.FileValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -143,11 +144,16 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        if (!isValidFileName(fieldValue)) {
+                        if (!FileValidationUtils.isValidFileName(fieldValue)) {
                             Notification.show("Invalid File name " + fieldValue +", File name must begin with a letter or number and contain only: letters, numbers, ., -, _", Notification.Type.ERROR_MESSAGE);
                             return;
                         }
-                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
+                        String normalizedName = normalizeFilename(fieldValue);
+                        final File file = new File(eventsDir, normalizedName);
+                        if (FileValidationUtils.isFileNameTooLong(normalizedName)) {
+                            Notification.show("Filename too long after normalization", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
                         LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
@@ -241,55 +247,6 @@ public class EventAdminApplication extends UI {
         }
         return fileName;
     }
-
-    public boolean isValidFileName(String fileName) {
-        if (fileName == null || fileName.isEmpty()) {
-            return false;
-        }
-
-        // Block path traversal sequences
-        if (fileName.contains("..") ||
-                fileName.contains("/") ||
-                fileName.contains("\\") ||
-                fileName.contains("\0") || // null byte
-                fileName.contains("%00") || // encoded null byte
-                fileName.contains("%2e") || // encoded dot
-                fileName.contains("%2f") || // encoded slash
-                fileName.contains("%5c")) { // encoded backslash
-            return false;
-        }
-
-        // Block other dangerous patterns
-        if (fileName.matches(".*[<>:\"|?*].*")) {
-            return false; // Windows reserved characters
-        }
-
-        // Extract just the filename part (in case any path components slipped through)
-        String nameOnly = new File(fileName).getName();
-        if (!nameOnly.equals(fileName)) {
-            return false; // Path components detected
-        }
-
-        // Allow only safe characters for filenames
-        if (!nameOnly.matches("^[a-zA-Z0-9][a-zA-Z0-9._\\-]+$")) {
-            return false;
-        }
-
-        // Prevent reserved filenames (Windows)
-        String nameWithoutExt = nameOnly.replaceFirst("\\.[^.]+$", "").toUpperCase();
-        if (nameWithoutExt.matches("^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$")) {
-            return false;
-        }
-
-        // Reasonable length limit
-        if (nameOnly.length() > 255) {
-            return false;
-        }
-
-        return true;
-    }
-
-
     /**
      * Adds a new Events Panel.
      *

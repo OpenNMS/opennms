@@ -25,6 +25,7 @@ import java.io.File;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.features.vaadin.utils.FileValidationUtils;
 
 /**
  * The Class EventAdminApplicationTest.
@@ -70,7 +71,7 @@ public class EventAdminApplicationTest {
         String[] testInputs = {"data", "my-event", "test123.events", "existing.xml"};
 
         for (String input : testInputs) {
-            Assert.assertTrue("Input should be valid: " + input, app.isValidFileName(input));
+            Assert.assertTrue("Input should be valid: " + input, FileValidationUtils.isValidFileName(input));
             // If valid, should also normalize without exception
             String normalized = app.normalizeFilename(input);
             Assert.assertNotNull("Normalized result should not be null for: " + input, normalized);
@@ -90,8 +91,34 @@ public class EventAdminApplicationTest {
         };
 
         for (String input : invalidInputs) {
-            Assert.assertFalse("Input should be invalid: " + input, app.isValidFileName(input));
+            Assert.assertFalse("Input should be invalid: " + input, FileValidationUtils.isValidFileName(input));
         }
+    }
+
+    @Test
+    public void testFileName_VeryLongStrings() throws Exception {
+        // Test with extremely long strings to ensure no performance issues
+        String veryLongFileName = "x".repeat(256);
+        Assert.assertTrue("Very long file name should be detected as too long",
+                FileValidationUtils.isFileNameTooLong(veryLongFileName));
+
+        String extremelyLongFileName = "y".repeat(10000);
+        Assert.assertTrue("Extremely long file name should be detected as too long",
+                FileValidationUtils.isFileNameTooLong(extremelyLongFileName));
+    }
+
+    @Test
+    public void testFileName_ValidStrings() throws Exception {
+
+        // 255 characters - should NOT be too long (exactly at limit)
+        String exactly255Chars = "x".repeat(255);
+        Assert.assertFalse("File name with exactly 255 characters should NOT be detected as too long",
+                FileValidationUtils.isFileNameTooLong(exactly255Chars));
+
+        // 20 characters - should NOT be too long (well under limit)
+        String shortFileName = "y".repeat(20);
+        Assert.assertFalse("File name with 20 characters should NOT be detected as too long",
+                FileValidationUtils.isFileNameTooLong(shortFileName));
     }
 
 
