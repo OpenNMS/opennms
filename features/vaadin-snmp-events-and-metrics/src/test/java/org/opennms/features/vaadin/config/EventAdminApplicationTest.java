@@ -63,4 +63,36 @@ public class EventAdminApplicationTest {
         Assert.assertEquals("events/JuniperEvents/syslog/tca_syslog.xml", file);
     }
 
+    @Test
+    public void testFileName_ValidInput() throws Exception {
+        EventAdminApplication app = new EventAdminApplication();
+        // Test that valid input passes validation and normalizes correctly
+        String[] testInputs = {"data", "my-event", "test123.events", "existing.xml"};
+
+        for (String input : testInputs) {
+            Assert.assertTrue("Input should be valid: " + input, app.isValidFileName(input));
+            // If valid, should also normalize without exception
+            String normalized = app.normalizeFilename(input);
+            Assert.assertNotNull("Normalized result should not be null for: " + input, normalized);
+        }
+    }
+
+    @Test
+    public void testFileName_InvalidInputBlocked() throws Exception {
+        EventAdminApplication app = new EventAdminApplication();
+        // Test that invalid input is blocked by isValidFileName
+        String[] invalidInputs = {
+                "../../etc/passwd",
+                "file<name", "CON", "folder/file",
+                "file with spaces", "file | cat /etc/passwd",
+                "file; rm -rf /",
+                "file...", "file..name", ".xml"
+        };
+
+        for (String input : invalidInputs) {
+            Assert.assertFalse("Input should be invalid: " + input, app.isValidFileName(input));
+        }
+    }
+
+
 }
