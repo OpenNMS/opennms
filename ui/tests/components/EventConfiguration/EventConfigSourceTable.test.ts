@@ -251,16 +251,21 @@ describe('EventConfigSourceTable.vue', () => {
     expect(wrapper.vm.sort.name).toBe(SORT.NONE)
   })
 
-  it('does not render dropdown for OpenNMS vendor', async () => {
+  it('renders dropdown for OpenNMS vendor with correct enable/disable text', async () => {
     store.sources = [openNMSMockSource]
     await wrapper.vm.$nextTick()
 
     const row = wrapper.find('transition-group-stub tr')
     expect(row.exists()).toBe(true)
-    expect(row.findAll('button')).toHaveLength(2)
+    expect(row.findAll('button')).toHaveLength(3)
 
-    expect(row.findAllComponents(FeatherDropdown)).toHaveLength(0)
-    expect(row.findAllComponents(FeatherDropdownItem)).toHaveLength(0)
+    expect(row.findAllComponents(FeatherDropdown)).toHaveLength(1)
+
+    row.findAllComponents(FeatherDropdown)[0].findAll('button')[0].trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(row.findAllComponents(FeatherDropdownItem)).toHaveLength(1)
+    expect(row.findAllComponents(FeatherDropdownItem)[0].text()).toBe('Enable Source')
   })
 
   it('renders dropdown for non-OpenNMS vendor with correct enable/disable text', async () => {
