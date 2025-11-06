@@ -10,12 +10,7 @@ This section explains how to install and configure a new {page-component-title} 
 +
 NOTE: The default configuration is not optimized to run in a production environment or monitor large networks.
 
-ifeval::["{page-component-title}" == "Horizon"]
-** By default, your time series database is JRobin, which persists RRD files on the local file system.
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
 ** By default, your time series database is RRDtool, which persists RRD files on the local file system.
-endif::[]
 * Sign in to the web UI and change the `admin` account's default password.
 
 == DNS considerations

@@ -112,7 +112,7 @@ Java Management Extensions (JMX):: A set of tools for managing and monitoring se
 https://www.atlassian.com/software/jira[Jira]:: A project management platform that The OpenNMS Group uses to track software issues, feature requests, and IT requests for its projects, including {page-component-title} (see https://issues.opennms.com[OpenNMS Jira]).
 
 JRobin:: A clone of RRDTool written in Java.
-It is the default time series database for new {page-component-title} instances.
+This RRD implementation was available in previous releases of {page-component-title}. It was deprecated in version 34 and removed in version 35.
 
 == K
 
@@ -153,7 +153,7 @@ It is not required for flow processing, but can improve performance for deployme
 network operations center (NOC):: One or more locations where a network is monitored and controlled (see https://en.wikipedia.org/wiki/Network_operations_center[Network Operations Center]).
 
 xref:deployment:time-series-storage/newts/introduction.adoc[New-Fangled Time Series Datastore (Newts)]:: An OpenNMS time series datastore based on Apache Cassandra.
-You can use it as an alternative persistence strategy (instead of JRobin or RRDtool).
+You can use it as an alternative persistence strategy (instead or RRDtool).
 
 node:: A device or application that sends communications over a network (for example, a server).
 They can be provisioned to and monitored by {page-component-title}.

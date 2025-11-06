@@ -51,7 +51,7 @@ TIP: Some collectors, such as the `JdbcCollector`, can be invoked without specif
 opennms:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
 +
-NOTE: This option will only persist data to JRB/RRD files if there is an existing file for the defined metrics.
+NOTE: This option will only persist data to RRD files if there is an existing file for the defined metrics.
 The files should be created on the first successful collection during a regular collection interval.
 
 A complete list of options is available using the help command.
