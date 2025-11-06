@@ -13,8 +13,9 @@ sudo dnf -y install {package-prefix}
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
-After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
+After upgrading, OpenNMS {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+We recommend excluding the {page-component-title} packages from updates except when you plan to perform an upgrade.
+If you have a minimal system installed, you may need to install the config manager with `sudo dnf install 'dnf-command(config-manager)'`.
 
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
@@ -25,27 +26,4 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 sudo dnf config-manager --disable meridian
 endif::[]
-----
-
-.Verify directory structure with the tree command
-[source, console]
-----
-sudo dnf -y install tree
-tree /opt/opennms -L 1
-----
-
-.Directory structure after successful installation
-[source, output]
-----
-/opt/opennms
-├── bin
-├── contrib
-├── data
-├── deploy
-├── etc
-├── jetty-webapps
-├── lib
-├── logs -> /var/log/opennms
-├── share -> /var/opennms
-└── system
 ----

@@ -275,7 +275,7 @@
     <node id="n17">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="68.83893401489257" width="56.98334.0.3-SNAPSHOT769615" x="598.5411342060087" y="122.12244599279632"/>
+          <y:Geometry height="68.83893401489257" width="56.983342011769615" x="598.5411342060087" y="122.12244599279632"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.979999542236328" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="40.01199722290039" x="8.485672394434573" y="72.83893401489257">Minion</y:NodeLabel>
@@ -289,7 +289,7 @@
     <node id="n18">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="68.83893401489257" width="56.98334.0.3-SNAPSHOT769615" x="594.0822684120174" y="312.0978930361233"/>
+          <y:Geometry height="68.83893401489257" width="56.983342011769615" x="594.0822684120174" y="312.0978930361233"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.979999542236328" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="40.01199722290039" x="8.485672394434573" y="72.83893401489257">Minion</y:NodeLabel>
@@ -303,7 +303,7 @@
     <node id="n19">
       <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="68.83893401489257" width="56.98334.0.3-SNAPSHOT769615" x="589.1499948501586" y="506.1224459927963"/>
+          <y:Geometry height="68.83893401489257" width="56.983342011769615" x="589.1499948501586" y="506.1224459927963"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Helvetica Neue" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.979999542236328" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="40.01199722290039" x="8.485672394434573" y="72.83893401489257">Minion</y:NodeLabel>

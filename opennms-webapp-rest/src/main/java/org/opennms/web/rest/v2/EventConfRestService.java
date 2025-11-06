@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
@@ -45,11 +46,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.io.ByteArrayInputStream;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.OutputStreamWriter;
 import java.io.InputStream;
+import java.io.BufferedWriter;
 import java.io.Serializable;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -69,6 +75,9 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
+
+    @Autowired
+    private EventConfEventDao eventConfEventDao;
 
     @Override
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
@@ -371,6 +380,53 @@ public class EventConfRestService implements EventConfRestApi {
                     .build();
         }
     }
+
+    @Override
+    public Response downloadEventConfXmlBySourceId(final Long sourceId, SecurityContext securityContext) {
+        if (sourceId == null || sourceId <= 0) {
+            return buildXmlError(Response.Status.BAD_REQUEST, "Invalid source ID");
+        }
+
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+
+        if (eventConfSource == null || eventConfSource.getEvents().isEmpty()) {
+            return buildXmlError(Response.Status.NOT_FOUND, "No events found for source ID: " + sourceId);
+        }
+
+        final var eventConfEvents = eventConfEventDao.findBySourceId(sourceId);
+
+        StreamingOutput stream = output -> {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
+                Events events = new Events();
+                for (final var  eventConfEvent : eventConfEvents) {
+                    if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) {
+                        continue;
+                    }
+                    try {
+                        Event event = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
+                        events.addEvent(event);
+                    } catch (Exception e) {
+                        LOG.error("Failed to parse event XML for source {}: {}", sourceId, e.getMessage());
+                    }
+                }
+                JaxbUtils.marshal(events, writer);
+            }
+        };
+
+        return Response.ok(stream).type(MediaType.APPLICATION_XML)
+                .header("Content-Disposition", "attachment; filename=\"%s.xml\""
+                        .formatted(eventConfSource.getName())).build();
+    }
+
+
+    private Response buildXmlError(Response.Status status, String message) {
+        return Response.status(status)
+                .entity("<error>%s</error>".formatted(message))
+                .type(MediaType.APPLICATION_XML)
+                .build();
+    }
+
+
 
     @Override
     public Response getEventConfSourceById(Long sourceId, SecurityContext securityContext) {

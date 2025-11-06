@@ -17,6 +17,18 @@
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
         <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
+
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-http</feature>
@@ -306,7 +318,7 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
-        <feature prerequisite="true" version="${netty4Version}">netty</feature>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
         <feature>camel-netty4</feature>
@@ -1088,8 +1100,12 @@
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.connector/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.connectors/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-openconfig-client" description="OpenNMS :: Telemetry :: OpenConfig :: Client" version="${project.version}">
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -2026,6 +2042,17 @@
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.rest/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-newts-api" description="OpenNMS :: Newts API" version="${project.version}">
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/failureaccess/${guavaFailureaccessVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-jexl3/${commonsJexl3Version}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-api/${newtsVersion}</bundle>
+        <bundle>mvn:org.opennms.newts/newts-aggregate/${newtsVersion}</bundle>
+    </feature>
+
     <feature name="opennms-timeseries-api" description="OpenNMS :: Timeseries Storage API" version="${project.version}">
         <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
@@ -2036,7 +2063,7 @@
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
         <feature>opennms-mate-impl</feature>
-        <feature>newts-api</feature>
+        <feature>opennms-newts-api</feature>
 
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
         <bundle dependency="true">wrap:mvn:net.agkn/hll/${hllVersion}</bundle>

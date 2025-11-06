@@ -391,7 +391,7 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.findComponent(FeatherDropdown).exists()).toBe(true)
     })
 
-    it('does not render dropdown if vendor is OpenNMS', async () => {
+    it('renders dropdown for non-OpenNMS vendor with correct enable/disable text', async () => {
       store.selectedSource = {
         id: 1,
         vendor: VENDOR_OPENNMS,
@@ -405,7 +405,18 @@ describe('EventConfigEventTable.vue', () => {
         lastModified: new Date()
       }
       await nextTick()
-      expect(wrapper.findComponent(FeatherDropdown).exists()).toBe(false)
+
+      const row = wrapper.find('transition-group-stub tr')
+      expect(row.exists()).toBe(true)
+      expect(row.findAll('button')).toHaveLength(3)
+
+      expect(row.findAllComponents(FeatherDropdown)).toHaveLength(1)
+
+      row.findAllComponents(FeatherDropdown)[0].findAll('button')[0].trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(row.findAllComponents(FeatherDropdownItem)).toHaveLength(1)
+      expect(row.findAllComponents(FeatherDropdownItem)[0].text()).toBe('Disable Event')
     })
 
     it('calls showChangeEventConfigEventStatusDialog on dropdown item click', async () => {
@@ -696,7 +707,7 @@ describe('EventConfigEventTable.vue', () => {
       wrapper.vm.expandedRows.push(1)
       wrapper.vm.expandedRows.push(1) // Duplicate
       store.events = [
-        { 
+        {
           id: 1,
           uei: 'UEI-1',
           eventLabel: 'Event 1',
@@ -717,23 +728,21 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('handles large number of events (renders without crash)', async () => {
-      store.events = new Array(1000)
-        .fill(0)
-        .map((_, i) => ({
-          id: i,
-          uei: `uei${i}`,
-          eventLabel: `Label${i}`,
-          severity: 'High',
-          enabled: true,
-          description: 'Desc',
-          xmlContent: '',
-          createdTime: new Date(),
-          lastModified: new Date(),
-          modifiedBy: '',
-          sourceName: '',
-          vendor: '',
-          fileOrder: 0
-        }))
+      store.events = new Array(1000).fill(0).map((_, i) => ({
+        id: i,
+        uei: `uei${i}`,
+        eventLabel: `Label${i}`,
+        severity: 'High',
+        enabled: true,
+        description: 'Desc',
+        xmlContent: '',
+        createdTime: new Date(),
+        lastModified: new Date(),
+        modifiedBy: '',
+        sourceName: '',
+        vendor: '',
+        fileOrder: 0
+      }))
       await nextTick()
       expect(wrapper.findAll('tr').length).toBeGreaterThan(1)
     })

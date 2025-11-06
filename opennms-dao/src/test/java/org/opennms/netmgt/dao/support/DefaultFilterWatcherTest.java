@@ -25,6 +25,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.FilterWatcher;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableEvent;
@@ -67,6 +69,11 @@ public class DefaultFilterWatcherTest {
         filterWatcher  = new DefaultFilterWatcher();
         // Use a short refresh limit for testing
         filterWatcher.setRefreshRateLimitMs(50);
+
+        NodeDao nodeDao = mock(NodeDao.class);
+        when(nodeDao.getLocationForId(anyInt())).thenReturn("test-location");
+        filterWatcher.setNodeDao(nodeDao);
+
         filterDao = mock(FilterDao.class);
         filterWatcher.setFilterDao(filterDao);
         sessionUtils = new MockSessionUtils();
