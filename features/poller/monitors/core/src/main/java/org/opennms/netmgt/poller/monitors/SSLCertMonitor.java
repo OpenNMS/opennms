@@ -176,7 +176,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
 
         // Get the address instance
         InetAddress ipAddr;
-        if (resolveHostName) {
+        if (resolveHostName && !Strings.isNullOrEmpty(serverName)) {
             // Look up the hostname provided in server-name parameter
             try {
                 ipAddr = InetAddress.getByName(serverName);
