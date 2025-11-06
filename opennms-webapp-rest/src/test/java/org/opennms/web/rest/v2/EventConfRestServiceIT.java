@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
@@ -48,21 +49,28 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -677,5 +685,88 @@ public class EventConfRestServiceIT {
         EventConfSource source = eventConfSourceDao.findByName("test-windows-path.events");
         assertNotNull(source);
         assertEquals("test-windows-path.events", source.getName());
+    }
+
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId() throws Exception {
+        String filename = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + filename;
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
+        Response response = eventConfRestApi.downloadEventConfXmlBySourceId(eventConfSource.getId(), securityContext);
+
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
+
+        Object entity = response.getEntity();
+        assertNotNull("Response entity should not be null", entity);
+
+        String downloadedXml;
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            downloadedXml = baos.toString(StandardCharsets.UTF_8);
+        } else if (entity instanceof InputStream) {
+            downloadedXml = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        } else if (entity instanceof String) {
+            downloadedXml = (String) entity;
+        } else {
+            fail("Unexpected entity type: " + entity.getClass());
+            return;
+        }
+
+        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+        assertTrue("XML should end with </events>", downloadedXml.trim().endsWith("</events>"));
+
+        is = getClass().getResourceAsStream(path);
+        String uploadedXml = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+
+        Events uploaded = JaxbUtils.unmarshal(Events.class, new StringReader(uploadedXml));
+        Events downloaded = JaxbUtils.unmarshal(Events.class, new StringReader(downloadedXml));
+
+        final var uploadedEvents = new ArrayList<>(uploaded.getEvents());
+        final var downloadedEvents = new ArrayList<>(downloaded.getEvents());
+
+        Comparator<Event> eventComparator = Comparator
+                .comparing(Event::getUei, Comparator.nullsLast(String::compareTo))
+                .thenComparing(Event::getEventLabel, Comparator.nullsLast(String::compareTo))
+                .thenComparing(Event::getDescr, Comparator.nullsLast(String::compareTo));
+
+        uploadedEvents.sort(eventComparator);
+        downloadedEvents.sort(eventComparator);
+
+        assertEquals(uploadedEvents.size(), downloadedEvents.size());
+
+        for (int i = 0; i < uploadedEvents.size(); i++) {
+            assertEquals(uploadedEvents.get(i), downloadedEvents.get(i));
+        }
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadEventConfXmlBySourceId_BadRequest() {
+        try {
+            final var response = eventConfRestApi.downloadEventConfXmlBySourceId(null, securityContext);
+            assertNotNull("Response should not be null", response);
+            assertEquals("Expected HTTP 400 Bad Request", 400, response.getStatus());
+        } catch (Exception e) {
+            assertTrue("Expected BadRequestException or similar",
+                    e instanceof BadRequestException || e.getMessage().contains("Bad Request"));
+        }
     }
 }
