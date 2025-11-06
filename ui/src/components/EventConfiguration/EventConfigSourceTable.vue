@@ -140,15 +140,15 @@
 
 <script lang="ts" setup>
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
+import Download from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
-import Download from '@featherds/icon/action/DownloadFile'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
@@ -159,7 +159,6 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
-import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -182,10 +181,9 @@ const sort = reactive({
 }) as any
 
 const onEventClick = (source: EventConfigSource) => {
-  const eventDetailsStore = useEventConfigDetailStore()
-  eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({
-    name: 'Event Configuration Detail'
+    name: 'Event Configuration Detail',
+    params: { id: source.id }
   })
 }
 

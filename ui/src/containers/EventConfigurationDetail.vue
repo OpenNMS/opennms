@@ -9,8 +9,9 @@
           <FeatherBackButton
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
-            >Go Back</FeatherBackButton
           >
+            Go Back
+          </FeatherBackButton>
         </div>
         <div>
           <h1>Event Configuration Details</h1>
@@ -100,31 +101,42 @@ import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { useEventModificationStore } from '@/stores/eventModificationStore'
-import { CreateEditMode } from '@/types'
+import { getEventConfSourceById } from '@/services/eventConfigService'
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
 const router = useRouter()
+const route = useRoute()
 const config = ref<EventConfigSource>()
 
 const onAddEventClick = (source: EventConfigSource) => {
-  const modificationStore = useEventModificationStore()
-  modificationStore.setSelectedEventConfigSource(source, CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({
-    name: 'Event Configuration New'
+    name: 'Event Configuration New',
+    params: { id: source.id }
   })
 }
 
-onMounted(async () => {
-  if (store.selectedSource?.id) {
-    config.value = store.selectedSource
-    store.resetFilters()
-    await store.fetchEventsBySourceId()
+const loadEventSource = async () => {
+  if (route.params.id) {
+    try {
+      const source = await getEventConfSourceById(route.params.id as string)
+      if (source) {
+        store.selectedSource = source
+        config.value = source
+        store.resetFilters()
+        await store.fetchEventsBySourceId()
+      }
+    } catch (error) {
+      console.error('Failed to fetch event configuration source:', error)
+    }
   }
+}
+
+onMounted(async () => {
+  await loadEventSource()
 })
 </script>
 

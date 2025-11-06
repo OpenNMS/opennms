@@ -1,7 +1,7 @@
 <template>
   <div
     class="feather-drawer-custom-padding"
-    v-if="detailStore.selectedSource && store.selectedSource"
+    v-if="store.selectedSource"
   >
     <BasicInformation />
   </div>
@@ -21,13 +21,30 @@
 
 <script setup lang="ts">
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { getEventConfSourceById } from '@/services/eventConfigService'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { FeatherButton } from '@featherds/button'
 
 const router = useRouter()
+const route = useRoute()
 const store = useEventModificationStore()
-const detailStore = useEventConfigDetailStore()
+
+const loadEventSource = async () => {
+  if (route.params.id) {
+    try {
+      const source = await getEventConfSourceById(route.params.id as string)
+      if (source) {
+        store.selectedSource = source
+      }
+    } catch (error) {
+      console.error('Failed to fetch event configuration source:', error)
+    }
+  }
+}
+
+onMounted(async () => {
+  await loadEventSource()
+})
 </script>
 
 <style lang="scss" scoped>
