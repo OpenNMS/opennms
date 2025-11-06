@@ -48,7 +48,7 @@ NOTE: `default` as profile label is reserved for default SNMP config.
 
 == Manually fit an SNMP profile
 
-The `opennms:snmp-fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
+The `opennms:snmp-fit` xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command finds a matching profile for a given IP address and prints out the resulting config.
 Matching or "fitting" an SNMP profile is successful if the IP passes the profile's filter expression and gets the scalar `sysObjectID` instance.
 
 [source, console]

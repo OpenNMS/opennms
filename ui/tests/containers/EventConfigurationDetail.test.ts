@@ -146,12 +146,18 @@ describe('EventConfigurationDetail.vue', () => {
     expect(buttons.length).equal(3)
   })
 
-  it('should hide action buttons for OpenNMS vendor', async () => {
+  it('should display action buttons for OpenNMS vendor with only Disable Source button and Add Event button', async () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
     wrapper = createWrapper(openNmsConfig)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('.action-container').exists()).toBe(false)
+    expect(wrapper.find('.action-container').exists()).toBe(true)
+
+    const buttons = wrapper.findAll('.action-container button')
+    expect(buttons.length).equal(2)
+
+    expect(buttons[0].text()).toContain('Add Event')
+    expect(buttons[1].text()).toContain('Disable Source')
   })
 
   it('should show "Disable Source" button when source is enabled', async () => {

@@ -63,11 +63,6 @@ export type EventConfigDetailStoreState = {
   eventsSearchTerm: string
   eventsSorting: Sorting
   selectedSource: EventConfigSource | null
-  eventModificationDrawerState: {
-    visible: boolean
-    isEditMode: CreateEditMode
-    eventConfigEvent: EventConfigEvent | null
-  }
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -126,7 +121,6 @@ export type UploadEventFileType = {
 export type EventModificationStoreState = {
   selectedSource: EventConfigSource | null
   eventModificationState: {
-    visible: boolean
     isEditMode: CreateEditMode
     eventConfigEvent: EventConfigEvent | null
   }
@@ -139,7 +133,11 @@ export type EventFormErrors = {
   severity?: string
   logmsg?: string
   dest?: string
+  maskElements?: Array<{ name?: string; value?: string }>
+  varbinds?: Array<{ index?: string; value?: string }>
+  varbindsDecode?: Array<{ parmId?: string; decode?: Array<{ key?: string; value?: string }> }>
   reductionKey?: string
   alarmType?: string
   clearKey?: string
 }
+

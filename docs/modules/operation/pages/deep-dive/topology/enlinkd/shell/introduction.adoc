@@ -1,7 +1,7 @@
 
 = Shell Commands
 
-A number of Karaf Shell commands are available to help administer and diagnose issues related to enlinkd and the topology map.
+A number of xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] commands are available to help administer and diagnose issues related to enlinkd and the topology map.
 
 NOTE: The enlinkd shell commands must be installed before use.
 

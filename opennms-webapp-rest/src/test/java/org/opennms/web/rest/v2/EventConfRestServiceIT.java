@@ -43,6 +43,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -186,6 +187,7 @@ public class EventConfRestServiceIT {
     }
 
     @Test
+    @Transactional
     public void testMalformedEventFile_ShouldAppearInErrors() throws Exception {
         String filename = "test.invalid.xml";
         InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
@@ -254,6 +256,7 @@ public class EventConfRestServiceIT {
 
 
     @Test
+    @Transactional
     public void testEventConfSourcesEnabledDisabled() throws Exception {
         String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
         List<Attachment> attachments = new ArrayList<>();
@@ -273,7 +276,9 @@ public class EventConfRestServiceIT {
         // Disable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
         eventConfRestApi.enableDisableEventConfSources(eventConfSrcDisablePayload, securityContext);
-        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        List<EventConfSource> eventConfSources  = eventConfSourceDao.findAll();
         assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
         assertTrue(eventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
@@ -281,6 +286,8 @@ public class EventConfRestServiceIT {
         // Enable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
         eventConfRestApi.enableDisableEventConfSources(eventConfSrcEnablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
         List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
@@ -438,6 +445,7 @@ public class EventConfRestServiceIT {
 
 
     @Test
+    @Transactional
     public void testDeleteEventConfSources_Success() throws Exception {
         String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
         List<Attachment> attachments = new ArrayList<>();
@@ -621,6 +629,62 @@ public class EventConfRestServiceIT {
         assertEquals("Clear label changed.", dbEvent.getEventLabel());
         assertEquals("Clear Description changed.", dbEvent.getDescr());
 
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithFolderPath() throws Exception {
+        // Test that folder paths are stripped and whitespace is trimmed
+        String realXmlFile = "opennms.alarm.events.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "subfolder/nested/test-unix-path.events .xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfSource source = eventConfSourceDao.findByName("test-unix-path.events");
+        assertNotNull(source);
+        assertEquals("test-unix-path.events", source.getName());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfFiles_WithWindowsPath() throws Exception {
+        // Test Windows-style backslash paths
+        String realXmlFile = "Cisco.airespace.xml";
+        String path = "/EVENTS-CONF/" + realXmlFile;
+
+        String filenameWithPath = "folder\\subfolder\\test-windows-path.events.xml";
+
+        InputStream is = getClass().getResourceAsStream(path);
+        assertNotNull("Resource not found: " + path, is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filenameWithPath);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        List<Attachment> attachments = List.of(attachment);
+        Response response = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfSource source = eventConfSourceDao.findByName("test-windows-path.events");
+        assertNotNull(source);
+        assertEquals("test-windows-path.events", source.getName());
     }
 
 

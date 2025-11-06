@@ -88,7 +88,7 @@ This snippet provides a collection definition named `opennms-copyright`:
 NOTE: Metadata expressions can also be used in attributes of the `http-datacollection-config.xml` configuration file.
 This lets the user to also reference credentials stored in the secure credentials.
 
-Once added to `etc/http-datacollection-config.xml`, you can use the `collect` command available in the Karaf Shell to test it:
+Once added to `etc/http-datacollection-config.xml`, you can use the `collect` command available in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] to test it:
 
 [source]
 ----

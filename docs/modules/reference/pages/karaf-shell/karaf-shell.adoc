@@ -1,0 +1,574 @@
+
+[[karaf-shell-overview]]
+= Karaf Shell
+:description: Learn about the convenient shell interface available in {page-component-title}.
+
+The link:https://karaf.apache.org/[Apache Karaf] shell console is a powerful, extensible, and Unix-like command-line interface for managing and monitoring the Karaf OSGi container and the {page-component-title} features running within it.
+It provides a full set of commands for interacting with {page-component-title}, managing services and configurations, and performing administration tasks.
+
+== Accessing the Karaf Shell
+
+Accessing the Karaf shell on {page-component-title} is commonly demonstrated as:
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+
+User authentication is performed with the same back-end as the WebUI, however, access to the Karaf shell is limited to users with xref:operation:deep-dive/user-management/security-roles.adoc#built-in-security-roles[ROLE_ADMIN].
+The Karaf shell accepts `ssh` connections on a known port which is unique per {page-component-title} component.
+[caption=]
+[options="autowidth"]
+|===
+|Component   | SSH Port
+
+|{page-component-title} Core
+|8101
+|Minion
+|8201
+|Sentinel
+|8301
+|===
+
+[[karaf-shell-commands]]
+== Karaf Shell Commands
+If you would like to learn more about an individual command, such as the parameters it accepts, run the command with the `--help` argument.
+All Karaf shell commands output usage information in response to `--help`.
+TAB-completion of commands is both supported and encouraged.
+
+[[karaf-shell-native-commands]]
+=== Built-in UNIX-like Commands
+This list is not exhaustive; tab-completion in the shell console will show the comprehensive list of all available commands and aliases.
+[caption=]
+[options="autowidth"]
+|===
+|Command   | Description
+
+|shell:alias 
+|creates an alias to an existing command
+|shell:cat
+|displays the content of a file or URL
+|shell:clear
+|clears the current console display
+|shell:completion
+|displays or change the current completion mode
+|shell:date
+|displays the current date (optionally using a format)
+|shell:each
+|executes a closure on a list of arguments
+|shell:echo
+|echoes and prints arguments to stdout
+|shell:edit
+|calls a text editor on the current file or URL
+|shell:env
+|displays or sets the value of a shell session variable
+|shell:exec
+|executes a system command
+|shell:grep
+|prints lines matching the given pattern
+|shell:head
+|displays the first line of the input
+|shell:history
+|prints the commands history
+|shell:if
+|allows you to use conditions (if, then, else blocks) in script
+|shell:info
+|prints various information about the current Karaf instance
+|shell:java
+|executes a Java application
+|shell:less
+|a file pager
+|shell:logout
+|disconnects shell from current session
+|shell:more
+|a file pager
+|shell:new
+|creates a new Java object
+|shell:printf
+|formats and prints arguments
+|shell:sleep
+|sleeps for a bit then wakes up
+|shell:sort
+|writes sorted concatenation of all files to stdout
+|shell:source
+|executes commands contained in a script
+|shell:stack-traces-print
+|prints the full stack trace in the console when the execution of a command throws an exception
+|shell:tac
+|captures the STDIN and returns it as a string
+|shell:tail
+|displays the last lines of the input
+|shell:threads
+|prints a dump of the current threads
+|shell:watch
+|periodically executes a command and refresh the output
+|shell:wc
+|prints newline, words, and byte counts for each file
+|shell:while
+|loop while the condition is true
+|===
+
+[[karaf-shell-bundle]]
+=== Built-in Bundle Management Commands
+An OSGi bundle is a Java archive file that contains Java code, resources, and a manifest that describes the bundle and its dependencies.
+This list is not exhaustive and only covers the most commonly used commands.
+[caption=]
+[options="autowidth"]
+|===
+|Command   | Description
+
+|bundle:diag
+|Displays diagnostic information why a bundle is not Active
+|bundle:info
+|Displays detailed information of a given bundles
+|bundle:install
+|Installs one or more bundles
+|bundle:list
+|Lists all installed bundles
+|bundle:refresh
+|Refresh bundles
+|bundle:requirements
+|Displays OSGi requirements of a given bundles
+|bundle:resolve
+|Resolve bundles
+|bundle:restart
+|Restarts bundles
+|bundle:start
+|Starts bundles
+|bundle:status
+|Get the bundle current status
+|bundle:stop
+|Stop bundles
+|bundle:uninstall
+|Uninstall bundles
+|bundle:update
+|Update bundle
+|bundle:watch
+|Watches and updates bundles
+|===
+
+[[karaf-shell-feature]]
+=== Built-in Feature Management Commands
+An Apache Karaf `feature` describes an application as a name, a version, a optional description (eventually with a long description), a set of OSGi bundles, an optional set configurations or configuration files, and an optional set of dependency features.
+xref:development:oia/introduction.adoc[OPA plugins] in {page-component-title} are packaged as Karaf `features`.
+This list is not exhaustive and only covers the most commonly used commands.
+[caption=]
+[options="autowidth"]
+|===
+|Command   | Description
+
+|feature:info
+|Shows information about selected feature
+|feature:install
+|Installs a feature with the specified name and version
+|feature:list
+|Lists all existing features available from the defined repositories
+|feature:refresh
+|Reloads features processing instructions and reprovisions existing features
+|feature:repo-add
+|Add a features repository
+|feature:repo-list
+|Displays a list of all defined repositories
+|feature:repo-refresh
+|Refresh a features repository
+|feature:repo-remove
+|Removes the specified repository features service
+|feature:start
+|Start features with the specified name and version
+|feature:status
+|Get the feature's current status
+|feature:stop
+|Stop features with the specified name and version
+|feature:uninstall
+|Uninstalls a feature with the specified name and version
+|feature:version-list
+|Lists all versions of a feature available from the currently available repositories
+|===
+
+[[karaf-shell-config]]
+=== Built-in Configuration Commands
+The `config` commands are frequently used to create or update configuration for Karaf `features` such as OPA plugins.
+This list is not exhaustive and only covers the most commonly used commands.
+[caption=]
+[options="autowidth"]
+|===
+|Command   | Description
+
+|config:cancel                                                              
+|Cancels the changes to the configuration being edited   
+|config:delete                                                                                             
+|Delete a configuration   
+|config:edit                                                                                     
+|Creates or edits a configuration   
+|config:exists                                                                                    
+|Check if a configuration exists   
+|config:install                                                                        
+|Install a cfg file in the Karaf etc folder   
+|config:list                                                                                        
+|Lists existing configurations   
+|config:property-append 
+|Appends the given value to an existing property or creates the property with the specified name and value
+|config:property-delete                                                    
+|Deletes a property from the configuration being edited
+|config:property-get                                           
+|Gets the value of a property in the currently edited configuration
+|config:property-list                                                    
+|Lists properties from the currently edited configuration
+|config:property-set                                                        
+|Sets a property in the currently edited configuration
+|config:update                                                   
+|Saves and propagates changes from the configuration being edited
+|===
+
+[[karaf-shell-opennms-commands]]
+=== OpenNMS-provided Commands
+[caption=]
+[options="autowidth"]
+|===
+| Command   | Description   | Feature Provided By
+
+|device-config:tftp-server-statistics
+|View or reset TFTP server statistics
+|Enabled By Default
+|opennms:activemq-purge-queue
+|Purge the content of an ActiveMQ queue
+|Enabled By Default
+|opennms:activemq-stats
+|Show statistics for the embedded ActiveMQ broker
+|Enabled By Default
+|opennms:alarm-list
+|Lists current alarms meeting certain criteria
+|Enabled By Default
+|opennms:asset-topo-create
+|Creates Asset Topology. Uses default config if options are not supplied
+|Enabled By Default
+|opennms:asset-topo-list
+|Lists all of the asset topologies currently installed
+|Enabled By Default
+|opennms:asset-topo-regenerate
+|Regeneates the asset topology for given providerId
+|Enabled By Default
+|opennms:asset-topo-regenerate-all
+|Uses Best Effort to regenerate all asset topologies
+|Enabled By Default
+|opennms:asset-topo-remove
+|Removes Asset Topology. Uses default config if options not supplied
+|Enabled By Default
+|opennms:bsm-delete-generated-hierarchies
+|Deletes generated hierarchies
+|Enabled By Default
+|opennms:bsm-generate-hierarchies
+|Generates hierarchies
+|Enabled By Default
+|opennms:bsm-render-graph
+|Renders the current state machine graph to a .png file
+|Enabled By Default
+|opennms:classify-flow
+|Verify the classification rules by classifying a request
+|Enabled By Default
+|opennms:collect
+|Invokes a collector against a host at a specified location
+|Enabled By Default
+|opennms:collectd-schedule
+|Displays the scheduled data-collection tasks
+|Enabled By Default
+|opennms:datachoices-display-usage-report
+|Displays the usage statistics report
+|Enabled By Default
+|opennms:datachoices-reset-system-id
+|Regenerate the system id
+|Enabled By Default
+|opennms:datachoices-send-usage-report
+|Generate and upload the usage statistics report
+|Enabled By Default
+|opennms:dcb-get
+|Get device config backup from a specific Interface
+|Enabled By Default
+|opennms:dcb-trigger
+|Trigger device config backup from a specific Interface
+|Enabled By Default
+|opennms:delete-measurement-resource
+|Delete the measurements and meta-data for a given resource ID
+|Enabled By Default
+|opennms:destination-path-trigger
+|Trigger test notifications to destination path
+|Enabled By Default
+|opennms:detect
+|Detect the service on a host at specified location
+|Enabled By Default
+|opennms:dns-lookup
+|DNS lookup for the specified host
+|Enabled By Default
+|opennms:dns-reverse-lookup
+|DNS reverse lookup for the specified ipaddress
+|Enabled By Default
+|opennms:enlinkd-discovery-bridge-domain
+|Execute bridge topology discovery algorithm
+|xref:operation:deep-dive/topology/enlinkd/shell/introduction.adoc[opennms-enlinkd-shell]
+|opennms:enlinkd-reload
+|Triggers a restart of the enlinkd daemon
+|opennms-enlinkd-shell
+|opennms:enlinkd-reload-config
+|Triggers a reload of configuration file and restart of the enlinkd daemon
+|opennms-enlinkd-shell
+|opennms:enlinkd-reload-topology
+|Triggers a reload of the topology in case the topology has been updated
+|opennms-enlinkd-shell
+|opennms:enlinkd-run-collection
+|Execute a linkd snmp data collection and persist
+|opennms-enlinkd-shell
+|opennms:enlinkd-snmp-collect
+|Collect enlinkd snmp data
+|opennms-enlinkd-shell
+|opennms:event
+|Show event details for a given id
+|Enabled By Default
+|opennms:event-list
+|Lists historical events meeting certain criteria
+|Enabled By Default
+|opennms:filter
+|Enumerates nodes/interfaces that match a given filter
+|Enabled By Default
+|opennms:graph-force-reload
+|Invalidates the cache for the given container, forcing it to reload when next request occurs
+|Enabled By Default
+|opennms:graph-get
+|Gets a graph identified by its namespace
+|Enabled By Default
+|opennms:graph-list
+|List all available graph containers and its graphs
+|Enabled By Default
+|opennms:graph-search
+|Searches vertices in a given namespace graph
+|Enabled By Default
+|opennms:health-check
+|Verifies that the container is healthy
+|Enabled By Default
+|opennms:import-requisition
+|Sends an 'uei.opennms.org/internal/importer/reloadImport' event to import the requisition from a given url parameter
+|Enabled By Default
+|opennms:ip-addr-range
+|Returns a list of IP addresses in a given range. Useful with closures
+|Enabled By Default
+|opennms:jira-list-components
+|Uses the JIRA ReST API to list all components
+|xref:reference:ticketing/ticketer/jira.adoc[jira-troubleticketer]
+|opennms:jira-list-fields
+|Uses the JIRA ReST API to list all fields available
+|jira-troubleticketer
+|opennms:jira-list-issue-types
+|Uses the JIRA ReST API to list all issue types
+|jira-troubleticketer
+|opennms:jira-list-priorities
+|Uses the JIRA ReST API to list all priorities
+|jira-troubleticketer
+|opennms:jira-list-projects
+|Uses the JIRA ReST API to determine all existing projects
+|jira-troubleticketer
+|opennms:jira-list-versions
+|Uses the JIRA ReST API to list all versions
+|jira-troubleticketer
+|opennms:jira-show-config
+|Shows the current configuration for the Jira Ticketer Plugin
+|jira-troubleticketer
+|opennms:jira-verify
+|Verifies the current configuration
+|jira-troubleticketer
+|opennms:kafka-evaluate-filter
+|Compiles the given expression and optionally test it against an object
+|xref:operation:deep-dive/kafka-producer/kafka-producer.adoc[opennms-kafka-producer]
+|opennms:kafka-push-topology-edges
+|Pushes all of the related topology edges to the configured topic
+|opennms-kafka-producer
+|opennms:kafka-sink-topics
+|List Sink Topics used by current system
+|opennms-core-ipc-kafka
+|opennms:kafka-list-alarms
+|Enumerates the alarms that are currently in the Kafka data store
+|opennms-kafka-producer
+|opennms:kafka-rpc-topics
+|List RPC topics used by current system
+|opennms-core-ipc-kafka
+|opennms:kafka-sync-alarms
+|Triggers a syncrhonization of the alarms topic against the database
+|opennms-kafka-producer
+|opennms:kv-benchmark-blob
+|Benchmark the blob store's throughput
+|Enabled By Default
+|opennms:kv-get-blob
+|Get a record from the blob store decoded as a string
+|Enabled By Default
+|opennms:kv-get-json
+|Get a record from the JSON store
+|Enabled By Default
+|opennms:kv-put-blob
+|Insert a string record into the blob store
+|Enabled By Default
+|opennms:kv-put-json
+|Insert a record into the JSON store
+|Enabled By Default
+|opennms:list-classification-groups
+|Lists all classification groups stored in the database
+|Enabled By Default
+|opennms:list-classification-invalid-rules
+|Lists invalid classification rules
+|Enabled By Default
+|opennms:list-classification-rules
+|Lists classification rules stored in the database
+|Enabled By Default
+|opennms:list-collectors
+|Lists all of the available collectors
+|Enabled By Default
+|opennms:list-detectors
+|Lists all of the available detectors
+|Enabled By Default
+|opennms:list-monitors
+|Lists all of the available monitors
+|Enabled By Default
+|opennms:list-namespaces
+|Lists the available blueprint namespaces and their providers
+|org.opennms.features.topology.shell
+|opennms:metadata-test
+|Test Meta-Data replacement
+|Enabled By Default
+|opennms:metrics-display
+|Display metrics from one or more metric sets
+|Enabled By Default
+|opennms:metrics-list
+|List the available metric sets
+|Enabled By Default
+|opennms:ping
+|ICMP Ping
+|Enabled By Default
+|opennms:ping-sweep
+|ICMP Ping Sweep
+|Enabled By Default
+|opennms:poll
+|Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package
+|Enabled By Default
+|opennms:poller-benchmark
+|Benchmark pollerd by creating N nodes/services and waiting for them to be polled
+|Enabled By Default
+|opennms:pollerd-schedule
+|Displays the scheduled poller tasks
+|Enabled By Default
+|opennms:reload-classification-engine
+|Reloads the rules of the classification engine
+|Enabled By Default
+|opennms:reload-daemon
+|Reload a specific daemon
+|Enabled By Default
+|opennms:scv-delete
+|Delete the stored credentials for the given alias
+|Enabled By Default
+|opennms:scv-get
+|Retrieves the username and attributes for the given alias
+|Enabled By Default
+|opennms:scv-list
+|List the available aliases
+|Enabled By Default
+|opennms:scv-set
+|Sets and securely store the credentials for the given alias
+|Enabled By Default
+|opennms:scv-validate
+|validate credentials for the given alias
+|Enabled By Default
+|opennms:send-event
+|Send event with specified uei and params
+|Enabled By Default
+|opennms:show-event-config
+|Renders the matched event definitions to XML. This command makes it possible to view event definitions which are not serialized on disk
+|Enabled By Default
+|opennms:show-import
+|Display the resulting requisition generated by a given URL
+|Enabled By Default
+|opennms:show-measurement-resources
+|Displays the resource tree. Optionally filter by node or resource ID
+|Enabled By Default
+|opennms:show-measurements
+|Measurements
+|Enabled By Default
+|opennms:show-newts-samples
+|Show the raw sample stored in Newts
+|Enabled By Default
+|opennms:snmp-config-decrypt
+|Decrypts snmp config and saves it on file system as a separate file
+|Enabled By Default
+|opennms:snmp-config-encrypt
+|Encrypts snmp config and saves it on file system
+|Enabled By Default
+|opennms:snmp-fit
+|Fit a profile for a given IP address
+|Enabled By Default
+|opennms:snmp-get
+|Request one or more fully-qualified MIB objects from the agent on the specified host and print the results
+|Enabled By Default
+|opennms:snmp-local-engine-id
+|Display the Local Engine Id used for Traps/Informs
+|Enabled By Default
+|opennms:snmp-metadata-provisioning-adapter
+|Trigger SnmpMetadataProvisioningAdapter for a set of nodes
+|Enabled By Default
+|opennms:snmp-remove-from-definition
+|Remove an IP address from a definition
+|Enabled By Default
+|opennms:snmp-show-config
+|Display the effective SNMP agent configuration
+|Enabled By Default
+|opennms:snmp-walk
+|Walk one or more MIB objects from the agent on the specified host and print the results
+|Enabled By Default
+|opennms:stress-dns
+|Stress the DNS lookups
+|Enabled By Default
+|opennms:stress-events
+|Stress the event bus with generated events
+|Enabled By Default
+|opennms:stress-metrics
+|Stress the current persistence strategy with generated collection sets
+|Enabled By Default
+|opennms:stress-rpc
+|Generates RPC requests against the Echo module
+|Enabled By Default
+|opennms:telemetry-listeners
+|Lists configured telemetry listeners
+|Enabled By Default
+|opennms:telemetry-parsers
+|Lists configured telemetry parsers
+|Enabled By Default
+|opennms:telemetry-replay-pcap
+|Replay a packet capture directly to a UDP-based parser
+|Enabled By Default
+|opennms:threshold-clear
+|Clears a specific threshold state
+|Enabled By Default
+|opennms:threshold-clear-all
+|Clears all threshold states
+|Enabled By Default
+|opennms:threshold-details
+|Prints the details of a specific threshold state
+|Enabled By Default
+|opennms:threshold-enumerate
+|Enumerates threshold states
+|Enabled By Default
+|opennms:topo-delete-history
+|Deletes history of all users
+|org.opennms.features.topology.shell
+|opennms:topo-list-operations
+|Lists the available OpenNMS topology operations
+|org.opennms.features.topology.shell
+|opennms:topo-show-history
+|Shows the history of a certain user
+|org.opennms.features.topology.shell
+|opennms:track-service
+|Track services that match a given filter
+|Enabled By Default
+|opennms:ts-stats
+|Prints statistics about the timeseries integration layer
+|xref:deployment:time-series-storage/timeseries/ts-integration-layer.adoc[opennms-timeseries-shell]
+|opennms:twin-subscribe
+|Get current Twin Object for the key specified
+|Enabled By Default
+|===
+
+== External Documentation
+Documentation on Karaf and its features, including the Karaf shell interface, is maintained by the Apache Software Foundation and can be found at link:https://karaf.apache.org/manual/latest/[]

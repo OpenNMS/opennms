@@ -48,10 +48,16 @@ public class RelativeTimePeriod {
                 new RelativeTimePeriod("last_12_hour", "Last 12 Hours", Calendar.HOUR, -12),
                 new RelativeTimePeriod("lastday", "Last Day", Calendar.DATE,
                                        -1),
+                new RelativeTimePeriod("lasttwodays", "Last Two Days", Calendar.DATE,
+                                       -2),
                 new RelativeTimePeriod("lastweek", "Last Week",
                                        Calendar.DATE, -7),
                 new RelativeTimePeriod("lastmonth", "Last Month",
                                        Calendar.DATE, -31),
+                new RelativeTimePeriod("lastthreemonths", "Last Three Months",
+                                       Calendar.DATE, -90),
+                new RelativeTimePeriod("lastsixmonths", "Last Six Months",
+                                       Calendar.DATE, -180),
                 new RelativeTimePeriod("lastyear", "Last Year",
                                        Calendar.DATE, -366) };
     }

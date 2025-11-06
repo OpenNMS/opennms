@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by Event UEI or Event Label"
+            label="Search"
             type="search"
             data-test="search-input"
             v-model.trim="store.eventsSearchTerm"
-            placeholder="Search by UEI or Event Label"
+            :hint="'Search by Event UEI, Event Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -65,10 +65,9 @@
               <td>{{ event.uei }}</td>
               <td>{{ event.eventLabel }}</td>
               <td>
-                <FeatherChip
-                  :class="`${event.severity.toLowerCase()}-color severity`"
-                  >{{ event.severity }}</FeatherChip
-                >
+                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">
+                  {{ event.severity }}
+                </FeatherChip>
               </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
               <td>
@@ -81,7 +80,7 @@
                   >
                     <FeatherIcon :icon="Edit" />
                   </FeatherButton>
-                  <FeatherDropdown v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS">
+                  <FeatherDropdown>
                     <template v-slot:trigger="{ attrs, on }">
                       <FeatherButton
                         link
@@ -102,6 +101,7 @@
                     <FeatherDropdownItem
                       @click="store.showDeleteEventConfigEventDialog(event)"
                       data-test="delete-event-button"
+                      v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS"
                     >
                       Delete Event
                     </FeatherDropdownItem>
@@ -109,8 +109,8 @@
                   <FeatherButton
                     primary
                     :icon="`${expandedRows.includes(event.id)
-                      ? 'Expand Less'
-                      : 'Expand More'
+                    ? 'Expand Less'
+                    : 'Expand More'
                     }`"
                     @click="toggleExpand(event.id)"
                   >
@@ -132,7 +132,10 @@
             >
               <td :colspan="5">
                 <h6>Description:</h6>
-                <p class="description" v-html="event.description"></p>
+                <p
+                  class="description"
+                  v-html="event.description"
+                ></p>
               </td>
             </tr>
           </template>
@@ -162,7 +165,6 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigEventEditDrawer />
 </template>
 
 <script setup lang="ts">
@@ -189,7 +191,6 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
-import EventConfigEventEditDrawer from './Drawer/EventConfigEventEditDrawer.vue'
 
 const store = useEventConfigDetailStore()
 const router = useRouter()
@@ -279,12 +280,6 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 
       .search-container {
         width: 80%;
-
-        .feather-input-container {
-          :deep(.feather-input-sub-text) {
-            display: none !important;
-          }
-        }
       }
     }
   }

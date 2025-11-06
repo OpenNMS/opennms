@@ -189,7 +189,7 @@ The match group is identified by number and must be zero or greater.
 | n/a
 
 | response-range
-| A comma-separated list of acceptable HTTP response code ranges (200-202,299).
+| A range of acceptable HTTP response codes.
 | 100-399
 |===
 

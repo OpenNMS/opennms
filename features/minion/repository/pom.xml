@@ -71,6 +71,7 @@
                                 <feature>minion-plugin-sample</feature>
                                 <feature>opennms-deviceconfig-monitor</feature>
                                 <feature>opennms-deviceconfig-sink</feature>
+                                <feature>minion-telemetry-openconfig-client</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -507,6 +508,25 @@
             <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.openconfig</groupId>
+            <artifactId>org.opennms.features.openconfig.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.openconfig</groupId>
+            <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+
     </dependencies>
 
 </project>

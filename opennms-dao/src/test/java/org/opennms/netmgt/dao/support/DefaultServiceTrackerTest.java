@@ -45,7 +45,7 @@ import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
 
 public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener {
-
+    private  static  final  String DEFAULT_LOCATION = "Default";
     private static final String OPENCONFIG = "OpenConfig";
     private static final String ICMP = "ICMP";
 
@@ -139,12 +139,12 @@ public class DefaultServiceTrackerTest implements ServiceTracker.ServiceListener
         }
 
         public void addService(int nodeId, InetAddress interfaceAddress, String serviceName) {
-            exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+            exposedServices.add(new ServiceRef(nodeId, interfaceAddress, serviceName,DEFAULT_LOCATION));
             rebuildResultsAndNotify();
         }
 
         public void deleteService(int nodeId, InetAddress interfaceAddress, String serviceName) {
-            exposedServices.removeIf(s -> Objects.equals(s, new ServiceRef(nodeId, interfaceAddress, serviceName)));
+            exposedServices.removeIf(s -> Objects.equals(s, new ServiceRef(nodeId, interfaceAddress, serviceName,DEFAULT_LOCATION)));
             rebuildResultsAndNotify();
         }
 

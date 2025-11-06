@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.EventConfUtil;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventUtilDaoImpl;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -51,7 +51,7 @@ public class NewSuspectLocationTest {
     @Before
     public void setUp() throws Exception {
         m_eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/eventconf.xml"));
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/eventconf.xml"));
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
 
         m_eventExpander = new EventExpander(new MetricRegistry());

@@ -11,7 +11,10 @@ export const validateEvent = (
   reductionKey: string,
   alarmType: string,
   autoClean: boolean,
-  clearKey: string
+  clearKey: string,
+  maskElements: Array<{ name?: { _text?: string; _value?: string }; value?: string }>,
+  varbinds: Array<{ index: string; value: string }>,
+  varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
 
@@ -52,6 +55,85 @@ export const validateEvent = (
       if (!clearKey || clearKey.trim() === '') {
         errors.clearKey = 'Clear Key is required when Auto Clean is enabled.'
       }
+    }
+  }
+
+  const maskElementErrors: Array<{ name?: string; value?: string }> = []
+  const namesSet = new Set<string>()
+  maskElements.forEach((element, index) => {
+    const elementErrors: { name?: string; value?: string } = {}
+    if (!element.name?._value || element.name?._value.trim() === '') {
+      elementErrors.name = 'Mask Element Name is required.'
+    } else if (namesSet.has(element.name._value)) {
+      elementErrors.name = 'Mask Element Name must be unique.'
+    } else {
+      namesSet.add(element.name._value)
+    }
+
+    if (!element.value || element.value.trim() === '') {
+      elementErrors.value = 'Mask Element Value is required.'
+    }
+
+    maskElementErrors[index] = elementErrors
+  })
+
+  if (maskElementErrors.some(err => Object.keys(err).length > 0)) {
+    errors.maskElements = maskElementErrors
+  }
+
+  if (varbinds && varbinds.length > 0) {
+    const varbindErrors: Array<{ index?: string; value?: string }> = []
+    varbinds.forEach((varbind, index) => {
+      const varbindError: { index?: string; value?: string } = {}
+      if (!varbind.index || varbind.index.trim() === '') {
+        varbindError.index = 'Index is required.'
+      }
+
+      if (!varbind.value || varbind.value.trim() === '') {
+        varbindError.value = 'Value is required.'
+      }
+
+      varbindErrors[index] = varbindError
+    })
+
+    if (varbindErrors.some(err => Object.keys(err).length > 0)) {
+      errors.varbinds = varbindErrors
+    }
+  }
+
+  if (varbindsDecode && varbindsDecode.length > 0) {
+    const varbindDecodeErrors: Array<{ parmId?: string; decode?: Array<{ key?: string; value?: string }> }> = []
+    varbindsDecode.forEach((varbindDecode, index) => {
+      const varbindDecodeError: { parmId?: string; decode?: Array<{ key?: string; value?: string }> } = {}
+      if (!varbindDecode.parmId || varbindDecode.parmId.trim() === '') {
+        varbindDecodeError.parmId = 'Parameter ID is required.'
+      }
+
+      if (varbindDecode.decode && varbindDecode.decode.length > 0) {
+        const decodeErrors: Array<{ key?: string; value?: string }> = []
+        varbindDecode.decode.forEach((decode, decodeIndex) => {
+          const decodeError: { key?: string; value?: string } = {}
+          if (!decode.key || decode.key.trim() === '') {
+            decodeError.key = 'Key is required.'
+          }
+
+          if (!decode.value || decode.value.trim() === '') {
+            decodeError.value = 'Value is required.'
+          }
+
+          decodeErrors[decodeIndex] = decodeError
+        })
+
+        if (decodeErrors.some(err => Object.keys(err).length > 0)) {
+          varbindDecodeError.decode = decodeErrors
+        }
+      }
+
+      varbindDecodeErrors[index] = varbindDecodeError
+    })
+
+    if (varbindDecodeErrors.some(err => Object.keys(err).length > 0)) {
+      errors.varbindsDecode = varbindDecodeErrors
     }
   }
 

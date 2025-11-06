@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by Name, Vendor or Description"
+            label="Search"
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
-            placeholder="Search by Name, Vendor or Description"
+            :hint="'Search by Name, Vendor, Description'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -69,14 +69,20 @@
             <td>
               <div class="action-container">
                 <FeatherButton
-                  primary
                   icon="View Details"
                   data-test="view-button"
                   @click="onEventClick(config)"
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
-                <FeatherDropdown v-if="config.vendor !== VENDOR_OPENNMS">
+                <FeatherButton
+                  icon="Download XML"
+                  data-test="download-button"
+                  @click="downloadEventConfXmlBySourceId(config.id)"
+                >
+                  <FeatherIcon :icon="Download"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
                     <FeatherButton
                       link
@@ -97,6 +103,7 @@
                   <FeatherDropdownItem
                     @click="store.showDeleteEventConfigSourceModal(config)"
                     data-test="delete-source-button"
+                    v-if="config.vendor !== VENDOR_OPENNMS"
                   >
                     Delete Source
                   </FeatherDropdownItem>
@@ -142,6 +149,7 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
+import Download from '@featherds/icon/action/DownloadFile'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
@@ -152,6 +160,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
+import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -236,24 +245,6 @@ onMounted(async () => {
 
       .search-container {
         width: 80%;
-
-        .feather-input-container {
-          :deep(.feather-input-sub-text) {
-            display: none !important;
-          }
-        }
-        :deep(.feather-input-wrapper-container) {
-          position: relative;
-          max-width: 100%;
-        }
-
-        :deep(.feather-input-label) {
-          display: block;
-          position: absolute;
-          white-space: normal;
-          word-wrap: break-word;
-          line-height: 1.2;
-        }
       }
     }
   }

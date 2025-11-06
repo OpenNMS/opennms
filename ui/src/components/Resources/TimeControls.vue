@@ -78,8 +78,11 @@ const options = [
   { label: 'Last 8 hours', time: { hours: '5' } },
   { label: 'Last 12 hours', time: { hours: '12' } },
   { label: 'Last day', time: { hours: '24' } },
+  { label: 'Last two days', time: { hours: '48' } },
   { label: 'Last week', time: { days: '7' } },
   { label: 'Last month', time: { months: '1' } },
+  { label: 'Last three months', time: { months: '3' } },
+  { label: 'Last six months', time: { months: '6' } },
   { label: 'Last year', time: { years: '1' } }
 ]
 
