@@ -111,7 +111,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
             WebElement title = findElementByXpath("//h4/strong/a[text()='TestMachine1']");
             Assert.assertNotNull(title);
 
-            // There are no RRD/JRB/Newts data, so it should show the default banner.
+            // There are no RRD/Newts data, so it should show the default banner.
             WebElement banner = findElementByXpath("//h1[text()='There are no resources for this node']");
             Assert.assertNotNull(banner);
         } finally {

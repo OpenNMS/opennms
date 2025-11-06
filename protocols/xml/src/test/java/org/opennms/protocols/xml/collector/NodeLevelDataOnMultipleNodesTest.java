@@ -191,7 +191,7 @@ public class NodeLevelDataOnMultipleNodesTest {
      * @param ipAddress the IP address
      * @param xmlSampleFileName the XML sample file name
      * @param parameters the parameters
-     * @param expectedFiles the expected amount of JRB files
+     * @param expectedFiles the expected amount of RRD files
      * @throws Exception the exception
      */
     public void executeCollectorTest(int nodeId, String ipAddress, String xmlSampleFileName, Map<String, Object> parameters, int expectedFiles) throws Exception {

@@ -107,7 +107,6 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        // These tests rely on JRobin to verify the values
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy",
         "org.opennms.rrd.usequeue=false"
 })

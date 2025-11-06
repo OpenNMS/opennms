@@ -101,7 +101,7 @@ public class XmlCollector3GPPIT extends XmlCollectorITCase {
         parameters.put("collection", "3GPP");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
         executeCollectorTest(parameters, 147);
-        // Test a JRB.
+        // Test a RRD.
         File file = new File(getSnmpRootDirectory(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.rrd");
         String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
         Double[] dsvalues = new Double[] { 1.0, 18.0 };

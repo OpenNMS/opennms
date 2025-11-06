@@ -147,12 +147,12 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
     }
 
     /**
-     *  Performs the actual retrieval of the values from the RRD/JRB files.
+     *  Performs the actual retrieval of the values from the RRD files.
      *
      *  If relaxed is <code>true</code> an empty response will be generated if there
-     *  are no RRD/JRB files to query.
+     *  are no RRD files to query.
      *
-     *  If relaxed is <code>true</code> and one or more RRD/JRB files are present,
+     *  If relaxed is <code>true</code> and one or more RRD files are present,
      *  then {@link FetchResults} will be populated with {@link Double#NaN} for all missing entries.
      */
     private FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
@@ -171,7 +171,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
     }
 
     /**
-     * Performs the actual retrieval of the values from the RRD/JRB files.
+     * Performs the actual retrieval of the values from the RRD files.
      */
     protected abstract FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
             Map<Source, String> rrdsBySource, Map<String, Object> constants, QueryMetadata metadata) throws RrdException;

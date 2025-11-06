@@ -95,7 +95,7 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     String getInterfaceLabel();
 
     /**
-     * Returns a not-null {@link TimeKeeper} instance when this resource requires to use a special timestamp when updating RRDs/JRBs.
+     * Returns a not-null {@link TimeKeeper} instance when this resource requires to use a special timestamp when updating RRDs.
      * If the resource doesn't need a special {@link TimeKeeper} it should return null.
      * 
      * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object or null to indicate that {@link DefaultTimeKeeper} should be used.

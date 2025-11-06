@@ -88,7 +88,7 @@ public class XmlCollectorSolarisZonesIT extends XmlCollectorITCase {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "Solaris");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
-        // Files expected: one JRB for each zone: global, zone1 and zone2 (3 in total)
+        // Files expected: one RRD for each zone: global, zone1 and zone2 (3 in total)
         executeCollectorTest(parameters, 3);
         Assert.assertTrue(new File(getSnmpRootDirectory(), "1/solarisZoneStats/global/solaris-zone-stats.rrd").exists());
         Assert.assertTrue(new File(getSnmpRootDirectory(),"1/solarisZoneStats/zone1/solaris-zone-stats.rrd").exists());

@@ -186,7 +186,7 @@ public abstract class XmlCollectorITCase {
      * Executes collector test.
      *
      * @param parameters the parameters
-     * @param expectedFiles the expected amount of JRB files
+     * @param expectedFiles the expected amount of RRD files
      * @return the collection set
      * @throws Exception the exception
      */

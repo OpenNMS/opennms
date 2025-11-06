@@ -91,7 +91,7 @@ public class XmlCollectorNamespaceTest extends XmlCollectorITCase {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("collection", "Namespace");
         parameters.put("handler-class", "org.opennms.protocols.xml.collector.MockDefaultXmlCollectionHandler");
-        // Files expected: one JRB for each zone: global, zone1 and zone2 (3 in total)
+        // Files expected: one RRD for each zone: global, zone1 and zone2 (3 in total)
         executeCollectorTest(parameters, 1);
         Assert.assertTrue(new File(getSnmpRootDirectory(), "1/namespace-stats.rrd").exists());
         // Checking data from Global Zone.

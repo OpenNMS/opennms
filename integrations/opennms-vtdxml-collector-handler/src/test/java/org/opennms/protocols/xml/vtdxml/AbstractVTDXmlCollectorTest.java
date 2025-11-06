@@ -22,7 +22,6 @@
 package org.opennms.protocols.xml.vtdxml;
 
 import org.apache.commons.io.FileUtils;
-import org.jrobin.core.RrdException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.util.RrdConvertUtils;
@@ -153,7 +153,7 @@ public abstract class AbstractVTDXmlCollectorTest {
      * Executes collector test.
      *
      * @param parameters the parameters
-     * @param expectedFiles the expected amount of JRB files
+     * @param expectedFiles the expected amount of RRD files
      * @throws Exception the exception
      */
     public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
@@ -173,7 +173,7 @@ public abstract class AbstractVTDXmlCollectorTest {
      * Validates a RRD.
      * <p>It assumes storeByGroup=true</p>
      *
-     * @param file the JRB file instance
+     * @param file the RRD file instance
      * @param dsnames the array of data source names
      * @param dsvalues the array of data source values
      * @throws Exception the exception
