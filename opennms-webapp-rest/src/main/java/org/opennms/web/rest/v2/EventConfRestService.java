@@ -79,8 +79,6 @@ public class EventConfRestService implements EventConfRestApi {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
-
     @Override
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
