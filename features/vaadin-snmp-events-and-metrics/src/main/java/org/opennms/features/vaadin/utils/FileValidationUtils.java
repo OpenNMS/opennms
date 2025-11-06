@@ -1,6 +1,3 @@
-package org.opennms.features.vaadin.utils;
-
-import java.io.File;
 /*
  * Licensed to The OpenNMS Group, Inc (TOG) under one or more
  * contributor license agreements.  See the LICENSE.md file
@@ -22,6 +19,10 @@ import java.io.File;
  * language governing permissions and limitations under the
  * License.
  */
+package org.opennms.features.vaadin.utils;
+
+import java.io.File;
+
 public final class FileValidationUtils {
     public static  boolean isValidFileName(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
