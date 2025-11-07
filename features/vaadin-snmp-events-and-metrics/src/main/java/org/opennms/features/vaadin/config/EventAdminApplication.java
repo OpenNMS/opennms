@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.vaadin.utils.FileValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -143,7 +144,16 @@ public class EventAdminApplication extends UI {
                 PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        final File file = new File(eventsDir, normalizeFilename(fieldValue));
+                        if (!FileValidationUtils.isValidFileName(fieldValue)) {
+                            Notification.show("Invalid File name " + fieldValue +", File name must begin with a letter or number and contain only: letters, numbers, ., -, _", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        String normalizedName = normalizeFilename(fieldValue);
+                        final File file = new File(eventsDir, normalizedName);
+                        if (FileValidationUtils.isFileNameTooLong(normalizedName)) {
+                            Notification.show("Filename too long after normalization", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
                         LOG.info("Adding new events file {}", file);
                         final Events events = new Events();
                         addEventPanel(layout, file, events);
@@ -237,7 +247,6 @@ public class EventAdminApplication extends UI {
         }
         return fileName;
     }
-
     /**
      * Adds a new Events Panel.
      *
