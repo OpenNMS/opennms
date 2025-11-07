@@ -268,7 +268,10 @@ public interface EventConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "EventConfSource retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "EventConfSource not found")
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+
     })
     Response getEventConfSourceById(
             @PathParam("sourceId") Long sourceId,
@@ -296,7 +299,5 @@ public interface EventConfRestApi {
             @PathParam("sourceId") Long sourceId,
             @Context SecurityContext securityContext
     ) throws Exception;
-
-
 
 }

@@ -688,7 +688,6 @@ public class EventConfRestServiceIT {
         assertEquals("test-windows-path.events", source.getName());
     }
 
-
     @Test
     @Transactional
     public void testDownloadEventConfXmlBySourceId() throws Exception {
@@ -770,6 +769,7 @@ public class EventConfRestServiceIT {
                     e instanceof BadRequestException || e.getMessage().contains("Bad Request"));
         }
     }
+
     @Test
     @Transactional
     public void testGetEventConfSourceById_ShouldReturnExpectedResponses() throws Exception {

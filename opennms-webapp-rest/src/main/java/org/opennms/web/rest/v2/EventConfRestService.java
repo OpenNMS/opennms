@@ -418,15 +418,12 @@ public class EventConfRestService implements EventConfRestApi {
                         .formatted(eventConfSource.getName())).build();
     }
 
-
     private Response buildXmlError(Response.Status status, String message) {
         return Response.status(status)
                 .entity("<error>%s</error>".formatted(message))
                 .type(MediaType.APPLICATION_XML)
                 .build();
     }
-
-
 
     @Override
     public Response getEventConfSourceById(Long sourceId, SecurityContext securityContext) {
@@ -436,9 +433,7 @@ public class EventConfRestService implements EventConfRestApi {
                         .entity(Map.of("error", "Invalid sourceId provided"))
                         .build();
             }
-
             final var eventConfSource = eventConfSourceDao.get(sourceId);
-
             if (eventConfSource == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(Map.of("error", "EventConfSource not found for id: " + sourceId))
@@ -457,7 +452,6 @@ public class EventConfRestService implements EventConfRestApi {
                     .build();
         }
     }
-
 
     private Events parseEventFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(Events.class, inputStream);
