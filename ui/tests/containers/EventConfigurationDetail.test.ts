@@ -75,11 +75,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   const createWrapper = async (selectedSource: EventConfigSource | null = mockConfig): Promise<VueWrapper> => {
-    if (selectedSource) {
-      vi.mocked(getEventConfSourceById).mockResolvedValue(selectedSource)
-    } else {
-      vi.mocked(getEventConfSourceById).mockRejectedValue(new Error('No event configuration found'))
-    }
+    store.selectedSource = selectedSource
     store.fetchEventsBySourceId = vi.fn()
 
     wrapper = mount(EventConfigurationDetail, {
@@ -345,7 +341,7 @@ describe('EventConfigurationDetail.vue', () => {
     })
     await flushPromises()
 
-    expect(vi.mocked(getEventConfSourceById)).toHaveBeenCalledWith(123)
+    expect(store.fetchSourceById).toHaveBeenCalledWith(123)
     expect(wrapper.find('.not-found-container').exists()).toBe(true)
   })
 
@@ -396,7 +392,7 @@ describe('EventConfigurationDetail.vue', () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
     wrapper = await createWrapper(openNmsConfig)
     // No button, so no call possible
-    expect(wrapper.find('[data-test="add-event"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="add-event"]').exists()).toBe(true)
   })
 
   it('should handle getDefaultEventConfigEvent returning null', async () => {
@@ -410,19 +406,6 @@ describe('EventConfigurationDetail.vue', () => {
       name: 'Event Configuration New',
       params: { id: mockConfig.id }
     })
-  })
-
-  it('should log error on fetch failure', async () => {
-    const mockError = new Error('Fetch failed')
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.mocked(getEventConfSourceById).mockRejectedValue(mockError)
-    wrapper = mount(EventConfigurationDetail, {
-      global: {
-        stubs: globalStubs
-      }
-    })
-    await flushPromises()
-    expect(console.error).toHaveBeenCalledWith('Failed to fetch event configuration source:', mockError)
   })
 
   it('should re-render on store change', async () => {

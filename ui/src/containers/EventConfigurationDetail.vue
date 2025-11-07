@@ -1,7 +1,7 @@
 <template>
   <div
     class="event-config-container"
-    v-if="config"
+    v-if="store.selectedSource"
   >
     <div class="header">
       <div class="title-container">
@@ -17,27 +17,26 @@
           <h1>Event Configuration Details</h1>
         </div>
       </div>
-
       <div class="action-container">
         <FeatherButton
           primary
           data-test="add-event"
-          @click="onAddEventClick(config)"
+          @click="onAddEventClick(store.selectedSource)"
         >
           Add Event
         </FeatherButton>
         <FeatherButton
           primary
-          @click="store.showChangeEventConfigSourceStatusDialog(config)"
+          @click="store.showChangeEventConfigSourceStatusDialog(store.selectedSource)"
           data-test="enable-disable-source"
         >
-          {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
+          {{ store.selectedSource.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
         <FeatherButton
           primary
-          @click="store.showDeleteEventConfigSourceDialog(config)"
+          @click="store.showDeleteEventConfigSourceDialog(store.selectedSource)"
           data-test="delete-source"
-          v-if="config.vendor !== VENDOR_OPENNMS"
+          v-if="store.selectedSource.vendor !== VENDOR_OPENNMS"
         >
           Delete Source
         </FeatherButton>
@@ -51,31 +50,30 @@
       <div class="config-row">
         <div class="config-field name-field">
           <span class="field-label">Name:</span>
-          <span class="field-value">{{ config?.name }}</span>
+          <span class="field-value">{{ store.selectedSource.name }}</span>
         </div>
         <div class="config-field description-field">
           <span class="field-label">Description:</span>
-          <span class="field-value">{{ config?.description }}</span>
+          <span class="field-value">{{ store.selectedSource.description }}</span>
         </div>
       </div>
       <div class="config-row">
         <div class="config-field vendor-field">
           <span class="field-label">Vendor:</span>
-          <span class="field-value">{{ config?.vendor }}</span>
+          <span class="field-value">{{ store.selectedSource.vendor }}</span>
         </div>
         <div class="config-field">
           <span class="field-label">Status:</span>
-          <span class="field-value">{{ config?.enabled ? 'Enabled' : 'Disabled' }}</span>
+          <span class="field-value">{{ store.selectedSource.enabled ? 'Enabled' : 'Disabled' }}</span>
         </div>
       </div>
       <div class="config-row">
         <div class="config-field">
           <span class="field-label">Event Count:</span>
-          <span class="field-value">{{ config?.eventCount }}</span>
+          <span class="field-value">{{ store.selectedSource.eventCount }}</span>
         </div>
       </div>
     </div>
-
     <div class="event-table-section">
       <EventConfigEventTable />
     </div>
@@ -101,7 +99,6 @@ import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { getEventConfSourceById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
@@ -110,7 +107,6 @@ import { FeatherButton } from '@featherds/button'
 const store = useEventConfigDetailStore()
 const router = useRouter()
 const route = useRoute()
-const config = ref<EventConfigSource>()
 
 const onAddEventClick = (source: EventConfigSource) => {
   router.push({
@@ -119,24 +115,14 @@ const onAddEventClick = (source: EventConfigSource) => {
   })
 }
 
-const loadEventSource = async () => {
+onMounted(async () => {
   if (route.params.id) {
-    try {
-      const source = await getEventConfSourceById(route.params.id as string)
-      if (source) {
-        store.selectedSource = source
-        config.value = source
-        store.resetFilters()
-        await store.fetchEventsBySourceId()
-      }
-    } catch (error) {
-      console.error('Failed to fetch event configuration source:', error)
+    await store.fetchSourceById(route.params.id as string)
+    store.resetFilters()
+    if (store.selectedSource) {
+      await store.fetchEventsBySourceId()
     }
   }
-}
-
-onMounted(async () => {
-  await loadEventSource()
 })
 </script>
 
