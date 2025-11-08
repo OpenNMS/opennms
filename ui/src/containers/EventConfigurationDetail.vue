@@ -99,7 +99,9 @@ import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
+import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
@@ -109,9 +111,10 @@ const router = useRouter()
 const route = useRoute()
 
 const onAddEventClick = (source: EventConfigSource) => {
+  const modificationStore = useEventModificationStore()
+  modificationStore.setSelectedEventConfigSource(source, CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({
-    name: 'Event Configuration New',
-    params: { id: source.id }
+    name: 'Event Configuration Create'
   })
 }
 

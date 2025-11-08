@@ -2,6 +2,8 @@ import EventConfigurationDetail from '@/containers/EventConfigurationDetail.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { getEventConfSourceById } from '@/services/eventConfigService'
 import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
+import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
@@ -41,6 +43,7 @@ vi.mock('@/stores/eventConfigDetailStore', async (importOriginal) => {
 describe('EventConfigurationDetail.vue', () => {
   let wrapper: VueWrapper
   let store: ReturnType<typeof useEventConfigDetailStore>
+  let modificationStore: ReturnType<typeof useEventModificationStore>
 
   const mockConfig: EventConfigSource = {
     id: 1,
@@ -67,6 +70,7 @@ describe('EventConfigurationDetail.vue', () => {
     setActivePinia(createTestingPinia())
     vi.clearAllMocks()
     store = useEventConfigDetailStore()
+    modificationStore = useEventModificationStore()
   })
 
   afterEach(() => {
@@ -113,10 +117,12 @@ describe('EventConfigurationDetail.vue', () => {
     await wrapper.vm.$nextTick()
     const addEventButton = wrapper.get('[data-test="add-event"]')
     await addEventButton.trigger('click')
+    await wrapper.vm.$nextTick()
 
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledTimes(1)
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockConfig, CreateEditMode.Create, expect.any(Object))
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration New',
-      params: { id: mockConfig.id }
+      name: 'Event Configuration Create'
     })
   })
 
@@ -201,9 +207,11 @@ describe('EventConfigurationDetail.vue', () => {
     await addButton?.trigger('click')
 
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration New',
-      params: { id: mockConfig.id }
+      name: 'Event Configuration Create'
     })
+
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledTimes(1)
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockConfig, CreateEditMode.Create, expect.any(Object))
   })
 
   it('should show change status dialog when Disable/Enable Source is clicked', async () => {
@@ -403,8 +411,7 @@ describe('EventConfigurationDetail.vue', () => {
     await addButton.trigger('click')
 
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration New',
-      params: { id: mockConfig.id }
+      name: 'Event Configuration Create'
     })
   })
 

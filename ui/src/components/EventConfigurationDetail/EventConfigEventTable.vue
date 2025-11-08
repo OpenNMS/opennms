@@ -236,7 +236,7 @@ const onEditEvent = (event: EventConfigEvent) => {
     const modificationStore = useEventModificationStore()
     modificationStore.setSelectedEventConfigSource(store.selectedSource, CreateEditMode.Edit, event)
     router.push({
-      name: 'Event Configuration New'
+      name: 'Event Configuration Create'
     })
   }
 }

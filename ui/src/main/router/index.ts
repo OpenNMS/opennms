@@ -282,7 +282,7 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigurationDetail.vue')
     },
     {
-      path: '/event-config/:id/create',
+      path: '/event-config/create',
       name: 'Event Configuration Create',
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },

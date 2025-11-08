@@ -501,10 +501,11 @@ const handleSaveEvent = async () => {
 }
 
 const handleCancel = () => {
-  store.resetEventModificationState()
   router.push({
-    name: 'Event Configuration Detail'
+    name: 'Event Configuration Detail',
+    params: { id: store.selectedSource?.id }
   })
+  store.resetEventModificationState()
 }
 
 watchEffect(() => {

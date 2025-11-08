@@ -12,7 +12,7 @@
     <p>No event configuration found.</p>
     <FeatherButton
       primary
-      @click="router.push({ name: 'Event Configuration' })"
+      @click="goBack()"
     >
       Go Back
     </FeatherButton>
@@ -25,14 +25,15 @@ import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { FeatherButton } from '@featherds/button'
 
 const router = useRouter()
-const route = useRoute()
 const store = useEventModificationStore()
 
-onMounted(async () => {
-  if (route.params.id) {
-    await store.fetchSourceById(route.params.id as string)
+const goBack = () => {
+  if (store.selectedSource?.id) {
+    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id } })
+  } else {
+    router.push({ name: 'Event Configuration' })
   }
-})
+}
 </script>
 
 <style lang="scss" scoped>
