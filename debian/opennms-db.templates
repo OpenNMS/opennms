@@ -5,5 +5,4 @@ Description: The OpenNMS installer must now be run manually
   initial setup, or upgrade an existing database. This is no longer the
   case. You must manually run /opt/opennms/bin/install to complete
   this install/upgrade. Full install documentation can be found in the
-  opennms-doc package or viewed online at the OpenNMS wiki,
-  (http://www.opennms.org/index.php/Official_Documentation).
+  opennms-doc package or viewed online at https://docs.opennms.com/
