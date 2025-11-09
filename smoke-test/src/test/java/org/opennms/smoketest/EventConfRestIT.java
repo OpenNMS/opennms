@@ -10,9 +10,9 @@ import org.opennms.smoketest.utils.RestClient;
 
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertEquals;
@@ -35,29 +35,31 @@ public class EventConfRestIT {
                         AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD);
         restClient = stack.opennms().getRestClient();
     }
+
     @Test
-    public void testEventConfUpload() throws IOException {
-        String resourcePath = "/EVENT-CONF/3Com.events.xml";
-        File tempFile = copyResourceToTempFile(resourcePath);
-        try {
-            Response response = restClient.uploadEventConfFile(tempFile);
-            assertEquals(200, response.getStatus());
-        } finally {
-            tempFile.deleteOnExit();
-        }
-    }
+    public void testUploadAllEventConfFilesAtOnce() throws IOException {
+        File eventsDir = new File("../opennms-base-assembly/src/main/filtered/etc/examples/events");
 
-    private static File copyResourceToTempFile(String resourcePath) throws IOException {
-        try (InputStream is = EventConfRestIT.class.getResourceAsStream(resourcePath)) {
-            if (is == null) {
-                throw new IllegalArgumentException("Resource not found: " + resourcePath);
-            }
-            File tempFile = File.createTempFile("eventconf-", ".xml");
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                is.transferTo(fos);
-            }
-            return tempFile;
+        if (!eventsDir.exists() || !eventsDir.isDirectory()) {
+            throw new IllegalStateException("Events directory not found: " + eventsDir.getAbsolutePath());
         }
-    }
 
+        File[] eventFiles = eventsDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".xml"));
+        if (eventFiles == null || eventFiles.length == 0) {
+            throw new IllegalStateException("No XML event files found in: " + eventsDir.getAbsolutePath());
+        }
+
+        Response response = restClient.uploadEventConfFiles(eventFiles);
+
+        assertEquals(200, response.getStatus());
+        String jsonResponse = response.readEntity(String.class);
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        Map<String, Object> responseMap = mapper.readValue(jsonResponse, Map.class);
+
+        List<Map<String, Object>> successList = (List<Map<String, Object>>) responseMap.get("success");
+        int successCount = successList != null ? successList.size() : 0;
+        System.out.println("Uploaded document success count:" + successCount);
+
+        assertEquals("Mismatch in successfully uploaded file count!", eventFiles.length, successCount);
+    }
 }
