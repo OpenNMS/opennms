@@ -435,23 +435,22 @@ public class RestClient {
         return new ObjectMapper().readTree(result);
     }
 
-    public Response uploadEventConfFile(File file) {
-        // Point to your REST API endpoint, e.g. /api/v2/eventconf/upload
+    public Response uploadEventConfFiles(File[] files) {
         final WebTarget target = getMultipartTarget().path("upload");
-
-        // Create multipart body
         try (FormDataMultiPart multipart = new FormDataMultiPart()) {
-            FileDataBodyPart filePart = new FileDataBodyPart("upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
-            multipart.bodyPart(filePart);
+            for (File file : files) {
+                FileDataBodyPart filePart = new FileDataBodyPart("upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+                multipart.bodyPart(filePart);
+            }
 
-            Invocation.Builder builder = getBuilder(target)
-                    .header("Accept", MediaType.APPLICATION_JSON);
+            Invocation.Builder builder = getBuilder(target).header("Accept", MediaType.APPLICATION_JSON);
 
             return builder.post(Entity.entity(multipart, multipart.getMediaType()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to upload event configuration files", e);
         }
     }
+
     private WebTarget getMultipartTarget() {
         final Client client = ClientBuilder.newBuilder()
                 .register(org.glassfish.jersey.media.multipart.MultiPartFeature.class) // important
