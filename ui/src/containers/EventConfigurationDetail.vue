@@ -48,23 +48,31 @@
       data-test="config-box"
     >
       <div class="config-row">
-        <div class="config-field name-field">
+        <div class="config-field">
           <span class="field-label">Name:</span>
           <span class="field-value">{{ store.selectedSource.name }}</span>
         </div>
-        <div class="config-field description-field">
-          <span class="field-label">Description:</span>
-          <span class="field-value">{{ store.selectedSource.description }}</span>
+        <div class="config-field">
+          <span class="field-label">Uploaded By:</span>
+          <span class="field-value">{{ store.selectedSource.uploadedBy }}</span>
+        </div>
+        <div class="config-field">
+          <span class="field-label">Creation Date:</span>
+          <span class="field-value">{{ store.selectedSource.createdTime && format(store.selectedSource.createdTime, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
       <div class="config-row">
-        <div class="config-field vendor-field">
+        <div class="config-field">
           <span class="field-label">Vendor:</span>
           <span class="field-value">{{ store.selectedSource.vendor }}</span>
         </div>
         <div class="config-field">
           <span class="field-label">Status:</span>
           <span class="field-value">{{ store.selectedSource.enabled ? 'Enabled' : 'Disabled' }}</span>
+        </div>
+        <div class="config-field">
+          <span class="field-label">Last Modified Date:</span>
+          <span class="field-value">{{ store.selectedSource.lastModified && format(store.selectedSource.lastModified, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
       <div class="config-row">
@@ -105,6 +113,7 @@ import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
+import { format } from 'date-fns-tz'
 
 const store = useEventConfigDetailStore()
 const router = useRouter()
@@ -174,6 +183,7 @@ onMounted(async () => {
       .config-field {
         display: flex;
         align-items: center;
+        flex: 1;
         margin-right: 40px;
 
         .field-label {
