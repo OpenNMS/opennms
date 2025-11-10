@@ -62,7 +62,6 @@ override_dh_auto_install:
 	
 	# move etc / data / deploy directories to where they will live
 	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
-		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \
 		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
 		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data \
 		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
