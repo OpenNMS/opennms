@@ -186,19 +186,19 @@ Parameters are passed to the connector and are interpolated for node/interface a
 
 === Create Requisition for OpenConfig
 
-To activate the open-config on a device you must add metadata that defines the open-config configuration .
+To activate the Open-config on a device you must add metadata that defines the Open-config configuration .
 
 
 . Click menu:Manage Inventory[Provisioning Requisitions] in the side menu, then click *Edit Default FS*.
 . Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 . Click *Add Requisition* and enter a name for the requisition.
-If you want to enable open-config  on existing nodes in a requisition, select the desired requisition and edit the node definition.
+If you want to enable Open-config  on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click on the edit icon and click Add Node.
-. Add   OpenConfig service on the interface which you want to use to open-config flow.
+. Add OpenConfig service on the interface which you want to use to open-config flow.
 . Click *Add Meta-Data*, and define the following key-value pairs:
-.. `oc:port`: port of the OpenConfig gRPC serve .
-.. `oc:paths`:  one or more OpenConfig paths to subscribe to; multiple paths comma-separated .
-.. `oc:mode`: stream format .
+.. `oc.port`: port of the OpenConfig gRPC serve .
+.. `oc.paths`:  one or more OpenConfig paths to subscribe to; multiple paths comma-separated.
+.. `oc.mode`: stream format.
 . Click *Save* to save the metadata and then *Save* to save the requisition.
 . Click *Return* and click *Synchronize*.
 . Choose a scan option and click *Synchronize*.
@@ -292,13 +292,22 @@ xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set up Messa
 On the Minion, install the following feature to enable OpenConfig support:
 [source, console]
 ----
-feature:install minion-telemetry-opencofig-client
+feature:install minion-telemetry-openconfig-client
 ----
 
 Verify weather all is setup
 [source, console]
 ----
-admin@minion()> feature:status minion-telemetry-opencofig-client
+admin@minion()> feature:status minion-telemetry-openconfig-client
 Started
 ----
+
+=== Stop / Disable Open-Config On Node
+
+. In the side menu, click  menu:Nodes[] to open the Nodes List page.
+. Select the node where you want to stop the Open-Config service.
+. In the `Availability` locate Open-Config (or the service name specified in the `connector` within `telemetryd-configuration.xml`).
+. Click the `Delete` option at the top to stop the service
+
+
 
