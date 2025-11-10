@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.tracing</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>34.0.0-SNAPSHOT</version>
+    <version>35.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.tracing</groupId>
@@ -96,6 +96,17 @@
       <groupId>io.jaegertracing</groupId>
       <artifactId>jaeger-core</artifactId>
       <version>${jaegertracingVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.squareup.okhttp3</groupId>
+          <artifactId>okhttp</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>4.12.0</version>
     </dependency>
     <dependency>
       <groupId>io.jaegertracing</groupId>

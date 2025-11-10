@@ -1,79 +1,25 @@
-[[releasenotes-34]]
+[[releasenotes-35]]
 
-= What's New in OpenNMS Horizon 34
+= What's New in OpenNMS Horizon 35
+
+
+== System requirements and Dependencies ==
+
+* Java 17: Horizon 35 requires JDK 17.
+* PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
+* Elasticsearch: Horizon 35 requires Elasticsearch 8 for flow processing.
+
 
 == New features and important changes
 
-=== Node Cache configuration
+=== Simplified Datasource Configuration
+The `opennms-datasources.xml` configuration file has been simplified by making the `factory` and `class-name` attributes optional with sensible defaults. The `factory` attribute now defaults to `org.opennms.core.db.HikariCPConnectionFactory` and the `class-name` attribute defaults to `org.postgresql.Driver`. Existing configurations with these attributes explicitly set will continue to work unchanged. New installations and users updating their configurations can omit these attributes for cleaner, more maintainable configuration files.
 
-Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
-The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
+=== Simplified Service Configuration
 
-=== `install.sh` script clears data directory and restores Karaf-related configuration files
-To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
-Furthermore, all Karaf-related configuration files are restored to their pristine state.
+The `service-configuration.xml` configuration file has been simplified by moving service implementation details (class names, attributes, and invoke methods) to defaults in the classpath. Users now only need to specify the service name and enabled status. A complete reference configuration is available in `etc/examples/service-configuration.xml.default`. Existing configurations continue to work unchanged.
 
-=== OpenNMS Plugin API
+=== Removed TestLoadLibraries Service
 
-The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
-It also includes some fixes to the protocol list used by Enlinkd.
+The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
 
-=== Expanded metadata support
-
-It is now possible to use the metadata DSL in nearly all configuration files.
-For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
-
-=== Confd improvements
-
-Support for `confd` has been added to the Sentinel container.
-
-=== UI: structured node list
-
-An enhanced node list has been introduced with options for sorting and filtering.
-
-== Breaking changes
-The default time series storage strategy is now by default RRDTool.
-
-IMPORTANT: If you use JRobin, make sure you set the property.
-You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
-If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
-
-IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
-
-.Configure explicitly JRobin for Horizon 34.x if required
-[source, console]
-----
-org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
-----
-
-== Deprecation of JRobin as timeseries storage
-
-The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
-The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
-
-
-== Deprecation of Tl1d
-The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-== Deprecation of AsteriskGateway
-The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-== Deprecation of Reportd service
-
-The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-
-=== OpenNMS Minion environment variables changes
-The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
-Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
-
-=== Secure Credentials Vault changes
-The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
-support has been added for the `PKCS12` keystore format.
-
-Set `org.opennms.features.scv.keystore.type=PKCS12` in configuration file
- `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
-
-If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
-You can convert a `JCEKS` file to `PKCS12` using the following command.
-`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.

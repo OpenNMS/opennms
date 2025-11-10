@@ -26,7 +26,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-11-openjdk-devel}
+%{!?jdk:%define jdk java-17-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -727,6 +727,11 @@ rm -rf %{buildroot}
 			%{instprefix}/deploy
 %attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
 %attr(755,root,root)	%{instprefix}/lib/*geoip-provisioning-adapter*.jar
+
+# Always override these files.
+%config %{instprefix}/etc/opennms.properties
+%config %{instprefix}/etc/custom.properties
+%config %{instprefix}/etc/config.properties
 
 %files jmx-config-generator
 %defattr(644 opennms opennms 755)

@@ -26,7 +26,7 @@ For more information, see xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc
 
 The enlinkd topology map supports layered protocol maps.
 
-Click menu:Maps[Topology] in the top menu bar to display the topology map, and click the *layers* symbol in the panel to the right of the map to view layers.
+Click *Topology Map* in the side menu to display the topology map, and click the *layers* symbol in the panel to the right of the map to view layers.
 The following layers are available:
 
 All (default):: Displays the topology that enlinkd discovers, for all supported protocols (OSPF, IS-IS, Bridge, LLDP, and CDP).

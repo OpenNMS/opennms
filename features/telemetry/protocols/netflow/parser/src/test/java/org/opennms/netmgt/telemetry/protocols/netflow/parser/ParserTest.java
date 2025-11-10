@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
@@ -49,6 +50,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class ParserTest {
+
+    private InformationElementDatabase database = new InformationElementDatabase(new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(), new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
     @BeforeClass
     public static void beforeClass() {
@@ -63,21 +66,21 @@ public class ParserTest {
                 final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
                 final Header h1 = new Header(slice(buffer, Header.SIZE));
-                final Packet p1 = new Packet(session, h1, slice(buffer, h1.length - Header.SIZE));
+                final Packet p1 = new Packet(database, session, h1, slice(buffer, h1.length - Header.SIZE));
 
                 assertThat(p1.header.versionNumber, is(0x000a));
                 assertThat(p1.header.observationDomainId, is(0L));
                 assertThat(p1.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
 
                 final Header h2 = new Header(slice(buffer, Header.SIZE));
-                final Packet p2 = new Packet(session, h2, slice(buffer, h2.length - Header.SIZE));
+                final Packet p2 = new Packet(database, session, h2, slice(buffer, h2.length - Header.SIZE));
 
                 assertThat(p2.header.versionNumber, is(0x000a));
                 assertThat(p2.header.observationDomainId, is(0L));
                 assertThat(p2.header.exportTime, is(1431516026L)); // "2015-05-13T11:20:26.000Z"
 
                 final Header h3 = new Header(slice(buffer, Header.SIZE));
-                final Packet p3 = new Packet(session, h3, slice(buffer, h3.length - Header.SIZE));
+                final Packet p3 = new Packet(database, session, h3, slice(buffer, h3.length - Header.SIZE));
 
                 assertThat(p3.header.versionNumber, is(0x000a));
                 assertThat(p3.header.observationDomainId, is(0L));

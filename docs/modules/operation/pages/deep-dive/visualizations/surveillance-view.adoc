@@ -93,8 +93,7 @@ In this way, the surveillance view can provide a quick idea of where trouble mig
 
 You can use the surveillance view configuration editor to modify a surveillance view:
 
-. Click the *gear* symbol at the top-right of the page.
-. Under Additional Tools, click *Surveillance Views Configuration*.
+. Click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *Surveillance Views Configuration*.
 
 The page displays an overview of configured surveillance views and lets you edit, remove, and preview them.
 You can also designate a default surveillance view by selecting *Default* beside its name.
@@ -117,7 +116,7 @@ To close the dialog without saving, click *Cancel*.
 
 Follow the steps below to categorize a node in the surveillance view:
 
-. Click menu:Info[Nodes] in the top menu bar.
+. Click menu:Inventory[Nodes] in the side menu.
 . Click *Edit* beside the Surveillance Category Memberships section title.
 . Select the *check box* at the bottom of the page to enable category membership controls.
 +

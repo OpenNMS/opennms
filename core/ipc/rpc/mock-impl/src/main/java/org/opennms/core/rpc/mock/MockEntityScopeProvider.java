@@ -35,6 +35,11 @@ public final class MockEntityScopeProvider implements EntityScopeProvider {
     }
 
     @Override
+    public Scope getScopeForEnv() {
+        return EmptyScope.EMPTY;
+    }
+
+    @Override
     public Scope getScopeForNode(final Integer nodeId) {
         return EmptyScope.EMPTY;
     }

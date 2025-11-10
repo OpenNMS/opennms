@@ -6,7 +6,7 @@
 == Objectives
 
 * Setting up a {page-component-title} Sentinel running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
-* Secure access with encrypted passwords to the Karaf shell
+* Secure access with encrypted passwords to the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]
 * Sentinel can be configured with the Karaf Shell from the server via `ssh admin@localhost -p 8301`
 * Sentinel is running as user `sentinel` without root permissions
 
@@ -34,18 +34,6 @@ CentOS/RHEL 9::
 +
 --
 include::centos-rhel9/install-sentinel.adoc[]
---
-
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-sentinel.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-sentinel.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]

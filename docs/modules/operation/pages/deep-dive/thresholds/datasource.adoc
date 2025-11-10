@@ -30,8 +30,8 @@ Before using metadata in a threshold, you need to add the metadata context pairâ
 
 Follow these steps to create the expression-based threshold:
 
-. Click the *gear* symbol in the top-right of the screen.
-. Under Performance Measurement, click *Configure Thresholds*.
+. Click menu:Administration[Configure Thresholds] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Performance Management*, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Expression-based Threshold*.
 . Fill in the following information:
@@ -58,7 +58,7 @@ image::metadata/meta-expression2.png["{page-component-title} dashboard displayin
 
 Before creating a threshold, you should make sure that you are collecting the metric against which you want to threshold:
 
-. Choose menu:Reports[Resource Graphs].
+. Choose menu:Metrics (Resource Graphs)[Resource Graphs] in the side menu.
 . Select one of the listed resources.
 . Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll to find the graph for the metric you want to threshold.
@@ -73,7 +73,7 @@ Data source names for the SNMP protocol appear in `etc/snmp-graph.properties.d`.
 
 To determine the name of the data source, navigate to the *Resource Graphs* screen:
 
-. Choose menu:Reports[Resource Graphs].
+. Choose menu:Metrics (Resource Graphs)[Resource Graphs] in the side menu.
 . Select one of the listed resources.
 . Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.
@@ -83,4 +83,52 @@ For example, "Number of Processes" or "System Uptime":
 image::thresholding/Graphs.png["Two example performance data metric graphs: one displays system uptime, and one displays the number of active processes over time"]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
-. Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
+. Note the name of the data source (found as *columns* for the graph report properties), and enter it as the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
+
+[[thresholding-response-times]]
+== Thresholding on response times from polled services
+
+To leverage response times from polled services as part of a threshold, you must ensure that the service has thresholding enabled by setting a parameter in the `$OPENNMS_HOME/etc/pollerd-configuration.xml` file.
+
+As an example, the following configuration for the HTTP service will enable thresholding by setting the `thresholding-enabled` parameter to true:
+
+[source, xml]
+-----
+
+      <service name="HTTP" interval="300000" user-defined="false" status="on">
+         <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
+         <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="port" value="${requisition:port|detector:port|80}" />
+         <parameter key="url" value="${requisition:url|detector:url|/}" />
+         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+         <parameter key="rrd-base-name" value="http" />
+         <parameter key="ds-name" value="http" />
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+-----
+
+The `rrdRepository` attribute of the thresholding group in `$OPENNMS_HOME/etc/thresholds.xml` must contain the appropriate path to the `response` repository.  In the the example below, the path is `/opt/opennms/share/rrd/response`.
+
+Additionally, response time thresholds must be `interface` (`if`) type.
+Below is an example section from `$OPENNMS_HOME/etc/thresholds.xml`:
+
+[source, xml]
+-----
+   <group name="high-network-latency" rrdRepository="/opt/opennms/share/rrd/response/">
+      <threshold description="High Latency for Interface" type="high" ds-type="if" value="1000" rearm="200" trigger="3" filterOperator="OR" ds-name="http"/>
+   </group>
+-----
+
+To complete the example, the thresholding package definition from `$OPENNMS_HOME/etc/threshd-configuration.xml` :
+
+[source, xml]
+-----
+   <package name="iot-network-latency">
+      <filter>IPADDR != '0.0.0.0' </filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="HTTP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="high-network-latency"/>
+      </service>
+   </package>
+-----

@@ -11,6 +11,7 @@ In a distributed installation, Minion instances require an account that is assig
 You can create one account for all Minions to share, or one account per Minion.
 endif::opennms-prime[]
 
+[[built-in-security-roles]]
 == Built-in security roles
 
 The following security roles are built in to {page-component-title} by default.
@@ -82,8 +83,8 @@ Allows users to escalate and acknowledge alarms and notifications.
 
 Follow the steps below to assign security roles to user accounts:
 
-. Click the *gear* symbol at the top-right of the screen.
-. Under Configure OpenNMS, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
+. Click menu:User Management[Manage Users] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 . Find the user to whom you want to assign a security role and click *Modify* beside their name.
 . Select the role to add to the user account from the *Available Roles* list, and click *Add*.
 ** Follow this step to add as many roles as necessary to the account.

@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.smoketest.ui.framework.TextInput;
 import org.opennms.smoketest.ui.framework.search.CentralSearch;
 import org.opennms.smoketest.ui.framework.search.result.ContextSearchResult;
 import org.opennms.smoketest.ui.framework.search.result.SearchContext;
@@ -63,9 +62,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         WebElement foundElement = null;
 
         // Dashboards Menu
-        clickMenuItem("dashboardsMenu", "Dashboards");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS Dashboards']")));
-
         clickMenuItem("dashboardsMenu", "Wallboard");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmsvaadinwallboard-')]")));
 
@@ -246,13 +242,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("internalLogsMenu", "Instrumentation Log Reader");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Instrumentation Log Reader')]")));
 
-        // TODO: Fix this test!
-//        // User Profile Menu
-//        clickMenuItem("userProfileMenu", "Change Password");
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='form-input-wrapper']//label[contains(text()[normalize-space()], 'Change Password')]")));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_change_password']")));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_skip']")));
-
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
         foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
@@ -294,17 +283,17 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
 
+        // Omitting for now - need to fix!
         // Vaadin Topology page
         frontPage();
-        clickMenuItem("topologiesMenu", "Topology");
+        clickTopMenuItem("topologiesMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
 
         // Navigation on Vue UI pages
         frontPage();
         clickMenuItem("inventoryMenu", "Structured Node List");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Structured Node List']")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Nodes']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Node List']")));
 
         clickMenuItem("inventoryMenu", "Device Configs");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
@@ -331,9 +320,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Logs']")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='logs-sidebar']")));
 
+        // Omitting for now - need to fix!
         // Geographical map page
         frontPage();
-        clickMenuItem("mapsMenu", "Geographical");
+        clickTopMenuItem("mapsMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
@@ -402,25 +392,38 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    public void testSelfServiceMenu() {
+        LOG.debug("In testSelfServiceMenu");
+
+        clickChangePassword();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[contains(text()[normalize-space()], 'Please enter the old and new passwords and confirm.')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Current Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'New Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Confirm New Password')]")));
+    }
+
+    @Test
     public void verifyCentralSearch() {
+        LOG.debug("In verifyCentralSearch");
+
         frontPage();
 
         // get the central search text input control and search for "Configure"
-        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']//div[@class='feather-input-wrapper']//input[@class='feather-input']");
-        TextInput ti = new TextInput(getDriver(), searchInput.getAttribute("id"));
-        ti.setInput("Configure");
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']/input[@class='search-input']");
+        searchInput.sendKeys("Configure");
 
-        // Get the search results, including the search results header
-        List<WebElement> searchResults = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-dropdown-wrapper']//ul[@class='feather-dropdown']/li");
+        // Get the search result context header
+        List<WebElement> searchHeaderResults = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='search-results-dropdown']/div[@class='search-category']");
+        assertThat(searchHeaderResults.size(), is(1));
 
-        // 10 actual results plus 1 header
-        assertThat(searchResults.size(), is(11));
+        List<WebElement> searchResultsHeaderElem = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='search-results-dropdown']/div[@class='search-category']/div[@class='onms-search-result-header']");
+        assertThat(searchResultsHeaderElem .size(), is(1));
+        assertThat(searchResultsHeaderElem .get(0).getText(), is("Action"));
 
-        List<WebElement> searchResultsHeader = findElementsByXpath("//div[@class='onms-search-result-header']");
-        assertThat(searchResultsHeader.size(), is(1));
-        assertThat(searchResultsHeader.get(0).getText(), is("Action"));
+        // Get the search result items
+        List<WebElement> searchResultItems = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='search-results-dropdown']/div[@class='search-result-item']");
 
-        List<WebElement> searchResultItems = findElementsByXpath("//a[contains(@class, 'onms-search-result-item')]");
+        // 10 actual results
         assertThat(searchResultItems.size(), is(10));
 
         // TODO:

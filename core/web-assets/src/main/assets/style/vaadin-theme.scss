@@ -35,16 +35,22 @@ The finished CSS file will include this line, directly:
 
 @import "bootstrap.scss";
 
-/* Reset these to their default value - the Vaadin elements do no display properly otherwise */
+/* Reset these to their default value - the Vaadin elements do not display properly otherwise */
 * {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
 }
 
 @import "opennms-theme.scss";
 @import "ionicons.scss";
 @import "font-awesome.scss";
+
+body.v-generated-body {
+    overflow: auto;
+}
 
 /*  --------------------------------------------------
     :: Header and other Custom Vaadin styles
@@ -91,7 +97,7 @@ The finished CSS file will include this line, directly:
 }
 
 // HACK to make the buttons size correctly.
-// This is needed when embeeding the bootstrap header, which includes bs4
+// This is needed when embedding the bootstrap header, which includes bs4
 .v-button-wrap {
   box-sizing: content-box;
 }
@@ -101,10 +107,39 @@ The finished CSS file will include this line, directly:
     -------------------------------------------------- */
 /**
 * Move topology UI over past the Vue top and side menus.
+* Note this only moves it past the collapsed side menu.
+* This same style is used in both the case where the Topology Map is the top-level item
+* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
+* within the Wallboard UI.
 */
 .v-app.topo_default.topologyui {
   margin-top: 0.5em;
   margin-left: 4em;
+}
+
+/* Safari 10+/20+ specific, needs extra top margin */
+body[class*="v-sa1"] .v-app.topo_default.topologyui,
+body[class*="v-sa2"] .v-app.topo_default.topologyui {
+  padding-top: 4em !important;
+}
+
+/*
+* Wallboard dashboard caption needs some extra padding to display fully.
+*/
+.v-app.dashboard.wallboardui {
+  margin-left: 4em;
+  margin-top: 4.5em;
+
+  .v-panel-caption,
+  .v-panel-caption.v-panel-caption-novscroll {
+    padding-bottom: 2em;
+  }
+}
+
+/* Safari 10+/20+ specific, needs extra top margin */
+body[class*="v-sa1"] .v-app.dashboard.wallboardui,
+body[class*="v-sa2"] .v-app.dashboard.wallboardui {
+  padding-top: 4em !important;
 }
 
 /*  --------------------------------------------------

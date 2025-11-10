@@ -9,6 +9,7 @@
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
+** xref:minion/tuning.adoc[]
 ** xref:minion/installing-jdbc-driver.adoc[]
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
@@ -36,6 +37,8 @@
 ** xref:upgrade/git-upgrade.adoc[]
 * xref:upgrade/backup/introduction.adoc[]
 * xref:upgrade/restore/introduction.adoc[]
+
+* xref:air-gap/air-gap-install.adoc[]
 
 * xref:opentracing/jaeger-tracing.adoc[]
 * xref:prometheus-monitoring.adoc[]

@@ -31,35 +31,35 @@ import NotMarkedIcon from './not-marked-icon.png';
 import NotMarkedRetinaIcon from './not-marked-icon-2x.png';
 
 if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationComponent) {
-    var __onms_getImagePath = function getImagePath() {
-        var el = L.DomUtil.create('div',  'leaflet-default-icon-path', document.body);
-        var path = L.DomUtil.getStyle(el, 'background-image') ||
+    const __onms_getImagePath = function getImagePath() {
+        const el = L.DomUtil.create('div',  'leaflet-default-icon-path', document.body);
+        const path = L.DomUtil.getStyle(el, 'background-image') ||
                    L.DomUtil.getStyle(el, 'backgroundImage');   // IE8
 
         document.body.removeChild(el);
 
-        console.log("__onms_getImagePath", el, path);
+        console.log('__onms_getImagePath', el, path);
 
         return path.indexOf('url') === 0 ?
             path.replace(/^url\(["']?/, '').replace(/marker-icon\.png\?v=.+["']?\)$/, '') : '';
     };
 
     window.org_opennms_features_topology_app_internal_ui_geographical_LocationComponent = function LocationComponent() {
-        var state = this.getState();
+        const state = this.getState();
 
         // The id is configurable, as we may have multiple or to prevent id conflicts
-        var mapId = state.mapId;
+        const mapId = state.mapId;
 
         // Add the map container
         this.getElement().innerHTML='<div style="width: 100%; height: 100%" id="' + mapId + '"></div>';
 
         // Create the Map
-        var theMap = L.map(mapId);
+        const theMap = L.map(mapId);
         L.tileLayer(state.tileLayer, state.layerOptions).addTo(theMap);
 
-        var imagePath = __onms_getImagePath();
+        const imagePath = __onms_getImagePath();
 
-        var notMarkedIcon = L.icon({
+        const notMarkedIcon = L.icon({
             /*
             iconUrl: L.Icon.Default.imagePath + '/not-marked-icon.png',
             iconRetinaUrl: L.Icon.Default.imagePath + '/not-marked-icon-2x.png',
@@ -79,7 +79,7 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
             shadowSize:  [41, 41]
         });
 
-        var markerIcon = L.icon({
+        const markerIcon = L.icon({
             iconUrl: imagePath + 'marker-icon.png',
             iconRetinaUrl: imagePath + 'marker-icon-2x.png',
             iconSize:    [25, 41],
@@ -91,13 +91,13 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
             shadowSize:  [41, 41]
         });
 
-        var markers = state.markers;
-        var coordinates = [];
-        var markerArray = [];
-        for (var i = 0; i < markers.length; i++) {
-            var latitude = markers[i].coordinates.latitude;
-            var longitude = markers[i].coordinates.longitude;
-            var marker = L.marker(L.latLng(latitude, longitude));
+        const markers = state.markers;
+        const coordinates = [];
+        const markerArray = [];
+        for (let i = 0; i < markers.length; i++) {
+            const latitude = markers[i].coordinates.latitude;
+            const longitude = markers[i].coordinates.longitude;
+            const marker = L.marker(L.latLng(latitude, longitude));
 
             if (markers[i].tooltip !== undefined) {
                 marker.bindPopup(markers[i].tooltip);
@@ -113,13 +113,13 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
         }
 
         // show all markers
-        var markerGroup = new L.featureGroup(markerArray);
+        const markerGroup = new L.featureGroup(markerArray);
         theMap.fitBounds(markerGroup.getBounds().pad(0.2));
 
         // If we have only one vertex, center it
         if (markerArray.length === 1) {
             // Center the view
-            var center = coordinates.reduce(function getCenter(x,y) {
+            const center = coordinates.reduce(function getCenter(x,y) {
                 return [x[0] + y[0]/coordinates.length, x[1] + y[1]/coordinates.length];
             }, [0,0]);
 

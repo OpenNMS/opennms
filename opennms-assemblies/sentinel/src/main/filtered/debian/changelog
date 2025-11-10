@@ -1,3 +1,31 @@
+opennms-sentinel (34.0.2-1) stable; urgency=low
+
+  * Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Oct 2025 13:49:36 -0400
+
+opennms-sentinel (34.0.1-1) stable; urgency=low
+
+  * Release 34.0.1 contains bug fixes, enhancements and a new feature.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Sep 2025 13:20:00 -0500
+
+opennms-sentinel (34.0.0-1) stable; urgency=low
+
+  * Release 34.0.0 contains a bunch of changes, including menu improvments,
+    updates to structured node list, IPFix support and more.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Aug 2025 13:20:00 -0500
+
 opennms-sentinel (33.1.8-1) stable; urgency=medium
 
   * Release 33.1.8 contains bug fixes, security updates and enhancements.

@@ -75,7 +75,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             new Check(
                     "admin/classification/index.jsp",
                     () -> pageContainsText("Classification rules defined by the user"),
-                    () -> findElementById("action.refresh").click(),
+                    () -> driver.findElement(By.xpath("//button[starts-with(@id, 'action.refresh')]")).click(),
                     null,
                     () -> validateRedirectedToLoginPage()),
             new Check(
@@ -111,7 +111,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
         setImplicitWait();
     }
 
-    @Ignore("Need to fix")
+    @Ignore("This test is flaky due to the simulated logout process, ignoring for now.")
     public void testAngularLogout() throws IOException {
         for (Check eachCheck : checks) {
             LOG.info("{}: Run test for page", eachCheck.url);

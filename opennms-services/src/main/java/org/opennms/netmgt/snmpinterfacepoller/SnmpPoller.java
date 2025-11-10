@@ -23,6 +23,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.utils.ParameterMap;
@@ -44,11 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 /**
  * SnmpPoller daemon class
@@ -144,7 +142,6 @@ public class SnmpPoller extends AbstractServiceDaemon {
     protected void onStart() {
         // get the category logger
         // start the scheduler
-        //
         try {
             LOG.debug("onStart: Starting SNMP Interface Poller scheduler");
 
@@ -205,20 +202,25 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /** {@inheritDoc} */
     @Override
     protected void onInit() {
-        
+
         createScheduler();
-        
-        // Schedule the interfaces currently in the database
-        //
-        try {
-            LOG.debug("onInit: Scheduling existing SNMP interfaces polling");
-            scheduleExistingSnmpInterface();
-        } catch (Throwable sqlE) {
-            LOG.error("onInit: Failed to schedule existing interfaces", sqlE);
-        }
+
+        // Schedule the interfaces currently in the database asynchronously
+        // to avoid blocking daemon initialization
+        ExecutorService executor = getExecutorService();
+        executor.execute(() -> {
+            Logging.withPrefix("snmp-poller", () -> {
+                try {
+                    LOG.debug("onInit: Scheduling existing SNMP interfaces polling");
+                    scheduleExistingSnmpInterfaces();
+                } catch (Throwable sqlE) {
+                    LOG.error("onInit: Failed to schedule existing interfaces", sqlE);
+                }
+            });
+        });
 
         m_initialized = true;
-        
+
     }
         
     /**
@@ -226,59 +228,52 @@ public class SnmpPoller extends AbstractServiceDaemon {
      *
      * @param ipaddr a {@link java.lang.String} object.
      */
-    protected void scheduleNewSnmpInterface(String ipaddr) {
-
-        List<CompletableFuture<Void>> futures = getNetwork().getContext().getPollableNodesByIp(ipaddr)
-                .stream()
-                .map(this::schedulePollableInterface)
-                .collect(Collectors.toList());
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    protected void scheduleNewSnmpInterfaces(String ipaddr) {
+        getNetwork().getContext().getPollableNodesByIp(ipaddr)
+                .forEach(this::schedulePollableInterfaceAsync);
     }
     
     /**
      * <p>scheduleExistingSnmpInterface</p>
      */
-    protected void scheduleExistingSnmpInterface() {
-        List<CompletableFuture<Void>> futures = getNetwork().getContext().getPollableNodes()
-                .stream()
-                        .map(this::schedulePollableInterface)
-                .collect(Collectors.toList());
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+    protected void scheduleExistingSnmpInterfaces() {
+        getNetwork().getContext().getPollableNodes()
+                        .forEach(this::schedulePollableInterfaceAsync);
     }   
 
+    protected void schedulePollableInterfaceAsync(OnmsIpInterface ipInterface) {
+        ExecutorService executor = getExecutorService();
+        executor.execute(() -> schedulePollableInterface(ipInterface));
+    }
     /**
      * <p>schedulePollableInterface</p>
      *
      * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    protected CompletableFuture<Void> schedulePollableInterface(OnmsIpInterface iface) {
-        ExecutorService executor = getExecutorService();
-        return CompletableFuture.runAsync(() -> {
-            try {
-                String ipaddress = iface.getIpAddress().getHostAddress();
-                String netmask = null;
-                // netmask is nullable
-                if (iface.getNetMask() != null) {
-                    netmask = iface.getNetMask().getHostAddress();
-                }
-                Integer nodeid = iface.getNode().getId();
-                String location = getNetwork().getContext().getLocation(nodeid);
-                if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
-                    String pkgName = getPollerConfig().getPackageName(ipaddress);
-                    if (pkgName != null) {
-                        LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
-                        scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, pkgName), pkgName, location);
-                    } else if (!getPollerConfig().useCriteriaFilters()) {
-                        LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
-                        scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, "null"), "null", location);
-                    }
-                }
-                return;
-            } catch (Exception e) {
-                LOG.error("Error occurred while scheduling snmppoll");
-                throw new SnmpPollerException(e);
+    protected void schedulePollableInterface(OnmsIpInterface iface) {
+
+        try {
+            String ipaddress = iface.getIpAddress().getHostAddress();
+            String netmask = null;
+            // netmask is nullable
+            if (iface.getNetMask() != null) {
+                netmask = iface.getNetMask().getHostAddress();
             }
-        }, executor);
+            Integer nodeid = iface.getNode().getId();
+            String location = getNetwork().getContext().getLocation(nodeid);
+            if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
+                String pkgName = getPollerConfig().getPackageName(ipaddress);
+                if (pkgName != null) {
+                    LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
+                    scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, pkgName), pkgName, location);
+                } else if (!getPollerConfig().useCriteriaFilters()) {
+                    LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
+                    scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, "null"), "null", location);
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error occurred while scheduling snmppoll for interface {}", iface);
+        }
     }
     
     private void scheduleSnmpCollection(PollableInterface nodeGroup, String pkgName, String location) {
@@ -410,7 +405,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             if (getNetwork().hasPollableInterface(ipaddr.toDbString())) {
                 LOG.debug("reloadSnmpConfig: recreating the Interface to poll: {}", ipaddr);
                 getNetwork().delete(ipaddr.toDbString());
-                scheduleNewSnmpInterface(ipaddr.toDbString());
+                scheduleNewSnmpInterfaces(ipaddr.toDbString());
             } else {
                 LOG.debug("reloadSnmpConfig: no Interface found for ipaddr: {}", ipaddr);
             }
@@ -428,7 +423,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         try {
             getPollerConfig().update();
             getNetwork().deleteAll();
-            scheduleExistingSnmpInterface();
+            scheduleExistingSnmpInterfaces();
         } catch (Throwable e) {
             LOG.error("Update SnmpPoller configuration file failed",e);
         }
@@ -447,7 +442,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         
         for (IParm parm : event.getParmCollection()){
             if (parm.isValid() && parm.getParmName().equals("newPrimarySnmpAddress")) {
-                scheduleNewSnmpInterface(parm.getValue().getContent());
+                scheduleNewSnmpInterfaces(parm.getValue().getContent());
                 return;
             }
         }
@@ -502,7 +497,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     public void serviceGainedHandler(IEvent event) {
         if (event.getService().equals(getPollerConfig().getService())) {
             getPollerConfig().rebuildPackageIpListMap();
-            scheduleNewSnmpInterface(event.getInterface());
+            scheduleNewSnmpInterfaces(event.getInterface());
         }
     }
 

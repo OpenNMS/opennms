@@ -23,6 +23,7 @@
     </feature>
 
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
+        <feature prerequisite="true" version="${netty4Version}">netty</feature>
         <feature prerequisite="true">opennms-distributed-core-jms</feature>
 
         <feature>opennms-core-ipc-sink-camel-server</feature>
@@ -32,6 +33,7 @@
     </feature>
 
     <feature name="sentinel-kafka" description="Sentinel :: Core :: Kafka" version="${project.version}">
+        <feature prerequisite="true" version="${netty4Version}">netty</feature>
         <feature>sentinel-core</feature>
         <!-- Sink Client-->
         <feature>opennms-core-ipc-sink-kafka</feature>
@@ -98,7 +100,7 @@
         <feature>dropwizard-metrics</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
-
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <feature>opennms-core-daemon</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-dao-api</feature>

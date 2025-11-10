@@ -1,5 +1,9 @@
 @import "../runo/legacy-styles.css";
 
+body.v-generated-body {
+    overflow: auto;
+}
+
 .dashboard .v-portlet-slot {
     background: #fff !important;
     -webkit-border-radius: 4px !important;
@@ -41,8 +45,42 @@
 
 /* Wallboard UI, make space for Vue top and side menus */
 .dashboard.v-app.wallboardui {
-    margin-top: 5em;
+    margin-top: 4.5em;
     margin-left: 4em;
+}
+
+/* Safari 10+/20+ specific, needs extra top margin */
+body[class*="v-sa1"] .dashboard.v-app.wallboardui,
+body[class*="v-sa2"] .dashboard.v-app.wallboardui {
+    margin-left: 4em;
+    padding-top: 4em !important;
+}
+
+.dashboard.v-app.wallboardui .v-panel-caption,
+.dashboard.v-app.wallboardui .v-panel-caption.v-panel-caption-novscroll {
+    padding-bottom: 2em;
+}
+
+/*  --------------------------------------------------
+    :: Vue Menu UI
+    -------------------------------------------------- */
+/**
+* Move topology UI over past the Vue top and side menus.
+* Note this only moves it past the collapsed side menu.
+* This same style is used in both the case where the Topology Map is the top-level item
+* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
+* within the Wallboard UI.
+*/
+.v-app.topo_default.topologyui {
+  margin-top: 0.5em;
+  margin-left: 4em;
+}
+
+/* Safari 10+/20+ specific, needs extra top margin */
+body[class*="v-sa1"] .v-app.topo_default.topologyui,
+body[class*="v-sa2"] .v-app.topo_default.topologyui {
+  margin-left: 4em;
+  padding-top: 4em !important;
 }
 
 .debug {

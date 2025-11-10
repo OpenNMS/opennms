@@ -6,6 +6,8 @@ import re
 import urllib.parse
 
 PROJECT_KEY = "NMS"
+EPIC_KEY = "NMS-16937" 
+EPIC_LINK_FIELD = "customfield_10014" 
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
@@ -116,8 +118,8 @@ def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
     
     try:
         response = requests.get(
-            f"{JIRA_URL}/rest/api/2/search",
-            params={'jql': jql, 'maxResults': 1},
+            f"{JIRA_URL}/rest/api/3/search/jql",
+            params={'jql': jql, 'maxResults': 1,"fields": ["key", "summary","id"]},
             auth=(JIRA_USER, JIRA_API_TOKEN)
         )
         response.raise_for_status()
@@ -227,7 +229,14 @@ def create_issue_for_package(package_name, vulnerabilities):
             "security": {
                 "name": SECURITY_LEVEL
             },
-            "labels": ["trivy"]
+            "labels": ["trivy"],
+            "fixVersions": [
+               {
+                "name": "Next"
+               }
+            ],
+            
+            EPIC_LINK_FIELD: EPIC_KEY  # Link to epic
         }
     }
 

@@ -6,6 +6,7 @@
 *** xref:configuration/filters/components.adoc[]
 *** xref:configuration/filters/parameters.adoc[]
 *** xref:configuration/filters/rule-formats.adoc[]
+*** xref:configuration/filters/filter-shell-cmd.adoc[]
 ** xref:configuration/core-docker.adoc[]
 ** xref:configuration/minion-docker.adoc[]
 *** xref:configuration/minion-confd/minion-confd.adoc[]

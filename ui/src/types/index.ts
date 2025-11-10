@@ -203,6 +203,11 @@ export interface MonitoringLocation {
   area: string    // mapped from 'monitoring-area' after API GET call response
 }
 
+export interface DrawerState {
+  visible: boolean;
+  isAdvanceFilterModal: boolean;
+}
+
 export interface SnmpInterface {
   collect: boolean
   collectFlag: string
@@ -591,4 +596,31 @@ export interface IpInterfaceInfo {
   managed: boolean
   primaryLabel: string
   primaryType: string
+}
+
+export enum FilterTypeEnum {
+  Category = 'category',
+  Flow = 'flow',
+  MonitoringLocation = 'location'
+}
+
+export enum Direction {
+  Left = 'left',
+  Right = 'right',
+}
+
+export interface GeolocationConfigOptions {
+  attribution?: string
+}
+
+export interface GeolocationConfigItem {
+  options?: GeolocationConfigOptions
+  tileServerUrl?: string
+}
+
+export interface TileProviderItem {
+  name: string
+  url: string
+  attribution: string
+  visible?: boolean
 }

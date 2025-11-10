@@ -9,10 +9,7 @@
   />
 </template>
 
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { FeatherSelect } from '@featherds/select'
 import { useMapStore } from '@/stores/mapStore'
 
@@ -40,13 +37,20 @@ const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.val
   top: 80px;
   /* z-index needs to be below $zindex-fixed (1030) which is the z-index of the FeatherAppBar component */
   z-index: var($zindex-sticky);
+
   .feather-input-wrapper {
     background: var($primary-text-on-color);
     border: 2px solid var($secondary);
   }
+
   .feather-input-label {
     border: 2px solid var($secondary);
     border-bottom: none;
+
+    // fix placement of severity dropdown label
+    // so it is aligned over top left of select dropdown
+    left: -0.025rem !important;
+    top: -1.25rem !important;
   }
 }
 </style>

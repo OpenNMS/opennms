@@ -67,8 +67,18 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
-echo "Invoking fix-karaf-setup.sh script..."
-"$OPENNMS_BINDIR"/fix-karaf-setup.sh --yes
+RUN_FIX_KARAF=false;
+for i in ${@}; do
+        if [ "$i" != "--help" -a "$i" != "-h" ]; then
+                RUN_FIX_KARAF=true;
+        else
+                RUN_FIX_KARAF=false;
+        fi
+done
+if [ "$RUN_FIX_KARAF" = true ]; then
+        echo "Invoking fix-karaf-setup.sh script..."
+        "$OPENNMS_BINDIR"/fix-karaf-setup.sh --yes
+fi
 
 # shellcheck disable=SC2086
 exec "$OPENNMS_BINDIR"/runjava -r -- \

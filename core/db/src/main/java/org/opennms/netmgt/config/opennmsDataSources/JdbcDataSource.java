@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.mate.api.EnvironmentScope;
+import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
@@ -63,7 +65,7 @@ public class JdbcDataSource implements java.io.Serializable {
     @XmlAttribute(name = "url", required = true)
     private String url;
 
-    @XmlAttribute(name = "class-name", required = true)
+    @XmlAttribute(name = "class-name")
     private String className;
 
     @XmlAttribute(name = "user-name")
@@ -151,20 +153,21 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Returns the value of field 'className'.
-     * 
+     *
      * @return the value of field 'ClassName'.
      */
     public String getClassName() {
-        return this.className;
+        return this.className != null ? this.className : "org.postgresql.Driver";
     }
 
     /**
      * Returns the value of field 'databaseName'.
-     * 
+     *
      * @return the value of field 'DatabaseName'.
      */
     public String getDatabaseName() {
-        return databaseName != null ? databaseName : "opennms";
+        String interpolated = interpolateAttribute(this.databaseName);
+        return interpolated != null ? interpolated : "opennms";
     }
 
     /**
@@ -247,11 +250,11 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Returns the value of field 'url'.
-     * 
+     *
      * @return the value of field 'Url'.
      */
     public String getUrl() {
-        return this.url;
+        return interpolateAttribute(this.url);
     }
 
     /**
@@ -270,11 +273,11 @@ public class JdbcDataSource implements java.io.Serializable {
      */
     public int hashCode() {
         return Objects.hash(
-            name, 
-            databaseName, 
-            schemaName, 
-            url, 
-            className, 
+            name,
+            databaseName,
+            schemaName,
+            url,
+            className,
             rawUserName,
             rawPassword,
             paramList,
@@ -319,7 +322,7 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Sets the value of field 'className'.
-     * 
+     *
      * @param className the value of field 'className'.
      */
     public void setClassName(final String className) {
@@ -443,7 +446,11 @@ public class JdbcDataSource implements java.io.Serializable {
     }
 
     public String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
-        final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
+        final Interpolator.Result result = Interpolator.interpolate(value,
+            new FallbackScope(
+                new SecureCredentialsVaultScope(secureCredentialsVault),
+                new EnvironmentScope()
+            ));
         return result.output;
     }
 

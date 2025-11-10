@@ -78,7 +78,7 @@ public class ContextRegistry {
                 LOG.warn("No {} files found on classpath", BEAN_REF_CONTEXT_RESOURCE);
                 return;
             }
-
+            
             LOG.debug("Found {} {} files on classpath", resources.length, BEAN_REF_CONTEXT_RESOURCE);
             
             // Create a parent factory to merge all definitions

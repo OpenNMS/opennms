@@ -18,6 +18,8 @@
 
 * xref:graph/graph.adoc[]
 
+* xref:menu/menu-templates.adoc[]
+
 * xref:rest/CORS.adoc[]
 
 * xref:rest/rest-api.adoc[]
@@ -45,6 +47,7 @@
 *** xref:rest/ksc_reports.adoc[]
 *** xref:rest/maps.adoc[]
 *** xref:rest/measurements.adoc[]
+*** xref:rest/menu.adoc[]
 *** xref:rest/meta-data.adoc[]
 *** xref:rest/monitoring_systems.adoc[]
 *** xref:rest/newsfeed.adoc[]
@@ -59,6 +62,7 @@
 *** xref:rest/rtc.adoc[]
 *** xref:rest/scheduled_outages.adoc[]
 *** xref:rest/situations.adoc[]
+*** xref:rest/scv.adoc[]
 *** xref:rest/snmp_configuration.adoc[]
 *** xref:rest/snmpinterfaces.adoc[]
 *** xref:rest/snmpmetadata.adoc[]

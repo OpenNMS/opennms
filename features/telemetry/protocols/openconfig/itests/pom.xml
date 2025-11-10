@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.telemetry.protocols.openconfig</artifactId>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
-    <version>34.0.0-SNAPSHOT</version>
+    <version>35.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -160,6 +160,24 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.core.ipc.twin</groupId>
+          <artifactId>org.opennms.core.ipc.twin.memory</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.core.ipc.twin.jms</groupId>
+          <artifactId>org.opennms.core.ipc.twin.jms.publisher</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.telemetry</groupId>
+          <artifactId>org.opennms.features.telemetry.connectors</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 
 </project>

@@ -1,4 +1,3 @@
-
 /*
  * Licensed to The OpenNMS Group, Inc (TOG) under one or more
  * contributor license agreements.  See the LICENSE.md file

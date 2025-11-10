@@ -22,6 +22,7 @@
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -148,9 +149,18 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
     private void mapCategories(final Set<Tag> tags, final OnmsNode node) {
         Objects.requireNonNull(node);
         if(config.isCategoriesEnabled()) {
+            List<String> catList = new ArrayList<>();
             node.getCategories().stream()
                     .map(OnmsCategory::getName)
-                    .forEach(catName -> tags.add(new ImmutableTag("cat_" + catName, catName)));
+                    .forEach(catName -> {
+                        tags.add(new ImmutableTag("cat_" + catName, catName));
+                        catList.add(catName);
+                    });
+            if (!catList.isEmpty() ) {
+                Collections.sort(catList);
+                String categories = String.join(",", catList);
+                tags.add(new ImmutableTag("categories", categories));
+            }
         }
     }
 

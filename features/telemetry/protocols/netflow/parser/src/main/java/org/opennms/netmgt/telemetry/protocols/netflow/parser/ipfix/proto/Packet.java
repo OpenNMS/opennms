@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -70,7 +71,8 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
     public final List<OptionsTemplateSet> optionTemplateSets;
     public final List<DataSet> dataSets;
 
-    public Packet(final Session session,
+    public Packet(final InformationElementDatabase informationElementDatabase,
+                  final Session session,
                   final Header header,
                   final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
@@ -86,7 +88,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
             final ByteBuf payloadBuffer = slice(buffer, setHeader.length - FlowSetHeader.SIZE);
             switch (setHeader.getType()) {
                 case TEMPLATE_SET: {
-                    final TemplateSet templateSet = new TemplateSet(this, setHeader, payloadBuffer);
+                    final TemplateSet templateSet = new TemplateSet(informationElementDatabase, this, setHeader, payloadBuffer);
 
                     for (final TemplateRecord record : templateSet) {
                         if (record.header.fieldCount == 0) {
@@ -113,7 +115,7 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                 }
 
                 case OPTIONS_TEMPLATE_SET: {
-                    final OptionsTemplateSet optionsTemplateSet = new OptionsTemplateSet(this, setHeader, payloadBuffer);
+                    final OptionsTemplateSet optionsTemplateSet = new OptionsTemplateSet(informationElementDatabase, this, setHeader, payloadBuffer);
 
                     for (final OptionsTemplateRecord record : optionsTemplateSet) {
                         if (record.header.fieldCount == 0) {

@@ -10,9 +10,13 @@ includeObjectNames:
   - "java.lang:*"
   - "org.opennms.*:*"
   - "kafka.producer:*"
+  - "kafka.consumer:*"
   - "org.apache.camel:*"
 
 rules:
+  - pattern: "java.lang.*"
+  - pattern: "kafka.producer.*"
+  - pattern: "org.apache.camel.*"
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
     name: sentinel_$1_$2
     type: GAUGE

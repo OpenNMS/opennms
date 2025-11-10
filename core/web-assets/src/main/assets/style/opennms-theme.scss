@@ -367,10 +367,8 @@ iframe.vaadin-fullscreen {
 
 // Main content container for all pages, used in bootstrap.jsp
 #content {
-  padding-top: 15px;
-
-  // Left padding to make room for the Vue SideMenu when it is collapsed
-  padding-left: 3.5rem;
+  // Note, the Vue side menu will add top and left padding to push this content over
+  // both when the menu is expanded and collapsed
 
   // Revert padding as growl added this, which was required in bootstrap 3 but is
   // no longer required, so without this the padding to the right is too much
@@ -383,7 +381,6 @@ iframe.vaadin-fullscreen {
   .growl-container > div.growl-item {
     background-position: $alert-padding-x center;
     background-repeat: no-repeat;
-
   }
 }
 
@@ -520,12 +517,12 @@ iframe.vaadin-fullscreen {
     color: #000;
   }
  
-.nav-item.dropdown a.dropdown-toggle:after {
-  vertical-align: 2px;
-  margin-left: 6px;
+  .nav-item.dropdown a.dropdown-toggle:after {
+    vertical-align: 2px;
+    margin-left: 6px;
+  }
 }
 
-}
 #ui-preview-btn {
   display:none;
 }

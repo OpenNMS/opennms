@@ -5,6 +5,8 @@
 
 This section describes how to configure the topology map.
 
+To view the topology map, click *Topology Map* in the side menu.
+
 == Properties
 
 The topology map supports the following properties.

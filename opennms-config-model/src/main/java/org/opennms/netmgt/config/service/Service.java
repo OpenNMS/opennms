@@ -48,7 +48,7 @@ public class Service implements Serializable {
     @XmlElement(name = "name", required = true)
     private String m_name;
 
-    @XmlElement(name = "class-name", required = true)
+    @XmlElement(name = "class-name", required = false)
     private String m_className;
 
     @XmlElement(name = "attribute")
@@ -92,7 +92,7 @@ public class Service implements Serializable {
     }
 
     public void setClassName(final String className) {
-        m_className = ConfigUtils.assertNotEmpty(className, "class-name");
+        m_className = ConfigUtils.normalizeString(className);
     }
 
     @XmlTransient
@@ -152,6 +152,52 @@ public class Service implements Serializable {
                     Objects.equals(this.m_invokes, that.m_invokes);
         }
         return false;
+    }
+
+    /**
+     * Merges two Service objects, with user config taking precedence over defaults.
+     *
+     * @param userService the user-defined service configuration
+     * @param defaultService the default service configuration from classpath
+     * @return merged service with user config taking precedence
+     */
+    public static Service merge(final Service userService, final Service defaultService) {
+        if (defaultService == null) {
+            return userService;
+        }
+
+        if (userService == null) {
+            return defaultService;
+        }
+
+        final Service merged = new Service();
+
+        // Name must match (we find defaults by name)
+        merged.setName(userService.getName());
+
+        // User's enabled setting takes precedence
+        // If user specified enabled explicitly, use it; otherwise default to true (enabled)
+        // This allows users to enable a service by just including it in config
+        merged.setEnabled(userService.m_enabled != null ? userService.m_enabled : Boolean.TRUE);
+
+        // User's class-name takes precedence, otherwise use default
+        merged.m_className = userService.m_className != null ? userService.m_className : defaultService.m_className;
+
+        // User's attributes take precedence if not empty, otherwise use defaults
+        if (userService.m_attributes != null && !userService.m_attributes.isEmpty()) {
+            merged.setAttributes(new ArrayList<>(userService.m_attributes));
+        } else if (defaultService.m_attributes != null) {
+            merged.setAttributes(new ArrayList<>(defaultService.m_attributes));
+        }
+
+        // User's invokes take precedence if not empty, otherwise use defaults
+        if (userService.m_invokes != null && !userService.m_invokes.isEmpty()) {
+            merged.setInvokes(new ArrayList<>(userService.m_invokes));
+        } else if (defaultService.m_invokes != null) {
+            merged.setInvokes(new ArrayList<>(defaultService.m_invokes));
+        }
+
+        return merged;
     }
 
 }

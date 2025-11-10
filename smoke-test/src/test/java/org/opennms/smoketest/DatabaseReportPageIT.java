@@ -54,6 +54,7 @@ import org.opennms.smoketest.ui.framework.Page;
 import org.opennms.smoketest.ui.framework.Select;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -271,16 +272,25 @@ public class DatabaseReportPageIT extends UiPageTest {
 
         public ReportTemplateTab select(String reportName) {
             LOG.debug("Selecting report '{}' from list", reportName);
+
             final WebElement element = findElementByXpath(String.format("//a/h5[text() = '%s']", reportName));
-            element.click();
+
+            // Using JavascriptExecutor to click since WebElement.click() does not
+            // always work when it is necessary to scroll.
+            // The list of database reports is long enough that scrolling is needed
+            ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", element);
+
             await().atMost(2, MINUTES).pollInterval(5, SECONDS).until(() -> execute(() -> getDriver().findElements(By.id("loading-bar-spinner")).isEmpty()));
             await().atMost(15, SECONDS).pollInterval(2, SECONDS).until(() -> findElementById("execute") != null);
             return this;
         }
 
         public ReportTemplateTab format(String format) {
+            LOG.debug("ReportTemplateTab format: '{}'", format);
+
             ensureReportIsSelected();
             new Select(driver, "reportFormat").setValueByText(format);
+
             return this;
         }
 
@@ -300,6 +310,8 @@ public class DatabaseReportPageIT extends UiPageTest {
         }
 
         public ReportTemplateTab createReport() {
+            LOG.debug("ReportTemplateTab create report");
+
             ensureReportIsSelected();
             final WebElement executeButton = execute(() -> findElementById("execute"));
             assertThat(executeButton.getText(), Matchers.is("Create Report"));
@@ -561,7 +573,6 @@ public class DatabaseReportPageIT extends UiPageTest {
     }
 
     public static class PersistedReportElement {
-
         private String reportId;
         private String title;
         private String runDate;
@@ -580,7 +591,6 @@ public class DatabaseReportPageIT extends UiPageTest {
     }
 
     public static class ReportScheduleElement extends Element {
-
         private String triggerName;
         private String templateName;
         private String format;
@@ -624,5 +634,4 @@ public class DatabaseReportPageIT extends UiPageTest {
             LOG.debug("Report schedule for trigger '{}' was updated!", triggerName);
         }
     }
-
 }

@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -110,21 +111,21 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 			throw new NullPointerException("parameter cannot be null");
 		}
 
-		String driverClass = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
-		try {
-			driver = (Driver)Class.forName(driverClass).newInstance();
-			LOG.debug("Loaded JDBC driver: {}", driverClass);
-		} catch (Throwable exp) {
-			throw new RuntimeException("Unable to load driver class: "+exp.toString(), exp);
-		}
-
-		LOG.info("Loaded JDBC driver");
-
 		// Get the JDBC url host part
 		InetAddress ipAddr = svc.getAddress();
 		String url = null;
 		url = DBTools.constructUrl(resolveKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipAddr.getCanonicalHostName());
 		LOG.debug("JDBC url: {}", url);
+
+                try {
+                    driver = DriverManager.getDriver(url);
+                    LOG.debug("Loaded JDBC driver for url: {}", url);
+                } catch (Throwable exp) {
+                    throw new RuntimeException("Unable to load JDBC driver for URL: " + url + "; " + exp.toString(), exp);
+                }
+
+                LOG.info("Loaded JDBC driver");
+
 		
 		TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -136,20 +137,18 @@ public class JDBCMonitor extends ParameterSubstitutingMonitor {
 		props.setProperty("password", db_pass);
 		props.setProperty("timeout", String.valueOf(tracker.getTimeoutInSeconds()));
 
-
 		for (tracker.reset(); tracker.shouldRetry(); tracker.nextAttempt()) {
 			try {
 				con = driver.connect(url, props);
 
-				// We are connected, upgrade the status to unresponsive
-				status = PollStatus.unresponsive();
-
 				if (con == null) {
-					LOG.error("Wrong kind of JDBC driver ({}) to connect to the JDBC URL: {}", driverClass, url);
-					status = PollStatus.unavailable("Wrong kind of JDBC driver to connect to the JDBC URL");
+					LOG.error("No JDBC driver available that can connect to the JDBC URL: {}", url);
+					status = PollStatus.unavailable("No JDBC driver available that can connect to the JDBC URL");
 					break;
 				} else {
 					LOG.debug("JDBC Connection Established");
+				        // We are connected, upgrade the status to unresponsive
+				        status = PollStatus.unresponsive();
 
 					tracker.startAttempt();
 

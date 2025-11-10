@@ -1,4 +1,5 @@
 
+[[system-requirements]]
 = Minimum System Requirements
 :description: OpenNMS system requirements, supported operating systems, version compatibility with Grafana, Cassandra, Elasticsearch, JDK, Kafka, PostgreSQL.
 
@@ -34,13 +35,10 @@ OpenNMS {page-component-title} requires one of the following operating systems:
 | Operating System  | Compatible Versions (64-bit)
 
 | RHEL
-| {compatible-rhel7} +
-{compatible-rhel8} +
-{compatible-rhel9}
+| {compatible-rhel9}
 
 | CentOS
-| {compatible-centos7} +
-{compatible-centos-stream}
+| {compatible-centos-stream}
 
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian

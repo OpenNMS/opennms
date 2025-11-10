@@ -200,7 +200,7 @@
   </c:if>
 
   <%-- Vue side menu --%>
-  <link rel="stylesheet" href="${baseHref}/opennms/ui-components/assets/index.css" media="screen" />
+  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css" media="screen" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -242,17 +242,28 @@
 <!-- Body -->
 <%-- This <div> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
-     validator doesn't complain.  See bug #1728. --%>
+     validator does not complain.  See bug #1728.
+--%>
+<%--
+    Note, if 'fromVaadin' is true, we display the menu anyway, even if 'superQuiet' is true.
+    This means this is a Vaadin page loaded at the top level and should have the menu.
+    For Vaadin pages that are actually dashlets loaded inside a Wallboard, they will have
+    'fromVaadinDashlet=true', which we treat the same as 'superQuiet', i.e. do not display a menu.
+    'fromVaadinDashlet' might be used to add additional code to fix margins, etc.
+    See header-component_connector.js and org.opennms.features.vaadin.components.header.HeaderComponent.java for more.
+--%>
 <c:choose>
   <c:when test="${param.superQuiet == 'true'}">
-    <c:if test="${param.fromVaadin == 'true'}">
-      <!-- both superQuiet and fromVaadin are true -->
-      <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
-        <div id="opennms-sidemenu-container"></div>
-        <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
-      <% } %>
-    </c:if>
-  </c:when>
+    <c:choose>
+      <c:when test="${param.fromVaadin == 'true'}">
+        <!-- both superQuiet and fromVaadin are true -->
+        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+          <div id="opennms-sidemenu-container"></div>
+          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
+        <% } %>
+      </c:when>
+    </c:choose>
+ </c:when>
   <c:otherwise>
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="onms-default-apps" />
@@ -273,7 +284,7 @@
       <c:otherwise>
         <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
-          <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
+          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
         <% } %>
       </c:otherwise>
     </c:choose>

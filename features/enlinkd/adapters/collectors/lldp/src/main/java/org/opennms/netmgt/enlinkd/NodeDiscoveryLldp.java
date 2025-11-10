@@ -303,7 +303,12 @@ public final class NodeDiscoveryLldp extends NodeCollector {
     }
 
     private void storeLldpLinks(List<LldpRemTableTracker.LldpRemRow> links, final LldpLocPortGetter lldpLocPortGetter) {
+        LOG.debug("storeLldpLinks: parsing {}", links.size());
         for (LldpRemTableTracker.LldpRemRow row : links) {
+            if (row.getLldpRemChassisId() == null || row.getLldpRemChassisId().isNull()) {
+                LOG.warn("storeLldpLinks: skipping row {}", row);
+                continue;
+            }
             m_lldpTopologyService.store(getNodeId(), lldpLocPortGetter.getLldpLink(row));
         }
     }

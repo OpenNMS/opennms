@@ -37,7 +37,9 @@ The secure credentials vault keystore file is located in `$\{OPENNMS_HOME}/etc/s
 Entries in the SCV are identified by aliases.
 For each alias, you can store a username, a password, and a set of key-value pair attributes.
 
-To access or add credentials, click menu:Info[Secure Credentials Vault] in the top menu bar.
+To access or add credentials, click menu:Tools[Secure Credentials Vault] in the side menu.
+
+NOTE: You must be logged in with a `ROLE_ADMIN` role to view or change SCV credentials.
 
 == Access entries
 
@@ -66,7 +68,7 @@ You can access entries in the secure credentials vault from metadata using the `
 
 === Karaf commands
 
-You can access and update entries in the secure credentials vault from the Karaf shell.
+You can access and update entries in the secure credentials vault from the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell].
 To do so, follow these steps:
 
 . Open an SSH session:
