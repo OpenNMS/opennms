@@ -1,17 +1,17 @@
 #!/usr/bin/make -f
 
 export CONTAINER_TYPE=minion
-export CONTAINER_PREFIX=/usr/share/$(CONTAINER_TYPE)
+export CONTAINER_PREFIX=/opt/$(CONTAINER_TYPE)
 
 export DH_VERBOSE=1
-export JAVA_HOME=$(shell bin/find-java.sh 1.8 11.9999)
+export JAVA_HOME=$(shell bin/find-java.sh 1.8 17.9999)
 export PACKAGE_NAME=opennms-$(CONTAINER_TYPE)
 
-export RUNTIME_PREFIX=/var/lib/$(CONTAINER_TYPE)
+export RUNTIME_PREFIX=/opt/$(CONTAINER_TYPE)
 export REPO_PREFIX=$(CONTAINER_PREFIX)/repositories
 export LOGDIR=/var/log/$(CONTAINER_TYPE)
 export SYSCONFDIR=/etc/default
-export ETCDIR=/etc/$(CONTAINER_TYPE)
+export ETCDIR=/opt/$(CONTAINER_TYPE)/etc
 export PIDFILE=$(LOGDIR)/$(CONTAINER_TYPE).pid
 
 %:
