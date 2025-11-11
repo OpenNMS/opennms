@@ -14,6 +14,3 @@ Description: horizontal scaling for OpenNMS
  OpenNMS Sentinel is a container for running a subset of OpenNMS
  services in a standalone container, suitable for horizontally
  scaling some subsystems, like flow telemetry processing.
- .
- http://www.opennms.org/wiki/Sentinel
-
