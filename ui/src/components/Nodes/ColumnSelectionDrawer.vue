@@ -2,9 +2,9 @@
   <FeatherDrawer
     id="column-selection-drawer"
     data-test="column-selection-drawer"
-    @shown="() => nodeStructureStore.columnsDrawerState.visible"
     v-model="nodeStructureStore.columnsDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
+    hide-close
     width="55em"
   >
     <div class="feather-drawer-custom-padding">

@@ -1,0 +1,15 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <global>
+      <security>
+         <doNotOverride>logmsg</doNotOverride>
+         <doNotOverride>operaction</doNotOverride>
+         <doNotOverride>autoaction</doNotOverride>
+         <doNotOverride>tticket</doNotOverride>
+         <doNotOverride>script</doNotOverride>
+      </security>
+   </global>
+   <!-- Custom event configs go here -->
+
+    <event-file>events/opennms.alarm.events.xml</event-file>
+    <event-file>events/Cisco.airespace.xml</event-file>
+</events>

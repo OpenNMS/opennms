@@ -29,13 +29,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventUtilDaoImpl;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
+
+import java.util.List;
 
 public class NewSuspectLocationTest {
     private final String NEW_SUSPECT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
@@ -47,8 +51,8 @@ public class NewSuspectLocationTest {
     @Before
     public void setUp() throws Exception {
         m_eventConfDao = new DefaultEventConfDao();
-        m_eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
-        m_eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/eventconf.xml"));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList);
 
         m_eventExpander = new EventExpander(new MetricRegistry());
         m_eventExpander.setEventConfDao(m_eventConfDao);

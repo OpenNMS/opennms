@@ -31,25 +31,38 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.List;
 
 import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 
 public class BroadcastEventProcessorIT extends NotificationsITCase {
+
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Before
     @Override
     public void setUp() throws Exception {
+        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
+                new FileSystemResource("src/test/resources/org/opennms/netmgt/notifd/eventconf.xml"));
+        // Load into DB
+        eventConfDao.loadEventsFromDB(events);
         super.setUp();
 
         m_anticipator.setExpectedDifference(3000);

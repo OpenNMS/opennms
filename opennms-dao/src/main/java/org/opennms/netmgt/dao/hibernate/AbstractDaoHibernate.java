@@ -486,4 +486,23 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             cause = cause.getCause();
         }
     }
+
+    public List<T> findWithPagination(final String query, final Object[] values, final int offset, final int limit) {
+        return (List<T>) getHibernateTemplate().execute(session -> {
+            Query hqlQuery = session.createQuery(query);
+
+            // Set positional parameters
+            if (values != null) {
+                for (int i = 0; i < values.length; i++) {
+                    hqlQuery.setParameter(i, values[i]);
+                }
+            }
+
+            // Set pagination
+            hqlQuery.setFirstResult(offset); // offset
+            hqlQuery.setMaxResults(limit);   // limit
+
+            return hqlQuery.list();
+        });
+    }
 }

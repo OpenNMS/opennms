@@ -2,7 +2,7 @@
   <FeatherDrawer
     id="left-drawer"
     data-test="left-drawer"
-    @shown="() => nodeStructureStore.drawerState.visible"
+    @hidden="nodeStructureStore.closeInstancesDrawerModal()"
     v-model="nodeStructureStore.drawerState.visible"
     :labels="{ close: 'close', title: 'Advanced Node Filters' }"
     width="60em"
