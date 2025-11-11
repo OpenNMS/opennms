@@ -68,6 +68,19 @@
               <yarnVersion>${yarnVersion}</yarnVersion>
             </configuration>
           </execution>
+          <!--
+            Pin node-gyp to v9.4.1 which is compatible with Node 18.
+            v10+ requires Node 20.17+
+          -->
+          <execution>
+            <id>yarn add node-gyp</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>global add node-gyp@9.4.1</arguments>
+            </configuration>
+          </execution>
           <execution>
             <id>yarn install</id>
             <goals>
