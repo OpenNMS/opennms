@@ -2,10 +2,10 @@
 
 set -e
 
-ETCDIR="/etc/sentinel"
+ETCDIR="/opt/sentinel/etc"
 SENTINELUSER="sentinel"
 SENTINELHOME="/opt/sentinel"
-SENTINELDATA="/var/lib/sentinel"
+SENTINELDATA="/opt/sentinel/data"
 SENTINELLOG="/var/log/sentinel"
 
 

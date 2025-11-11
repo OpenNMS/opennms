@@ -2,7 +2,7 @@
 
 set -e
 
-ETCDIR="/etc/sentinel"
+ETCDIR="/opt/sentinel/etc"
 SENTINELHOME="/opt/sentinel"
 
 if [ "$1" = "purge" ]; then
