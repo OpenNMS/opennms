@@ -2,7 +2,7 @@
 
 set -e
 
-ETCDIR="/etc/minion"
+ETCDIR="/opt/minion/etc"
 MINIONHOME="/opt/minion"
 
 if [ "$1" = "purge" ]; then

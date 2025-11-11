@@ -61,12 +61,14 @@ override_dh_auto_install:
 	rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data/*
 	
 	# move etc / data / deploy directories to where they will live
-	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
+#	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
+#		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \
+        ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \
 		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
 		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data \
 		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
 		&& ln -s ../../..$(RUNTIME_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy \
-	
+
 	# take care of some packaging/lintian warnings
 	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides
 	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME).lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides/$(PACKAGE_NAME)
