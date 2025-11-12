@@ -40,7 +40,7 @@ describe('EventConfigSourceTable.vue', () => {
     store.sourcesSearchTerm = ''
     store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
-    store.refreshEventsSources = vi.fn().mockResolvedValue(undefined)
+    store.resetSourcesPagination = vi.fn().mockResolvedValue(undefined)
     store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
@@ -114,7 +114,7 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="refresh-button"]').trigger('click') // Assuming data-test added or use selector for refresh button
-    expect(store.refreshEventsSources).toHaveBeenCalledTimes(1)
+    expect(store.refreshSourcesfilters).toHaveBeenCalledTimes(1)
   })
 
   it('handles search input changes with debouncing', async () => {

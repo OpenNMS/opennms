@@ -24,7 +24,7 @@
             primary
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.refreshEventsSources()"
+            @click="store.refreshSourcesfilters()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>

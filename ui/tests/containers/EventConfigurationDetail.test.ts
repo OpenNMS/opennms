@@ -384,12 +384,12 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should call store.resetFilters and fetchEventsBySourceId on successful mount', async () => {
-    store.resetFilters = vi.fn()
+    store.refreshEventConfigEvents = vi.fn()
     store.fetchEventsBySourceId = vi.fn()
     wrapper = await createWrapper(mockConfig)
     await flushPromises()
 
-    expect(store.resetFilters).toHaveBeenCalledOnce()
+    expect(store.refreshEventConfigEvents).toHaveBeenCalledOnce()
     expect(store.fetchEventsBySourceId).toHaveBeenCalledOnce()
     expect(store.fetchEventsBySourceId).toHaveBeenCalledWith() // Pass source ID
     expect(store.selectedSource).toEqual(mockConfig)

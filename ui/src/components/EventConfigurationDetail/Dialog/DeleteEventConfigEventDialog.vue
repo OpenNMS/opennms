@@ -53,7 +53,7 @@ const deleteEventConfigEvent = async (id?: number) => {
     if (result) {
       showSnackBar({ msg: 'Event configuration event deleted successfully', error: false })
       store.hideDeleteEventConfigEventDialog()
-      store.resetFilters()
+      store.resetEventConfigEvents()
       if (store.selectedSource.eventCount === 0) {
         router.push({ name: 'Event Configuration' })
       } else {

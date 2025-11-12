@@ -201,11 +201,12 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         throw new Error('No source selected')
       }
     },
-    resetFilters() {
+    async resetEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
       this.eventsSorting.sortKey = 'createdTime'
       this.eventsSorting.sortOrder = 'desc'
+      await this.fetchEventsBySourceId()
     }
   }
 })
