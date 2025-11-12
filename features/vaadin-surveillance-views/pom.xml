@@ -6,7 +6,7 @@
         <relativePath>../topology-map/poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>34.1.0</version>
+        <version>34.1.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-surveillance-views</artifactId>
