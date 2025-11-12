@@ -2,5 +2,9 @@
 [source, console]
 ----
 sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel9.noarch.rpm
-sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+IMPORTANT: The next command is a workaround until https://opennms.atlassian.net/browse/NMS-19071 is solved.
+[source, console]
+----
+sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /etc/yum.repos.d/opennms-repo-stable-rhel9.repo
 ----
