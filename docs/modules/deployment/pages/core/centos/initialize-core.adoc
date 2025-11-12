@@ -1,0 +1,47 @@
+.Configure PostgreSQL database access
+
+You can store your PostgreSQL credentials in the secure credentials vault.
+To do this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`:
+
+. Create encrypted credentials for the PostgreSQL database connections:
++
+[source, console]
+----
+sudo -u opennms /opt/opennms/bin/scvcli set postgres opennms password <1>
+sudo -u opennms /opt/opennms/bin/scvcli set postgres-admin postgres password <1>
+----
+<1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
+
+.Detect and assign Java environment and persist in /opt/opennms/etc/java.conf
+[source, console]
+----
+sudo /opt/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, console]
+----
+sudo /opt/opennms/bin/install -dis
+----
+
+NOTE: **Optional**: Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap.
+[source, console]
+----
+echo "JAVA_HEAP_SIZE=16384" | sudo tee /opt/opennms/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee /opt/opennms/etc/opennms.conf
+----
+NOTE: These values are provided as examples; ideal values will vary based on your environment and workload
+
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
+[[initialize-core-firewall]]
+.Allow connection to the web UI from your network
+[source, console]
+----
+sudo firewall-cmd --permanent --add-port=8980/tcp
+sudo systemctl reload firewalld
+----

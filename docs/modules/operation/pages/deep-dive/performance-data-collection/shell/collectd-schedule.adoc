@@ -4,7 +4,7 @@
 = Collectd Schedule
 :description: Overview of Karaf shell commands in {page-component-title} to help administer and diagnose issues related to performance data collection scheduling.
 
-The `opennms:collectd-schedule` Karaf Shell command can be used to output details of the Collectd scheduler.
+The `opennms:collectd-schedule` xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command can be used to output details of the Collectd scheduler.
 
 * List all collected statistics of the Collectd daemon.
 +

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>34.0.2</version>
+    <version>34.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -85,7 +85,7 @@
               <goal>yarn</goal>
             </goals>
             <configuration>
-              <arguments>global add node-gyp</arguments>
+              <arguments>global add node-gyp@9.4.1</arguments>
             </configuration>
           </execution>
           <execution>
