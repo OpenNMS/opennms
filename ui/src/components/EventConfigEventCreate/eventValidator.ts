@@ -51,11 +51,11 @@ export const validateEvent = (
       errors.alarmType = 'Alarm Type is required when Alarm Data is added.'
     }
 
-    if (autoClean) {
-      if (!clearKey || clearKey.trim() === '') {
-        errors.clearKey = 'Clear Key is required when Auto Clean is enabled.'
-      }
-    }
+    // if (autoClean) {
+    //   if (!clearKey || clearKey.trim() === '') {
+    //     errors.clearKey = 'Clear Key is required when Auto Clean is enabled.'
+    //   }
+    // }
   }
 
   const maskElementErrors: Array<{ name?: string; value?: string }> = []

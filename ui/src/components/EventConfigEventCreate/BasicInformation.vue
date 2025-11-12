@@ -186,7 +186,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -297,8 +297,8 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       const alarmDataElement = xmlDoc.getElementsByTagName('alarm-data')[0]
       reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
       alarmType.value = {
-        _text: alarmDataElement?.getAttribute('alarm-type') || '',
-        _value: alarmDataElement?.getAttribute('alarm-type') || ''
+        _text: AlarmTypeName[alarmDataElement?.getAttribute('alarm-type') as keyof typeof AlarmTypeValue]  || '',
+        _value: alarmDataElement?.getAttribute('alarm-type') as keyof typeof AlarmTypeValue || ''
       }
       autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
       clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
@@ -487,10 +487,16 @@ const handleSaveEvent = async () => {
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
       resetValues()
+      const selectedSource = store.selectedSource
       store.resetEventModificationState()
-      router.push({
-        name: 'Event Configuration Detail'
-      })
+      if (selectedSource && selectedSource.id) {
+        router.push({
+          name: 'Event Configuration Detail',
+          params: { id: selectedSource.id }
+        })
+      } else {
+        router.push({ name: 'Event Configuration' })
+      }
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -501,11 +507,16 @@ const handleSaveEvent = async () => {
 }
 
 const handleCancel = () => {
-  router.push({
-    name: 'Event Configuration Detail',
-    params: { id: store.selectedSource?.id }
-  })
+  const selectedSource = store.selectedSource
   store.resetEventModificationState()
+  if (selectedSource && selectedSource.id) {
+    router.push({
+      name: 'Event Configuration Detail',
+      params: { id: selectedSource.id }
+    })
+  } else {
+    router.push({ name: 'Event Configuration' })
+  }
 }
 
 watchEffect(() => {

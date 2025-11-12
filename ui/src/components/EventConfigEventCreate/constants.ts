@@ -73,15 +73,21 @@ export const MaskElementNameOptions: ISelectItemType[] = [
   { _text: MaskElementName.Trapoid, _value: MaskElementName.Trapoid }
 ]
 
-export enum AlarmType {
+export enum AlarmTypeValue {
   One = '1',
   Two = '2',
   Three = '3'
 }
 
+export enum AlarmTypeName {
+  One = 'Raise',
+  Two = 'Resolution',
+  Three = 'Unresolvable'
+}
+
 export const AlarmTypeOptions: ISelectItemType[] = [
-  { _text: AlarmType.One, _value: AlarmType.One },
-  { _text: AlarmType.Two, _value: AlarmType.Two },
-  { _text: AlarmType.Three, _value: AlarmType.Three }
+  { _text: AlarmTypeName.One, _value: AlarmTypeValue.One },
+  { _text: AlarmTypeName.Two, _value: AlarmTypeValue.Two },
+  { _text: AlarmTypeName.Three, _value: AlarmTypeValue.Three }
 ]
 
