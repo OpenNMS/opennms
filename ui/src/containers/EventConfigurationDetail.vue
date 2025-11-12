@@ -1,7 +1,7 @@
 <template>
   <div
     class="event-config-container"
-    v-if="config"
+    v-if="store.selectedSource"
   >
     <div class="header">
       <div class="title-container">
@@ -9,34 +9,34 @@
           <FeatherBackButton
             data-test="back-button"
             @click="router.push({ name: 'Event Configuration' })"
-            >Go Back
+          >
+            Go Back
           </FeatherBackButton>
         </div>
         <div>
           <h1>Event Configuration Details</h1>
         </div>
       </div>
-
       <div class="action-container">
         <FeatherButton
           primary
           data-test="add-event"
-          @click="onAddEventClick(config)"
+          @click="onAddEventClick(store.selectedSource)"
         >
           Add Event
         </FeatherButton>
         <FeatherButton
           primary
-          @click="store.showChangeEventConfigSourceStatusDialog(config)"
+          @click="store.showChangeEventConfigSourceStatusDialog(store.selectedSource)"
           data-test="enable-disable-source"
         >
-          {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
+          {{ store.selectedSource.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
         <FeatherButton
           primary
-          @click="store.showDeleteEventConfigSourceDialog(config)"
+          @click="store.showDeleteEventConfigSourceDialog(store.selectedSource)"
           data-test="delete-source"
-          v-if="config.vendor !== VENDOR_OPENNMS"
+          v-if="store.selectedSource.vendor !== VENDOR_OPENNMS"
         >
           Delete Source
         </FeatherButton>
@@ -48,33 +48,40 @@
       data-test="config-box"
     >
       <div class="config-row">
-        <div class="config-field name-field">
+        <div class="config-field">
           <span class="field-label">Name:</span>
-          <span class="field-value">{{ config?.name }}</span>
+          <span class="field-value">{{ store.selectedSource.name }}</span>
         </div>
-        <div class="config-field description-field">
-          <span class="field-label">Description:</span>
-          <span class="field-value">{{ config?.description }}</span>
+        <div class="config-field">
+          <span class="field-label">Uploaded By:</span>
+          <span class="field-value">{{ store.selectedSource.uploadedBy }}</span>
+        </div>
+        <div class="config-field">
+          <span class="field-label">Creation Date:</span>
+          <span class="field-value">{{ store.selectedSource.createdTime && format(store.selectedSource.createdTime, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
       <div class="config-row">
-        <div class="config-field vendor-field">
+        <div class="config-field">
           <span class="field-label">Vendor:</span>
-          <span class="field-value">{{ config?.vendor }}</span>
+          <span class="field-value">{{ store.selectedSource.vendor }}</span>
         </div>
         <div class="config-field">
           <span class="field-label">Status:</span>
-          <span class="field-value">{{ config?.enabled ? 'Enabled' : 'Disabled' }}</span>
+          <span class="field-value">{{ store.selectedSource.enabled ? 'Enabled' : 'Disabled' }}</span>
+        </div>
+        <div class="config-field">
+          <span class="field-label">Last Modified Date:</span>
+          <span class="field-value">{{ store.selectedSource.lastModified && format(store.selectedSource.lastModified, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
       <div class="config-row">
         <div class="config-field">
           <span class="field-label">Event Count:</span>
-          <span class="field-value">{{ config?.eventCount }}</span>
+          <span class="field-value">{{ store.selectedSource.eventCount }}</span>
         </div>
       </div>
     </div>
-
     <div class="event-table-section">
       <EventConfigEventTable />
     </div>
@@ -106,24 +113,27 @@ import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
+import { format } from 'date-fns-tz'
 
 const store = useEventConfigDetailStore()
 const router = useRouter()
-const config = ref<EventConfigSource>()
+const route = useRoute()
 
 const onAddEventClick = (source: EventConfigSource) => {
   const modificationStore = useEventModificationStore()
   modificationStore.setSelectedEventConfigSource(source, CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({
-    name: 'Event Configuration New'
+    name: 'Event Configuration Create'
   })
 }
 
 onMounted(async () => {
-  if (store.selectedSource?.id) {
-    config.value = store.selectedSource
+  if (route.params.id) {
+    await store.fetchSourceById(route.params.id as string)
     store.resetFilters()
-    await store.fetchEventsBySourceId()
+    if (store.selectedSource) {
+      await store.fetchEventsBySourceId()
+    }
   }
 })
 </script>
@@ -173,6 +183,7 @@ onMounted(async () => {
       .config-field {
         display: flex;
         align-items: center;
+        flex: 1;
         margin-right: 40px;
 
         .field-label {

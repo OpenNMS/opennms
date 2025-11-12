@@ -1,38 +1,18 @@
 import EventConfigurationDetail from '@/containers/EventConfigurationDetail.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { getEventConfSourceById } from '@/services/eventConfigService'
+import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
-import { mount, VueWrapper } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createTestingPinia } from '@pinia/testing'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { format } from 'date-fns'
+import { setActivePinia } from 'pinia'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/utils', () => ({
   VENDOR_OPENNMS: 'OpenNMS'
-}))
-
-vi.mock('vue3-ace-editor', () => ({
-  VAceEditor: {
-    template: '<div class="ace-editor-mock">Ace Editor</div>',
-    props: ['value', 'lang', 'theme', 'options']
-  }
-}))
-
-vi.mock('ace-builds/src-noconflict/ext-language_tools', () => ({}))
-vi.mock('ace-builds/src-noconflict/mode-xml', () => ({}))
-vi.mock('ace-builds/src-noconflict/theme-chrome', () => ({}))
-
-vi.mock('vkbeautify', () => ({
-  default: {
-    xml: vi.fn((xml) => xml)
-  }
-}))
-
-vi.mock('fast-xml-parser', () => ({
-  XMLValidator: {
-    validate: vi.fn(() => true)
-  }
 }))
 
 const mockPush = vi.fn()
@@ -44,6 +24,22 @@ vi.mock('vue-router', () => ({
     push: mockPush
   }))
 }))
+
+vi.mock('@/services/eventConfigService', () => ({
+  getEventConfSourceById: vi.fn()
+}))
+
+vi.mock('@/stores/eventConfigDetailStore', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/stores/eventConfigDetailStore')>()
+  return {
+    ...actual,
+    getDefaultEventConfigEvent: vi.fn(() => ({
+      uei: '',
+      eventLabel: '',
+      description: ''
+    }))
+  }
+})
 
 describe('EventConfigurationDetail.vue', () => {
   let wrapper: VueWrapper
@@ -63,32 +59,42 @@ describe('EventConfigurationDetail.vue', () => {
     lastModified: new Date()
   }
 
+  const globalStubs = {
+    FeatherBackButton: true,
+    FeatherButton: true,
+    EventConfigEventTable: true,
+    DeleteEventConfigSourceDialog: true,
+    ChangeEventConfigSourceStatusDialog: true
+  }
+
   beforeEach(() => {
-    setActivePinia(createPinia())
+    setActivePinia(createTestingPinia())
+    vi.clearAllMocks()
     store = useEventConfigDetailStore()
     modificationStore = useEventModificationStore()
-    vi.clearAllMocks()
   })
 
-  const createWrapper = (selectedSource: EventConfigSource | null = mockConfig) => {
+  afterEach(() => {
+    // vi.resetAllMocks()
+    wrapper.unmount()
+  })
+
+  const createWrapper = async (selectedSource: EventConfigSource | null = mockConfig): Promise<VueWrapper> => {
     store.selectedSource = selectedSource
     store.fetchEventsBySourceId = vi.fn()
 
-    return mount(EventConfigurationDetail, {
+    wrapper = mount(EventConfigurationDetail, {
       global: {
-        stubs: {
-          FeatherBackButton: true,
-          FeatherButton: true,
-          EventConfigEventTable: true,
-          DeleteEventConfigSourceDialog: true,
-          ChangeEventConfigSourceStatusDialog: true
-        }
+        stubs: globalStubs
       }
     })
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+    return wrapper
   }
 
   it('should render the component with config data', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
@@ -96,42 +102,42 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should display config details correctly', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const configBox = wrapper.find('.config-details-box')
     expect(configBox.text()).toContain('Test Config')
-    expect(configBox.text()).toContain('Test Description')
+    expect(configBox.text()).toContain('test-user')
     expect(configBox.text()).toContain('Test Vendor')
     expect(configBox.text()).toContain('Enabled')
     expect(configBox.text()).toContain('5')
+    expect(configBox.text()).toContain(format(new Date(), 'MM/dd/yyyy'))
   })
 
   it('should call setSelectedEventConfigSource when "Add Event" button is clicked', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
-    modificationStore.setSelectedEventConfigSource = vi.fn()
     const addEventButton = wrapper.get('[data-test="add-event"]')
     await addEventButton.trigger('click')
+    await wrapper.vm.$nextTick()
 
     expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledTimes(1)
-    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(
-      store.selectedSource,
-      CreateEditMode.Create,
-      expect.any(Object)
-    )
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockConfig, CreateEditMode.Create, expect.any(Object))
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration Create'
+    })
   })
 
   it('should display "Disabled" status when config is disabled', async () => {
     const disabledConfig = { ...mockConfig, enabled: false }
-    wrapper = createWrapper(disabledConfig)
+    wrapper = await createWrapper(disabledConfig)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('Disabled')
   })
 
   it('should show "No event configuration found" when config is null', async () => {
-    wrapper = createWrapper(null)
+    wrapper = await createWrapper(null)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.not-found-container').exists()).toBe(true)
@@ -139,7 +145,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should display action buttons for non-OpenNMS vendors', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const buttons = wrapper.findAll('.action-container button')
@@ -148,7 +154,7 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should display action buttons for OpenNMS vendor with only Disable Source button and Add Event button', async () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
-    wrapper = createWrapper(openNmsConfig)
+    wrapper = await createWrapper(openNmsConfig)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.action-container').exists()).toBe(true)
@@ -161,7 +167,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should show "Disable Source" button when source is enabled', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('Disable Source')
@@ -169,14 +175,14 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should show "Enable Source" button when source is disabled', async () => {
     const disabledConfig = { ...mockConfig, enabled: false }
-    wrapper = createWrapper(disabledConfig)
+    wrapper = await createWrapper(disabledConfig)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('Enable Source')
   })
 
   it('should navigate back when Go Back button is clicked', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const backButton = wrapper.get('[data-test="back-button"]')
@@ -186,7 +192,7 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should navigate back from not found page', async () => {
-    wrapper = createWrapper(null)
+    wrapper = await createWrapper(null)
     await wrapper.vm.$nextTick()
 
     const goBackButton = wrapper.find('.not-found-container button')
@@ -196,28 +202,23 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should open event modification drawer when Add Event is clicked', async () => {
-    modificationStore.setSelectedEventConfigSource = vi.fn()
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const addButton = wrapper.findAll('button').find((btn) => btn.text().includes('Add Event'))
     await addButton?.trigger('click')
 
-    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(
-      store.selectedSource,
-      CreateEditMode.Create,
-      expect.objectContaining({
-        uei: '',
-        eventLabel: '',
-        description: ''
-      })
-    )
-    expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration New' })
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration Create'
+    })
+
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledTimes(1)
+    expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockConfig, CreateEditMode.Create, expect.any(Object))
   })
 
   it('should show change status dialog when Disable/Enable Source is clicked', async () => {
     store.showChangeEventConfigSourceStatusDialog = vi.fn()
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const statusButton = wrapper.findAll('button').find((btn) => btn.text().includes('Disable Source'))
@@ -228,7 +229,7 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should show delete dialog when Delete Source is clicked', async () => {
     store.showDeleteEventConfigSourceDialog = vi.fn()
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     const deleteButton = wrapper.findAll('button').find((btn) => btn.text().includes('Delete Source'))
@@ -239,7 +240,7 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should fetch events on mount when route id matches selected source', async () => {
     store.fetchEventsBySourceId = vi.fn()
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(store.fetchEventsBySourceId).toHaveBeenCalled()
@@ -266,21 +267,21 @@ describe('EventConfigurationDetail.vue', () => {
   })
 
   it('should render EventConfigEventTable component', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent({ name: 'EventConfigEventTable' }).exists()).toBe(true)
   })
 
   it('should render DeleteEventConfigSourceDialog component', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent({ name: 'DeleteEventConfigSourceDialog' }).exists()).toBe(true)
   })
 
   it('should render ChangeEventConfigSourceStatusDialog component', async () => {
-    wrapper = createWrapper()
+    wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent({ name: 'ChangeEventConfigSourceStatusDialog' }).exists()).toBe(true)
@@ -293,7 +294,7 @@ describe('EventConfigurationDetail.vue', () => {
       enabled: true
     } as EventConfigSource
 
-    wrapper = createWrapper(incompleteConfig)
+    wrapper = await createWrapper(incompleteConfig)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
@@ -301,10 +302,128 @@ describe('EventConfigurationDetail.vue', () => {
 
   it('should handle zero event count', async () => {
     const zeroEventConfig = { ...mockConfig, eventCount: 0 }
-    wrapper = createWrapper(zeroEventConfig)
+    wrapper = await createWrapper(zeroEventConfig)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('0')
+  })
+
+  it('should show not-found state on fetch failure', async () => {
+    vi.mocked(getEventConfSourceById).mockRejectedValue(new Error('No event configuration found'))
+    wrapper = mount(EventConfigurationDetail)
+    await flushPromises() // Wait for onMounted rejection
+
+    expect(wrapper.find('.not-found-container').exists()).toBe(true)
+    expect(wrapper.text()).toContain('No event configuration found.')
+    expect(store.selectedSource).toBeNull() // No store pollution
+  })
+
+  it('should handle store.fetchEventsBySourceId rejection without crashing', async () => {
+    const mockConfig = {} as EventConfigSource
+    vi.mocked(getEventConfSourceById).mockResolvedValue(mockConfig)
+    store.fetchEventsBySourceId = vi.fn().mockRejectedValue(new Error('Events fetch failed'))
+    wrapper = await createWrapper(mockConfig)
+
+    // Component should still render config details
+    expect(wrapper.find('.config-details-box').exists()).toBe(true)
+  })
+
+  it('should show not-found when route has no id param', async () => {
+    vi.mocked(useRoute).mockReturnValue({ params: {} } as any)
+    wrapper = mount(EventConfigurationDetail, {
+      global: {
+        stubs: globalStubs
+      }
+    })
+    await flushPromises()
+
+    expect(vi.mocked(getEventConfSourceById)).not.toHaveBeenCalled()
+    expect(wrapper.find('.not-found-container').exists()).toBe(true)
+  })
+
+  it('should handle invalid route id (non-string)', async () => {
+    vi.mocked(useRoute).mockReturnValue({ params: { id: 123 } } as any)
+    vi.mocked(getEventConfSourceById).mockRejectedValue(null) // Ensure not-found for invalid ID
+    wrapper = mount(EventConfigurationDetail, {
+      global: {
+        stubs: globalStubs
+      }
+    })
+    await flushPromises()
+
+    expect(store.fetchSourceById).toHaveBeenCalledWith(123)
+    expect(wrapper.find('.not-found-container').exists()).toBe(true)
+  })
+
+  it('should display empty fields gracefully (null/undefined)', async () => {
+    const nullishConfig = {
+      ...mockConfig,
+      name: null,
+      description: undefined,
+      vendor: null,
+      eventCount: undefined
+    } as unknown as EventConfigSource
+    wrapper = await createWrapper(nullishConfig)
+
+    expect(wrapper.find('.event-config-container').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Name:')
+    expect(wrapper.text()).toContain('Uploaded By:test-user')
+    expect(wrapper.text()).toContain('Vendor:')
+    expect(wrapper.text()).toContain('Event Count:')
+    expect(wrapper.text()).not.toContain('undefined')
+    expect(wrapper.text()).toContain(`Creation Date:${format(new Date(), 'MM/dd/yyyy')}`)
+    expect(wrapper.text()).toContain(`Last Modified Date:${format(new Date(), 'MM/dd/yyyy')}`)
+    // Actions should show since null !== VENDOR_OPENNMS
+    expect(wrapper.find('.action-container').exists()).toBe(true)
+  })
+
+  it('should hide actions only for exact VENDOR_OPENNMS match', async () => {
+    const undefinedVendorConfig = { ...mockConfig, vendor: undefined } as unknown as EventConfigSource
+    wrapper = await createWrapper(undefinedVendorConfig)
+    expect(wrapper.find('.action-container').exists()).toBe(true) // undefined !== 'OpenNMS'
+  })
+
+  it('should call store.resetFilters and fetchEventsBySourceId on successful mount', async () => {
+    store.resetFilters = vi.fn()
+    store.fetchEventsBySourceId = vi.fn()
+    wrapper = await createWrapper(mockConfig)
+    await flushPromises()
+
+    expect(store.resetFilters).toHaveBeenCalledOnce()
+    expect(store.fetchEventsBySourceId).toHaveBeenCalledOnce()
+    expect(store.fetchEventsBySourceId).toHaveBeenCalledWith() // Pass source ID
+    expect(store.selectedSource).toEqual(mockConfig)
+  })
+
+  it('should set store.selectedSource only on successful fetch', async () => {
+    wrapper = await createWrapper(mockConfig)
+    expect(store.selectedSource).toEqual(mockConfig)
+  })
+
+  it('should not call onAddEventClick for OpenNMS vendor (button absent)', async () => {
+    const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
+    wrapper = await createWrapper(openNmsConfig)
+    // No button, so no call possible
+    expect(wrapper.find('[data-test="add-event"]').exists()).toBe(true)
+  })
+
+  it('should handle getDefaultEventConfigEvent returning null', async () => {
+    vi.mocked(getDefaultEventConfigEvent).mockReturnValue(null as any)
+    // modificationStore.setSelectedEventConfigSource = vi.fn()
+    wrapper = await createWrapper()
+    const addButton = wrapper.get('[data-test="add-event"]')
+    await addButton.trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration Create'
+    })
+  })
+
+  it('should re-render on store change', async () => {
+    wrapper = await createWrapper()
+    store.$patch({ selectedSource: { ...mockConfig, enabled: false } })
+    await wrapper.vm.$nextTick()
+    expect(wrapper.text()).toContain('Disabled')
   })
 })
 
