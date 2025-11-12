@@ -7,6 +7,7 @@ import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { format } from 'date-fns'
 import { setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -106,10 +107,11 @@ describe('EventConfigurationDetail.vue', () => {
 
     const configBox = wrapper.find('.config-details-box')
     expect(configBox.text()).toContain('Test Config')
-    expect(configBox.text()).toContain('Test Description')
+    expect(configBox.text()).toContain('test-user')
     expect(configBox.text()).toContain('Test Vendor')
     expect(configBox.text()).toContain('Enabled')
     expect(configBox.text()).toContain('5')
+    expect(configBox.text()).toContain(format(new Date(), 'MM/dd/yyyy'))
   })
 
   it('should call setSelectedEventConfigSource when "Add Event" button is clicked', async () => {
@@ -364,11 +366,13 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper(nullishConfig)
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
-    expect(wrapper.text()).not.toContain('Test Config') // Name is null, not shown
-    expect(wrapper.text()).not.toContain('Test Description') // Description is undefined, not shown
-    expect(wrapper.text()).not.toContain('Test Vendor') // Vendor is null, not shown
-    expect(wrapper.text()).not.toContain('5') // EventCount is undefined, not shown
-    expect(wrapper.text()).not.toContain('undefined') // Safe chaining prevents this
+    expect(wrapper.text()).toContain('Name:')
+    expect(wrapper.text()).toContain('Uploaded By:test-user')
+    expect(wrapper.text()).toContain('Vendor:')
+    expect(wrapper.text()).toContain('Event Count:')
+    expect(wrapper.text()).not.toContain('undefined')
+    expect(wrapper.text()).toContain(`Creation Date:${format(new Date(), 'MM/dd/yyyy')}`)
+    expect(wrapper.text()).toContain(`Last Modified Date:${format(new Date(), 'MM/dd/yyyy')}`)
     // Actions should show since null !== VENDOR_OPENNMS
     expect(wrapper.find('.action-container').exists()).toBe(true)
   })
