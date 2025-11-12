@@ -384,7 +384,7 @@ describe('EventConfigEventTable.vue', () => {
         CreateEditMode.Edit,
         store.events[0]
       )
-      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration New' })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration Create' })
     })
 
     it('renders dropdown only if vendor is not OpenNMS', () => {

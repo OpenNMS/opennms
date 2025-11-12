@@ -1,12 +1,14 @@
 import {
   mapEventConfEventEditRequest,
   mapEventConfigEventsResponseFromServer,
+  mapEventConfigSourceFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer
 } from '@/mappers/eventConfig.mapper'
 import {
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
+  EventConfigSource,
   EventConfigSourcesResponse
 } from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
@@ -274,10 +276,9 @@ export const deleteEventConfigEventBySourceId = async (sourceId: number, eventId
   }
 }
 
-
 /**
  * Downloads the EventConf XML for the given sourceId.
- * 
+ *
  * @param sourceId The ID of the event configuration source to download the XML for.
  * @returns A promise that resolves to a boolean indicating whether the XML was downloaded successfully.
  */
@@ -304,8 +305,33 @@ export const downloadEventConfXmlBySourceId = async (sourceId: number): Promise<
   }
 }
 
-const extractFilenameFromContentDisposition = (headers: Record<string, any> | undefined, defaultName: string): string => {
-  const contentDisposition = headers && (headers['content-disposition'] || headers['Content-Disposition']) as string | undefined
+/**
+ * Makes a GET request to the REST endpoint to fetch an event configuration source by ID.
+ *
+ * @param sourceId The ID of the event configuration source to fetch.
+ * @returns A promise that resolves to an `EventConfigSource` object representing the fetched event configuration source, or throws an error if the request fails.
+ */
+export const getEventConfSourceById = async (sourceId: string): Promise<EventConfigSource> => {
+  const endpoint = `/eventconf/sources/${sourceId}`
+  try {
+    const response = await v2.get(endpoint)
+    if (response.status === 200) {
+      return mapEventConfigSourceFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching event config source by ID:', error)
+    throw error
+  }
+}
+
+const extractFilenameFromContentDisposition = (
+  headers: Record<string, any> | undefined,
+  defaultName: string
+): string => {
+  const contentDisposition =
+    headers && ((headers['content-disposition'] || headers['Content-Disposition']) as string | undefined)
   if (!contentDisposition) return defaultName
 
   const match = /filename\*?=(?:UTF-8'')?["']?([^;"']+)["']?/.exec(contentDisposition)

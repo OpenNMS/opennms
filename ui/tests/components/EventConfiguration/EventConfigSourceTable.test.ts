@@ -1,7 +1,6 @@
 import EventConfigSourceTable from '@/components/EventConfiguration/EventConfigSourceTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { downloadEventConfXmlBySourceId } from '@/services/eventConfigService'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
@@ -23,7 +22,6 @@ vi.mock('vue-router', () => ({
 describe('EventConfigSourceTable.vue', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigStore>
-  let detailStore: ReturnType<typeof useEventConfigDetailStore>
   let mockSource: EventConfigSource
   let openNMSMockSource: EventConfigSource
 
@@ -37,13 +35,12 @@ describe('EventConfigSourceTable.vue', () => {
     })
 
     store = useEventConfigStore(pinia)
-    detailStore = useEventConfigDetailStore(pinia)
 
     store.sources = []
     store.sourcesSearchTerm = ''
     store.sourcesPagination = { page: 1, pageSize: 10, total: 0 }
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
-    store.refreshEventsSources = vi.fn().mockResolvedValue(undefined)
+    store.resetSourcesPagination = vi.fn().mockResolvedValue(undefined)
     store.onChangeSourcesSearchTerm = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageChange = vi.fn().mockResolvedValue(undefined)
     store.onSourcePageSizeChange = vi.fn().mockResolvedValue(undefined)
@@ -117,7 +114,7 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="refresh-button"]').trigger('click') // Assuming data-test added or use selector for refresh button
-    expect(store.refreshEventsSources).toHaveBeenCalledTimes(1)
+    expect(store.refreshSourcesfilters).toHaveBeenCalledTimes(1)
   })
 
   it('handles search input changes with debouncing', async () => {
@@ -128,9 +125,9 @@ describe('EventConfigSourceTable.vue', () => {
   it('handles view details button click correctly', () => {
     wrapper.vm.onEventClick(mockSource)
 
-    expect(detailStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockSource)
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail'
+      name: 'Event Configuration Detail',
+      params: { id: mockSource.id }
     })
   })
 
@@ -214,9 +211,9 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="view-button"]').trigger('click')
-    expect(detailStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockSource)
     expect(mockPush).toHaveBeenCalledWith({
-      name: 'Event Configuration Detail'
+      name: 'Event Configuration Detail',
+      params: { id: mockSource.id }
     })
   })
 

@@ -487,10 +487,16 @@ const handleSaveEvent = async () => {
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
       resetValues()
+      const id = store.selectedSource.id
       store.resetEventModificationState()
-      router.push({
-        name: 'Event Configuration Detail'
-      })
+      if (id) {
+        router.push({
+          name: 'Event Configuration Detail',
+          params: { id }
+        })
+      } else {
+        router.push({ name: 'Event Configuration' })
+      }
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -501,10 +507,16 @@ const handleSaveEvent = async () => {
 }
 
 const handleCancel = () => {
+  const id = store.selectedSource?.id
   store.resetEventModificationState()
-  router.push({
-    name: 'Event Configuration Detail'
-  })
+  if (id) {
+    router.push({
+      name: 'Event Configuration Detail',
+      params: { id }
+    })
+  } else {
+    router.push({ name: 'Event Configuration' })
+  }
 }
 
 watchEffect(() => {

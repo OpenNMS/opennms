@@ -29,13 +29,6 @@ export type EventConfigEvent = {
   fileOrder: number
 }
 
-export type EventConfigEventRequest = {
-  uei: string
-  ['event-label']: string
-  descr: string
-  severity: string
-}
-
 export type EventConfigStoreState = {
   sources: EventConfigSource[]
   sourcesPagination: Pagination

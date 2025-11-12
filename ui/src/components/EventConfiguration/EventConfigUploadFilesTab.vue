@@ -216,17 +216,17 @@ const openFolderDialog = () => {
 const handleFolderUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
   if (!input.files || input.files.length === 0) {
-    console.warn("No folder selected")
+    console.warn('No folder selected')
     return
   }
 
   const files = Array.from(input.files).filter(f =>
-    f.name.endsWith(".events.xml")
+    f.name.endsWith('.events.xml')
   )
 
   if (files.length === 0) {
     snackbar.showSnackBar({
-      msg: "Folder contains no .events.xml files",
+      msg: 'Folder contains no .events.xml files',
       error: true
     })
     return
