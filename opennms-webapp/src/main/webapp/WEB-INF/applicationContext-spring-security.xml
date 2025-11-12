@@ -45,6 +45,18 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE,ROLE_FILESYSTEM_EDITOR"/>
 
+      <intercept-url pattern="/rest/classifications/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+
+
+      <intercept-url pattern="/rest/cm/provisiond/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+
+
     <!-- Calls to health/overview are always accepted -->
     <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
@@ -107,7 +119,8 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
-    <!-- Allow certain actions for the ROLE_USER role -->
+
+      <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
     <!-- read-only calls should be allowed for any user -->
