@@ -52,7 +52,7 @@ RUN apt-get update && \
             ca-certificates && \
     curl -fsSL ${REPO_KEY_URL} | apt-key add && \
     echo "deb https://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list && \
-    apt-get update && \
+    apt-get update || (sleep 30 && apt-get clean && apt-get update) && \
     apt-get \
         --no-install-recommends \
         -yq \
