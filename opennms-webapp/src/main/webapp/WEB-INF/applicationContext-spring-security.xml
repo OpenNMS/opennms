@@ -45,16 +45,16 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE,ROLE_FILESYSTEM_EDITOR"/>
 
-      <intercept-url pattern="/rest/classifications/**" method="GET" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST"/>
+      <intercept-url pattern="/rest/classifications/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
 
 
-      <intercept-url pattern="/rest/cm/provisiond/**" method="GET" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/cm/provisiond/**" method="DELETE" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="ROLE_REST"/>
-      <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="ROLE_REST"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="GET" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+      <intercept-url pattern="/rest/cm/provisiond/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
 
 
     <!-- Calls to health/overview are always accepted -->
