@@ -186,7 +186,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -296,9 +296,13 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
     if (addAlarmData.value) {
       const alarmDataElement = xmlDoc.getElementsByTagName('alarm-data')[0]
       reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
+      const alarmTypeAttr = alarmDataElement?.getAttribute('alarm-type') as AlarmTypeValue
+      const matchedKey = Object.keys(AlarmTypeValue).find(
+        (key) => AlarmTypeValue[key as keyof typeof AlarmTypeValue] === alarmTypeAttr
+      ) as keyof typeof AlarmTypeValue
       alarmType.value = {
-        _text: alarmDataElement?.getAttribute('alarm-type') || '',
-        _value: alarmDataElement?.getAttribute('alarm-type') || ''
+        _text: AlarmTypeName[matchedKey] || '',
+        _value: alarmTypeAttr || ''
       }
       autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
       clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
