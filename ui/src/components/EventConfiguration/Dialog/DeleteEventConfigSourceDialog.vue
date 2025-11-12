@@ -55,8 +55,8 @@ const deleteEventConfigSource = async () => {
       showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
       return
     }
-    store.hideDeleteEventConfigSourceModal()
     store.refreshSourcesfilters()
+    store.hideDeleteEventConfigSourceModal()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)
     showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
