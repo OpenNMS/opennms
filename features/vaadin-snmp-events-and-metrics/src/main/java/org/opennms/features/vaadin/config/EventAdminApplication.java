@@ -24,6 +24,7 @@ package org.opennms.features.vaadin.config;
 import java.io.File;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.vaadin.utils.FileValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
@@ -128,6 +129,87 @@ public class EventAdminApplication extends UI {
             }
         });
 
+        final Button add = new Button("Add New Events File");
+        toolbar.addComponent(add);
+        add.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                PromptWindow w = new PromptWindow("New Events Configuration", "Events File Name") {
+                    @Override
+                    public void textFieldChanged(String fieldValue) {
+                        if (!FileValidationUtils.isValidFileName(fieldValue)) {
+                            Notification.show("Invalid File name " + fieldValue +", File name must begin with a letter or number and contain only: letters, numbers, ., -, _", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        String normalizedName = normalizeFilename(fieldValue);
+                        final File file = new File(eventsDir, normalizedName);
+                        if (FileValidationUtils.isFileNameTooLong(normalizedName)) {
+                            Notification.show("Filename too long after normalization", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        LOG.info("Adding new events file {}", file);
+                        final Events events = new Events();
+                        addEventPanel(layout, file, events);
+                    }
+                };
+                addWindow(w);
+            }
+        });
+
+        final Button remove = new Button("Remove Selected Events File");
+        toolbar.addComponent(remove);
+        remove.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if (eventSource.getValue() == null) {
+                    Notification.show("Please select an event configuration file.");
+                    return;
+                }
+                final File file = (File) eventSource.getValue();
+                ConfirmDialog.show(getUI(),
+                                   "Are you sure?",
+                                   "Do you really want to remove the file " + file.getName() + "?\nThis cannot be undone and OpenNMS won't be able to handle the events configured on this file.",
+                                   "Yes",
+                                   "No",
+                                   new ConfirmDialog.Listener() {
+                    public void onClose(ConfirmDialog dialog) {
+                        if (dialog.isConfirmed()) {
+                            LOG.info("deleting file {}", file);
+                            if (file.delete()) {
+                                try {
+                                    // Updating eventconf.xml
+                                    boolean modified = false;
+                                    File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+                                    Events config = JaxbUtils.unmarshal(Events.class, configFile);
+                                    for (Iterator<String> it = config.getEventFiles().iterator(); it.hasNext();) {
+                                        String fileName = it.next();
+                                        if (file.getAbsolutePath().contains(fileName)) {
+                                            it.remove();
+                                            modified = true;
+                                        }
+                                    }
+                                    if (modified) {
+                                        JaxbUtils.marshal(config, new FileWriter(configFile));
+                                        EventBuilder eb = new EventBuilder(EventConstants.EVENTSCONFIG_CHANGED_EVENT_UEI, "WebUI");
+                                        eventProxy.send(eb.getEvent());
+                                    }
+                                    // Updating UI Components
+                                    eventSource.select(null);
+                                    if (layout.getComponentCount() > 1)
+                                        layout.removeComponent(layout.getComponent(1));
+                                } catch (Exception e) {
+                                    LOG.error("an error ocurred while saving the event configuration: {}", e.getMessage(), e);
+                                    Notification.show("Can't save event configuration. " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                                }
+                            } else {
+                                Notification.show("Cannot delete file " + file, Notification.Type.WARNING_MESSAGE);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
         layout.addComponent(toolbar);
         layout.addComponent(new Label(""));
         layout.setComponentAlignment(toolbar, Alignment.MIDDLE_RIGHT);
@@ -158,7 +240,6 @@ public class EventAdminApplication extends UI {
         }
         return fileName;
     }
-
     /**
      * Adds a new Events Panel.
      *
