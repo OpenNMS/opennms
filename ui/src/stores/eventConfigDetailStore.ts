@@ -2,13 +2,10 @@ import { Severity } from '@/components/EventConfigEventCreate/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
-  filterEventConfigEvents
+  filterEventConfigEvents,
+  getEventConfSourceById
 } from '@/services/eventConfigService'
-import {
-  EventConfigDetailStoreState,
-  EventConfigEvent,
-  EventConfigSource
-} from '@/types/eventConfig'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -62,6 +59,15 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     }
   }),
   actions: {
+    async fetchSourceById(id: string) {
+      try {
+        const response = await getEventConfSourceById(id)
+        this.selectedSource = response
+        await this.fetchEventsBySourceId()
+      } catch (error) {
+        console.error('Error fetching source by ID:', id, error)
+      }
+    },
     async fetchEventsBySourceId() {
       if (!this.selectedSource) {
         console.error('No source selected')
@@ -195,11 +201,12 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         throw new Error('No source selected')
       }
     },
-    resetFilters() {
+    async resetEventConfigEvents() {
       this.resetEventsPagination()
       this.eventsSearchTerm = ''
       this.eventsSorting.sortKey = 'createdTime'
       this.eventsSorting.sortOrder = 'desc'
+      await this.fetchEventsBySourceId()
     }
   }
 })

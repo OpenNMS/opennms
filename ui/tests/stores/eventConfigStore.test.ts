@@ -367,7 +367,7 @@ describe('useEventConfigStore', () => {
     store.sourcesSearchTerm = 'search term'
     store.sourcesSorting = { sortKey: 'vendor', sortOrder: 'asc' }
 
-    await store.refreshEventsSources()
+    await store.refreshSourcesfilters()
 
     expect(store.sourcesPagination.page).toBe(1)
     expect(store.sourcesPagination.pageSize).toBe(10)

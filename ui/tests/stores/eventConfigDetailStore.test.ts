@@ -536,7 +536,7 @@ describe('useEventConfigDetailStore', () => {
     store.selectedSource = mockSource
     vi.mocked(filterEventConfigEvents).mockResolvedValue(mockFilterResponse)
 
-    store.resetFilters()
+    store.refreshEventConfigEvents()
 
     expect(store.eventsSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
     expect(store.eventsSearchTerm).toBe('')
