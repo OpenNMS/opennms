@@ -175,8 +175,11 @@ find %{buildroot}%{sentinelinstprefix} -type d | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.sentinel
 
+echo "/var/log/sentinel" >> %{_tmppath}/files.sentinel
+
 %clean
 rm -rf %{buildroot}
+rm -rf /var/log/sentinel
 
 %files -f %{_tmppath}/files.sentinel
 %defattr(664 sentinel sentinel 775)
@@ -221,6 +224,7 @@ fi
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
+sed -i -e "s,.{karaf.log},\/var\/log\/minion,g" -e "s,.{karaf.data}/log,\/var\/log\/minion,g" -e 's,/karaf.log,/minion.log,g' ${ROOT_INST}/etc/org.ops4j.pax.logging.cfg
 
 echo ""
 echo " *** Thanks for using OpenNMS!”

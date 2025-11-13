@@ -219,8 +219,11 @@ find %{buildroot}%{minioninstprefix} -type d | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.minion
 
+echo "/var/log/minion" >> %{_tmppath}/files.minion
+
 %clean
 rm -rf %{buildroot}
+rm -rf /var/log/minion
 
 %files -f %{_tmppath}/files.minion
 %defattr(664 minion minion 775)
@@ -285,6 +288,8 @@ sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/
 rm -rf "${ROOT_INST}/repositories/.local"
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
+
+sed -i -e "s,.{karaf.log},\/var\/log\/minion,g" -e "s,.{karaf.data}/log,\/var\/log\/minion,g" -e 's,/karaf.log,/minion.log,g' ${ROOT_INST}/etc/org.ops4j.pax.logging.cfg
 
 echo ""
 echo " *** Thanks for using OpenNMS!”
