@@ -28,7 +28,6 @@ import java.util.Iterator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
-import org.opennms.features.vaadin.utils.FileValidationUtils;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -110,15 +109,6 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 PromptWindow w = new PromptWindow("New Data Collection Group", "Group Name") {
                     @Override
                     public void textFieldChanged(String fieldValue) {
-                        if (!FileValidationUtils.isValidFileName(fieldValue)) {
-                            Notification.show("Invalid File name " + fieldValue +", File name must begin with a letter or number and contain only: letters, numbers, ., -, _", Notification.Type.ERROR_MESSAGE);
-                            return;
-                        }
-                        if (FileValidationUtils.isFileNameTooLong(fieldValue)) {
-                            Notification.show("Filename too long", Notification.Type.ERROR_MESSAGE);
-                            return;
-                        }
-
                         File file = new File(datacollectionDir, fieldValue.replaceAll(" ", "_") + ".xml");
                         LOG.info("Adding new data collection file {}", file);
                         DatacollectionGroup dcGroup = new DatacollectionGroup();
