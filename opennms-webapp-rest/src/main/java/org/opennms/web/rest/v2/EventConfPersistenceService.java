@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -135,6 +136,7 @@ public class EventConfPersistenceService {
             eventConfEvent.setDescription(payload.getEvent().getDescr());
             eventConfEvent.setEnabled(payload.getEnabled());
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
+            eventConfEvent.setJsonContent(JsonUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
@@ -171,6 +173,7 @@ public class EventConfPersistenceService {
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
             event.setXmlContent(JaxbUtils.marshal(parsed));
+            event.setJsonContent(JsonUtils.marshal(parsed));
             event.setCreatedTime(now);
             event.setLastModified(now);
             event.setModifiedBy(username);
@@ -188,6 +191,7 @@ public class EventConfPersistenceService {
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+        eventConfEvent.setJsonContent(JsonUtils.marshal(event));
         eventConfEvent.setCreatedTime(now);
         eventConfEvent.setLastModified(now);
         eventConfEvent.setModifiedBy(username);

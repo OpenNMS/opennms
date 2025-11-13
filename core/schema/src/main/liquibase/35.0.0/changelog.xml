@@ -76,6 +76,9 @@
             <column name="xml_content" type="text">
                 <constraints nullable="false"/>
             </column>
+            <column name="json_content" type="text" defaultValue="{}">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_time" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>

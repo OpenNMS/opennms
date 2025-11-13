@@ -66,6 +66,9 @@ public class EventConfEvent implements Serializable {
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;
 
+    @Column(name = "json_content", columnDefinition = "text", nullable = false)
+    private String jsonContent;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_time")
     private Date createdTime;
@@ -131,6 +134,14 @@ public class EventConfEvent implements Serializable {
 
     public void setXmlContent(String xmlContent) {
         this.xmlContent = xmlContent;
+    }
+
+    public String getJsonContent() {
+        return jsonContent;
+    }
+
+    public void setJsonContent(String jsonContent) {
+        this.jsonContent = jsonContent;
     }
 
     public Date getCreatedTime() {
