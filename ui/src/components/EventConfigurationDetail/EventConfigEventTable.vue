@@ -273,7 +273,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 
     .action-container {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-end;
       gap: 5px;
       width: 30%;
