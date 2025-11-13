@@ -206,7 +206,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("administrationMenu", "Configure Thresholds");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
 
-        clickMenuItem("administrationMenu", "Flows Management");
+        clickMenuItem("administrationMenu", "Flow Classification");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Flow Classification')]")));
 
         clickMenuItem("administrationMenu", "Notifications");
