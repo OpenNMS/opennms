@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
@@ -107,6 +108,8 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
 
     public static final String PARAMETER_SERVER_NAME = "server-name";
 
+    public static final String PARAMETER_RESOLVE_SERVER_NAME = "resolve-server-name";
+
     public static final String PARAMETER_STLS_INIT = "starttls-preamble";
 
     public static final String PARAMETER_STLS_INIT_RESP = "starttls-preamble-response";
@@ -158,6 +161,8 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
         final String tlsStartResp = PropertiesUtils.substitute(resolveKeyedString(parameters, PARAMETER_STLS_START_RESP, ""),
                                                              getServiceProperties(svc));
 
+        final boolean resolveHostName = ParameterMap.getKeyedBoolean(parameters, PARAMETER_RESOLVE_SERVER_NAME, false);
+
         // Calculate validity range
         Calendar calValid = this.getCalendarInstance();
         Calendar calCurrent = this.getCalendarInstance();
@@ -167,14 +172,29 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
         Calendar calBefore = this.getCalendarInstance();
         Calendar calAfter = this.getCalendarInstance();
 
+        PollStatus serviceStatus = PollStatus.unavailable();
+
         // Get the address instance
-        InetAddress ipAddr = svc.getAddress();
+        InetAddress ipAddr;
+        if (resolveHostName && !Strings.isNullOrEmpty(serverName)) {
+            // Look up the hostname provided in server-name parameter
+            try {
+                ipAddr = InetAddress.getByName(serverName);
+            }
+            catch (UnknownHostException e) {
+                LOG.error("Failed to resolve hostname in server-name: {}", serverName);
+                serviceStatus = PollStatus.unavailable("Failed to resolve server-name '" + serverName + "' to an addresss and resolve-server-name is true");
+                return serviceStatus;
+            }
+        }
+        else {
+            ipAddr = svc.getAddress();
+        }
 
         final String hostAddress = InetAddressUtils.str(ipAddr);
-        LOG.debug("poll: address={}, port={}, serverName={}, {}", hostAddress, port, serverName, tracker);
+        LOG.debug("poll: address={}, port={}, serverName={}, resolve={} {}", hostAddress, port, serverName, resolveHostName, tracker);
 
         // Give it a whirl
-        PollStatus serviceStatus = PollStatus.unavailable();
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
             Socket socket = null;
             BufferedReader r = null;

@@ -75,9 +75,8 @@
             </configuration>
           </execution>
           <!--
-            yarn occasionally fails due to node-gyp not having been installed.
-            Installing it here so it's done before 'yarn install'.
-            Ideally should be able to remove this.
+            Pin node-gyp to v9.4.1 which is compatible with Node 18.
+            v10+ requires Node 20.17+
           -->
           <execution>
             <id>yarn add node-gyp</id>
