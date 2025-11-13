@@ -1,4 +1,5 @@
 @use "@featherds/styles/mixins/_typography.scss" as typo;
+@use "@featherds/styles/themes/variables";
 
 /**
 * Add some additional base styles that weren't included in the base Feather typography.
@@ -23,4 +24,9 @@ th {
   // For p, we leave it alone as the slightly larger spacing is more readable for paragraphs of text.
   letter-spacing: normal;
   line-height: 1.3rem;
+}
+
+// Do not want the Feather behavior of changing the color of links when visited.
+a:visited {
+  color: var(--feather-clickable-normal);
 }
