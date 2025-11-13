@@ -22,17 +22,12 @@
 package org.opennms.web.services;
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
-import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
@@ -55,11 +50,8 @@ public class EventConfProgrammaticService {
     private EventConfEventDao eventConfEventDao;
     private EventConfDao eventConfDao;
 
-    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("load-eventConf-programmatic-%d")
-            .build();
-
-    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+    private final ExecutorService eventConfExecutor =
+            EventConfServiceHelper.createEventConfExecutor("load-eventConf-programmatic-%d");
 
     /**
      * Saves an event to the programmatic events source in the database.
@@ -71,11 +63,15 @@ public class EventConfProgrammaticService {
     @Transactional
     public void saveEventToDB(Event event, String username) {
         EventConfSource source = getOrCreateProgrammaticSource();
-        saveEvent(source, event, username, new Date());
+        EventConfServiceHelper.saveEvent(eventConfEventDao, source, event, username, new Date());
 
         // Update event count
         source.setEventCount(source.getEventCount() + 1);
         eventConfSourceDao.save(source);
+    }
+
+    public void reloadEventsFromDB() {
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
     }
 
     /**
@@ -105,39 +101,6 @@ public class EventConfProgrammaticService {
             eventConfSourceDao.saveOrUpdate(source);
         }
         return source;
-    }
-
-    /**
-     * Saves a single event to the database.
-     *
-     * @param source The EventConfSource to associate with this event
-     * @param event The event to save
-     * @param username The username of the user creating the event
-     * @param now The current timestamp
-     */
-    private void saveEvent(EventConfSource source, Event event, String username, Date now) {
-        EventConfEvent eventConfEvent = new EventConfEvent();
-        eventConfEvent.setSource(source);
-        eventConfEvent.setUei(event.getUei());
-        eventConfEvent.setEventLabel(event.getEventLabel());
-        eventConfEvent.setDescription(event.getDescr());
-        eventConfEvent.setEnabled(true);
-        eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
-        eventConfEvent.setCreatedTime(now);
-        eventConfEvent.setLastModified(now);
-        eventConfEvent.setModifiedBy(username);
-        eventConfEventDao.save(eventConfEvent);
-    }
-
-    /**
-     * Reloads all enabled events from the database into memory.
-     */
-    public void reloadEventsFromDB() {
-        eventConfExecutor.execute(() -> {
-            List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-            LOG.info("Reloading {} events from database into memory", dbEvents.size());
-            eventConfDao.loadEventsFromDB(dbEvents);
-        });
     }
 
     /**

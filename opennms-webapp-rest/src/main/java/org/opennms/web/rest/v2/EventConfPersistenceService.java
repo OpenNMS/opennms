@@ -22,10 +22,10 @@
 package org.opennms.web.rest.v2;
 
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -53,8 +53,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -72,16 +70,13 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfDao eventConfDao;
 
-    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("load-eventConf-%d")
-            .build();
-
-    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+    private final ExecutorService eventConfExecutor =
+            EventConfServiceHelper.createEventConfExecutor("load-eventConf-%d");
 
     @PostConstruct
     public void init() {
         // Asynchronously load events from DB in order to not to block startup
-        eventConfExecutor.execute(this::reloadEventsFromDB);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -95,7 +90,7 @@ public class EventConfPersistenceService {
     public Long addEventConfSourceEvent(final Long sourceId, final String userName, Event event) {
         final Date now = new Date();
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
-        Long eventConfId = saveEvent(eventConfSource, event, userName, now);
+        Long eventConfId = EventConfServiceHelper.saveEvent(eventConfEventDao, eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
         eventConfSourceDao.saveOrUpdate(eventConfSource);
         return eventConfId;
@@ -163,43 +158,9 @@ public class EventConfPersistenceService {
     }
 
     private void saveEvents(EventConfSource source, Events events, String username, Date now) {
-        List<EventConfEvent> eventEntities = events.getEvents().stream().map(parsed -> {
-            EventConfEvent event = new EventConfEvent();
-            event.setSource(source);
-            event.setUei(parsed.getUei());
-            event.setEventLabel(parsed.getEventLabel());
-            event.setDescription(parsed.getDescr());
-            event.setEnabled(true);
-            event.setXmlContent(JaxbUtils.marshal(parsed));
-            event.setCreatedTime(now);
-            event.setLastModified(now);
-            event.setModifiedBy(username);
-            return event;
-        }).toList();
-
+        List<EventConfEvent> eventEntities = EventConfServiceHelper.createEventConfEventEntities(
+                source, events.getEvents(), username, now);
         eventConfEventDao.saveAll(eventEntities);
-    }
-
-    private Long saveEvent(EventConfSource source, Event event, String username, Date now) {
-        EventConfEvent eventConfEvent = new EventConfEvent();
-        eventConfEvent.setSource(source);
-        eventConfEvent.setUei(event.getUei());
-        eventConfEvent.setEventLabel(event.getEventLabel());
-        eventConfEvent.setDescription(event.getDescr());
-        eventConfEvent.setEnabled(true);
-        eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
-        eventConfEvent.setCreatedTime(now);
-        eventConfEvent.setLastModified(now);
-        eventConfEvent.setModifiedBy(username);
-        return eventConfEventDao.save(eventConfEvent);
-    }
-
-    protected void reloadEventsFromDB() {
-        final long startTime = System.currentTimeMillis();
-        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        eventConfDao.loadEventsFromDB(dbEvents);
-        final long endTime = System.currentTimeMillis();
-        LOG.info("Time to reload events from DB: {} ms", (endTime - startTime));
     }
 
     @PreDestroy
@@ -231,7 +192,7 @@ public class EventConfPersistenceService {
 
     public  void reloadEventsIntoMemory() {
         // Schedule reload only AFTER transaction commits
-        eventConfExecutor.execute(EventConfPersistenceService.this::reloadEventsFromDB);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
     }
 
     public Map<String, Object> filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,
