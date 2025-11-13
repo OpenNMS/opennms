@@ -44,17 +44,20 @@ const { startSpinner, stopSpinner } = useSpinner()
 // for backward compatibility with legacy OpenNMS plugins
 // should eventually be removed when plugins are compliant with new schema
 const isLegacyPlugin = (plugin: Plugin) => {
-  if (plugin.extensionClass &&
-      (plugin.extensionClass === 'org.opennms.plugins.cloud.ui.CloudUiExtension' ||
-       plugin.menuEntry === 'Cloud Services') &&
-       plugin.moduleFileName === 'uiextension.es.js') {
+  if (
+    plugin.extensionClass &&
+    (plugin.extensionClass === 'org.opennms.plugins.cloud.ui.CloudUiExtension' ||
+      plugin.menuEntry === 'Cloud Services') &&
+    plugin.moduleFileName === 'uiextension.es.js'
+  ) {
     return true
   }
 
-  if (plugin.extensionClass &&
-      (plugin.extensionClass === 'org.opennms.alec.ui.UIExtension' ||
-       plugin.menuEntry === 'ALEC') &&
-       plugin.moduleFileName === 'uiextension.es.js') {
+  if (
+    plugin.extensionClass &&
+    (plugin.extensionClass === 'org.opennms.alec.ui.UIExtension' || plugin.menuEntry === 'ALEC') &&
+    plugin.moduleFileName === 'uiextension.es.js'
+  ) {
     return true
   }
 
@@ -244,7 +247,10 @@ const router = createRouter({
         if (rolesAreLoaded.value && !!menuStore.value?.mainMenu?.baseHref) {
           checkZenith()
         } else {
-          whenever(() => rolesAreLoaded && !!menuStore.value?.mainMenu?.baseHref, () => checkZenith())
+          whenever(
+            () => rolesAreLoaded && !!menuStore.value?.mainMenu?.baseHref,
+            () => checkZenith()
+          )
         }
       },
       children: [
@@ -266,6 +272,21 @@ const router = createRouter({
       ]
     },
     {
+      path: '/event-config',
+      name: 'Event Configuration',
+      component: () => import('@/containers/EventConfiguration.vue')
+    },
+    {
+      path: '/event-config/:id',
+      name: 'Event Configuration Detail',
+      component: () => import('@/containers/EventConfigurationDetail.vue')
+    },
+    {
+      path: '/event-config/create',
+      name: 'Event Configuration Create',
+      component: () => import('@/containers/EventConfigEventCreate.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
@@ -276,3 +297,4 @@ router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
 export { isLegacyPlugin }
+

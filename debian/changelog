@@ -1,3 +1,14 @@
+opennms (34.1.0-1) stable; urgency=low
+
+  * Release 34.1.0 contains a couple of bug fixes, enhancements and documentation updates.
+    Starting with this release when upgrading OpenNMS, `custom.properties`, 
+    `config.properties` and `opennms.properties` files will be overridden.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.1.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Nov 2025 10:20:09 -0500
+
 opennms (34.0.2-1) stable; urgency=low
 
   * Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
@@ -7,12 +18,12 @@ opennms (34.0.2-1) stable; urgency=low
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Oct 2025 13:49:36 -0400
 
-opennms (34.0.3-SNAPSHOT-1) stable; urgency=low
+opennms (34.0.1-1) stable; urgency=low
 
-  * Release 34.0.3-SNAPSHOT contains bug fixes, enhancements and a new feature.
+  * Release 34.0.1 contains bug fixes, enhancements and a new feature.
 
     For details on what has changed, see:
-    https://docs.opennms.com/horizon/34.0.3-SNAPSHOT/index.html
+    https://docs.opennms.com/horizon/34.0.1/index.html
 
  -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Sep 2025 13:20:00 -0500
 

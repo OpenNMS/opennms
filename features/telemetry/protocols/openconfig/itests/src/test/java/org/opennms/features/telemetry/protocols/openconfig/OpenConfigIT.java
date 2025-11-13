@@ -130,6 +130,10 @@ public class OpenConfigIT {
                 .setForeignId("1")
                 .setType(OnmsNode.NodeType.ACTIVE);
         nb.addInterface("127.0.0.1");
+        nb.setNodeMetaDataEntry("device","oc.port","50054");
+        nb.setNodeMetaDataEntry("device","oc.mode","jti");
+        nb.setNodeMetaDataEntry("device","oc.mode","/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp");
+
         OnmsServiceType onmsServiceType = new OnmsServiceType("OpenConfig");
         serviceTypeDao.save(onmsServiceType);
         nb.addService(onmsServiceType);

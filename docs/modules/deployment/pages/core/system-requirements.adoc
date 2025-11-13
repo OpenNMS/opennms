@@ -1,4 +1,5 @@
 
+[[system-requirements]]
 = Minimum System Requirements
 :description: OpenNMS system requirements, supported operating systems, version compatibility with Grafana, Cassandra, Elasticsearch, JDK, Kafka, PostgreSQL.
 

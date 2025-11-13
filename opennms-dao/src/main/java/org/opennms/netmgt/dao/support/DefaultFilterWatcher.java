@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.dao.api.FilterWatcher;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -65,6 +66,8 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
     @Autowired
     private FilterDao filterDao;
+    @Autowired
+    private NodeDao nodeDao;
 
     @Autowired
     private SessionUtils sessionUtils;
@@ -157,9 +160,10 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     
     private static class FilterResultsImpl implements FilterResults {
         private final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap;
-
-        public FilterResultsImpl(Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap) {
+        private final NodeDao nodeDao;
+        public FilterResultsImpl(Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap, NodeDao nodeDao) {
             this.nodeIpServiceMap = Objects.requireNonNull(nodeIpServiceMap);
+            this.nodeDao = Objects.requireNonNull(nodeDao);
         }
 
         @Override
@@ -175,7 +179,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
                 for (Map.Entry<InetAddress, Set<String>> interfaceEntry : nodeEntry.getValue().entrySet()) {
                     InetAddress interfaceAddress = interfaceEntry.getKey();
                     if (interfaceEntry.getValue().contains(serviceName)) {
-                        serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+                        serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName,nodeDao.getLocationForId(nodeId)));
                     }
                 }
             }
@@ -218,7 +222,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             lastRefreshedMs = System.currentTimeMillis();
             LOG.debug("Refreshing results for filter rule: {}", rule);
             FilterResults newFilterResults = sessionUtils.withReadOnlyTransaction(() ->
-                    new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule)));
+                    new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule), nodeDao));
             LOG.debug("Done refreshing results for rule.");
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
@@ -268,6 +272,10 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
     public void setFilterDao(FilterDao filterDao) {
         this.filterDao = filterDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
     }
 
     public void setSessionUtils(SessionUtils sessionUtils) {

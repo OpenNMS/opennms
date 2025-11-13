@@ -96,7 +96,7 @@ This snippet provides a sample collection definition named `opennms-stats`:
 </jdbc-collection>
 ----
 
-Once the definition is added to `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command in the Karaf Shell:
+Once the definition is added to `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`, you can test it using the `collect` command in the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell]:
 
 [source, console]
 ----
