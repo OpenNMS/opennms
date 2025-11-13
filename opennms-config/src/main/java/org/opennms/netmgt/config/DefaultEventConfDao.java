@@ -225,7 +225,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	private void parseAndAddEvent(Events eventsForSource, EventConfEvent dbEvent) {
-		String jsonContent = dbEvent.getXmlContent();
+		String jsonContent = dbEvent.getJsonContent();
 		if (jsonContent != null && !jsonContent.trim().isEmpty()) {
 			try {
 				Event event = JsonUtils.unmarshal(Event.class, jsonContent);
