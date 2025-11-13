@@ -197,6 +197,8 @@
 *** xref:deep-dive/kafka-producer/configure-kafka.adoc[]
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
+** xref:reference:karaf-shell/karaf-shell.adoc[]
+
 ** xref:deep-dive/grpc-exporter/grpc-exporter.adoc[]
 
 ** xref:deep-dive/meta-data.adoc[]

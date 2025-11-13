@@ -42,6 +42,7 @@ Use this quick starting point to evaluate and explore how to configure Horizon b
 endif::[]
 
 
+[[requirements]]
 == Requirements
 
 The following components and settings are required to set up a new {page-component-title} instance:
@@ -49,8 +50,8 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
-* Internet access to download the installation packages.
+* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
+* Internet access to download the installation packages. xref:system-requirements.adoc
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service, if necessary.
