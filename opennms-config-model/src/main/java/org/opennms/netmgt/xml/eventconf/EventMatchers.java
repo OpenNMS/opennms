@@ -165,7 +165,28 @@ public abstract class EventMatchers  {
 		};
 	}
 
-	private static abstract class EventField implements Field {
+    public static Field varbind(final String vboid) {
+        if (vboid == null || vboid.isEmpty()) {
+            throw new IllegalArgumentException("Invalid varbind vboid index");
+        }
+        return new Field() {
+            public String get(Event event) {
+                final List<Parm> parms = event.getParmCollection();
+                for(final Parm parm : parms) {
+                    if (vboid.equals(parm.getParmName())) {
+                        return EventConstants.getValueAsString(parm.getValue());
+                    }
+                }
+                return null;
+            }
+            @Override
+            public String toString() {
+                return "event.varbind#"+vboid;
+            }
+        };
+    }
+
+    private static abstract class EventField implements Field {
 		private String m_name;
 
 		public EventField(String name) {

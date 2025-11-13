@@ -46,7 +46,24 @@ import org.opennms.netmgt.events.api.EventConstants;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventKey extends LinkedHashMap<String, Object> implements Serializable, Comparable<EventKey> {
+public class EventKey extends LinkedHashMap<EventKey.Entity, Object> implements Serializable, Comparable<EventKey> {
+
+    enum Type {
+        TAG,
+        VBNUMBER,
+        VBOID;
+    }
+
+    public static class Entity {
+        private final Type type;
+        private final String key;
+
+        public Entity(final Type type, final String key) {
+            this.type = type;
+            this.key = key;
+        }
+    }
+
     /**
      * 
      */
@@ -152,7 +169,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * @param maskelements
      *            the maskelements that should form this key
      */
-    public EventKey(Map<String, Object> maskelements) {
+    public EventKey(Map<Entity, Object> maskelements) {
         super(maskelements);
 
         m_hashCode = 1;
@@ -176,7 +193,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         if ((mask == null) || mask.getMaskelements().size() == 0) {
             String uei = event.getUei();
             if (uei != null) {
-                put(TAG_UEI, new EventMaskValueList(uei));
+                put(new Entity(Type.TAG, TAG_UEI), new EventMaskValueList(uei));
             }
         } else {
             for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelements()) {
@@ -187,14 +204,18 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
                     value.add(mevalue);
                 }
 
-                put(name, value);
+                put(new Entity(Type.TAG, name), value);
             }
             if (mask != null && mask.getVarbinds().size() != 0) {
                 for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbinds()) {
                     final EventMaskValueList vbvalues = new EventMaskValueList();
                     vbvalues.addAll(varbind.getVbvalues());
 
-                    put(varbind.getVbnumber().toString(), vbvalues);
+                    if (varbind.getVbnumber() != null) {
+                        put(new Entity(Type.VBNUMBER, varbind.getVbnumber().toString()), vbvalues);
+                    } else {
+                        put(new Entity(Type.VBOID, varbind.getVboid()), vbvalues);
+                    }
                 }
             }
         }
@@ -216,14 +237,14 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
         if ((mask == null) || mask.getMaskelementCount() == 0) {
             String uei = event.getUei();
             if (uei != null) {
-                put(TAG_UEI, uei);
+                put(new Entity(Type.TAG, TAG_UEI), uei);
             }
         } else {
             for (org.opennms.netmgt.xml.event.Maskelement maskelement : mask.getMaskelementCollection()) {
                 String name = maskelement.getMename();
-                String value = getMaskElementValue(event, name);
+                String value = getMaskElementValue(event, new Entity(Type.TAG, name));
 
-                put(name, value);
+                put(new Entity(Type.TAG, name), value);
             }
         }
     }
@@ -250,7 +271,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * @see java.util.HashMap#put(Object, Object)
      */
     @Override
-    public Object put(String key, Object value) {
+    public Object put(Entity key, Object value) {
         Object ret = super.put(key, value);
         evaluateHashCode();
         return ret;
@@ -263,7 +284,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * @see java.util.HashMap#putAll(Map)
      */
     @Override
-    public void putAll(Map<? extends String, ? extends Object> m) {
+    public void putAll(Map<? extends Entity, ? extends Object> m) {
         super.putAll(m);
         evaluateHashCode();
     }
@@ -302,8 +323,8 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
             return;
         }
 
-        for (final Map.Entry<String,Object> entry : entrySet()) {
-            final String key = entry.getKey();
+        for (final Map.Entry<Entity, Object> entry : entrySet()) {
+            final Entity key = entry.getKey();
             // m_hashCode = 31 * m_hashCode;
 
             // value
@@ -352,7 +373,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
     public String toString() {
         final StringBuilder s = new StringBuilder("EventKey\n[\n\t");
 
-        for (Map.Entry<String, Object> e : entrySet()) {
+        for (Map.Entry<Entity, Object> e : entrySet()) {
             s.append(e.getKey() + "    = " + e.getValue().toString() + "\n\t");
         }
 
@@ -376,58 +397,91 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      * @param mename a {@link java.lang.String} object.
      */
-    public static String getMaskElementValue(org.opennms.netmgt.xml.event.Event event, String mename) {
+    public static String getMaskElementValue(org.opennms.netmgt.xml.event.Event event, Entity mename) {
         String retParmVal = null;
 
-        if (mename.equals(TAG_UEI)) {
-            retParmVal = event.getUei();
-        } else if (mename.equals(TAG_SOURCE)) {
-            retParmVal = event.getSource();
-        } else if (mename.equals(TAG_NODEID)) {
-            retParmVal = Long.toString(event.getNodeid());
-        } else if (mename.equals(TAG_HOST)) {
-            retParmVal = event.getHost();
-        } else if (mename.equals(TAG_INTERFACE)) {
-            retParmVal = event.getInterface();
-        } else if (mename.equals(TAG_SNMPHOST)) {
-            retParmVal = event.getSnmphost();
-        } else if (mename.equals(TAG_SERVICE)) {
-            retParmVal = event.getService();
-        } else if (mename.equals(TAG_SNMP_EID)) {
-            if (event.getSnmp() != null) {
-                retParmVal = event.getSnmp().getId();
+        if (mename.type == Type.TAG) {
+            switch (mename.key) {
+                case TAG_UEI:
+                    retParmVal = event.getUei();
+                    break;
+                case TAG_SOURCE:
+                    retParmVal = event.getSource();
+                    break;
+                case TAG_NODEID:
+                    retParmVal = Long.toString(event.getNodeid());
+                    break;
+                case TAG_HOST:
+                    retParmVal = event.getHost();
+                    break;
+                case TAG_INTERFACE:
+                    retParmVal = event.getInterface();
+                    break;
+                case TAG_SNMPHOST:
+                    retParmVal = event.getSnmphost();
+                    break;
+                case TAG_SERVICE:
+                    retParmVal = event.getService();
+                    break;
+                case TAG_SNMP_EID:
+                    if (event.getSnmp() != null) {
+                        retParmVal = event.getSnmp().getId();
+                    }
+                    break;
+                case TAG_SNMP_TRAPOID:
+                    if (event.getSnmp() != null && event.getSnmp().hasTrapOID()) {
+                        retParmVal = event.getSnmp().getTrapOID();
+                    }
+
+                    break;
+                case TAG_SNMP_SPECIFIC: {
+                        org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
+                        if (eventSnmpInfo != null) {
+                            if (eventSnmpInfo.hasSpecific()) {
+                                retParmVal = Integer.toString(eventSnmpInfo.getSpecific());
+                            }
+                        }
+                    }
+                    break;
+                case TAG_SNMP_GENERIC: {
+                        org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
+                        if (eventSnmpInfo != null) {
+                            if (eventSnmpInfo.hasGeneric()) {
+                                retParmVal = Integer.toString(eventSnmpInfo.getGeneric());
+                            }
+                        }
+                    }
+                    break;
+                case TAG_SNMP_COMMUNITY: {
+                        org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
+                        if (eventSnmpInfo != null) {
+                            retParmVal = eventSnmpInfo.getCommunity();
+                        }
+                    }
+                default:
+                    break;
             }
-        } else if (mename.equals(TAG_SNMP_TRAPOID)) {
-            if (event.getSnmp() != null && event.getSnmp().hasTrapOID()) {
-                retParmVal = event.getSnmp().getTrapOID();
-            }
-        } else if (mename.equals(TAG_SNMP_SPECIFIC)) {
-            org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
-            if (eventSnmpInfo != null) {
-                if (eventSnmpInfo.hasSpecific()) {
-                    retParmVal = Integer.toString(eventSnmpInfo.getSpecific());
+        } else {
+            if (!event.getParmCollection().isEmpty()) {
+                if (mename.type == Type.VBNUMBER) {
+                    ArrayList<String> eventparms = new ArrayList<>();
+                    for (org.opennms.netmgt.xml.event.Parm evParm : event.getParmCollection()) {
+                        eventparms.add(EventConstants.getValueAsString(evParm.getValue()));
+                    }
+                    int vbnumber = Integer.parseInt(mename.key);
+                    if (vbnumber > 0 && vbnumber <= eventparms.size()) {
+                        retParmVal = (String) eventparms.get(vbnumber - 1);
+                    }
+                } else {
+                    final ArrayList<String> eventParms = new ArrayList<>();
+                    for (org.opennms.netmgt.xml.event.Parm eventParameter : event.getParmCollection()) {
+                        final String oid = eventParameter.getParmName();
+                        if (oid != null && oid.equals(mename.key)) {
+                            retParmVal = EventConstants.getValueAsString(eventParameter.getValue());
+                            break;
+                        }
+                    }
                 }
-            }
-        } else if (mename.equals(TAG_SNMP_GENERIC)) {
-            org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
-            if (eventSnmpInfo != null) {
-                if (eventSnmpInfo.hasGeneric()) {
-                    retParmVal = Integer.toString(eventSnmpInfo.getGeneric());
-                }
-            }
-        } else if (mename.equals(TAG_SNMP_COMMUNITY)) {
-            org.opennms.netmgt.xml.event.Snmp eventSnmpInfo = event.getSnmp();
-            if (eventSnmpInfo != null) {
-                retParmVal = eventSnmpInfo.getCommunity();
-            }
-        } else if (event.getParmCollection().size() > 0) {
-            ArrayList<String> eventparms = new ArrayList<>();
-            for (org.opennms.netmgt.xml.event.Parm evParm : event.getParmCollection()) {
-                eventparms.add(EventConstants.getValueAsString(evParm.getValue()));
-            }
-            int vbnumber = Integer.parseInt(mename);
-            if (vbnumber > 0 && vbnumber <= eventparms.size()) {
-                retParmVal = (String) eventparms.get(vbnumber - 1);
             }
         }
 
