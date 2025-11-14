@@ -34,6 +34,7 @@
 %define _binary_filedigest_algorithm 0
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
+%define _log_dir /var/log/minion
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -219,13 +220,13 @@ find %{buildroot}%{minioninstprefix} -type d | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.minion
 
-echo "/var/log/minion" >> %{_tmppath}/files.minion
+mkdir -p %{buildroot}/%{_log_dir}
 
 %clean
 rm -rf %{buildroot}
-rm -rf /var/log/minion
 
 %files -f %{_tmppath}/files.minion
+%dir %attr(755,minion,minion) %{_log_dir}
 %defattr(664 minion minion 775)
 %attr(644,minion,minion) %{_unitdir}/minion.service
 %attr(644,minion,minion) %config(noreplace) %{_sysconfdir}/sysconfig/minion
@@ -287,9 +288,9 @@ sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/
 # Remove the directory used as the local Maven repo cache
 rm -rf "${ROOT_INST}/repositories/.local"
 
-"${ROOT_INST}/bin/update-package-permissions" "%{name}"
-
 sed -i -e "s,.{karaf.log},\/var\/log\/minion,g" -e "s,.{karaf.data}/log,\/var\/log\/minion,g" -e 's,/karaf.log,/minion.log,g' ${ROOT_INST}/etc/org.ops4j.pax.logging.cfg
+
+"${ROOT_INST}/bin/update-package-permissions" "%{name}"
 
 echo ""
 echo " *** Thanks for using OpenNMS!”
