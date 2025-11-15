@@ -49,7 +49,8 @@ public class EventConfRestIT {
             throw new IllegalStateException("No XML event files found in: " + eventsDir.getAbsolutePath());
         }
 
-        Response response = restClient.uploadEventConfFiles(eventFiles);
+        // "eventconf/upload" is API path
+        Response response = restClient.uploadFiles("upload",new String[]{"eventconf", "upload"},eventFiles);
 
         assertEquals(200, response.getStatus());
         String jsonResponse = response.readEntity(String.class);

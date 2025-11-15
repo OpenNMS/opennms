@@ -435,19 +435,29 @@ public class RestClient {
         return new ObjectMapper().readTree(result);
     }
 
-    public Response uploadEventConfFiles(File[] files) {
-        final WebTarget target = getMultipartTarget().path("upload");
+    public Response uploadFiles(final String fieldName, final  String[] pathSegments, final File[] files) {
+        WebTarget target = getMultipartTarget();
+        for (final var segment : pathSegments) {
+            target = target.path(segment);
+        }
+
         try (FormDataMultiPart multipart = new FormDataMultiPart()) {
-            for (File file : files) {
-                FileDataBodyPart filePart = new FileDataBodyPart("upload", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+
+            for (final var file : files) {
+                FileDataBodyPart filePart = new FileDataBodyPart(
+                        fieldName,
+                        file,
+                        MediaType.APPLICATION_OCTET_STREAM_TYPE
+                );
                 multipart.bodyPart(filePart);
             }
 
-            Invocation.Builder builder = getBuilder(target).header("Accept", MediaType.APPLICATION_JSON);
+            Invocation.Builder builder = getBuilder(target)
+                    .header("Accept", MediaType.APPLICATION_JSON);
 
             return builder.post(Entity.entity(multipart, multipart.getMediaType()));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload event configuration files", e);
+            throw new RuntimeException("Failed to upload  files", e);
         }
     }
 
@@ -459,7 +469,6 @@ public class RestClient {
 
         return client.target(url.toString())
                 .path("api")
-                .path("v2")
-                .path("eventconf");
+                .path("v2");
     }
 }
