@@ -501,7 +501,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_dao.saveOrUpdate(source2);
         m_dao.flush();
         // Insert event in the source2
-        insertEvent(source2,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+        insertEvent(source2,"uei.opennms.org/internal/trigger", "Trigger-label", "The Trigger configuration has been changed and should be reloaded", "Normal");
 
         // Inline helper for reusing assertions
         BiConsumer<Map<String, Object>, String> assertSourceName =
@@ -549,8 +549,13 @@ public class EventConfSourceDaoIT implements InitializingBean {
         assertEquals(1, list.size());
         assertEquals("opennms.test.events", ((EventConfSource) list.get(0)).getName());
 
-        // 8. Filter by uei "uei.opennms.org/internal/trigger"
+        // 8. Filter by event uei "uei.opennms.org/internal/trigger"
         result = m_dao.filterEventConfSource("uei.opennms.org/internal/trigger", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.events");
+
+        // 8. Filter by event label "trigger-label"
+        result = m_dao.filterEventConfSource("trigger-label", "fileOrder", "asc", 0, 0, 10);
         assertEquals(1, result.get("totalRecords"));
         assertSourceName.accept(result, "cisco.test.events");
     }

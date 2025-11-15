@@ -134,6 +134,9 @@ public class EventConfSourceDaoHibernate
                 conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.uei) like ? escape '\\')");
                 queryParams.add(escapedFilter);
 
+                conditions.add("exists (select 1 from EventConfEvent e where e.source = s and lower(e.eventLabel) like ? escape '\\')");
+                queryParams.add(escapedFilter);
+
             }
 
             String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
