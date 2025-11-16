@@ -128,12 +128,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.scv</groupId>
-      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.concurrent-locks</groupId>
       <artifactId>concurrent-locks</artifactId>
     </dependency>
@@ -151,6 +145,20 @@
           <artifactId>swagger-parser</artifactId>
         </exclusion>
     </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

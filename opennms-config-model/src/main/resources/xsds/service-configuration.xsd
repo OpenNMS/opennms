@@ -41,7 +41,7 @@
         <element maxOccurs="unbounded" minOccurs="0" ref="this:invoke"/>
       </sequence>
 
-      <attribute name="enabled" type="boolean" use="optional" default="true" />
+      <attribute name="enabled" type="string" use="optional" default="true" />
 
     </complexType>
   </element>

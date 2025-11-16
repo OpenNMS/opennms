@@ -29,12 +29,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.core.mate.api.EnvironmentScope;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -81,11 +87,49 @@ public final class ServiceConfigFactory implements org.opennms.netmgt.config.api
             LOG.debug("ServiceConfigFactory.init: config file path {}", cfgFile.getPath());
             ServiceConfiguration userConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
             m_config = ServiceConfiguration.mergeWithDefaults(userConfig);
+
+            // Interpolate environment variables in service enabled attributes
+            interpolateServiceAttributes();
+
             LOG.info("Merged user service configuration with defaults");
         } catch (IOException e) {
             // Should never happen
             LOG.error("Could not open configuration file: " + ConfigFileConstants.SERVICE_CONF_FILE_NAME, e);
     }
+    }
+
+    /**
+     * Interpolates environment variables in service attributes using the MATE interpolation system.
+     * This allows service enabled attributes to use ${env:VAR_NAME|default} syntax.
+     */
+    private void interpolateServiceAttributes() {
+        for (Service service : m_config.getServices()) {
+            String rawEnabled = service.getRawEnabled();
+            if (rawEnabled != null) {
+                String interpolated = interpolateAttribute(rawEnabled);
+                service.setEnabled(interpolated);
+            }
+        }
+    }
+
+    /**
+     * Interpolates a string value using environment variables and secure credentials vault.
+     * Follows the same pattern as DataSourceConfiguration.
+     */
+    private String interpolateAttribute(final String value) {
+        return interpolateAttribute(value, JCEKSSecureCredentialsVault.defaultScv());
+    }
+
+    private String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
+        if (value == null) {
+            return null;
+        }
+        final Interpolator.Result result = Interpolator.interpolate(value,
+            new FallbackScope(
+                new SecureCredentialsVaultScope(secureCredentialsVault),
+                new EnvironmentScope()
+            ));
+        return result.output;
     }
 
     /**
