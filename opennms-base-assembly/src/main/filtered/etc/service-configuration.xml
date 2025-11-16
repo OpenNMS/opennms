@@ -3,32 +3,33 @@
   <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
   Note that omitting the enabled attribute will default to enabled = true -->
   <!-- WARNING: The first 2 services (Manager and Eventd) must never be disabled. -->
+  <!-- Environment variables can be used to enable/disable services using the pattern: CORE_SERVICE_<NAME>_ENABLED -->
   <service enabled="true"><name>OpenNMS:Name=Manager</name></service>
   <service enabled="true"><name>OpenNMS:Name=Eventd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Alarmd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Bsmd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Ticketer</name></service>
-  <service enabled="false"><name>OpenNMS:Name=Correlator</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Queued</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Actiond</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Notifd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Scriptd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Rtcd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Pollerd</name></service>
-  <service enabled="false"><name>OpenNMS:Name=SnmpPoller</name></service>
-  <service enabled="true"><name>OpenNMS:Name=EnhancedLinkd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Collectd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Discovery</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Vacuumd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=EventTranslator</name></service>
-  <service enabled="true"><name>OpenNMS:Name=PassiveStatusd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Statsd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Provisiond</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Ackd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=JettyServer</name></service>
-  <service enabled="true"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
-  <service enabled="false"><name>OpenNMS:Name=Syslogd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Telemetryd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Trapd</name></service>
-  <service enabled="true"><name>OpenNMS:Name=PerspectivePoller</name></service>
+  <service enabled="${env:CORE_SERVICE_ALARMD_ENABLED|true}"><name>OpenNMS:Name=Alarmd</name></service>
+  <service enabled="${env:CORE_SERVICE_BSMD_ENABLED|true}"><name>OpenNMS:Name=Bsmd</name></service>
+  <service enabled="${env:CORE_SERVICE_TICKETER_ENABLED|true}"><name>OpenNMS:Name=Ticketer</name></service>
+  <service enabled="${env:CORE_SERVICE_CORRELATOR_ENABLED|false}"><name>OpenNMS:Name=Correlator</name></service>
+  <service enabled="${env:CORE_SERVICE_QUEUED_ENABLED|true}"><name>OpenNMS:Name=Queued</name></service>
+  <service enabled="${env:CORE_SERVICE_ACTIOND_ENABLED|true}"><name>OpenNMS:Name=Actiond</name></service>
+  <service enabled="${env:CORE_SERVICE_NOTIFD_ENABLED|true}"><name>OpenNMS:Name=Notifd</name></service>
+  <service enabled="${env:CORE_SERVICE_SCRIPTD_ENABLED|true}"><name>OpenNMS:Name=Scriptd</name></service>
+  <service enabled="${env:CORE_SERVICE_RTCD_ENABLED|true}"><name>OpenNMS:Name=Rtcd</name></service>
+  <service enabled="${env:CORE_SERVICE_POLLERD_ENABLED|true}"><name>OpenNMS:Name=Pollerd</name></service>
+  <service enabled="${env:CORE_SERVICE_SNMPPOLLER_ENABLED|false}"><name>OpenNMS:Name=SnmpPoller</name></service>
+  <service enabled="${env:CORE_SERVICE_ENHANCEDLINKD_ENABLED|true}"><name>OpenNMS:Name=EnhancedLinkd</name></service>
+  <service enabled="${env:CORE_SERVICE_COLLECTD_ENABLED|true}"><name>OpenNMS:Name=Collectd</name></service>
+  <service enabled="${env:CORE_SERVICE_DISCOVERY_ENABLED|true}"><name>OpenNMS:Name=Discovery</name></service>
+  <service enabled="${env:CORE_SERVICE_VACUUMD_ENABLED|true}"><name>OpenNMS:Name=Vacuumd</name></service>
+  <service enabled="${env:CORE_SERVICE_EVENTTRANSLATOR_ENABLED|true}"><name>OpenNMS:Name=EventTranslator</name></service>
+  <service enabled="${env:CORE_SERVICE_PASSIVESTATUSD_ENABLED|true}"><name>OpenNMS:Name=PassiveStatusd</name></service>
+  <service enabled="${env:CORE_SERVICE_STATSD_ENABLED|true}"><name>OpenNMS:Name=Statsd</name></service>
+  <service enabled="${env:CORE_SERVICE_PROVISIOND_ENABLED|true}"><name>OpenNMS:Name=Provisiond</name></service>
+  <service enabled="${env:CORE_SERVICE_ACKD_ENABLED|true}"><name>OpenNMS:Name=Ackd</name></service>
+  <service enabled="${env:CORE_SERVICE_JETTYSERVER_ENABLED|true}"><name>OpenNMS:Name=JettyServer</name></service>
+  <service enabled="${env:CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED|true}"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
+  <service enabled="${env:CORE_SERVICE_SYSLOGD_ENABLED|false}"><name>OpenNMS:Name=Syslogd</name></service>
+  <service enabled="${env:CORE_SERVICE_TELEMETRYD_ENABLED|true}"><name>OpenNMS:Name=Telemetryd</name></service>
+  <service enabled="${env:CORE_SERVICE_TRAPD_ENABLED|true}"><name>OpenNMS:Name=Trapd</name></service>
+  <service enabled="${env:CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED|true}"><name>OpenNMS:Name=PerspectivePoller</name></service>
 </service-configuration>

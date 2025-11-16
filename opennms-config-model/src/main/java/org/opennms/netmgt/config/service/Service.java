@@ -43,7 +43,7 @@ public class Service implements Serializable {
     private static final long serialVersionUID = 2L;
 
     @XmlAttribute(name = "enabled")
-    private Boolean m_enabled;
+    private String m_enabled;
 
     @XmlElement(name = "name", required = true)
     private String m_name;
@@ -68,12 +68,30 @@ public class Service implements Serializable {
         setInvokes(invokes);
     }
 
+    /**
+     * Gets the raw enabled value as a string, which may contain environment variable placeholders.
+     * Use isEnabled() to get the evaluated boolean value.
+     */
+    @XmlTransient
+    public String getRawEnabled() {
+        return m_enabled;
+    }
+
     @XmlTransient
     public Boolean isEnabled() {
-        return m_enabled == null? Boolean.TRUE : m_enabled;
+        // Default to true if not specified
+        if (m_enabled == null) {
+            return Boolean.TRUE;
+        }
+        // Parse the string value - interpolation should happen before this is called
+        return Boolean.parseBoolean(m_enabled);
     }
 
     public void setEnabled(final Boolean enabled) {
+        m_enabled = enabled == null ? null : enabled.toString();
+    }
+
+    public void setEnabled(final String enabled) {
         m_enabled = enabled;
     }
 
@@ -178,7 +196,7 @@ public class Service implements Serializable {
         // User's enabled setting takes precedence
         // If user specified enabled explicitly, use it; otherwise default to true (enabled)
         // This allows users to enable a service by just including it in config
-        merged.setEnabled(userService.m_enabled != null ? userService.m_enabled : Boolean.TRUE);
+        merged.m_enabled = userService.m_enabled != null ? userService.m_enabled : "true";
 
         // User's class-name takes precedence, otherwise use default
         merged.m_className = userService.m_className != null ? userService.m_className : defaultService.m_className;
