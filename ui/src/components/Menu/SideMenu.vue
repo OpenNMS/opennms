@@ -12,6 +12,7 @@
       menuFooter
       @update:expanded="() => menuStore.setSideMenuExpanded(true)"
       @update:collapsed="() => menuStore.setSideMenuExpanded(false)"
+      @update:="() => menuStore.setSideMenuExpanded(false)"
     />
   </div>
 </template>
@@ -59,7 +60,7 @@ const getMenuLink = (menuItem: MenuItem) => {
   return '#'
 }
 
-const createTopMenuIcon = (menuItem: MenuItem) => {
+const createMenuIcon = (menuItem: MenuItem) => {
   const icon: (DefineComponent | null) = getIcon(menuItem.icon)
 
   return (icon ?? IconHome) as typeof FeatherIcon
@@ -78,11 +79,18 @@ const createMenuListEntry = (menuItem: MenuItem) => {
 
   const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
 
+  let icon: any
+
+  if (menuItem.icon) {
+    icon = createMenuIcon(menuItem)
+  }
+
   return {
     id: menuItem.id ?? menuItem.name,
     type: 'item',
     title: menuItem.name,
     href: getMenuLink(menuItem),
+    icon: icon,
     target,
     onClick
   } as MenuListEntry
@@ -118,7 +126,7 @@ const createTopMenuListEntry = (topMenuItem: MenuItem) => {
     type: 'item',
     title: topMenuItem.name,
     content: '',
-    icon: createTopMenuIcon(topMenuItem),
+    icon: createMenuIcon(topMenuItem),
     component: markRaw(FeatherMenuList),
     componentProps: {
       items: topMenuItem.items?.map(createMenuListEntry) ?? []
