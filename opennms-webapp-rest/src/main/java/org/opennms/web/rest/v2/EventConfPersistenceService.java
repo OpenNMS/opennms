@@ -30,6 +30,7 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
@@ -171,6 +172,7 @@ public class EventConfPersistenceService {
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
             event.setXmlContent(JaxbUtils.marshal(parsed));
+            event.setSeverity(OnmsSeverity.valueOf(parsed.getSeverity()));
             event.setCreatedTime(now);
             event.setLastModified(now);
             event.setModifiedBy(username);
@@ -188,6 +190,7 @@ public class EventConfPersistenceService {
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+        eventConfEvent.setSeverity(OnmsSeverity.valueOf(event.getSeverity()));
         eventConfEvent.setCreatedTime(now);
         eventConfEvent.setLastModified(now);
         eventConfEvent.setModifiedBy(username);

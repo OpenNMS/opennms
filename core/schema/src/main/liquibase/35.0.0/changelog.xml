@@ -68,6 +68,9 @@
             <column name="uei" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="severity" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
             <column name="event_label" type="text"/>
             <column name="description" type="text"/>
             <column name="enabled" type="boolean" defaultValueBoolean="true">
