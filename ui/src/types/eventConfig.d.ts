@@ -27,6 +27,7 @@ export type EventConfigEvent = {
   sourceName: string
   vendor: string
   fileOrder: number
+  jsonContent: EventConfigEventJsonStructure
 }
 
 export type EventConfigStoreState = {
@@ -132,5 +133,40 @@ export type EventFormErrors = {
   reductionKey?: string
   alarmType?: string
   clearKey?: string
+}
+
+export type EventConfigEventJsonStructure = {
+  mask?: {
+    maskelement?: {
+      mename: string
+      mevalue: string
+    }[]
+    varbind?: {
+      vbnumber: number
+      vbvalue: string
+    }[]
+  }
+  varbindsdecode?: {
+    parmid: string | number
+    decode: {
+      key: string
+      value: string
+    }[]
+  }[]
+  uei: string
+  'event-label': string
+  descr: string
+  operinstruct: string
+  logmsg: {
+    dest: string
+    content: string
+  }
+  severity: string
+  'alarm-data'?: {
+    'reduction-key': string
+    'alarm-type': string | number
+    'auto-clean': boolean
+    'clear-key'?: string
+  }
 }
 

@@ -5,7 +5,7 @@ import {
   filterEventConfigEvents,
   getEventConfSourceById
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfigEventJsonStructure, EventConfigSource } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -27,7 +27,8 @@ export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
   modifiedBy: '',
   sourceName: '',
   vendor: '',
-  fileOrder: 0
+  fileOrder: 0,
+  jsonContent: {} as EventConfigEventJsonStructure
 })
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {

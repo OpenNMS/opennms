@@ -6,7 +6,7 @@ import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
-import { EventConfigSource } from '@/types/eventConfig'
+import { EventConfigEventJsonStructure, EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -140,7 +140,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -172,7 +173,8 @@ describe('EventConfigEventTable.vue', () => {
         modifiedBy: '',
         sourceName: '',
         vendor: '',
-        fileOrder: 0
+        fileOrder: 0,
+        jsonContent: {} as EventConfigEventJsonStructure
       }))
       store.eventsPagination.total = 15
       await nextTick()
@@ -253,7 +255,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -308,7 +311,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -367,7 +371,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       store.selectedSource = mockSource
@@ -536,7 +541,8 @@ describe('EventConfigEventTable.vue', () => {
         modifiedBy: '',
         sourceName: '',
         vendor: 'opennms',
-        fileOrder: 0
+        fileOrder: 0,
+        jsonContent: {} as EventConfigEventJsonStructure
       })
       await nextTick()
       const rows = wrapper.findAll('transition-group-stub tr')
@@ -573,7 +579,8 @@ describe('EventConfigEventTable.vue', () => {
         modifiedBy: '',
         sourceName: '',
         vendor: '',
-        fileOrder: 0
+        fileOrder: 0,
+        jsonContent: {} as EventConfigEventJsonStructure
       }))
       store.eventsPagination.total = 15
       await nextTick()
@@ -624,7 +631,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -658,7 +666,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -692,7 +701,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -720,7 +730,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()
@@ -741,7 +752,8 @@ describe('EventConfigEventTable.vue', () => {
         modifiedBy: '',
         sourceName: '',
         vendor: '',
-        fileOrder: 0
+        fileOrder: 0,
+        jsonContent: {} as EventConfigEventJsonStructure
       }))
       await nextTick()
       expect(wrapper.findAll('tr').length).toBeGreaterThan(1)
@@ -780,7 +792,8 @@ describe('EventConfigEventTable.vue', () => {
           modifiedBy: '',
           sourceName: '',
           vendor: '',
-          fileOrder: 0
+          fileOrder: 0,
+          jsonContent: {} as EventConfigEventJsonStructure
         }
       ]
       await nextTick()

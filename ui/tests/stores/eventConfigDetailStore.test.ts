@@ -5,7 +5,7 @@ import {
   filterEventConfigEvents
 } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import { EventConfigEvent, EventConfigEventJsonStructure, EventConfigSource } from '@/types/eventConfig'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -45,7 +45,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user1',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 1
+      fileOrder: 1,
+      jsonContent: {} as EventConfigEventJsonStructure
     },
     {
       id: 2,
@@ -60,7 +61,8 @@ describe('useEventConfigDetailStore', () => {
       modifiedBy: 'user2',
       sourceName: 'Test Source',
       vendor: 'Test Vendor',
-      fileOrder: 2
+      fileOrder: 2,
+      jsonContent: {} as EventConfigEventJsonStructure
     }
   ]
 

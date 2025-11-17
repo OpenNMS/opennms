@@ -9,7 +9,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherTextarea } from '@featherds/textarea'
 import { FeatherSelect } from '@featherds/select'
-import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
+import { createEventConfigEventXml, updateEventConfigEventByIdXml } from '@/services/eventConfigService'
 
 vi.mock('./AlarmDataInfo.vue', () => ({
   default: {
@@ -46,8 +46,8 @@ vi.mock('@/composables/useSnackbar', () => ({
 }))
 
 vi.mock('@/services/eventConfigService', () => ({
-  createEventConfigEvent: vi.fn(),
-  updateEventConfigEventById: vi.fn()
+  createEventConfigEventXml: vi.fn(),
+  updateEventConfigEventByIdXml: vi.fn()
 }))
 
 vi.mock('vkbeautify', () => ({
@@ -347,7 +347,7 @@ describe('BasicInformation Component', () => {
   })
 
   it('should handle save event button click in edit mode', async () => {
-    vi.mocked(updateEventConfigEventById).mockResolvedValue(true)
+    vi.mocked(updateEventConfigEventByIdXml).mockResolvedValue(true)
 
     wrapper.vm.isValid = true
     await wrapper.vm.$nextTick()
@@ -357,12 +357,12 @@ describe('BasicInformation Component', () => {
     await saveButton.trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(updateEventConfigEventById).toHaveBeenCalled()
+    expect(updateEventConfigEventByIdXml).toHaveBeenCalled()
   })
 
   it('should handle save event button click in create mode', async () => {
     store.eventModificationState.isEditMode = CreateEditMode.Create
-    vi.mocked(createEventConfigEvent).mockResolvedValue(true)
+    vi.mocked(createEventConfigEventXml).mockResolvedValue(true)
     await wrapper.vm.$nextTick()
 
     wrapper.vm.isValid = true
@@ -374,12 +374,12 @@ describe('BasicInformation Component', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(createEventConfigEvent).toHaveBeenCalled()
+    expect(createEventConfigEventXml).toHaveBeenCalled()
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
     expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventByIdXml')
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
 
@@ -395,7 +395,7 @@ describe('BasicInformation Component', () => {
   })
 
   it('should handle save event failure', async () => {
-    vi.mocked(updateEventConfigEventById).mockRejectedValue(new Error('API Error'))
+    vi.mocked(updateEventConfigEventByIdXml).mockRejectedValue(new Error('API Error'))
     wrapper.vm.isValid = true
     await wrapper.vm.$nextTick()
 
@@ -403,7 +403,7 @@ describe('BasicInformation Component', () => {
     await saveButton.trigger('click')
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(updateEventConfigEventById).toHaveBeenCalled()
+    expect(updateEventConfigEventByIdXml).toHaveBeenCalled()
   })
 
   it('should generate XML content when form data changes', async () => {
