@@ -19,6 +19,8 @@
  * language governing permissions and limitations under the
  * License.
  */
+import bootbox from "bootbox";
+
 require('../services/Requisitions');
 
 import Util from 'lib/util';
@@ -265,7 +267,12 @@ const QuickNode = require('../model/QuickNode');
         }
 
         if (foreignSource) {
-          RequisitionsService.addRequisition(foreignSource).then(
+            if (foreignSource.match(/[/\\?:&*'"]/)) {
+                bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
+                return;
+            }
+            
+            RequisitionsService.addRequisition(foreignSource).then(
             function() { // success
               RequisitionsService.synchronizeRequisition(foreignSource, false).then(
                 function() {
