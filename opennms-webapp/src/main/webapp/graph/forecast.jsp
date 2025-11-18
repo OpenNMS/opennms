@@ -93,12 +93,12 @@ window.forecastError = "One or more dependencies required for forecasting "
 
       <div class="card" ng-hide="error">
       <div class="card-header text-center">
-          <span>Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
+          <span ng-non-bindable>Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
       </div> <!-- card-header -->
       <div class="card-body">
 		<div class="row-fluid">
 			<div class="col-md-7">
-		        <div data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
+		        <div ng-non-bindable data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
 		    </div>
 		    <div class="col-md-4" ng-show="series.length < 1">
 		        <p>The graph does not contain any series that can be forecasted.</p>
