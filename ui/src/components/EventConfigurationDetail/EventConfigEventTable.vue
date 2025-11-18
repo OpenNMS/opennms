@@ -236,7 +236,7 @@ const onEditEvent = (event: EventConfigEvent) => {
     const modificationStore = useEventModificationStore()
     modificationStore.setSelectedEventConfigSource(store.selectedSource, CreateEditMode.Edit, event)
     router.push({
-      name: 'Event Configuration New'
+      name: 'Event Configuration Create'
     })
   }
 }
@@ -273,7 +273,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 
     .action-container {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-end;
       gap: 5px;
       width: 30%;

@@ -466,7 +466,7 @@
           "name": "Flow Classification",
           "url": "admin/classification/index.jsp",
           "locationMatch": null,
-          "roles": ["ROLE_FLOW_MANAGER"]
+          "roles": ["ROLE_ADMIN", "ROLE_FLOW_MANAGER"]
         },
         {
           "id": "notifications",

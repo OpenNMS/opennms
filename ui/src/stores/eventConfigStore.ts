@@ -100,7 +100,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
     },
-    async refreshEventsSources() {
+    async refreshSourcesfilters() {
       this.resetSourcesPagination()
       this.sourcesSearchTerm = ''
       this.sourcesSorting.sortKey = 'createdTime'

@@ -1,6 +1,5 @@
 import {
   EventConfigEvent,
-  EventConfigEventRequest,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
@@ -85,17 +84,6 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
     events: response.eventConfSourceList.map((event: any) => mapEventConfigEventFromServer(event)),
     totalRecords: response.totalRecords
   }
-}
-
-export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfigEventRequest => {
-  const newEvent: Partial<EventConfigEventRequest> = {
-    uei: event.uei,
-    ['event-label']: event.eventLabel,
-    descr: event.description,
-    severity: event.severity
-  }
-
-  return newEvent as EventConfigEventRequest
 }
 
 export const mapEventConfEventEditRequest = (content: any, status: boolean): string => {

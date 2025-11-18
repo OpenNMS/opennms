@@ -168,7 +168,7 @@
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
             -->
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
-            <li><a href="admin/manageEvents.jsp">Customize Event Configurations</a></li>
+            <li><a href="ui/index.html#/event-config">Customize Event Configurations</a></li>
         </ul>
       </div> <!-- card-body -->
       <div class="card-footer text-right">

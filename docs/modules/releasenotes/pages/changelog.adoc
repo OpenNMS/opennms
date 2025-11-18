@@ -2,6 +2,50 @@
 
 = Changelog
 
+[[releasenotes-changelog-34.1.0]]
+
+== Release 34.1.0
+
+Release 34.1.0 contains a couple of bug fixes, enhancements and documentation updates.
+
+Starting with this release when upgrading OpenNMS, `custom.properties`, `config.properties` and `opennms.properties` files will be overridden.
+
+=== Bug
+
+* Adding IP Address Range to Discovery Fails (Issue https://issues.opennms.org/browse/NMS-18537[NMS-18537])
+* Comma-separated categories enhancement tries to create empty Prometheus labels (Issue https://issues.opennms.org/browse/NMS-18976[NMS-18976])
+* FE: Top menu can have 2 overlapping dropdowns for self-service and notifications (Issue https://issues.opennms.org/browse/NMS-18977[NMS-18977])
+* Page Sequence Monitor invalid range spec for paramter response-range (Issue https://issues.opennms.org/browse/NMS-19008[NMS-19008])
+* Path Traversal Allowing File Write Outside Intended Directory (Issue https://issues.opennms.org/browse/NMS-19045[NMS-19045])
+* SNMP SET via minion fails - wrong XML adapter in SnmpSetRequestDTO (Issue https://issues.opennms.org/browse/NMS-19043[NMS-19043])
+* Top nav bar style changes between classic and new UI pages (Issue https://issues.opennms.org/browse/NMS-15000[NMS-15000])
+* Update com.fasterxml.jackson.core:jackson-core library (Issue https://issues.opennms.org/browse/NMS-18357[NMS-18357])
+* Update cups-libs library (Issues https://issues.opennms.org/browse/NMS-18873[NMS-18873], https://issues.opennms.org/browse/NMS-18922[NMS-18922], https://issues.opennms.org/browse/NMS-18939[NMS-18939])
+* Update io.grpc:grpc-netty-shaded library (Issue https://issues.opennms.org/browse/NMS-18782[NMS-18782])
+* Update io.netty:netty-codec library (Issue https://issues.opennms.org/browse/NMS-18346[NMS-18346])
+* Update io.netty:netty-codec-http library (Issue https://issues.opennms.org/browse/NMS-18347[NMS-18347])
+* Update io.netty:netty-codec-smtp library (Issue https://issues.opennms.org/browse/NMS-19025[NMS-19025])
+* Update jackson-databind library (Issue https://issues.opennms.org/browse/NMS-16675[NMS-16675])
+* Update libarchive library (Issues https://issues.opennms.org/browse/NMS-18354[NMS-18354], https://issues.opennms.org/browse/NMS-18366[NMS-18366], https://issues.opennms.org/browse/NMS-18400[NMS-18400])
+* Update pam library (Issues https://issues.opennms.org/browse/NMS-18367[NMS-18367], https://issues.opennms.org/browse/NMS-18381[NMS-18381], https://issues.opennms.org/browse/NMS-18401[NMS-18401])
+
+=== Enhancement
+
+* Allow users to control core services via environment variables (Issue https://issues.opennms.org/browse/NMS-18965[NMS-18965])
+* Configurable structured logging output in JSON format (Issue https://issues.opennms.org/browse/NMS-19016[NMS-19016])
+* Give SSLCertMonitor the option to resolve the server-name (Issue https://issues.opennms.org/browse/NMS-19078[NMS-19078])
+* Improve ActiveMQ visualization (Issue https://issues.opennms.org/browse/NMS-19049[NMS-19049])
+
+=== Story
+
+* Always overwrite opennms.properties in upgrade process (Issue https://issues.opennms.org/browse/NMS-18201[NMS-18201])
+
+=== Task
+
+* FE: Menu template fix to remove unwanted menu header (Issue https://issues.opennms.org/browse/NMS-18773[NMS-18773])
+* Update CentOS 9 install documentation (Issue https://issues.opennms.org/browse/NMS-18547[NMS-18547])
+* Update Node List page documentation (Issue https://issues.opennms.org/browse/NMS-18534[NMS-18534])
+
 [[releasenotes-changelog-34.0.2]]
 
 == Release 34.0.2
@@ -10,21 +54,21 @@ Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
 
 === Epic
 
-* Remove EOL componts from our dependencies and docs (Issue https://opennms.atlassian.net/browse/NMS-17902[NMS-17902]) 
+* Remove EOL componts from our dependencies and docs (Issue https://opennms.atlassian.net/browse/NMS-17902[NMS-17902])
 
 === Story
 
-* Remove end of life version CentOS 7/8 (Issue https://opennms.atlassian.net/browse/NMS-17901[NMS-17901]) 
-* Exclude selfmonitor requisition in the Quick Add Node page (Issue https://opennms.atlassian.net/browse/NMS-18184[NMS-18184]) 
-* Expose TwinPublishers on OSGi (Issue https://opennms.atlassian.net/browse/NMS-18310[NMS-18310]) 
+* Remove end of life version CentOS 7/8 (Issue https://opennms.atlassian.net/browse/NMS-17901[NMS-17901])
+* Exclude selfmonitor requisition in the Quick Add Node page (Issue https://opennms.atlassian.net/browse/NMS-18184[NMS-18184])
+* Expose TwinPublishers on OSGi (Issue https://opennms.atlassian.net/browse/NMS-18310[NMS-18310])
 
 === Task
 
-* Menu Redesign: Update all existing documentation (Issue https://opennms.atlassian.net/browse/NMS-18176[NMS-18176]) 
-* FE: Do not display menu on embedded Wallboard page (Issue https://opennms.atlassian.net/browse/NMS-18198[NMS-18198]) 
-* DevOps: Clean up `Some problems were encountered while building the effective model` warnings (Issue https://opennms.atlassian.net/browse/NMS-18316[NMS-18316]) 
-* FE: Update the Poweredby/Meridian Stylesheet and images (Issue https://opennms.atlassian.net/browse/NMS-18767[NMS-18767]) 
-* FE: Menu template fix to remove unwanted menu header (Issue https://opennms.atlassian.net/browse/NMS-18773[NMS-18773]) 
+* Menu Redesign: Update all existing documentation (Issue https://opennms.atlassian.net/browse/NMS-18176[NMS-18176])
+* FE: Do not display menu on embedded Wallboard page (Issue https://opennms.atlassian.net/browse/NMS-18198[NMS-18198])
+* DevOps: Clean up `Some problems were encountered while building the effective model` warnings (Issue https://opennms.atlassian.net/browse/NMS-18316[NMS-18316])
+* FE: Update the Poweredby/Meridian Stylesheet and images (Issue https://opennms.atlassian.net/browse/NMS-18767[NMS-18767])
+* FE: Menu template fix to remove unwanted menu header (Issue https://opennms.atlassian.net/browse/NMS-18773[NMS-18773])
 
 === Bug
 
@@ -57,8 +101,8 @@ Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
 
 === Enhancement
 
-* Update JMX Prometheus exporter to 1.4.0 (Issue https://opennms.atlassian.net/browse/NMS-18544[NMS-18544]) 
-* Improve Confd template for opennms-datasources.xml and documentation (Issue https://opennms.atlassian.net/browse/NMS-18757[NMS-18757]) 
+* Update JMX Prometheus exporter to 1.4.0 (Issue https://opennms.atlassian.net/browse/NMS-18544[NMS-18544])
+* Improve Confd template for opennms-datasources.xml and documentation (Issue https://opennms.atlassian.net/browse/NMS-18757[NMS-18757])
 
 === New Feature
 
@@ -127,20 +171,20 @@ It contains a bunch of changes, including improvements to menu structure, update
 * DeviceConfig via Minion fails if sshScript output contains control characters (Issue https://opennms.atlassian.net/browse/NMS-15717[NMS-15717])
 * Device config backup ssh client throws key spec not recognised: class net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec (Issue https://opennms.atlassian.net/browse/NMS-16359[NMS-16359])
 * News Feed override URL should only apply to Rest service, not front end (Issue https://opennms.atlassian.net/browse/NMS-16373[NMS-16373])
-* The risk of XSLT injection in OpenNMS can lead to RCE. (Issue https://opennms.atlassian.net/browse/NMS-16414[NMS-16414]) 
-* 500 Server Error when sending events from GUI when OpenNMS has large number of Events configured (Issue https://opennms.atlassian.net/browse/NMS-16485[NMS-16485]) 
+* The risk of XSLT injection in OpenNMS can lead to RCE. (Issue https://opennms.atlassian.net/browse/NMS-16414[NMS-16414])
+* 500 Server Error when sending events from GUI when OpenNMS has large number of Events configured (Issue https://opennms.atlassian.net/browse/NMS-16485[NMS-16485])
 * Installation instructions are broken and show an unresolved variable (Issue https://opennms.atlassian.net/browse/NMS-16490[NMS-16490])
 * Search does not return any results for Asset Search string Meridian 2024.1.3 (Issue https://opennms.atlassian.net/browse/NMS-16510[NMS-16510])
-* OpenNMS RESTful API provides incorrect URL in GUI after SSL enablement (Issue https://opennms.atlassian.net/browse/NMS-16530[NMS-16530]) 
-* Provisioning fails when category has been deleted (Issue https://opennms.atlassian.net/browse/NMS-16536[NMS-16536]) 
+* OpenNMS RESTful API provides incorrect URL in GUI after SSL enablement (Issue https://opennms.atlassian.net/browse/NMS-16530[NMS-16530])
+* Provisioning fails when category has been deleted (Issue https://opennms.atlassian.net/browse/NMS-16536[NMS-16536])
 * Requisition file names with a colon ( : ) break resource graphs (Issue https://opennms.atlassian.net/browse/NMS-16537[NMS-16537])
-* With use-address-from-varbind traps are misassigned (Issue https://opennms.atlassian.net/browse/NMS-16543[NMS-16543]) 
+* With use-address-from-varbind traps are misassigned (Issue https://opennms.atlassian.net/browse/NMS-16543[NMS-16543])
 * User tries to create an Alarm filter favorite, but the filter doesn't save the arguments of the filter (Issue https://opennms.atlassian.net/browse/NMS-16573[NMS-16573])
 * Update Node label component (Issue https://opennms.atlassian.net/browse/NMS-16585[NMS-16585])
 * Incompatible types: java.util.List<org.xbill.DNS.RRset> cannot be converted to org.xbill.DNS.RRset[] (Issue https://opennms.atlassian.net/browse/NMS-16591[NMS-16591])
 * Update owasp-java-html-sanitizer Library (Issue https://opennms.atlassian.net/browse/NMS-16637[NMS-16637])
 * Update com.google.code.gson-gson Library (Issue https://opennms.atlassian.net/browse/NMS-16706[NMS-16706])
-* Update neko-htmlunit Library (Issue https://opennms.atlassian.net/browse/NMS-16724[NMS-16724]) 
+* Update neko-htmlunit Library (Issue https://opennms.atlassian.net/browse/NMS-16724[NMS-16724])
 * Update java-17-openjdk-headless Library (Issue https://opennms.atlassian.net/browse/NMS-17016[NMS-17016])
 * Update openssh-clients Library (Issue https://opennms.atlassian.net/browse/NMS-17020[NMS-17020])
 * Update python3 Library (Issue https://opennms.atlassian.net/browse/NMS-17026[NMS-17026])
