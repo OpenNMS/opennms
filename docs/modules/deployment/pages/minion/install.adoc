@@ -61,6 +61,44 @@ include::debian/install-minion.adoc[]
 endif::[]
 ====
 
+== SELinux
+
+Minion does not currently support running with `SELinux` in enforcing mode by default.
+However, if `SELinux` is required, the following policy is sufficient to allow Minion to start successfully:
+
+.`minion.te`
+[source]
+----
+module minion 1.0;
+
+require {
+        type init_t;
+        type unlabeled_t;
+        type usr_t;
+        type port_t;
+        type initrc_t;
+        class file { execute execute_no_trans unlink };
+        class icmp_socket name_bind;
+}
+
+#============= init_t ==============
+allow init_t unlabeled_t:file execute_no_trans;
+allow init_t unlabeled_t:file execute;
+allow init_t usr_t:file unlink;
+allow initrc_t port_t:icmp_socket name_bind;
+----
+
+This can be saved as `minion.te`, compiled, and installed as below:
+[source,shell]
+----
+checkmodule -M -m -o minion.mod minion.te <1>
+semodule_package -o minion.pp -m minion.mod <2>
+semodule -i minion.pp <3>
+----
+<1> From the `checkpolicy` package; Checks and compiles a `SELinux` security policy module into a binary representation.
+<2> From the `policycoreutils` package; Creates a `SELinux` policy module package from a binary policy module.
+<3> From the `policycoreutils` package; Manages `SELinux` policy modules, including installing, upgrading, listing and removing modules.
+
 == Secure access to Karaf shell
 
 IMPORTANT: Change the default username and password (_admin/admin_) for the Karaf shell and encrypt it.
