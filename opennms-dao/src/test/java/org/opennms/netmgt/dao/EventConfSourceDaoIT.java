@@ -499,6 +499,9 @@ public class EventConfSourceDaoIT implements InitializingBean {
         source2.setVendor("cisco");
         source2.setDescription("Cisco Events");
         m_dao.saveOrUpdate(source2);
+        m_dao.flush();
+        // Insert event in the source2
+        insertEvent(source2,"uei.opennms.org/internal/trigger", "Trigger-label", "The Trigger configuration has been changed and should be reloaded", "Normal");
 
         // Inline helper for reusing assertions
         BiConsumer<Map<String, Object>, String> assertSourceName =
@@ -545,6 +548,16 @@ public class EventConfSourceDaoIT implements InitializingBean {
         List<?> list = (List<?>) result.get("eventConfSourceList");
         assertEquals(1, list.size());
         assertEquals("opennms.test.events", ((EventConfSource) list.get(0)).getName());
+
+        // 8. Filter by event uei "uei.opennms.org/internal/trigger"
+        result = m_dao.filterEventConfSource("uei.opennms.org/internal/trigger", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.events");
+
+        // 8. Filter by event label "trigger-label"
+        result = m_dao.filterEventConfSource("trigger-label", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.events");
     }
 
     @Test
@@ -553,5 +566,20 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 null, null, null, null, 0, 5);
         assertNotNull(result);
         assertFalse(result.isEmpty());
+    }
+
+    private void insertEvent(EventConfSource m_source,String uei, String label, String description, String severity) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei(uei);
+        event.setEventLabel(label);
+        event.setDescription(description);
+        event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("JUnitTest");
+
+        m_eventDao.saveOrUpdate(event);
     }
 }
