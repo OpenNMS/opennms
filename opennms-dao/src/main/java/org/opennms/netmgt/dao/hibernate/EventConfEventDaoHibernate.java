@@ -144,13 +144,15 @@ public class EventConfEventDaoHibernate
         int batchSize = 50;
         int i = 0;
         for (EventConfEvent event : events) {
+            String jsonString = event.getJsonContent();
+            event.setJsonContent(null);
             getHibernateTemplate().save(event);
             i++;
             if (i % batchSize == 0) {
                 getHibernateTemplate().flush();
                 getHibernateTemplate().clear();
             }
-
+            updateJsonForEventConfEvent(event.getId(), jsonString);
         }
         getHibernateTemplate().flush();
         getHibernateTemplate().clear();
@@ -225,4 +227,10 @@ public class EventConfEventDaoHibernate
     public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
         return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
     }
+
+
+   public int updateJsonForEventConfEvent(Long eventConfEventId, String jsonString){
+        return super.updateJsonForEventConfEvent(eventConfEventId, jsonString);
+   }
+
 }

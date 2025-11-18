@@ -30,7 +30,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.opennms.core.xml.JsonUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -225,17 +225,17 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	private void parseAndAddEvent(Events eventsForSource, EventConfEvent dbEvent) {
-		String jsonContent = dbEvent.getJsonContent();
-		if (jsonContent != null && !jsonContent.trim().isEmpty()) {
-			try {
-				Event event = JsonUtils.unmarshal(Event.class, jsonContent);
-				if (event != null) {
-					eventsForSource.addEvent(event);
-				}
-			} catch (Exception e) {
-				LOG.warn("Failed to parse event JSON content for UEI {}", dbEvent.getUei(), e);
-			}
-		}
+        String xmlContent = dbEvent.getXmlContent();
+        if (xmlContent != null && !xmlContent.trim().isEmpty()) {
+            try {
+                Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
+                if (event != null) {
+                    eventsForSource.addEvent(event);
+                }
+            } catch (Exception e) {
+                LOG.warn("Failed to parse event XML content for UEI {}", dbEvent.getUei(), e);
+            }
+        }
 	}
 
 

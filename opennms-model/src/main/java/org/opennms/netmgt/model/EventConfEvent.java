@@ -66,7 +66,7 @@ public class EventConfEvent implements Serializable {
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;
 
-    @Column(name = "json_content", columnDefinition = "text", nullable = false)
+    @Column(name = "json_content", columnDefinition = "jsonb", nullable = false, insertable = false, updatable = false)
     private String jsonContent;
 
     @Temporal(TemporalType.TIMESTAMP)
