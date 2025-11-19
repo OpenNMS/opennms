@@ -83,7 +83,6 @@ public class MenuProviderTest {
         assertThat(menuNames, containsInAnyOrder(expectedMenuNames));
 
         assertNotNull(mainMenu.configurationMenu);
-        assertNotNull(mainMenu.flowsMenu);
         assertNotNull(mainMenu.helpMenu);
         assertNotNull(mainMenu.provisionMenu);
         assertNotNull(mainMenu.selfServiceMenu);

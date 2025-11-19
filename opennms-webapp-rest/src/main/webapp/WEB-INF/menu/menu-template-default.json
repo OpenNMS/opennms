@@ -139,31 +139,10 @@
       "roles": null,
       "items": [
         {
-          "id": "surveillanceView",
-          "name": "Surveillance View",
-          "url": "surveillance-view.jsp",
-          "locationMatch": "surveillance-view",
-          "roles": null
-        },
-        {
-          "id": "applications",
-          "name": "Applications",
-          "url": "application/index.jsp",
-          "locationMatch": "application",
-          "roles": null
-        },
-        {
           "id": "alarms",
           "name": "Alarms",
           "url": "alarm/index.htm",
           "locationMatch": "alarm",
-          "roles": null
-        },
-        {
-          "id": "outages",
-          "name": "Outages",
-          "url": "outage/index.jsp",
-          "locationMatch": "outage",
           "roles": null
         },
         {
@@ -174,13 +153,34 @@
           "roles": null
         },
         {
+          "id": "applications",
+          "name": "Applications",
+          "url": "application/index.jsp",
+          "locationMatch": "application",
+          "roles": null
+        },
+        {
+          "id": "outages",
+          "name": "Outages",
+          "url": "outage/index.jsp",
+          "locationMatch": "outage",
+          "roles": null
+        },
+        {
           "id": "pathOutages",
           "name": "Path Outages",
           "url": "pathOutage/index.jsp",
           "locationMatch": "pathOutage",
           "roles": null
+        },
+        {
+          "id": "surveillanceView",
+          "name": "Surveillance View",
+          "url": "surveillance-view.jsp",
+          "locationMatch": "surveillance-view",
+          "roles": null
         }
-      ]
+     ]
     },
     {
       "id": "mapsMenu",
@@ -361,7 +361,7 @@
           "name": "Provisioning Requisitions",
           "url": "admin/ng-requisitions/index.jsp",
           "locationMatch": "provisioning",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "scheduledDiscovery",
@@ -382,14 +382,14 @@
           "name": "Add a Single Node",
           "url": "admin/ng-requisitions/quick-add-node.jsp",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "deleteNodes",
           "name": "Delete Nodes",
           "url": "admin/deleteNodes",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "manageBusinessServices",
@@ -765,13 +765,6 @@
     "url": "admin/ng-requisitions/quick-add-node.jsp#/",
     "locationMatch": null,
     "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
-  },
-  "flowsMenu": {
-    "id": "flowMenu",
-    "name": "Flows Management",
-    "url": "admin/classification/index.jsp",
-    "locationMatch": null,
-    "roles": ["ROLE_FLOW_MANAGER"]
   },
   "configurationMenu": {
     "id": "configurationMenu",
