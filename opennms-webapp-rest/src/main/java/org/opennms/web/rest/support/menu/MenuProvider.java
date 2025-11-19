@@ -152,10 +152,6 @@ public class MenuProvider {
             mainMenu.provisionMenu = null;
         }
 
-        if (!evaluateRoleBasedMenuEntry(mainMenu.flowsMenu)) {
-            mainMenu.flowsMenu = null;
-        }
-
         if (!evaluateRoleBasedMenuEntry(mainMenu.configurationMenu)) {
             mainMenu.configurationMenu = null;
         }

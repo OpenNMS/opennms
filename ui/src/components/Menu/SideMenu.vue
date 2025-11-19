@@ -164,18 +164,6 @@ const createPluginsMenu = (useFake: boolean) => {
   return topMenuItem
 }
 
-const createFlowsMenu = () => {
-  const flowsMenuLink = mainMenu.value?.flowsMenu?.url ?? 'admin/classification/index.jsp'
-  const flowsMenuName = mainMenu.value?.flowsMenu?.name ?? 'Flows Management'
-
-  const flowsMenuItem = {
-    ...createMenuItem('flows-management', flowsMenuName),
-    url: flowsMenuLink
-  }
-
-  return createTopMenuItem('flowsMenu', 'Flows', [flowsMenuItem])
-}
-
 const topPanels = computed<MenuListEntry[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
@@ -186,11 +174,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
   const allMenus = [
     ...mainMenu.value.menus ?? []
   ]
-
-  // Flows menu
-  if (mainMenu.value.flowsMenu?.url?.length) {
-    allMenus.push(createFlowsMenu())
-  }
 
   // Plugins menu
   if (plugins.value && plugins.value.length > 0) {
