@@ -68,9 +68,6 @@
             <column name="uei" type="varchar(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="severity" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
             <column name="event_label" type="text"/>
             <column name="description" type="text"/>
             <column name="enabled" type="boolean" defaultValueBoolean="true">
@@ -108,6 +105,28 @@
             <column name="enabled"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="aurangzeb" id="35.0.1-add-severity-column-eventconf-events">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <not>
+                    <columnExists tableName="eventconf_events" columnName="severity"/>
+                </not>
+            </and>
+        </preConditions>
+
+        <addColumn tableName="eventconf_events">
+            <column name="severity" type="varchar(256)" defaultValue="Indeterminate">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_severity">
+            <column name="severity"/>
+        </createIndex>
+    </changeSet>
+
 
     <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-sources-insert">
         <preConditions onFail="MARK_RAN">

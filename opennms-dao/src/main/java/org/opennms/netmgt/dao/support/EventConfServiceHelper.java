@@ -28,6 +28,7 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,7 @@ public class EventConfServiceHelper {
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
+        eventConfEvent.setSeverity(OnmsSeverity.valueOf(event.getSeverity()));
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
@@ -134,6 +136,7 @@ public class EventConfServiceHelper {
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
+            event.setSeverity(OnmsSeverity.valueOf(parsed.getSeverity()));
             event.setXmlContent(JaxbUtils.marshal(parsed));
             event.setCreatedTime(timestamp);
             event.setLastModified(timestamp);
