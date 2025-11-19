@@ -76,7 +76,7 @@
             <column name="xml_content" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="json_content" type="jsonb" defaultValue="{}">
+            <column name="content" type="jsonb" defaultValue="{}">
                 <constraints nullable="false"/>
             </column>
             <column name="created_time" type="timestamp with time zone">
@@ -130,6 +130,19 @@
         </preConditions>
         <sqlFile
                 path="../sql/eventconf_events.sql"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                endDelimiter=";"
+                stripComments="true"/>
+    </changeSet>
+    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-update">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM eventconf_events
+            </sqlCheck>
+        </preConditions>
+        <sqlFile
+                path="../sql/eventConf_events_updates.sql"
                 relativeToChangelogFile="true"
                 splitStatements="true"
                 endDelimiter=";"

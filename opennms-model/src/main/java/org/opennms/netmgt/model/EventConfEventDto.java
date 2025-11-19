@@ -34,7 +34,7 @@ public class EventConfEventDto {
     private String description;
     private Boolean enabled;
     private String xmlContent;
-    private String jsonContent;
+    private String content;
     private Date createdTime;
     private Date lastModified;
     private String modifiedBy;
@@ -48,7 +48,7 @@ public class EventConfEventDto {
     }
 
     public EventConfEventDto(Long id, String uei, String eventLabel, String description, Boolean enabled,
-                             String xmlContent, String jsonContent, Date createdTime, Date lastModified, String modifiedBy,
+                             String xmlContent, String content, Date createdTime, Date lastModified, String modifiedBy,
                              String sourceName, String vendor, Integer fileOrder) {
         this.id = id;
         this.uei = uei;
@@ -56,7 +56,7 @@ public class EventConfEventDto {
         this.description = description;
         this.enabled = enabled;
         this.xmlContent = xmlContent;
-        this.jsonContent=jsonContent;
+        this.content=content;
         this.createdTime = createdTime;
         this.lastModified = lastModified;
         this.modifiedBy = modifiedBy;
@@ -112,12 +112,12 @@ public class EventConfEventDto {
         this.fileOrder = fileOrder;
     }
 
-    public String getJsonContent() {
-        return jsonContent;
+    public String getContent() {
+        return content;
     }
 
-    public void setJsonContent(String jsonContent) {
-        this.jsonContent = jsonContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public static List<EventConfEventDto> fromEntity(List<EventConfEvent> entityList) {
@@ -130,7 +130,7 @@ public class EventConfEventDto {
                         e.getDescription(),
                         e.getEnabled(),
                         e.getXmlContent(),
-                        e.getJsonContent(),
+                        e.getContent(),
                         e.getCreatedTime(),
                         e.getLastModified(),
                         e.getModifiedBy(),

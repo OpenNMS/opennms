@@ -26,7 +26,6 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
-import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -68,7 +67,7 @@ public class EventConfServiceHelper {
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
-        eventConfEvent.setJsonContent(JsonUtils.marshal(event));
+        eventConfEvent.setContent(JsonUtils.marshal(event));
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
@@ -137,7 +136,7 @@ public class EventConfServiceHelper {
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
             event.setXmlContent(JaxbUtils.marshal(parsed));
-            event.setJsonContent(JsonUtils.marshal(parsed));
+            event.setContent(JsonUtils.marshal(parsed));
             event.setCreatedTime(timestamp);
             event.setLastModified(timestamp);
             event.setModifiedBy(username);

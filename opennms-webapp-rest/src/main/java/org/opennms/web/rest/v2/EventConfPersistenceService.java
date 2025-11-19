@@ -131,7 +131,7 @@ public class EventConfPersistenceService {
             eventConfEvent.setDescription(payload.getEvent().getDescr());
             eventConfEvent.setEnabled(payload.getEnabled());
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
-            eventConfEvent.setJsonContent(JsonUtils.marshal(payload.getEvent()));
+            eventConfEvent.setContent(JsonUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);

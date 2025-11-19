@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,19 +144,20 @@ public class EventConfEventDaoHibernate
 
         int batchSize = 50;
         int i = 0;
+        Map<Long, String> jsonMap = new HashMap<>();
         for (EventConfEvent event : events) {
-            String jsonString = event.getJsonContent();
-            event.setJsonContent(null);
+            String json = event.getContent();
             getHibernateTemplate().save(event);
+            jsonMap.put(event.getId(), json);
             i++;
             if (i % batchSize == 0) {
                 getHibernateTemplate().flush();
                 getHibernateTemplate().clear();
             }
-            updateJsonForEventConfEvent(event.getId(), jsonString);
         }
         getHibernateTemplate().flush();
         getHibernateTemplate().clear();
+        jsonMap.forEach(this::updateJsonForEventConfEvent);
     }
 
     /**

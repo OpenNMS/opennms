@@ -430,8 +430,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             K returnVal = null;
 
             if(entity instanceof EventConfEvent){
-                String jsonString = ((EventConfEvent) entity).getJsonContent();
-                ((EventConfEvent) entity).setJsonContent(null);
+                String jsonString = ((EventConfEvent) entity).getContent();
                 returnVal = (K) getHibernateTemplate().save(entity);
                 updateJsonForEventConfEvent(((EventConfEvent) entity).getId(), jsonString);
             }else {
@@ -454,10 +453,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public void saveOrUpdate(final T entity) throws DataAccessException {
         try {
             if(entity instanceof EventConfEvent){
-                String jsonString = ((EventConfEvent) entity).getJsonContent();
-                ((EventConfEvent) entity).setJsonContent(null);
+                String jsonContent = ((EventConfEvent) entity).getContent();
                 getHibernateTemplate().saveOrUpdate(entity);
-                updateJsonForEventConfEvent(((EventConfEvent) entity).getId(), jsonString);
+                updateJsonForEventConfEvent(((EventConfEvent) entity).getId(), jsonContent);
             }else {
                 getHibernateTemplate().saveOrUpdate(entity);
             }
@@ -533,7 +531,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         return getHibernateTemplate().execute(session -> {
            int updatedRows = 0;
             try {
-               String sql = "UPDATE eventconf_events SET json_content = to_jsonb(:json) WHERE id = :id";
+               String sql = "UPDATE eventconf_events SET content = CAST(:json AS jsonb) WHERE id = :id";
                SQLQuery updateQuery = session.createSQLQuery(sql);
                updateQuery.setParameter("json", jsonString);
                updateQuery.setParameter("id", eventConfEventId);
