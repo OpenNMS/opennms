@@ -63,7 +63,6 @@
           >
             <td>{{ config.name }}</td>
             <td>{{ config.vendor }}</td>
-            <td>{{ config.description }}</td>
             <td>{{ config.eventCount }}</td>
             <td>{{ config.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
@@ -170,7 +169,6 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
   { id: 'vendor', label: 'Vendor' },
-  { id: 'description', label: 'Description' },
   { id: 'eventCount', label: 'Event Count' }
 ])
 

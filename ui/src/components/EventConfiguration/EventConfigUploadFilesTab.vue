@@ -234,24 +234,28 @@ const handleFolderUpload = async (e: Event) => {
 
   for (const file of files) {
     try {
-      if (isDuplicateFile(file.name, eventFiles.value)) continue
+      if (isDuplicateFile(file.name, eventFiles.value)) {
+        continue
+      }
 
       const isAlreadyUploaded = store.uploadedSourceNames
         .map(name => name.replace('.xml', '').toLowerCase())
         .includes(file.name.replace('.xml', '').toLowerCase())
 
-      if (isAlreadyUploaded) continue
+      if (isAlreadyUploaded) {
+        continue
+      }
 
-      const validationResult = await validateEventConfigFile(file)
+      const { isValid, errors } = await validateEventConfigFile(file)
 
       eventFiles.value.push({
         file,
-        isValid: validationResult.isValid,
-        errors: validationResult.errors,
+        isValid: isValid,
+        errors: errors,
         isDuplicate: false
       })
 
-      if (!validationResult.isValid) {
+      if (!isValid) {
         snackbar.showSnackBar({
           msg: `Error processing ${file.name}`,
           error: true
@@ -279,7 +283,7 @@ const handleEventConfUpload = async (e: Event) => {
         if (isDuplicateFile(file.name, eventFiles.value)) {
           continue
         }
-        const validationResult = await validateEventConfigFile(file)
+        const { isValid, errors } = await validateEventConfigFile(file)
         if (eventFiles.value.length >= MAX_FILES_UPLOAD) {
           snackbar.showSnackBar({
             msg: `You can upload a maximum of ${MAX_FILES_UPLOAD} files at a time.`,
@@ -289,11 +293,11 @@ const handleEventConfUpload = async (e: Event) => {
         } else {
           eventFiles.value.push({
             file,
-            isValid: validationResult.isValid,
-            errors: validationResult.errors,
+            isValid: isValid,
+            errors: errors,
             isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
           })
-          if (!validationResult.isValid) {
+          if (!isValid) {
             snackbar.showSnackBar({
               msg: `Error processing file ${file.name}.`,
               error: true

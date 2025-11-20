@@ -182,7 +182,6 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows[0].get('[data-test="view-button"]').isVisible()).toBe(true)
     expect(rows[0].text()).toContain('TestSource')
     expect(rows[0].text()).toContain('Cisco')
-    expect(rows[0].text()).toContain('Test description')
     expect(rows[0].text()).toContain('5')
     expect(rows[0].text()).toContain('Enabled')
 
