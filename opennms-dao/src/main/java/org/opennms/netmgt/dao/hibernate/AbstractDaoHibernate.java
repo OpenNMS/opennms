@@ -23,7 +23,6 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,21 +40,17 @@ import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.metadata.ClassMetadata;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateQueryException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -426,17 +421,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @Override
     public K save(final T entity) throws DataAccessException {
         try {
-
-            K returnVal = null;
-
-            if(entity instanceof EventConfEvent){
-                String jsonString = ((EventConfEvent) entity).getContent();
-                returnVal = (K) getHibernateTemplate().save(entity);
-                updateJsonForEventConfEvent(((EventConfEvent) entity).getId(), jsonString);
-            }else {
-                returnVal = (K) getHibernateTemplate().save(entity);
-            }
-            return returnVal;
+            return (K) getHibernateTemplate().save(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
             throw e;
@@ -452,14 +437,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @Override
     public void saveOrUpdate(final T entity) throws DataAccessException {
         try {
-            if(entity instanceof EventConfEvent){
-                String jsonContent = ((EventConfEvent) entity).getContent();
-                getHibernateTemplate().saveOrUpdate(entity);
-                updateJsonForEventConfEvent(((EventConfEvent) entity).getId(), jsonContent);
-            }else {
-                getHibernateTemplate().saveOrUpdate(entity);
-            }
-
+            getHibernateTemplate().saveOrUpdate(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
             throw e;
@@ -522,25 +500,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             hqlQuery.setMaxResults(limit);   // limit
 
             return hqlQuery.list();
-        });
-    }
-
-
-    public int updateJsonForEventConfEvent(Long eventConfEventId, String jsonString){
-
-        return getHibernateTemplate().execute(session -> {
-           int updatedRows = 0;
-            try {
-               String sql = "UPDATE eventconf_events SET content = CAST(:json AS jsonb) WHERE id = :id";
-               SQLQuery updateQuery = session.createSQLQuery(sql);
-               updateQuery.setParameter("json", jsonString);
-               updateQuery.setParameter("id", eventConfEventId);
-               updatedRows = updateQuery.executeUpdate();
-           }catch (Exception ex){
-               LOG.warn("Error while updateJsonForEventConfEvent {} for eventConfId {} and jsonString ", ex, eventConfEventId, jsonString);
-           }
-
-            return updatedRows;
         });
     }
 }

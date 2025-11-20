@@ -225,17 +225,17 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	private void parseAndAddEvent(Events eventsForSource, EventConfEvent dbEvent) {
-        String xmlContent = dbEvent.getXmlContent();
-        if (xmlContent != null && !xmlContent.trim().isEmpty()) {
-            try {
-                Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
-                if (event != null) {
-                    eventsForSource.addEvent(event);
-                }
-            } catch (Exception e) {
-                LOG.warn("Failed to parse event XML content for UEI {}", dbEvent.getUei(), e);
-            }
-        }
+		String xmlContent = dbEvent.getXmlContent();
+		if (xmlContent != null && !xmlContent.trim().isEmpty()) {
+			try {
+				Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
+				if (event != null) {
+					eventsForSource.addEvent(event);
+				}
+			} catch (Exception e) {
+				LOG.warn("Failed to parse event XML content for UEI {}", dbEvent.getUei(), e);
+			}
+		}
 	}
 
 

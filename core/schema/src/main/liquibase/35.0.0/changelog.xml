@@ -76,9 +76,6 @@
             <column name="xml_content" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="content" type="jsonb" defaultValue="{}">
-                <constraints nullable="false"/>
-            </column>
             <column name="created_time" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
@@ -135,10 +132,22 @@
                 endDelimiter=";"
                 stripComments="true"/>
     </changeSet>
+    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-add-content-column">
+        <addColumn tableName="eventconf_events">
+            <column name="content" type="jsonb" defaultValue="{}">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="eventconf_events" columnName="content" />
+        </rollback>
+    </changeSet>
     <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-update">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*) FROM eventconf_events
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN EXISTS (
+                    SELECT 1 FROM eventconf_events WHERE content = '{}'::jsonb
+                ) THEN 1 ELSE 0 END;
             </sqlCheck>
         </preConditions>
         <sqlFile

@@ -52,6 +52,4 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     EventConfEvent findBySourceIdAndEventId(Long sourceId,Long eventId);
 
     void deleteByEventIds(Long sourceId,List<Long> eventIds);
-
-    int updateJsonForEventConfEvent(Long eventConfEventId, String jsonString);
 }

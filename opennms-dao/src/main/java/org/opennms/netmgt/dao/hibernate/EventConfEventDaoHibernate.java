@@ -144,11 +144,8 @@ public class EventConfEventDaoHibernate
 
         int batchSize = 50;
         int i = 0;
-        Map<Long, String> jsonMap = new HashMap<>();
         for (EventConfEvent event : events) {
-            String json = event.getContent();
             getHibernateTemplate().save(event);
-            jsonMap.put(event.getId(), json);
             i++;
             if (i % batchSize == 0) {
                 getHibernateTemplate().flush();
@@ -157,7 +154,6 @@ public class EventConfEventDaoHibernate
         }
         getHibernateTemplate().flush();
         getHibernateTemplate().clear();
-        jsonMap.forEach(this::updateJsonForEventConfEvent);
     }
 
     /**
@@ -229,10 +225,4 @@ public class EventConfEventDaoHibernate
     public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
         return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
     }
-
-
-   public int updateJsonForEventConfEvent(Long eventConfEventId, String jsonString){
-        return super.updateJsonForEventConfEvent(eventConfEventId, jsonString);
-   }
-
 }
