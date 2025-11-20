@@ -15,6 +15,11 @@
   "version": "",
   "menus": [
     {
+      "id": "emptyHeader",
+      "name": "",
+      "type": "header"
+    },
+    {
       "id": "operationsMenu",
       "name": "Operations",
       "url": "#",
@@ -71,7 +76,7 @@
       "name": "Inventory",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/Server",
+      "icon": "network/Inventory",
       "roles": null,
       "items": [
         {
@@ -164,7 +169,7 @@
         {
           "id": "customizeEvents",
           "name": "Customize Events",
-          "url": "admin/manageEvents.jsp",
+          "url": "ui/index.html#/event-config",
           "locationMatch": "",
           "roles": null
         },
@@ -301,14 +306,14 @@
           "name": "Add a Single Node",
           "url": "admin/ng-requisitions/quick-add-node.jsp",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "deleteNodes",
           "name": "Delete Nodes",
           "url": "admin/deleteNodes",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         }
       ]
     },
@@ -320,7 +325,7 @@
       "name": "Distributed Monitoring",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ViewDetails",
+      "icon": "network/DistributedMonitoring",
       "roles": null,
       "items": [
         {
@@ -440,7 +445,7 @@
       "name": "Administration",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ManageProfile",
+      "icon": "network/Configuration",
       "roles": null,
       "items": [
         {
@@ -469,7 +474,7 @@
           "name": "Flow Classification",
           "url": "admin/classification/index.jsp",
           "locationMatch": null,
-          "roles": ["ROLE_FLOW_MANAGER"]
+          "roles": ["ROLE_ADMIN", "ROLE_FLOW_MANAGER"]
         },
         {
           "id": "scheduledOutages",
@@ -704,13 +709,6 @@
     "url": "admin/ng-requisitions/quick-add-node.jsp#/",
     "locationMatch": null,
     "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
-  },
-  "flowsMenu": {
-    "id": "flowMenu",
-    "name": "Flows Management",
-    "url": "admin/classification/index.jsp",
-    "locationMatch": null,
-    "roles": ["ROLE_FLOW_MANAGER"]
   },
   "configurationMenu": {
     "id": "configurationMenu",

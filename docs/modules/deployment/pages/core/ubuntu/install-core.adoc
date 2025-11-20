@@ -30,25 +30,3 @@ sudo apt-mark hold libopennms-java \
               opennms-common \
               opennms-db
 ----
-
-.Verify directory structure with the tree command
-[source, console]
-----
-sudo apt -y install tree
-tree /opt/opennms -L 1
-----
-
-.Directory structure after successful installation
-[source, output]
-----
-/opt/opennms
-├── bin
-├── data
-├── deploy
-├── etc -> /etc/opennms
-├── jetty-webapps
-├── lib -> ../java/opennms
-├── logs -> /var/log/opennms
-├── share -> /var/lib/opennms
-└── system
-----

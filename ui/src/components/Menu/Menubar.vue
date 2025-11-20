@@ -25,8 +25,17 @@
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
       <template v-if="mainMenu.username">
-        <UserNotificationsMenuItem :ref="userNotificationsMenu" />
-        <UserSelfServiceMenuItem />
+        <UserNotificationsMenuItem
+          :expanded="currentDropdownMenu === DropdownMenuType.UserNotifications"
+          @menuShow="() => onMenuShow(DropdownMenuType.UserNotifications)"
+          @menuHide="() => onMenuHide(DropdownMenuType.UserNotifications)"
+        />
+
+        <UserSelfServiceMenuItem
+          :expanded="currentDropdownMenu === DropdownMenuType.SelfService"
+          @menuShow="() => onMenuShow(DropdownMenuType.SelfService)"
+          @menuHide="() => onMenuHide(DropdownMenuType.SelfService)"
+        />
       </template>
 
       <!-- <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
@@ -40,9 +49,11 @@ import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 
-import IconLogo from '@/assets/LogoHorizon.vue'
+// see vite.config.ts, resolve.alias for the actual logo file that is imported
+import IconLogo from './src/assets/ProductLogo.vue'
 import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { DropdownMenuType } from './types'
 import { MainMenu } from '@/types/mainMenu'
 import Search from './Search.vue'
 import UserNotificationsMenuItem from './UserNotificationsMenuItem.vue'
@@ -55,7 +66,7 @@ const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
 const light = 'open-light'
 const dark = 'open-dark'
 const outsideClick = ref()
-const userNotificationsMenu = ref()
+const currentDropdownMenu = ref<DropdownMenuType>(DropdownMenuType.None)
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButton ?? false))
@@ -68,7 +79,17 @@ useOutsideClick(outsideClick.value, () => {
 })
 
 const resetMenuItems = () => {
-  userNotificationsMenu.value?.hideMenu()
+  currentDropdownMenu.value = DropdownMenuType.None
+}
+
+const onMenuShow = (val: DropdownMenuType) => {
+  currentDropdownMenu.value = val
+}
+
+const onMenuHide = (val: DropdownMenuType) => {
+  if (currentDropdownMenu.value === val) {
+    currentDropdownMenu.value = DropdownMenuType.None
+  }
 }
 
 const onAddNode = () => {
@@ -220,6 +241,8 @@ onMounted(async () => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
+  font-family: var(--feather-header-font-family);
+  font-size: 0.875rem;
   margin-right: 1em;
 
   .date-formatted-date {
@@ -231,7 +254,6 @@ onMounted(async () => {
     display: flex;
     justify-content: right;
     font-weight: 800;
-    font-size: 1em;
   }
 }
 </style>

@@ -4,10 +4,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Prebuild
-          command: |
-            yarn global add node-gyp@9.4.1
-      - run:
           name: Build
           command: |
             cd ui && yarn install && yarn build && yarn test

@@ -58,6 +58,10 @@ An additional preliminary message and response regular expression pair is availa
 | This is the DNS hostname to send as part of the TLS negotiation, known as server name indication (SNI) (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546], section 3.1.)
 | n/a
 
+| resolve-server-name
+| Attempt to resolve the `server-name` string to an IP address, and use that IP for TLS negotiation.
+| false
+
 | starttls-preamble kbd:[{}]
 | Preliminary message to send to server prior to STARTTLS command.
 | n/a

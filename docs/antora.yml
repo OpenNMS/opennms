@@ -1,5 +1,5 @@
 name: horizon
-version: '34-SNAPSHOT'
+version: '34'
 title: Horizon
 asciidoc:
   attributes:
@@ -13,14 +13,14 @@ asciidoc:
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
     compatible-rhel9: '9.x'
-    compatible-ubuntu: '20.04 LTS'
+    compatible-ubuntu: '24.04 LTS'
     compatible-debian: '9 - 11'
     compatible-rocky-linux: '9.x'
     compatible-opennms-plugin: '9 - 11.2'
     compatible-oia: '1.6.1'
     compatible-cassandra: '4.17.0'
     compatible-elasticsearch: '8.18.2'
-    compatible-javajdk: 'OpenJDK 17'
+    compatible-javajdk: '17'
     compatible-kafka: '1.x - 3.x'
     compatible-postgresql: '13.x - 15.x'
     compatible-rrdtool: '1.7.x'

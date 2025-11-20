@@ -30,19 +30,19 @@
       <attribute name="factory" type="string" use="optional" default="org.opennms.core.db.HikariCPConnectionFactory">
         <annotation><documentation>The connection pool implementation to use.</documentation></annotation>
       </attribute>
-      <attribute name="idleTimeout" type="int" use="optional" default="600">
+      <attribute name="idleTimeout" type="string" use="optional" default="600">
         <annotation><documentation>How long, in seconds, an idle connection is kept in the pool before it is removed.</documentation></annotation>
       </attribute>
-      <attribute name="loginTimeout" type="int" use="optional" default="3">
+      <attribute name="loginTimeout" type="string" use="optional" default="3">
         <annotation><documentation>How long, in seconds, to attempt to make a connection to the database.</documentation></annotation>
       </attribute>
-      <attribute name="minPool" type="int" use="optional" default="10">
+      <attribute name="minPool" type="string" use="optional" default="10">
         <annotation><documentation>The minimum number of pooled connections to retain.</documentation></annotation>
       </attribute>
-      <attribute name="maxPool" type="int" use="optional" default="50">
+      <attribute name="maxPool" type="string" use="optional" default="50">
         <annotation><documentation>The maximum number of pooled connections to retain.</documentation></annotation>
       </attribute>
-      <attribute name="maxSize" type="int" use="optional" default="500">
+      <attribute name="maxSize" type="string" use="optional" default="500">
         <annotation><documentation>The maximum number of connections that can be created.</documentation></annotation>
       </attribute>
       
@@ -63,7 +63,7 @@
       <attribute name="database-name" type="string" use="optional" default="opennms" />
       <attribute name="schema-name" type="string" use="optional" />
       <attribute name="url" type="string" use="required" />
-      <attribute name="class-name" type="string" use="required" />
+      <attribute name="class-name" type="string" use="optional" default="org.postgresql.Driver" />
       <attribute name="user-name" type="string" use="optional" />
       <attribute name="password" type="string" use="optional" />
     </complexType>

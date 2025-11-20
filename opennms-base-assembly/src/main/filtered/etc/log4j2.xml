@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- WARN here is just for internal log4j messages and does not effect logging in general -->
+<!-- WARN here is just for internal log4j messages and does not affect logging in general -->
 <configuration status="WARN" monitorInterval="60">
 
   <!--
@@ -23,10 +23,33 @@
   <properties>
     <property name="prefix">uncategorized</property>
     <property name="logdir">${install.logs.dir}</property>
+      <!-- We allow to configure the console logging output with:
+                     * ConsolePlain: Default standard out formatting on standard out
+                     * ConsoleJson: JSON formatted output on standard out
+                     * ConsoleNull: Disabled output
+
+                   You can use these output formats for:
+                     * Startup output: just related to the manager and invoker
+                     * Daemon output: rest of the OpenNMS daemons, e.g. Poller, Collectd, etc.
+
+                   The daemon output is by default disabled with "ConsoleNull" on standard out and just goes to the log files.
+                   Daemons will always log into their local logfiles and standard output in the plain and json format is an
+                   addition.
+
+                   You can control it with environment variables it with OPENNMS_LOG_CONSOLE_STARTUP_OUTPUT
+                     * OPENNMS_LOG_CONSOLE_STARTUP_OUTPUT: default ConsolePlain on standard out
+                     * OPENNMS_LOG_CONSOLE_DAEMON_OUTPUT: default ConsoleNull disables logging on standard out
+
+                   It can also be controlled with Java system args:
+                     * -Dopennms.log.console.startup.output
+                     * -Dopennms.log.console.daemon.output
+              -->
+      <property name="console.startup.output">\${env:OPENNMS_LOG_CONSOLE_STARTUP_OUTPUT:-\${sys:opennms.log.console.startup.output:-ConsolePlain}}</property>
+      <property name="console.daemon.output">\${env:OPENNMS_LOG_CONSOLE_DAEMON_OUTPUT:-\${sys:opennms.log.console.daemon.output:-ConsoleNull}}</property>
   </properties>
 
   <!--
-    This section specifes how log messages are directed to log files.  The below indicates
+    This section specifies how log messages are directed to log files.  The below indicates
     the log messages are sent to files of the form logs/${prefix}.log.  Each message is placed in 
     a log file corresponding to its MDC prefix.  This happens even if the prefix is not specified
     above.
@@ -72,115 +95,163 @@
         </Route>
       </Routes>
     </Routing>
-    <Console name="console" target="SYSTEM_OUT" follow="true">
+
+    <!-- Plain default format logging on stdout -->
+    <Console name="ConsolePlain" target="SYSTEM_OUT" follow="true">
       <PatternLayout>
         <pattern>[%p] %m%n</pattern>
       </PatternLayout>
     </Console>
+
+    <!-- JSON format logging on stdout -->
+    <Console name="ConsoleJson" target="SYSTEM_OUT" follow="true">
+      <JsonLayout complete="false" compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+        <KeyValuePair key="component" value="\${env:OPENNMS_LOG_COMPONENT:-core}"/>
+        <KeyValuePair key="distribution" value="\${env:OPENNMS_LOG_DISTRIBUTION:-${product.name}}"/>
+        <KeyValuePair key="environment" value="\${env:OPENNMS_ENVIRONMENT:-unspecified}"/>
+        <KeyValuePair key="instance" value="\${env:OPENNMS_INSTANCE_ID:-OpenNMS}"/>
+        <KeyValuePair key="hostname" value="\${env:HOSTNAME:-localhost}"/>
+        <KeyValuePair key="timestamp" value="\${date:yyyy-MM-dd'T'HH:mm:ss.SSSXXX}"/>
+        <KeyValuePair key="version" value="${install.version}"/>
+      </JsonLayout>
+    </Console>
+
+    <Console name="ConsoleNull" target="SYSTEM_OUT">
+      <Filters>
+        <DenyAllFilter/>
+      </Filters>
+    </Console>
   </appenders>
-
   <loggers>
-
     <!-- we always want this at info for the instrumentation log reader -->
     <logger name="org.opennms.netmgt.collectd.DefaultCollectdInstrumentation" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
 
     <!-- write startup/shutdown logs to stdout or output.log as well as manager.log -->
     <logger name="org.opennms.netmgt.vmmgr.Invoker" additivity="true" level="INFO">
-      <appender-ref ref="console"/>
+      <appender-ref ref="\${console.startup.output}"/>
     </logger>
     <logger name="org.opennms.netmgt.vmmgr.Manager" additivity="true" level="INFO">
-      <appender-ref ref="console"/>
+      <appender-ref ref="\${console.startup.output}"/>
     </logger>
 
-    <!-- 
+    <!--
       Set the threshold for individual loggers that may be too chatty at the default 
       level for their prefix.
     -->
     <logger name="com.google.gwt.user.server" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="com.mchange" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="httpclient" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="net.sf.jasperreports" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.bsf" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.camel.component.jms" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.commons" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.coyote" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.mina.filter.logging" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.asteriskjava" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.gwtwidgets" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.hibernate" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.hibernate.sql" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.hibernate.cfg.annotations.EntityBinder" additivity="false" level="WARN">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.mortbay" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.quartz" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.springframework" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="snaq.db" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="com.datastax.driver" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.snmp4j.transport" additivity="false" level="ERROR">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.apache.kafka" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender" />
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.http.HttpParser" additivity="false" level="ERROR">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.io.ChannelEndPoint" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.server.HttpChannel" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.server.HttpConnection" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="org.eclipse.jetty.server.HttpInput" additivity="false" level="INFO">
-     <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" additivity="false" level="ERROR">
-     <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
     </logger>
 
 
@@ -246,6 +317,7 @@
       </DynamicThresholdFilter>
 
       <appender-ref ref="RoutingAppender"/>
+      <appender-ref ref="\${console.daemon.output}"/>
 
     </root>
   </loggers>

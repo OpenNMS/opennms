@@ -53,7 +53,7 @@ Remove from situation and clean multiple Alarms .
 * `situationId` Integer – ID of the existing situation.
 * `alarmIdList` List – Comma-separated list of alarm IDs to remove from situation and clear.
 
-| /api/v2/situations/accepted/{id}
+| /api/v2/situations/accepted/\{id}
 a|
 Accept Situation .
 

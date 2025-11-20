@@ -134,6 +134,12 @@ The following key is available under this context:
 The special context `scv` provides access to values stored in the xref:deep-dive/admin/configuration/scv-configuration.adoc[secure credentials vault].
 The key used in this context must consist of the alias and the attribute of the credential, separated by a colon (for example, `${scv:mydevice:password}` will access the `password` attribute of a credential named `mydevice`).
 
+[[ga-metadata-env]]
+=== Environment variables
+
+The special context `env` provides access to environment variables.
+The key used in this context is the name of the environment variable (for example, `${env:POSTGRES_HOST|localhost}` will access the `POSTGRES_HOST` environment variable with a default value of `localhost`).
+
 [[ga-metadata-webui]]
 == Add metadata through the web UI
 
@@ -225,7 +231,7 @@ ${scv:${requisition:credentials|node:label}:password}
 
 === Test an expression
 
-Test an expression using the following Karaf shell command:
+Test an expression using the following xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell] command:
 
 [source, karaf]
 admin@opennms> opennms:metadata-test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
@@ -269,8 +275,9 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
 * <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
 
-Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scope `scv` in order to reference credentials in the Secure Credentials Vault:
+Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scopes `scv` and `env`:
 
+* xref:reference:configuration/core-docker.adoc[Database configuration]: opennms-datasources.xml
 * xref:operation:deep-dive/elasticsearch/introduction.adoc[Elasticsearch integration]: elastic-configuration.xml
 * xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: http-datacollection-config.xml
 * xref:operation:deep-dive/alarms/ifttt-integration.adoc[IFTTT integration]: ifttt-config.xml

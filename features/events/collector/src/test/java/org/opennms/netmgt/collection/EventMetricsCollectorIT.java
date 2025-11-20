@@ -26,18 +26,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
-import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.api.StrategyDefinition;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
-import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
-import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
@@ -47,7 +44,7 @@ import org.opennms.netmgt.events.api.model.ImmutableEvent;
 import org.opennms.netmgt.events.api.model.ImmutableParm;
 import org.opennms.netmgt.events.api.model.ImmutableValue;
 import org.opennms.netmgt.mock.MockPersister;
-import org.opennms.netmgt.mock.MockResourceType;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -62,7 +59,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -95,8 +91,8 @@ public class EventMetricsCollectorIT {
     private EventMetricsCollector getCollector(Persister persister) throws IOException {
         // load testing eventconf
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        eventConfDao.setConfigResource(new FileSystemResource("src/test/resources/events/collection.events.xml"));
-        eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/events/collection.events.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // fake interface info
         OnmsNode node = new OnmsNode();

@@ -138,7 +138,7 @@
     </action>
     <action>
         <label>Customize Event Configurations</label>
-        <url>admin/manageEvents.jsp</url>
+        <url>ui/index.html#/event-config</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

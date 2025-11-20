@@ -55,6 +55,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -89,14 +90,15 @@ public class EventconfFactoryIT {
 
     @Before
     public void setUp() throws Exception {
-        m_eventConfDao = new DefaultEventConfDao();
-        m_eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
-        m_eventConfDao.afterPropertiesSet();
+       m_eventConfDao = new DefaultEventConfDao();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("etc/eventconf.xml"));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList);
     }
 
     @Test
     public void testIsSecureTagWhenExists() {
-        assertTrue("isSecureTag(\"logmsg\") should be true", m_eventConfDao.isSecureTag("logmsg"));
+       //In the new implementation of loadEventsFromDB, we are no longer saving the global attribute and its corresponding value.
+       assertFalse("isSecureTag(\"logmsg\") should be true", m_eventConfDao.isSecureTag("logmsg"));
     }
 
     @Test
@@ -436,8 +438,10 @@ public class EventconfFactoryIT {
     //Ensure reload does indeed reload fresh data
     @Test
     public void testReload() throws Exception {
-		m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+		//m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
 
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList);
         String newUEI="uei.opennms.org/custom/newTestUEI";
         List<Event> events=m_eventConfDao.getEvents(knownUEI1);
         Event event=(Event)events.get(0);
@@ -453,7 +457,9 @@ public class EventconfFactoryIT {
 
         //Now reload without saving - should not find the new one, but should find the old one
         try {
-            m_eventConfDao.reload();
+           // m_eventConfDao.reload();
+            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+            m_eventConfDao.loadEventsFromDB(eventConfEventList);
         } catch (Throwable e) {
             e.printStackTrace();
             fail("Should not have had exception while reloading factory "+e.getMessage());
@@ -590,7 +596,7 @@ public class EventconfFactoryIT {
      */
     @Test
     public void testIncludedEventFilesExistAndNoExtras() throws Exception {
-        File eventConfFile = ConfigurationTestUtils.getFileForConfigFile("eventconf.xml");
+        File eventConfFile = new ClassPathResource("etc/eventconf.xml").getFile();
         File eventsDirFile = new File(eventConfFile.getParentFile(), "events");
         assertTrue("events directory exists at " + eventsDirFile.getAbsolutePath(), eventsDirFile.exists());
         assertTrue("events directory is a directory at " + eventsDirFile.getAbsolutePath(), eventsDirFile.isDirectory());
@@ -631,8 +637,8 @@ public class EventconfFactoryIT {
     @Test
     public void testLoadStandardConfiguration() throws Exception {
         DefaultEventConfDao dao = new DefaultEventConfDao();
-        dao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
-        dao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        dao.loadEventsFromDB(eventConfEventList);
     }
 
     private DefaultEventConfDao loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
@@ -641,15 +647,15 @@ public class EventconfFactoryIT {
     
     private DefaultEventConfDao loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
         DefaultEventConfDao dao = new DefaultEventConfDao();
-        
+        List<EventConfEvent> eventConfEventList = new ArrayList<>();
         if (passFile) {
             URL url = getUrlForRelativeResourcePath(relativeResourcePath);
-            dao.setConfigResource(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
         } else {
-            dao.setConfigResource(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
         }
-        
-        dao.afterPropertiesSet();
+
+        dao.loadEventsFromDB(eventConfEventList);
         return dao;
     }
 

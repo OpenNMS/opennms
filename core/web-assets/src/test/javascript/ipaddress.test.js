@@ -30,3 +30,7 @@ test('isValidIPAddress(1.2.3.4)', () => {
 test('isValidIPAddress(::1)', () => {
 	expect(window.isValidIPAddress('::1')).toBeTruthy();
 });
+
+test('isValidIPAddressRange', () => {
+  expect(window.checkIpRange('10.0.0.0', '10.0.0.10')).toBeTruthy();
+});
