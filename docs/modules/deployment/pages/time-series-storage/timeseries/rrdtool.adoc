@@ -171,3 +171,9 @@ NOTE: The first data collection creates RRDtool files with extension `.rrd`.
 --
 
 ====
+
+== Converting JRobin data to RRDTool data
+
+JRobin, the pure-Java RRD implementation has been removed. In order to convert existing JRobin `.jrb` files to RRDTool `.rrd` files you can use the
+JRobin to RRDtool Converter. Refer to https://github.com/opennms-forge/jrobin-to-rrdtool-converter for detailed information on how to download, build and use the utility.
+
