@@ -383,6 +383,17 @@
     "@featherds/utils" "^0.12.43"
     vue "^3.1.0-0"
 
+"@featherds/back-button@0.12.43":
+  version "0.12.43"
+  resolved "https://registry.yarnpkg.com/@featherds/back-button/-/back-button-0.12.43.tgz#1a3ce80b83fe8d0f379dd720f7d7f52a7fe85394"
+  integrity sha512-8dtB4ZFqv5YZyOXVhXLUV/jo3cQL1Qx2F9ELhh9Wxi1icHd/GuQLbCNZVU7apW7qwBdzQEp18pBglyG8xE60Ow==
+  dependencies:
+    "@featherds/icon" "^0.12.43"
+    "@featherds/ripple" "^0.12.43"
+    "@featherds/styles" "^0.12.43"
+    "@featherds/utils" "^0.12.43"
+    vue "^3.1.0-0"
+
 "@featherds/button@0.12.43", "@featherds/button@^0.12.43":
   version "0.12.43"
   resolved "https://registry.yarnpkg.com/@featherds/button/-/button-0.12.43.tgz#6cfc701caa96bfade76cf2bf0f05b768b0700dad"
