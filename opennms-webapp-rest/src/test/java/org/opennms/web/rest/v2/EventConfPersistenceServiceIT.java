@@ -874,5 +874,78 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> updatedEventsBySource = eventConfEventDao.findBySourceId(eventConfSource.getId());
         assertEquals(0, updatedEventsBySource.size());
     }
+
+    @Test
+    @Transactional
+    public void testFilterConfEventsBySourceId_ShouldReturnFilteredAndSortedResults() {
+        String filename1 = "vendor-cisco.xml";
+        String username = "filter_test_user";
+        Date now = new Date();
+
+        // First metadata (Cisco vendor)
+        EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("Cisco")
+                .description("Cisco events")
+                .build();
+
+        Event ciscoEvent = new Event();
+        ciscoEvent.setUei("uei.opennms.org/vendor/cisco");
+        ciscoEvent.setEventLabel("Cisco Event");
+        ciscoEvent.setDescr("Cisco test event");
+        ciscoEvent.setSeverity("Major");     // 🔥 higher severity
+        Events ciscoEvents = new Events();
+        ciscoEvents.getEvents().add(ciscoEvent);
+
+        Event ciscodEvents2 = new Event();
+        ciscodEvents2.setUei("uei.opennms.org/vendor/cisco1");
+        ciscodEvents2.setEventLabel("HP Event");
+        ciscodEvents2.setDescr("HP test event");
+        ciscodEvents2.setSeverity("Normal");
+        ciscoEvents.getEvents().add(ciscodEvents2);
+        eventConfPersistenceService.persistEventConfFile(ciscoEvents, ciscoMetadata);
+
+        EventConfSource  eventConfSource = eventConfSourceDao.findByName(filename1);
+        // --- FETCH ALL EVENTS AND VERIFY SORTING ---
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(
+                eventConfSource.getId(), "", "severity", "desc", 0, 0, 10);
+
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.containsKey("eventConfEventList"));
+
+        List<EventConfEvent> eventConfEventList = (List<EventConfEvent>) result.get("eventConfEventList");
+        Assert.assertNotNull(eventConfEventList);
+        Assert.assertEquals(2, eventConfEventList.size());
+
+        // 🔥 Validate sorting by severity (Major should be first)
+        Assert.assertEquals("Normal", eventConfEventList.get(0).getSeverity());
+
+        // 🔥 Validate second event is lower severity
+        Assert.assertEquals("Major", eventConfEventList.get(1).getSeverity());
+
+
+        // --- FETCH ALL EVENTS AND VERIFY SORTING ---
+        Map<String, Object> ascResult = eventConfPersistenceService.filterConfEventsBySourceId(
+                eventConfSource.getId(), "", "severity", "asc", 0, 0, 10);
+
+        Assert.assertNotNull(ascResult);
+        Assert.assertTrue(ascResult.containsKey("eventConfEventList"));
+
+        List<EventConfEvent> eventConfEventList1 = (List<EventConfEvent>) ascResult.get("eventConfEventList");
+        Assert.assertNotNull(eventConfEventList1);
+        Assert.assertEquals(2, eventConfEventList1.size());
+
+        // 🔥 Validate sorting by severity (Major should be first)
+        Assert.assertEquals("Major", eventConfEventList1.get(0).getSeverity());
+
+        // 🔥 Validate second event is lower severity
+        Assert.assertEquals("Normal", eventConfEventList1.get(1).getSeverity());
+
+    }
+
 }
 

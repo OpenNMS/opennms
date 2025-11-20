@@ -32,8 +32,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
@@ -68,9 +66,8 @@ public class EventConfEvent implements Serializable {
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="severity",length = 256,nullable = false)
-    private OnmsSeverity severity;
+    @Column(name="severity", length = 256, nullable = false)
+    private String severity;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_time")
@@ -162,12 +159,14 @@ public class EventConfEvent implements Serializable {
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
-    public OnmsSeverity getSeverity() {
+
+    public String getSeverity() {
         return severity;
     }
 
-    public void setSeverity(OnmsSeverity severity) {
+    public void setSeverity(String severity) {
         this.severity = severity;
     }
+
 
 }
