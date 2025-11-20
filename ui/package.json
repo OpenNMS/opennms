@@ -28,6 +28,7 @@
     "@featherds/app-rail": "0.12.43",
     "@featherds/autocomplete": "0.12.43",
     "@featherds/button": "0.12.43",
+    "@featherds/back-button": "0.12.43",
     "@featherds/checkbox": "0.12.43",
     "@featherds/chips": "0.12.43",
     "@featherds/date-input": "0.12.43",
