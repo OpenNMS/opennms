@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rrd.model;
+package org.opennms.netmgt.rrd.util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,6 +32,8 @@ import javax.xml.transform.sax.SAXSource;
 
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdException;
+import org.jrobin.core.timespec.TimeParser;
+import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
@@ -43,12 +45,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The Class RRD Conversion Utilities.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ *
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class RrdConvertUtils {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(RrdConvertUtils.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(RrdConvertUtils.class);
 
     /**
      * Instantiates a new RRDtool Convert Utils.
@@ -68,6 +70,18 @@ public class RrdConvertUtils {
         RRDv1 rrd = JaxbUtils.unmarshal(RRDv1.class, jrb.getXml());
         jrb.close();
         return rrd;
+    }
+
+    public static long[] getTimestamps(final String startTime, final String endTime) throws org.opennms.netmgt.rrd.RrdException {
+        final TimeParser startParser = new TimeParser(startTime);
+        final TimeParser endParser = new TimeParser(endTime);
+        try {
+            TimeSpec specStart = startParser.parse();
+            TimeSpec specEnd = endParser.parse();
+            return TimeSpec.getTimestamps(specStart, specEnd);
+        } catch (Exception e) {
+            throw new org.opennms.netmgt.rrd.RrdException(e);
+        }
     }
 
     /**
@@ -110,7 +124,7 @@ public class RrdConvertUtils {
         RrdDb targetJrb = new RrdDb(targetFile.getCanonicalPath(), RrdDb.PREFIX_XML + outputXmlFile.getAbsolutePath());
         targetJrb.close();
         if(!outputXmlFile.delete()) {
-        	LOG.warn("Could not delete file: {}", outputXmlFile.getPath());
+            LOG.warn("Could not delete file: {}", outputXmlFile.getPath());
         }
     }
 
@@ -133,7 +147,7 @@ public class RrdConvertUtils {
             Process process = Runtime.getRuntime().exec(new String[]{ rrdBinary, "restore", xmlDest.getAbsolutePath(), targetFile.getAbsolutePath() });
             process.waitFor();
             if(!xmlDest.delete()) {
-            	LOG.warn("Could not delete file: {}", xmlDest.getPath());
+                LOG.warn("Could not delete file: {}", xmlDest.getPath());
             }
         } catch (Exception e) {
             throw new RrdException("Can't restore RRD", e);

@@ -21,20 +21,6 @@
  */
 package org.opennms.protocols.xml.collector;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.isNotNull;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jrobin.core.Datasource;
-import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,7 +50,10 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
+import org.opennms.netmgt.rrd.model.v3.DS;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.protocols.http.collector.HttpCollectionHandler;
 import org.opennms.protocols.json.collector.DefaultJsonCollectionHandler;
 import org.opennms.protocols.xml.config.XmlDataCollection;
@@ -73,6 +62,17 @@ import org.opennms.protocols.xml.config.XmlRrd;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * The Test Class for HTTP Data Collection.
@@ -108,6 +108,7 @@ public class HttpDataCollectionIT {
     @SuppressWarnings("deprecation")
     @Before
     public void setUp() throws Exception {
+        System.setProperty("rrd.binary", "rrdtool");
         MockLogAppender.setupLogging();
         DefaultDataCollectionConfigDao dao = new DefaultDataCollectionConfigDao();
         dao.setConfigDirectory("src/test/resources/etc/datacollection");
@@ -115,7 +116,7 @@ public class HttpDataCollectionIT {
         dao.afterPropertiesSet();
         DataCollectionConfigFactory.setInstance(dao);
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
         m_temporaryFolder.newFolder("snmp");
@@ -174,12 +175,13 @@ public class HttpDataCollectionIT {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
-        RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/count-stats.jrb"));
-        Assert.assertNotNull(jrb);
-        Assert.assertEquals(1, jrb.getDsCount());
-        Datasource ds = jrb.getDatasource("count");
-        Assert.assertNotNull(ds);
-        Assert.assertEquals(Double.valueOf(5), Double.valueOf(ds.getLastValue()));
+        final RRDv3 rrd = RrdConvertUtils.dumpRrd(new File(getSnmpRoot(), "1/count-stats.rrd"));
+
+        Assert.assertNotNull(rrd);
+        Assert.assertEquals(1, rrd.getDataSources().size());
+        Optional<DS> ds = rrd.getDataSources().stream().filter(d -> d.getName().equals("count")).findFirst();
+        Assert.assertTrue(ds.isPresent());
+        Assert.assertEquals(Double.valueOf(5), Double.valueOf(ds.get().getLastDs()));
     }
 
     /**
@@ -211,12 +213,13 @@ public class HttpDataCollectionIT {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
-        RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/market.jrb"));
-        Assert.assertNotNull(jrb);
-        Assert.assertEquals(2, jrb.getDsCount());
-        Datasource ds = jrb.getDatasource("nasdaq");
-        Assert.assertNotNull(ds);
-        Assert.assertEquals(Double.valueOf(3578.30), Double.valueOf(ds.getLastValue()));
+        final RRDv3 rrd = RrdConvertUtils.dumpRrd(new File(getSnmpRoot(), "1/market.rrd"));
+
+        Assert.assertNotNull(rrd);
+        Assert.assertEquals(2, rrd.getDataSources().size());
+        Optional<DS> ds = rrd.getDataSources().stream().filter(d -> d.getName().equals("nasdaq")).findFirst();
+        Assert.assertTrue(ds.isPresent());
+        Assert.assertEquals(Double.valueOf(3578.30), Double.valueOf(ds.get().getLastDs()));
     }
 
     /**
@@ -248,12 +251,13 @@ public class HttpDataCollectionIT {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
-        RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/person-stats.jrb"));
-        Assert.assertNotNull(jrb);
-        Assert.assertEquals(3, jrb.getDsCount());
-        Datasource ds = jrb.getDatasource("contributions");
-        Assert.assertNotNull(ds);
-        Assert.assertEquals(Double.valueOf(500), Double.valueOf(ds.getLastValue()));
+        final RRDv3 rrd = RrdConvertUtils.dumpRrd(new File(getSnmpRoot(), "1/person-stats.rrd"));
+
+        Assert.assertNotNull(rrd);
+        Assert.assertEquals(3, rrd.getDataSources().size());
+        Optional<DS> ds = rrd.getDataSources().stream().filter(d -> d.getName().equals("contributions")).findFirst();
+        Assert.assertTrue(ds.isPresent());
+        Assert.assertEquals(Double.valueOf(500), Double.valueOf(ds.get().getLastDs()));
     }
 
     /**
@@ -286,12 +290,13 @@ public class HttpDataCollectionIT {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, repository, false, false);
         collectionSet.visit(persister);
 
-        RrdDb jrb = new RrdDb(new File(getSnmpRoot(), "1/solarisZoneStats/global/solaris-zone-stats.jrb"));
-        Assert.assertNotNull(jrb);
-        Assert.assertEquals(6, jrb.getDsCount());
-        Datasource ds = jrb.getDatasource("nproc");
-        Assert.assertNotNull(ds);
-        Assert.assertEquals(Double.valueOf(245.0), Double.valueOf(ds.getLastValue()));
+        final RRDv3 rrd = RrdConvertUtils.dumpRrd(new File(getSnmpRoot(), "1/solarisZoneStats/global/solaris-zone-stats.rrd"));
+
+        Assert.assertNotNull(rrd);
+        Assert.assertEquals(6, rrd.getDataSources().size());
+        Optional<DS> ds = rrd.getDataSources().stream().filter(d -> d.getName().equals("nproc")).findFirst();
+        Assert.assertTrue(ds.isPresent());
+        Assert.assertEquals(Double.valueOf(245.0), Double.valueOf(ds.get().getLastDs()));
     }
 
     /**

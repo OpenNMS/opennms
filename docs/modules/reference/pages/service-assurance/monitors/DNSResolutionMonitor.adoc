@@ -163,7 +163,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <2> Timeout for the *isReachable* method, in milliseconds.
 <3> The *resolution-type*: *v4*, *v6*, *both* (v4 and v6), or *either* (v4 or v6).
 <4> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<5> The name of the RRD file (minus the .rrd or .jrb file extension).
+<5> The name of the RRD file (minus the .rrd file extension).
 <6> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <7> Alternate DNS record to look up.
 <8> The DNS server to query for the records.

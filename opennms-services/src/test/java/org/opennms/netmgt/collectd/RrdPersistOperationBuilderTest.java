@@ -51,7 +51,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -80,7 +80,7 @@ public class RrdPersistOperationBuilderTest {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
 
         m_fileAnticipator = new FileAnticipator();
 

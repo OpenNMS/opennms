@@ -21,17 +21,7 @@
  */
 package org.opennms.protocols.xml.vtdxml;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.io.FileUtils;
-import org.jrobin.core.Datasource;
-import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,9 +37,13 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
+import org.opennms.netmgt.rrd.model.v3.DS;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.protocols.xml.collector.XmlCollector;
 import org.opennms.protocols.xml.collector.XmlCollectorTestUtils;
@@ -57,6 +51,15 @@ import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * The Abstract Class for Testing the XML Collector using VTD-XML.
@@ -90,9 +93,10 @@ public abstract class AbstractVTDXmlCollectorTest {
      */
     @Before
     public void setUp() throws Exception {
+        System.setProperty("rrd.binary", "rrdtool");
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
         m_temporaryFolder.newFolder("snmp");
@@ -149,7 +153,7 @@ public abstract class AbstractVTDXmlCollectorTest {
      * Executes collector test.
      *
      * @param parameters the parameters
-     * @param expectedFiles the expected amount of JRB files
+     * @param expectedFiles the expected amount of RRD files
      * @throws Exception the exception
      */
     public void executeCollectorTest(Map<String, Object> parameters, int expectedFiles) throws Exception {
@@ -162,28 +166,33 @@ public abstract class AbstractVTDXmlCollectorTest {
         CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRoot(), new String[] { "jrb" }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRoot(), new String[] { "rrd" }, true).size());
     }
 
     /**
-     * Validates a JRB.
+     * Validates a RRD.
      * <p>It assumes storeByGroup=true</p>
      *
-     * @param file the JRB file instance
+     * @param file the RRD file instance
      * @param dsnames the array of data source names
      * @param dsvalues the array of data source values
      * @throws Exception the exception
      */
-    public void validateJrb(File file, String[] dsnames, Double[] dsvalues) throws Exception {
+    public void validateRrd(File file, String[] dsnames, Double[] dsvalues) throws Exception {
         Assert.assertTrue(file.exists());
-        RrdDb jrb = new RrdDb(file);
-        Assert.assertEquals(dsnames.length, jrb.getDsCount());
-        for (int i = 0; i < dsnames.length; i++) {
-            Datasource ds = jrb.getDatasource(dsnames[i]);
-            Assert.assertNotNull(ds);
-            Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
-        }
+        try {
+            final RRDv3 rrdv3 = RrdConvertUtils.dumpRrd(file);
 
+            Assert.assertEquals(dsnames.length, rrdv3.getDataSources().size());
+            for (int i = 0; i < dsnames.length; i++) {
+                final String dsname = dsnames[i];
+                final Optional<DS> ds = rrdv3.getDataSources().stream().filter(d -> dsname.equals(d.getName())).findAny();
+                Assert.assertTrue(ds.isPresent());
+                Assert.assertEquals(dsvalues[i], ds.get().getLastDs());
+            }
+        } catch (Exception e) {
+            throw new RrdException("Can't parse RRD Dump", e);
+        }
     }
 
     /**

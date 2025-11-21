@@ -23,12 +23,12 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.jrobin.core.Datasource;
-import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,13 +44,23 @@ import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.model.v3.DS;
+import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.protocols.xml.config.XmlRrd;
 import org.opennms.protocols.xml.dao.jaxb.XmlDataCollectionConfigDaoJaxb;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.sax.SAXSource;
 
 /**
  * The Abstract Class for Testing the XML Collector.
@@ -110,7 +120,7 @@ public abstract class XmlCollectorITCase {
      * @throws Exception the exception
      */
     protected void initializeRrdStrategy() throws Exception {
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
         m_temporaryFolder.newFolder("snmp");
@@ -176,7 +186,7 @@ public abstract class XmlCollectorITCase {
      * Executes collector test.
      *
      * @param parameters the parameters
-     * @param expectedFiles the expected amount of JRB files
+     * @param expectedFiles the expected amount of RRD files
      * @return the collection set
      * @throws Exception the exception
      */
@@ -196,22 +206,34 @@ public abstract class XmlCollectorITCase {
     }
 
     /**
-     * Validates a JRB.
+     * Validates a RRD.
      * <p>It assumes storeByGroup=true</p>
      * 
-     * @param file the JRB file instance
+     * @param file the RRD file instance
      * @param dsnames the array of data source names
      * @param dsvalues the array of data source values
      * @throws Exception the exception
      */
-    public void validateJrb(File file, String[] dsnames, Double[] dsvalues) throws Exception {
+    public void validateRrd(File file, String[] dsnames, Double[] dsvalues) throws Exception {
         Assert.assertTrue(file.exists());
-        RrdDb jrb = new RrdDb(file);
-        Assert.assertEquals(dsnames.length, jrb.getDsCount());
-        for (int i = 0; i < dsnames.length; i++) {
-            Datasource ds = jrb.getDatasource(dsnames[i]);
-            Assert.assertNotNull(ds);
-            Assert.assertEquals(dsvalues[i], Double.valueOf(ds.getLastValue()));
+        try {
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            Process process = Runtime.getRuntime().exec(new String[] {"rrdtool", "dump", file.getAbsolutePath()});
+            SAXSource source = new SAXSource(xmlReader, new InputSource(new InputStreamReader(process.getInputStream())));
+            JAXBContext jc = JAXBContext.newInstance(RRDv3.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            final RRDv3 rrdv3 = (RRDv3) u.unmarshal(source);
+
+            Assert.assertEquals(dsnames.length, rrdv3.getDataSources().size());
+            for (int i = 0; i < dsnames.length; i++) {
+                final String dsname = dsnames[i];
+                final Optional<DS> ds = rrdv3.getDataSources().stream().filter(d -> dsname.equals(d.getName())).findAny();
+                Assert.assertTrue(ds.isPresent());
+                Assert.assertEquals(dsvalues[i], ds.get().getLastDs());
+            }
+        } catch (Exception e) {
+            throw new RrdException("Can't parse RRD Dump", e);
         }
     }
 

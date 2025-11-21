@@ -110,7 +110,7 @@
       <feature>fop</feature>
       <feature>hibernate-validator4</feature>
       <feature>joda-time</feature>
-      <feature>jrobin</feature>
+      <feature>opennms-rrd-util</feature>
       <feature>json-lib</feature>
       <feature>quartz</feature>
 

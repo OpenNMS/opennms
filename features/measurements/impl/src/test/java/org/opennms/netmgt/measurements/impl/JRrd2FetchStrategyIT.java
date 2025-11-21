@@ -21,10 +21,10 @@
  */
 package org.opennms.netmgt.measurements.impl;
 
-import org.jrobin.core.RrdException;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.netmgt.rrd.RrdException;
 
 import java.io.File;
 import java.util.HashMap;

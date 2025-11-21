@@ -184,9 +184,6 @@
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.jolokia/jolokia-client-java/${jolokiaVersion}</bundle>
     </feature>
-    <feature name="jrobin" version="1.6.0" description="JRobin">
-        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
-    </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6$Bundle-SymbolicName=net.sf.ezmorph&amp;Bundle-Version=1.0.6</bundle>
         <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15$Bundle-SymbolicName=net.sf.json-lib&amp;Bundle-Version=2.2.3</bundle>
@@ -710,11 +707,12 @@
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms/opennms-rrd-api/${project.version}</bundle>
     </feature>
-    <feature name="opennms-rrd-jrobin" version="${project.version}" description="OpenNMS :: RRD :: JRobin">
+    <feature name="opennms-rrd-util" version="${project.version}" description="OpenNMS :: RRD :: Utilities">
         <feature version="[4.2,4.3)">spring</feature>
-        <feature>jrobin</feature>
         <feature>opennms-rrd-api</feature>
-        <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
+        <!-- only used to convert .jrb files -->
+        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
+        <bundle>mvn:org.opennms/opennms-rrd-util/${project.version}</bundle>
     </feature>
     <feature name="opennms-snmp" version="${project.version}" description="OpenNMS :: Core :: SNMP">
         <feature>commons-lang</feature>

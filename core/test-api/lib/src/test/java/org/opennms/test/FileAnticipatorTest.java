@@ -413,7 +413,7 @@ public class FileAnticipatorTest extends TestCase {
 
         assertFalse(m_anticipator.foundExpected());
 
-        m_anticipator.tempFile(subdir, "should_not_exist.jrb");
+        m_anticipator.tempFile(subdir, "should_not_exist.rrd");
 
         assertTrue(m_anticipator.foundExpected());
 

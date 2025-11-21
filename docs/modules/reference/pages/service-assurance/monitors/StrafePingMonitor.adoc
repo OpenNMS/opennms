@@ -50,7 +50,7 @@ image::service-assurance/monitors/01_strafeping.png[]
 | $OPENNMS_HOME/share/rrd/response
 
 | rrd-base-name
-| The name of the RRD file to write (minus the extension, .rrd or .jrb).
+| The name of the RRD file to write (minus the extension, .rrd).
 | strafeping
 
 3+|*Optional*

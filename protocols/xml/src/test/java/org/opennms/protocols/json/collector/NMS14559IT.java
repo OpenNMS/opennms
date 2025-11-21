@@ -49,15 +49,15 @@ public class NMS14559IT extends JsonCollectorITCase {
 
         executeCollectorTest(parameters, 4);
 
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/blupp/json-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bar/json-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/foo/json-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bla/json-mapping-test.jrb").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/blupp/json-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bar/json-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/foo/json-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bla/json-mapping-test.rrd").exists());
 
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/foo/json-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{100.0, 10.0, 10.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/bar/json-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{200.0, 20.0, 20.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/blupp/json-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{300.0, 30.0, 30.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/bla/json-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{400.0, 40.0, 40.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/foo/json-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{100.0, 10.0, 10.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/bar/json-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{200.0, 20.0, 20.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/blupp/json-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{300.0, 30.0, 30.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/bla/json-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{400.0, 40.0, 40.0});
     }
 
 }

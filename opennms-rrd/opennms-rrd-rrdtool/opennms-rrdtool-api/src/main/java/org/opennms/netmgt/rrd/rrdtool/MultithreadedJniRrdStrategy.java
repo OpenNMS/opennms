@@ -145,7 +145,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
         int k = 0;
         final String[] arguments = new String[dataSources.size() + rraList.size()];
 
-        final long start = (System.currentTimeMillis() / 1000L - 10L);
+        final long start = (RrdCreationTimeProvider.currentTimeMillis() / 1000L - 10L);
 
         for (RrdDataSource dataSource : dataSources) {
             arguments[k++] = String.format("DS:%s:%s:%d:%s:%s",
