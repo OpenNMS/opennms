@@ -117,10 +117,10 @@ public class NodeLevelDataTest extends XmlCollectorITCase {
         collectionSet.visit(visitor);
         Assert.assertEquals(1, visitor.getResourceCount());
         Assert.assertEquals(6, visitor.getAttributeCount());
-        File file = new File(getSnmpRootDirectory(), "1/node-level-stats.jrb");
+        File file = new File(getSnmpRootDirectory(), "1/node-level-stats.rrd");
         Assert.assertTrue(file.exists());
         String[] dsnames = new String[] { "v1", "v2", "v3", "v4", "v5", "v6" };
         Double[] dsvalues = new Double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
     }
 }

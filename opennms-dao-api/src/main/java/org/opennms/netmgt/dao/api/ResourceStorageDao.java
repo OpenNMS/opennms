@@ -128,7 +128,7 @@ public interface ResourceStorageDao {
      * Maps the given metric names to the their associated resources names.
      * The resource names are relative to the given path.
      *
-     * When persisting to .rrd of .jrb files with storeByGroup enabled,
+     * When persisting to .rrd files with storeByGroup enabled,
      * this is used to map the data sources names (metrics) to associated
      * .rrd files (resource names).
      *

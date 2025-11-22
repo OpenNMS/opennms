@@ -21,16 +21,18 @@
  */
 package org.opennms.protocols.xml.vtdxml;
 
-import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opennms.netmgt.rrd.rrdtool.RrdCreationTimeProvider;
+
+import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Test class for XML Collector for 3GPP Statistics
@@ -54,6 +56,16 @@ public class XmlCollector3GPPTest extends AbstractVTDXmlCollectorTest {
     @Override
     public String getXmlSampleFileName() {
         return "../../protocols/xml/src/test/resources/A20111025.0030-0500-0045-0500_MME00001.xml";
+    }
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        RrdCreationTimeProvider.setProvider(new RrdCreationTimeProvider.ProviderInterface() {
+            @Override
+            public long currentTimeMillis() {
+                return 1319521500000L;
+            }
+        });
     }
 
     /**
@@ -87,11 +99,11 @@ public class XmlCollector3GPPTest extends AbstractVTDXmlCollectorTest {
         parameters.put("collection", "3GPP");
         parameters.put("handler-class", "org.opennms.protocols.xml.vtdxml.MockDefaultVTDXmlCollectionHandler");
         executeCollectorTest(parameters, 147);
-        // Test a JRB.
-        File file = new File(getSnmpRoot(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.jrb");
+        // Test a RRD.
+        File file = new File(getSnmpRoot(), "1/platformSystemResource/processor_v1_frame0_shelf0_slot4_sub-slot1/platform-system-resource.rrd");
         String[] dsnames = new String[] { "cpuUtilization", "memoryUtilization" };
         Double[] dsvalues = new Double[] { 1.0, 18.0 };
-        validateJrb(file, dsnames, dsvalues);
+        validateRrd(file, dsnames, dsvalues);
     }
 
 }

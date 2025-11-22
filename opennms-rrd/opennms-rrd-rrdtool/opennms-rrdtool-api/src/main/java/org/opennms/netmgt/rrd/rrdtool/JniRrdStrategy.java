@@ -122,7 +122,7 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
 
         final StringBuilder parameter = new StringBuilder();
 
-        parameter.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
+        parameter.append(" --start=" + (RrdCreationTimeProvider.currentTimeMillis() / 1000L - 10L));
 
         parameter.append(" --step=" + step);
         

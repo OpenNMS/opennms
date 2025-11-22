@@ -188,8 +188,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -201,6 +201,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.opennms</groupId>
+       <artifactId>opennms-rrd-util</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

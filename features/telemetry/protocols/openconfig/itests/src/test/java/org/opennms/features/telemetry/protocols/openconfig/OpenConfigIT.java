@@ -153,9 +153,9 @@ public class OpenConfigIT {
         updateDaoWithConfig(getConfig(true));
         // Start the daemon
         telemetryd.start();
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth0", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     @Test
@@ -165,9 +165,9 @@ public class OpenConfigIT {
         updateDaoWithConfig(getConfig(false));
         // Start the daemon
         telemetryd.start();
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth1", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {

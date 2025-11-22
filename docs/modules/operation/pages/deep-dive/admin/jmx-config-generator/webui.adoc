@@ -67,9 +67,9 @@ This field cannot contain special characters.
 * *Selected:* Add or remove the MBean attribute or composite member from the data collection configuration.
 * *Name:* Name of the MBean attribute or composite member.
 This field cannot contain special characters.
-* *Alias:* The name of the data source where measurements are persisted in an RRD or JRobin file.
+* *Alias:* The name of the data source where measurements are persisted in an RRD file.
 The alias must be shorter than 19 characters, and must be unique in the data collection configuration.
-* *Type:* A gauge or counter data type, used to persist measurements in an RRD or JRobin file.
+* *Type:* A gauge or counter data type, used to persist measurements in an RRD file.
 
 == Download and include configuration
 

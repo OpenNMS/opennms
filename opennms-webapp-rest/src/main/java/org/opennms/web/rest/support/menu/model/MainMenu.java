@@ -47,7 +47,6 @@ public class MainMenu {
     public MenuEntry selfServiceMenu;
     public MenuEntry userNotificationMenu;
     public MenuEntry provisionMenu;
-    public MenuEntry flowsMenu;
     public MenuEntry configurationMenu; // aka admin menu, the "cogs"
 
     public void addTopMenu(MenuEntry entry) {
