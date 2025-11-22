@@ -56,8 +56,8 @@ public class SendEventController extends AbstractController {
     private static final Logger LOG = LoggerFactory.getLogger(SendEventController.class);
     @Autowired
     private EventConfDao m_eventConfDao;
-    private EventConfEventDao m_eventDao;
-    private EventConfSourceDao m_sourceDao;
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -68,11 +68,23 @@ public class SendEventController extends AbstractController {
     private Map<String, Object> createModel() throws FileNotFoundException, IOException {
         // Make sure we have an up-to-date list of events
         m_eventConfDao.reload();
-
+        System.out.println("Reloaded event configuration");
         Map<String, Object> model = Maps.newHashMap();
-        model.put("vendorList", m_sourceDao.findAllVendors());
+        model.put("vendorList", buildVendorSelect());
         model.put("eventSelect", buildEventSelect());
         return model;
+    }
+
+    private String buildVendorSelect() {
+        List<String> vendors = eventConfSourceDao.findAllVendors();
+        final StringBuilder buffer = new StringBuilder();
+
+        for (String vendor : vendors) {
+            buffer.append("<option value=" + vendor + ">" + vendor
+                    + "</option>");
+        }
+
+        return buffer.toString();
     }
 
     private String buildEventSelect() throws IOException, FileNotFoundException {

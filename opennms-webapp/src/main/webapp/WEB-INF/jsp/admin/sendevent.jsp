@@ -49,8 +49,6 @@
 </jsp:include>
 
 <script type="text/javascript">
-  console.log('${model.eventSelect}', 'loaded from server');
-  
   function next() {
     if (document.getElementById("input.uei").selectedIndex == 0) {
       alert("Please select a uei to associate with this event.");
@@ -117,7 +115,6 @@
           });
       },
     });
-
     $("#nodeSelect").combobox({
       name: "nodeid",
       jsonUrl: "admin/sched-outages/jsonNodes.jsp",
@@ -126,7 +123,6 @@
       name: "interface",
       jsonUrl: "admin/sched-outages/jsonIpInterfaces.jsp",
     });
-
     $("#addparm").click(function (event) {
       event.preventDefault();
       var lastNum = 0;
@@ -176,9 +172,7 @@
       );
       $("#parmlist").removeClass("invisible");
     });
-  });
 
-  $(document).ready(function () {
     function initializeUeiAutocomplete() {
       var $select = $("#input\\.uei");
       var $input = $("#ueiAutocomplete");
@@ -252,9 +246,169 @@
       }
     }
 
+    function initializeVendorAutocomplete() {
+      var $select = $("#input\\.vendor");
+      var $input = $("#vendorAutocomplete");
+
+      var source = $select
+        .find("option")
+        .map(function () {
+          var $option = $(this);
+          return {
+            label: $option.text().trim(),
+            value: $option.attr("value") || $option.text().trim(),
+            element: $option,
+          };
+        })
+        .get();
+
+      var autocompleteSource = source.filter(function (item) {
+        return item.value !== "" && item.label !== "--Select One--";
+      });
+
+      $input.autocomplete({
+        minLength: 0,
+        delay: 100,
+        source: function (request, response) {
+          var term = request.term.toLowerCase().trim();
+          if (term === "") {
+            response(autocompleteSource);
+          } else {
+            var results = autocompleteSource.filter(function (item) {
+              return (
+                item.label.toLowerCase().includes(term) ||
+                item.value.toLowerCase().includes(term)
+              );
+            });
+            response(results);
+          }
+        },
+        select: function (event, ui) {
+          $input.val(ui.item.label);
+          $select.val(ui.item.value);
+          $select.trigger("change");
+          return false;
+        },
+        focus: function (event, ui) {
+          $input.val(ui.item.label);
+          return false;
+        },
+      });
+
+      $("#showAllVendors").on("click", function (e) {
+        e.preventDefault();
+        $input.autocomplete("search", "");
+        $input.focus();
+      });
+
+      $input.on("blur", function () {
+        var current = $input.val().trim();
+        var match = autocompleteSource.find(function (item) {
+          return item.label === current;
+        });
+
+        if (match) {
+          $select.val(match.value);
+        } else {
+          $input.val("");
+          $select.val("");
+        }
+      });
+
+      var currentSelected = $select.find("option:selected");
+      if (currentSelected.length && currentSelected.val() !== "") {
+        $input.val(currentSelected.text().trim());
+      }
+    }
+
+    $("#input\\.vendor").on("change", function () {
+      var vendor = $(this).val();
+      if (vendor) {
+        loadEventsForVendor(vendor);
+      }
+    });
     // Initialize the autocomplete
     initializeUeiAutocomplete();
+    initializeVendorAutocomplete();
   });
+
+  // $(document).ready(function () {
+  //   function initializeUeiAutocomplete() {
+  //     var $select = $("#input\\.uei");
+  //     var $input = $("#ueiAutocomplete");
+  //     var source = $select
+  //       .find("option")
+  //       .map(function () {
+  //         var $option = $(this);
+  //         return {
+  //           label: $option.text().trim(),
+  //           value: $option.attr("value") || $option.text().trim(),
+  //           element: $option,
+  //         };
+  //       })
+  //       .get();
+
+  //     var autocompleteSource = source.filter(function (item) {
+  //       return item.value !== "" && item.label !== "--Select One--";
+  //     });
+
+  //     $input.autocomplete({
+  //       minLength: 0,
+  //       delay: 100,
+  //       source: function (request, response) {
+  //         var term = request.term.toLowerCase().trim();
+
+  //         if (term === "") {
+  //           response(autocompleteSource);
+  //         } else {
+  //           var results = autocompleteSource.filter(function (item) {
+  //             return (
+  //               item.label.toLowerCase().includes(term) ||
+  //               item.value.toLowerCase().includes(term)
+  //             );
+  //           });
+  //           response(results);
+  //         }
+  //       },
+  //       select: function (event, ui) {
+  //         $input.val(ui.item.label);
+  //         $select.val(ui.item.value);
+  //         $select.trigger("change");
+  //         return false;
+  //       },
+  //       focus: function (event, ui) {
+  //         $input.val(ui.item.label);
+  //         return false;
+  //       },
+  //     });
+  //     $("#showAllUei").on("click", function (e) {
+  //       e.preventDefault();
+  //       $input.autocomplete("search", "");
+  //       $input.focus();
+  //     });
+  //     $input.on("blur", function () {
+  //       var currentText = $input.val().trim();
+  //       var matchedItem = autocompleteSource.find(function (item) {
+  //         return item.label === currentText;
+  //       });
+
+  //       if (matchedItem) {
+  //         $select.val(matchedItem.value);
+  //       } else {
+  //         $input.val("");
+  //         $select.val("");
+  //       }
+  //     });
+
+  //     var currentSelected = $select.find("option:selected");
+  //     if (currentSelected.length && currentSelected.val() !== "") {
+  //       $input.val(currentSelected.text().trim());
+  //     }
+  //   }
+
+  //   // Initialize the autocomplete
+  //   initializeUeiAutocomplete();
+  // });
 
   function next() {
     var ueiValue = document.getElementById("input.uei").value;
@@ -270,6 +424,37 @@
     } else {
       document.getElementById("form.sendevent").submit();
     }
+  }
+
+  function loadEventsForVendor(vendor) {
+    $.ajax({
+      url: "admin/sendevent/eventsByVendor",
+      data: { vendor: vendor },
+      method: "GET",
+      success: function (data) {
+        var $select = $("#input\\.uei");
+        var $input = $("#ueiAutocomplete");
+
+        // Clear old list
+        $select.empty().append('<option value="">--Select One--</option>');
+
+        // Add new options
+        data.forEach(function (item) {
+          $select.append(
+            '<option value="' + item.value + '">' + item.label + "</option>"
+          );
+        });
+
+        // Clear autocomplete text
+        $input.val("");
+
+        // Re-initialize autocomplete with new data
+        initializeUeiAutocomplete();
+      },
+      error: function () {
+        alert("Failed to load events for vendor: " + vendor);
+      },
+    });
   }
 </script>
 
@@ -289,6 +474,45 @@
         </div>
         <div class="card-body">
           <div class="form-group form-row">
+            <label for="input.vendor" class="col-sm-3 col-form-label"
+              >Vendor</label
+            >
+            <div class="col-sm-9">
+              <!-- Hidden select for form submission -->
+              <select
+                name="vendor"
+                class="form-control custom-select"
+                id="input.vendor"
+                style="display: none"
+              >
+                <option value="">--Select One--</option>
+                ${model.vendorList}
+              </select>
+
+              <!-- Visible autocomplete input -->
+              <div class="input-group" id="vendor-combobox-wrapper">
+                <input
+                  id="vendorAutocomplete"
+                  name="vendorAutocomplete"
+                  class="form-control"
+                  placeholder="Type to search vendors or click dropdown"
+                  type="text"
+                  autocomplete="off"
+                />
+                <div class="input-group-append">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="showAllVendors"
+                    title="Show All Vendors"
+                  >
+                    <i class="fa fa-caret-down"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group form-row">
             <label for="input.uei" class="col-sm-3 col-form-label">Event</label>
             <div class="col-sm-9">
               <!-- Hidden select for form submission -->
@@ -299,7 +523,6 @@
                 style="display: none"
               >
                 <option value="">--Select One--</option>
-                ${model.eventSelect}
               </select>
 
               <!-- Visible autocomplete input for user interaction -->
@@ -325,7 +548,6 @@
               </div>
             </div>
           </div>
-
           <div class="form-group form-row">
             <label for="uuid" class="col-sm-3 col-form-label">UUID</label>
             <div class="col-sm-9">
