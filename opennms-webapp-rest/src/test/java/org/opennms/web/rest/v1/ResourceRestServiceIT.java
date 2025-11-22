@@ -214,7 +214,7 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         JSONObject restObject = new JSONObject(json);
         final String jsonString = IOUtils.toString(new FileInputStream("src/test/resources/v1/resources.json"));
-        JSONObject expectedObject = new JSONObject(jsonString.replace(".jrb", m_extension));
+        JSONObject expectedObject = new JSONObject(jsonString.replace(".rrd", m_extension));
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 

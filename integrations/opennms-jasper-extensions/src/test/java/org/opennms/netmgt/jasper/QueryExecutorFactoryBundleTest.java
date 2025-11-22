@@ -31,11 +31,6 @@ import net.sf.jasperreports.engine.query.QueryExecuterFactory;
 public class QueryExecutorFactoryBundleTest {
 
     @Test
-    public void verifyJrobinNotSupported() throws JRException {
-        verifyLanguage("jrobin", false, null);
-    }
-
-    @Test
     public void verifyResourceQueryNotSupported() throws JRException {
         verifyLanguage("resourceQuery", false, null);
     }

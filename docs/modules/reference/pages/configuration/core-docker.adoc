@@ -99,7 +99,7 @@
 |===
 | Mountpoint             | Description
 | `/opt/opennms-overlay` | Allows you to overwrite files relative to `/opt/opennms`.
-| `/opennms-data`        | Directory with RRDTool/JRobin files and generated PDF reports sent to the file system.
+| `/opennms-data`        | Directory with RRDTool files and generated PDF reports sent to the file system.
 |===
 
 == JMX Prometheus Exporter

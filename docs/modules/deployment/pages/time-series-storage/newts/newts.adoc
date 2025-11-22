@@ -116,4 +116,4 @@ After it restarts, {page-component-title} will begin to persist metrics using th
 You can go to the Node Detail page for any SNMP-managed device to verify your setup; you should see response time graphs for the node's ICMP and node-level performance data.
 
 NOTE: Only metrics stored in Newts are displayed in graphs.
-If you have data stored in RRD or JRB files, it will not be displayed unless it is xref:time-series-storage/newts/newts-repository-converter.adoc[migrated to Newts].
+If you have data stored in RRD files, it will not be displayed unless it is xref:time-series-storage/newts/newts-repository-converter.adoc[migrated to Newts].

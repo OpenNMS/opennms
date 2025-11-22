@@ -13,7 +13,7 @@ asciidoc:
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
     compatible-rhel9: '9.x'
-    compatible-ubuntu: '20.04 LTS'
+    compatible-ubuntu: '24.04 LTS'
     compatible-debian: '9 - 11'
     compatible-rocky-linux: '9.x'
     compatible-opennms-plugin: '9 - 11.2'

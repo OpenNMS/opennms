@@ -100,7 +100,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <4> When *extendedMode* is *false*, the DHCP poller sends a DISCOVER.
 When *extendedMode* is *true*, the DHCP poller sends a DISCOVER.
 <5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<6> The name of the RRD file (minus the .rrd or .jrb file extension).
+<6> The name of the RRD file (minus the .rrd file extension).
 <7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <8> Required *monitor* section.
 
@@ -130,7 +130,7 @@ You can use the same monitor in `poller-configuration.xml` as in the above examp
 <4> When *extendedMode* is *false*, the DHCP poller sends a DISCOVER.
 When *extendedMode* is *true*, the DHCP poller sends a DISCOVER.
 <5> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<6> The name of the RRD file (minus the .rrd or .jrb file extension).
+<6> The name of the RRD file (minus the .rrd file extension).
 <7> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <8> If *relayMode* is set to *true*, this parameter will usually be set to the IP address of the {page-component-title} server.
 <9> Required *monitor* section.

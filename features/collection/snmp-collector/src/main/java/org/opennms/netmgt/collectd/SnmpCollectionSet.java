@@ -470,7 +470,7 @@ public class SnmpCollectionSet implements Collectable, CollectionSet {
         if (getSysUpTime().isChanged(getCollectionAgent().getSavedSysUpTime())) {
             /*
              * Only on sysUpTime change (i.e. SNMP Agent Restart) we must ignore collected data
-             * to avoid spikes on RRD/JRB files
+             * to avoid spikes on RRD files
              */
             m_ignorePersist = true;
             getCollectionAgent().setSavedSysUpTime(-1);

@@ -39,7 +39,6 @@ export interface MainMenu {
   selfServiceMenu: MenuItem | null
   userNotificationMenu: MenuItem | null
   provisionMenu: MenuItem | null
-  flowsMenu: MenuItem | null
   configurationMenu: MenuItem | null
 }
 

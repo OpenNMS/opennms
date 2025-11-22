@@ -452,13 +452,6 @@
     "locationMatch": null,
     "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
   },
-  "flowsMenu": {
-    "id": "flowMenu",
-    "name": "Flows Management",
-    "url": "admin/classification/index.jsp",
-    "locationMatch": null,
-    "roles": ["ROLE_FLOW_MANAGER"]
-  },
   "configurationMenu": {
     "id": "configurationMenu",
     "name": "Configure OpenNMS",

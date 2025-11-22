@@ -74,8 +74,6 @@ public class RrdGraphControllerTest {
 		if(now.get(Calendar.HOUR_OF_DAY) == 23 && now.get(Calendar.MINUTE) > 59 && now.get(Calendar.SECOND) > 50) {
 			Thread.sleep(30000);
 		}
-
-
 	}
 
 	/**
@@ -238,70 +236,6 @@ public class RrdGraphControllerTest {
 		assertEquals(endDate.getTime(), end);
 
 	}
-	
-	/**
-	 * Test the specification of just an "hour", with "today" as the day, for
-	 * both start and end, using am/pm designators
-	 */
-	//Will fail until JRobin 1.5.13 comes out with my fix to TimeParser (not yet committed)
-	/*@Test
-	public void testAMPMClockHourTodayStartEndTime() {
-		Calendar now = new GregorianCalendar();
-		now.set(Calendar.HOUR_OF_DAY, 8); //8am
-		now.set(Calendar.MINUTE, 0);
-		now.set(Calendar.SECOND, 0);
-		now.set(Calendar.MILLISECOND, 0);
-		Date startDate = now.getTime();
-		now.set(Calendar.HOUR_OF_DAY, 16); //4pm
-		now.set(Calendar.MINUTE, 0);
-		now.set(Calendar.SECOND, 0);
-		now.set(Calendar.MILLISECOND, 0);
-		Date endDate = now.getTime();
-		
-		m_request.addParameter("start", "today 8am");
-		m_request.addParameter("end", "today 4pm");
-		
-		long[] result = m_controller.parseTimes(m_request);
-		long start = result[0];
-		long end = result[1];
-
-		assertEquals(startDate.getTime(), start);
-		assertEquals(endDate.getTime(), end);
-
-	}*/
-	
-	/**
-	 * Test the specification of just an "hour", with "yesterday" as the day, for
-	 * both start and end, using am/pm designators
-	 */
-	//Will fail until JRobin 1.5.13 comes out with my fix to TimeParser (not yet committed)
-	/*@Test
-	public void testAMPMClockHourTodayStartEndTime() {
-		Calendar now = new GregorianCalendar();
-		now.set(Calendar.HOUR_OF_DAY, 8); //8am
-		now.set(Calendar.MINUTE, 0);
-		now.set(Calendar.SECOND, 0);
-		now.set(Calendar.MILLISECOND, 0);
-		Date startDate = new Date(now.getTimeInMillis()-(24 * 60 * 60 * 1000));
-
-		now.set(Calendar.HOUR_OF_DAY, 16); //4pm
-		now.set(Calendar.MINUTE, 0);
-		now.set(Calendar.SECOND, 0);
-		now.set(Calendar.MILLISECOND, 0);
-		Date endDate = new Date(now.getTimeInMillis()-(24 * 60 * 60 * 1000));
-
-		
-		m_request.addParameter("start", "yesterday 8am");
-		m_request.addParameter("end", "yesterday 4pm");
-		
-		long[] result = m_controller.parseTimes(m_request);
-		long start = result[0];
-		long end = result[1];
-
-		assertEquals(startDate.getTime(), start);
-		assertEquals(endDate.getTime(), end);
-
-	}*/
 
 	/**
 	 * Tests a simple negative hour offset

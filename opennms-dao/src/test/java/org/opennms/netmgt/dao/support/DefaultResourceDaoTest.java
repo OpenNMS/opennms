@@ -62,7 +62,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.ThrowableAnticipator;
 
@@ -97,7 +97,7 @@ public class DefaultResourceDaoTest {
         when(m_filterDao.getActiveIPAddressList(anyString())).thenReturn(Arrays.asList());
         setUpCollectdConfigFactory();
 
-        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        RrdStrategy<?, ?> rrdStrategy = new MultithreadedJniRrdStrategy();
         m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
 
         m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());
