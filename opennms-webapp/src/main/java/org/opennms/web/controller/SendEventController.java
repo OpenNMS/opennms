@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,8 @@ public class SendEventController extends AbstractController {
     private static final Logger LOG = LoggerFactory.getLogger(SendEventController.class);
     @Autowired
     private EventConfDao m_eventConfDao;
+    private EventConfEventDao m_eventDao;
+    private EventConfSourceDao m_sourceDao;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -66,6 +70,7 @@ public class SendEventController extends AbstractController {
         m_eventConfDao.reload();
 
         Map<String, Object> model = Maps.newHashMap();
+        model.put("vendorList", m_sourceDao.findAllVendors());
         model.put("eventSelect", buildEventSelect());
         return model;
     }
