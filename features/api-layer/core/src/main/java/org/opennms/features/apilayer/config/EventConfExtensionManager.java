@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 
 public class EventConfExtensionManager extends ConfigExtensionManager<EventConfExtension, Events> {
     private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionManager.class);
-    private static final String INTEGRATION_API_SOURCE_NAME = "opennms-plugins-events";
+    static final String INTEGRATION_API_SOURCE_NAME = "opennms-plugins-events";
     private static final String USERNAME = "opennms-plugins";
 
     private final EventConfDao eventConfDao;
