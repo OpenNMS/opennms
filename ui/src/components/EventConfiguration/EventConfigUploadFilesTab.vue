@@ -129,7 +129,8 @@
         <ul>
           <li>Event configuration files must be in XML format with a .events.xml extension.</li>
           <li>Each event configuration file should contain a single event configuration.</li>
-          <li>Maximum number of files that can be uploaded at once is {{ MAX_FILES_UPLOAD }}.</li>
+          <li>When upploading using 'Choose files to upload' maximum <strong>{{ MAX_FILES_UPLOAD }}</strong> files can be uploaded at once.</li>
+          <li>When uploading using 'Choose folder to upload' all files in the folder will be uploaded.</li>
           <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
           <li>
             Files that are valid and ready for upload will be flagged with icon
