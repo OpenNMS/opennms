@@ -206,30 +206,28 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
     }
 
     private EventConfSource getOrCreatePluginSource() {
-        synchronized (this) {
-            // Always refresh from database to ensure it hasn't been deleted
-            EventConfSource source = eventConfSourceDao.findByName(INTEGRATION_API_SOURCE_NAME);
-            if (source == null) {
-                // Create new source
-                source = new EventConfSource();
-                Date now = new Date();
-                source.setName(INTEGRATION_API_SOURCE_NAME);
-                source.setDescription("Events from OpenNMS plugins");
-                source.setVendor("OpenNMS-Plugins");
-                source.setEnabled(true);
-                Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
-                source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
-                source.setCreatedTime(now);
-                source.setLastModified(now);
-                source.setUploadedBy(USERNAME);
-                source.setEventCount(0);
-                eventConfSourceDao.save(source);
-                LOG.info("Created new EventConfSource: {} with fileOrder: {}", INTEGRATION_API_SOURCE_NAME, source.getFileOrder());
-            }
-            // Update cached reference
-            pluginSource = source;
-            return source;
+        // Always refresh from database to ensure it hasn't been deleted
+        EventConfSource source = eventConfSourceDao.findByName(INTEGRATION_API_SOURCE_NAME);
+        if (source == null) {
+            // Create new source
+            source = new EventConfSource();
+            Date now = new Date();
+            source.setName(INTEGRATION_API_SOURCE_NAME);
+            source.setDescription("Events from OpenNMS plugins");
+            source.setVendor("OpenNMS-Plugins");
+            source.setEnabled(true);
+            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
+            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            source.setCreatedTime(now);
+            source.setLastModified(now);
+            source.setUploadedBy(USERNAME);
+            source.setEventCount(0);
+            eventConfSourceDao.save(source);
+            LOG.info("Created new EventConfSource: {} with fileOrder: {}", INTEGRATION_API_SOURCE_NAME, source.getFileOrder());
         }
+        // Update cached reference
+        pluginSource = source;
+        return source;
     }
 
     public void destroy() {
