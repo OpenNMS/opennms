@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -874,5 +875,125 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> updatedEventsBySource = eventConfEventDao.findBySourceId(eventConfSource.getId());
         assertEquals(0, updatedEventsBySource.size());
     }
+
+    @Test
+    @Transactional
+    public void testJsonMarshallingOnAddEventConfSourceEvent() throws Exception {
+        String username = "test_user";
+        Date now = new Date();
+
+        // Create source
+        EventConfSource source = new EventConfSource();
+        source.setName("json-test-source");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        source.setFileOrder(1);
+        source.setDescription("JSON test");
+        source.setVendor("Vendor1");
+        source.setUploadedBy(username);
+        source.setEventCount(0);
+        source.setLastModified(now);
+
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        // Create event
+        Event event = new Event();
+        event.setUei("uei.opennms.org/json/test");
+        event.setEventLabel("JSON Test Event");
+        event.setDescr("JSON Marshalling Description");
+        event.setSeverity("Warning");
+
+        // Persist using service
+        Long eventId = eventConfPersistenceService.addEventConfSourceEvent(
+                source.getId(), username, event
+        );
+
+        assertNotNull(eventId);
+
+        // Fetch from DB
+        EventConfEvent stored = eventConfEventDao.findByUei("uei.opennms.org/json/test");
+        assertNotNull(stored);
+
+        // Validate JSON content
+        String jsonContent = stored.getContent();
+        assertNotNull(jsonContent);
+
+        Event unmarshalledFromJson = JsonUtils.unmarshal(Event.class, jsonContent);
+
+        assertEquals("uei.opennms.org/json/test", unmarshalledFromJson.getUei());
+        assertEquals("JSON Test Event", unmarshalledFromJson.getEventLabel());
+        assertEquals("JSON Marshalling Description", unmarshalledFromJson.getDescr());
+        assertEquals("Warning", unmarshalledFromJson.getSeverity());
+    }
+
+    @Test
+    @Transactional
+    public void testJsonMarshallingOnEventUpdate() throws Exception {
+
+        // Create source
+        EventConfSource source = new EventConfSource();
+        source.setName("json-update-source");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setFileOrder(1);
+        source.setDescription("Test update");
+        source.setVendor("VendorX");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(1);
+        source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        // Insert initial event
+        insertEvent(
+                source,
+                "uei.opennms.org/internal/original",
+                "Original Label",
+                "Original Description",
+                "Normal"
+        );
+
+        EventConfEvent original = eventConfEventDao.findByUei("uei.opennms.org/internal/original");
+        assertNotNull(original);
+
+        // Create update payload
+        String jsonPayload = """
+            {
+              "enabled": true,
+              "event": {
+                "uei": "uei.opennms.org/internal/original",
+                "eventLabel": "Updated JSON Label",
+                "descr": "Updated JSON Description",
+                "severity": "Major"
+              }
+            }
+            """;
+
+        ObjectMapper mapper = new ObjectMapper();
+        EventConfEventEditRequest payload = mapper.readValue(jsonPayload, EventConfEventEditRequest.class);
+
+        // Perform update through service
+        eventConfPersistenceService.updateEventConfEvent(
+                source.getId(),
+                original.getId(),
+                payload
+        );
+
+        // Re-fetch from DB
+        EventConfEvent updated = eventConfEventDao.findByUei("uei.opennms.org/internal/original");
+        assertNotNull(updated);
+
+        // Validate JSON content
+        assertNotNull(updated.getContent());
+
+        Event eventFromJson = JsonUtils.unmarshal(Event.class, updated.getContent());
+
+        assertEquals("Updated JSON Label", eventFromJson.getEventLabel());
+        assertEquals("Updated JSON Description", eventFromJson.getDescr());
+        assertEquals("Major", eventFromJson.getSeverity());
+    }
+
 }
 

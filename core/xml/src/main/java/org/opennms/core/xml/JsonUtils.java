@@ -26,8 +26,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
@@ -42,15 +40,16 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public abstract class JsonUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(JsonUtils.class);
 
     private static final JsonExceptionTranslator EXCEPTION_TRANSLATOR = new JsonExceptionTranslator();
-    private static ThreadLocal<Map<Class<?>, ObjectMapper>> m_mappers = new ThreadLocal<>();
+
+    // Shared ObjectMapper configured once. Safe for concurrent use after construction.
+    private static final ObjectMapper MAPPER = createObjectMapper();
+
+    private JsonUtils() {
+    }
 
     private static class JsonExceptionTranslator {
         public RuntimeException translate(String operation, Exception e) {
@@ -58,16 +57,7 @@ public abstract class JsonUtils {
         }
     }
 
-    private JsonUtils() {
-    }
-
-    // XML to JSON Conversion Methods
-
-    /**
-     * Convert XML string to JSON string using JaxbUtils unmarshalling
-     */
-
-    // Core Marshaling Methods (Existing)
+    // Core Marshaling Methods
 
     public static String marshal(final Object obj) {
         final StringWriter writer = new StringWriter();
@@ -75,18 +65,8 @@ public abstract class JsonUtils {
         return writer.toString();
     }
 
-    public static String marshal(final Object obj, final boolean prettyPrint) {
-        final StringWriter writer = new StringWriter();
-        marshal(obj, writer, prettyPrint);
-        return writer.toString();
-    }
-
     public static void marshal(final Object obj, final File file) throws IOException {
-        marshal(obj, file, false);
-    }
-
-    public static void marshal(final Object obj, final File file, final boolean prettyPrint) throws IOException {
-        String jsonString = marshal(obj, prettyPrint);
+        String jsonString = marshal(obj);
         if (jsonString != null) {
             try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                 fileWriter.write(jsonString);
@@ -96,24 +76,18 @@ public abstract class JsonUtils {
     }
 
     public static void marshal(final Object obj, final Writer writer) {
-        marshal(obj, writer, false);
-    }
-
-    public static void marshal(final Object obj, final Writer writer, final boolean prettyPrint) {
-        final ObjectMapper mapper = getMapperFor(obj, prettyPrint);
         try {
-            mapper.writeValue(writer, obj);
+            getObjectMapper().writeValue(writer, obj);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("marshalling " + obj.getClass().getSimpleName(), e);
         }
     }
 
-    // Core Unmarshaling Methods (Existing)
+    // Core Unmarshaling Methods
 
     public static <T> T unmarshal(final Class<T> clazz, final String json) throws RuntimeException {
-        final ObjectMapper mapper = getMapperFor(clazz, false);
         try {
-            return mapper.readValue(json, clazz);
+            return getObjectMapper().readValue(json, clazz);
         } catch (final JsonProcessingException e) {
             throw EXCEPTION_TRANSLATOR.translate("unmarshalling " + clazz.getSimpleName(), e);
         }
@@ -130,9 +104,8 @@ public abstract class JsonUtils {
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader) throws RuntimeException {
-        final ObjectMapper mapper = getMapperFor(clazz, false);
         try {
-            return mapper.readValue(reader, clazz);
+            return getObjectMapper().readValue(reader, clazz);
         } catch (final IOException e) {
             throw EXCEPTION_TRANSLATOR.translate("unmarshalling " + clazz.getSimpleName(), e);
         }
@@ -154,62 +127,45 @@ public abstract class JsonUtils {
         }
     }
 
-    // Utility Methods (Existing)
+    // Utility Methods
 
     public static <T> T duplicateObject(T obj, final Class<T> clazz) {
         return unmarshal(clazz, marshal(obj));
     }
 
-    private static ObjectMapper getMapperFor(final Object obj, final boolean prettyPrint) {
-        final Class<?> clazz = (obj instanceof Class<?>) ? (Class<?>) obj : obj.getClass();
-
-        Map<Class<?>, ObjectMapper> mappers = m_mappers.get();
-        if (mappers == null) {
-            mappers = Collections.synchronizedMap(new WeakHashMap<Class<?>, ObjectMapper>());
-            m_mappers.set(mappers);
-        }
-
-        String cacheKey = clazz.getName() + "_" + prettyPrint;
-
-        if (mappers.containsKey(clazz)) {
-            LOG.trace("found mapper for {}", cacheKey);
-            return mappers.get(clazz);
-        }
-
-        LOG.trace("creating mapper for {}", cacheKey);
-        final ObjectMapper mapper = createObjectMapper(prettyPrint);
-        mappers.put(clazz, mapper);
-
-        return mapper;
+    /**
+     * Return the shared ObjectMapper instance. Callers may use writerWithDefaultPrettyPrinter()
+     * on the returned mapper when they explicitly want pretty-printed output.
+     */
+    public static ObjectMapper getObjectMapper() {
+        return MAPPER;
     }
 
-    private static ObjectMapper createObjectMapper(final boolean prettyPrint) {
+    private static ObjectMapper createObjectMapper() {
         final ObjectMapper mapper = new ObjectMapper();
+
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setDefaultPropertyInclusion(
-                JsonInclude.Value.construct(JsonInclude.Include.NON_NULL,
-                        JsonInclude.Include.NON_DEFAULT));
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        // Exclude nulls AND empty collections/arrays/strings
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        // More explicit: set default property inclusion to NON_EMPTY for both value and content
+        mapper.setDefaultPropertyInclusion(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
+
+        // Ensure primitives behave same as before (non-default)
         mapper.configOverride(int.class)
                 .setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_DEFAULT, null));
         mapper.configOverride(Integer.class)
                 .setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_DEFAULT, null));
 
-        if (prettyPrint) {
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        }
-
+        // Also explicitly tell mapper to avoid serializing empty java.util.List / Collection properties
+        mapper.configOverride(java.util.List.class)
+                .setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
+        mapper.configOverride(java.util.Collection.class)
+                .setInclude(JsonInclude.Value.construct(JsonInclude.Include.NON_EMPTY, JsonInclude.Include.NON_EMPTY));
 
         return mapper;
-    }
-
-    public static ObjectMapper getObjectMapper(final Class<?> clazz) {
-        return getMapperFor(clazz, false);
-    }
-
-    public static ObjectMapper getObjectMapper(final Class<?> clazz, final boolean prettyPrint) {
-        return getMapperFor(clazz, prettyPrint);
     }
 }
