@@ -173,6 +173,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private OpennmsKafkaProducer kafkaProducer;
 
+    private KafkaProducerManager kafkaProducerManager;
+
     private KafkaAlarmDataSync kafkaAlarmaDataStore;
 
     private ExecutorService executor;
@@ -241,7 +243,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao, 5);
+        kafkaProducerManager = new KafkaProducerManager(configAdmin);
+
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, kafkaProducerManager,eventdIpcMgr, onmsTopologyDao, 5);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -252,7 +256,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapper);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(kafkaProducerManager, kafkaProducer, protobufMapper);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
         kafkaAlarmaDataStore.setAlarmSync(true);
         kafkaAlarmaDataStore.init();
