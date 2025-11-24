@@ -34,6 +34,9 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     changeEventConfigSourceStatusDialogState: {
       visible: false,
       eventConfigSource: null
+    },
+    createEventConfigSourceDialogState: {
+      visible: false
     }
   }),
   actions: {
@@ -136,6 +139,12 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         console.error('No source selected')
         throw new Error('No source selected')
       }
+    },
+    showCreateEventConfigSourceDialog() {
+      this.createEventConfigSourceDialogState.visible = true
+    },
+    hideCreateEventConfigSourceDialog() {
+      this.createEventConfigSourceDialogState.visible = false
     }
   }
 })

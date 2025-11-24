@@ -48,6 +48,9 @@ export type EventConfigStoreState = {
     visible: boolean
     eventConfigSource: EventConfigSource | null
   }
+  createEventConfigSourceDialogState: {
+    visible: boolean
+  }
 }
 
 export type EventConfigDetailStoreState = {
