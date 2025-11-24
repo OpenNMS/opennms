@@ -301,7 +301,7 @@ public interface EventConfRestApi {
     ) throws Exception;
 
     @GET
-    @Path("/sources/{vendorName}/events")
+    @Path("/vendors/{vendorName}/events")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Get EventConf Events by Vendor",
