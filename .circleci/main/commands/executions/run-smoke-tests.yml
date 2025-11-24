@@ -54,10 +54,10 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          when: on_fail
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          when: on_fail
           path: ~/test-artifacts
           destination: test-artifacts
