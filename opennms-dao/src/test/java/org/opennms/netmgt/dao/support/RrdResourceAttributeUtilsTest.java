@@ -168,10 +168,10 @@ public class RrdResourceAttributeUtilsTest {
         final AlphaNumericOnmsAttributeComparator comparator = new AlphaNumericOnmsAttributeComparator();
 
         List<RrdGraphAttribute> testArray = Arrays.asList(
-            new RrdGraphAttribute("abcd123", "abcd123/eth0", "abcd123.jrb"),
-            new RrdGraphAttribute("abcd10", "abcd10/eth0", "abcd10.jrb"),
-            new RrdGraphAttribute("SOMETHING", "SOMETHING/eth0", "something.jrb"),
-            new RrdGraphAttribute("AANYTHING", "AANYTHING/eth0", "aanything.jrb")
+            new RrdGraphAttribute("abcd123", "abcd123/eth0", "abcd123.rrd"),
+            new RrdGraphAttribute("abcd10", "abcd10/eth0", "abcd10.rrd"),
+            new RrdGraphAttribute("SOMETHING", "SOMETHING/eth0", "something.rrd"),
+            new RrdGraphAttribute("AANYTHING", "AANYTHING/eth0", "aanything.rrd")
         );
         testArray.sort(comparator);
         assertArrayEquals(
@@ -180,10 +180,10 @@ public class RrdResourceAttributeUtilsTest {
 	    );
 
         testArray = Arrays.asList(
-            new RrdGraphAttribute("NMS1234", "NMS1234/eth0", "nms1234.jrb"),
-            new RrdGraphAttribute("nms1234", "nms1234/eth0", "nms1234.jrb"),
-            new RrdGraphAttribute("this is a test", "test/eth0", "test.jrb"),
-            new RrdGraphAttribute("test go brrr", "brrr/eth0", "brrr.jrb")
+            new RrdGraphAttribute("NMS1234", "NMS1234/eth0", "nms1234.rrd"),
+            new RrdGraphAttribute("nms1234", "nms1234/eth0", "nms1234.rrd"),
+            new RrdGraphAttribute("this is a test", "test/eth0", "test.rrd"),
+            new RrdGraphAttribute("test go brrr", "brrr/eth0", "brrr.rrd")
         );
         testArray.sort(comparator);
         assertArrayEquals(
@@ -195,7 +195,7 @@ public class RrdResourceAttributeUtilsTest {
     private OnmsResource createResource() {
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
         Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>(1);
-        attributes.add(new RrdGraphAttribute("foo", "1/eth0", "foo.jrb"));
+        attributes.add(new RrdGraphAttribute("foo", "1/eth0", "foo.rrd"));
         OnmsResource childResource = new OnmsResource("eth0", "Interface eth0", new MockResourceType(), attributes, new ResourcePath("foo"));
         childResource.setParent(topResource);
         return childResource;

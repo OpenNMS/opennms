@@ -50,7 +50,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 public class FindTopLevelResourcesTest {
@@ -78,7 +78,7 @@ public class FindTopLevelResourcesTest {
 
         when(m_filterDao.getActiveIPAddressList("IPADDR IPLIKE *.*.*.*")).thenReturn(new ArrayList<InetAddress>(0));
 
-        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        RrdStrategy<?, ?> rrdStrategy = new MultithreadedJniRrdStrategy();
         m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
 
         m_resourceStorageDao.setRrdDirectory(m_fileAnticipator.getTempDir());

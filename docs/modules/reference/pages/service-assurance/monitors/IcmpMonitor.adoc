@@ -71,7 +71,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <1> Number of attempts to test a service’s status.
 <2> Timeout for the *isReachable* method, in milliseconds.
 <3> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<4> The name of the RRD file (minus the .rrd or .jrb file extension).
+<4> The name of the RRD file (minus the .rrd file extension).
 <5> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <6> Required *monitor* section.
 
@@ -97,7 +97,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <4> Whether to set the "Don’t Fragment" bit on outgoing packets.
 <5> Number of bytes of the ICMP packet to send.
 <6> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<7> The file name of the RRD file (minus the .rrd or .jrb file extension).
+<7> The file name of the RRD file (minus the .rrd file extension).
 <8> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <9> Required *monitor* section.
 
