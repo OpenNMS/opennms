@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jrobin.core.RrdException;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
 import org.opennms.netmgt.rrd.jrrd2.impl.JRrd2Jni;

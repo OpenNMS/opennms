@@ -19,34 +19,31 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.rrd.model;
+package org.opennms.netmgt.rrd.rrdtool;
 
-import java.io.File;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.opennms.netmgt.rrd.model.v1.RRDv1;
-
-/**
- * The Test Class for NMS6369.
- * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
- */
-public class NMS6369IT {
-
-    /**
-     * Test JRobin parse.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testJrobinParse() throws Exception {
-        RRDv1 rrd = RrdConvertUtils.dumpJrb(new File("src/test/resources/mib2-interfaces.jrb"));
-        Assert.assertNotNull(rrd);
-        File target = new File("target/mib2-interfaces.jrb");
-        RrdConvertUtils.restoreJrb(rrd, target);
-        Assert.assertTrue(target.exists());
+public class RrdCreationTimeProvider {
+    public interface ProviderInterface {
+        long currentTimeMillis();
     }
 
-}
+    public static ProviderInterface DEFAULT = new ProviderInterface() {
+        @Override
+        public long currentTimeMillis() {
+            return System.currentTimeMillis();
+        }
+    };
 
+    private static ProviderInterface provider = DEFAULT;
+
+    public static void setProvider(final ProviderInterface provider) {
+        RrdCreationTimeProvider.provider = provider;
+    }
+
+    public static long currentTimeMillis() {
+        if (RrdCreationTimeProvider.provider != null) {
+            return provider.currentTimeMillis();
+        } else {
+            return DEFAULT.currentTimeMillis();
+        }
+    }
+}

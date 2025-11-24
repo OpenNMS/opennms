@@ -36,7 +36,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 
 public class FilesystemResourceStorageDaoTest {
 
@@ -49,7 +49,7 @@ public class FilesystemResourceStorageDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        RrdStrategy<?, ?> rrdStrategy = new JRobinRrdStrategy();
+        RrdStrategy<?, ?> rrdStrategy = new MultithreadedJniRrdStrategy();
         m_rrdFileExtension = rrdStrategy.getDefaultFileExtension();
 
         m_fsResourceStorageDao.setRrdDirectory(tempFolder.getRoot());

@@ -154,7 +154,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         params.put("rrd-repository", getResponseTimeRoot().getAbsolutePath());
         params.put("rrd-base-name", "smtp-base");
 
-        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".rrd");
 
         when(m_rrdStrategy.createDefinition(eq("192.168.1.5"),
                 eq(getResponseTimeRoot().toPath().resolve(pathToResourceInResponseTime).toString()),
@@ -166,7 +166,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         // verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
 
         when(m_rrdStrategy.openFile(eq(getResponseTimeRoot().toPath()
-                .resolve(pathToResourceInResponseTime.resolve("smtp-base.jrb")).toString()))).thenReturn(null);
+                .resolve(pathToResourceInResponseTime.resolve("smtp-base.rrd")).toString()))).thenReturn(null);
         // verify(m_rrdStrategy, atLeastOnce()).openFile(anyString());
 
         // This is the important bit, the order of the values should match the order there were inserted above
@@ -212,7 +212,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
                 InetAddress.getByName("192.168.1.5"), svcName);
 
-        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".rrd");
 
         when(m_rrdStrategy.createDefinition(eq("192.168.1.5"),
                 eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").toString()),
@@ -246,7 +246,7 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
                 isNull());
 
         verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
-        verify(m_rrdStrategy, atLeastOnce()).openFile(eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+        verify(m_rrdStrategy, atLeastOnce()).openFile(eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").resolve(expectedName + ".rrd").toString()));
 
         clearInvocations(m_rrdStrategy);
     }

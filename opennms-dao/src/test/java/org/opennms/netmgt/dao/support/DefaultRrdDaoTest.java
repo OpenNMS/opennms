@@ -149,7 +149,7 @@ public class DefaultRrdDaoTest {
 
     private OnmsResource preparePrintValueTest(long start, long end, String printLine) throws IOException, RrdException {
         String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
-        String rrdFile = "ifInOctets.jrb";
+        String rrdFile = "ifInOctets.rrd";
         
         String escapedFile = rrdDir + File.separator + rrdFile;
         if  (File.separatorChar == '\\') {
@@ -188,7 +188,7 @@ public class DefaultRrdDaoTest {
     @Test
     public void testFetchLastValue() throws Exception {
         String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
-        String rrdFile = "ifInOctets.jrb";
+        String rrdFile = "ifInOctets.rrd";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
@@ -218,7 +218,7 @@ public class DefaultRrdDaoTest {
     @Test
     public void testFetchLastValueInRange() throws Exception {
         String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
-        String rrdFile = "ifInOctets.jrb";
+        String rrdFile = "ifInOctets.rrd";
 
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 

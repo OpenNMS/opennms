@@ -490,11 +490,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jrrd2-dependencies</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -503,6 +498,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-util</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>

@@ -184,7 +184,7 @@ For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
 <monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
 <1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<2> The name of the RRD file (minus the .rrd or .jrb file extension).
+<2> The name of the RRD file (minus the .rrd file extension).
 <3> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <4> IP address of the interface that this service should use as its proxy.
 <5> IP address that the remote IOS device should ping.
@@ -233,7 +233,7 @@ Example `poller-configuration.xml` additions:
 <monitor service="BarCentral" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" /> <6>
 ----
 <1> Base directory of an RRD repository in which to store this service monitor’s response-time samples.
-<2> The name of the RRD file (minus the .rrd or .jrb file extension).
+<2> The name of the RRD file (minus the .rrd file extension).
 <3> Name of the RRD data source (DS) in which to store this service monitor’s response-time samples.
 <4> IP address of the interface that this service should use as its proxy.
 <5> IP address that the remote IOS device should ping.

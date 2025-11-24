@@ -36,7 +36,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DefaultDataCollectionConfigDao;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;

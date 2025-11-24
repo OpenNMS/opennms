@@ -4,8 +4,6 @@
 Many open source applications use link:http://oss.oetiker.ch/rrdtool[RRDtool], which is the de-facto open standard for time series data.
 This section describes how to install RRDtool and how to configure your {page-component-title} Core instance to use it.
 
-WARNING: This guide does not cover data migration from JRobin to RRDtool.
-
 Configurations must in the `etc` directory relative to the {page-component-title} Core home directory.
 Depending on your operating system, the home directory is `/opt/opennms` for Debian/Ubuntu and for CentOS/RHEL.
 
@@ -36,7 +34,7 @@ org.opennms.web.graphs.engine=rrdtool<4>
 rrd.binary=/usr/bin/rrdtool<5>
 ----
 
-<1> Set JNI RRD strategy class instead of JRobin.
+<1> Set JNI RRD strategy class.
 <2> Use the internal JRRD library.
 <3> Use the JRRD library to interface with RRDtool.
 <4> This is optional; use RRDtool to render graphs.
@@ -55,15 +53,13 @@ TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the
 sudo systemctl restart opennms
 ----
 
-.Verify that RRD files get created instead of JRobin files
+.Verify that RRD files get created
 [source, console]
 ----
 find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
 NOTE: The first data collection creates RRDtool files with extension `.rrd`.
-      JRobin files with extension `.jrb` are not updated.
-      JRobin files are not deleted automatically.
       You must delete them manually.
 --
 
@@ -92,7 +88,7 @@ org.opennms.web.graphs.engine=rrdtool<4>
 rrd.binary=/usr/bin/rrdtool<5>
 ----
 
-<1> Set JNI RRD strategy class instead of JRobin.
+<1> Set JNI RRD strategy class.
 <2> Use the internal JRRD library.
 <3> Use the JRRD library to interface with RRDtool.
 <4> This is optional; use RRDtool to render graphs.
@@ -111,15 +107,13 @@ TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the
 sudo systemctl restart opennms
 ----
 
-.Verify that RRD files get created instead of JRobin files
+.Verify that RRD files get created
 [source, console]
 ----
 find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
 NOTE: The first data collection creates RRDtool files with extension `.rrd`.
-      JRobin files with extension `.jrb` are not updated.
-      JRobin files are not deleted automatically.
       You must delete them manually.
 --
 
@@ -147,7 +141,7 @@ org.opennms.web.graphs.engine=rrdtool<4>
 rrd.binary=/usr/bin/rrdtool<5>
 ----
 
-<1> Set JNI RRD strategy class instead of JRobin.
+<1> Set JNI RRD strategy class.
 <2> Use the internal JRRD library.
 <3> Use the JRRD library to interface with RRDtool.
 <4> This is optional; use RRDtool to render graphs.
@@ -166,16 +160,20 @@ TIP: If your RRDtool binary is not in `/usr/bin/rrdtool`, adjust the path in the
 sudo systemctl restart opennms
 ----
 
-.Verify RRD files get created instead of JRobin files
+.Verify that RRD files get created
 [source, console]
 ----
 find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
 NOTE: The first data collection creates RRDtool files with extension `.rrd`.
-      JRobin files with extension `.jrb` are not updated.
-      JRobin files are not deleted automatically.
       You must delete them manually.
 --
 
 ====
+
+== Converting JRobin data to RRDTool data
+
+JRobin, the pure-Java RRD implementation has been removed. In order to convert existing JRobin `.jrb` files to RRDTool `.rrd` files you can use the
+JRobin to RRDtool Converter. Refer to https://github.com/opennms-forge/jrobin-to-rrdtool-converter for detailed information on how to download, build and use the utility.
+

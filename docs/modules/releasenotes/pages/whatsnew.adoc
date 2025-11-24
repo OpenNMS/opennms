@@ -2,6 +2,11 @@
 
 = What's New in OpenNMS Horizon 35
 
+=== Removed JRobin implementation
+
+JRobin, the pure-Java RRD implementation has been removed.
+The class `org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy` is no longer available.
+The Utilities to convert and analyze JRobin files (`.jrb`) are still available and usable.
 
 == System requirements and Dependencies ==
 

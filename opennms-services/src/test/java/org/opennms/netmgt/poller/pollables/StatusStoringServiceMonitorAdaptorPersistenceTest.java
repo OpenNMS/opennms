@@ -107,7 +107,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
                                                                            InetAddress.getByName("192.168.1.5"), "SMTP");
 
-        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".rrd");
 
         when(this.rrdStrategy.createDefinition(eq("192.168.1.5"),
                                                      eq(getStatusRoot().resolve("192.168.1.5").toString()),
@@ -149,7 +149,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
                                                                  isNull());
 
         verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
-        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve("smtp-base.jrb").toString()));
+        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve("smtp-base.rrd").toString()));
         verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":1"));
         verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":-1"));
         verify(this.rrdStrategy, atLeastOnce()).updateFile(isNull(), eq("192.168.1.5"), endsWith(":U"));
@@ -198,7 +198,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
                 InetAddress.getByName("192.168.1.5"), svcName);
 
-        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".rrd");
 
         when(this.rrdStrategy.createDefinition(eq("192.168.1.5"),
                 eq(getStatusRoot().resolve("192.168.1.5").toString()),
@@ -232,7 +232,7 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
                 isNull());
 
         verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
-        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve(expectedName + ".rrd").toString()));
 
         clearInvocations(this.rrdStrategy);
     }
