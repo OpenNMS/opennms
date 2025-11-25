@@ -1397,6 +1397,15 @@
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>jackson-core</feature>
         <feature>jackson-dataformat-yaml</feature>
+        <feature>jackson-datatype-jdk8</feature>
+
+        <bundle>mvn:jakarta.annotation/jakarta.annotation-api/3.0.0</bundle>
+        <bundle>mvn:com.google.code.findbugs/annotations/3.0.1</bundle>
+
+        <bundle>wrap:mvn:com.hubspot.immutables/immutables-exceptions/1.9</bundle>
+        <bundle>wrap:mvn:com.hubspot.immutables/hubspot-style/1.9</bundle>
+        <bundle>wrap:mvn:com.hubspot/algebra/1.5</bundle>
+
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.history/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
