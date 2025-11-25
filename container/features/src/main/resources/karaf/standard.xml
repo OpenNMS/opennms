@@ -865,10 +865,6 @@ org.osgi.service.http.port=8181
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.jetty/4.0.8</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.whiteboard/4.0.0</bundle>
         <capability>http-service;provider:=felix-http</capability>
-        <conditional>
-            <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.6</bundle>
-        </conditional>
     </feature>
 
     <!-- Replace the Pax Web HTTP service with our servlet bridge -->
@@ -879,10 +875,6 @@ org.osgi.service.http.port=8181
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
         <!--<bundle start-level="30">mvn:org.opennms.container/org.opennms.container.bridge/${project.version}</bundle>-->
         <capability>http-service;provider:=pax-http</capability>
-        <conditional>
-            <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.2.6</bundle>
-        </conditional>
     </feature>
 
     <feature name="http-whiteboard" description="Provide HTTP Whiteboard pattern support" version="4.2.6">
@@ -1050,48 +1042,6 @@ org.osgi.service.http.port=8181
 install = admin
 uninstall = admin
             </config>
-        </conditional>
-    </feature>
-
-    <feature name="webconsole" description="Base support of the Karaf WebConsole" version="4.2.6">
-        <feature>jaas-boot</feature>
-        <config name="org.apache.karaf.webconsole">
-################################################################################
-#
-#    Licensed to the Apache Software Foundation (ASF) under one or more
-#    contributor license agreements.  See the NOTICE file distributed with
-#    this work for additional information regarding copyright ownership.
-#    The ASF licenses this file to You under the Apache License, Version 2.0
-#    (the "License"); you may not use this file except in compliance with
-#    the License.  You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-#
-################################################################################
-
-realm=karaf
-        </config>
-        <feature>http</feature>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.metatype/1.2.2</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.console/4.2.6</bundle>
-        <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.memoryusage/1.0.10</bundle>
-        <conditional>
-            <condition>instance</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.instance/4.2.6</bundle>
-        </conditional>
-        <conditional>
-            <condition>shell</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.gogo/4.2.6</bundle>
-        </conditional>
-        <conditional>
-            <condition>feature</condition>
-            <bundle start-level="30">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.features/4.2.6</bundle>
         </conditional>
     </feature>
 
@@ -1499,10 +1449,6 @@ org.apache.felix.eventadmin.AddSubject=true
             <condition>shell</condition>
             <bundle>mvn:org.apache.karaf/org.apache.karaf.event/4.2.6</bundle>
         </conditional>
-        <conditional>
-            <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.event/1.1.8</bundle>
-        </conditional>
     </feature>
 
     <feature name="jasypt-encryption" description="Advanced encryption support for Karaf security" version="4.2.6">
@@ -1529,11 +1475,6 @@ org.apache.felix.eventadmin.AddSubject=true
         <conditional>
             <condition>management</condition>
             <bundle start-level="30">mvn:org.apache.karaf.scr/org.apache.karaf.scr.management/4.2.6</bundle>
-        </conditional>
-        <conditional>
-            <condition>webconsole</condition>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.inventory/1.0.4</bundle>
-            <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.webconsole.plugins.ds/2.1.0</bundle>
         </conditional>
         <conditional>
             <condition>bundle</condition>

@@ -92,7 +92,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("standard");
         installFeature("system");
         installFeature("war");
-        installFeature("webconsole");
         installFeature("wrap");
         installFeature("wrapper");
 
