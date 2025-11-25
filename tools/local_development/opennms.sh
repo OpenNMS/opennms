@@ -34,11 +34,16 @@ start_postgres_docker(){
 if [[ "$(docker ps -q -f name=opennms-postgres)" ]]; then
     echo "PostgreSQL Docker container is already running."
     return
-else
+fi
+
+if [[ "$INSTALL_POSTGRESQL" == "yes" ]]; then
     echo "Starting PostgreSQL Docker container..."
     cd "$ROOT"/tools/local_development/postgres || exit 1
     docker-compose up -d
     cd - || exit 1
+else
+    echo "INSTALL_POSTGRESQL is set to 'no'. Skipping"
+    return 
 fi
 
 # Check if postgres is ready
