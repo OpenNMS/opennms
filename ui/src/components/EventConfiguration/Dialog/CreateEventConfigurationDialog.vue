@@ -10,7 +10,6 @@
         <FeatherInput
           label="Event Configuration Name"
           v-model="configName"
-          placeholder="Enter event configuration name"
           :error="error"
         />
       </div>
