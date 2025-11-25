@@ -1,8 +1,8 @@
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-common.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-common.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-rest-v1.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-rest-v2.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/messages.xml
-/usr/share/opennms/jetty-webapps/opennms/WEB-INF/web.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-common.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-common.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-rest-v1.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-cxf-rest-v2.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/messages.xml
+/opt/opennms/jetty-webapps/opennms/WEB-INF/web.xml

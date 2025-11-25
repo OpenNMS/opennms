@@ -10,9 +10,7 @@ Architecture: all
 Depends: adduser, openssh-client, uuid-runtime, sudo
 Recommends: openjdk-17-jre-headless | openjdk-17-jre | adoptopenjdk-17-openj9xl-jre | adoptopenjdk-17-openj9-jre | adoptopenjdk-17-hotspot-jre | temurin-17-jdk | jdk-17, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Conflicts: opennms-minion-container (<< 25.0.0), opennms-minion-features-core (<<25.0.0), opennms-minion-features-default (<<25.0.0)
-Provides: opennms-plugin-api (= OPA_VERSION)
+Provides: opennms-plugin-api (= 1.6.1)
 Description: distributed OpenNMS monitoring client
  OpenNMS Minion is a container infrastructure for distributed, scalable network
  management and monitoring.
- .
- http://www.opennms.org/wiki/Minion

@@ -22,7 +22,7 @@ answered), https://opennms.discourse.group/c/community-support
 Differences in the Debian packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- $OPENNMS_HOME on Debian is /usr/share/opennms, not /opt/opennms
+- $OPENNMS_HOME on Debian is /opt/opennms
 
 - The configuration files can be found in /etc/opennms
 

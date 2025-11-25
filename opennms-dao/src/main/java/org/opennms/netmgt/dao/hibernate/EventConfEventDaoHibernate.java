@@ -54,6 +54,16 @@ public class EventConfEventDaoHibernate
         return list.isEmpty() ? null : list.get(0);
     }
 
+    @Override
+    public List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId) {
+        return find("from EventConfEvent e where e.uei = ? and e.source.id = ?", uei, sourceId);
+    }
+
+    @Override
+    public int countBySourceId(Long sourceId) {
+        return queryInt("select count(e.id) from EventConfEvent e where e.source.id = ?", sourceId);
+    }
+
     public List<EventConfEvent> filterEventConf(final String uei, final String vendor, final String sourceName, final int offset, final int limit) {
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
@@ -144,7 +154,7 @@ public class EventConfEventDaoHibernate
         int batchSize = 50;
         int i = 0;
         for (EventConfEvent event : events) {
-            getHibernateTemplate().save(event);
+            getHibernateTemplate().saveOrUpdate(event);
             i++;
             if (i % batchSize == 0) {
                 getHibernateTemplate().flush();
