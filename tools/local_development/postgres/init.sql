@@ -1,0 +1,4 @@
+CREATE USER opennms WITH PASSWORD 'opennms';
+GRANT ALL PRIVILEGES ON DATABASE opennms TO opennms;
+GRANT CREATE ON SCHEMA public TO opennms;
+
