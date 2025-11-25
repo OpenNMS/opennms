@@ -49,7 +49,7 @@ public class EventConfEventDto {
 
     public EventConfEventDto(Long id, String uei, String eventLabel, String description, Boolean enabled,
                              String xmlContent, Date createdTime, Date lastModified, String modifiedBy,
-                             String sourceName, String vendor, Integer fileOrder,String severity) {
+                             String sourceName, String vendor, Integer fileOrder, String severity) {
         this.id = id;
         this.uei = uei;
         this.eventLabel = eventLabel;

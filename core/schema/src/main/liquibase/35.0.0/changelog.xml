@@ -154,5 +154,19 @@
                 endDelimiter=";"
                 stripComments="true"/>
     </changeSet>
-
+    <changeSet author="aurangzeb" id="35.0.0-eventconf-events-severity-update">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+            <columnExists tableName="eventconf_events" columnName="severity"/>
+        </preConditions>
+        <sql>
+            UPDATE eventconf_events
+            SET severity = (
+            xpath('//ns:severity/text()', xml_content::xml, ARRAY[
+            ['ns', 'http://xmlns.opennms.org/xsd/eventconf']
+            ])::text[]
+            )[1]
+            WHERE severity ='Indeterminate';
+        </sql>
+    </changeSet>
 </databaseChangeLog>
