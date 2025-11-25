@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.MinionTests.class)
-@Ignore ("see https://opennms.atlassian.net/browse/MPLUG-78")
 public class IntegrationAPIIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationAPIIT.class);
