@@ -68,7 +68,7 @@ fi
 check_postgres(){
     if command -v pg_isready >/dev/null; then
         if ! pg_isready -q; then
-            echo "PostgreSQL not ready – attempting to start Docker container"
+            echo "PostgreSQL not ready - attempting to start Docker container"
             setup_postgres
         else
             echo "PostgreSQL is already ready"
@@ -76,7 +76,7 @@ check_postgres(){
     else
         # Fallback – try to connect directly
         if ! nc -z localhost 5432; then
-            echo "PostgreSQL not reachable – attempting to start Docker container"
+            echo "PostgreSQL not reachable - attempting to start Docker container"
             setup_postgres
         else
             echo "PostgreSQL is already reachable"
