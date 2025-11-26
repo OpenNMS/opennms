@@ -26,6 +26,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,7 @@ import java.util.stream.Collectors;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -105,6 +108,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -395,6 +399,81 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Sleep an additional 10 seconds to verify a second alarm was not consumed
         Thread.sleep(10000);
         assertEquals(1, kafkaConsumer.getAlarms().size());
+    }
+    @Test
+    public void testFallbackToGlobalConfiguration() throws Exception {
+
+
+        Hashtable<String, Object> globalConfigProps = new Hashtable<>();
+        globalConfigProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+        globalConfigProps.put("client.id", "global-producer");
+
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        Configuration globalConfig = mock(Configuration.class);
+        when(globalConfig.getProperties()).thenReturn(globalConfigProps);
+
+        Configuration emptyConfig = mock(Configuration.class);
+        when(emptyConfig.getProperties()).thenReturn(null);
+
+        when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.ALARMS_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.NODES_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.GLOBAL_KAFKA_CLIENT_PID)).thenReturn(globalConfig);
+        when(configAdmin.getConfiguration(anyString())).thenReturn(globalConfig);
+
+        KafkaProducerManager testManager = new KafkaProducerManager(configAdmin);
+        testManager.init();
+
+        for (KafkaProducerManager.MessageType messageType : KafkaProducerManager.MessageType.values()) {
+            Properties config = testManager.getConfigurationForMessageType(messageType);
+            assertThat("use global config when topic-specific is missing",
+                    config.getProperty("client.id"), is("global-producer"));
+        }
+
+        testManager.destroy();
+        LOG.info("Fallback to global configuration test completed successfully");
+    }
+
+    @Test
+    public void testEffectivePidSelectionLogic() throws Exception {
+
+        Hashtable<String, Object> configWithBootstrap = new Hashtable<>();
+        configWithBootstrap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+
+        Hashtable<String, Object> configWithoutBootstrap = new Hashtable<>();
+        configWithoutBootstrap.put("othertest.property", "value");
+
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+
+        Configuration eventsConfig = mock(Configuration.class);
+        when(eventsConfig.getProperties()).thenReturn(configWithBootstrap);
+
+        Configuration alarmsConfig = mock(Configuration.class);
+        when(alarmsConfig.getProperties()).thenReturn(configWithoutBootstrap);
+
+        Configuration globalConfig = mock(Configuration.class);
+        when(globalConfig.getProperties()).thenReturn(configWithBootstrap);
+
+        when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID)).thenReturn(eventsConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.ALARMS_KAFKA_CLIENT_PID)).thenReturn(alarmsConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.GLOBAL_KAFKA_CLIENT_PID)).thenReturn(globalConfig);
+        when(configAdmin.getConfiguration(anyString())).thenReturn(globalConfig);
+
+        KafkaProducerManager testManager = new KafkaProducerManager(configAdmin);
+
+        testManager.init();
+
+        Properties eventsResult = testManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.EVENT);
+
+        Properties alarmsResult = testManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM);
+
+        assertThat("Events config should have bootstrap servers",
+                eventsResult.getProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), not(nullValue()));
+        assertThat("Alarms config should have bootstrap servers (from global fallback)",
+                alarmsResult.getProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), not(nullValue()));
+
+        testManager.destroy();
+        LOG.info("Effective PID selection logic test completed");
     }
 
     @Test
