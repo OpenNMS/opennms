@@ -269,7 +269,7 @@
         {
           "id": "customizeEvents",
           "name": "Customize Events",
-          "url": "admin/manageEvents.jsp",
+          "url": "ui/index.html#/event-config",
           "locationMatch": "",
           "roles": null
         },

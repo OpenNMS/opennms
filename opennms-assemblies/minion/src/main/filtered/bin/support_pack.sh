@@ -21,9 +21,9 @@ PG_USER="opennms"
 PG_PASS="opennms"
 PG_HOST="127.0.0.1"
 DATETIME=$(date +%Y%m%d%H%M%S)
-OPENNMS_HOME="/opt/nothing_yet"
-MINION_HOME="/opt/nothing_yet"
-SENTINEL_HOME="/opt/nothing_yet"
+OPENNMS_HOME="/opt/opennms"
+MINION_HOME="/opt/minion"
+SENTINEL_HOME="/opt/sentinel"
 PACK_DIR="${TEMPDIR}/support-pack-$DATETIME"
 PSQL=$(/usr/bin/env which psql 2>/dev/null || echo "false")
 TAR=$(/usr/bin/env which tar 2>/dev/null || echo "false")
@@ -130,16 +130,10 @@ echo "Be aware that generating a support pack can take several minutes!"
 #What are we?
 if [ -f /etc/redhat-release ]; then  #RPM
    FAMILY="rpm";
-   OPENNMS_HOME="/opt/opennms"
-   MINION_HOME="/opt/minion"
-   SENTINEL_HOME="/opt/sentinel"
 fi
 if [ -f /etc/os-release ]; then
    if [ $(grep -ci ubuntu /etc/os-release) -ge 1 -o $(grep -ci debian /etc/os-release) -ge 1 ]; then  #deb
       FAMILY="deb";
-      OPENNMS_HOME="/usr/share/opennms"
-      MINION_HOME="/usr/share/minion"
-      SENTINEL_HOME="/usr/share/sentinel"
    fi
 fi 
 

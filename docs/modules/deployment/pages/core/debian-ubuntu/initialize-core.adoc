@@ -15,13 +15,13 @@ sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 .Detect Java environment and persist in /usr/share/opennms/etc/java.conf
 [source, console]
 ----
-sudo /usr/share/opennms/bin/runjava -s
+sudo /opt/opennms/bin/runjava -s
 ----
 
 .Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
 [source, console]
 ----
-sudo /usr/share/opennms/bin/install -dis
+sudo /opt/opennms/bin/install -dis
 ----
 
 .Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
