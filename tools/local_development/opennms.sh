@@ -26,10 +26,15 @@ RELEASE="$(.circleci/scripts/pom2version.sh pom.xml)"
 
 INSTALL_POSTGRESQL=${INSTALL_POSTGRESQL:-"no"}
 
-INSTALL_JRRD2=${INSTALL_JRRD2:-"no"}
+ENABLE_JRRD2=${ENABLE_JRRD2:-"no"}
 # INSTALL_JICMP=${INSTALL_JICMP:-"no"}
 # INSTALL_JICMP6=${INSTALL_JICMP6:-"no"}
 
+# run dependency setup
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common.sh"
+
+detect_jrrd2_location
 
 # ------------------------------------------------------
 # PostgreSQL 
@@ -103,6 +108,8 @@ if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
     ./clean.pl && ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
 fi
 
+env 
+
 echo "Compiling & assembling (skip tests)..."
 ./clean.pl && ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
 
@@ -115,7 +122,8 @@ tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
-if [[ "$INSTALL_JRRD2" == "yes" ]]; then
+if [[ "$ENABLE_JRRD2" == "yes" ]]; then 
+    
     echo "
     org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
     org.opennms.rrd.interfaceJar=$JRRD_JAR
