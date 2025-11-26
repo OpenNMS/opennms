@@ -304,7 +304,7 @@ install_jrrd2(){
     
     JRRD_VERSION="$("$ROOT"/.circleci/scripts/pom2version.sh "$ROOT"/jrrd2/java/pom.xml)"
     
-        JRRD_JAR=$(find "$ROOT/jrrd2" -name "jrrd2-*-$JRRD_VERSION.jar" | head -n 1)
+    JRRD_JAR=$(find "$ROOT/jrrd2" -name "jrrd2-*-$JRRD_VERSION.jar" | head -n 1)
     JRRD_LIB=$(find "$ROOT/jrrd2" -name "libjrrd2.so" | head -n 1)
     
     if [[ ! -d "$ROOT/built_dependencies/lib" ]]; then
@@ -313,9 +313,14 @@ install_jrrd2(){
     
     cp $JRRD_LIB $ROOT/built_dependencies/lib/
     cp $JRRD_JAR $ROOT/built_dependencies/
+    if [[ "$OS_NAME" == "macOS" ]]; then
+       ln -s $ROOT/built_dependencies/lib/libjrrd2.so $ROOT/built_dependencies/lib/libjrrd2.dylib
+    fi
+    ln -s $ROOT/build_dependencies/jrrd2-*-$JRRD_VERSION.jar $ROOT/built_dependencies/jrrd2.jar
+
     
     
-    JRRD_JAR="$ROOT/built_dependencies/$(basename $JRRD_JAR)"
+    JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
     JRRD_LIB="$ROOT/built_dependencies/lib/$(basename $JRRD_LIB)"  
     cd ..
     echo "Successfully built jrrd2 locally: $JRRD_JAR, $JRRD_LIB"
