@@ -29,7 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Objects;
+import java.util.Map;
+import java.util.Dictionary;
+import java.util.Properties;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class KafkaProducerManager {
@@ -138,19 +142,7 @@ public class KafkaProducerManager {
 
     private Producer<byte[], byte[]> initializeProducerForPid(String pid) {
         try {
-            final Properties producerConfig = new Properties();
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(pid).getProperties();
-
-            if (properties != null) {
-                final Enumeration<String> keys = properties.keys();
-                while (keys.hasMoreElements()) {
-                    final String key = keys.nextElement();
-                    producerConfig.put(key, properties.get(key));
-                }
-            } else {
-                LOG.warn("No configuration found for PID: {}, using empty configuration", pid);
-            }
-
+            final Properties producerConfig = getConfigurationForPid(pid);
             producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
             producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
@@ -178,6 +170,7 @@ public class KafkaProducerManager {
         return getConfigurationForPid(pid);
     }
 
+
     public Properties getConfigurationForPid(String pid) {
         try {
             final Properties config = new Properties();
@@ -189,7 +182,7 @@ public class KafkaProducerManager {
                     final String key = keys.nextElement();
                     Object value = properties.get(key);
                     if (value != null) {
-                        config.put(key, value.toString());
+                        config.put(key, value);
                     }
                 }
             }
