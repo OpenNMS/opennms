@@ -115,15 +115,15 @@ tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
-# TODO: FIX This
-# echo "
-# org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
-# org.opennms.rrd.interfaceJar=$JRRD_JAR
-# opennms.library.jrrd2=$JRRD_LIB
-# org.opennms.web.graphs.engine=rrdtool
-# rrd.binary=/usr/bin/rrdtool
-#   " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
-# fi
+if [[ "$INSTALL_JRRD2" == "yes" ]]; then
+    echo "
+    org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+    org.opennms.rrd.interfaceJar=$JRRD_JAR
+    opennms.library.jrrd2=$JRRD_LIB
+    org.opennms.web.graphs.engine=rrdtool
+    rrd.binary=/usr/bin/rrdtool
+    " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
+fi
 
 
 # Check if POSTGRES_PASSWORD is set, if not set a default value
