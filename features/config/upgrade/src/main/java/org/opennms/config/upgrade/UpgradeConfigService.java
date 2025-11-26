@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -42,21 +43,23 @@ public class UpgradeConfigService implements InitializingBean {
     private final ConfigurationManagerService cm;
     private final DataSource dataSource;
     private final boolean skipConfigUpgrades;
-
+    private final EventConfEventDao eventConfEventDao;
     @Inject
     public UpgradeConfigService(final ConfigurationManagerService cm,
                                 final DataSource dataSource,
                                 @Value( "${skipConfigUpgrades:false}" )
-                                final boolean skipConfigUpgrades) {
+                                final boolean skipConfigUpgrades, EventConfEventDao eventConfEventDao) {
         this.cm = Objects.requireNonNull(cm);
         this.dataSource = Objects.requireNonNull(dataSource);
         this.skipConfigUpgrades = skipConfigUpgrades;
+        this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         if (!skipConfigUpgrades) {
             new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+            new EventConfUpgrader(eventConfEventDao).runContentUpgrade();
         }
     }
 }

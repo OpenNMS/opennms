@@ -142,20 +142,4 @@
             <dropColumn tableName="eventconf_events" columnName="content" />
         </rollback>
     </changeSet>
-    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-update">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="1">
-                SELECT CASE WHEN EXISTS (
-                    SELECT 1 FROM eventconf_events WHERE content = '{}'::jsonb
-                ) THEN 1 ELSE 0 END;
-            </sqlCheck>
-        </preConditions>
-        <sqlFile
-                path="../sql/eventConf_events_updates.sql"
-                relativeToChangelogFile="true"
-                splitStatements="true"
-                endDelimiter=";"
-                stripComments="true"/>
-    </changeSet>
-
 </databaseChangeLog>
