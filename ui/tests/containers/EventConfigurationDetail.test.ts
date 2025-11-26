@@ -152,7 +152,7 @@ describe('EventConfigurationDetail.vue', () => {
     expect(buttons.length).equal(3)
   })
 
-  it('should display action buttons for OpenNMS vendor with only Disable Source button and Add Event button', async () => {
+  it('should display action buttons for OpenNMS vendor with only Disable Configuration button and Add Event button', async () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
     wrapper = await createWrapper(openNmsConfig)
     await wrapper.vm.$nextTick()
@@ -163,22 +163,22 @@ describe('EventConfigurationDetail.vue', () => {
     expect(buttons.length).equal(2)
 
     expect(buttons[0].text()).toContain('Add Event')
-    expect(buttons[1].text()).toContain('Disable Source')
+    expect(buttons[1].text()).toContain('Disable Configuration')
   })
 
-  it('should show "Disable Source" button when source is enabled', async () => {
+  it('should show "Disable Configuration" button when source is enabled', async () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.text()).toContain('Disable Source')
+    expect(wrapper.text()).toContain('Disable Configuration')
   })
 
-  it('should show "Enable Source" button when source is disabled', async () => {
+  it('should show "Enable Configuration" button when source is disabled', async () => {
     const disabledConfig = { ...mockConfig, enabled: false }
     wrapper = await createWrapper(disabledConfig)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.text()).toContain('Enable Source')
+    expect(wrapper.text()).toContain('Enable Configuration')
   })
 
   it('should navigate back when Go Back button is clicked', async () => {
@@ -216,23 +216,23 @@ describe('EventConfigurationDetail.vue', () => {
     expect(modificationStore.setSelectedEventConfigSource).toHaveBeenCalledWith(mockConfig, CreateEditMode.Create, expect.any(Object))
   })
 
-  it('should show change status dialog when Disable/Enable Source is clicked', async () => {
+  it('should show change status dialog when Disable/Enable Configuration is clicked', async () => {
     store.showChangeEventConfigSourceStatusDialog = vi.fn()
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const statusButton = wrapper.findAll('button').find((btn) => btn.text().includes('Disable Source'))
+    const statusButton = wrapper.findAll('button').find((btn) => btn.text().includes('Disable Configuration'))
     await statusButton?.trigger('click')
 
     expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockConfig)
   })
 
-  it('should show delete dialog when Delete Source is clicked', async () => {
+  it('should show delete dialog when Delete Configuration is clicked', async () => {
     store.showDeleteEventConfigSourceDialog = vi.fn()
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const deleteButton = wrapper.findAll('button').find((btn) => btn.text().includes('Delete Source'))
+    const deleteButton = wrapper.findAll('button').find((btn) => btn.text().includes('Delete Configuration'))
     await deleteButton?.trigger('click')
 
     expect(store.showDeleteEventConfigSourceDialog).toHaveBeenCalledWith(mockConfig)

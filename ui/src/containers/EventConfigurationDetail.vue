@@ -28,17 +28,17 @@
         <FeatherButton
           primary
           @click="store.showChangeEventConfigSourceStatusDialog(store.selectedSource)"
-          data-test="enable-disable-source"
+          data-test="enable-disable-configuration"
         >
-          {{ store.selectedSource.enabled ? 'Disable Source' : 'Enable Source' }}
+          {{ store.selectedSource.enabled ? 'Disable Configuration' : 'Enable Configuration' }}
         </FeatherButton>
         <FeatherButton
           primary
           @click="store.showDeleteEventConfigSourceDialog(store.selectedSource)"
-          data-test="delete-source"
+          data-test="delete-configuration"
           v-if="store.selectedSource.vendor !== VENDOR_OPENNMS"
         >
-          Delete Source
+          Delete Configuration
         </FeatherButton>
       </div>
     </div>
