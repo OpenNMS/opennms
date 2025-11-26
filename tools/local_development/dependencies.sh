@@ -295,8 +295,15 @@ install_jrrd2(){
     # create a simple folder for compiling jrrd2 if not present
     if [[ ! -d "$ROOT/built_dependencies" ]]; then
       mkdir -p "$ROOT/built_dependencies"
+    else
+      rm -rf "$ROOT/built_dependencies"
+      mkdir -p "$ROOT/built_dependencies"
     fi
     
+    if [[ -d "$ROOT/jrrd2" ]]; then
+        rm -rf "$ROOT/jrrd2"
+    fi
+
     echo "Attempting to build jrrd2 locally..."
     git clone https://github.com/OpenNMS/jrrd2.git
     cd jrrd2
@@ -317,8 +324,6 @@ install_jrrd2(){
        ln -s $ROOT/built_dependencies/lib/libjrrd2.so $ROOT/built_dependencies/lib/libjrrd2.dylib
     fi
     ln -s $ROOT/build_dependencies/jrrd2-*-$JRRD_VERSION.jar $ROOT/built_dependencies/jrrd2.jar
-
-    
     
     JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
     JRRD_LIB="$ROOT/built_dependencies/lib/$(basename $JRRD_LIB)"  
