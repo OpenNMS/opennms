@@ -38,6 +38,7 @@
         <exclude>com/fasterxml/jackson/core/jackson-core/2.13.*/*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*/*</exclude>
+        <exclude>io/netty/netty-codec-http/4.1.22.Final</exclude>
       </excludes>
     </fileSet>
   </fileSets>
