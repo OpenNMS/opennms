@@ -9,7 +9,7 @@ case "$1" in
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     ;;
     purge)
-        rm -rf /etc/opennms /var/lib/opennms /var/log/opennms >/dev/null || :
+        rm -rf /var/lib/opennms /var/log/opennms >/dev/null || :
     ;;
     *)
 	echo "postrm called with unknown argument \`$1'" >&2

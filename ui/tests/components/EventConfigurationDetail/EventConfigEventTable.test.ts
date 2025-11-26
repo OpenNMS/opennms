@@ -115,7 +115,7 @@ describe('EventConfigEventTable.vue', () => {
     it('renders search input with correct label and hint', () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       expect(searchInput.props('label')).toBe('Search')
-      expect(searchInput.props('hint')).toBe('Search by Event UEI, Event Label')
+      expect(searchInput.props('hint')).toBe('Search by Event UEI or Event Label')
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
     })
 

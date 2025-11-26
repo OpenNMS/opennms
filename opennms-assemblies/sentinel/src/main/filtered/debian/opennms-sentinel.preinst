@@ -3,7 +3,7 @@
 set -e
 
 SENTINELUSER="sentinel"
-SENTINELHOME="/usr/share/sentinel"
+SENTINELHOME="/opt/sentinel"
 
 if ! getent group "$SENTINELUSER" >/dev/null; then
 	addgroup --system "$SENTINELUSER"

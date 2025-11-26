@@ -48,7 +48,8 @@ describe('EventConfigFilesUploadReportDialog', () => {
       sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
       isLoading: false,
       activeTab: 0,
-      uploadedSourceNames: []
+      uploadedSourceNames: [],
+      createEventConfigSourceDialogState: { visible: false }
     }
 
     wrapper = mount(EventConfigFilesUploadReportDialog, {

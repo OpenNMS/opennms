@@ -1,1 +1,1 @@
-/usr/share/opennms/bin/opennms /usr/sbin/opennms
+/opt/opennms/bin/opennms /usr/sbin/opennms
