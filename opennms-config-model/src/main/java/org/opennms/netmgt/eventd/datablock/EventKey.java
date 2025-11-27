@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.events.api.EventConstants;
 
@@ -61,6 +62,18 @@ public class EventKey extends LinkedHashMap<EventKey.Entity, Object> implements 
         public Entity(final Type type, final String key) {
             this.type = type;
             this.key = key;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Entity entity = (Entity) o;
+            return type == entity.type && Objects.equals(key, entity.key);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, key);
         }
     }
 

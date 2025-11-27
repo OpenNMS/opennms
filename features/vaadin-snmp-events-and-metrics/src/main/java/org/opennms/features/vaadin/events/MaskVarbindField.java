@@ -23,7 +23,9 @@ package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import com.vaadin.v7.ui.ComboBox;
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -47,10 +49,61 @@ import com.vaadin.v7.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MaskVarbindField extends CustomField<List<Varbind>> implements Button.ClickListener {
+public class MaskVarbindField extends CustomField<List<MaskVarbindField.VarbindWithType>> implements Button.ClickListener {
+
+    public static class VarbindWithType extends Varbind {
+        private String vbtype = "vbnumber";
+
+        public VarbindWithType() {
+            setVbnumber(0);
+        }
+
+        public String getVbid() {
+            if ("vboid".equals(this.vbtype)) {
+                return this.getVboid();
+            } else {
+                return String.valueOf(this.getVbnumber());
+            }
+        }
+
+        public void setVbid(final String varbindId) {
+            if ("vboid".equals(this.vbtype)) {
+                this.setVboid(varbindId);
+                this.setVbnumber(null);
+            } else {
+                try {
+                    this.setVbnumber(Integer.valueOf(varbindId));
+                } catch (NumberFormatException e) {
+                    this.setVbnumber(0);
+                }
+                this.setVboid(null);
+            }
+        }
+
+        public String getVbtype() {
+            return this.vbtype;
+        }
+
+        public void setVbtype(final String vbtype) {
+            this.vbtype = vbtype;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            VarbindWithType that = (VarbindWithType) o;
+            return Objects.equals(vbtype, that.vbtype);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), vbtype);
+        }
+    }
 
     /** The Container. */
-    private final OnmsBeanContainer<Varbind> container = new OnmsBeanContainer<Varbind>(Varbind.class);
+    private final OnmsBeanContainer<VarbindWithType> container = new OnmsBeanContainer<VarbindWithType>(VarbindWithType.class);
 
     /** The Table. */
     private final Table table = new Table(null, container);
@@ -72,9 +125,9 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
     public MaskVarbindField(String caption) {
         setCaption(caption);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"vbnumber", "vboid", "vbvalues"});
-        table.setColumnHeader("vbnumber", "Varbind Number");
-        table.setColumnHeader("vboid", "Varbind OID");
+        table.setVisibleColumns(new Object[]{"vbtype", "vbid", "vbvalues"});
+        table.setColumnHeader("vbtype", "Varbind Type");
+        table.setColumnHeader("vbid", "Varbind OID or Number");
         table.setColumnHeader("vbvalues", "Varbind Values");
         table.setColumnExpandRatio("vbvalues", 1);
         table.setEditable(!isReadOnly());
@@ -84,23 +137,33 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                if (propertyId.equals("vbtype")) {
+                    final ComboBox field = new ComboBox();
+                    field.setSizeFull();
+                    field.setRequired(true);
+                    field.setImmediate(true);
+                    field.setNullSelectionAllowed(false);
+                    field.setNewItemsAllowed(false);
+                    field.setTextInputAllowed(false);
+                    field.addItem("vboid");
+                    field.addItem("vbnumber");
+                    return field;
+                }
+
                 if (propertyId.equals("vbvalues")) {
                     final TextField field = new TextField();
                     field.setConverter(new CsvListConverter());
                     return field;
                 }
 
-                if (propertyId.equals("vboid")) {
-                    final Varbind varbind = ((Varbind)MaskVarbindField.this.container.getOnmsBean(itemId));
-                }
-
-                if (propertyId.equals("vbnumber")) {
-                    final Varbind varbind = ((Varbind)MaskVarbindField.this.container.getOnmsBean(itemId));
+                if (propertyId.equals("vbid")) {
+                    final VarbindWithType varbind = MaskVarbindField.this.container.getOnmsBean(itemId);
                 }
 
                 return super.createField(container, itemId, propertyId, uiContext);
             }
         });
+
         toolbar.addComponent(add);
         toolbar.addComponent(delete);
         toolbar.setVisible(table.isEditable());
@@ -123,15 +186,15 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends List<Varbind>> getType() {
-        return (Class<ArrayList<Varbind>>) new ArrayList<Varbind>().getClass();
+    public Class<? extends List<VarbindWithType>> getType() {
+        return (Class<ArrayList<VarbindWithType>>) new ArrayList<VarbindWithType>().getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected List<Varbind> getInternalValue() {
+    protected List<VarbindWithType> getInternalValue() {
         return container.getOnmsBeans();
     }
 
@@ -139,7 +202,7 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(List<Varbind> varbinds) {
+    protected void setInternalValue(List<VarbindWithType> varbinds) {
         container.removeAllItems();
         container.addAll(varbinds);
     }
@@ -172,7 +235,7 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
      * Adds the handler.
      */
     private void addHandler() {
-        Varbind v = new Varbind();
+        VarbindWithType v = new VarbindWithType();
         container.addOnmsBean(v);
     }
 
