@@ -28,7 +28,7 @@ parameters:
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: "develop
+    default: develop
 
   ### sub-tree "module" build setup ###
   trigger-docs:
