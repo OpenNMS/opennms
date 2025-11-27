@@ -24,73 +24,54 @@ ROOT="$(pwd)"
 RELEASE="$(.circleci/scripts/pom2version.sh pom.xml)"
 
 
-INSTALL_POSTGRESQL=${INSTALL_POSTGRESQL:-"no"}
+usage(){
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  --help                   Show this help message"
+    echo "  --enable-jrrd2          Enable jrrd2 library,from prebuilt binaries"
+    exit 1
+}
 
 ENABLE_JRRD2=${ENABLE_JRRD2:-"no"}
 # INSTALL_JICMP=${INSTALL_JICMP:-"no"}
 # INSTALL_JICMP6=${INSTALL_JICMP6:-"no"}
 
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --help)
+            usage
+            ;;
+        --enable-jrrd2 )
+            ENABLE_JRRD2="yes"
+            shift
+            ;;
+        --all)
+            ENABLE_JRRD2="yes"
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+
 # run dependency setup
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-detect_jrrd2_location
-
-# ------------------------------------------------------
-# PostgreSQL 
-# ------------------------------------------------------
-start_postgres_docker(){
-    if [[ "$(docker ps -q -f name=opennms-postgres)" ]]; then
-        echo "PostgreSQL Docker container is already running."
-        return
-    fi
-
-    echo "Starting PostgreSQL Docker container..."
-    cd "$ROOT"/tools/local_development/postgres || exit 1
-    docker-compose up -d
-    cd - || exit 1
-    
-    # Check if postgres is ready
-    until docker exec opennms-postgres pg_isready -U postgres; do
-        echo "Waiting for PostgreSQL to be ready..."
-        sleep 2
-    done
-    echo "PostgreSQL is ready."
-    export POSTGRES_PASSWORD=postgres                                                                                                                                                                               
-}
-
-# setup postgres
-setup_postgres(){
-if [[ "$INSTALL_POSTGRESQL" == "yes" ]]; then
-    start_postgres_docker
-else
-    echo "INSTALL_POSTGRESQL is set to 'no'. Skipping"
-    return 
+if [[ "$ENABLE_JRRD2" == "yes" ]]; then
+   detect_jrrd2_location
 fi
-}   
 
-# Do we have postgres installed?
-check_postgres(){
-    if command -v pg_isready >/dev/null; then
-        if ! pg_isready -q; then
-            echo "PostgreSQL not ready - attempting to start Docker container"
-            setup_postgres
-        else
-            echo "PostgreSQL is already ready"
-        fi
-    else
-        # Fallback – try to connect directly
-        if ! nc -z localhost 5432; then
-            echo "PostgreSQL not reachable - attempting to start Docker container"
-            setup_postgres
-        else
-            echo "PostgreSQL is already reachable"
-        fi
-    fi
-}
 
-check_postgres
+detect_postgres_installed
 
+if [[ ${POSTGRES_VERSION:-} == "unknown" ]]; then
+    echo "PostgreSQL not detected. "
+    exit 1
+fi
 
 # ------------------------------------------------------
 # Build OpenNMS
@@ -123,7 +104,6 @@ echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
 if [[ "$ENABLE_JRRD2" == "yes" ]]; then 
-    
     echo "
     org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
     org.opennms.rrd.interfaceJar=$JRRD_JAR

@@ -5,6 +5,8 @@
 # ----------------------------------------------------------------------
 set -euo pipefail          # Fail fast & catch unset vars
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 
 detect_jdk_version_required(){
     # Can't use grep since MacOS doesn't support -P option :(
@@ -18,8 +20,9 @@ detect_jdk_version_required(){
 detect_postgres_installed(){
     if command -v pg_isready >/dev/null; then
         if ! pg_isready -q; then
-            echo "PostgreSQL not ready - attempting to start Docker container"
-            setup_postgres
+            # echo "PostgreSQL not ready"
+            # setup_postgres
+            POSTGRES_VERSION="unknown"
         else
             echo "PostgreSQL is already ready"
             POSTGRES_VERSION=$(psql --version | awk '{print $3}')
@@ -27,10 +30,11 @@ detect_postgres_installed(){
     else
         # Fallback – try to connect directly
         if ! nc -z localhost 5432; then
-            echo "PostgreSQL not reachable - attempting to start Docker container"
-            setup_postgres
+            # echo "PostgreSQL not reachable"
+            # setup_postgres
+            POSTGRES_VERSION="unknown"
         else
-            echo "PostgreSQL is already reachable"
+            # echo "PostgreSQL is already reachable"
             # If psql is available, get the version
             if command -v psql >/dev/null 2>&1; then
                 POSTGRES_VERSION=$(psql --version | awk '{print $3}')
@@ -48,6 +52,7 @@ detect_jrrd2_location(){
 export JRRD_JAR=${JRRD_JAR:-$( \
   for path in \
     "$ROOT"/built_dependencies/jrrd2-*.jar \
+    "$ROOT"/built_dependencies/jrrd2*.jar \
     ./java/jrrd2.jar \
     /usr/share/java/jrrd2.jar \
     /usr/local/lib/jrrd2.jar

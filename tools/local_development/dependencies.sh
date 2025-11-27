@@ -14,10 +14,11 @@ source "$SCRIPT_DIR/common.sh"
 usage(){
     echo "Usage: $0 [options]"
     echo "Options:"
-    echo "  --help                   Show this help message"
+    echo "  --help                  Show this help message"
     echo "  --check-dependencies    Check if required dependencies are installed (default action)"
-    echo "  --install-postgresql     Install and setup PostgreSQL using Docker"
-    echo "  --install-jrrd2         Install jrrd2 library"
+    echo "  --install-postgresql    Install and setup PostgreSQL using Docker"
+    echo "  --install-jrrd2         Install jrrd2 library,from prebuilt binaries"
+    echo "  --install-jrrd2-from-source  Compile and install jrrd2 from source code"
     # echo "  --install-jicmp         Install jicmp library"
     # echo "  --install-jicmp6        Install jicmp6 library"
     exit 1
@@ -29,7 +30,8 @@ if [[ $# -eq 0 ]]; then
 fi
 
 INSTALL_POSTGRESQL="no"
-INSTALL_JRRD2="no"
+INSTALL_JRRD2="no" # install prebuilt jrrd2
+INSTALL_JRRD2_FROM_SOURCE="no"
 # INSTALL_JICMP="no"
 # INSTALL_JICMP6="no"
 
@@ -46,13 +48,18 @@ while [[ $# -gt 0 ]]; do
             INSTALL_POSTGRESQL="yes"
             shift
             ;;
-        --install-jrrd2)
+        --install-jrrd2 )
             INSTALL_JRRD2="yes"
+            shift
+            ;;
+        --install-jrrd2-from-source)
+            INSTALL_JRRD2="no"
+            INSTALL_JRRD2_FROM_SOURCE="yes"
             shift
             ;;
         --all)
             INSTALL_POSTGRESQL="yes"
-            INSTALL_JRRD2="yes"
+            INSTALL_JRRD2_FROM_SOURCE="yes"
             # INSTALL_JICMP="yes"
             # INSTALL_JICMP6="yes"
             shift
@@ -174,7 +181,7 @@ start_postgres_docker(){
 
     echo "Starting PostgreSQL Docker container..."
     cd "$ROOT"/tools/local_development/postgres || exit 1
-    docker-compose up -d
+    docker compose up -d
     cd - || exit 1
     
     # Check if postgres is ready
@@ -182,14 +189,16 @@ start_postgres_docker(){
         echo "Waiting for PostgreSQL to be ready..."
         sleep 2
     done
+
     export POSTGRES_PASSWORD=postgres
+
     POSTGRES_VERSION=$(docker exec opennms-postgres psql --version | awk '{print $3}')                                                                                                                                                                           
     echo "PostgreSQL: $POSTGRES_VERSION"
 
 }
 
 setup_postgres(){
-if [[ "$INSTALL_POSTGRESQL" == "yes" ]]; then
+if [[ "$INSTALL_POSTGRESQL" == "yes" || "$POSTGRES_VERSION" == "unknown"  ]]; then
     start_postgres_docker
 else
     echo "INSTALL_POSTGRESQL is set to 'no'. Skipping"
@@ -197,8 +206,7 @@ else
 fi
 }   
 
-
-install_jrrd2(){
+install_jrrd2_from_source(){
     echo "Compiling jrrd2 from source..."
     # create a simple folder for compiling jrrd2 if not present
     if [[ ! -d "$ROOT/built_dependencies" ]]; then
@@ -242,6 +250,79 @@ install_jrrd2(){
 
 }
 
+BASE_URL="https://debian.opennms.org/dists/stable/main"
+BASE_ARM64="$BASE_URL/binary-arm64/"
+BASE_AMD64="$BASE_URL/binary-amd64/"
+
+get_latest_deb() {
+  local base_url=$1
+  # Fetch directory listing, filter jrrd, sort by version, pick last
+  latest=$(curl -s "$base_url" | grep -o 'jrrd2[^"]*\.deb' | sort -V | tail -n 1)
+  echo "$base_url$latest"
+}
+
+install_jrrd2_prebuilt(){
+    echo "Installing prebuilt jrrd2..."
+
+    # create a simple folder for compiling jrrd2 if not present
+    if [[ ! -d "$ROOT/built_dependencies" ]]; then
+      mkdir -p "$ROOT/built_dependencies"
+      mkdir -p "$ROOT/built_dependencies/lib"
+      
+    else
+      rm -rf "$ROOT/built_dependencies"
+      mkdir -p "$ROOT/built_dependencies"
+      mkdir -p "$ROOT/built_dependencies/lib"
+    fi
+
+    cd "$ROOT/built_dependencies" || exit 1
+    mkdir tmp
+    cd tmp || exit 1
+
+    if [[ "$OS_NAME" == "Linux" ]]; then
+      ARCH=$(uname -m)
+      if [[ "$ARCH" == "x86_64" ]]; then
+        DEB_URL=$(get_latest_deb "$BASE_AMD64")
+      else
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+      fi
+      echo "Downloading jrrd2 from $DEB_URL"
+    fi
+
+    if [[ "$OS_NAME" == "macOS" ]]; then
+      echo "macOS detected. Using prebuilt binaries from arm64 package."
+      DEB_URL=$(get_latest_deb "$BASE_ARM64")
+      echo "Downloading jrrd2 from $DEB_URL"
+    fi
+
+    if [[ ! -z "$DEB_URL" ]]; then
+      curl -s -LO "$DEB_URL"
+      DEB_FILE=$(basename "$DEB_URL")
+    fi
+
+
+    if [[ -f "$DEB_FILE" ]]; then  
+      ar vx "$DEB_FILE" 2>/dev/null 1>&2 || true
+      tar -xvf data.tar.gz 2>/dev/null 1>&2 || true
+    fi
+
+    mv usr/share/java/jrrd2.jar $ROOT/built_dependencies/
+    mv usr/lib/jni/libjrrd2.so $ROOT/built_dependencies/lib
+
+    cd .. || exit 1
+
+    rm -rf tmp
+
+    if [[ "$OS_NAME" == "macOS" ]]; then
+       ln -s $ROOT/built_dependencies/lib/libjrrd2.so $ROOT/built_dependencies/lib/libjrrd2.dylib
+    fi
+
+    JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
+    JRRD_LIB="$ROOT/built_dependencies/lib/libjrrd2.so"
+
+   # echo "Successfully installed prebuilt jrrd2: $JRRD_JAR, $JRRD_LIB"
+}
 
 # ----------------------------------------------------------------------
 # Check dependencies
@@ -268,7 +349,6 @@ if [[ "${CHECK_DEPENDENCIES:-}" == "yes" ]]; then
         echo "PostgreSQL is not installed or not reachable."
     fi
 
-
     detect_jrrd2_location
 
     exit 0
@@ -279,7 +359,11 @@ if [[ "$INSTALL_POSTGRESQL" == "yes" ]]; then
 fi
 
 if [[ "$INSTALL_JRRD2" == "yes" ]]; then
-    install_jrrd2
+    install_jrrd2_prebuilt
+fi
+
+if [[ "$INSTALL_JRRD2_FROM_SOURCE" == "yes" ]]; then
+    install_jrrd2_from_source
 fi
 # ----------------------------------------------------------------------
 # 2. Install dependencies
