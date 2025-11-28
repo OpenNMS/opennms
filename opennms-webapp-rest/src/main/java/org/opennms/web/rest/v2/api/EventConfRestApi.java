@@ -300,4 +300,25 @@ public interface EventConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
+    @GET
+    @Path("/vendors/{vendorName}/events")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConf Events by Vendor",
+            description = "Returns all EventConf events associated with the specified vendor name.",
+            operationId = "getEventsByVendor"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf Events retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing vendor name"),
+            @ApiResponse(responseCode = "404", description = "No events found for the specified vendor"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventsByVendor(
+            @PathParam("vendorName") String vendorName,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+
 }
