@@ -35,6 +35,10 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     EventConfEvent findByUei(String uei);
 
+    List<EventConfEvent> findByUeiAndSourceId(String uei, Long sourceId);
+
+    int countBySourceId(Long sourceId);
+
     List<EventConfEvent> findEnabledEvents();
 
     void deleteBySourceId(Long sourceId);

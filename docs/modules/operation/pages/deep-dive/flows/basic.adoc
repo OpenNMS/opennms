@@ -60,7 +60,7 @@ elasticIndexStrategy=daily
 
 == Configuring NetFlow Composable Templates
 
-OpenNMS supports [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates) for more flexible and modular management of Elasticsearch index settings.
+OpenNMS supports (https://www.elastic.co/docs/manage-data/data-store/templates)[composable templates] for more flexible and modular management of Elasticsearch index settings.
 To enable composable templates for NetFlow data, update below configuration in Karaf:
 
 [source, karaf]

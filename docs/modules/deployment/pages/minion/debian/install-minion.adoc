@@ -33,13 +33,13 @@ sudo apt-mark hold opennms-minion
 [source, console]
 ----
 sudo apt -y install tree
-tree /usr/share/minion -L 1
+tree /opt/minion -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-/usr/share/minion
+/opt/minion
 ├── bin
 ├── data -> /var/lib/minion/data
 ├── deploy -> /var/lib/minion/deploy
