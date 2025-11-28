@@ -106,7 +106,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="aurangzeb" id="35.0.1-add-severity-column-eventconf-events">
+    <changeSet author="aurangzeb" id="35.0.0-add-severity-column-eventconf-events">
         <preConditions onFail="MARK_RAN">
             <and>
                 <tableExists tableName="eventconf_events"/>
@@ -117,7 +117,7 @@
         </preConditions>
 
         <addColumn tableName="eventconf_events">
-            <column name="severity" type="varchar(256)" defaultValue="Indeterminate">
+            <column name="severity" type="varchar(32)" defaultValue="Indeterminate">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
