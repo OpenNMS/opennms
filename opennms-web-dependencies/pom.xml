@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>35.0.0-SNAPSHOT</version>
+    <version>36.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -58,11 +58,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
+      <artifactId>opennms-rrd-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

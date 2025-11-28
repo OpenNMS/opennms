@@ -80,7 +80,7 @@ import com.google.common.collect.Maps;
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy"
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"
 })
 @JUnitTemporaryDatabase
 public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
@@ -128,7 +128,7 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
-        File rrdDirectory = new File("src/test/resources/share/jrb");
+        File rrdDirectory = new File("src/test/resources/share/rrd");
         assertTrue(rrdDirectory.canRead());
 
         m_resourceStorageDao.setRrdDirectory(rrdDirectory);

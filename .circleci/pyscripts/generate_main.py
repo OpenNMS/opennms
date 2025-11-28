@@ -172,7 +172,9 @@ for e in main_yml_content:
 
             level += 2
             branch_name = os.environ.get("CIRCLE_BRANCH")
-            if branch_name and branch_name == "develop":
+            if branch_name and (
+                branch_name == "develop" or branch_name.startswith(("foundation-", "release-"))
+                ):
                 workflow_path.append(common_library.create_space(level) + "max_auto_reruns: 3\n"+common_library.create_space(level)+"jobs:")
             else:
                 workflow_path.append(common_library.create_space(level) + "jobs:")

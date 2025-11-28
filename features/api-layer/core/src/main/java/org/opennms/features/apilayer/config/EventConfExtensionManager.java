@@ -21,17 +21,28 @@
  */
 package org.opennms.features.apilayer.config;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMsgDestType;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.CollectionGroup;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -49,12 +60,23 @@ import org.slf4j.LoggerFactory;
 
 public class EventConfExtensionManager extends ConfigExtensionManager<EventConfExtension, Events> {
     private static final Logger LOG = LoggerFactory.getLogger(EventConfExtensionManager.class);
+    static final String INTEGRATION_API_SOURCE_NAME = "opennms-plugins-events";
+    private static final String USERNAME = "opennms-plugins";
 
     private final EventConfDao eventConfDao;
+    private final EventConfSourceDao eventConfSourceDao;
+    private final EventConfEventDao eventConfEventDao;
+    private final SessionUtils sessionUtils;
+    private final ExecutorService executor;
+    private volatile EventConfSource pluginSource;
 
-    public EventConfExtensionManager(EventConfDao eventConfDao) {
+    public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, SessionUtils sessionUtils) {
         super(Events.class, new Events());
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
+        this.eventConfSourceDao = Objects.requireNonNull(eventConfSourceDao);
+        this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
+        this.executor = EventConfServiceHelper.createEventConfExecutor("integration-api-eventconf-%d");
         LOG.debug("EventConfExtensionManager initialized.");
     }
 
@@ -64,7 +86,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                 .flatMap(ext -> ext.getEventDefinitions().stream())
                 .sorted(Comparator.comparing(EventDefinition::getPriority))
                 .map(EventConfExtensionManager::toEvent)
-                .collect(Collectors.toList());
+                .toList();
         // Re-build the events
         final Events events = new Events();
         events.getEvents().addAll(orderedEvents);
@@ -73,8 +95,145 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
 
     @Override
     protected void triggerReload() {
-        LOG.debug("Event configuration changed. Triggering a reload.");
-        eventConfDao.reload();
+        LOG.debug("Event configuration changed. Syncing to database and triggering reload.");
+        boolean changesApplied = syncEventsToDatabase();
+        if (changesApplied) {
+            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, executor);
+        } else {
+            LOG.debug("No changes to sync, skipping reload.");
+        }
+    }
+
+    protected synchronized boolean syncEventsToDatabase() {
+        try {
+            // Get the current aggregated events from all extensions
+            Events events = getObject();
+            if (events == null || events.getEvents().isEmpty()) {
+                LOG.debug("No events to persist from Integration API extensions.");
+                return false;
+            }
+
+            return sessionUtils.withTransaction(() -> {
+                // Get or create the plugin source
+                EventConfSource source = getOrCreatePluginSource();
+
+                // Load existing events from database for this source
+                List<EventConfEvent> dbEvents = eventConfEventDao.findBySourceId(source.getId());
+
+                // Index DB events by UEI for faster lookup
+                Map<String, List<EventConfEvent>> dbEventsByUei = new java.util.HashMap<>();
+                for (EventConfEvent dbEvent : dbEvents) {
+                    dbEventsByUei.computeIfAbsent(dbEvent.getUei(), k -> new ArrayList<>()).add(dbEvent);
+                }
+
+                // Get events from all plugins
+                List<Event> currentEvents = events.getEvents();
+                Date now = new Date();
+
+                List<Event> newEvents = new ArrayList<>();
+                List<EventConfEvent> eventsToUpdate = new ArrayList<>();
+
+                // For each plugin event, check if it matches any DB event
+                for (Event currentEvent : currentEvents) {
+                    EventConfEvent matchedDbEvent = null;
+
+                    // Filter by UEI first, then compare mask if needed
+                    List<EventConfEvent> candidatesWithSameUei = dbEventsByUei.get(currentEvent.getUei());
+                    if (candidatesWithSameUei != null) {
+                        for (EventConfEvent dbEvent : candidatesWithSameUei) {
+                            Event dbEventParsed = JaxbUtils.unmarshal(Event.class, dbEvent.getXmlContent());
+                            if (EventConfServiceHelper.eventsMatch(currentEvent, dbEventParsed)) {
+                                matchedDbEvent = dbEvent;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (matchedDbEvent != null) {
+                        // Found matching event - update it
+                        String newXmlContent = JaxbUtils.marshal(currentEvent);
+                        if (!newXmlContent.equals(matchedDbEvent.getXmlContent())) {
+                            matchedDbEvent.setEventLabel(currentEvent.getEventLabel());
+                            matchedDbEvent.setDescription(currentEvent.getDescr());
+                            matchedDbEvent.setXmlContent(newXmlContent);
+                            matchedDbEvent.setLastModified(now);
+                            matchedDbEvent.setModifiedBy(USERNAME);
+                            eventsToUpdate.add(matchedDbEvent);
+                        }
+                    } else {
+                        // No match - new event
+                        newEvents.add(currentEvent);
+                    }
+                }
+
+                // Save all new and updated events at once
+                List<EventConfEvent> allEventsToSave = new ArrayList<>();
+
+                if (!newEvents.isEmpty()) {
+                    List<EventConfEvent> newEntities = EventConfServiceHelper.createEventConfEventEntities(
+                            source, newEvents, USERNAME, now
+                    );
+                    allEventsToSave.addAll(newEntities);
+                }
+
+                allEventsToSave.addAll(eventsToUpdate);
+
+                boolean hasChanges = !allEventsToSave.isEmpty();
+
+                if (hasChanges) {
+                    eventConfEventDao.saveAll(allEventsToSave);
+                    LOG.info("Synced {} events to Integration API source ({} new, {} updated)",
+                            allEventsToSave.size(), newEvents.size(), eventsToUpdate.size());
+
+                    // Update source metadata
+                    int totalCount = eventConfEventDao.countBySourceId(source.getId());
+                    source.setEventCount(totalCount);
+                    source.setLastModified(new Date());
+                    eventConfSourceDao.saveOrUpdate(source);
+
+                    LOG.info("Synced Integration API events to database: {} total events in source '{}'",
+                            totalCount, INTEGRATION_API_SOURCE_NAME);
+                } else {
+                    LOG.debug("No changes to Integration API events");
+                }
+
+                return hasChanges;
+            });
+        } catch (Exception e) {
+            LOG.error("Failed to sync Integration API events to database", e);
+            return false;
+        }
+    }
+
+    private EventConfSource getOrCreatePluginSource() {
+        // Always refresh from database to ensure it hasn't been deleted
+        EventConfSource source = eventConfSourceDao.findByName(INTEGRATION_API_SOURCE_NAME);
+        if (source == null) {
+            // Create new source
+            source = new EventConfSource();
+            Date now = new Date();
+            source.setName(INTEGRATION_API_SOURCE_NAME);
+            source.setDescription("Events from OpenNMS plugins");
+            source.setVendor("OpenNMS-Plugins");
+            source.setEnabled(true);
+            Integer maxFileOrder = eventConfSourceDao.findMaxFileOrder();
+            source.setFileOrder(maxFileOrder != null ? maxFileOrder + 1 : 1);
+            source.setCreatedTime(now);
+            source.setLastModified(now);
+            source.setUploadedBy(USERNAME);
+            source.setEventCount(0);
+            eventConfSourceDao.save(source);
+            LOG.info("Created new EventConfSource: {} with fileOrder: {}", INTEGRATION_API_SOURCE_NAME, source.getFileOrder());
+        }
+        // Update cached reference
+        pluginSource = source;
+        return source;
+    }
+
+    public void destroy() {
+        if (executor != null) {
+            executor.shutdown();
+        }
     }
 
     private static Event toEvent(EventDefinition def) {

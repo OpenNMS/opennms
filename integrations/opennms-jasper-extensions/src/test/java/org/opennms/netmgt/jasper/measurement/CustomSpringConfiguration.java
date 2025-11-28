@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.jrobin.core.RrdException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.support.InterfaceSnmpResourceType;
@@ -43,6 +42,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

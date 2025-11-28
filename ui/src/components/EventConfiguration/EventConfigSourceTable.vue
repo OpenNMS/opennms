@@ -11,7 +11,7 @@
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
-            :hint="'Search by Name, Vendor, Description'"
+            :hint="'Search by Name, Vendor, Event UEI or Event Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -63,7 +63,6 @@
           >
             <td>{{ config.name }}</td>
             <td>{{ config.vendor }}</td>
-            <td>{{ config.description }}</td>
             <td>{{ config.eventCount }}</td>
             <td>{{ config.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
@@ -170,7 +169,6 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
   { id: 'vendor', label: 'Vendor' },
-  { id: 'description', label: 'Description' },
   { id: 'eventCount', label: 'Event Count' }
 ])
 

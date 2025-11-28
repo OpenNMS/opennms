@@ -30,6 +30,8 @@
   <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
   <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+  <reference id="eventConfSourceDao" interface="org.opennms.netmgt.dao.api.EventConfSourceDao" availability="mandatory"/>
+  <reference id="eventConfEventDao" interface="org.opennms.netmgt.dao.api.EventConfEventDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
   <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
@@ -99,8 +101,11 @@
 
   <!-- Events -->
 
-  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
+  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager" destroy-method="destroy">
     <argument ref="eventConfDao"/>
+    <argument ref="eventConfSourceDao"/>
+    <argument ref="eventConfEventDao"/>
+    <argument ref="sessionUtils"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.events.EventConfExtension" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="eventConfExtensionManager" />

@@ -240,7 +240,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 Group group = getGroup(dcGroup, groupName, resourceType);
                 String typeName = getMetricType(v.getType()); // FIXME what if it is not a primitive type, like in ENTITY-SENSOR-MIB ?
                 if (typeName != null) {
-                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool DS size restriction.
                     MibObj mibObj = new MibObj();
                     mibObj.setOid('.' + v.getOidStr());
                     mibObj.setInstance(resourceType == null ? "0" : resourceType);
@@ -295,7 +295,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                 if (typeName != null && !typeName.toLowerCase().contains("string")) {
                     name = groupName + '.' + v.getId();
                     String title = getMibName() + "::" + groupName + "::" + v.getId();
-                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
+                    String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool DS size restriction.
                     String descr = MISSING_DESCR;
                     if (v.getDescription() != null) { // missing descriptions are a source of pain; don't NPE, just work.
                         descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");

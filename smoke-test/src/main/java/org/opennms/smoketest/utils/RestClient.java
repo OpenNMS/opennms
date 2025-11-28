@@ -21,6 +21,7 @@
  */
 package org.opennms.smoketest.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -44,6 +45,8 @@ import javax.ws.rs.core.Response;
 
 import joptsimple.internal.Strings;
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
@@ -430,5 +433,42 @@ public class RestClient {
         }
 
         return new ObjectMapper().readTree(result);
+    }
+
+    public Response uploadFiles(final String fieldName, final  String[] pathSegments, final File[] files) {
+        WebTarget target = getMultipartTarget();
+        for (final var segment : pathSegments) {
+            target = target.path(segment);
+        }
+
+        try (FormDataMultiPart multipart = new FormDataMultiPart()) {
+
+            for (final var file : files) {
+                FileDataBodyPart filePart = new FileDataBodyPart(
+                        fieldName,
+                        file,
+                        MediaType.APPLICATION_OCTET_STREAM_TYPE
+                );
+                multipart.bodyPart(filePart);
+            }
+
+            Invocation.Builder builder = getBuilder(target)
+                    .header("Accept", MediaType.APPLICATION_JSON);
+
+            return builder.post(Entity.entity(multipart, multipart.getMediaType()));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload  files", e);
+        }
+    }
+
+    private WebTarget getMultipartTarget() {
+        final Client client = ClientBuilder.newBuilder()
+                .register(org.glassfish.jersey.media.multipart.MultiPartFeature.class) // important
+                .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
+                .build();
+
+        return client.target(url.toString())
+                .path("api")
+                .path("v2");
     }
 }

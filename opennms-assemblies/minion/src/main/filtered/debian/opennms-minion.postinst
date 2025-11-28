@@ -2,10 +2,10 @@
 
 set -e
 
-ETCDIR="/etc/minion"
+ETCDIR="/opt/minion/etc"
 MINIONUSER="minion"
-MINIONHOME="/usr/share/minion"
-MINIONDATA="/var/lib/minion"
+MINIONHOME="/opt/minion"
+MINIONDATA="/opt/minion/data"
 MINIONLOG="/var/log/minion"
 
 rm -rf "${MINIONHOME}/data"/* || true

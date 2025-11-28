@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>35.0.0-SNAPSHOT</version>
+    <version>36.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -356,7 +356,6 @@
                 <feature>hibernate-validator4</feature>
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>
-                <feature>jrobin</feature>
                 <feature>json-lib</feature>
                 <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
@@ -401,7 +400,7 @@
                 <feature>opennms-provisioning-detectors</feature>
                 <feature>opennms-provisioning-shell</feature>
                 <feature>opennms-rrd-api</feature>
-                <feature>opennms-rrd-jrobin</feature>
+                <feature>opennms-rrd-util</feature>
                 <feature>opennms-situation-feedback</feature>
                 <feature>opennms-snmp</feature>
                 <feature>opennms-snmp-commands</feature>

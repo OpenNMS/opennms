@@ -28,7 +28,7 @@ This value should match the interval of the services in the package.
 <6> Store the minimum of 288 buckets for 366 buckets.
 1-day min kept for 366 days.
 
-IMPORTANT: If the RRD definition is modified after data has been collected, you must manually delete the existing RRD/JRB files on disk so they can be recreated with the updated definition.
+IMPORTANT: If the RRD definition is modified after data has been collected, you must manually delete the existing RRD files on disk so they can be recreated with the updated definition.
 
 When using another storage strategy, such as Newts, Cortex, or other integration, all collected data points are persisted without aggregation.
 These points will be kept until the configured TTL expires.

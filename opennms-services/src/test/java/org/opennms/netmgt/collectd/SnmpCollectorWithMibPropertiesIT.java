@@ -56,7 +56,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.beans.factory.InitializingBean;
@@ -142,7 +142,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
 
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");

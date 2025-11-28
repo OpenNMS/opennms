@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>35.0.0-SNAPSHOT</version>
+    <version>36.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.system-report</artifactId>
@@ -58,8 +58,8 @@
     </dependency>
     <!-- needed by opennms-dao runtime :( -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

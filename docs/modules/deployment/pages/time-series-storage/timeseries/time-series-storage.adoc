@@ -1,7 +1,7 @@
 
 [[time-series-storage]]
 = Time Series Database
-:description: Overview of OpenNMS time series database options: JRobin, RRDtool, and Newts. Plugins and parallel series writes.
+:description: Overview of OpenNMS time series database options: RRDtool and Newts. Plugins and parallel series writes.
 
 {page-component-title} stores performance data in a time series database (RRDTool by default).
 For different scenarios you may want to use a different time series database.
@@ -12,12 +12,6 @@ The following implementations are installed by default:
 [cols="1,3"]
 |===
 | Time Series Database  | Description
-
-| JRobin
-| JRobin is a clone of RRDtool written in Java and is the default time series database when you install {page-component-title}.
-It does not fully cover the latest RRDtool feature set.
-Data is stored on the local file system of the {page-component-title} node.
-Depending on I/O capabilities, it works well for small- to medium-size installations.
 
 | RRDtool
 | RRDtool is actively maintained and the de-facto standard for time series data.

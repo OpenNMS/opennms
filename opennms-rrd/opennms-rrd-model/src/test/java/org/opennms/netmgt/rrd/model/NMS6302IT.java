@@ -36,12 +36,12 @@ import org.opennms.netmgt.rrd.model.v3.RRDv3;
 public class NMS6302IT {
 
     /**
-     * Test JRobin parse.
+     * Test XML dump parse.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testJrobinParse() throws Exception {
+    public void testXmlDumpParse() throws Exception {
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/ifHCOutOctets.xml"), true);
         Assert.assertNotNull(rrd);
     }

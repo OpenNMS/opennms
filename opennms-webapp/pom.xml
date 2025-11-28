@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.0-SNAPSHOT</version>
+    <version>36.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -490,11 +490,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jrrd2-dependencies</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -503,6 +498,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-util</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
