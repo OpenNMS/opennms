@@ -293,7 +293,6 @@ if "trigger-ui" in mappings:
 
 if "trigger-coverage" in mappings:
     build_mappings["coverage"] = mappings["trigger-coverage"]
-    print(build_mappings)
     mappings.clear()
     What_to_build.clear()
     git_keywords.clear()
