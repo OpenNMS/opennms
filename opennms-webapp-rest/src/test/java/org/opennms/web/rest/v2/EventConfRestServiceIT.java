@@ -492,6 +492,7 @@ public class EventConfRestServiceIT {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setSeverity(severity);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");
