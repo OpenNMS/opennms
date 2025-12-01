@@ -286,15 +286,14 @@ if "trigger-build" in mappings:
               break
 
 if "trigger-docs" in mappings:
-
     build_mappings["docs"] = mappings["trigger-docs"]
 
 if "trigger-ui" in mappings:
-
     build_mappings["ui"] = mappings["trigger-ui"]
 
 if "trigger-coverage" in mappings:
     build_mappings["coverage"] = mappings["trigger-coverage"]
+    print(build_mappings)
     mappings.clear()
     What_to_build.clear()
     git_keywords.clear()
