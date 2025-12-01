@@ -232,6 +232,11 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
+    public List<EventConfEvent> findEventsByVendor(String vendor) {
+        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ? order by e.id asc ", vendor);
+    }
+
+    @Override
     public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
         return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
     }
