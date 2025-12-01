@@ -3,7 +3,7 @@ version: '34'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '35.0.0-SNAPSHOT'
+    full-display-version: '36.0.0-SNAPSHOT'
     package-prefix: opennms
     experimental: true
     source-language: asciidoc@
@@ -29,7 +29,7 @@ asciidoc:
     postgresql-version: '15'
     jmx-prom-exporter-version: '1.3.0'
 nav:
-- modules/ROOT/index.adoc
+- modules/ROOT/nav.adoc
 - modules/releasenotes/nav.adoc
 - modules/deployment/nav.adoc
 - modules/operation/nav.adoc
