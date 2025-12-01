@@ -420,6 +420,37 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
+    public Response getEventsByVendor(final String vendorName, SecurityContext securityContext) {
+        try {
+            if (vendorName == null || vendorName.isBlank()) {
+                LOG.warn("Vendor name is null or blank.");
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Vendor name must not be null or blank")
+                        .build();
+            }
+
+            final var results = eventConfEventDao.findEventsByVendor(vendorName);
+
+            if (results == null || results.isEmpty()) {
+                LOG.info("No events found for vendor: {}", vendorName);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("No events found for vendor: " + vendorName)
+                        .build();
+            }
+
+            final var eventsDtoList = EventConfEventDto.fromEntity(results);
+            return Response.ok(eventsDtoList).build();
+        }
+        catch (Exception ex) {
+            LOG.error("Error retrieving events for vendor: {}", vendorName, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error while retrieving events for vendor: " + vendorName
+                            + ". Cause: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
     public Response addEventConfSource(final AddEventConfSourceRequest request, SecurityContext securityContext) throws Exception {
         final Date now = new Date();
 
