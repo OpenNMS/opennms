@@ -49,26 +49,190 @@
 </jsp:include>
 
 <script type="text/javascript">
-  function next() {
-    if (document.getElementById("input.uei").selectedIndex == 0) {
-      alert("Please select a uei to associate with this event.");
-    } else {
-      document.getElementById("form.sendevent").submit();
+  // function next() {
+  //   if (document.getElementById("input.uei").selectedIndex == 0) {
+  //     alert("Please select a uei to associate with this event.");
+  //   } else {
+  //     document.getElementById("form.sendevent").submit();
+  //   }
+  // }
+
+  function initializeUeiAutocomplete() {
+    var $select = $("#input\\.uei");
+    var $input = $("#ueiAutocomplete");
+    
+    // Destroy existing autocomplete if present
+    if ($input.data("ui-autocomplete")) {
+      $input.autocomplete("destroy");
+    }
+    
+    var source = $select
+      .find("option")
+      .map(function () {
+        var $option = $(this);
+        return {
+          label: $option.text().trim(),
+          value: $option.attr("value") || $option.text().trim(),
+          element: $option,
+        };
+      })
+      .get();
+
+    var autocompleteSource = source.filter(function (item) {
+      return item.value !== "" && item.label !== "--Select One--";
+    });
+
+    $input.autocomplete({
+      minLength: 0,
+      delay: 100,
+      source: function (request, response) {
+        var term = request.term.toLowerCase().trim();
+
+        if (term === "") {
+          response(autocompleteSource);
+        } else {
+          var results = autocompleteSource.filter(function (item) {
+            return (
+              item.label.toLowerCase().includes(term) ||
+              item.value.toLowerCase().includes(term)
+            );
+          });
+          response(results);
+        }
+      },
+      select: function (event, ui) {
+        $input.val(ui.item.label);
+        $select.val(ui.item.value);
+        $select.trigger("change");
+        return false;
+      },
+      focus: function (event, ui) {
+        $input.val(ui.item.label);
+        return false;
+      },
+    });
+    
+    $("#showAllUei").off("click").on("click", function (e) {
+      e.preventDefault();
+      $input.autocomplete("search", "");
+      $input.focus();
+    });
+
+    $input.off("blur").on("blur", function () {
+      var currentText = $input.val().trim();
+      var currentValue = $select.val();
+
+      if (currentValue && currentValue !== "") {
+        return;
+      }
+
+      var matchedItem = autocompleteSource.find(function (item) {
+        return item.label === currentText;
+      });
+
+      if (matchedItem) {
+        $select.val(matchedItem.value);
+        $input.val(matchedItem.label);
+      } else if (currentText === "") {
+        $select.val("");
+      }
+    });
+
+    var currentSelected = $select.find("option:selected");
+    if (currentSelected.length && currentSelected.val() !== "") {
+      $input.val(currentSelected.text().trim());
     }
   }
 
-  // Invoke a jQuery function
+  function initializeVendorAutocomplete() {
+    var $select = $("#input\\.vendor");
+    var $input = $("#vendorAutocomplete");
+
+    var source = $select
+      .find("option")
+      .map(function () {
+        var $option = $(this);
+        return {
+          label: $option.text().trim(),
+          value: $option.attr("value") || $option.text().trim(),
+          element: $option,
+        };
+      })
+      .get();
+
+    var autocompleteSource = source.filter(function (item) {
+      return item.value !== "" && item.label !== "--Select One--";
+    });
+
+    $input.autocomplete({
+      minLength: 0,
+      delay: 100,
+      source: function (request, response) {
+        var term = request.term.toLowerCase().trim();
+        if (term === "") {
+          response(autocompleteSource);
+        } else {
+          var results = autocompleteSource.filter(function (item) {
+            return (
+              item.label.toLowerCase().includes(term) ||
+              item.value.toLowerCase().includes(term)
+            );
+          });
+          response(results);
+        }
+      },
+      select: function (event, ui) {
+        $input.val(ui.item.label);
+        $select.val(ui.item.value);
+        $select.trigger("change");
+        return false;
+      },
+      focus: function (event, ui) {
+        $input.val(ui.item.label);
+        return false;
+      },
+    });
+
+    $("#showAllVendors").off("click").on("click", function (e) {
+      e.preventDefault();
+      $input.autocomplete("search", "");
+      $input.focus();
+    });
+
+    $input.off("blur").on("blur", function () {
+      var current = $input.val().trim();
+      var currentValue = $select.val();
+
+      if (currentValue && currentValue !== "") {
+        return;
+      }
+
+      var match = autocompleteSource.find(function (item) {
+        return item.label === current;
+      });
+
+      if (match) {
+        $select.val(match.value);
+        $input.val(match.label);
+      } else if (current === "") {
+        $select.val("");
+      }
+    });
+
+    var currentSelected = $select.find("option:selected");
+    if (currentSelected.length && currentSelected.val() !== "") {
+      $input.val(currentSelected.text().trim());
+    }
+  }
+
   $(document).ready(function () {
-    // Create the 'combobox' widget which can widgetize a <select> tag
     $.widget("ui.combobox", {
       _create: function () {
         var self = this;
-        // Hide the existing tag
         var select = this.element.hide();
 
         var wrapper = $('<div class="input-group">').appendTo(select.parent());
 
-        // Add an autocomplete text field
         var input = $(
           '<input class="form-control" name="' + self.options.name + '">'
         )
@@ -78,7 +242,6 @@
             delay: 1000,
             change: function (event, ui) {
               if (!ui.item) {
-                // remove invalid value, as it didn't match anything
                 $(this).val("");
                 return false;
               }
@@ -95,8 +258,6 @@
             },
             minLength: 0,
           });
-
-        // Add a dropdown arrow button that will expand the entire list
         $(
           '<div class="input-group-append"><button type="button" class="btn btn-secondary"><i class="fa fa-caret-down"></i></button></div>'
         )
@@ -104,12 +265,10 @@
           .attr("title", "Show All Items")
           .insertAfter(input)
           .click(function () {
-            // close if already visible
             if (input.autocomplete("widget").is(":visible")) {
               input.autocomplete("close");
               return;
             }
-            // pass empty string as value to search for, displaying all results
             input.autocomplete("search", "");
             input.focus();
           });
@@ -173,242 +332,20 @@
       $("#parmlist").removeClass("invisible");
     });
 
-    function initializeUeiAutocomplete() {
-      var $select = $("#input\\.uei");
-      var $input = $("#ueiAutocomplete");
-      var source = $select
-        .find("option")
-        .map(function () {
-          var $option = $(this);
-          return {
-            label: $option.text().trim(),
-            value: $option.attr("value") || $option.text().trim(),
-            element: $option,
-          };
-        })
-        .get();
-
-      var autocompleteSource = source.filter(function (item) {
-        return item.value !== "" && item.label !== "--Select One--";
-      });
-
-      $input.autocomplete({
-        minLength: 0,
-        delay: 100,
-        source: function (request, response) {
-          var term = request.term.toLowerCase().trim();
-
-          if (term === "") {
-            response(autocompleteSource);
-          } else {
-            var results = autocompleteSource.filter(function (item) {
-              return (
-                item.label.toLowerCase().includes(term) ||
-                item.value.toLowerCase().includes(term)
-              );
-            });
-            response(results);
-          }
-        },
-        select: function (event, ui) {
-          $input.val(ui.item.label);
-          $select.val(ui.item.value);
-          $select.trigger("change");
-          return false;
-        },
-        focus: function (event, ui) {
-          $input.val(ui.item.label);
-          return false;
-        },
-      });
-      $("#showAllUei").on("click", function (e) {
-        e.preventDefault();
-        $input.autocomplete("search", "");
-        $input.focus();
-      });
-      $input.on("blur", function () {
-        var currentText = $input.val().trim();
-        var matchedItem = autocompleteSource.find(function (item) {
-          return item.label === currentText;
-        });
-
-        if (matchedItem) {
-          $select.val(matchedItem.value);
-        } else {
-          $input.val("");
-          $select.val("");
-        }
-      });
-
-      var currentSelected = $select.find("option:selected");
-      if (currentSelected.length && currentSelected.val() !== "") {
-        $input.val(currentSelected.text().trim());
-      }
-    }
-
-    function initializeVendorAutocomplete() {
-      var $select = $("#input\\.vendor");
-      var $input = $("#vendorAutocomplete");
-
-      var source = $select
-        .find("option")
-        .map(function () {
-          var $option = $(this);
-          return {
-            label: $option.text().trim(),
-            value: $option.attr("value") || $option.text().trim(),
-            element: $option,
-          };
-        })
-        .get();
-
-      var autocompleteSource = source.filter(function (item) {
-        return item.value !== "" && item.label !== "--Select One--";
-      });
-
-      $input.autocomplete({
-        minLength: 0,
-        delay: 100,
-        source: function (request, response) {
-          var term = request.term.toLowerCase().trim();
-          if (term === "") {
-            response(autocompleteSource);
-          } else {
-            var results = autocompleteSource.filter(function (item) {
-              return (
-                item.label.toLowerCase().includes(term) ||
-                item.value.toLowerCase().includes(term)
-              );
-            });
-            response(results);
-          }
-        },
-        select: function (event, ui) {
-          $input.val(ui.item.label);
-          $select.val(ui.item.value);
-          $select.trigger("change");
-          return false;
-        },
-        focus: function (event, ui) {
-          $input.val(ui.item.label);
-          return false;
-        },
-      });
-
-      $("#showAllVendors").on("click", function (e) {
-        e.preventDefault();
-        $input.autocomplete("search", "");
-        $input.focus();
-      });
-
-      $input.on("blur", function () {
-        var current = $input.val().trim();
-        var match = autocompleteSource.find(function (item) {
-          return item.label === current;
-        });
-
-        if (match) {
-          $select.val(match.value);
-        } else {
-          $input.val("");
-          $select.val("");
-        }
-      });
-
-      var currentSelected = $select.find("option:selected");
-      if (currentSelected.length && currentSelected.val() !== "") {
-        $input.val(currentSelected.text().trim());
-      }
-    }
-
     $("#input\\.vendor").on("change", function () {
       var vendor = $(this).val();
-      if (vendor) {
+      if (vendor) {        
         loadEventsForVendor(vendor);
+      } else {
+        $("#input\\.uei").empty().append('<option value="">--Select One--</option>');
+        $("#ueiAutocomplete").val("");
+        initializeUeiAutocomplete();
       }
     });
-    // Initialize the autocomplete
-    initializeUeiAutocomplete();
+
     initializeVendorAutocomplete();
+    initializeUeiAutocomplete();
   });
-
-  // $(document).ready(function () {
-  //   function initializeUeiAutocomplete() {
-  //     var $select = $("#input\\.uei");
-  //     var $input = $("#ueiAutocomplete");
-  //     var source = $select
-  //       .find("option")
-  //       .map(function () {
-  //         var $option = $(this);
-  //         return {
-  //           label: $option.text().trim(),
-  //           value: $option.attr("value") || $option.text().trim(),
-  //           element: $option,
-  //         };
-  //       })
-  //       .get();
-
-  //     var autocompleteSource = source.filter(function (item) {
-  //       return item.value !== "" && item.label !== "--Select One--";
-  //     });
-
-  //     $input.autocomplete({
-  //       minLength: 0,
-  //       delay: 100,
-  //       source: function (request, response) {
-  //         var term = request.term.toLowerCase().trim();
-
-  //         if (term === "") {
-  //           response(autocompleteSource);
-  //         } else {
-  //           var results = autocompleteSource.filter(function (item) {
-  //             return (
-  //               item.label.toLowerCase().includes(term) ||
-  //               item.value.toLowerCase().includes(term)
-  //             );
-  //           });
-  //           response(results);
-  //         }
-  //       },
-  //       select: function (event, ui) {
-  //         $input.val(ui.item.label);
-  //         $select.val(ui.item.value);
-  //         $select.trigger("change");
-  //         return false;
-  //       },
-  //       focus: function (event, ui) {
-  //         $input.val(ui.item.label);
-  //         return false;
-  //       },
-  //     });
-  //     $("#showAllUei").on("click", function (e) {
-  //       e.preventDefault();
-  //       $input.autocomplete("search", "");
-  //       $input.focus();
-  //     });
-  //     $input.on("blur", function () {
-  //       var currentText = $input.val().trim();
-  //       var matchedItem = autocompleteSource.find(function (item) {
-  //         return item.label === currentText;
-  //       });
-
-  //       if (matchedItem) {
-  //         $select.val(matchedItem.value);
-  //       } else {
-  //         $input.val("");
-  //         $select.val("");
-  //       }
-  //     });
-
-  //     var currentSelected = $select.find("option:selected");
-  //     if (currentSelected.length && currentSelected.val() !== "") {
-  //       $input.val(currentSelected.text().trim());
-  //     }
-  //   }
-
-  //   // Initialize the autocomplete
-  //   initializeUeiAutocomplete();
-  // });
 
   function next() {
     var ueiValue = document.getElementById("input.uei").value;
@@ -427,28 +364,27 @@
   }
 
   function loadEventsForVendor(vendor) {
+    // Validate vendor
+    if (!vendor || vendor.trim() === "") {
+      alert("Please select a vendor first.");
+      return;
+    }
+
+    const url = '/opennms/api/v2/eventconf/vendors/' + encodeURIComponent(vendor) + '/events';    
     $.ajax({
-      url: "admin/sendevent/eventsByVendor",
-      data: { vendor: vendor },
+      url: url,
       method: "GET",
+      withCredentials: true,
       success: function (data) {
         var $select = $("#input\\.uei");
         var $input = $("#ueiAutocomplete");
-
-        // Clear old list
         $select.empty().append('<option value="">--Select One--</option>');
-
-        // Add new options
         data.forEach(function (item) {
           $select.append(
-            '<option value="' + item.value + '">' + item.label + "</option>"
+            '<option value="' + item.uei + '">' + item.eventLabel + "</option>"
           );
         });
-
-        // Clear autocomplete text
         $input.val("");
-
-        // Re-initialize autocomplete with new data
         initializeUeiAutocomplete();
       },
       error: function () {
