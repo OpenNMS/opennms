@@ -834,14 +834,14 @@ public class EventConfRestServiceIT {
 
         // test when eventConfSource name is empty
         final var  eventConfSourceBadRequest =
-                new AddEventConfSourceRequest("","Testing addEventConfSource","test");
+                new AddEventConfSourceRequest("Testing addEventConfSource","","test");
 
         resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequest,securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
         // test when eventConfSource already exists with the same name.
         final var  eventConfSourceNameExistsRequest =
-                new AddEventConfSourceRequest("addEventConfSource","Testing eventConfSource already exists with the same name","test");
+                new AddEventConfSourceRequest("Testing eventConfSource already exists with the same name","addEventConfSource","test");
         resp = eventConfRestApi.addEventConfSource(eventConfSourceNameExistsRequest,securityContext);
         assertEquals(Response.Status.CONFLICT.getStatusCode(), resp.getStatus());
     }

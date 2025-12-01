@@ -482,17 +482,19 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
-    private void validateAddSourceRequest(AddEventConfSourceRequest request) {
+    private void validateAddSourceRequest(final AddEventConfSourceRequest request) {
         if (request == null) {
-            return;
+            throw new IllegalArgumentException("Request must not be null.");
         }
+
         if (request.getName() == null || request.getName().isBlank()) {
-            return;
+            throw new IllegalArgumentException("Source name must not be null or blank.");
         }
+
         if (request.getVendor() == null || request.getVendor().isBlank()) {
+            throw new IllegalArgumentException("Vendor must not be null or blank.");
         }
     }
-
 
     private Response buildXmlError(Response.Status status, String message) {
         return Response.status(status)
