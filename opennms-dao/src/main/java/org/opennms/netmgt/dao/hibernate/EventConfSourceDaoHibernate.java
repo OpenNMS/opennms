@@ -185,6 +185,14 @@ public class EventConfSourceDaoHibernate
         return maxOrder != null ? maxOrder : 0;
     }
 
+    @Override
+    public List<String> findAllVendors() {
+        return findObjects(
+                String.class,
+                "select distinct s.vendor from EventConfSource s"
+        );
+    }
+
 
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
