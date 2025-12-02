@@ -5,7 +5,13 @@
   >
     <div class="section-content">
       <div class="varbinds-decode-header">
-        <h3>Varbinds Decode</h3>
+        <div>
+          <h3>Varbinds Decoding</h3>
+          <p>
+            Convert the following numeric values for the varbind parm to the decoded string value when displaying the
+            event description:
+          </p>
+        </div>
         <FeatherButton
           secondary
           @click="$emit('setVarbindsDecode', 'addVarbindDecodeRow', null, -1, -1)"
@@ -56,21 +62,23 @@
         >
           <div class="input-field">
             <FeatherInput
-              label="Decode String"
-              :model-value="decodeRow.key"
-              @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
+              label="Varbind Value"
+              type="number"
+              min="0"
+              :model-value="decodeRow.value"
+              @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
               data-test="varbind-value-input"
-              :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
+              :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
             />
           </div>
           <div class="value-field">
             <div class="input-field">
               <FeatherInput
-                label="Decode Value"
-                :model-value="decodeRow.value"
-                @update:model-value="$emit('setVarbindsDecode', 'setDecodeValue', $event, index, decodeIndex)"
+                label="Decoded String"
+                :model-value="decodeRow.key"
+                @update:model-value="$emit('setVarbindsDecode', 'setDecodeKey', $event, index, decodeIndex)"
                 data-test="varbind-value-input"
-                :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.value"
+                :error="errors.varbindsDecode?.[index]?.decode?.[decodeIndex]?.key"
               />
             </div>
             <FeatherButton
