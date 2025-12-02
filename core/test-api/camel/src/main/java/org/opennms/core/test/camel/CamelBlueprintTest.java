@@ -63,7 +63,7 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
 
     @Override
     public boolean isUseAdviceWith() {
-        return true;
+        return false;
     }
 
     @Override

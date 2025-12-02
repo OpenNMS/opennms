@@ -1628,14 +1628,14 @@
     <!-- dependency versions -->
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
-    <activemqVersion>5.15.5</activemqVersion>
+    <activemqVersion>5.16.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.16</batikVersion>
     <bouncyCastleVersion>1.68</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
-    <camelVersion>2.19.1</camelVersion>
+    <camelVersion>2.21.5</camelVersion>
     <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
     <!-- Match Newts version -->
     <cassandraVersion>3.11.2</cassandraVersion>
@@ -1698,7 +1698,7 @@
     <ipaddressVersion>5.3.3</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.14.2</jackson2Version>
-    <snakeyamlVersion>1.33</snakeyamlVersion>
+    <snakeyamlVersion>2.2</snakeyamlVersion>
     <jacocoVersion>0.8.8</jacocoVersion>
     <jasperreportsVersion>6.20.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
