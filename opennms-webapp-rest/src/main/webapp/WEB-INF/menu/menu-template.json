@@ -268,7 +268,7 @@
         },
         {
           "id": "customizeEvents",
-          "name": "Customize Events",
+          "name": "Manage Event Configuration",
           "url": "ui/index.html#/event-config",
           "locationMatch": "",
           "roles": null

@@ -26,7 +26,7 @@ describe('EventConfig.vue', () => {
     // use the store so it is not reported as unused
     expect(store).toBeDefined()
 
-    expect(wrapper.find('h1').text()).toBe('Event Configuration')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Configuration')
 
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
   })

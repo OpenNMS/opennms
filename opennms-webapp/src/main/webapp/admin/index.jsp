@@ -168,7 +168,7 @@
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
             -->
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
-            <li><a href="ui/index.html#/event-config">Customize Event Configurations</a></li>
+            <li><a href="ui/index.html#/event-config">Manage Event Configuration</a></li>
         </ul>
       </div> <!-- card-body -->
       <div class="card-footer text-right">
@@ -313,7 +313,7 @@
             further be associated with specific interfaces or services.
         </p>
 
-        <p><b>Customize Event Configurations</b>: Add and edit configuration files for events definitions.</p>
+        <p><b>Manage Event Configuration</b>: Add and edit configuration files for events definitions.</p>
 
         <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.
             This is a system-wide setting. As long as this is <em>Off</em>, OpenNMS will not create notifications.

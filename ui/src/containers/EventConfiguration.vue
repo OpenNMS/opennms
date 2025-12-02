@@ -2,7 +2,7 @@
   <div class="event-config">
     <div class="header">
       <div class="heading">
-        <h1>Event Configuration</h1>
+        <h1>Manage Event Configuration</h1>
       </div>
       <div class="action">
         <FeatherButton
