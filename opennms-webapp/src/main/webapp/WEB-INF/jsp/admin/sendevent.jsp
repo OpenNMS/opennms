@@ -49,14 +49,6 @@
 </jsp:include>
 
 <script type="text/javascript">
-  // function next() {
-  //   if (document.getElementById("input.uei").selectedIndex == 0) {
-  //     alert("Please select a uei to associate with this event.");
-  //   } else {
-  //     document.getElementById("form.sendevent").submit();
-  //   }
-  // }
-
   function initializeUeiAutocomplete() {
     var $select = $("#input\\.uei");
     var $input = $("#ueiAutocomplete");
