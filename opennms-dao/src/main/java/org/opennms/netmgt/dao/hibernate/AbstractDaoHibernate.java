@@ -421,7 +421,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @Override
     public K save(final T entity) throws DataAccessException {
         try {
-            return (K) getHibernateTemplate().save(entity);
+            return (K)getHibernateTemplate().save(entity);
         } catch (final DataAccessException e) {
             logExtraSaveOrUpdateExceptionInformation(entity, e);
             throw e;
