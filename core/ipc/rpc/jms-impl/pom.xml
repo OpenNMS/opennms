@@ -27,6 +27,14 @@
     </plugins>
   </build>
   <dependencies>
+
+    <dependency>
+      <groupId>org.apache.karaf.shell</groupId>
+      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <version>${karafVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
