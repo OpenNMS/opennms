@@ -25,13 +25,13 @@
             'ptopoConfigTrapInterval' object.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             ptopoConnTabInserts&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ptopoConnTabDeletes&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ptopoConnTabDrops&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ptopoConnTabAgeouts&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>PTOPO Event: Physical Topology Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

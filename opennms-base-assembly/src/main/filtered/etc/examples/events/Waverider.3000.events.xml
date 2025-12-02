@@ -28,15 +28,15 @@ incorrectly configured networks at an EUM or attempts to spoof MAC addresses.&lt
 	&lt;tr>&lt;td>&lt;b>
 
 	ccuTrapACMacAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ccuTrapACOldId&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ccuTrapACNewId&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			ccuAddressChangeTrap trap received 
 			ccuTrapACMacAddress=%parm[#1]% 
@@ -71,7 +71,7 @@ configured with the same IP address as the CCU.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	ccuTrapDupEumId&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			ccuDuplicateIpTrap trap received 
 			ccuTrapDupEumId=%parm[#1]%&lt;/p>

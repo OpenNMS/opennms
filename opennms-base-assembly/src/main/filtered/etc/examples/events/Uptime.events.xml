@@ -20,30 +20,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor1HighCritical trap received 
 			sysDescr=%parm[#1]% 
@@ -75,30 +75,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor1HighWarning trap received 
 			sysDescr=%parm[#1]% 
@@ -130,30 +130,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor1LowWarning trap received 
 			sysDescr=%parm[#1]% 
@@ -185,30 +185,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor1LowCritical trap received 
 			sysDescr=%parm[#1]% 
@@ -240,30 +240,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor1Normal trap received 
 			sysDescr=%parm[#1]% 
@@ -295,30 +295,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor2HighCritical trap received 
 			sysDescr=%parm[#1]% 
@@ -350,30 +350,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor2HighWarning trap received 
 			sysDescr=%parm[#1]% 
@@ -405,30 +405,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor2LowWarning trap received 
 			sysDescr=%parm[#1]% 
@@ -460,30 +460,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor2LowCritical trap received 
 			sysDescr=%parm[#1]% 
@@ -515,30 +515,30 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	sysDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorType&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorCurrentValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sh2SensorState&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		highCritical(1)
 		highWarning(2)
 		lowWarning(3)
 		lowCritical(4)
 		normal(5)
 		notPresent(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Uptime Devices: sh2Sensor2Normal trap received 
 			sysDescr=%parm[#1]% 
