@@ -133,4 +133,40 @@
                 stripComments="true"/>
     </changeSet>
 
+    <changeSet author="aurangzeb" id="35.0.0-add-severity-column-eventconf-events">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <not>
+                    <columnExists tableName="eventconf_events" columnName="severity"/>
+                </not>
+            </and>
+        </preConditions>
+
+        <addColumn tableName="eventconf_events">
+            <column name="severity" type="varchar(32)" defaultValue="Indeterminate">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_severity">
+            <column name="severity"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aurangzeb" id="35.0.0-eventconf-events-severity-update">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+            <columnExists tableName="eventconf_events" columnName="severity"/>
+        </preConditions>
+        <sql>
+            UPDATE eventconf_events
+            SET severity = (
+            xpath('//ns:severity/text()', xml_content::xml, ARRAY[
+            ['ns', 'http://xmlns.opennms.org/xsd/eventconf']
+            ])::text[]
+            )[1]
+            WHERE severity ='Indeterminate';
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

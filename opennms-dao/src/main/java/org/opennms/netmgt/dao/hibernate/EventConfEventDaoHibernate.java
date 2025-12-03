@@ -129,7 +129,7 @@ public class EventConfEventDaoHibernate
 
             String sortOrder = "ASC".equalsIgnoreCase(eventOrder) ? "ASC" : "DESC";
 
-            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "enabled");
+            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled");
 
             if (eventSortBy == null || !allowedSortFields.contains(eventSortBy)) {
                 sortField = "createdTime";

@@ -495,6 +495,7 @@ public class EventConfRestServiceIT {
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");
+        event.setSeverity(severity);
 
         eventConfEventDao.saveOrUpdate(event);
     }

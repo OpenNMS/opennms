@@ -70,6 +70,11 @@ public class EventConfServiceHelper {
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
+        event.setSeverity(
+                (event.getSeverity() == null || event.getSeverity().isBlank())
+                        ? "Indeterminate"
+                        : event.getSeverity()
+        );
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
@@ -138,6 +143,11 @@ public class EventConfServiceHelper {
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
+            event.setSeverity(
+                    (event.getSeverity() == null || event.getSeverity().isBlank())
+                            ? "Indeterminate"
+                            : event.getSeverity()
+            );
             event.setXmlContent(JaxbUtils.marshal(parsed));
             event.setCreatedTime(timestamp);
             event.setLastModified(timestamp);

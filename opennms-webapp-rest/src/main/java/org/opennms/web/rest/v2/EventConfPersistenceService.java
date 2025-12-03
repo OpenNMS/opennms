@@ -131,6 +131,11 @@ public class EventConfPersistenceService {
             eventConfEvent.setEnabled(payload.getEnabled());
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
+            eventConfEvent.setSeverity(
+                    (payload.getEvent().getSeverity() == null || payload.getEvent().getSeverity().isBlank())
+                            ? "Indeterminate"
+                            : payload.getEvent().getSeverity()
+            );
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
 
