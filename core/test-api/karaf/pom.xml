@@ -135,7 +135,6 @@
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
-                <feature>webconsole</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
 
