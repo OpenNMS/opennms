@@ -146,12 +146,6 @@ public class KafkaProducerManager {
             producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
             producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
 
-            if (!producerConfig.containsKey("acks")) {
-                producerConfig.put("acks", "all");
-            }
-            if (!producerConfig.containsKey("retries")) {
-                producerConfig.put("retries", "3");
-            }
 
             LOG.info("Creating Kafka producer for PID: {} with bootstrap.servers: {}",
                     pid, producerConfig.getProperty("bootstrap.servers", "not configured"));

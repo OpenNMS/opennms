@@ -26,6 +26,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.features.kafka.producer.KafkaProducerManager;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -68,9 +69,25 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     public void init() throws IOException {
         // Create the Kafka producer
+        String metricsPid = KafkaProducerManager.METRICS_KAFKA_CLIENT_PID;
+        String globalPid = OpennmsKafkaProducer.KAFKA_CLIENT_PID;
+
         final Properties producerConfig = new Properties();
-        final Dictionary<String, Object> properties = configAdmin
-                .getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
+        Dictionary<String, Object> properties = null;
+        try {
+            properties = configAdmin.getConfiguration(metricsPid).getProperties();
+        } catch (Exception e) {
+            LOG.debug("No metrics-specific configuration found for PID: {}, will try global", metricsPid);
+        }
+
+        if (properties == null || properties.isEmpty()) {
+            LOG.debug("Using global Kafka configuration for metrics");
+            properties = configAdmin.getConfiguration(globalPid).getProperties();
+        } else {
+            LOG.debug("Using metrics-specific Kafka configuration");
+        }
+
+        // Load properties
         if (properties != null) {
             final Enumeration<String> keys = properties.keys();
             while (keys.hasMoreElements()) {
