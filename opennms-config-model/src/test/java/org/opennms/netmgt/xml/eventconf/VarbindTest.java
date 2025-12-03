@@ -43,6 +43,9 @@ public class VarbindTest extends XmlTestNoCastor<Varbind> {
 		varbind1.setVbnumber(5);
 		varbind1.addVbvalue("0");
 		varbind1.setTextualConvention("MacAddress");
+        Varbind varbind2 = new Varbind();
+        varbind2.setVboid(".1.2.3");
+        varbind2.addVbvalue("0");
 		return Arrays.asList(new Object[][] {
 				{varbind0,
 				"<varbind>" +
@@ -55,8 +58,13 @@ public class VarbindTest extends XmlTestNoCastor<Varbind> {
 					"<vbnumber>5</vbnumber>" +
 					"<vbvalue>0</vbvalue>" +
 					"</varbind>",
-					"target/classes/xsds/eventconf.xsd" } 
+					"target/classes/xsds/eventconf.xsd" },
+                {varbind2,
+                    "<varbind>" +
+                    "<vboid>.1.2.3</vboid>" +
+                    "<vbvalue>0</vbvalue>" +
+                    "</varbind>",
+                    "target/classes/xsds/eventconf.xsd" }
 		});
 	}
-
 }
