@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
@@ -416,6 +417,83 @@ public class EventConfRestService implements EventConfRestApi {
         return Response.ok(stream).type(MediaType.APPLICATION_XML)
                 .header("Content-Disposition", "attachment; filename=\"%s.xml\""
                         .formatted(eventConfSource.getName())).build();
+    }
+
+    @Override
+    public Response addEventConfSource(final AddEventConfSourceRequest request, SecurityContext securityContext) throws Exception {
+        final Date now = new Date();
+
+        try {
+            validateAddSourceRequest(request);
+        } catch (IllegalArgumentException ex) {
+            LOG.warn("Validation failed for addEventConfSource request. reason={}", ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        }
+
+        try {
+            if (eventConfSourceDao.findByName(request.getName()) != null) {
+                LOG.warn("Attempt to create duplicate EventConfSource. name='{}' ", request.getName());
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("An EventConfSource with the same name already exists")
+                        .build();
+            }
+
+            final String username = getUsername(securityContext);
+            int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
+            int newOrder = maxFileOrder + 1;
+            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'", newOrder, request.getName());
+
+            EventConfSource eventConfSource = new EventConfSource();
+            eventConfSource.setName(request.getName());
+            eventConfSource.setDescription(request.getDescription());
+            eventConfSource.setVendor(request.getVendor());
+            eventConfSource.setEnabled(true);
+            eventConfSource.setEventCount(0);
+            eventConfSource.setCreatedTime(now);
+            eventConfSource.setLastModified(now);
+            eventConfSource.setFileOrder(newOrder);
+            eventConfSource.setUploadedBy(username);
+
+            LOG.debug("Persisting EventConfSource name='{}'", request.getName());
+
+            Long eventConfSourceID = eventConfPersistenceService.createEventConfSource(eventConfSource);
+
+            LOG.info("Successfully created EventConfSource id={}, name='{}', user='{}'",
+                    eventConfSourceID, request.getName(), username);
+
+            return Response
+                    .status(Response.Status.CREATED)
+                    .entity(Map.of(
+                            "id", eventConfSource.getId(),
+                            "name", eventConfSource.getName(),
+                            "fileOrder", eventConfSource.getFileOrder()
+                    ))
+                    .build();
+
+        } catch (Exception ex) {
+            LOG.error("Failed to create EventConfSource name='{}' . Error={}",
+                    request.getName(), ex.getMessage(), ex);
+            return Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while creating EventConfSource: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    private void validateAddSourceRequest(final AddEventConfSourceRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request must not be null.");
+        }
+
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new IllegalArgumentException("Source name must not be null or blank.");
+        }
+
+        if (request.getVendor() == null || request.getVendor().isBlank()) {
+            throw new IllegalArgumentException("Vendor must not be null or blank.");
+        }
     }
 
     private Response buildXmlError(Response.Status status, String message) {
