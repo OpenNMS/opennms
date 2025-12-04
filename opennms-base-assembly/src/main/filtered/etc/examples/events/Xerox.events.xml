@@ -35,13 +35,13 @@
  by devices of interest.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrDeviceStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(1) running(2) warning(3) testing(4) down(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  commonNone(0) commonOther(1) commonUnknown(2) commonLast(99) otherNone(100) unknownNone(200) 
  processorNone(300) networkNone(400) printerNone(500) printerOther(501) printerUnknown(502) 
  printerIdle(503) printerPrinting(504) printerNeedsAttention(505) printerPaused(506) printerShutdown(507) 
@@ -50,11 +50,11 @@
  coprocessorNone(1200) keyboardNone(1300) modemNone(1400) parallelPortNone(1500) pointingNone(1600) 
  serialPortNone(1700) tapeNone(1800) clockNone(1900) volatileMemoryNone(2000) nonVolatileMemoryNone(2100) 
  hostSystemNone(10100) scannerNone(10200) copierNone(10300) faxNone(10400) mailboxNone(10500) reserved(40000)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Xerox Event: Device Status Change Notification.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -96,13 +96,13 @@
  by requests they have submitted.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrDeviceStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(1) running(2) warning(3) testing(4) down(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  commonNone(0) commonOther(1) commonUnknown(2) commonLast(99) otherNone(100) unknownNone(200) processorNone(300) 
  networkNone(400) printerNone(500) printerOther(501) printerUnknown(502) printerIdle(503) printerPrinting(504) 
  printerNeedsAttention(505) printerPaused(506) printerShutdown(507) printerJobStartWait(508) printerJobEndWait(509) 
@@ -111,13 +111,13 @@
  parallelPortNone(1500) pointingNone(1600) serialPortNone(1700) tapeNone(1800) clockNone(1900) volatileMemoryNone(2000) 
  nonVolatileMemoryNone(2100) hostSystemNone(10100) scannerNone(10200) copierNone(10300) faxNone(10400) mailboxNone(10500) 
  reserved(40000)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevMgmtCommandRequest&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  none(1) startup(2) resetWarning(3) test(4) shutdown(5) quiesce(6) resetCounters(7) resetWarm(8) resetCold(9) 
  resetFactory(10) flushInput(11) flushOutput(12) flushInOut(13) manage(14) refresh(15) warmUp(16) coolDown(17) 
  energySave(18) wakeUp(19) powerToReady(20) powerToStandby(21) powerToSleep(22) deviceCreate(1301) deviceDelete(1302) 
@@ -125,13 +125,13 @@
  deviceShutdown(1310) deviceQueueList(1311) deviceManage(2301) deviceRestart(2302) deviceInstall(2321) deviceUpgrade(2322) 
  deviceBackup(2323) deviceRestore(2324) deviceConfigure(2325) deviceDiagnose(2326) deviceResetCounters(2331) deviceResetWarm(2332) 
  deviceResetCold(2333) deviceResetFactory(2334) deviceLogin(2341) deviceLogout(2342)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevMgmtCommandStatus&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  noError(0) tooBig(1) noSuchName(2) badValue(3) readOnly(4) genErr(5) noAccess(6) wrongType(7) wrongLength(8) wrongEncoding(9) 
  wrongValue(10) noCreation(11) inconsistentValue(12) resourceUnavailable(13) commitFailed(14) undoFailed(15) 
  authorizationError(16) notWritable(17) inconsistentName(18)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Xerox Event: Command Completed Notification.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -175,9 +175,9 @@
  by device details of interest.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevDetailType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) unknown(2) deviceName(3) deviceAlias(4) deviceType(5) deviceDescription(6) deviceID(7) deviceTree(8) deviceContext(9) 
  deviceManufacturer(10) deviceModel(11) deviceSerialNumber(12) deviceVendor(13) deviceVersion(14) deviceServiceByCustomer(15) 
  deviceReplaceByCustomer(16) deviceServicePlanName(17) deviceServicePlanPassword(18) deviceReplaceByWarranty(19) 
@@ -201,9 +201,9 @@
  deviceNextWarmerModeIndex(123) deviceNextCoolerModeIndex(124) deviceProcessorFrwID(130) deviceNetworkIfIndex(140) 
  deviceDiskStorageAccess(160) deviceDiskStorageMedia(161) deviceDiskStorageRemovable(162) deviceDiskStorageCapacity(163) 
  deviceGuestJobPolicy(200) deviceAlienJobPolicy(201) deviceEventLogFullPolicy(202) deviceJobLogFullPolicy(203) deviceRequestLogFullPolicy(204)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  xcmHrDevDetailIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Xerox Event: Detail Event Notification.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

@@ -66,19 +66,19 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryTimeOnBattery&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryRuntimeRemaining&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	upsConfigLowRuntimeSetpoint&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapUPSOnBattery trap received 
 			upsBatteryTimeOnBattery=%parm[#1]% 
@@ -182,7 +182,7 @@ to 'sleep' and immediately cut power to the load.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapNearLowBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p>
@@ -211,7 +211,7 @@ value that is too high for safe battery maintenance.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapHighBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p>
@@ -264,7 +264,7 @@ put itself to sleep to prevent a complete discharge of the batteries.&lt;/p>&lt;
 	&lt;tr>&lt;td>&lt;b>
 
 	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapLowBattery trap received 
 			upsBatteryVoltage=%parm[#1]%&lt;/p>

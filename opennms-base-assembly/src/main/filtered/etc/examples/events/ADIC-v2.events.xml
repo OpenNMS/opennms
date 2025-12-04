@@ -18,11 +18,11 @@
       <event-label>ADICLIBMIB-v2 defined trap event: statusChange</event-label>
       <descr>&lt;p>The %param[#1]% status has changed to %param[#2]%.  Previous status was %param[#3]%.&lt;/p>
   &lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-  &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
-  globalStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>
-  unknown(1) ok(2) degraded(3) failure(4)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>
-  &lt;b>prevGlobalStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>
-  unknown(1) ok(2) degraded(3) failure(4)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+  &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+  globalStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>
+  unknown(1) ok(2) degraded(3) failure(4)&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>
+  &lt;b>prevGlobalStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>
+  unknown(1) ok(2) degraded(3) failure(4)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
   &lt;p>ADIC StatusChange trap received displayName=%parm[#1]% globalStatus=%parm[#2]% prevGlobalStatus=%parm[#3]%&lt;/p>
  </logmsg>
@@ -47,9 +47,9 @@
       <event-label>ADICLIBMIB-v2 defined trap event: doorStateChange</event-label>
       <descr>&lt;p>The %param[#1]% door state has changed to %param[#2]%.&lt;/p>
 &lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>
-%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>
+%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>
 &lt;td>&lt;b>moverDoorState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>
-&lt;td>&lt;p;>unknown(1) open(2) closed(3) locked(4)&lt;/p>&lt;/td;>&lt;/tr>
+&lt;td>&lt;p>unknown(1) open(2) closed(3) locked(4)&lt;/p>&lt;/td>&lt;/tr>
 &lt;/table></descr>
       <logmsg dest="logndisplay">
   &lt;p>ADIC DoorStateChange trap received displayName=%parm[#1]% moverDoorState=%parm[#2]%&lt;/p>
@@ -73,7 +73,7 @@
       </mask>
       <uei>http://uei.opennms.org/vendor/ADIC/traps/mailboxStateChange</uei>
       <event-label>ADICLIBMIB-v2 defined trap event: mailboxStateChange</event-label>
-      <descr>&lt;p>The %param[#1]% mailbox state has changed to %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>moverMailboxState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>unknown(1) open(2) closed(3) locked(4)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <descr>&lt;p>The %param[#1]% mailbox state has changed to %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>moverMailboxState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>unknown(1) open(2) closed(3) locked(4)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
   &lt;p>ADIC MailboxStateChange trap received displayName=%parm[#1]% moverMailboxState=%parm[#2]%&lt;/p>
 </logmsg>
@@ -96,7 +96,7 @@
       </mask>
       <uei>http://uei.opennms.org/vendor/ADIC/traps/startup</uei>
       <event-label>ADICLIBMIB-v2 defined trap event: startup</event-label>
-      <descr>&lt;p>The %param[#1]% device has started.  The shutdown state was %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>startupState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <descr>&lt;p>The %param[#1]% device has started.  The shutdown state was %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>startupState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
  &lt;p>ADIC Startup trap received displayName=%parm[#1]% startupState=%parm[#2]%&lt;/p>
 </logmsg>
@@ -119,7 +119,7 @@
       </mask>
       <uei>http://uei.opennms.org/vendor/ADIC/traps/shutdown</uei>
       <event-label>ADICLIBMIB-v2 defined trap event: shutdown</event-label>
-      <descr>&lt;p>The %param[#1]% device has shut down.  The shutdown state is %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>shutdownState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <descr>&lt;p>The %param[#1]% device has shut down.  The shutdown state is %param[#2]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>shutdownState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>other(1) unknown(2) normal(3) powerfail(4) errorreboot(5)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
  &lt;p>ADIC Shutdown trap received displayName=%parm[#1]% shutdownState=%parm[#2]%&lt;/p>
 </logmsg>
@@ -142,7 +142,7 @@
       </mask>
       <uei>http://uei.opennms.org/vendor/ADIC/traps/error</uei>
       <event-label>ADICLIBMIB-v2 defined trap event: error</event-label>
-      <descr>&lt;p>The %param[#1]% device had an error.  Error code is %param[#2]%.  Error data is %param[#3]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>errorCode&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>errorModifier&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <descr>&lt;p>The %param[#1]% device had an error.  Error code is %param[#2]%.  Error data is %param[#3]%.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>errorCode&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>errorModifier&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
 &lt;p>ADIC error trap received displayName=%parm[#1]% errorCode=%parm[#2]% errorModifier=%parm[#3]%&lt;/p>
 </logmsg>
@@ -165,7 +165,7 @@
       </mask>
       <uei>http://uei.opennms.org/vendor/ADIC/traps/sac</uei>
       <event-label>ADICLIBMIB-v2 defined trap event: sac</event-label>
-      <descr>&lt;p>The %param[#1]% device generated a SAC code of %param[#2]% (%param[#3]%).&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serviceActionCode&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serviceActionCodeHex&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <descr>&lt;p>The %param[#1]% device generated a SAC code of %param[#2]% (%param[#3]%).&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>displayName&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>serviceActionCode&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>serviceActionCodeHex&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">
 &lt;p>ADIC SAC trap received displayName=%parm[#1]% ServiceActionCode=%parm[#2]% serviceActionCodeHex=%parm[#3]%&lt;/p>
 </logmsg>

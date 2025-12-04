@@ -23,11 +23,11 @@
       <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  %parm[all]%&lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Quintum Event - Critical Alarm - %parm[#3]%&lt;/p></logmsg>
       <severity>Critical</severity>
    </event>
@@ -55,11 +55,11 @@
       <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  %parm[all]%&lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Quintum Event - Major Alarm - %parm[#3]%&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -87,11 +87,11 @@
       <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  %parm[all]%&lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Quintum Event - Minor Alarm - %parm[#3]%&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -119,11 +119,11 @@
       <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  %parm[all]%&lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Quintum Event - Warning - %parm[#3]%&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -151,11 +151,11 @@
       <descr>&lt;p>Quintum IP Address - %parm[#3]%&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  %parm[all]%&lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  &lt;/b>&lt;/td>&lt;td>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Quintum Event - Status Normal - %parm[#3]%&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
