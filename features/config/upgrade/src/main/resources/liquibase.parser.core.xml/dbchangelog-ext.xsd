@@ -65,4 +65,9 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="eventConfEventChange">
+        <xsd:complexType>
+        </xsd:complexType>
+    </xsd:element>
+
 </xsd:schema>

@@ -21,15 +21,17 @@
  */
 package liquibase.ext2.cm.change;
 
+import liquibase.change.AbstractChange;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
-import liquibase.exception.ValidationErrors;
-import liquibase.ext2.cm.database.CmDatabase;
-import liquibase.ext2.cm.statement.UpdateEventConfEventStatement;
 import liquibase.statement.SqlStatement;
+import liquibase.statement.core.UpdateStatement;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
+import org.opennms.netmgt.xml.eventconf.Event;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,34 +42,30 @@ import java.util.Map;
 @DatabaseChange(name = "eventConfEventChange",
         description = "Update EventConfEvent entries by converting XML content to JSON and updating the 'content' field",
         priority = ChangeMetaData.PRIORITY_DATABASE)
-public class EventConfChange extends AbstractCmChange {
+public class EventConfChange extends AbstractChange {
+
+    private Map<Long, String> cachedEvents;
+
     @Override
     public String getConfirmationMessage() {
         return "EventConfEvent content updated to JSON successfully.";
     }
 
-    @Override
     public SqlStatement[] generateStatements(Database database) {
-        if (!(database instanceof CmDatabase)) {
-            return new SqlStatement[0];
+        if (cachedEvents == null) {
+            cachedEvents = loadEvents((JdbcConnection) database.getConnection());
         }
 
-        Map<Long, String> eventMap = loadEvents(database);
-
-        return eventMap.entrySet()
+        return cachedEvents.entrySet()
                 .stream()
-                .map(e -> new UpdateEventConfEventStatement(e.getKey(), e.getValue()))
+                .map(entry -> {
+                    return createUpdateStatement(entry.getKey(), entry.getValue());
+                })
                 .toArray(SqlStatement[]::new);
     }
 
-    @Override
-    protected ValidationErrors validate(CmDatabase database, ValidationErrors validationErrors) {
-        return validationErrors;
-    }
-
-    private Map<Long, String> loadEvents(Database database) {
+    private Map<Long, String> loadEvents(JdbcConnection conn) {
         Map<Long, String> eventMap = new HashMap<>();
-        JdbcConnection conn = (JdbcConnection) database.getConnection();
 
         try (PreparedStatement ps = conn.prepareStatement("SELECT id, xml_content FROM eventconf_events");
              ResultSet rs = ps.executeQuery()) {
@@ -80,5 +78,26 @@ public class EventConfChange extends AbstractCmChange {
             throw new RuntimeException(e);
         }
         return eventMap;
+    }
+
+    private UpdateStatement createUpdateStatement(Long id, String xmlContent) {
+        String jsonContent;
+        try {
+            Event xmlEvent = JaxbUtils.unmarshal(Event.class, xmlContent);
+            jsonContent = JsonUtils.marshal(xmlEvent);
+            if (jsonContent == null) {
+                jsonContent = "{}";
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed marshall Object to JSON for id=" + id, e);
+        }
+
+        UpdateStatement update = new UpdateStatement(null, null, "eventconf_events");
+        update.addNewColumnValue("content", jsonContent);
+        update.addNewColumnValue("modified_by", "system-upgrade");
+        update.addNewColumnValue("last_modified", new liquibase.statement.DatabaseFunction("CURRENT_TIMESTAMP"));
+        update.setWhereClause("id=" + id);
+
+        return update;
     }
 }

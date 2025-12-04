@@ -69,7 +69,6 @@ public class LiquibaseUpgrader {
         ChangeFactory.getInstance().register(ImportConfiguration.class);
         ChangeFactory.getInstance().register(ImportConfigurations.class);
         ChangeFactory.getInstance().register(ChangeSchema.class);
-        ChangeFactory.getInstance().register(EventConfChange.class);
         // Liqui 4.4.3: Scope.getCurrentScope().getSingleton(liquibase.change.ChangeFactory.class).register(new RegisterSchema());
         ExecutorService.getInstance().clearExecutor(db);
         CmExecutor executor = new CmExecutor();

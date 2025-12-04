@@ -6,7 +6,5 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-update-content-column-value">
-        <cm:eventConfEventChange/>
-    </changeSet>
+    <include file="changelog-eventconf/35.0.0/changelog.xml"/>
 </databaseChangeLog>
