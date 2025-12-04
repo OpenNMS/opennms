@@ -62,7 +62,7 @@
         "phantomjs-prebuilt": "^2.1.16",
         "postcss-loader": "^3.0.0",
         "prettier": "^3.6.2",
-        "sass": "^1.90.0",
+        "sass": "^1.94.2",
         "sass-loader": "^10.5.2",
         "script-loader": "^0.7.2",
         "speed-measure-webpack-plugin": "^1.5.0",

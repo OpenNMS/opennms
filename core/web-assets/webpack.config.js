@@ -85,7 +85,29 @@ const scssUse = [
     }
   },
   {
-    loader: 'sass-loader'
+    loader: 'sass-loader',
+    options: {
+      sassOptions: {
+        // silenceDeprecations
+        // 'abs-percent': Passing percentage units to the global abs() function is deprecated.
+        //     this is in Bootstrap, perhaps they will eventually be fixed
+        //     More info: https://sass-lang.com/d/abs-percent
+        // 'color-functions': darken() / lighten() is deprecated.
+        //     these are in Bootstrap, perhaps they will eventually be fixed
+        //     More info: https://sass-lang.com/d/color-functions
+        // 'global-builtin': Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+        //     we will worry about that if/when we move to sass 3.0
+        // 'import': we cannot replace @import with @use until Bootstrap updates to use sass modules
+        //     so we will silence these hundreds of warnings
+        //     Bootstrap is slated to fix this in v6, at that point we can update
+        // 'legacy-js-api': The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+        //     we will worry about that if/when we move to sass 2.0
+        // 'slash-div': Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0
+        //     This is in font-awesome, check if this warning still exists after updating font-awesome
+        //     More info and automated migrator: https://sass-lang.com/d/slash-div
+        silenceDeprecations: ['abs-percent', 'color-functions', 'global-builtin', 'import', 'legacy-js-api', 'slash-div']
+      },
+    }
   }
 ];
 
