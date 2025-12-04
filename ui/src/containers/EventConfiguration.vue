@@ -1,5 +1,10 @@
 <template>
   <div class="event-config">
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <BreadCrumbs :items="breadcrumbs" />
+      </div>
+    </div>
     <div class="header">
       <div class="heading">
         <h1>Event Configuration</h1>
@@ -23,10 +28,22 @@
 <script lang="ts" setup>
 import CreateEventConfigurationDialog from '@/components/EventConfiguration/Dialog/CreateEventConfigurationDialog.vue'
 import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
+import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { useMenuStore } from '@/stores/menuStore'
+import { BreadCrumb } from '@/types'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigStore()
+const menuStore = useMenuStore()
+const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
+
+const breadcrumbs = computed<BreadCrumb[]>(() => {
+  return [
+    { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+    { label: 'Event Configuration', to: '#', position: 'last' }
+  ]
+})
 </script>
 
 <style lang="scss" scoped>
@@ -41,4 +58,3 @@ const store = useEventConfigStore()
   }
 }
 </style>
-
