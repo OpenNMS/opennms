@@ -75,8 +75,6 @@ public class KafkaPersisterActivator implements BundleActivator {
                 SessionUtils sessionUtils = context
                         .getService(context.getServiceReference(SessionUtils.class));
                 ResourceDao resourceDao = context.getService(context.getServiceReference(ResourceDao.class));
-                // Wait  for kafka manager blueprint to initialize weather to use global or metric specific producer
-                Thread.sleep(5000);
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, sessionUtils, resourceDao);
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);

@@ -80,7 +80,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
             LOG.debug("No metrics-specific configuration found for PID: {}, will try global", metricsPid);
         }
 
-        if (properties == null || properties.isEmpty()) {
+        if (properties == null || properties.isEmpty() || properties.size() == 0) {
             LOG.debug("Using global Kafka configuration for metrics");
             properties = configAdmin.getConfiguration(globalPid).getProperties();
         } else {

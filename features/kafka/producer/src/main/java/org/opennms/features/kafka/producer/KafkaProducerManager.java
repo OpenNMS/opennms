@@ -23,6 +23,7 @@ package org.opennms.features.kafka.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -143,8 +144,8 @@ public class KafkaProducerManager {
     private Producer<byte[], byte[]> initializeProducerForPid(String pid) {
         try {
             final Properties producerConfig = getConfigurationForPid(pid);
-            producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
-            producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
+            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
 
 
             LOG.info("Creating Kafka producer for PID: {} with bootstrap.servers: {}",
