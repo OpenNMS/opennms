@@ -26,13 +26,20 @@ import java.net.InetAddress;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * The Test Class for SnmpTrapNorthbounder.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+//@RunWith(OpenNMSJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {
+//        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
+//})
 public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
 
     /** The SNMP trap helper. */

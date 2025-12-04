@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 
@@ -41,6 +42,7 @@ import org.opennms.core.xml.ValidateUsing;
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
+@XmlType(propOrder={"definition", "profiles"})
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 
@@ -48,10 +50,10 @@ public class SnmpConfig extends Configuration implements Serializable {
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
     @XmlElement(name="definition")
-    private List<Definition> m_definitions = new ArrayList<>();
+    private List<Definition> definition = new ArrayList<>();
 
     @XmlElement(name="profiles")
-    private SnmpProfiles m_snmpProfiles;
+    private SnmpProfiles profiles;
 
     public SnmpConfig() {
         super();
@@ -86,38 +88,38 @@ public class SnmpConfig extends Configuration implements Serializable {
     }
 
     public List<Definition> getDefinitions() {
-        if (m_definitions == null) {
+        if (definition == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_definitions);
+            return Collections.unmodifiableList(definition);
         }
     }
 
     public void setDefinitions(final List<Definition> definitions) {
-        m_definitions = new ArrayList<Definition>(definitions);
+        this.definition = new ArrayList<Definition>(definitions);
     }
 
     public void addDefinition(final Definition definitions) throws IndexOutOfBoundsException {
-        this.m_definitions.add(definitions);
+        this.definition.add(definitions);
     }
 
     public boolean removeDefinition(final Definition definitions) {
-        return m_definitions.remove(definitions);
+        return this.definition.remove(definitions);
     }
 
     public SnmpProfiles getSnmpProfiles() {
-        return m_snmpProfiles;
+        return profiles;
     }
 
     public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
-        this.m_snmpProfiles = snmpProfiles;
+        this.profiles = snmpProfiles;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((m_definitions == null) ? 0 : m_definitions.hashCode());
+        result = prime * result + ((definition == null) ? 0 : definition.hashCode());
         return result;
     }
 
@@ -133,11 +135,11 @@ public class SnmpConfig extends Configuration implements Serializable {
             return false;
         }
         SnmpConfig other = (SnmpConfig) obj;
-        if (m_definitions == null) {
-            if (other.m_definitions != null) {
+        if (definition == null) {
+            if (other.definition != null) {
                 return false;
             }
-        } else if (!m_definitions.equals(other.m_definitions)) {
+        } else if (!definition.equals(other.definition)) {
             return false;
         }
         return true;
@@ -145,12 +147,12 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     @Override
     public String toString() {
-        return "SnmpConfig [definitions=" + m_definitions + "]";
+        return "SnmpConfig [definitions=" + definition + "]";
     }
 
     public void visit(SnmpConfigVisitor visitor) {
         visitor.visitSnmpConfig(this);
-        for (final Definition definition : m_definitions) {
+        for (final Definition definition : definition) {
             definition.visit(visitor);
         }
         visitor.visitSnmpConfigFinished();

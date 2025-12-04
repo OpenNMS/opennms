@@ -50,6 +50,7 @@
 
   <util:map id="configFileMap" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
       <entry key="provisiond" value="importerServiceTest-provisiond-configuration.xml"/>
+      <entry key="snmp-config" value="importerServiceTest-snmp-config.xml"/>
   </util:map>
 
   <bean name="configurationManagerService" class="org.opennms.netmgt.dao.mock.ConfigurationManagerServiceMock">
