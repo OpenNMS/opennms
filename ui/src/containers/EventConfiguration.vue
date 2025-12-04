@@ -7,7 +7,7 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>Event Configuration</h1>
+        <h1>Manage Event Configurations</h1>
       </div>
       <div class="action">
         <FeatherButton

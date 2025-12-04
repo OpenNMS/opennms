@@ -32,7 +32,7 @@ describe('EventConfig.vue', () => {
     })
 
     expect(store).toBeDefined()
-    expect(wrapper.find('h1').text()).toBe('Event Configuration')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Configurations')
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
   })
 
@@ -227,7 +227,7 @@ describe('EventConfig.vue', () => {
     await wrapper.find('button').trigger('click')
 
     expect(wrapper.find('.event-config').exists()).toBe(true)
-    expect(wrapper.find('h1').text()).toBe('Event Configuration')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Configurations')
   })
 
   it('renders feather-row and feather-col structure', () => {

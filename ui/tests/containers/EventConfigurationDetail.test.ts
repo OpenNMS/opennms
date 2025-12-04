@@ -98,7 +98,7 @@ describe('EventConfigurationDetail.vue', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
-    expect(wrapper.find('h1').text()).toBe('Event Configuration Details')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Config for a Source')
   })
 
   it('should display config details correctly', async () => {
@@ -114,10 +114,11 @@ describe('EventConfigurationDetail.vue', () => {
     expect(configBox.text()).toContain(format(new Date(), 'MM/dd/yyyy'))
   })
 
-  it('should call setSelectedEventConfigSource when "Add Event" button is clicked', async () => {
+  it('should call setSelectedEventConfigSource when "Add Event Config" button is clicked', async () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
-    const addEventButton = wrapper.get('[data-test="add-event"]')
+    const addEventButton = wrapper.get('[data-test="add-event-config"]')
+    expect(addEventButton.text()).toBe('Add Event Config')
     await addEventButton.trigger('click')
     await wrapper.vm.$nextTick()
 
@@ -152,7 +153,7 @@ describe('EventConfigurationDetail.vue', () => {
     expect(buttons.length).equal(3)
   })
 
-  it('should display action buttons for OpenNMS vendor with only Disable Source button and Add Event button', async () => {
+  it('should display action buttons for OpenNMS vendor with only Disable Source button and Add Event Config button', async () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
     wrapper = await createWrapper(openNmsConfig)
     await wrapper.vm.$nextTick()
@@ -162,7 +163,7 @@ describe('EventConfigurationDetail.vue', () => {
     const buttons = wrapper.findAll('.action-container button')
     expect(buttons.length).equal(2)
 
-    expect(buttons[0].text()).toContain('Add Event')
+    expect(buttons[0].text()).equal('Add Event Config')
     expect(buttons[1].text()).toContain('Disable Source')
   })
 
@@ -201,11 +202,12 @@ describe('EventConfigurationDetail.vue', () => {
     expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration' })
   })
 
-  it('should open event modification drawer when Add Event is clicked', async () => {
+  it('should open event modification drawer when Add Event Config is clicked', async () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    const addButton = wrapper.findAll('button').find((btn) => btn.text().includes('Add Event'))
+    const addButton = wrapper.findAll('button').find((btn) => btn.text().includes('Add Event Config'))
+    expect(addButton?.text()).eq('Add Event Config')
     await addButton?.trigger('click')
 
     expect(mockPush).toHaveBeenCalledWith({
@@ -366,7 +368,7 @@ describe('EventConfigurationDetail.vue', () => {
     wrapper = await createWrapper(nullishConfig)
 
     expect(wrapper.find('.event-config-container').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Name:')
+    expect(wrapper.text()).toContain('Source:')
     expect(wrapper.text()).toContain('Uploaded By:test-user')
     expect(wrapper.text()).toContain('Vendor:')
     expect(wrapper.text()).toContain('Event Count:')
@@ -404,14 +406,13 @@ describe('EventConfigurationDetail.vue', () => {
     const openNmsConfig = { ...mockConfig, vendor: VENDOR_OPENNMS }
     wrapper = await createWrapper(openNmsConfig)
     // No button, so no call possible
-    expect(wrapper.find('[data-test="add-event"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="add-event-config"]').exists()).toBe(true)
   })
 
   it('should handle getDefaultEventConfigEvent returning null', async () => {
     vi.mocked(getDefaultEventConfigEvent).mockReturnValue(null as any)
-    // modificationStore.setSelectedEventConfigSource = vi.fn()
     wrapper = await createWrapper()
-    const addButton = wrapper.get('[data-test="add-event"]')
+    const addButton = wrapper.get('[data-test="add-event-config"]')
     await addButton.trigger('click')
 
     expect(mockPush).toHaveBeenCalledWith({
