@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-import bootbox from "bootbox";
+import bootbox from 'bootbox';
 
 require('../services/Requisitions');
 
