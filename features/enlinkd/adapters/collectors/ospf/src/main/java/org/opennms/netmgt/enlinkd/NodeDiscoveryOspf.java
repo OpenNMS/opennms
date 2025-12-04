@@ -136,12 +136,14 @@ public final class NodeDiscoveryOspf extends NodeCollector {
        }
 
         List<OspfIf> localOspfPorts =  new ArrayList<>();
+        List<OspfIf> portsNeedingLookup = new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
             public void processOspfIfRow(final OspfIfRow row) {
                 if (row.getOspfIf().getOspfIfAddressLessIf() != 0) {
                     localOspfPorts.add(row.getOspfIf());
                 } else {
-                    localOspfPorts.add(ipAddrTableGetter.get(row.getOspfIf()));
+                    // Don't block in callback - defer lookup until after walk completes
+                    portsNeedingLookup.add(row.getOspfIf());
                 }
             }
         };
@@ -153,13 +155,22 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.debug("run: node [{}]: ExecutionException: {}", 
+           LOG.debug("run: node [{}]: ExecutionException: {}",
                     getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.debug("run: node [{}]: InterruptedException: {}", 
+           LOG.debug("run: node [{}]: InterruptedException: {}",
                     getNodeId(), e.getMessage());
             return;
+       }
+
+       for (OspfIf ospfIf : portsNeedingLookup) {
+           try {
+               localOspfPorts.add(ipAddrTableGetter.get(ospfIf));
+           } catch (Exception e) {
+               LOG.warn("run: node [{}]: failed to lookup IP for OSPF interface: {}",
+                        getNodeId(), e.getMessage(), e);
+           }
        }
 
         for (OspfLink link : links) {

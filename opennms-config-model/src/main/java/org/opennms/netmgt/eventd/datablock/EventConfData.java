@@ -74,12 +74,12 @@ public class EventConfData extends Object {
      * 
      * @return true if the event matches the passed key
      */
-    private boolean eventMatchesKey(EventKey eventKey, org.opennms.netmgt.xml.event.Event event) {
+    boolean eventMatchesKey(EventKey eventKey, org.opennms.netmgt.xml.event.Event event) {
         // go through the key elements and see if this event will match
         boolean maskMatch = true;
 
-        for (final Entry<String, Object> entry : eventKey.entrySet()) {
-            final String key = entry.getKey();
+        for (final Entry<EventKey.Entity, Object> entry : eventKey.entrySet()) {
+            final EventKey.Entity key = entry.getKey();
 
             @SuppressWarnings("unchecked")
             final List<String> maskValues = (List<String>) entry.getValue();
@@ -182,7 +182,7 @@ public class EventConfData extends Object {
             String eventEID = eventSnmp.getId();
             if (eventEID != null) {
                 EventKey snmpKey = new EventKey();
-                snmpKey.put(EventKey.TAG_SNMP_EID, new EventMaskValueList(eventEID));
+                snmpKey.put(new EventKey.Entity(EventKey.Type.TAG, EventKey.TAG_SNMP_EID), new EventMaskValueList(eventEID));
 
                 m_eventMap.put(snmpKey, event);
 
@@ -293,7 +293,7 @@ public class EventConfData extends Object {
      */
     public synchronized org.opennms.netmgt.xml.eventconf.Event getEventByUEI(String uei) {
         EventKey key = new EventKey();
-        key.put(EventKey.TAG_UEI, new EventMaskValueList(uei));
+        key.put(new EventKey.Entity(EventKey.Type.TAG, EventKey.TAG_UEI), new EventMaskValueList(uei));
 
         return m_eventMap.get(key);
     }
