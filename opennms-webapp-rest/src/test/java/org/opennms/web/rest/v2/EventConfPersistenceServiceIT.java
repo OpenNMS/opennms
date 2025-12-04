@@ -951,7 +951,7 @@ public class EventConfPersistenceServiceIT {
                 expectedDesc,
                 descList.stream().map(EventConfEvent::getSeverity).toList());
 
-// validate severity in asc order
+       // validate severity in asc order
         final var ascResult = eventConfPersistenceService.filterConfEventsBySourceId(
                 m_source.getId(), "", "severity", "asc", 0, 0, 10);
 
