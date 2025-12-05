@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -142,8 +142,9 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         this.executorService.execute(() -> {
             final var subscription = this.subscriptions.computeIfAbsent(twinUpdate.getKey(), Subscription::new);
 
-            try (Scope scope = spanBuilder.startActive(true)) {
-                addTracingTags(scope.span(), twinUpdate);
+            final Span span = spanBuilder.start();
+            try (final Scope scope = getTracer().scopeManager().activate(span)) {
+                addTracingTags(span, twinUpdate);
                 subscription.update(twinUpdate);
             } catch (final IOException e) {
                 LOG.error("Processing update failed: {}", twinUpdate.getKey(), e);
