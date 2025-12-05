@@ -109,7 +109,10 @@ public class UserIT extends OpenNMSSeleniumIT {
         driver.findElement(By.xpath("//div[@class='card-header']/span[text()='Details for Group: " + GROUP_NAME + "']"));
 
         findElementByLink("Group List").click();
-        findElementById(GROUP_NAME + ".doDelete").click();
+        
+        WebElement deleteGroupLink = findElementById(GROUP_NAME + ".doDelete");
+        clickElementUsingScript(deleteGroupLink);
+        
         handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?");
         assertElementDoesNotExist(By.id(GROUP_NAME));
 

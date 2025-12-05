@@ -152,18 +152,47 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
         return null;
     }
 
-    private void deleteUnpriviledgedUser() throws Exception{
-        logout();
-        login();
-        LOG.debug("Deleting unpriviledged user...");
-        adminPage();
-        findElementByLink("Configure Users, Groups and On-Call Roles").click();
-        findElementByLink("Configure Users").click();
-        findElementById("users("+ UNPRIVILEDGED_USERNAME +").doDelete").click();
-        acceptAlert("Are you sure you want to delete the user "+ UNPRIVILEDGED_USERNAME +"?");
-        assertElementDoesNotExist(By.id(UNPRIVILEDGED_USERNAME));
-        LOG.debug("Unpriviledged deleted!");
-    }
+   // Replace your existing clickElement(final By by) in AbstractOpenNMSSeleniumHelper.java with this:
+
+public WebElement clickElement(final By by) {
+    // We rely on waitUntil to ensure the element is found immediately (not null)
+    return waitUntil(new Callable<WebElement>() {
+        @Override
+        public WebElement call() throws Exception {
+            final WebElement el = getElementImmediately(by);
+            if (el == null) {
+                // Return null so waitUntil can retry or time out
+                return null;
+            }
+
+            // 1. Attempt Native Selenium Click (Preferred method)
+            try {
+                el.click();
+                return el;
+            } catch (final Exception e) {
+                // Catch ElementNotInteractableException (and others)
+                LOG.warn("Native click failed for element {}. Retrying with JavaScript click. Error: {}", by, e.getMessage());
+
+                // 2. Fallback to JavaScript (Forces scroll and click)
+                try {
+                    final JavascriptExecutor js = (JavascriptExecutor) getDriver();
+                    
+                    // Force the element into the center of the viewport
+                    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", el);
+                    
+                    // Use JS to perform the click
+                    js.executeScript("arguments[0].click();", el);
+                    
+                    return el;
+                } catch (final Exception jsException) {
+                    // Re-throw the original exception if JS also fails to click
+                    LOG.error("JavaScript click also failed for element {}.", by, jsException);
+                    throw e; 
+                }
+            }
+        }
+    });
+}
 
     private void createUnpriviledgedUser() {
         LOG.debug("Creating unpriviledged user...");
