@@ -2016,8 +2016,7 @@
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
     <nodeVersion>v18.20.2</nodeVersion>
-    <npmVersion>9.8.1</npmVersion>
-    <yarnVersion>v1.22.19</yarnVersion>
+    <pnpmVersion>10.24.0</pnpmVersion>
 
     <!-- configuration manager -->
     <xmlschemaVersion>2.3.1</xmlschemaVersion>

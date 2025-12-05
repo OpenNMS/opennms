@@ -4,13 +4,14 @@
   "license": "AGPL v3",
   "type": "module",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --base=/opennms/ui/",
-    "build:all": "yarn run build && yarn run build:menu",
+    "build:all": "pnpm run build && pnpm run build:menu",
     "build:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
     "build:dev:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/ --minify false",
-    "build:all:dev": "yarn run build:dev && yarn run build:dev:menu",
+    "build:all:dev": "pnpm run build:dev && pnpm run build:dev:menu",
     "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",
     "watch:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false --watch",
     "serve": "vite preview",
@@ -31,6 +32,7 @@
     "@featherds/button": "0.12.43",
     "@featherds/checkbox": "0.12.43",
     "@featherds/chips": "0.12.43",
+    "@featherds/composables": "^0.12.43",
     "@featherds/date-input": "0.12.43",
     "@featherds/dialog": "0.12.43",
     "@featherds/dock": "0.12.43",
@@ -49,10 +51,12 @@
     "@featherds/progress": "0.12.43",
     "@featherds/protected-input": "0.12.43",
     "@featherds/radio": "0.12.43",
+    "@featherds/ripple": "^0.12.43",
     "@featherds/select": "0.12.43",
     "@featherds/sidebar": "0.12.43",
     "@featherds/snackbar": "0.12.43",
     "@featherds/styles": "0.12.43",
+    "@featherds/switch": "^0.12.43",
     "@featherds/table": "0.12.43",
     "@featherds/tabs": "0.12.43",
     "@featherds/textarea": "0.12.43",
@@ -123,13 +127,15 @@
     "vue-tsc": "^1.6.5"
   },
   "engines": {
-    "node": ">=18",
-    "yarn": ">=1.22.18"
+    "node": ">=18"
   },
-  "resolutions": {
-    "@antfu/utils": "^0.7.3",
-    "micromatch": "^4.0.8",
-    "prismjs": "^1.30.0",
-    "undici": "5.28.4"
+  "packageManager": "pnpm@10.24.0",
+  "pnpm": {
+    "overrides": {
+      "@antfu/utils": "^0.7.3",
+      "micromatch": "^4.0.8",
+      "prismjs": "^1.30.0",
+      "undici": "5.28.4"
+    }
   }
 }
