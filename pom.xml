@@ -1776,7 +1776,7 @@
     <log4j2Version>2.21.1</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.6</mavenApiVersion>
+    <mavenApiVersion>3.9.11</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
     <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
