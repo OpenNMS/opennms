@@ -50,6 +50,7 @@ onMounted(() => deviceStore.getDeviceConfigBackups(true))
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 @mixin status-bar($color) {
   background: $color;
