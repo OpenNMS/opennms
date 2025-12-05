@@ -26,12 +26,12 @@ import java.util.Objects;
 
 import liquibase.Liquibase;
 import liquibase.change.ChangeFactory;
+import liquibase.core.schema.change.EventConfChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.core.PostgresDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.ext2.cm.change.EventConfChange;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
 /**
