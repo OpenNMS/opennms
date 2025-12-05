@@ -1,6 +1,6 @@
 
 = Event Daemon Configuration
-:description: How to configure the event daemon in {page-component-title}: parameters, severities, event reload configuration.
+:description: How to configure the event daemon in {page-component-title}: parameters, severities, event management, and database storage.
 
 The back-end configuration surrounding events is split into two areas: the configuration of eventd itself, and the configuration of events definitions known to {page-component-title}.
 
@@ -59,37 +59,65 @@ This is useful when troubleshooting event processing on busy systems where `DEBU
 |
 |===
 
-The set of known events is configured in `$\{OPENNMS_HOME}/etc/eventconf.xml`.
-This file opens with a `<global>` element, whose `<security>` child element defines which event fields may not be overridden in the body of an event submitted via any eventd listener.
-This mechanism stops a malicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
+== Event configuration storage
 
-After the `<global>` element, this file consists of a series of `<event-file>` elements.
-The content of each `<event-file>` element specifies the path of a tributary file whose contents will be read and incorporated into the event configuration.
-These paths are resolved relative to the `$\{OPENNMS_HOME}/etc` directory; absolute paths are not accepted.
+{page-component-title} stores event definitions in the database, enabling dynamic management without requiring system restarts.
+This architecture provides several key benefits:
 
-Each tributary file contains a top-level `<events>` element with one or more `<event>` child elements.
-Consider the following event definition:
+* *No restart required*: Changes to event configurations take effect immediately without restarting eventd or {page-component-title}.
+* *Dynamic management*: Add, modify, enable, or disable events through the UI or REST API.
+* *Version control*: Each event source and event definition maintains audit information including creation time, last modification, and the user who made changes.
+* *Flexible organization*: Events are organized by source files, allowing logical grouping by vendor or functionality.
 
-[source, xml]
-----
-<event>
-    <uei>uei.opennms.org/nodes/nodeLostService</uei>
-    <event-label>OpenNMS-defined node event: nodeLostService</event-label>
-    <descr>&lt;p>A %service% outage was identified on interface
-        %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
-        A new outage record has been created and service-level
-        availability calculations will be impacted until this outage is
-        resolved.&lt;/p></descr>
-    <logmsg dest="logndisplay">
-        %service% outage identified on interface %interface%.
-    </logmsg>
-    <severity>Minor</severity>
-    <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
-</event>
-----
+=== Core OpenNMS events
 
-Every event definition has this same basic structure.
-See <<deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>> for a discussion of the structural elements.
+Core {page-component-title} events are pre-loaded in the database and are essential for system operation.
+These events handle internal {page-component-title} functionality such as node discovery, service monitoring, and alarm management.
+
+IMPORTANT: Core OpenNMS events should not be deleted.
+While individual events can be disabled if needed, removing core event definitions may cause unexpected system behavior.
+
+=== Vendor event files
+
+Vendor-specific event definitions for third-party devices are available in `$\{OPENNMS_HOME}/etc/examples/events/`.
+This directory contains event configuration files for hundreds of vendors including:
+
+* Network equipment (Cisco, Juniper, Arista, etc.)
+* Storage systems (NetApp, EMC, etc.)
+* UPS and power systems (APC, Eaton, etc.)
+* Server hardware (Dell, HP, IBM, etc.)
+* And many more
+
+These files are provided as examples and can be uploaded to {page-component-title} as needed for your environment.
+You only need to upload the event files relevant to the devices in your network.
+
+=== Event sources
+
+Event definitions are organized into *sources*.
+Each source typically corresponds to a single event configuration file and contains one or more event definitions.
+Sources have the following properties:
+
+[caption=]
+.Event source properties
+[cols="1,3"]
+|===
+| Property | Description
+
+| Name
+| The name of the source (typically the original filename).
+
+| Vendor
+| The vendor associated with this event source (e.g., "Cisco", "OpenNMS").
+
+| Description
+| A description of the events contained in this source.
+
+| Enabled
+| Whether events from this source are active.
+
+| Event Count
+| The number of event definitions in this source.
+|===
 
 [[severities]]
 === A word about severities
@@ -138,30 +166,79 @@ Use "Normal" severity for events that clear an alarm.
 | 1
 |===
 
-=== Structure of eventconf.xml tributary files
+=== Event matching order
 
-The order of event definitions is very important, as an incoming event is matched against them in order.
+The order of event definitions within a file is important, as an incoming event is matched against them in order.
 It is possible, and often useful, to have several event definitions that could match variant forms of a given event; for example, based on the values of SNMP trap variable bindings.
 
-The tributary files included via the `<event-file>` tag have been broken up by vendor.
-When {page-component-title} starts, each tributary file is loaded in order.
-The ordering of events inside each tributary file is also preserved.
+Within each event configuration file, events are evaluated in the order they are defined.
+If your file contains catch-all event definitions (generic events that match a broad range of conditions), place them at the bottom of the file to ensure more specific definitions are matched first.
 
-The tributary files listed at the end of `eventconf.xml` contain catch-all event definitions.
-When slotting your own event definitions, take care not to place them below these catch-all files; otherwise your definitions will be effectively unreachable.
+NOTE: Core {page-component-title} catch-all events are automatically placed at the lowest priority, so your uploaded vendor events will be evaluated before the generic catch-all definitions.
+
+== Uploading event configurations
+
+You can upload event configurations through the UI or the REST API.
+Uploads support both individual files and multiple files (folder upload).
+
+=== Uploading individual files
+
+Single event configuration files can be uploaded directly.
+The file must be valid XML conforming to the event configuration schema.
+Each uploaded file becomes a separate event source in the database.
+
+=== Uploading a folder
+
+You can upload an entire folder of event configuration files at once.
+Each XML file in the folder is processed as a separate event source.
+This is useful when you need to add events for multiple vendors or device types simultaneously.
+
+=== Duplicate handling
+
+When uploading event files, {page-component-title} checks for duplicate source names.
+If a source with the same name already exists:
+
+* The upload for that specific file is skipped.
+* Other files in the batch upload continue processing.
+* A message is returned indicating which files were skipped.
+
+To update an existing event source, you must first delete it and then re-upload.
+
+== Managing event configurations
+
+=== Through the UI
+
+The {page-component-title} web interface provides a comprehensive event configuration management interface where you can:
+
+* View all event sources and their events.
+* Upload new event configuration files (individual or folder).
+* Enable or disable sources and individual events.
+* Edit event definitions.
+* Delete sources or individual events.
+* Download event sources as XML.
+* Search and filter events by UEI, vendor, or source name.
+
+=== Through the REST API
+
+The Event Configuration REST API (`/api/v2/eventconf`) provides programmatic access to all event management functions.
+API documentation is available via Swagger UI at `http://<opennms-host>:8980/opennms/ui/index.html#/open-api`.
+
+Key operations include:
+
+* `POST /api/v2/eventconf/upload` - Upload event configuration files.
+* `GET /api/v2/eventconf/filter/sources` - List and filter event sources.
+* `GET /api/v2/eventconf/filter/{sourceId}/events` - Get events for a source.
+* `PATCH /api/v2/eventconf/sources/status` - Enable/disable sources.
+* `DELETE /api/v2/eventconf/sources` - Delete event sources.
 
 === A few tips
 
-* To save memory and shorten startup times, you may want to remove event definition files that you know you do not need.
-* If you need to customize some events in one of the default tributary files, you may want to make a copy of the file containing only the customized events and load the copy above the original in `eventconf.xml`.
-This practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
+* Only upload vendor event files that are relevant to devices in your network to keep the event configuration manageable.
+* Use descriptive vendor names when uploading events to make filtering and searching easier.
+* Disabled events remain in the database but are not used for event matching, allowing you to temporarily turn off noisy events without losing the configuration.
+* When creating custom event files, place catch-all definitions at the bottom of your file to ensure specific events are matched first.
 
-At level `DEBUG`, `eventd` will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
-On busy systems, this setting may create so much noise as to be impractical.
-In these cases, you can get terse event summaries by setting `eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
-Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
-
-=== Karaf Shell
+=== Karaf shell
 
 Use the `opennms:show-event-config` command to render the event definition for one or more event UEIs (matching a substring) to XML.
 This command is useful for displaying event definitions that may not be easily accessible on disk, or verifying that particular events were actually loaded.
@@ -172,12 +249,18 @@ $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> opennms:show-event-config -u uei.opennms.org/alarms
 ----
-=== Reload event configuration
 
-After making manual changes to `$\{OPENNMS_HOME}/etc/eventconf.xml` or any of its tributary files, you must restart the eventd daemon.
-You can trigger a reload of the daemon in the Karaf shell or by issuing the following command on the {page-component-title} server:
+== Legacy file-based configuration
 
-[source, console]
-----
-${OPENNMS_HOME}/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
-----
+NOTE: The file-based event configuration approach described below is deprecated.
+Event definitions are now managed through the database and can be uploaded via the UI or REST API.
+The legacy configuration files remain for reference but changes to them will not be reflected in the running system.
+
+The legacy approach used `$\{OPENNMS_HOME}/etc/eventconf.xml` with `<event-file>` elements pointing to tributary files.
+This method required restarting eventd after changes.
+All event management should now be done through the database-backed system described above.
+
+At level `DEBUG`, `eventd` will log a verbose description of every event it handles to `$\{OPENNMS_HOME}/logs/eventd.log`.
+On busy systems, this setting may create so much noise as to be impractical.
+In these cases, you can get terse event summaries by setting `eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `$\{OPENNMS_HOME}/etc/eventd-configuration.xml`.
+Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
