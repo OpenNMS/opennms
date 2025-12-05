@@ -103,7 +103,7 @@
         "flot.axislabels": "https://github.com/RangerRick/flot-axislabels.git#master",
         "flot.navigate": "https://github.com/OpenNMS/flot-navigate.git#master",
         "flot.saveas": "https://github.com/RangerRick/flot-saveas.git#master",
-        "font-awesome": "^4.7.0",
+        "@fortawesome/fontawesome-free": "^6.7.2",
         "hash.js": "^1.1.7",
         "holderjs": "^2.9.6",
         "ionicons": "^2.0.1",
