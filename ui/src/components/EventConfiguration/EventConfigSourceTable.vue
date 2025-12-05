@@ -120,7 +120,7 @@
           :modelValue="store.sourcesPagination.page"
           :pageSize="store.sourcesPagination.pageSize"
           :total="store.sourcesPagination.total"
-          :pageSizes="[10, 20, 50]"
+          :pageSizes="[10, 20, 50, 100, 200]"
           @update:modelValue="store.onSourcePageChange"
           @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"

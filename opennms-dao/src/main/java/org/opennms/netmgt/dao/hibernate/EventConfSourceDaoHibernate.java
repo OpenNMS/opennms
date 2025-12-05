@@ -193,7 +193,6 @@ public class EventConfSourceDaoHibernate
         );
     }
 
-
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
         int deletedCount = getHibernateTemplate().execute(session ->

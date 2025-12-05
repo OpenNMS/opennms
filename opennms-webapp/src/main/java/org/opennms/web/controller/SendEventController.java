@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public class SendEventController extends AbstractController {
     @Autowired
     private EventConfDao m_eventConfDao;
     @Autowired
-    private EventConfSourceDao eventConfSourceDao;
+    private EventConfSourceDao m_eventConfSourceDao;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
@@ -75,7 +74,7 @@ public class SendEventController extends AbstractController {
     }
 
     private String buildVendorSelect() {
-        List<String> vendors = eventConfSourceDao.findAllVendors();
+        List<String> vendors = m_eventConfSourceDao.findAllVendors();
         final StringBuilder buffer = new StringBuilder();
 
         for (String vendor : vendors) {
