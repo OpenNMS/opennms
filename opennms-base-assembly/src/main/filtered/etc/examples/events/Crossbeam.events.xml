@@ -207,11 +207,11 @@ working has become operational.&lt;/p>&lt;table>&lt;/table></descr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsFanStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		up(1)
 		down(2)
 		not-present(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwFanFailed trap received 
 			cbsFanStatus=%parm[#1]%&lt;/p>
@@ -239,11 +239,11 @@ working has become operational.&lt;/p>&lt;table>&lt;/table></descr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsFanStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		up(1)
 		down(2)
 		not-present(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwFanRecovered trap received 
 			cbsFanStatus=%parm[#1]%&lt;/p>
@@ -271,12 +271,12 @@ working has become operational.&lt;/p>&lt;table>&lt;/table></descr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwSystemAlarm&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		none(1)
 		minor(2)
 		major(3)
 		critical(4)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwSystemAlarmTrap trap received 
 			cbsHwSystemAlarm=%parm[#1]%&lt;/p>
@@ -305,7 +305,7 @@ has exceeded the maximum.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwSystemChassisTemp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwChassisTempExceeded trap received 
 			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p>
@@ -334,7 +334,7 @@ has returned to normal.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwSystemChassisTemp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwChassisTempNormal trap received 
 			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p>
@@ -363,7 +363,7 @@ the module that has changed is reported.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unavailable(1)
 		down(2)
 		initializing(3)
@@ -372,7 +372,7 @@ the module that has changed is reported.&lt;/p>&lt;table>
 		bootwait(6)
 		offline(7)
 		maintenance(8)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleStatusChanged trap received 
 			cbsHwModuleStatus=%parm[#1]%&lt;/p>
@@ -401,7 +401,7 @@ number of the module that has been inserted.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleInserted trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -430,7 +430,7 @@ number of the module that has been removed.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleRemoved trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -458,7 +458,7 @@ number of the module that has been removed.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleCpuTemp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleTempExceeded trap received 
 			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p>
@@ -487,7 +487,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleCpuTemp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleTempNormal trap received 
 			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p>
@@ -515,7 +515,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsDbhaLinkUp trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -543,7 +543,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsDbhaLinkDown trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -571,7 +571,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleCpu2Temp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCpu2TempExceeded trap received 
 			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p>
@@ -599,7 +599,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleCpu2Temp&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCpu2TempNormal trap received 
 			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p>
@@ -627,7 +627,7 @@ operating range.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsAFTUsageHigh trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -656,7 +656,7 @@ excessive, has returned to normal level.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsAFTUsageNormal trap received 
 			cbsHwModuleID=%parm[#1]%&lt;/p>
@@ -686,7 +686,7 @@ that is experinceing excessive load is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleCPULoad1&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPULoadExceeded trap received 
 			cbsModuleCPULoad1=%parm[#1]%&lt;/p>
@@ -716,7 +716,7 @@ that has returned to normal is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleCPULoad1&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPULoadNormal trap received 
 			cbsModuleCPULoad1=%parm[#1]%&lt;/p>
@@ -746,11 +746,11 @@ sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleMemoryTotal&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleMemoryUsed&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleMemoryUsageExceeded trap received 
 			cbsModuleMemoryTotal=%parm[#1]% 
@@ -781,11 +781,11 @@ memory for the module are sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleMemoryTotal&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleMemoryUsed&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleMemoryUsageNormal trap received 
 			cbsModuleMemoryTotal=%parm[#1]% 
@@ -816,7 +816,7 @@ that is experinceing excessive load is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleCPUUtil1&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPUUtilExceeded trap received 
 			cbsModuleCPUUtil1=%parm[#1]%&lt;/p>
@@ -846,7 +846,7 @@ that has returned to normal is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsModuleCPUUtil1&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPUUtilNormal trap received 
 			cbsModuleCPUUtil1=%parm[#1]%&lt;/p>
@@ -874,7 +874,7 @@ that has returned to normal is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVmVapStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unavailable(1)
 		down(2)
 		initializing(3)
@@ -883,11 +883,11 @@ that has returned to normal is sent.&lt;/p>&lt;table>
 		bootwait(6)
 		offline(7)
 		maintenance(8)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVmVapName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsVapStatusChanged trap received 
 			cbsVmVapStatus=%parm[#1]% 
@@ -917,27 +917,27 @@ has transitioned to 'Master' state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapNewMasterFailGrName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapNewMasterVrId&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapNewMasterCirId&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapNewMasterCirName&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapNewMasterReason&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		priority(0)
 		preempted(1)
 		masterNoResponse(2)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsVrrpTrapNewMaster trap received 
 			cbsVrrpTrapNewMasterFailGrName=%parm[#1]% 
@@ -971,12 +971,12 @@ vrrpTrapProtoErrorReason.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	cbsVrrpTrapProtoErrReason&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		hopLimitError(0)
 		versionError(1)
 		checksumError(2)
 		vridError(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			cbsVrrpTrapProtoError trap received 
 			cbsVrrpTrapProtoErrReason=%parm[#1]%&lt;/p>

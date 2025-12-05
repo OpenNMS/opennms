@@ -33,25 +33,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Unknown TLV.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -77,25 +77,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Service Request Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -121,25 +121,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Service Response Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -165,25 +165,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Service Acknowledgement Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -209,25 +209,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: BPI Initialization Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -252,25 +252,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: BPKM Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -296,25 +296,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Security Association Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -341,27 +341,27 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevServerDhcp&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: DHCP Server %parm[#8]% has failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -389,29 +389,29 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwFilename&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwServer&lt;/b>&lt;/td>&lt;td>%parm[#9]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Software Upgrade Initiated. File: %parm[#8]% from %parm[#9]%.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -439,29 +439,29 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwFilename&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwServer&lt;/b>&lt;/td>&lt;td>%parm[#9]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Software Upgrade Failed. File: %parm[#8]% from %parm[#9]%.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -489,29 +489,29 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwFilename&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevSwServer&lt;/b>&lt;/td>&lt;td>%parm[#9]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Software Upgrade Succeeded. File: %parm[#8]% from %parm[#9]%.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -538,25 +538,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
-            docsis10(1) docsis11(2)&lt;/p>&lt;/td;>
+            &lt;/td>&lt;td>&lt;p>
+            docsis10(1) docsis11(2)&lt;/p>&lt;/td>
             &lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Software Upgrade File Failed Verification.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -583,28 +583,28 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>
             &lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevServerTime&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Time of Day Server %parm[#8]% Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -631,25 +631,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Channel Change Request Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -676,26 +676,26 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>
             &lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Channel Change Response Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -722,26 +722,26 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisOperMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmCmtsAddress&lt;/b>
             &lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Dynamic Channel Change Acknowledgement
             Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -782,25 +782,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Registraton Request Failure During CM Initialization.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -827,24 +827,24 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Registraton Respnse Failure During CM Initialization.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -871,25 +871,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>
             &lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: Registraton Acknowledgement Failure During CM Initialization.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -916,25 +916,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Service Request
             Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -962,25 +962,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Service Response
             Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -1008,25 +1008,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Service Acknowledgement Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1053,25 +1053,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected BPI Initialization Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1097,25 +1097,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected BPKM Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1141,25 +1141,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Security Association
             Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -1188,25 +1188,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Channel Change Request
             Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -1234,25 +1234,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Channel Change Response Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1279,25 +1279,25 @@
             &lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             docsDevEvLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             emergency(1) alert(2) critical(3) error(4) warning(5) notice(6) information(7) debug(8)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsDevEvText&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusDocsisMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfCmtsCmStatusMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             docsIfDocsisCapability&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             docsis10(1) docsis11(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             ifPhysAddress&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DOCSIS Event: CMTS Detected Dynamic Channel Change Acknowledgement Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

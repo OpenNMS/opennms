@@ -20,7 +20,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ims-trap-string&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: environment-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p>
@@ -48,7 +48,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ims-trap-string&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: ip-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p>
@@ -76,7 +76,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ims-trap-string&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Sensaphone Event: diagnostic-alarm-trap trap received 
 			ims-trap-string=%parm[#1]%&lt;/p>

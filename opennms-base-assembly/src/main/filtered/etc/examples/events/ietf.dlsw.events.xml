@@ -22,9 +22,9 @@
             by dlswTrapCntlTConnPartnerReject.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswTConnOperTDomain&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswTConnOperRemoteTAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Transport Connection Rejected by Partner:
             %parm[#2]%.&lt;/p></logmsg>
       <severity>Warning</severity>
@@ -52,9 +52,9 @@
             trap is controlled by dlswTrapCntlTConnProtViolation.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswTConnOperTDomain&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswTConnOperRemoteTAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Protocol Violation.&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
@@ -81,9 +81,9 @@
             is controlled by dlswTrapCntlTConn.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswTConnOperTDomain&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswTConnOperRemoteTAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Transport Connection Up.&lt;/p></logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
@@ -110,9 +110,9 @@
             is controlled by dlswTrapCntlTConn.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswTConnOperTDomain&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswTConnOperRemoteTAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Transport Connection Down.&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
@@ -139,13 +139,13 @@
             dlswTrapCntlCircuit.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswCircuitS1Mac&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS1Sap&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS2Mac&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS2Sap&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Circuit Connection Up.&lt;/p></logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/DLSW/traps/dlswTrapcircuitDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
@@ -172,13 +172,13 @@
             dlswTrapCntlCircuit.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             dlswCircuitS1Mac&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS1Sap&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS2Mac&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             dlswCircuitS2Sap&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>DLSW Event: Circuit Connection Down.&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="true"/>
