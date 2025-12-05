@@ -808,7 +808,6 @@ public class EventConfRestServiceIT {
         assertTrue(notFoundBody.get("error").contains("not found"));
     }
 
-
     @Test
     @Transactional
     public void testGetEventsByVendor() throws Exception {

@@ -129,6 +129,7 @@ watch(varbindsDecode, (newVarbindsDecode) => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    gap: 20px;
   }
 
   .form-row {
@@ -215,4 +216,3 @@ watch(varbindsDecode, (newVarbindsDecode) => {
   }
 }
 </style>
-

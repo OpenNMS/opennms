@@ -320,5 +320,4 @@ public interface EventConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
-
 }

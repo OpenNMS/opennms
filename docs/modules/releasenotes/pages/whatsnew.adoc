@@ -28,3 +28,5 @@ The `service-configuration.xml` configuration file has been simplified by moving
 
 The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
 
+== Breaking changes
+Starting with this release, we will use standard install location (`/opt/opennms`) for Debian and RPM packages. 
