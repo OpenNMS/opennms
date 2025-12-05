@@ -140,7 +140,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapMisc trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -169,15 +169,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ipAddressString&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	memberPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapServiceDown trap received 
 			loadBalTrapMessage=%parm[#1]% 
@@ -208,15 +208,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ipAddressString&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	memberPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapServiceUP trap received 
 			loadBalTrapMessage=%parm[#1]% 
@@ -247,7 +247,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapReset trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -276,7 +276,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapDenial trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -305,7 +305,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapLogin trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -334,7 +334,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapRemoveUnit trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -363,7 +363,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	loadBalTrapMessage&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			loadBalTrapAddUnit trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
@@ -466,7 +466,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipCpuTempHigh trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -495,7 +495,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipCpuFanSpeedLow trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -524,7 +524,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipCpuFanSpeedBad trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -553,7 +553,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipChassisTempHigh trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -582,7 +582,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipChassisFanBad trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -611,7 +611,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipChassisPowerSupplyBad trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -640,15 +640,15 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjNode&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipServiceDown trap received 
 			bigipNotifyObjMsg=%parm[#1]% 
@@ -679,15 +679,15 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjNode&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipServiceUp trap received 
 			bigipNotifyObjMsg=%parm[#1]% 
@@ -718,11 +718,11 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjNode&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipNodeDown trap received 
 			bigipNotifyObjMsg=%parm[#1]% 
@@ -752,11 +752,11 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjNode&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipNodeUp trap received 
 			bigipNotifyObjMsg=%parm[#1]% 
@@ -786,7 +786,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipStandby trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -815,7 +815,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipActive trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -844,7 +844,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipActiveActive trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -873,7 +873,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipFeatureFailed trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -902,7 +902,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipFeatureOnline trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -931,7 +931,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLicenseFailed trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -960,7 +960,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLicenseExpired trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -989,7 +989,7 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipTamdAlert trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1020,7 +1020,7 @@ for DOS prevention.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipAggrReaperStateChange trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1049,7 +1049,7 @@ for DOS prevention.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipARPConflict trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1081,7 +1081,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipNetLinkDown trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1110,7 +1110,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipDiskPartitionWarn trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1139,7 +1139,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipDiskPartitionGrowth trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1168,7 +1168,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipAuthFailed trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1197,7 +1197,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipConfigLoaded trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1226,7 +1226,7 @@ If they do, it indicates a serious problem.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLogEmerg trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1256,7 +1256,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLogAlert trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1285,7 +1285,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLogCrit trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1314,7 +1314,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLogErr trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1343,7 +1343,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipLogWarning trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1372,7 +1372,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipPacketRejected trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
@@ -1401,7 +1401,7 @@ properly.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	bigipNotifyObjMsg&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			bigipCompLimitExceeded trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
