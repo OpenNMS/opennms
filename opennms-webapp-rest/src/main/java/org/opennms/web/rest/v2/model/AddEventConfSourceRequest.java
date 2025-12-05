@@ -29,9 +29,9 @@ public class AddEventConfSourceRequest {
 
     public AddEventConfSourceRequest() {
     }
-    public AddEventConfSourceRequest(String description, String name, String vendor) {
-        this.description = description;
+    public AddEventConfSourceRequest(String name, String description, String vendor) {
         this.name = name;
+        this.description = description;
         this.vendor = vendor;
     }
 
@@ -43,18 +43,19 @@ public class AddEventConfSourceRequest {
         this.name = name;
     }
 
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 }

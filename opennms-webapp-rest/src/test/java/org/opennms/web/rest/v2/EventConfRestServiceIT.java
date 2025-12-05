@@ -825,23 +825,23 @@ public class EventConfRestServiceIT {
         eventConfSourceDao.saveOrUpdate(source);
         eventConfSourceDao.flush();
 
-        // success scenario
+        // Success scenario
         final var  eventConfSourceRequest =
                 new AddEventConfSourceRequest("addEventConfSourceNew","Testing addEventConfSource","test");
 
         Response resp = eventConfRestApi.addEventConfSource(eventConfSourceRequest,securityContext);
         assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
 
-        // test when eventConfSource name is empty
+        // Test when eventConfSource name is empty
         final var  eventConfSourceBadRequest =
-                new AddEventConfSourceRequest("Testing addEventConfSource","","test");
+                new AddEventConfSourceRequest("","Test Source Description","test");
 
         resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequest,securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
-        // test when eventConfSource already exists with the same name.
+        // Test when eventConfSource already exists with the same name.
         final var  eventConfSourceNameExistsRequest =
-                new AddEventConfSourceRequest("Testing eventConfSource already exists with the same name","addEventConfSource","test");
+                new AddEventConfSourceRequest("addEventConfSource","Duplicate source test description","test");
         resp = eventConfRestApi.addEventConfSource(eventConfSourceNameExistsRequest,securityContext);
         assertEquals(Response.Status.CONFLICT.getStatusCode(), resp.getStatus());
     }

@@ -466,7 +466,7 @@ public class EventConfRestService implements EventConfRestApi {
             return Response
                     .status(Response.Status.CREATED)
                     .entity(Map.of(
-                            "id", eventConfSource.getId(),
+                            "id", eventConfSourceID,
                             "name", eventConfSource.getName(),
                             "fileOrder", eventConfSource.getFileOrder()
                     ))
