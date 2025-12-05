@@ -75,7 +75,7 @@
         "typescript": "^5.0.2",
         "webpack": "^4.46.0",
         "webpack-cli": "^3.3.12",
-        "yargs": "^16.2.0"
+        "yargs": "^18.0.0"
     },
     "dependencies": {
         "@babel/runtime-corejs3": "^7.16.5",
