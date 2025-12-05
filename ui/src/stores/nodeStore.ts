@@ -36,7 +36,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
   const availability = ref({} as NodeAvailability)
   const outages = ref([] as Outage[])
   const outagesTotalCount = ref(0)
-  const nodeQueryParameters = ref({ limit: 10, offset: 0, orderBy: 'label' } as QueryParameters)
+  const nodeQueryParameters = ref({ limit: 20, offset: 0, orderBy: 'label' } as QueryParameters)
 
   // map of nodeId to IpInterfaces associated with that node
   const nodeToIpInterfaceMap = ref<Map<string, IpInterface[]>>(new Map<string, IpInterface[]>())
