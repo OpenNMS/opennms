@@ -41,7 +41,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Event Configuration', to: '#', position: 'last' }
+    { label: 'Manage Event Configurations', to: '#', position: 'last' }
   ]
 })
 </script>
