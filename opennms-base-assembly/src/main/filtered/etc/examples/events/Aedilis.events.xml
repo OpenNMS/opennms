@@ -19,7 +19,7 @@
       <descr>&lt;p>This event is generated when the equipment is restarted or powered on.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>KSM-1 coldStart&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -43,17 +43,17 @@
       <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Normal.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -77,17 +77,17 @@
       <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Warning.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -111,17 +111,17 @@
       <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Minor.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -145,17 +145,17 @@
       <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Major.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -179,17 +179,17 @@
       <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Critical.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Critical</severity>
    </event>
@@ -213,17 +213,17 @@
       <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Normal.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -247,17 +247,17 @@
       <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Warning.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -281,17 +281,17 @@
       <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Minor.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -315,17 +315,17 @@
       <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Major.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -349,17 +349,17 @@
       <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Critical.&lt;/p>
  &lt;table>&lt;tr>&lt;td>&lt;b>
  InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
       <severity>Critical</severity>
    </event>

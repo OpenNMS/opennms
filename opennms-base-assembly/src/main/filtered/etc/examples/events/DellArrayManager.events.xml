@@ -1659,15 +1659,15 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         channelNumberEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         timeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         percPauseIO trap received
                         controllerNameEv=%parm[#1]%
@@ -1697,11 +1697,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         channelNumberEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         percResumeIO trap received
                         controllerNameEv=%parm[#1]%
@@ -1730,11 +1730,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         percHotSpareAssign trap received
                         controllerNameEv=%parm[#1]%
@@ -1763,11 +1763,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         percHotSpareUnAssign trap received
                         controllerNameEv=%parm[#1]%
@@ -2162,11 +2162,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureAlertTempWarnMax trap received
                         enclosureNameEv=%parm[#1]%
@@ -2195,11 +2195,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureAlertTempWarnMin trap received
                         enclosureNameEv=%parm[#1]%
@@ -2228,11 +2228,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureAlertTempErrMax trap received
                         enclosureNameEv=%parm[#1]%
@@ -2261,11 +2261,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureAlertTempErrMin trap received
                         enclosureNameEv=%parm[#1]%
@@ -2294,11 +2294,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericFailed trap received
                         enclosureNameEv=%parm[#1]%
@@ -2327,11 +2327,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericOffline trap received
                         enclosureNameEv=%parm[#1]%
@@ -2360,11 +2360,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericUnknown trap received
                         enclosureNameEv=%parm[#1]%
@@ -2393,11 +2393,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         unitNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericWarning trap received
                         enclosureNameEv=%parm[#1]%
@@ -2426,11 +2426,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureUnitNamesEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericDegraded trap received
                         controllerNameEv=%parm[#1]%
@@ -2459,11 +2459,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertShutdownEnclosure trap received
                         controllerNameEv=%parm[#1]%
@@ -2492,11 +2492,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertShutdownServer trap received
                         controllerNameEv=%parm[#1]%
@@ -2525,11 +2525,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertPausedCheckConsistency trap received
                         controllerNameEv=%parm[#1]%
@@ -2558,11 +2558,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertResumedCheckConsistency trap received
                         controllerNameEv=%parm[#1]%
@@ -2591,11 +2591,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertVirtualDiskSplitMirror trap received
                         controllerNameEv=%parm[#1]%
@@ -2624,11 +2624,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertVirtualDiskUnmirror trap received
                         controllerNameEv=%parm[#1]%
@@ -2657,15 +2657,15 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameNewEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertRenameVirtualDisk trap received
                         controllerNameEv=%parm[#1]%
@@ -2695,11 +2695,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         device1NameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertGenericReady trap received
                         controllerNameEv=%parm[#1]%
@@ -2728,11 +2728,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         device1NameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCommTimeout trap received
                         controllerNameEv=%parm[#1]%
@@ -2761,11 +2761,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         device1NameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCommFailure trap received
                         controllerNameEv=%parm[#1]%
@@ -2794,11 +2794,11 @@ resume after the allotted time (%d seconds).&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         device1NameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCommRestored trap received
                         controllerNameEv=%parm[#1]%
@@ -2875,7 +2875,7 @@ possible.&lt;/p>&lt;table>&lt;/table></descr>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertMegalibTimeout trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -2904,23 +2904,23 @@ unit operation was interrupted prior to completion.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseKeyEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseCodeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseQualifierEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertScsiSenseFormatFail trap received
                         controllerNameEv=%parm[#1]%
@@ -2953,23 +2953,23 @@ If this disk is part of a non-redundant virtual disk, the data for this block ca
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseKeyEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseCodeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         senseQualifierEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertScsiSenseSectorReassign trap received
                         controllerNameEv=%parm[#1]%
@@ -3003,19 +3003,19 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         eMMFWVersion0Ev&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         eMMFWVersion1Ev&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertEmmFwMismatch trap received
                         controllerNameEv=%parm[#1]%
@@ -3046,11 +3046,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertConserveCacheModeEnable trap received
                         controllerNameEv=%parm[#1]%
@@ -3079,11 +3079,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertConserveCacheModeDisable trap received
                         controllerNameEv=%parm[#1]%
@@ -3112,15 +3112,15 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         eMMFWVersion0Ev&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertEnclosureFwDownload trap received
                         controllerNameEv=%parm[#1]%
@@ -3150,11 +3150,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertEnclosureAlarmEnable trap received
                         controllerNameEv=%parm[#1]%
@@ -3183,11 +3183,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertEnclosureAlarmDisable trap received
                         controllerNameEv=%parm[#1]%
@@ -3216,7 +3216,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertControllerAlarmEnable trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -3244,7 +3244,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertControllerAlarmDisable trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -3272,11 +3272,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         rebuildRateEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertControllerRebuildRate trap received
                         controllerNameEv=%parm[#1]%
@@ -3305,11 +3305,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertArrayDiskForcedOnline trap received
                         controllerNameEv=%parm[#1]%
@@ -3338,11 +3338,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertArrayDiskForcedOffline trap received
                         controllerNameEv=%parm[#1]%
@@ -3371,11 +3371,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertTaskBGI trap received
                         controllerNameEv=%parm[#1]%
@@ -3404,11 +3404,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCancelBGI trap received
                         controllerNameEv=%parm[#1]%
@@ -3437,11 +3437,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertFailBGI trap received
                         controllerNameEv=%parm[#1]%
@@ -3470,11 +3470,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCompleteBGI trap received
                         controllerNameEv=%parm[#1]%
@@ -3503,11 +3503,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureUnitNamesEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericNotInstalled trap received
                         controllerNameEv=%parm[#1]%
@@ -3536,23 +3536,23 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         commErrorTypeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         returnCodeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         scsiStatusEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericCommTimeout trap received
                         controllerNameEv=%parm[#1]%
@@ -3584,23 +3584,23 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         enclosureNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         commErrorTypeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         returnCodeEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         scsiStatusEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         enclosureGenericCommLost trap received
                         controllerNameEv=%parm[#1]%
@@ -3632,11 +3632,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         arrayDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertCompWithErrDiskRebuild trap received
                         controllerNameEv=%parm[#1]%
@@ -3665,11 +3665,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         additionalInfoEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         alertControllerMiscError trap received
                         controllerNameEv=%parm[#1]%
@@ -3698,15 +3698,15 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         instVerEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         reqVerEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         installedDriverVerUnsupported trap received
                         controllerNameEv=%parm[#1]%
@@ -3736,15 +3736,15 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         instVerEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         reqVerEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         installedFirmwareVerUnsupported trap received
                         controllerNameEv=%parm[#1]%
@@ -3774,11 +3774,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         instVerEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         unsupportedConfig trap received
                         controllerNameEv=%parm[#1]%
@@ -10667,11 +10667,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_STARTED trap received
                         controllerNameEv=%parm[#1]%
@@ -10700,11 +10700,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_STOPPED trap received
                         controllerNameEv=%parm[#1]%
@@ -10733,11 +10733,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_PAUSED trap received
                         controllerNameEv=%parm[#1]%
@@ -10766,11 +10766,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_RESTARTED trap received
                         controllerNameEv=%parm[#1]%
@@ -10799,11 +10799,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_FAILED trap received
                         controllerNameEv=%parm[#1]%
@@ -10832,11 +10832,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BG_INIT_COMPLETED trap received
                         controllerNameEv=%parm[#1]%
@@ -10865,7 +10865,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_BBU_CALIBRATE_START trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -10893,7 +10893,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_BBU_CALIBRATE_DONE trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -10921,7 +10921,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_BBU_CALIBRATE_ABORT trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -10949,7 +10949,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_BBU_NO_BATTERY trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -10977,11 +10977,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SYSDEV_BBULOW_POSSIBLE_DATA_LOSS trap received
                         controllerNameEv=%parm[#1]%
@@ -11056,11 +11056,11 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         virtualDiskNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_IMPROPERLY_SHUTDOWN trap received
                         controllerNameEv=%parm[#1]%
@@ -11089,7 +11089,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_AUTOMATIC_FLASH_STARTED trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11117,7 +11117,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_FAILED_JUMPERS trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11145,7 +11145,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_SAME_ID trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11173,7 +11173,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_BOARD_TYPE trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11201,7 +11201,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_DISK_CHANNELS trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11229,7 +11229,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_HOST_CHANNELS trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11257,7 +11257,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_MEMORY_SIZE trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11285,7 +11285,7 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_CTLDEV_NEGOTIATION_CACHE_SIZE trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11313,15 +11313,15 @@ firmware to this enclosure again to correct this condition.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         channelNumberEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         targetIDEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_PHYSDEV_HOT_SPARE_SMALLER trap received
                         controllerNameEv=%parm[#1]%
@@ -11352,7 +11352,7 @@ This trap is similar to 981 but may occur for older firmware versions.&lt;/p>&lt
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_SES_ERR trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11381,7 +11381,7 @@ This trap is similar to 980 but may occur for more recent firmware versions.&lt;
         &lt;tr>&lt;td>&lt;b>
 
         controllerNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         pv660fEvent_ENC_SES_ERR trap received
                         controllerNameEv=%parm[#1]%&lt;/p>
@@ -11409,7 +11409,7 @@ This trap is similar to 980 but may occur for more recent firmware versions.&lt;
         &lt;tr>&lt;td>&lt;b>
 
         volumeNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         fsysPro_DISK_CAPACITY_WARNING trap received
                         volumeNameEv=%parm[#1]%&lt;/p>
@@ -11437,7 +11437,7 @@ This trap is similar to 980 but may occur for more recent firmware versions.&lt;
         &lt;tr>&lt;td>&lt;b>
 
         volumeNameEv&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         fsysPro_DISK_CAPACITY_ERROR trap received
                         volumeNameEv=%parm[#1]%&lt;/p>

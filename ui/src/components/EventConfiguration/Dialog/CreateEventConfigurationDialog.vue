@@ -10,12 +10,13 @@
         <FeatherInput
           label="Event Configuration Name"
           v-model="configName"
-          placeholder="Enter event configuration name"
           :error="error"
         />
       </div>
       <div>
-        <p>Please note that the event configuration will be created with 0 events. You can add events after creation.</p>
+        <p>
+          Please note that the event configuration will be created with 0 events. You can add events after creation.
+        </p>
       </div>
     </div>
     <template v-slot:footer>

@@ -269,23 +269,23 @@ instances has fired, for triggers with mteTriggerType
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTrigger&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotContextName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotOID&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotValue&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Cisco Event: mteTriggerFired trap received
                         mteHotTrigger=%parm[#1]%
@@ -318,22 +318,22 @@ with mteTriggerType 'threshold'.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTrigger&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotContextName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
         mteHotOID&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotValue&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Cisco Event: mteTriggerRising trap received
                         mteHotTrigger=%parm[#1]%
@@ -366,23 +366,23 @@ with mteTriggerType 'threshold'.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTrigger&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotContextName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotOID&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotValue&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Cisco Event: mteTriggerFalling trap received
                         mteHotTrigger=%parm[#1]%
@@ -420,23 +420,23 @@ be found otherwise.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTrigger&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotContextName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotOID&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteFailedReason&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>
                 sampleOverrun(-6)
                 badType(-5)
                 noResponse(-4)
@@ -462,7 +462,7 @@ be found otherwise.&lt;/p>&lt;table>
                 authorizationError(16)
                 notWritable(17)
                 inconsistentName(18)
-        &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Cisco Event: mteTriggerFailure trap received
                         mteHotTrigger=%parm[#1]%
@@ -501,23 +501,23 @@ be found otherwise.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTrigger&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotContextName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteHotOID&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         mteFailedReason&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>
                 sampleOverrun(-6)
                 badType(-5)
                 noResponse(-4)
@@ -543,7 +543,7 @@ be found otherwise.&lt;/p>&lt;table>
                 authorizationError(16)
                 notWritable(17)
                 inconsistentName(18)
-        &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Cisco Event: mteEventSetFailure trap received
                         mteHotTrigger=%parm[#1]%
