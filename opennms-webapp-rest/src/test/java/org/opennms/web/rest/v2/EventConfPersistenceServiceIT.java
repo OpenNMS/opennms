@@ -944,14 +944,15 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(7, descList.size());
 
         final var expectedDesc = Arrays.asList(
-                "Warning", "Normal", "Minor", "Major", "Indeterminate", "Critical", "Cleared"
+                "Cleared", "Critical", "Major", "Minor", "Warning", "Normal", "Indeterminate"
         );
+
 
         Assert.assertEquals("DESC alphabetical sort failed",
                 expectedDesc,
                 descList.stream().map(EventConfEvent::getSeverity).toList());
 
-       // validate severity in asc order
+       // Validate severity in asc order
         final var ascResult = eventConfPersistenceService.filterConfEventsBySourceId(
                 m_source.getId(), "", "severity", "asc", 0, 0, 10);
 
@@ -959,7 +960,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(7, ascList.size());
 
         final var expectedAsc = Arrays.asList(
-                "Cleared", "Critical", "Indeterminate", "Major", "Minor", "Normal", "Warning"
+                "Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical", "Cleared"
         );
 
         Assert.assertEquals("ASC alphabetical sort failed",

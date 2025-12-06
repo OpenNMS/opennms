@@ -25,13 +25,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
-import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.Event;
-import org.opennms.netmgt.xml.eventconf.Mask;
-import org.opennms.netmgt.xml.eventconf.Maskelement;
-import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +67,7 @@ public class EventConfServiceHelper {
         eventConfEvent.setEventLabel(event.getEventLabel());
         eventConfEvent.setDescription(event.getDescr());
         eventConfEvent.setEnabled(true);
-        eventConfEvent.setSeverity(
-                (event.getSeverity() == null || event.getSeverity().isBlank())
-                        ? "Indeterminate"
-                        : event.getSeverity()
-        );
+        eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(event.getSeverity()));
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
@@ -143,11 +136,7 @@ public class EventConfServiceHelper {
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
-            event.setSeverity(
-                    (parsed.getSeverity() == null || parsed.getSeverity().isBlank())
-                            ? "Indeterminate"
-                            : parsed.getSeverity()
-            );
+            event.setSeverity(EventConfServiceHelper.getValidSeverity(parsed.getSeverity()));
             event.setXmlContent(JaxbUtils.marshal(parsed));
             event.setCreatedTime(timestamp);
             event.setLastModified(timestamp);
@@ -174,5 +163,37 @@ public class EventConfServiceHelper {
 
         // Compare masks using their equals() method
         return Objects.equals(event1.getMask(), event2.getMask());
+    }
+
+    /**
+     * Validates the severity value coming from the XML event definition.
+     *
+     * <p>This method ensures that the severity stored in the database is always a valid
+     * OpenNMS severity. A severity is considered valid if it matches one of the
+     * labels in {@link OnmsSeverity}. If the provided severity is null, empty, or does
+     * not map to a known severity, the default severity "Indeterminate" is used.</p>
+     *
+     * <p>Examples:
+     * <ul>
+     *   <li>getValidSeverity("Major") → "Major"</li>
+     *   <li>getValidSeverity("") → "Indeterminate"</li>
+     *   <li>getValidSeverity(null) → "Indeterminate"</li>
+     *   <li>getValidSeverity("unknown") → "Indeterminate"</li>
+     * </ul>
+     * </p>
+     *
+     * @param severity The severity string from the XML event definition
+     * @return A normalized and guaranteed valid OpenNMS severity label
+     */
+    public static String getValidSeverity(final String severity) {
+
+        // If severity is null or blank, fallback to the default "Indeterminate"
+        if (severity == null || severity.isBlank()) {
+            return OnmsSeverity.INDETERMINATE.getLabel();
+        }
+
+        // Attempt to resolve the severity label to a known OnmsSeverity enum.
+        // OnmsSeverity.get(String) already defaults to INDETERMINATE if no match is found.
+        return OnmsSeverity.get(severity).getLabel();
     }
 }
