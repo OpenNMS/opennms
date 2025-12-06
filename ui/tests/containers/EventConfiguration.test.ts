@@ -66,7 +66,7 @@ describe('EventConfig.vue', () => {
 
     expect(items).toHaveLength(2)
     expect(items[0]).toEqual({ label: 'Home', to: '/home', isAbsoluteLink: true })
-    expect(items[1]).toEqual({ label: 'Event Configuration', to: '#', position: 'last' })
+    expect(items[1]).toEqual({ label: 'Manage Event Configurations', to: '#', position: 'last' })
   })
 
   it('renders BreadCrumbs with undefined homeUrl when mainMenu is not set', () => {
@@ -84,7 +84,7 @@ describe('EventConfig.vue', () => {
 
     expect(items).toHaveLength(2)
     expect(items[0]).toEqual({ label: 'Home', to: undefined, isAbsoluteLink: true })
-    expect(items[1]).toEqual({ label: 'Event Configuration', to: '#', position: 'last' })
+    expect(items[1]).toEqual({ label: 'Manage Event Configurations', to: '#', position: 'last' })
   })
 
   it('renders CreateEventConfigurationDialog component', () => {
