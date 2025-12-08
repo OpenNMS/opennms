@@ -224,7 +224,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                         catch (Exception e) {}
                     }
                     // strip the '.' and filenameSuffix from the filename
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()), scriptOutput)));
+                    future.complete(Either.right(new Success(content, fileName.replace(fileNameSuffix, ""), scriptOutput)));
                 }
             }
             else {
