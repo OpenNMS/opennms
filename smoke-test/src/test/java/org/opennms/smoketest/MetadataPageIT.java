@@ -39,7 +39,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.openqa.selenium.WebElement;
 import java.util.ArrayList;
 import java.util.List;
 
