@@ -14,7 +14,7 @@
           primary
           @click="store.showCreateEventConfigSourceDialog"
         >
-          Create Event Source
+          Create New Event Source
         </FeatherButton>
       </div>
     </div>
@@ -58,3 +58,4 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   }
 }
 </style>
+
