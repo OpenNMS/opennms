@@ -7,14 +7,14 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>Event Configuration</h1>
+        <h1>Manage Event Configurations</h1>
       </div>
       <div class="action">
         <FeatherButton
           primary
           @click="store.showCreateEventConfigSourceDialog"
         >
-          Create New Event Configuration
+          Create New Event Source
         </FeatherButton>
       </div>
     </div>
@@ -41,7 +41,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
     { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-    { label: 'Event Configuration', to: '#', position: 'last' }
+    { label: 'Manage Event Configurations', to: '#', position: 'last' }
   ]
 })
 </script>
@@ -58,3 +58,4 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   }
 }
 </style>
+

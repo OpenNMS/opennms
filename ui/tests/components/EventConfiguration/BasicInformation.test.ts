@@ -169,7 +169,7 @@ describe('BasicInformation Component', () => {
 
   it('should display correct title for edit mode', () => {
     const title = wrapper.find('h3')
-    expect(title.text()).toBe('Edit Event Details')
+    expect(title.text()).toBe('Edit Event Configuration Details')
   })
 
   it('should display correct title for create mode', async () => {
@@ -177,7 +177,7 @@ describe('BasicInformation Component', () => {
     await wrapper.vm.$nextTick()
 
     const title = wrapper.find('h3')
-    expect(title.text()).toBe('Create New Event')
+    expect(title.text()).toBe('Create New Event Configuration')
   })
 
   it('should render all basic information form fields', () => {

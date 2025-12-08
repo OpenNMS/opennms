@@ -109,7 +109,7 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('renders the component title correctly', () => {
-      expect(wrapper.find('.title').text()).toBe('Events')
+      expect(wrapper.find('.title').text()).toBe('Event Configurations')
     })
 
     it('renders search input with correct label and hint', () => {
