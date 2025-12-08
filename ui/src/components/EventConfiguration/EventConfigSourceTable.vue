@@ -11,7 +11,7 @@
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
-            :hint="'Search by Name, Vendor, Event UEI or Event Label'"
+            :hint="'Search by Source, Vendor, UEI or Label'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -120,7 +120,7 @@
           :modelValue="store.sourcesPagination.page"
           :pageSize="store.sourcesPagination.pageSize"
           :total="store.sourcesPagination.total"
-          :pageSizes="[10, 20, 50]"
+          :pageSizes="[10, 20, 50, 100, 200]"
           @update:modelValue="store.onSourcePageChange"
           @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"
@@ -167,7 +167,7 @@ const emptyListContent = {
 }
 
 const columns = computed(() => [
-  { id: 'name', label: 'Name' },
+  { id: 'name', label: 'Source' },
   { id: 'vendor', label: 'Vendor' },
   { id: 'eventCount', label: 'Event Count' }
 ])

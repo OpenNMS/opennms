@@ -3,10 +3,20 @@
     class="main-content"
     v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
   >
-    <div>
-      <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
-      </h3>
+    <div class="header">
+      <div>
+        <FeatherBackButton
+          data-test="back-button"
+          @click="handleCancel"
+        >
+          Go Back
+        </FeatherBackButton>
+      </div>
+      <div>
+        <h3>
+          {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event Configuration' : 'Edit Event Configuration Details' }}
+        </h3>
+      </div>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -178,6 +188,7 @@ import { createEventConfigEvent, updateEventConfigEventById } from '@/services/e
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
+import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
@@ -490,17 +501,7 @@ const handleSaveEvent = async () => {
 
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
-      resetValues()
-      const id = store.selectedSource.id
-      store.resetEventModificationState()
-      if (id) {
-        router.push({
-          name: 'Event Configuration Detail',
-          params: { id }
-        })
-      } else {
-        router.push({ name: 'Event Configuration' })
-      }
+      handleCancel()
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -511,6 +512,7 @@ const handleSaveEvent = async () => {
 }
 
 const handleCancel = () => {
+  resetValues()
   const id = store.selectedSource?.id
   store.resetEventModificationState()
   if (id) {
@@ -559,6 +561,12 @@ onMounted(() => {
 
   border-radius: 8px;
   background-color: #ffffff;
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
   .basic-info {
     border-width: 1px;
