@@ -79,7 +79,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "foundation-2023"
+    target-branch: "foundation-2025"
     reviewers:
       - "OpenNMS/dependabot-reviewers-maven"
     labels:
@@ -92,7 +92,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "foundation-2025"
     reviewers:
       - "OpenNMS/dependabot-reviewers-maven"
     labels:
