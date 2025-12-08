@@ -113,7 +113,7 @@ describe('EventConfig.vue', () => {
 
     const button = wrapper.find('button')
     expect(button.exists()).toBe(true)
-    expect(button.text()).toBe('Create New Event Configuration')
+    expect(button.text()).toBe('Create Event Source')
   })
 
   it('calls store method when Create button is clicked', async () => {

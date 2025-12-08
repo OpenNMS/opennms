@@ -14,7 +14,7 @@
           primary
           @click="store.showCreateEventConfigSourceDialog"
         >
-          Create New Event Configuration
+          Create Event Source
         </FeatherButton>
       </div>
     </div>
