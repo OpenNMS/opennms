@@ -131,9 +131,19 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             try {
                                 int localPort = transferTftp_.getLocalPort();
                                 transferTftp_.close();
+                                while (true) {
+                                    if (!transferTftp_.isOpen()) { // wait until we know the socket is not open
+                                        break;
+                                    }
+                                }
                                 DatagramSocket socket = new DatagramSocket(localPort);
                                 socket.send(oackPacket);
                                 socket.close();
+                                while (true) {
+                                    if (socket.isClosed()) { // wait until we know the socket is closed
+                                        break;
+                                    }
+                                }
                                 transferTftp_.open(localPort); // every day I'm shufflin'
                             } catch (Exception e) {
                                 LOG.debug("Error sending OACK packet in response to 'blksize={}',", negotiatedBlksize, e);
