@@ -128,7 +128,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             LOG.debug("Negotiating tftp blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
                             // Create an OAck response packet - commons doesn't provide a method for this yet.
                             DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
-                            //ship it
+                           
                             try {
                                 int localPort = transferTftp_.getLocalPort();
                                 transferTftp_.close();
