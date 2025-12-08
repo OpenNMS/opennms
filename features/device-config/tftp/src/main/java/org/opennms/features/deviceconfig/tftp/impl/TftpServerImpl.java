@@ -123,8 +123,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                                     twrp.getPort(), TFTPErrorPacket.INVALID_OPTIONS_VALUE,
                                     "Invalid blksize"));
                             return;
-                        }
-                        else {
+                        } else {
                             LOG.debug("Negotiating tftp blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
                             // Create an OAck response packet - commons doesn't provide a method for this yet.
                             DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
