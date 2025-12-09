@@ -94,7 +94,7 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Groups").click();
         findElementByLink("Add new group").click();
-
+        
         enterText(By.id("groupName"), GROUP_NAME);
         enterText(By.id("groupComment"), "Test");
         findElementByXpath("//button[@type='submit' and text()='OK']").click();
@@ -109,14 +109,16 @@ public class UserIT extends OpenNMSSeleniumIT {
         driver.findElement(By.xpath("//div[@class='card-header']/span[text()='Details for Group: " + GROUP_NAME + "']"));
 
         findElementByLink("Group List").click();
-        findElementById(GROUP_NAME + ".doDelete").click();
+        // FIX 1: Use clickElement(By) for robust clicking
+        clickElement(By.id(GROUP_NAME + ".doDelete"));
         handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?");
         assertElementDoesNotExist(By.id(GROUP_NAME));
 
         findElementByLink("Users and Groups").click();
         findElementByLink("Configure Users").click();
         findElementById("user-" + USER_NAME);
-        findElementById("users(" + USER_NAME + ").doDelete").click();
+        // FIX 2: Use clickElement(By) for robust clicking
+        clickElement(By.id("users(" + USER_NAME + ").doDelete"));
         handleAlert("Are you sure you want to delete the user " + USER_NAME + "?");
         assertElementDoesNotExist(By.id(USER_NAME));
     }
@@ -311,7 +313,9 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Users").click();
 
-        findElementById("users(user).doDelete").click();
+        WebElement deleteGroupLink = findElementById("users(user).doDelete");
+        clickElementUsingScript(deleteGroupLink);
+
         handleAlert("Are you sure you want to delete the user user?");
     }
 }
