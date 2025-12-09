@@ -8,7 +8,6 @@
 * PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
 * Elasticsearch: Horizon 35 requires Elasticsearch 8 for flow processing.
 
-
 == New features and important changes
 
 
@@ -32,6 +31,10 @@ The `service-configuration.xml` configuration file has been simplified by moving
 === Removed TestLoadLibraries Service
 
 The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
+
+=== OpenConfig Support on Minion
+
+OpenConfig telemetry streaming is now supported on Minion. See xref:reference:telemetryd/protocols/openconfig.adoc#minion-setup[Set up OpenConfig on Minion] for configuration details.
 
 
 == Breaking changes
