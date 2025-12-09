@@ -76,7 +76,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         Dictionary<String, Object> properties = null;
         try {
             properties = configAdmin.getConfiguration(metricsPid).getProperties();
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.debug("No metrics-specific configuration found for PID: {}, will try global", metricsPid);
         }
 
