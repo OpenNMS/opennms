@@ -91,9 +91,5 @@
             <artifactId>org.opennms.core.test-api.services</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-api</artifactId>
-        </dependency>
     </dependencies>
 </project>

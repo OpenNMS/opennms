@@ -101,44 +101,6 @@ public class JsonUtilsTest {
     }
 
     @Test
-    public void testUnmarshalFromReader() throws Exception {
-        String json = JsonUtils.marshal(sampleEvent);
-
-        Event e = JsonUtils.unmarshal(Event.class, new StringReader(json));
-        assertEquals("Sample Description", e.getDescr());
-    }
-
-    @Test
-    public void testUnmarshalFromInputStream() throws Exception {
-        String json = JsonUtils.marshal(sampleEvent);
-
-        InputStream is = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
-        Event e = JsonUtils.unmarshal(Event.class, is);
-
-        assertEquals("uei.test.event", e.getUei());
-    }
-
-    @Test
-    public void testUnmarshalFromFile() throws Exception {
-        File temp = File.createTempFile("event", ".json");
-        JsonUtils.marshal(sampleEvent, temp);
-
-        Event e = JsonUtils.unmarshal(Event.class, temp);
-
-        assertEquals("Test Event", e.getEventLabel());
-    }
-
-    @Test
-    public void testDuplicateObject() {
-        Event copy = JsonUtils.duplicateObject(sampleEvent, Event.class);
-
-        assertNotNull(copy);
-        assertEquals(sampleEvent.getUei(), copy.getUei());
-        assertEquals(sampleEvent.getEventLabel(), copy.getEventLabel());
-        assertNotSame(sampleEvent, copy);    // Deep copy
-    }
-
-    @Test
     public void testUnmarshalInvalidJsonThrowsRuntime() {
         String invalidJson = "{ this is wrong json }";
 

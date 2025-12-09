@@ -26,17 +26,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.springframework.core.io.Resource;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -91,46 +85,6 @@ public abstract class JsonUtils {
         } catch (final JsonProcessingException e) {
             throw EXCEPTION_TRANSLATOR.translate("unmarshalling " + clazz.getSimpleName(), e);
         }
-    }
-
-    public static <T> T unmarshal(final Class<T> clazz, final File file) {
-        try (FileReader reader = new FileReader(file)) {
-            return unmarshal(clazz, reader);
-        } catch (final FileNotFoundException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading " + file, e);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("closing file " + file, e);
-        }
-    }
-
-    public static <T> T unmarshal(final Class<T> clazz, final Reader reader) throws RuntimeException {
-        try {
-            return getObjectMapper().readValue(reader, clazz);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("unmarshalling " + clazz.getSimpleName(), e);
-        }
-    }
-
-    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
-        try (final Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            return unmarshal(clazz, reader);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
-        }
-    }
-
-    public static <T> T unmarshal(final Class<T> clazz, final Resource resource) {
-        try (InputStream inputStream = resource.getInputStream()) {
-            return unmarshal(clazz, inputStream);
-        } catch (final IOException e) {
-            throw EXCEPTION_TRANSLATOR.translate("getting a configuration resource from spring", e);
-        }
-    }
-
-    // Utility Methods
-
-    public static <T> T duplicateObject(T obj, final Class<T> clazz) {
-        return unmarshal(clazz, marshal(obj));
     }
 
     /**
