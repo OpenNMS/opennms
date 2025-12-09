@@ -37,6 +37,7 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -228,7 +229,6 @@ public class CollectionSetMapper {
     }
 
     private String getNodeCriteriaFromResource(CollectionResource resource) {
-
         String nodeCriteria = null;
         if (resource.getParent() != null) {
             String[] resourcePathArray = resource.getParent().elements();
@@ -266,6 +266,10 @@ public class CollectionSetMapper {
                 responseTimeResourceBuilder.setInstance(resourcePathArray[1]);
             } else if (resourcePathArray.length == 1) {
                 responseTimeResourceBuilder.setInstance(resourcePathArray[0]);
+            }
+            String nodeCriteria = getNodeCriteriaFromResource(resource);
+            if (!Strings.isNullOrEmpty(nodeCriteria)) {
+                responseTimeResourceBuilder.setNode(buildNodeLevelResourceForProto(nodeCriteria));
             }
             return responseTimeResourceBuilder;
         }
@@ -321,6 +325,5 @@ public class CollectionSetMapper {
         }
         return Optional.empty();
     }
-
 
 }
