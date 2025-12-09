@@ -314,7 +314,10 @@ describe('EventConfigEventTable.vue', () => {
       }
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
       expect(sortHeaders).toHaveLength(4)
-      const headerTexts = wrapper.findAll('thead th').map((th) => th.text().trim()).filter((text: string) => text.length > 0)
+      const headerTexts = wrapper
+        .findAll('thead th')
+        .map((th) => th.text().trim())
+        .filter((text: string) => text.length > 0)
       expect(headerTexts[0]).toContain('Event UEI')
       expect(headerTexts[1]).toContain('Event Label')
       expect(headerTexts[2]).toContain('Severity')
@@ -322,14 +325,15 @@ describe('EventConfigEventTable.vue', () => {
       expect(headerTexts[4]).toContain('Actions')
     })
 
-    it('sorts by severity column in ascending order', async () => {      // Get severity header by looking for the third th element
+    it('sorts by severity column in ascending order', async () => {
+      // Get severity header by looking for the third th element
       const allHeaders = wrapper.findAll('thead th')
       expect(allHeaders[2].text()).toContain('Severity')
-      
+
       // Emit sort change on severity - simulate clicking the header
       wrapper.vm.sortChanged({ property: 'severity', value: SORT.ASCENDING })
       await nextTick()
-      
+
       expect(store.onEventsSortChange).toHaveBeenCalledWith('severity', SORT.ASCENDING)
       if (wrapper.vm.sort.severity !== undefined) {
         expect(wrapper.vm.sort.severity).toBe(SORT.ASCENDING)
@@ -339,7 +343,7 @@ describe('EventConfigEventTable.vue', () => {
     it('sorts by severity column in descending order', async () => {
       wrapper.vm.sortChanged({ property: 'severity', value: SORT.DESCENDING })
       await nextTick()
-      
+
       expect(store.onEventsSortChange).toHaveBeenCalledWith('severity', SORT.DESCENDING)
       if (wrapper.vm.sort.severity !== undefined) {
         expect(wrapper.vm.sort.severity).toBe(SORT.DESCENDING)
@@ -349,7 +353,7 @@ describe('EventConfigEventTable.vue', () => {
     it('sorts by enabled (status) column in ascending order', async () => {
       wrapper.vm.sortChanged({ property: 'enabled', value: SORT.ASCENDING })
       await nextTick()
-      
+
       expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.ASCENDING)
       if (wrapper.vm.sort.enabled !== undefined) {
         expect(wrapper.vm.sort.enabled).toBe(SORT.ASCENDING)
@@ -359,7 +363,7 @@ describe('EventConfigEventTable.vue', () => {
     it('sorts by enabled (status) column in descending order', async () => {
       wrapper.vm.sortChanged({ property: 'enabled', value: SORT.DESCENDING })
       await nextTick()
-      
+
       expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.DESCENDING)
       if (wrapper.vm.sort.enabled !== undefined) {
         expect(wrapper.vm.sort.enabled).toBe(SORT.DESCENDING)
@@ -375,7 +379,7 @@ describe('EventConfigEventTable.vue', () => {
       // Then toggle it off (NONE)
       wrapper.vm.sortChanged({ property: 'uei', value: SORT.NONE })
       await nextTick()
-      
+
       // Should reset to default sort (createdTime, desc)
       expect(store.onEventsSortChange).toHaveBeenCalledWith('createdTime', 'desc')
       expect(wrapper.vm.sort.uei).toBe(SORT.NONE)
@@ -392,7 +396,7 @@ describe('EventConfigEventTable.vue', () => {
       // Switch to enabled
       wrapper.vm.sortChanged({ property: 'enabled', value: SORT.DESCENDING })
       await nextTick()
-      
+
       expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.DESCENDING)
       if (wrapper.vm.sort.enabled !== undefined) {
         expect(wrapper.vm.sort.enabled).toBe(SORT.DESCENDING)
@@ -466,10 +470,10 @@ describe('EventConfigEventTable.vue', () => {
     it('updates header sort prop when sort changes', async () => {
       const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
       expect(ueiHeader.props('sort')).toBe(SORT.NONE)
-      
+
       wrapper.vm.sort.uei = SORT.ASCENDING
       await nextTick()
-      
+
       expect(wrapper.findAllComponents(FeatherSortHeader)[0].props('sort')).toBe(SORT.ASCENDING)
     })
   })
@@ -1011,7 +1015,7 @@ describe('EventConfigEventTable.vue', () => {
 
     it('displays different severity levels with correct colors', async () => {
       const severities = ['Critical', 'Major', 'Minor', 'Warning', 'Indeterminate', 'Cleared']
-      
+
       store.events = severities.map((sev, i) => ({
         id: i,
         uei: `uei${i}`,
@@ -1027,12 +1031,12 @@ describe('EventConfigEventTable.vue', () => {
         vendor: '',
         fileOrder: 0
       }))
-      
+
       await nextTick()
-      
+
       const chips = wrapper.findAllComponents(FeatherChip)
       expect(chips).toHaveLength(severities.length)
-      
+
       chips.forEach((chip, index) => {
         const chipElement = chip.element as Element
         expect(chipElement.classList.contains(`${severities[index].toLowerCase()}-color`)).toBe(true)
@@ -1074,7 +1078,7 @@ describe('EventConfigEventTable.vue', () => {
         }
       ]
       await nextTick()
-      
+
       const tds = wrapper.findAll('td')
       // Find status cells (4th column in each row)
       expect(tds[3].text()).toContain('Enabled')
@@ -1127,7 +1131,7 @@ describe('EventConfigEventTable.vue', () => {
         ]
         await nextTick()
       }
-      
+
       const table = wrapper.find('table')
       expect(table.attributes('aria-label')).toBe('Events Table')
     })
@@ -1166,20 +1170,20 @@ describe('EventConfigEventTable.vue', () => {
         }
       ]
       await nextTick()
-      
+
       // Expand first event
       const rows = wrapper.findAll('transition-group-stub tr')
       const buttons = rows[0].findAll('button')
       const expandButton = buttons[2]
       await expandButton.trigger('click')
       await nextTick()
-      
+
       expect(wrapper.vm.expandedRows).toContain(1)
-      
+
       // Sort
       wrapper.vm.sortChanged({ property: 'severity', value: SORT.ASCENDING })
       await nextTick()
-      
+
       // Expanded state should be preserved
       expect(wrapper.vm.expandedRows).toContain(1)
     })
