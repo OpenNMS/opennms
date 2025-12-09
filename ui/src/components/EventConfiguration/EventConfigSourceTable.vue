@@ -204,9 +204,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 }, 500)
 
 onMounted(async () => {
-  await store.fetchEventConfigs()
-  console.log('Test')
-  
+  await store.fetchEventConfigs()  
 })
 </script>
 

@@ -145,7 +145,7 @@ describe('EventConfigEventTable.vue', () => {
       ]
       await nextTick()
       const headers = wrapper.findAllComponents(FeatherSortHeader)
-      expect(headers.length).toBe(2)
+      expect(headers.length).toBe(4)
       expect(wrapper.find('thead tr').text()).toContain('Event UEI')
       expect(wrapper.find('thead tr').text()).toContain('Event Label')
       expect(wrapper.find('thead tr').text()).toContain('Severity')
@@ -289,6 +289,204 @@ describe('EventConfigEventTable.vue', () => {
       expect(store.onEventsSortChange).toHaveBeenCalledWith('eventLabel', SORT.DESCENDING)
       expect(wrapper.vm.sort.eventLabel).toBe(SORT.DESCENDING)
       expect(wrapper.vm.sort.uei).toBe(SORT.NONE)
+    })
+
+    it('renders all four sortable column headers', async () => {
+      if (!store.events.length) {
+        store.events = [
+          {
+            id: 1,
+            uei: 'uei1',
+            eventLabel: 'Label1',
+            severity: 'High',
+            enabled: true,
+            description: 'Desc',
+            xmlContent: '',
+            createdTime: new Date(),
+            lastModified: new Date(),
+            modifiedBy: '',
+            sourceName: '',
+            vendor: '',
+            fileOrder: 0
+          }
+        ]
+        await nextTick()
+      }
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      expect(sortHeaders).toHaveLength(4)
+      const headerTexts = wrapper.findAll('thead th').map((th) => th.text().trim()).filter((text: string) => text.length > 0)
+      expect(headerTexts[0]).toContain('Event UEI')
+      expect(headerTexts[1]).toContain('Event Label')
+      expect(headerTexts[2]).toContain('Severity')
+      expect(headerTexts[3]).toContain('Status')
+      expect(headerTexts[4]).toContain('Actions')
+    })
+
+    it('sorts by severity column in ascending order', async () => {      // Get severity header by looking for the third th element
+      const allHeaders = wrapper.findAll('thead th')
+      expect(allHeaders[2].text()).toContain('Severity')
+      
+      // Emit sort change on severity - simulate clicking the header
+      wrapper.vm.sortChanged({ property: 'severity', value: SORT.ASCENDING })
+      await nextTick()
+      
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('severity', SORT.ASCENDING)
+      if (wrapper.vm.sort.severity !== undefined) {
+        expect(wrapper.vm.sort.severity).toBe(SORT.ASCENDING)
+      }
+    })
+
+    it('sorts by severity column in descending order', async () => {
+      wrapper.vm.sortChanged({ property: 'severity', value: SORT.DESCENDING })
+      await nextTick()
+      
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('severity', SORT.DESCENDING)
+      if (wrapper.vm.sort.severity !== undefined) {
+        expect(wrapper.vm.sort.severity).toBe(SORT.DESCENDING)
+      }
+    })
+
+    it('sorts by enabled (status) column in ascending order', async () => {
+      wrapper.vm.sortChanged({ property: 'enabled', value: SORT.ASCENDING })
+      await nextTick()
+      
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.ASCENDING)
+      if (wrapper.vm.sort.enabled !== undefined) {
+        expect(wrapper.vm.sort.enabled).toBe(SORT.ASCENDING)
+      }
+    })
+
+    it('sorts by enabled (status) column in descending order', async () => {
+      wrapper.vm.sortChanged({ property: 'enabled', value: SORT.DESCENDING })
+      await nextTick()
+      
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.DESCENDING)
+      if (wrapper.vm.sort.enabled !== undefined) {
+        expect(wrapper.vm.sort.enabled).toBe(SORT.DESCENDING)
+      }
+    })
+
+    it('resets all sort states when clicking a sorted column to toggle off', async () => {
+      // First sort by uei
+      wrapper.vm.sortChanged({ property: 'uei', value: SORT.ASCENDING })
+      await nextTick()
+      expect(wrapper.vm.sort.uei).toBe(SORT.ASCENDING)
+
+      // Then toggle it off (NONE)
+      wrapper.vm.sortChanged({ property: 'uei', value: SORT.NONE })
+      await nextTick()
+      
+      // Should reset to default sort (createdTime, desc)
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('createdTime', 'desc')
+      expect(wrapper.vm.sort.uei).toBe(SORT.NONE)
+    })
+
+    it('switches sort from severity to enabled (status) column', async () => {
+      // Sort by severity
+      wrapper.vm.sortChanged({ property: 'severity', value: SORT.ASCENDING })
+      await nextTick()
+      if (wrapper.vm.sort.severity !== undefined) {
+        expect(wrapper.vm.sort.severity).toBe(SORT.ASCENDING)
+      }
+
+      // Switch to enabled
+      wrapper.vm.sortChanged({ property: 'enabled', value: SORT.DESCENDING })
+      await nextTick()
+      
+      expect(store.onEventsSortChange).toHaveBeenCalledWith('enabled', SORT.DESCENDING)
+      if (wrapper.vm.sort.enabled !== undefined) {
+        expect(wrapper.vm.sort.enabled).toBe(SORT.DESCENDING)
+      }
+      if (wrapper.vm.sort.severity !== undefined) {
+        expect(wrapper.vm.sort.severity).toBe(SORT.NONE) // Previous sort should reset
+      }
+    })
+  })
+
+  describe('Column Headers', () => {
+    beforeEach(async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Label1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+    })
+
+    it('renders all 5 column headers (4 columns + Actions)', () => {
+      const headers = wrapper.findAll('thead th')
+      expect(headers).toHaveLength(5)
+    })
+
+    it('renders headers with correct labels in order', () => {
+      const headerTexts = wrapper.findAll('thead th').map((th) => th.text())
+      expect(headerTexts[0]).toContain('Event UEI')
+      expect(headerTexts[1]).toContain('Event Label')
+      expect(headerTexts[2]).toContain('Severity')
+      expect(headerTexts[3]).toContain('Status')
+      expect(headerTexts[4]).toContain('Actions')
+    })
+
+    it('Event UEI header has correct properties', () => {
+      const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
+      expect(ueiHeader.props('property')).toBe('uei')
+      expect(ueiHeader.attributes('scope')).toBe('col')
+    })
+
+    it('Event Label header has correct properties', () => {
+      const labelHeader = wrapper.findAllComponents(FeatherSortHeader)[1]
+      expect(labelHeader.props('property')).toBe('eventLabel')
+      expect(labelHeader.attributes('scope')).toBe('col')
+    })
+
+    it('Severity header has correct properties', () => {
+      const severityHeader = wrapper.findAllComponents(FeatherSortHeader)[2]
+      expect(severityHeader.props('property')).toBe('severity')
+      expect(severityHeader.attributes('scope')).toBe('col')
+    })
+
+    it('Status (enabled) header has correct properties', () => {
+      const statusHeader = wrapper.findAllComponents(FeatherSortHeader)[3]
+      expect(statusHeader.props('property')).toBe('enabled')
+      expect(statusHeader.attributes('scope')).toBe('col')
+    })
+
+    it('updates header sort prop when sort changes', async () => {
+      const ueiHeader = wrapper.findAllComponents(FeatherSortHeader)[0]
+      expect(ueiHeader.props('sort')).toBe(SORT.NONE)
+      
+      wrapper.vm.sort.uei = SORT.ASCENDING
+      await nextTick()
+      
+      expect(wrapper.findAllComponents(FeatherSortHeader)[0].props('sort')).toBe(SORT.ASCENDING)
+    })
+  })
+
+  describe('Columns Computed Property', () => {
+    it('contains all expected column definitions', () => {
+      const columns = wrapper.vm.columns
+      expect(columns).toHaveLength(4)
+      expect(columns[0]).toEqual({ id: 'uei', label: 'Event UEI' })
+      expect(columns[1]).toEqual({ id: 'eventLabel', label: 'Event Label' })
+      expect(columns[2]).toEqual({ id: 'severity', label: 'Severity' })
+      expect(columns[3]).toEqual({ id: 'enabled', label: 'Status' })
+    })
+
+    it('column definitions are in correct order', () => {
+      const columns = wrapper.vm.columns
+      expect(columns.map((c: any) => c.id)).toEqual(['uei', 'eventLabel', 'severity', 'enabled'])
     })
   })
 
@@ -785,6 +983,205 @@ describe('EventConfigEventTable.vue', () => {
       ]
       await nextTick()
       expect(wrapper.find('td').text()).toContain('') // Or empty, but no crash
+    })
+
+    it('renders severity chip with lowercase severity class', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Event 1',
+          severity: 'CRITICAL',
+          enabled: true,
+          description: 'Desc',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      const chip = wrapper.findComponent(FeatherChip)
+      const chipElement = chip.element as Element
+      expect(chipElement.classList.contains('critical-color')).toBe(true)
+    })
+
+    it('displays different severity levels with correct colors', async () => {
+      const severities = ['Critical', 'Major', 'Minor', 'Warning', 'Indeterminate', 'Cleared']
+      
+      store.events = severities.map((sev, i) => ({
+        id: i,
+        uei: `uei${i}`,
+        eventLabel: `Event ${sev}`,
+        severity: sev,
+        enabled: true,
+        description: 'Desc',
+        xmlContent: '',
+        createdTime: new Date(),
+        lastModified: new Date(),
+        modifiedBy: '',
+        sourceName: '',
+        vendor: '',
+        fileOrder: 0
+      }))
+      
+      await nextTick()
+      
+      const chips = wrapper.findAllComponents(FeatherChip)
+      expect(chips).toHaveLength(severities.length)
+      
+      chips.forEach((chip, index) => {
+        const chipElement = chip.element as Element
+        expect(chipElement.classList.contains(`${severities[index].toLowerCase()}-color`)).toBe(true)
+        expect(chip.text()).toBe(severities[index])
+      })
+    })
+
+    it('renders correct enabled/disabled status for multiple events', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Enabled Event',
+          severity: 'High',
+          enabled: true,
+          description: 'Enabled',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        },
+        {
+          id: 2,
+          uei: 'uei2',
+          eventLabel: 'Disabled Event',
+          severity: 'Low',
+          enabled: false,
+          description: 'Disabled',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      
+      const tds = wrapper.findAll('td')
+      // Find status cells (4th column in each row)
+      expect(tds[3].text()).toContain('Enabled')
+      expect(tds[8].text()).toContain('Disabled') // 8 = 5 cells per row + 3 offset
+    })
+
+    it('renders edit button with correct data-test attribute', async () => {
+      if (!store.events.length) {
+        store.events = [
+          {
+            id: 1,
+            uei: 'uei1',
+            eventLabel: 'Event 1',
+            severity: 'Critical',
+            enabled: true,
+            description: 'Desc',
+            xmlContent: '',
+            createdTime: new Date(),
+            lastModified: new Date(),
+            modifiedBy: '',
+            sourceName: '',
+            vendor: '',
+            fileOrder: 0
+          }
+        ]
+        await nextTick()
+      }
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      expect(editButton.exists()).toBe(true)
+    })
+
+    it('renders table with correct aria-label for accessibility', async () => {
+      if (!store.events.length) {
+        store.events = [
+          {
+            id: 1,
+            uei: 'uei1',
+            eventLabel: 'Label1',
+            severity: 'High',
+            enabled: true,
+            description: 'Desc',
+            xmlContent: '',
+            createdTime: new Date(),
+            lastModified: new Date(),
+            modifiedBy: '',
+            sourceName: '',
+            vendor: '',
+            fileOrder: 0
+          }
+        ]
+        await nextTick()
+      }
+      
+      const table = wrapper.find('table')
+      expect(table.attributes('aria-label')).toBe('Events Table')
+    })
+
+    it('preserves expanded state when sorting events', async () => {
+      store.events = [
+        {
+          id: 1,
+          uei: 'uei1',
+          eventLabel: 'Label1',
+          severity: 'High',
+          enabled: true,
+          description: 'Desc1',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        },
+        {
+          id: 2,
+          uei: 'uei2',
+          eventLabel: 'Label2',
+          severity: 'Low',
+          enabled: false,
+          description: 'Desc2',
+          xmlContent: '',
+          createdTime: new Date(),
+          lastModified: new Date(),
+          modifiedBy: '',
+          sourceName: '',
+          vendor: '',
+          fileOrder: 0
+        }
+      ]
+      await nextTick()
+      
+      // Expand first event
+      const rows = wrapper.findAll('transition-group-stub tr')
+      const buttons = rows[0].findAll('button')
+      const expandButton = buttons[2]
+      await expandButton.trigger('click')
+      await nextTick()
+      
+      expect(wrapper.vm.expandedRows).toContain(1)
+      
+      // Sort
+      wrapper.vm.sortChanged({ property: 'severity', value: SORT.ASCENDING })
+      await nextTick()
+      
+      // Expanded state should be preserved
+      expect(wrapper.vm.expandedRows).toContain(1)
     })
   })
 })
