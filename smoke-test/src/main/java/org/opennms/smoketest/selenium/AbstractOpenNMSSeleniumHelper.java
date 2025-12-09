@@ -552,7 +552,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-  protected void clickMenuItem(final String menuItemId, final String subMenuText) {
+    protected void clickMenuItem(final String menuItemId, final String subMenuText) {
         clickMenuItem(menuItemId, subMenuText, MENU_ITEM_TIMEOUT);
     }
 
@@ -566,16 +566,10 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected void clickMenuItem(final String menuItemId, final String subMenuText, int timeout) {
         LOG.debug("Clicking menu item with id '{}' and text '{}'", menuItemId, subMenuText);
 
-        // Add a small, immediate sleep to let the UI settle before the action starts
-        sleepQuietly(200);
-
         WebElement link = findMenuItemLink(menuItemId, subMenuText, false, timeout);
 
         if (link != null) {
-            // Use your existing click logic (which may need to scroll/use script)
             link.click();
-        } else {
-            fail(String.format("Failed to find menu item: '%s' under menu '%s'", subMenuText, menuItemId));
         }
     }
 
@@ -747,48 +741,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         getDriver().navigate().back();
     }
 
-    // Inside AbstractOpenNMSSeleniumHelper.java
-
-public WebElement clickElement(final By by) {
-    // We rely on waitUntil to ensure the element is found immediately (not null)
-    return waitUntil(new Callable<WebElement>() {
-        @Override
-        public WebElement call() throws Exception {
-            final WebElement el = getElementImmediately(by);
-            if (el == null) {
-                // Return null so waitUntil can retry or time out
-                return null;
-            }
-
-            // 1. Attempt Native Selenium Click (Preferred method)
-            try {
+    public WebElement clickElement(final By by) {
+        return waitUntil(new Callable<WebElement>() {
+            @Override public WebElement call() throws Exception {
+                final WebElement el = getElementImmediately(by);
                 el.click();
                 return el;
-            } catch (final Exception e) {
-                // Catch ElementNotInteractableException (and others)
-                LOG.warn("Native click failed for element {}. Retrying with JavaScript click. Error: {}", by, e.getMessage());
-
-                // 2. Fallback to JavaScript (Forces scroll and click)
-                try {
-                    final JavascriptExecutor js = (JavascriptExecutor) getDriver();
-                    
-                    // Force the element into the center of the viewport
-                    js.executeScript("arguments[0].scrollIntoView({block: 'center'});", el);
-                    
-                    // Use JS to perform the click
-                    js.executeScript("arguments[0].click();", el);
-                    
-                    return el;
-                } catch (final Exception jsException) {
-                    // Re-throw the original exception if JS also fails to click, 
-                    // allowing waitUntil to retry or fail gracefully.
-                    LOG.error("JavaScript click also failed for element {}.", by, jsException);
-                    throw e; // Throw original native exception to respect the call structure
-                }
             }
-        }
-    });
-}
+        });
+    }
 
     /**
      * Click a WebElement using JavascriptExecutor since WebElement.click() does not
