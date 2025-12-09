@@ -49,6 +49,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase // we need a real database in order to haave the TransactionOperations available, etc.

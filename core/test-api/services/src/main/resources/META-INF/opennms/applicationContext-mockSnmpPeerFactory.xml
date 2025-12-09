@@ -9,6 +9,7 @@
 
     <context:annotation-config />
 
+    <bean id="eventForwarder" class="org.opennms.netmgt.config.mock.NullEventForwarder"/>
     <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
 
 </beans>
