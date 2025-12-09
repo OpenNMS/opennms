@@ -59,11 +59,17 @@
     <property name="timeoutInMs" value="${nodeRefreshTimeoutMs}"/>
   </bean>
 
-  <bean id="kafkaProducer" class="org.opennms.features.kafka.producer.OpennmsKafkaProducer"
+    <bean id="kafkaProducerManager" class="org.opennms.features.kafka.producer.KafkaProducerManager"
+          init-method="init" destroy-method="destroy">
+        <argument ref="configAdmin"/>
+    </bean>
+
+
+    <bean id="kafkaProducer" class="org.opennms.features.kafka.producer.OpennmsKafkaProducer"
           init-method="init" destroy-method="destroy">
     <argument ref="protobufMapper"/>
     <argument ref="nodeCache"/>
-    <argument ref="configAdmin"/>
+     <argument ref="kafkaProducerManager"/>
     <argument ref="eventSubscriptionService"/>
     <argument ref="onmsTopologyDao"/>
     <argument value="${nodeAsyncUpdateThreads}"/>
@@ -96,7 +102,7 @@
 
   <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync"
 		init-method="init" destroy-method="destroy">
-    <argument ref="configAdmin"/>
+      <argument ref="kafkaProducerManager"/>
     <argument ref="kafkaProducer"/>
     <argument ref="protobufMapper" />
     <property name="alarmTopic" value="${alarmTopic}"/>

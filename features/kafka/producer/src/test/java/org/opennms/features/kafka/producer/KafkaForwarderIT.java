@@ -26,6 +26,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,7 @@ import java.util.stream.Collectors;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -105,6 +108,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -172,6 +176,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private MockDatabase mockDatabase;
 
     private OpennmsKafkaProducer kafkaProducer;
+
+    private KafkaProducerManager kafkaProducerManager;
 
     private KafkaAlarmDataSync kafkaAlarmaDataStore;
 
@@ -241,7 +247,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, onmsTopologyDao, 5);
+        kafkaProducerManager = new KafkaProducerManager(configAdmin);
+
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, kafkaProducerManager,eventdIpcMgr, onmsTopologyDao, 5);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -252,7 +260,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapper);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(kafkaProducerManager, kafkaProducer, protobufMapper);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
         kafkaAlarmaDataStore.setAlarmSync(true);
         kafkaAlarmaDataStore.init();
@@ -391,6 +399,81 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         // Sleep an additional 10 seconds to verify a second alarm was not consumed
         Thread.sleep(10000);
         assertEquals(1, kafkaConsumer.getAlarms().size());
+    }
+    @Test
+    public void testFallbackToGlobalConfiguration() throws Exception {
+
+
+        Hashtable<String, Object> globalConfigProps = new Hashtable<>();
+        globalConfigProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+        globalConfigProps.put("client.id", "global-producer");
+
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        Configuration globalConfig = mock(Configuration.class);
+        when(globalConfig.getProperties()).thenReturn(globalConfigProps);
+
+        Configuration emptyConfig = mock(Configuration.class);
+        when(emptyConfig.getProperties()).thenReturn(null);
+
+        when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.ALARMS_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.NODES_KAFKA_CLIENT_PID)).thenReturn(emptyConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.GLOBAL_KAFKA_CLIENT_PID)).thenReturn(globalConfig);
+        when(configAdmin.getConfiguration(anyString())).thenReturn(globalConfig);
+
+        KafkaProducerManager testManager = new KafkaProducerManager(configAdmin);
+        testManager.init();
+
+        for (KafkaProducerManager.MessageType messageType : KafkaProducerManager.MessageType.values()) {
+            Properties config = testManager.getConfigurationForMessageType(messageType);
+            assertThat("use global config when topic-specific is missing",
+                    config.getProperty("client.id"), is("global-producer"));
+        }
+
+        testManager.destroy();
+        LOG.info("Fallback to global configuration test completed successfully");
+    }
+
+    @Test
+    public void testEffectivePidSelectionLogic() throws Exception {
+
+        Hashtable<String, Object> configWithBootstrap = new Hashtable<>();
+        configWithBootstrap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
+
+        Hashtable<String, Object> configWithoutBootstrap = new Hashtable<>();
+        configWithoutBootstrap.put("othertest.property", "value");
+
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+
+        Configuration eventsConfig = mock(Configuration.class);
+        when(eventsConfig.getProperties()).thenReturn(configWithBootstrap);
+
+        Configuration alarmsConfig = mock(Configuration.class);
+        when(alarmsConfig.getProperties()).thenReturn(configWithoutBootstrap);
+
+        Configuration globalConfig = mock(Configuration.class);
+        when(globalConfig.getProperties()).thenReturn(configWithBootstrap);
+
+        when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID)).thenReturn(eventsConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.ALARMS_KAFKA_CLIENT_PID)).thenReturn(alarmsConfig);
+        when(configAdmin.getConfiguration(KafkaProducerManager.GLOBAL_KAFKA_CLIENT_PID)).thenReturn(globalConfig);
+        when(configAdmin.getConfiguration(anyString())).thenReturn(globalConfig);
+
+        KafkaProducerManager testManager = new KafkaProducerManager(configAdmin);
+
+        testManager.init();
+
+        Properties eventsResult = testManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.EVENT);
+
+        Properties alarmsResult = testManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM);
+
+        assertThat("Events config should have bootstrap servers",
+                eventsResult.getProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), not(nullValue()));
+        assertThat("Alarms config should have bootstrap servers (from global fallback)",
+                alarmsResult.getProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), not(nullValue()));
+
+        testManager.destroy();
+        LOG.info("Effective PID selection logic test completed");
     }
 
     @Test
@@ -544,12 +627,25 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         private List<CollectionSetProtos.CollectionSet> collectionSetValues = new ArrayList<>();
         private Map<String, OpennmsModelProtos.Alarm> alarmsByReductionKey = new LinkedHashMap<>();
         private AtomicInteger numRecordsConsumed = new AtomicInteger(0);
+        private String groupId;
+        private List<String> topics;
 
         private AtomicInteger numOfMetricRecords = new AtomicInteger(0);
 
         public KafkaMessageConsumerRunner(String kafkaConnectString) {
             this.kafkaConnectString = Objects.requireNonNull(kafkaConnectString);
         }
+
+        public KafkaMessageConsumerRunner(String kafkaConnectString, String topic, String groupId) {
+            this(kafkaConnectString, Collections.singletonList(topic), groupId);
+        }
+
+        public KafkaMessageConsumerRunner(String kafkaConnectString, List<String> topics, String groupId) {
+            this.kafkaConnectString = Objects.requireNonNull(kafkaConnectString);
+            this.topics = Objects.requireNonNull(topics);
+            this.groupId = Objects.requireNonNull(groupId);
+        }
+
 
         @Override
         public void run() {
@@ -751,6 +847,154 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         eventdIpcMgr.reset();
         alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         databasePopulator.resetDatabase();
+    }
+
+    @Test
+ public void testMessagesSentToDifferentKafkaClusters() throws Exception {
+        TemporaryFolder globalTempFolder = new TemporaryFolder();
+        TemporaryFolder eventsTempFolder = new TemporaryFolder();
+
+        globalTempFolder.create();
+        eventsTempFolder.create();
+
+        JUnitKafkaServer globalKafkaServer = new JUnitKafkaServer(globalTempFolder);
+        JUnitKafkaServer eventsKafkaServer = new JUnitKafkaServer(eventsTempFolder);
+
+        try {
+            globalKafkaServer.before();
+            eventsKafkaServer.before();
+
+            String globalConnectString = globalKafkaServer.getKafkaConnectString();
+            String eventsConnectString = eventsKafkaServer.getKafkaConnectString();
+
+            ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
+
+            Hashtable<String, Object> globalConfig = new Hashtable<>();
+            globalConfig.put("bootstrap.servers", globalConnectString);
+            globalConfig.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 3000);
+            globalConfig.put(ProducerConfig.LINGER_MS_CONFIG, 0);
+            globalConfig.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 2000);
+
+            Hashtable<String, Object> eventsConfig = new Hashtable<>();
+            eventsConfig.put("bootstrap.servers", eventsConnectString);
+            eventsConfig.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 3000);
+            eventsConfig.put(ProducerConfig.LINGER_MS_CONFIG, 0);
+            eventsConfig.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 2000);
+
+
+            when(configAdmin.getConfiguration(KafkaProducerManager.GLOBAL_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+            when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(eventsConfig);
+
+            when(configAdmin.getConfiguration(KafkaProducerManager.ALARMS_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+            when(configAdmin.getConfiguration(KafkaProducerManager.NODES_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+            when(configAdmin.getConfiguration(KafkaProducerManager.METRICS_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+            when(configAdmin.getConfiguration(KafkaProducerManager.TOPOLOGY_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+            when(configAdmin.getConfiguration(KafkaProducerManager.ALARM_FEEDBACK_KAFKA_CLIENT_PID).getProperties())
+                    .thenReturn(globalConfig);
+
+            Hashtable<String, Object> streamsConfig = new Hashtable<>();
+            streamsConfig.put(StreamsConfig.STATE_DIR_CONFIG, tempFolder.newFolder("streams").getAbsolutePath());
+            streamsConfig.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
+            streamsConfig.put(StreamsConfig.METADATA_MAX_AGE_CONFIG, 1000);
+            when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties())
+                    .thenReturn(streamsConfig);
+            KafkaProducerManager multiClusterManager = new KafkaProducerManager(configAdmin);
+
+                Configuration eventsPidConfig = mock(Configuration.class);
+                when(eventsPidConfig.getProperties()).thenReturn(eventsConfig);
+                when(configAdmin.getConfiguration(KafkaProducerManager.EVENTS_KAFKA_CLIENT_PID, null))
+                        .thenReturn(eventsPidConfig);
+
+
+            multiClusterManager.init();
+
+            Properties eventConfig = multiClusterManager.getConfigurationForMessageType(
+                    KafkaProducerManager.MessageType.EVENT);
+            Properties alarmConfig = multiClusterManager.getConfigurationForMessageType(
+                    KafkaProducerManager.MessageType.ALARM);
+
+            assertThat("Events should use events Kafka cluster",
+                    eventConfig.getProperty("bootstrap.servers"),
+                    equalTo(eventsConnectString));
+
+            assertThat("Alarms should fall back to global Kafka cluster",
+                    alarmConfig.getProperty("bootstrap.servers"),
+                    equalTo(globalConnectString));
+
+            OpennmsKafkaProducer multiClusterProducer = new OpennmsKafkaProducer(
+                    protobufMapper, nodeCache, multiClusterManager, eventdIpcMgr, onmsTopologyDao, 5);
+            multiClusterProducer.setEventTopic(EVENT_TOPIC_NAME);
+            multiClusterProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
+            multiClusterProducer.setAlarmTopic(ALARM_TOPIC_NAME);
+            multiClusterProducer.setAlarmFeedbackTopic(ALARM_FEEDBACK_TOPIC_NAME);
+            multiClusterProducer.setAlarmFilter(null);
+            multiClusterProducer.setNodeTopic(NODE_TOPIC_NAME);
+            multiClusterProducer.setEncoding("UTF-8");
+            multiClusterProducer.init();
+
+            KafkaAlarmDataSync multiClusterDataSync = new KafkaAlarmDataSync(multiClusterManager, multiClusterProducer, protobufMapper);
+            multiClusterDataSync.setAlarmTopic(ALARM_TOPIC_NAME);
+            multiClusterDataSync.setAlarmSync(true);
+            multiClusterDataSync.init();
+            multiClusterProducer.setDataSync(multiClusterDataSync);
+
+
+            alarmLifecycleListenerManager.onListenerUnregistered(kafkaProducer, Collections.emptyMap());
+            alarmLifecycleListenerManager.onListenerRegistered(multiClusterProducer, Collections.emptyMap());
+
+            String eventsGroupId = "events-consumer-group-" + UUID.randomUUID();
+            String globalGroupId = "global-consumer-group-" + UUID.randomUUID();
+
+            KafkaMessageConsumerRunner eventsConsumer = new KafkaMessageConsumerRunner(
+                    eventsConnectString, EVENT_TOPIC_NAME, eventsGroupId);
+            KafkaMessageConsumerRunner globalConsumer = new KafkaMessageConsumerRunner(
+                    globalConnectString, EVENT_TOPIC_NAME, globalGroupId);
+
+            ExecutorService consumerExecutor = Executors.newFixedThreadPool(2);
+            consumerExecutor.execute(eventsConsumer);
+            consumerExecutor.execute(globalConsumer);
+
+            try {
+                await().atMost(20000, TimeUnit.MINUTES).until(() -> {
+                    eventdIpcMgr.sendNow(
+                            MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent()
+                    );
+                    return eventsConsumer.getEvents().size() >= 1;
+                });
+
+                List<String> eventUeis = eventsConsumer.getEvents().stream()
+                        .map(OpennmsModelProtos.Event::getUei)
+                        .collect(Collectors.toList());
+                assertThat(eventUeis, hasItem(EventConstants.NODE_DOWN_EVENT_UEI));
+                assertThat("Event should NOT be in global cluster",
+                        globalConsumer.getEvents(), empty());
+            } finally {
+                eventsConsumer.shutdown();
+                globalConsumer.shutdown();
+                consumerExecutor.shutdown();
+                consumerExecutor.awaitTermination(2, TimeUnit.MINUTES);
+                alarmLifecycleListenerManager.onListenerUnregistered(multiClusterProducer, Collections.emptyMap());
+                multiClusterDataSync.destroy();
+                multiClusterProducer.destroy();
+                multiClusterManager.destroy();
+
+                alarmLifecycleListenerManager.onListenerRegistered(kafkaProducer, Collections.emptyMap());
+            }
+
+        } finally {
+                eventsKafkaServer.after();
+                globalKafkaServer.after();
+
+             eventsTempFolder.delete();
+             globalTempFolder.delete();
+
+        }
     }
 
     @Override

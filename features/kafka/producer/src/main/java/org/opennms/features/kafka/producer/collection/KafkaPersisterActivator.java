@@ -75,7 +75,6 @@ public class KafkaPersisterActivator implements BundleActivator {
                 SessionUtils sessionUtils = context
                         .getService(context.getServiceReference(SessionUtils.class));
                 ResourceDao resourceDao = context.getService(context.getServiceReference(ResourceDao.class));
-
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, sessionUtils, resourceDao);
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
