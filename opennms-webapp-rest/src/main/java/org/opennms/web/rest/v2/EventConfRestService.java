@@ -451,9 +451,12 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response addEventConfSource(final AddEventConfSourceRequest request, SecurityContext securityContext) throws Exception {
+    public Response addEventConfSource(final AddEventConfSourceRequest request,
+                                       SecurityContext securityContext) throws Exception {
+
         final Date now = new Date();
 
+        // Validate request
         try {
             validateAddSourceRequest(request);
         } catch (IllegalArgumentException ex) {
@@ -464,17 +467,21 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         try {
+            // Duplicate check
             if (eventConfSourceDao.findByName(request.getName()) != null) {
-                LOG.warn("Attempt to create duplicate EventConfSource. name='{}' ", request.getName());
+                LOG.warn("Attempt to create duplicate EventConfSource. name='{}'", request.getName());
                 return Response.status(Response.Status.CONFLICT)
                         .entity("An EventConfSource with the same name already exists")
                         .build();
             }
 
             final String username = getUsername(securityContext);
+
             int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
             int newOrder = maxFileOrder + 1;
-            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'", newOrder, request.getName());
+
+            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'",
+                    newOrder, request.getName());
 
             EventConfSource eventConfSource = new EventConfSource();
             eventConfSource.setName(request.getName());
@@ -489,26 +496,26 @@ public class EventConfRestService implements EventConfRestApi {
 
             LOG.debug("Persisting EventConfSource name='{}'", request.getName());
 
-            Long eventConfSourceID = eventConfPersistenceService.createEventConfSource(eventConfSource);
+            Long eventConfSourceId = eventConfPersistenceService.createEventConfSource(eventConfSource);
 
             LOG.info("Successfully created EventConfSource id={}, name='{}', user='{}'",
-                    eventConfSourceID, request.getName(), username);
+                    eventConfSourceId, request.getName(), username);
 
-            return Response
-                    .status(Response.Status.CREATED)
+            return Response.status(Response.Status.CREATED)
                     .entity(Map.of(
-                            "id", eventConfSourceID,
+                            "id", eventConfSourceId,
                             "name", eventConfSource.getName(),
                             "fileOrder", eventConfSource.getFileOrder()
                     ))
                     .build();
 
         } catch (Exception ex) {
-            LOG.error("Failed to create EventConfSource name='{}' . Error={}",
+            LOG.error("Failed to create EventConfSource name='{}'. Error={}",
                     request.getName(), ex.getMessage(), ex);
-            return Response
-                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred while creating EventConfSource: " + ex.getMessage())
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while creating EventConfSource: "
+                            + ex.getMessage())
                     .build();
         }
     }

@@ -36,7 +36,6 @@ import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
-import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.slf4j.Logger;
@@ -142,11 +141,7 @@ public class EventConfPersistenceService {
 
     @Transactional
     public Long createEventConfSource(final EventConfSource eventConfSource) {
-        try {
-            return eventConfSourceDao.save(eventConfSource);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to save EventConfSource", e);
-        }
+        return eventConfSourceDao.save(eventConfSource);
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
