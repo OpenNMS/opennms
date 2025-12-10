@@ -16,19 +16,19 @@ parameters:
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: release-35.x
+    default: foundation-2026
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: release-35.x
+    default: foundation-2026
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: develop
+    default: release-35.x
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: develop
+    default: release-35.x
 
   ### sub-tree "module" build setup ###
   trigger-docs:
