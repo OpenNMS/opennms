@@ -326,6 +326,35 @@ export const getEventConfSourceById = async (sourceId: string): Promise<EventCon
   }
 }
 
+/**
+ * Makes a POST request to the REST endpoint to add a new event configuration source.
+ *
+ * @param sourceName The name of the event configuration source to add.
+ * @param description The description of the event configuration source to add.
+ * @param vendor The vendor of the event configuration source to add.
+ * @returns A promise that resolves to a boolean indicating whether the event configuration source was added successfully.
+ */
+export const addEventConfigSource = async (
+  sourceName: string,
+  description: string,
+  vendor: string
+): Promise<201 | 409 | 500> => {
+  const endpoint = '/eventconf/sources/eventConfSource'
+  const payload = {
+    name: sourceName,
+    description: description,
+    vendor: vendor
+  }
+
+  try {
+    const response = await v2.post(endpoint, payload)
+    return response.status as 201 | 409
+  } catch (error) {
+    console.error('Error adding event config source:', error)
+    return 500
+  }
+}
+
 const extractFilenameFromContentDisposition = (
   headers: Record<string, any> | undefined,
   defaultName: string
