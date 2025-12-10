@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>vaadin-components</artifactId>
-        <version>35.0.0</version>
+        <version>35.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.vaadin-components</groupId>

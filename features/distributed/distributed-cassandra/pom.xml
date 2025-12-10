@@ -5,7 +5,7 @@
     <parent>
         <artifactId>distributed-parent</artifactId>
         <groupId>org.opennms.features.distributed</groupId>
-        <version>35.0.0</version>
+        <version>35.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.features.distributed.cassandra</artifactId>
