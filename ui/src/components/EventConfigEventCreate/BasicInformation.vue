@@ -174,7 +174,7 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
+import { createEventConfigEventXml, updateEventConfigEventByIdXml } from '@/services/eventConfigService'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
@@ -260,6 +260,7 @@ const resetValues = () => {
   eventUei.value = ''
   eventLabel.value = ''
   eventDescription.value = ''
+  operatorInstructions.value = ''
   severity.value = { _text: '', _value: '' }
   destination.value = { _text: '', _value: '' }
   logMessage.value = ''
@@ -477,7 +478,7 @@ const handleSaveEvent = async () => {
 
     let response = null
     if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
-      response = await updateEventConfigEventById(
+      response = await updateEventConfigEventByIdXml(
         xmlContent.value,
         store.selectedSource.id,
         store.eventModificationState.eventConfigEvent.id,
@@ -485,7 +486,7 @@ const handleSaveEvent = async () => {
       )
     }
     if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEvent(xmlContent.value, store.selectedSource.id)
+      response = await createEventConfigEventXml(xmlContent.value, store.selectedSource.id)
     }
 
     if (response) {

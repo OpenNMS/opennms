@@ -6,6 +6,7 @@ import {
   mapUploadedEventConfigFilesResponseFromServer
 } from '@/mappers/eventConfig.mapper'
 import {
+  EventConfigEventJsonStructure,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
@@ -68,7 +69,7 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
  * @param status Whether to enable or disable the event configuration event.
  * @returns A promise that resolves to a boolean indicating whether the event configuration event was updated successfully.
  */
-export const updateEventConfigEventById = async (
+export const updateEventConfigEventByIdXml = async (
   eventXml: string,
   sourceId: number,
   eventId: number,
@@ -86,16 +87,66 @@ export const updateEventConfigEventById = async (
 }
 
 /**
+ * Makes a PUT request to the REST endpoint to update an event configuration event.
+ *
+ * @param {EventConfigEventJsonStructure} eventJson - The JSON object representing the event configuration event to update.
+ * @param {number} sourceId - The ID of the event configuration source under which the event configuration event belongs.
+ * @param {number} eventId - The ID of the event configuration event to update.
+ * @param {boolean} status - Whether to enable or disable the event configuration event.
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the event configuration event was updated successfully.
+ */
+export const updateEventConfigEventByIdJson = async (
+  eventJson: EventConfigEventJsonStructure,
+  sourceId: number,
+  eventId: number,
+  status: boolean
+): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/${eventId}`
+  const payload = {
+    ...eventJson,
+    enabled: status
+  }
+  try {
+    const response = await v2.put(endpoint, payload, { headers: { 'Content-Type': 'application/json' } })
+    return response.status === 200
+  } catch (error) {
+    console.error('Error Updating event config source:', error)
+    return false
+  }
+}
+
+/**
  * Makes a POST request to the REST endpoint to create a new event configuration event.
  *
  * @param eventXml The XML string representing the event configuration event to create.
  * @param sourceId The ID of the event configuration source under which the event configuration event belongs.
  * @returns A promise that resolves to a boolean indicating whether the event configuration event was created successfully.
  */
-export const createEventConfigEvent = async (eventXml: string, sourceId: number): Promise<boolean> => {
+export const createEventConfigEventXml = async (eventXml: string, sourceId: number): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events`
   try {
     const response = await v2.post(endpoint, eventXml, { headers: { 'Content-Type': 'application/xml' } })
+    return response.status === 200 || response.status === 201
+  } catch (error) {
+    console.error('Error Creating event config source:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a POST request to the REST endpoint to create a new event configuration event.
+ *
+ * @param {EventConfigEventJsonStructure} eventJson - The JSON object representing the event configuration event to create.
+ * @param {number} sourceId - The ID of the event configuration source under which the event configuration event belongs.
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the event configuration event was created successfully.
+ */
+export const createEventConfigEventJson = async (
+  eventJson: EventConfigEventJsonStructure,
+  sourceId: number
+): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events`
+  try {
+    const response = await v2.post(endpoint, eventJson, { headers: { 'Content-Type': 'application/json' } })
     return response.status === 200 || response.status === 201
   } catch (error) {
     console.error('Error Creating event config source:', error)

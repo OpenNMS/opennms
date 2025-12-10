@@ -1,10 +1,11 @@
-import { mount, VueWrapper } from '@vue/test-utils'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createTestingPinia } from '@pinia/testing'
+import EventConfigEventCreate from '@/containers/EventConfigEventCreate.vue'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
-import EventConfigEventCreate from '@/containers/EventConfigEventCreate.vue'
 import { CreateEditMode } from '@/types'
+import { EventConfigEvent, EventConfigEventJsonStructure } from '@/types/eventConfig'
+import { createTestingPinia } from '@pinia/testing'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockPush = vi.fn()
 
@@ -27,7 +28,7 @@ const mockSource = {
   lastModified: new Date()
 }
 
-const mockEvent = {
+const mockEvent: EventConfigEvent = {
   id: 1,
   uei: 'test-uei',
   eventLabel: 'Test Event',
@@ -40,7 +41,8 @@ const mockEvent = {
   modifiedBy: 'Tester',
   sourceName: 'Test Source',
   vendor: 'Test Vendor',
-  fileOrder: 1
+  fileOrder: 1,
+  jsonContent: {} as EventConfigEventJsonStructure
 }
 
 describe('EventConfigSourceDetail.vue', () => {
