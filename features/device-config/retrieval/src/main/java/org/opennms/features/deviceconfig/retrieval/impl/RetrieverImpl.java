@@ -207,7 +207,7 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
 
         @Override
         public void onFileReceived(InetAddress address, String fileName, byte[] content) {
-            if (fileName.endsWith(fileNameSuffix)) {
+            if (fileName.endsWith(fileNameSuffix) || fileName.contains(fileNameSuffix)) {
                 // it is unlikely, that the file receiver receives a file (with matching filename!) before the file
                 // upload was triggered
                 // -> just to be sure check that the future is set
@@ -224,8 +224,11 @@ public class RetrieverImpl implements Retriever, AutoCloseable {
                         catch (Exception e) {}
                     }
                     // strip the '.' and filenameSuffix from the filename
-                    future.complete(Either.right(new Success(content, fileName.substring(0, fileName.length() - fileNameSuffix.length()), scriptOutput)));
+                    future.complete(Either.right(new Success(content, fileName.replace(fileNameSuffix, ""), scriptOutput)));
                 }
+            }
+            else {
+                LOG.warn("Received file from {} without a matching 'filenameSuffix' token; Ignoring...", address.getHostAddress());
             }
         }
     }

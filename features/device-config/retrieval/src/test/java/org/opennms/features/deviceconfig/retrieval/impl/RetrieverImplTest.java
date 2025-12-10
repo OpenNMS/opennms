@@ -221,7 +221,7 @@ public class RetrieverImplTest {
         var filenameSuffix = (String)vars.get("filenameSuffix");
 
         // signal the receiver of some incoming file that has a different name
-        receiver.onFileReceived(InetAddress.getLocalHost(), "config.gz" + filenameSuffix + ".other", new byte[] { 1, 2, 3 });
+        receiver.onFileReceived(InetAddress.getLocalHost(), "config.gz.somerandomstringhuehuehue.other", new byte[] { 1, 2, 3 });
 
         await().until(future::isDone);
 

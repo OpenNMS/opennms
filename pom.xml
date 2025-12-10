@@ -1770,7 +1770,7 @@
     <commonsLangVersion>2.6</commonsLangVersion>
     <commonsLang3Version>3.16.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
-    <commonsNetVersion>3.10.0</commonsNetVersion>
+    <commonsNetVersion>3.12.0</commonsNetVersion>
     <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsTextVersion>1.11.0</commonsTextVersion>
