@@ -80,10 +80,10 @@
     	action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
     }
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"far fa-square-plus\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"far fa-square-minus\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fas fa-square-caret-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fas fa-square-caret-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Events"));
 %>
 
@@ -266,12 +266,12 @@
       <c:when test="${favorite == null}">
       <button class="btn btn-secondary" onclick="createFavorite()">
         <!-- Star outline -->
-        <i class="fa fa-lg fa-star-o"></i>
+        <i class="far fa-lg fa-star"></i>
       </button>
       </c:when>
       <c:otherwise>
       <button class="btn btn-secondary" onclick="deleteFavorite(${favorite.id})">
-        <i class="fa fa-lg fa-star"></i>
+        <i class="fas fa-lg fa-star"></i>
       </button>
       </c:otherwise>
       </c:choose>

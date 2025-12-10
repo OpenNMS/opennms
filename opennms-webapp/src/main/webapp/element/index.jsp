@@ -77,7 +77,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" id="byname_nodename" name="nodename"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -90,7 +90,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -114,7 +114,7 @@
                   </select>
                   <input type="text" class="form-control" id="bymib2_mib2ParmValue" name="mib2ParmValue"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -136,7 +136,7 @@
                   </select>
                   <input type="text" class="form-control" id="byif_snmpParmValue" name="snmpParmValue"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -154,7 +154,7 @@
                       <% } %>
                   </select>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -172,7 +172,7 @@
                       <% } %>
                   </select>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -185,7 +185,7 @@
               <div class="input-group">
                   <input class="form-control" type="text" name="maclike"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -198,7 +198,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" name="foreignSource"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -214,7 +214,7 @@
                       <option value="false">Nodes without flow data</option>
                   </select>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -226,7 +226,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" id="byif_topology" name="topology"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>
@@ -256,7 +256,7 @@
                 <% } %>
                 </select>
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                 </div>
             </div>
         </form>
@@ -274,7 +274,7 @@
                   </select>
                   <input type="text" class="form-control" id="byfield_value" name="searchvalue" placeholder="Containing text"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </form>

@@ -75,8 +75,8 @@
     </tr>
     <c:forEach items="${categories}" var="category">
       <tr>
-        <td><a href="javascript:void(0);" onclick="deleteCategory('${e:forJavaScript(category.name)}', ${category.id})" ><i class="fa fa-trash-o fa-2x"></i></a></td>
-        <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><i class="fa fa-edit fa-2x"></i></a></td>
+        <td><a href="javascript:void(0);" onclick="deleteCategory('${e:forJavaScript(category.name)}', ${category.id})" ><i class="fas fa-trash-can fa-2x"></i></a></td>
+        <td><a href="admin/categories.htm?categoryid=${category.id}&edit"><i class="fas fa-pen-to-square fa-2x"></i></a></td>
         <td><a href="admin/categories.htm?categoryid=${category.id}">${fn:escapeXml(category.name)}</a></td>
       </tr>
     </c:forEach>
@@ -84,7 +84,7 @@
       <td colspan="3">
         <form role="form" class="form-inline mt-4" action="admin/categories.htm">
           <input type="textfield" class="form-control" size="40" name="newCategoryName" placeholder="Category name"/>
-          <button type="submit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Category</button>
+          <button type="submit" class="btn btn-secondary ml-2"><i class="fas fa-plus"></i> Add New Category</button>
         </form>
     </tr>
   </table>

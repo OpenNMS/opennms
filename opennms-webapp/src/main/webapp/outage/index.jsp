@@ -67,7 +67,7 @@ function validateId() {
                 <div class="input-group">
                   <input type="text" class="form-control" id="input_id" name="id" />
                   <div class="input-group-append">
-                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
                 </div>
               </div>

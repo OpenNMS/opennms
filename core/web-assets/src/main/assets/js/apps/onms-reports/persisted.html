@@ -1,6 +1,6 @@
 <div class="mx-2 my-2">
     <div class="mb-4">
-        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()"><i class="fas fa-arrows-rotate"></i></button>
         <button class="btn btn-secondary"
                 ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && persistedReports.length > 0"
                 id="action.deleteAll"
@@ -13,7 +13,7 @@
                 confirm-text="Yes"
                 cancel-text="No"
                 title="Delete All">
-            <i class="fa fa-trash"></i>
+            <i class="fas fa-trash-can"></i>
         </button>
     </div>
     <div ng-if="persistedReports.length == 0">
@@ -33,7 +33,7 @@
             <tbody>
             <tr ng-repeat="report in persistedReports">
                 <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
-                    <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
+                    <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fas fa-trash-can"></i></button>
                 </td>
                 <td>
                     <a ng-repeat="format in report.formats" href="rest/reports/download?locatorId={{report.id}}&amp;format={{format}}" class="mr-4"><i ng-class="{'fa-file-pdf-o': format === 'PDF', 'fa-file-text-o': format === 'CSV'}" class="fa"></i> {{format}}</a>

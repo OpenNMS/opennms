@@ -51,7 +51,7 @@
             <p id="configError.referer" class="invalid-feedback">{{configError.referer || "User Agent or Referer must be set"}}</p>
         </div>
         <div class="form-group">
-            <label style="width: 180px" for="nominatimAcceptUsageTerms">Accept <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Usage Terms <i class="fa fa-share-square-o"></i></a></label>
+            <label style="width: 180px" for="nominatimAcceptUsageTerms">Accept <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Usage Terms <i class="far fa-share-from-square"></i></a></label>
             <toggle id="nominatimAcceptUsageTerms"
                     name="nominatimAcceptUsageTerms"
                     on="Yes"
@@ -78,6 +78,6 @@
         </div>
 
         <p class="text-warning" ng-if="form.$dirty">You have unsaved changes</p>
-        <button id="saveButton" class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid || validateFieldsManually() !== true"><i class="fa fa-save"></i> Save</button>
+        <button id="saveButton" class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid || validateFieldsManually() !== true"><i class="fas fa-floppy-disk"></i> Save</button>
     </form>
 </div>

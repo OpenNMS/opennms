@@ -610,7 +610,7 @@ Collection<String> dutySchedules = user.getDutySchedules();
                  <option value="6">6</option>
                  <option value="7">7</option>
            </select>
-           <button id="addSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="addDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> Add Schedules</button>
+           <button id="addSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="addDutySchedules()" title="Add This Many Schedules"><i class="fas fa-plus"></i> Add Schedules</button>
        </div>
 
    </div>

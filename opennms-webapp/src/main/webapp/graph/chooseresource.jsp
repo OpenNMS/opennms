@@ -87,21 +87,21 @@
         <div class="input-group mr-4">
           <div class="input-group-prepend">
             <div class="input-group-text">
-              <span class="fa fa-search"></span>
+              <span class="fas fa-magnifying-glass"></span>
             </div>
           </div>
           <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="searchQuery"></input>
           <div class="input-group-prepend" ng-show="searchQuery.length > 0">
             <div class="input-group-text">
-              <span class="fa fa-remove" ng-click="searchQuery = ''"></span>
+              <span class="fas fa-xmark" ng-click="searchQuery = ''"></span>
             </div>
           </div>
         </div>
         <div class="btn-group">
-          <button type="button" class="btn btn-secondary" ng-click="checkAll(true)"><i class="fa fa-check"></i> Select All</button>
-          <button type="button" class="btn btn-secondary" ng-click="checkAll(false)"><i class="fa fa-remove"></i> Clear All</button>
-          <button type="button" class="btn btn-secondary" ng-click="graphSelected()"><i class="fa fa-th-large"></i> Graph Selection</button>
-          <button type="button" class="btn btn-secondary" ng-click="graphAll()"><i class="fa fa-th"></i> Graph All</button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(true)"><i class="fas fa-check"></i> Select All</button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(false)"><i class="fas fa-xmark"></i> Clear All</button>
+          <button type="button" class="btn btn-secondary" ng-click="graphSelected()"><i class="fas fa-table-cells-large"></i> Graph Selection</button>
+          <button type="button" class="btn btn-secondary" ng-click="graphAll()"><i class="fas fa-table-cells"></i> Graph All</button>
         </div>
       </form>
     </div>
@@ -116,9 +116,9 @@
           </uib-accordion-heading>
             <div class="checkbox" ng-repeat="resource in group | orderBy:'label'">
               <label><input type="checkbox" class="mr-1" ng-model="resource.selected"/>{{ resource.label }}</label>
-              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress/egress flow data available"><i class="fa fa-exchange"></i>&nbsp;flow data</span></a>
-              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===false" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress flow data available"><i class="fa fa-long-arrow-left"></i>&nbsp;flow data</span></a>
-              <a ng-if="resource.hasIngressFlows===false && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: egress flow data available"><i class="fa fa-long-arrow-right"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress/egress flow data available"><i class="fas fa-right-left"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===true && resource.hasEgressFlows===false" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: ingress flow data available"><i class="fas fa-arrow-left-long"></i>&nbsp;flow data</span></a>
+              <a ng-if="resource.hasIngressFlows===false && resource.hasEgressFlows===true" ng-href="{{resource.flowGraphUrl}}" target="_blank" title="Open flow graphs"><span class="badge badge-secondary" title="Flows: egress flow data available"><i class="fas fa-arrow-right-long"></i>&nbsp;flow data</span></a>
             </div>
         </div>
       </uib-accordion>

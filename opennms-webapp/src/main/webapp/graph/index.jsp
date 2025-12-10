@@ -77,7 +77,7 @@
             <div class="input-group">
               <div class="input-group-prepend">
                 <div class="input-group-text">
-                  <i class="fa fa-search"></i>
+                  <i class="fas fa-magnifying-glass"></i>
                 </div>
 
               </div>

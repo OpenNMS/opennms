@@ -31,7 +31,7 @@
         <div class="input-group">
           <div class="input-group-prepend">
             <div class="input-group-text">
-              <i class="fa fa-pencil"></i>
+              <i class="fas fa-pencil"></i>
             </div>
           </div>
           <input class="form-control" type="text" name="serviceName" placeholder="Service Name (choose one from the list or type a custom text for a new one)"
@@ -40,7 +40,7 @@
                  ng-class="{ 'is-invalid' : serviceForm.serviceName.$invalid }">
           <span class="input-group-append">
             <button class="btn btn-secondary" type="button" ng-click="removeService($index)">
-              <i class="fa fa-trash"></i>
+              <i class="fas fa-trash-can"></i>
             </button>
           </span>
           <p ng-show="serviceForm.serviceName.$invalid" class="invalid-feedback">Service name is required and should be unique on the interface.</p>

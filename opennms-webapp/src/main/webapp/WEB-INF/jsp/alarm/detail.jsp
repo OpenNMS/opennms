@@ -88,11 +88,11 @@
     if (alarm.getAckTime() == null) {
         ackButtonName = "Acknowledge";
         action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-        ackButtonIcon = "fa fa-check-square-o";
+        ackButtonIcon = "far fa-square-check";
     } else {
         ackButtonName = "Unacknowledge";
         action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
-        ackButtonIcon = "fa fa-square-o";
+        ackButtonIcon = "far fa-square";
     }
 
     String escalateAction = AlarmSeverityChangeController.ESCALATE_ACTION;
@@ -378,10 +378,10 @@
                 <td>
                     <c:choose>
                     <c:when test="${relatedVar.situation}">
-                    <i class="fa fa-check-square-o">
+                    <i class="far fa-square-check">
                         </c:when>
                         <c:otherwise>
-                        <i class="fa fa-square-o">
+                        <i class="far fa-square">
                             </c:otherwise>
                             </c:choose>
                 </td>
@@ -587,7 +587,7 @@
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
                     <button class="form-control btn btn-secondary" type="submit">
-                        <i class="fa fa-arrow-up"></i> Escalate
+                        <i class="fas fa-arrow-up"></i> Escalate
                     </button>
                 </form>
             <%}%>
@@ -598,7 +598,7 @@
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
                     <button class="form-control btn btn-secondary" type="submit" value="Clear">
-                        <i class="fa fa-thumbs-up"></i> Clear
+                        <i class="fas fa-thumbs-up"></i> Clear
                     </button>
                 </form>
             <%}%>

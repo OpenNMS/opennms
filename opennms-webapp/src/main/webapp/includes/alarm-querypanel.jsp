@@ -42,7 +42,7 @@
 			<option value="7">Last month</option>
 		</select>
 		<div class="input-group-append">
-			<button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+			<button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
 		</div>
 	</div>
 </form>

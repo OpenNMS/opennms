@@ -83,7 +83,7 @@
 <div class="card">
   <div class="card-header">
     <h4 class="pull-left">Event Notifications</h4>
-    <button class="pull-right btn btn-secondary" onclick="javascript:newNotice()"><i class="fa fa-plus"></i> Add New Event Notification</button>
+    <button class="pull-right btn btn-secondary" onclick="javascript:newNotice()"><i class="fas fa-plus"></i> Add New Event Notification</button>
   </div>
   <div class="card-body">
         <table class="table table-sm table-striped">

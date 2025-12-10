@@ -1,10 +1,10 @@
 <div class="card-body">
     <div class="btn-toolbar pull-right mb-2">
         <div class="btn-group ml-2" role="group">
-            <button id="action.refresh" class="btn btn-secondary" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+            <button id="action.refresh" class="btn btn-secondary" ng-click="refresh()" title="Refresh list"><i class="fas fa-arrows-rotate"></i></button>
         </div>
         <div class="btn-group ml-2" role="group">
-            <button id="action.addGroup" class="btn btn-secondary" ng-click="addGroup()" title="Add new classification group"><i class="fa fa-plus"></i></button>
+            <button id="action.addGroup" class="btn btn-secondary" ng-click="addGroup()" title="Add new classification group"><i class="fas fa-plus"></i></button>
         </div>
     </div>
     <div ng-show="groups.length == 0">No groups defined.</div>
@@ -23,7 +23,7 @@
             <tbody ng-model="groups" ui-sortable="sortableGroups">
             <tr class="d-flex" ng-repeat="group in groups" data-row="{{group.name}}" ng-class="{'unsortable': group['readOnly']}">
                 <td class="col-md-1 text-nowrap">
-                    <i class="fa fa-bars text-muted" style="padding-right:1em"
+                    <i class="fas fa-bars text-muted" style="padding-right:1em"
                         ng-style="{'visibility': !group['readOnly'] ? 'visible' : 'hidden'}"></i>
                     {{group['position']}}</td>
                 <td class="col-md-3 text-nowrap">{{group['name']}}</td>
@@ -34,7 +34,7 @@
                 </td>
                 <td class="col-md-1 text-nowrap">
                     <div class="pull-right">
-                        <button id="action.{{group.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editGroup(group)" title="edit group" ng-show="!group.readOnly"><i class="fa fa-edit"></i></button>
+                        <button id="action.{{group.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editGroup(group)" title="edit group" ng-show="!group.readOnly"><i class="fas fa-pen-to-square"></i></button>
 
                         <button
                                 id="action.{{group.position}}.delete"
@@ -48,7 +48,7 @@
                                 cancel-button-type="secondary"
                                 confirm-text="Yes"
                                 cancel-text="No"
-                                ng-show="!group.readOnly"><i class="fa fa-trash-o"></i></button>
+                                ng-show="!group.readOnly"><i class="fas fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>
