@@ -45,6 +45,7 @@ message GenericTypeResource {
 message ResponseTimeResource {
   string instance = 1;
   string location = 2;
+  NodeLevelResource node = 3;
 }
 
 message CollectionSetResource {
