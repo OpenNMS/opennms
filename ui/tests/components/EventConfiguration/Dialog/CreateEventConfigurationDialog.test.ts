@@ -139,7 +139,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     ;(addEventConfigSource as any).mockResolvedValue(201)
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
     store.resetSourcesPagination = vi.fn()
-    store.refreshSourcesfilters = vi.fn()
+    store.refreshSourcesFilters = vi.fn()
     const mockSource = {
       id: 1,
       vendor: 'ConfigA',
@@ -168,7 +168,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     ;(addEventConfigSource as any).mockResolvedValue(201)
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
     store.resetSourcesPagination = vi.fn()
-    store.refreshSourcesfilters = vi.fn()
+    store.refreshSourcesFilters = vi.fn()
     const mockSource = {
       id: 1,
       vendor: 'ResetMe',
@@ -204,7 +204,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     ;(addEventConfigSource as any).mockResolvedValue(201)
     store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
     store.resetSourcesPagination = vi.fn()
-    store.refreshSourcesfilters = vi.fn()
+    store.refreshSourcesFilters = vi.fn()
 
     const mockSource = {
       id: 1,
@@ -462,7 +462,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     it('shows success message after successful creation', async () => {
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
 
       const createBtn = wrapper.findAllComponents(FeatherButton)[1]
       await createBtn.trigger('click')
@@ -477,7 +477,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       const mockSource = {
         id: 123,
         vendor: 'TestVendor',
@@ -511,7 +511,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     it('success message contains confirmation text', async () => {
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
 
       const createBtn = wrapper.findAllComponents(FeatherButton)[1]
       await createBtn.trigger('click')
@@ -531,7 +531,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     it('shows View Source button instead of Create after success', async () => {
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
 
       const createBtn = wrapper.findAllComponents(FeatherButton)[1]
       await createBtn.trigger('click')
@@ -563,7 +563,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
 
       await wrapper.vm.$nextTick()
@@ -595,8 +595,16 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(wrapper.vm as any).vendor = 'TestVendor'
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
-      store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      // Spy on resetSourcesPagination before any action
+      const resetSpy = vi.spyOn(store, 'resetSourcesPagination')
+      // Create a real implementation of refreshSourcesFilters that calls resetSourcesPagination
+      store.refreshSourcesFilters = async function() {
+        this.resetSourcesPagination()
+        this.sourcesSearchTerm = ''
+        this.sourcesSorting.sortKey = 'createdTime'
+        this.sourcesSorting.sortOrder = 'desc'
+        await this.fetchEventConfigs()
+      }
       store.sources = [mockSource]
 
       await wrapper.vm.$nextTick()
@@ -604,16 +612,18 @@ describe('CreateEventConfigurationDialog.vue', () => {
       await createBtn.trigger('click')
       await flushPromises()
 
-      expect(store.resetSourcesPagination).toHaveBeenCalled()
+      // resetSourcesPagination is called internally by refreshSourcesFilters
+      expect(resetSpy).toHaveBeenCalled()
+      resetSpy.mockRestore()
     })
 
-    it('calls store.refreshSourcesfilters after successful creation', async () => {
+    it('calls store.refreshSourcesFilters after successful creation', async () => {
       ;(wrapper.vm as any).configName = 'TestConfig'
       ;(wrapper.vm as any).vendor = 'TestVendor'
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
 
       await wrapper.vm.$nextTick()
@@ -621,7 +631,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       await createBtn.trigger('click')
       await flushPromises()
 
-      expect(store.refreshSourcesfilters).toHaveBeenCalled()
+      expect(store.refreshSourcesFilters).toHaveBeenCalled()
     })
 
     it('calls store.fetchEventConfigs after successful creation', async () => {
@@ -630,7 +640,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
 
       await wrapper.vm.$nextTick()
@@ -662,7 +672,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
       store.hideCreateEventConfigSourceDialog = vi.fn()
 
@@ -687,7 +697,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
       store.hideCreateEventConfigSourceDialog = vi.fn()
 
@@ -709,7 +719,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
       store.hideCreateEventConfigSourceDialog = vi.fn()
 
@@ -767,7 +777,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       ;(addEventConfigSource as any).mockResolvedValue(201)
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
 
       await wrapper.vm.$nextTick()
@@ -789,7 +799,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
 
       store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
       store.resetSourcesPagination = vi.fn()
-      store.refreshSourcesfilters = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
       store.sources = [mockSource]
 
       // Verify initial description state

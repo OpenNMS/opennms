@@ -119,8 +119,7 @@ const handleSave = async () => {
     )
     if (response && response === 201) {
       resetForm()
-      store.resetSourcesPagination()
-      store.refreshSourcesfilters()
+      store.refreshSourcesFilters()
       store.fetchEventConfigs().then(() => {
         successMessage.value = true
         newId.value = store.sources[0].id // Assuming the newly created source is at the top
