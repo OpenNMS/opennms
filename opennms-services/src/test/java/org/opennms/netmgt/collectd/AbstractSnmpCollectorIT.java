@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -618,6 +619,16 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
         checkValueMapping("13", 1000.0, stepSizeInMillis, rangeSizeInMillis);
     }
 
+    private void checkStringsDotProperties(final String instance, final String value, final int stepSize, final int rangeSize) throws Exception {
+        assertTrue(Files.readString(m_resourceStorageDao.getRrdDirectory().toPath()
+                .resolve("snmp")
+                .resolve("1")
+                .resolve("the-instance-2")
+                .resolve(instance)
+                .resolve("strings.properties")
+        ).contains("wordString=" + value));
+    }
+
     private void checkValueMapping(final String instance, final double value, final int stepSize, final int rangeSize) throws Exception {
         assertEquals(value,
                 m_rrdStrategy.fetchLastValueInRange(
@@ -633,5 +644,29 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
                         stepSize,
                         rangeSize),
                 0.0);
+    }
+
+    @Test
+    @Transactional
+    @JUnitCollector(
+            datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-json-mapping.xml",
+            datacollectionType = "snmp",
+            anticipateRrds={
+                    "1/the-instance/1/wordGauge",
+                    "1/the-instance/2/wordGauge"
+            }
+    )
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
+    public void testNMS19147() throws Exception {
+        final int numUpdates = 2;
+        final int stepSizeInSecs = 1;
+        final int stepSizeInMillis = stepSizeInSecs * 1000;
+        final int rangeSizeInMillis = stepSizeInMillis + 20000;
+
+        CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
+        checkValueMapping("1", 1.23, stepSizeInMillis, rangeSizeInMillis);
+        checkValueMapping("2", 5.43, stepSizeInMillis, rangeSizeInMillis);
+        checkStringsDotProperties("1", "yyy", stepSizeInMillis, rangeSizeInMillis);
+        checkStringsDotProperties("2", "xxx", stepSizeInMillis, rangeSizeInMillis);
     }
 }
