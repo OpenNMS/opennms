@@ -11,7 +11,6 @@
   <name>OpenNMS :: UI (SPA)</name>
   <packaging>jar</packaging>
 
-
   <properties>
     <skipNodeJSBuild>false</skipNodeJSBuild>
   </properties>
@@ -63,43 +62,46 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>install node</id>
+            <id>install node and pnpm</id>
             <goals>
-              <goal>install-node-and-yarn</goal>
+              <goal>install-node-and-pnpm</goal>
             </goals>
-            <phase>generate-resources</phase>
+            <!--<phase>generate-resources</phase>-->
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
               <nodeVersion>${nodeVersion}</nodeVersion>
-              <yarnVersion>${yarnVersion}</yarnVersion>
+              <pnpmVersion>${pnpmVersion}</pnpmVersion>
             </configuration>
           </execution>
           <execution>
-            <id>yarn install</id>
+            <id>install</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>pnpm</goal>
             </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
           </execution>
           <execution>
             <id>build release</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>pnpm</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>build</arguments>
+              <arguments>run build</arguments>
             </configuration>
           </execution>
           <execution>
             <id>build-menu release</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>pnpm</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>build:menu</arguments>
+              <arguments>run build:menu</arguments>
             </configuration>
           </execution>
         </executions>
@@ -145,7 +147,7 @@
               <execution>
                 <id>run tests</id>
                 <goals>
-                  <goal>yarn</goal>
+                  <goal>pnpm</goal>
                 </goals>
                 <phase>test</phase>
                 <configuration>

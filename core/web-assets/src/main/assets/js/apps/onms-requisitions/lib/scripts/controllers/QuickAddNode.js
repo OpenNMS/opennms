@@ -25,6 +25,7 @@ require('../services/Requisitions');
 
 import Util from 'lib/util';
 const QuickNode = require('../model/QuickNode');
+const escape = require('lodash.escape');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -37,7 +38,6 @@ const QuickNode = require('../model/QuickNode');
   const quickAddPanelBasicView = require('../../views/quick-add-panel-basic.html');
   const quickAddPanelSnmpView = require('../../views/quick-add-panel-snmp.html');
   const quickAddPanelCategoriesView = require('../../views/quick-add-panel-categories.html');
-  // const quickAddPanelCliView = require('../../views/quick-add-panel-cli.html');
   const quickAddPanelHelpView = require('../../views/quick-add-panel-help.html');
 
   angular.module('onms-requisitions')
@@ -62,7 +62,6 @@ const QuickNode = require('../model/QuickNode');
     $scope.quickAddPanelBasicView = quickAddPanelBasicView;
     $scope.quickAddPanelSnmpView = quickAddPanelSnmpView;
     $scope.quickAddPanelCategoriesView = quickAddPanelCategoriesView;
-    // $scope.quickAddPanelCliView = quickAddPanelCliView;
     $scope.quickAddPanelHelpView = quickAddPanelHelpView;
 
     /**
@@ -137,8 +136,8 @@ const QuickNode = require('../model/QuickNode');
     */
     $scope.provision = function() {
       $scope.isSaving = true;
-      growl.info('The node ' + _.escape($scope.node.nodeLabel) + ' is being added to requisition ' + _.escape($scope.node.foreignSource) + '. Please wait...');
-      const successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
+      growl.info('The node ' + escape($scope.node.nodeLabel) + ' is being added to requisition ' + escape($scope.node.foreignSource) + '. Please wait...');
+      const successMessage = 'The node ' + escape($scope.node.nodeLabel) + ' has been added to requisition ' + escape($scope.node.foreignSource);
 
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
@@ -268,7 +267,7 @@ const QuickNode = require('../model/QuickNode');
 
         if (foreignSource) {
             if (foreignSource.match(/[/\\?:&*'"]/)) {
-                bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
+                bootbox.alert('Cannot add the requisition ' + escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
                 return;
             }
             
@@ -276,7 +275,7 @@ const QuickNode = require('../model/QuickNode');
             function() { // success
               RequisitionsService.synchronizeRequisition(foreignSource, false).then(
                 function() {
-                  growl.success('The requisition ' + _.escape(foreignSource) + ' has been created and synchronized.');
+                  growl.success('The requisition ' + escape(foreignSource) + ' has been created and synchronized.');
                   $scope.foreignSources.push(foreignSource);
                 },
                 $scope.errorHandler

@@ -53,36 +53,37 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>install node</id>
+            <id>install node and pnpm</id>
             <goals>
-              <goal>install-node-and-npm</goal>
+              <goal>install-node-and-pnpm</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
               <nodeVersion>${nodeVersion}</nodeVersion>
+              <pnpmVersion>${pnpmVersion}</pnpmVersion>
             </configuration>
           </execution>
           <execution>
             <id>install dependencies</id>
             <goals>
-              <goal>npm</goal>
+              <goal>pnpm</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --no-progress run install-deps</arguments>
+              <arguments>run install-deps --prefer-offline</arguments>
             </configuration>
           </execution>
           <execution>
             <id>build release</id>
             <goals>
-              <goal>npm</goal>
+              <goal>pnpm</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>--prefer-offline --no-progress run release</arguments>
+              <arguments>run release --prefer-offline</arguments>
             </configuration>
           </execution>
         </executions>
@@ -144,11 +145,11 @@
               <execution>
                 <id>run tests</id>
                 <goals>
-                  <goal>npm</goal>
+                  <goal>pnpm</goal>
                 </goals>
                 <phase>test</phase>
                 <configuration>
-                  <arguments>--prefer-offline --no-progress run maven-test</arguments>
+                  <arguments>run maven-test --prefer-offline</arguments>
                 </configuration>
               </execution>
             </executions>

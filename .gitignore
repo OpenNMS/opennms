@@ -28,9 +28,14 @@ dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log
 /core/web-assets/node_modules
+/core/web-assets/**/node_modules
 /features/discovery/activemq-data
 /features/topology-map/org.opennms.features.topology.app/www-test/
 /opennms-alarms/jms-northbounder/activemq-data/
+core/web-assets/.pnpm-store/
+core/web-assets/.pnpm-debug.log
+ui/.pnpm-store/
+ui/.pnpm-debug.log
 ui/dist/
 ui/src/main/dist/
 ui/src/menu/dist-menu/

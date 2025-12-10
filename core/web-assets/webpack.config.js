@@ -471,7 +471,7 @@ var config = {
       styleroot,
       path.resolve(path.join(__dirname, 'node_modules'))
     ],
-    descriptionFiles: ['package.json', 'bower.json'],
+    descriptionFiles: ['package.json'],
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
