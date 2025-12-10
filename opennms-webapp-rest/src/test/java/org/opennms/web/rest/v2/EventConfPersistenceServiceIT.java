@@ -944,7 +944,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(7, descList.size());
 
         final var expectedDesc = Arrays.asList(
-                "Cleared", "Critical", "Major", "Minor", "Warning", "Normal", "Indeterminate"
+                "Critical", "Major", "Minor", "Warning", "Normal", "Cleared", "Indeterminate"
         );
 
 
@@ -960,7 +960,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(7, ascList.size());
 
         final var expectedAsc = Arrays.asList(
-                "Indeterminate", "Normal", "Warning", "Minor", "Major", "Critical", "Cleared"
+                "Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical"
         );
 
         Assert.assertEquals("ASC alphabetical sort failed",
