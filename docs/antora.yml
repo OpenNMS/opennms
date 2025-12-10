@@ -1,5 +1,5 @@
 name: horizon
-version: '34'
+version: '36'
 title: Horizon
 asciidoc:
   attributes:

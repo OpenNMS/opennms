@@ -2,7 +2,7 @@
   <TableCard class="event-config-event-table">
     <div class="header">
       <div class="title-container">
-        <span class="title"> Events </span>
+        <span class="title"> Event Configurations </span>
       </div>
       <div class="action-container">
         <div class="search-container">

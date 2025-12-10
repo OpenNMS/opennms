@@ -2,22 +2,26 @@
 
 = What's New in OpenNMS Horizon 35
 
-=== Removed JRobin implementation
-
-JRobin, the pure-Java RRD implementation has been removed.
-The class `org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy` is no longer available.
-The Utilities to convert and analyze JRobin files (`.jrb`) are still available and usable.
-
 == System requirements and Dependencies ==
 
 * Java 17: Horizon 35 requires JDK 17.
 * PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
 * Elasticsearch: Horizon 35 requires Elasticsearch 8 for flow processing.
 
-
 == New features and important changes
 
+
+=== Event Configuration Moved to Database
+
+Event definitions are now stored in the database, enabling dynamic management without requiring eventd restarts. Core OpenNMS events are pre-loaded automatically. Vendor-specific event files are available in `$\{OPENNMS_HOME}/etc/examples/events/` and can be uploaded through the UI or REST API as needed.
+
+See xref:operation:deep-dive/events/event-configuration.adoc[Event Configuration] for details.
+
+* Legacy file-based event configuration (`etc/eventconf.xml`) is deprecated; changes to these files are not reflected in the running system.
+* Vendor event files moved from `etc/events/` to `etc/examples/events/` and must be uploaded manually.
+
 === Simplified Datasource Configuration
+
 The `opennms-datasources.xml` configuration file has been simplified by making the `factory` and `class-name` attributes optional with sensible defaults. The `factory` attribute now defaults to `org.opennms.core.db.HikariCPConnectionFactory` and the `class-name` attribute defaults to `org.postgresql.Driver`. Existing configurations with these attributes explicitly set will continue to work unchanged. New installations and users updating their configurations can omit these attributes for cleaner, more maintainable configuration files.
 
 === Simplified Service Configuration
@@ -28,5 +32,23 @@ The `service-configuration.xml` configuration file has been simplified by moving
 
 The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
 
+=== OpenConfig Support on Minion
+
+OpenConfig telemetry streaming is now supported on Minion. See xref:reference:telemetryd/protocols/openconfig.adoc#minion-setup[Set up OpenConfig on Minion] for configuration details.
+
+
 == Breaking changes
-Starting with this release, we will use standard install location (`/opt/opennms`) for Debian and RPM packages. 
+
+=== Debian path updates
+
+With this release, we’re streamlining the installation process for OpenNMS on both Debian and RPM-based systems by standardizing the installation location to `/opt/opennms`. This update provides a consistent deployment path, simplifies future upgrades, and minimizes conflicts caused by differing directories.
+
+Before upgrading, we strongly recommend backing up your existing installation including configuration files, databases, and any custom scripts or integrations to prevent data loss or disruption.
+
+
+=== Removed JRobin implementation
+
+JRobin, the pure-Java RRD implementation has been removed.
+The class `org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy` is no longer available.
+The Utilities to convert and analyze JRobin files (`.jrb`) are still available and usable.
+
