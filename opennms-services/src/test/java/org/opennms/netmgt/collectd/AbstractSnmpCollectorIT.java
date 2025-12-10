@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdDef;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +64,7 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -136,7 +134,7 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
         MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
 
         m_resourceStorageDao = new FilesystemResourceStorageDao();
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
@@ -321,13 +319,13 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
 
         File rrdFile = new File(snmpDir, rrd("test"));
 
-        RrdStrategy<RrdDef,RrdDb> m_rrdStrategy = new JRobinRrdStrategy();
+        RrdStrategy<MultithreadedJniRrdStrategy.CreateCommand, MultithreadedJniRrdStrategy.UpdateCommand> m_rrdStrategy = new MultithreadedJniRrdStrategy();
 
         RrdDataSource rrdDataSource = new RrdDataSource("testAttr", RrdAttributeType.GAUGE, stepSize*2, "U", "U");
-        RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        MultithreadedJniRrdStrategy.CreateCommand def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
 
-        RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        MultithreadedJniRrdStrategy.UpdateCommand rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < numUpdates; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", ((start/1000) - (stepSize*(numUpdates-i))) + ":1");
         }
@@ -620,7 +618,7 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
                             .resolve("1")
                             .resolve("the-instance")
                             .resolve(instance)
-                            .resolve("wordGauge.jrb")
+                            .resolve("wordGauge.rrd")
                             .toString(),
                     "wordGauge",
                         stepSize,

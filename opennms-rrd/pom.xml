@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>34.1.0</version>
+    <version>35.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd</artifactId>
@@ -11,10 +11,10 @@
   <name>OpenNMS :: RRD</name>
   <modules>
     <module>opennms-rrd-api</module>
-    <module>opennms-rrd-jrobin</module>
     <module>opennms-rrd-rrdtool</module>
     <module>opennms-rrd-tcp</module>
     <module>opennms-rrd-model</module>
+    <module>opennms-rrd-util</module>
   </modules>
   <build>
     <plugins>

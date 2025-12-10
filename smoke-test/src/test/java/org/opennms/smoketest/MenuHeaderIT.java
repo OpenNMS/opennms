@@ -206,13 +206,14 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("administrationMenu", "Configure Thresholds");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
 
-        // Omitting 'Flow Classification' for now - needs Flows role
+        clickMenuItem("administrationMenu", "Flow Classification");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Flow Classification')]")));
 
         clickMenuItem("administrationMenu", "Notifications");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
 
-        clickMenuItem("administrationMenu", "Customize Events");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage Events Configuration')]")));
+        clickMenuItem("administrationMenu", "Manage Event Configurations");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='app']//div[@class='event-config']//div[@class='heading']//h1[text()='Manage Event Configurations']")));
 
         clickMenuItem("administrationMenu", "Customize Data Collection Groups");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage SNMP Collections and Data Collection Groups')]")));

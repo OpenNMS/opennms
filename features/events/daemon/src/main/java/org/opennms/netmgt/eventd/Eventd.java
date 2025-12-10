@@ -94,8 +94,6 @@ public final class Eventd extends AbstractServiceDaemon {
     protected void onInit() {
         Assert.state(m_eventdServiceManager != null, "property eventdServiceManager must be set");
         Assert.state(m_receiver != null, "property receiver must be set");
-        
-        m_eventdServiceManager.dataSourceSync();
     }
 
     /**

@@ -1,0 +1,323 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements. See the LICENSE.md file
+ * distributed with this work for additional information.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License"); you may not use
+ * this file except in compliance with the License.
+ * https://www.gnu.org/licenses/agpl-3.0.txt
+ */
+package org.opennms.web.rest.v2.api;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
+import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
+
+
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PATCH;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
+import java.util.List;
+
+@Path("eventconf")
+@Tag(name = "EventConf", description = "EventConf API")
+public interface EventConfRestApi {
+
+    @POST
+    @Path("/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("application/json")
+    @Operation(
+            summary = "Upload eventconf files",
+            description = "Upload one or more eventconf files including optional eventconf.xml to determine file order.",
+            operationId = "uploadEventConfFiles"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Upload successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid eventconf.xml or request")
+    })
+    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
+                                  @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("filter")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Filter EventConf Records",
+            description = "Fetch EventConf records based on provided filters such as UEI, vendor, source and name.",
+            operationId = "filterEventConf"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConf records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterEventConf(
+            @QueryParam("uei") String uei,
+            @QueryParam("vendor") String vendor,
+            @QueryParam("sourceName") String sourceName,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit,
+            @Context SecurityContext securityContext );
+
+    @PATCH
+    @Path("/sources/status")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable EventConf Sources",
+            description = "Enable or disable one or more sources (and optionally cascade to their events)",
+            operationId = "enableDisableEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("filter/{sourceId}/events")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Get EventConfEvents by Source ID with filtering and sorting",
+            description = """
+        Retrieves EventConfEvent records for the given source ID with optional filtering, sorting, and pagination.
+        - `eventFilter`: case-insensitive match on UEI, Event Label, or Description.
+        - `eventSortBy`: sort field `uei`, `eventLabel`, `description`, `enabled` defaults to `createdTime` if invalid.
+        - `eventOrder`: `asc` or `desc` (default: `desc`).
+        - `offset` and `limit`: for pagination.""",
+            operationId = "filterConfEventBySourceId"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                content = @Content),
+        @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                content = @Content),
+        @ApiResponse(responseCode = "204", description = "No matching EventConfEvent record found for the given criteria",
+                content = @Content)
+    })
+    Response filterConfEventsBySourceId(
+            @PathParam("sourceId") Long sourceId,
+            @QueryParam("eventFilter") String eventFilter,
+            @QueryParam("eventSortBy") String eventSortBy,
+            @QueryParam("eventOrder") String eventOrder,
+            @QueryParam("totalRecords") Integer totalRecords,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("limit") Integer limit,
+            @Context SecurityContext securityContext );
+
+
+    @DELETE
+    @Path("/sources")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    @Operation(
+            summary = "Delete EventConf Sources",
+            description = "Delete one or more eventConf sources by their IDs.",
+            operationId = "deleteEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sources deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid IDs)"),
+            @ApiResponse(responseCode = "404", description = "One or more sources not found")
+    })
+    Response deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload,
+                                    @Context SecurityContext securityContext) throws Exception;
+
+    @PATCH
+    @Path("/sources/{sourceId}/events/status")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    @Operation(
+            summary = "Update EventConf Sources events",
+            description = "Update one or more eventConf sources  by their events IDs.",
+            operationId = "enableDisableConfSourcesEvents"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid IDs)"),
+            @ApiResponse(responseCode = "404", description = "One or more sources not found")
+    })
+    Response enableDisableEventConfSourcesEvents(@PathParam("sourceId") final Long sourceId,EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload,
+                                    @Context SecurityContext securityContext) throws Exception;
+    @GET
+    @Path("filter/sources")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Filter EventConfSource Records",
+            description = "Fetch EventConfSource records based on provided filters such as name, vendor, description, fileOrder and eventCount.",
+            operationId = "filterEventConfSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConfSource records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConfSource records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterEventConfSource(
+            @QueryParam("filter") String filter,
+            @QueryParam("sortBy") String sortBy,
+            @QueryParam("order") String order,
+            @QueryParam("totalRecords") Integer totalRecords,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("limit") Integer limit,
+            @Context SecurityContext securityContext );
+
+
+
+    @GET
+    @Path("/sources/names")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get EventConf Source Names",
+            description = "Retrieve the names of all EventConf sources stored in the database.",
+            operationId = "getEventConfSourcesNames"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved source names"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("/sources/{sourceId}/events")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new event to an EventConfSource",
+            description = "Creates and adds a new event under the given EventConfSource by its ID.",
+            operationId = "addEventConfSourceEvent")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found")})
+    Response addEventConfSourceEvent(@PathParam("sourceId") final Long sourceId, Event event, @Context SecurityContext securityContext) throws Exception;
+
+
+
+    @PUT
+    @Path("/sources/{sourceId}/events/{eventId}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces("application/json")
+    @Operation(
+            summary = "Update EventConf  Event",
+            description = "Update  eventConf event by sourceId and eventId.",
+            operationId = "updateEventConfEvent"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "404", description = "One or more sources not found")
+    })
+    Response updateEventConfEvent(@PathParam("sourceId") final Long sourceId,@PathParam("eventId") final Long eventId, EventConfEventEditRequest payload,
+                                  @Context SecurityContext securityContext) throws Exception;
+    @DELETE
+    @Path("/sources/{sourceId}/events")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Delete Events for a Source",
+            description = "Delete one or more events belonging to the specified eventConf source.",
+            operationId = "deleteEventsForSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Events deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid event IDs)"),
+            @ApiResponse(responseCode = "404", description = "Source or one or more events not found")
+    })
+    Response deleteEventsForSource(
+            @PathParam("sourceId") Long sourceId,
+            EventConfEventDeletePayload eventConfEventDeletePayload,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @GET
+    @Path("/sources/{sourceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConfSource by ID",
+            description = "Retrieve an EventConfSource by its unique identifier.",
+            operationId = "getEventConfSourceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConfSource retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+
+    })
+    Response getEventConfSourceById(
+            @PathParam("sourceId") Long sourceId,
+            @Context SecurityContext securityContext
+    );
+
+
+    @GET
+    @Path("/sources/{sourceId}/events/download")
+    @Produces(MediaType.APPLICATION_XML)
+    @Operation(
+            summary = "Download EventConf XML for a Source",
+            description = """
+            Downloads all EventConf events associated with the specified source ID.
+        """,
+            operationId = "downloadEventConfXmlBySourceId"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf XML downloaded successfully",
+                    content = @Content(mediaType = "application/xml")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing source ID"),
+            @ApiResponse(responseCode = "404", description = "No events found for the specified source ID")
+    })
+    Response downloadEventConfXmlBySourceId(
+            @PathParam("sourceId") Long sourceId,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @GET
+    @Path("/vendors/{vendorName}/events")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConf Events by Vendor",
+            description = "Returns all EventConf events associated with the specified vendor name.",
+            operationId = "getEventsByVendor"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf Events retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing vendor name"),
+            @ApiResponse(responseCode = "404", description = "No events found for the specified vendor"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventsByVendor(
+            @PathParam("vendorName") String vendorName,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+}

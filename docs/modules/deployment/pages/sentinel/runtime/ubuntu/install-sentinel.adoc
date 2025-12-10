@@ -32,13 +32,13 @@ sudo apt-mark hold opennms-sentinel
 [source, console]
 ----
 sudo apt -y install tree
-tree /usr/share/sentinel -L 1
+tree /opt/sentinel -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-/usr/share/sentinel
+/opt/sentinel
 ├── bin
 ├── data -> /var/lib/sentinel/data
 ├── deploy -> /var/lib/sentinel/deploy

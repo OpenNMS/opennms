@@ -4,24 +4,21 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
-  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
-    idleTimeout="600"
-    loginTimeout="3"
-    minPool="25"
-    maxPool="50"
-    maxSize="50" />
+  <connection-pool idleTimeout="\${env:OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT|600}"
+    loginTimeout="\${env:OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT|3}"
+    minPool="\${env:OPENNMS_DATABASE_CONNECTION_MINPOOL|25}"
+    maxPool="\${env:OPENNMS_DATABASE_CONNECTION_MAXPOOL|50}"
+    maxSize="\${env:OPENNMS_DATABASE_CONNECTION_MAXSIZE|50}" />
 
-  <jdbc-data-source name="opennms" 
-                    database-name="${install.database.name}" 
-                    class-name="${install.database.driver}" 
-                    url="jdbc:postgresql://localhost:5432/${install.database.name}"
+  <jdbc-data-source name="opennms"
+                    database-name="\${env:OPENNMS_DBNAME|${install.database.name}}"
+                    url="jdbc:postgresql://\${env:POSTGRES_HOST|localhost}:\${env:POSTGRES_PORT|5432}/\${env:OPENNMS_DBNAME|${install.database.name}}?sslmode=\${env:POSTGRES_SSL_MODE|prefer}&amp;sslfactory=\${env:POSTGRES_SSL_FACTORY|org.postgresql.ssl.LibPQFactory}"
                     user-name="${install.database.user}"
                     password="${install.database.password}" />
 
   <jdbc-data-source name="opennms-admin" 
-                    database-name="template1" 
-                    class-name="${install.database.driver}" 
-                    url="jdbc:postgresql://localhost:5432/template1"
+                    database-name="template1"
+                    url="jdbc:postgresql://\${env:POSTGRES_HOST|localhost}:\${env:POSTGRES_PORT|5432}/template1?sslmode=\${env:POSTGRES_SSL_MODE|prefer}&amp;sslfactory=\${env:POSTGRES_SSL_FACTORY|org.postgresql.ssl.LibPQFactory}"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}">
     <connection-pool idleTimeout="600"
@@ -31,9 +28,8 @@
   </jdbc-data-source>
   
   <jdbc-data-source name="opennms-monitor" 
-                    database-name="postgres" 
-                    class-name="${install.database.driver}" 
-                    url="jdbc:postgresql://localhost:5432/postgres"
+                    database-name="postgres"
+                    url="jdbc:postgresql://\${env:POSTGRES_HOST|localhost}:\${env:POSTGRES_PORT|5432}/postgres?sslmode=\${env:POSTGRES_SSL_MODE|prefer}&amp;sslfactory=\${env:POSTGRES_SSL_FACTORY|org.postgresql.ssl.LibPQFactory}"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}">
     <connection-pool idleTimeout="600"

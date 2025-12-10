@@ -33,6 +33,7 @@ import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 
 public class IpfixUdpParserFactory implements ParserFactory {
 
@@ -40,12 +41,14 @@ public class IpfixUdpParserFactory implements ParserFactory {
     private final EventForwarder eventForwarder;
     private final Identity identity;
     private final DnsResolver dnsResolver;
+    private final InformationElementDatabase informationElementDatabase;
 
-    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver) {
+    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver, final InformationElementDatabase informationElementDatabase) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.informationElementDatabase = Objects.requireNonNull(informationElementDatabase);
     }
 
     @Override
@@ -56,6 +59,6 @@ public class IpfixUdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new IpfixUdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new IpfixUdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry(), informationElementDatabase);
     }
 }

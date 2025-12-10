@@ -24,6 +24,7 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
@@ -182,9 +183,6 @@
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.jolokia/jolokia-client-java/${jolokiaVersion}</bundle>
-    </feature>
-    <feature name="jrobin" version="1.6.0" description="JRobin">
-        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6$Bundle-SymbolicName=net.sf.ezmorph&amp;Bundle-Version=1.0.6</bundle>
@@ -709,11 +707,12 @@
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms/opennms-rrd-api/${project.version}</bundle>
     </feature>
-    <feature name="opennms-rrd-jrobin" version="${project.version}" description="OpenNMS :: RRD :: JRobin">
+    <feature name="opennms-rrd-util" version="${project.version}" description="OpenNMS :: RRD :: Utilities">
         <feature version="[4.2,4.3)">spring</feature>
-        <feature>jrobin</feature>
         <feature>opennms-rrd-api</feature>
-        <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
+        <!-- only used to convert .jrb files -->
+        <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
+        <bundle>mvn:org.opennms/opennms-rrd-util/${project.version}</bundle>
     </feature>
     <feature name="opennms-snmp" version="${project.version}" description="OpenNMS :: Core :: SNMP">
         <feature>commons-lang</feature>
@@ -1100,8 +1099,12 @@
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.connector/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.connectors/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-openconfig-client" description="OpenNMS :: Telemetry :: OpenConfig :: Client" version="${project.version}">
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -1167,6 +1170,9 @@
         <feature>opennms-mate-impl</feature>
         <feature>opennms-elastic-client</feature>
         <feature>rate-limited-logger</feature>
+
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>
@@ -1182,12 +1188,9 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
-        <!--
-        <bundle>mvn:jakarta.annotation/jakarta.annotation-api/3.0.0</bundle>
-        <bundle>mvn:com.google.findbugs/jsr305/3.0.2</bundle>
-        -->
-        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
+
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
@@ -1197,6 +1200,7 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.core/${project.version}</bundle>
     </feature>
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>
@@ -1408,6 +1412,15 @@
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>jackson-core</feature>
         <feature>jackson-dataformat-yaml</feature>
+        <feature>jackson-datatype-jdk8</feature>
+
+        <bundle>mvn:jakarta.annotation/jakarta.annotation-api/3.0.0</bundle>
+        <bundle>mvn:com.google.code.findbugs/annotations/3.0.1</bundle>
+
+        <bundle>wrap:mvn:com.hubspot.immutables/immutables-exceptions/1.9</bundle>
+        <bundle>wrap:mvn:com.hubspot.immutables/hubspot-style/1.9</bundle>
+        <bundle>wrap:mvn:com.hubspot/algebra/1.5</bundle>
+
         <feature>jung</feature>
         <feature prerequisite="true">vaadin</feature>
         <feature>jackson-datatype-jdk8</feature>

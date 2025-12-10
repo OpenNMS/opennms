@@ -59,6 +59,7 @@ import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
@@ -72,6 +73,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -501,8 +503,8 @@ public class BsmdIT {
     public void verifyStartupWithoutAlarmData() throws Exception {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        eventConfDao.setConfigResource(new ClassPathResource("/eventconf.xml"));
-        eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // Remove Alarm Data
         REQUIRED_EVENT_UEIS.forEach(eventUei -> eventConfDao.getEvents(eventUei).get(0).setAlarmData(null));
@@ -524,8 +526,8 @@ public class BsmdIT {
     public void verifyStartupWithChangedReductionKey() throws Exception {
         // Load custom events
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        eventConfDao.setConfigResource(new ClassPathResource("/eventconf.xml"));
-        eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList);
 
         // change reduction key
         REQUIRED_EVENT_UEIS.forEach(uei -> eventConfDao.getEvents(uei).get(0).getAlarmData().setReductionKey("custom"));

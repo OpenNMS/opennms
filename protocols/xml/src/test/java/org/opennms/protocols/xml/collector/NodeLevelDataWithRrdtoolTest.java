@@ -23,16 +23,12 @@ package org.opennms.protocols.xml.collector;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.model.Row;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
-import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 
 /**
@@ -66,26 +62,6 @@ public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
         setRrdBinary();
         setJniRrdLibrary();
         return new JniRrdStrategy();
-    }
-
-    /**
-     * Validates a RRD.
-     * <p>It assumes storeByGroup=true</p>
-     * 
-     * @param file the RRD file instance
-     * @param dsnames the array of data source names
-     * @param dsvalues the array of data source values
-     * @throws Exception the exception
-     */
-    protected void validateRrd(File file, String[] dsnames, Double[] dsvalues) throws Exception {
-        Assert.assertTrue(file.exists());
-        RRDv3 rrd = RrdConvertUtils.dumpRrd(file);
-        Assert.assertEquals(dsnames.length, rrd.getDataSources().size());
-        for (int i = 0; i < dsnames.length; i++) {
-            Assert.assertEquals(dsvalues[i], Double.valueOf(rrd.getDataSource(i).getLastDs()));
-            List<Row> rows = rrd.getRras().get(0).getRows();
-            Assert.assertFalse(rows.get(rows.size() - 1).isNan()); // All the last values stored on the RRA must be valid numbers
-        }
     }
 
     /**

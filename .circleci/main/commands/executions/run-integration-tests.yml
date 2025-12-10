@@ -63,15 +63,14 @@ commands:
             done
       - store_test_results:
           path: ~/test-results
+      - run:
+          name: Copy artifacts on failure
+          when: on_fail
+          command: |
+            mkdir -p ~/failure-artifacts
+            cp -R ~/test-results ~/failure-artifacts/ || true
+            cp -R ~/build-results ~/failure-artifacts/ || true
+            cp -R ~/generated-tests ~/failure-artifacts/ || true
       - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
-      - store_artifacts:
-          when: always
-          path: ~/build-results
-          destination: build-results
-      - store_artifacts:
-          when: always
-          path: ~/generated-tests
-          destination: generated-tests
+          path: ~/failure-artifacts
+          destination: failure-artifacts

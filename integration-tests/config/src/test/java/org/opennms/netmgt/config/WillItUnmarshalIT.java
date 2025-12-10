@@ -288,8 +288,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, false, null);
-        addFile(Source.EXAMPLE, "hyperic-integration/imports-HQ.xml", Requisition.class, false, null);
-        addFile(Source.EXAMPLE, "hyperic-integration/imports-opennms-admin.xml", Requisition.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/activemq.xml", JmxDatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/cassandra.xml", JmxDatacollectionConfig.class, false, null);
@@ -317,7 +315,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 
         // Add all event files
-        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "examples/events"),
                                                    new String[] { "xml" },
                                                    true)) {
             addFile(Source.ABSOLUTE, file.getPath(), Events.class, false, null);

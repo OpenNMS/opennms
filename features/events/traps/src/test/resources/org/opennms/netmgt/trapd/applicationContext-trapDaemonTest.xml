@@ -5,8 +5,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
 
-  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
-    <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
+  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
+  </bean>
+
+  <bean id="eventConfTestResource" class="org.springframework.core.io.ClassPathResource">
+    <constructor-arg value="org/opennms/netmgt/trapd/eventconf.xml"/>
+  </bean>
+
+  <bean id="eventConfEventList" class="org.opennms.netmgt.config.EventConfTestUtil" factory-method="parseResourcesAsEventConfEvents">
+    <constructor-arg ref="eventConfTestResource"/>
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventConfDao">
+    <property name="targetObject" ref="eventConfDao"/>
+    <property name="targetMethod" value="loadEventsFromDB"/>
+    <property name="arguments">
+      <list>
+        <ref bean="eventConfEventList"/>
+      </list>
+    </property>
   </bean>
 
   <!-- We need a mock consumer manager and a dispatcher factory in order to make the tests work-->

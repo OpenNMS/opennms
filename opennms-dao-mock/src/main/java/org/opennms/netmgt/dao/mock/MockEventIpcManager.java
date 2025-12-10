@@ -50,6 +50,7 @@ import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -110,9 +111,6 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         public void addEvent(final org.opennms.netmgt.xml.eventconf.Event event) {}
 
         @Override
-        public void addEventToProgrammaticStore(final org.opennms.netmgt.xml.eventconf.Event event) {}
-
-        @Override
         public org.opennms.netmgt.xml.eventconf.Event findByEvent(final Event matchingEvent) {
             return null;
         }
@@ -156,17 +154,15 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         public void reload() throws DataAccessException {}
 
         @Override
-        public boolean removeEventFromProgrammaticStore(final org.opennms.netmgt.xml.eventconf.Event event) {
-            return false;
-        }
-
-        @Override
-        public void saveCurrent() {}
-
-        @Override
         public Events getRootEvents() {
             return null;
         }
+
+        @Override
+        public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+
+        }
+
     }
 
     public static interface SendNowHook {

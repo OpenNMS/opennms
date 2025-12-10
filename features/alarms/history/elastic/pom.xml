@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.alarms</groupId>
     <artifactId>org.opennms.features.alarms.history</artifactId>
-    <version>34.1.0</version>
+    <version>35.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.alarms.history</groupId>
@@ -101,7 +101,23 @@
     </dependency>
 
     <!-- Test Scope -->
-    <dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-rrdtool-api</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.collection</groupId>
+          <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>jrrd2-dependencies</artifactId>
+          <scope>test</scope>
+          <type>pom</type>
+      </dependency>
+      <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>
       <scope>test</scope>

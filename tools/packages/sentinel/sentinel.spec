@@ -34,6 +34,7 @@
 %define _binary_filedigest_algorithm 0
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
+%define _log_dir /var/log/sentinel
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -175,10 +176,13 @@ find %{buildroot}%{sentinelinstprefix} -type d | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.sentinel
 
+mkdir -p %{buildroot}/%{_log_dir}
+
 %clean
 rm -rf %{buildroot}
 
 %files -f %{_tmppath}/files.sentinel
+%dir %attr(755,sentinel,sentinel) %{_log_dir}
 %defattr(664 sentinel sentinel 775)
 %attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
@@ -219,6 +223,8 @@ fi
 
 # Set up ICMP for non-root users
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
+
+sed -i -e "s,.{karaf.log},\/var\/log\/sentinel,g" -e "s,.{karaf.data}/log,\/var\/log\/sentinel,g" -e 's,/karaf.log,/sentinel.log,g' ${ROOT_INST}/etc/org.ops4j.pax.logging.cfg
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
 

@@ -72,7 +72,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Event Management
         new String[] { "Manually Send an Event", "//span[text()='Send Event to OpenNMS']" },
         new String[] { "Configure Notifications", "//span[text()='Configure Notifications']" },
-        new String[] { "Customize Event Configurations", "//div[@id='content']/iframe[@name='mib-compiler-events']" },
+        new String[] { "Manage Event Configurations", "//div[@id='app']//div[@class='event-config']//div[@class='heading']/h1[text()='Manage Event Configurations']" },
 
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },

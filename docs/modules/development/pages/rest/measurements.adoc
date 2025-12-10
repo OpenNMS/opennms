@@ -1,7 +1,7 @@
 
 = Measurements API
 
-You can use the Measurements API to retrieve collected values stored in RRD or JRB files, in Newts, and in other supported time series databases.
+You can use the Measurements API to retrieve collected values stored in RRD files, in Newts, and in other supported time series databases.
 
 NOTE: Unless otherwise specified, all units of time are expressed in milliseconds.
 

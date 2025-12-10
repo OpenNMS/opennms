@@ -36,6 +36,10 @@ import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMessage;
 import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 public class EventConfExtensionManagerTest {
@@ -43,7 +47,12 @@ public class EventConfExtensionManagerTest {
     @Test
     public void canPrioritizeEvents() {
         EventConfDao eventConfDao = mock(EventConfDao.class);
-        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao);
+        EventConfEventDao eventConfEventDao = mock(EventConfEventDao.class);
+        EventConfSourceDao eventConfSourceDao = mock(EventConfSourceDao.class);
+        SessionUtils sessionUtils = mock(SessionUtils.class);
+
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao,
+                 eventConfSourceDao, eventConfEventDao, sessionUtils);
 
         // No events yet
         Events events = eventConfExtensionMgr.getObject();
@@ -104,7 +113,11 @@ public class EventConfExtensionManagerTest {
     public void canPreserveEventNumberAndOrdering() {
         String ueiBase = "uei.opennms.org/test/VoluminousEventConfExtension/";
         EventConfDao eventConfDao = mock(EventConfDao.class);
-        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao);
+        EventConfEventDao eventConfEventDao = mock(EventConfEventDao.class);
+        EventConfSourceDao eventConfSourceDao = mock(EventConfSourceDao.class);
+        SessionUtils sessionUtils = mock(SessionUtils.class);
+        EventConfExtensionManager eventConfExtensionMgr = new EventConfExtensionManager(eventConfDao,
+                eventConfSourceDao, eventConfEventDao, sessionUtils);
 
         // No events yet
         Events events = eventConfExtensionMgr.getObject();

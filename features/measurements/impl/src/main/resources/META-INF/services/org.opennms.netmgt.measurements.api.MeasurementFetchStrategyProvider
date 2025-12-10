@@ -1,3 +1,2 @@
-org.opennms.netmgt.measurements.impl.JrobinFetchStrategyProvider
 org.opennms.netmgt.measurements.impl.RrdtoolXportFetchStrategyProvider
 org.opennms.netmgt.measurements.impl.JRrd2FetchStrategyProvider

@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>34.1.0</version>
+  <version>35.0.0</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1396,6 +1396,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.testing.plugin.version}</version>
         <configuration>
+            <argLine>${argLineAllowReflection}</argLine>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
@@ -1422,7 +1423,6 @@
             <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
-            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
@@ -1450,7 +1450,6 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
-            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
@@ -1675,7 +1674,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>34.1.0</opennms.osgi.version>
+    <opennms.osgi.version>35.0.0</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1697,10 +1696,10 @@
 
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
-    <install.database.user>${scv:postgres:username|opennms}</install.database.user>
-    <install.database.password>${scv:postgres:password|opennms}</install.database.password>
-    <install.database.admin.user>${scv:postgres-admin:username|postgres}</install.database.admin.user>
-    <install.database.admin.password>${scv:postgres-admin:password|}</install.database.admin.password>
+    <install.database.user>${scv:postgres:username|env:OPENNMS_DBUSER|opennms}</install.database.user>
+    <install.database.password>${scv:postgres:password|env:OPENNMS_DBPASS|opennms}</install.database.password>
+    <install.database.admin.user>${scv:postgres-admin:username|env:POSTGRES_USER|postgres}</install.database.admin.user>
+    <install.database.admin.password>${scv:postgres-admin:password|env:POSTGRES_PASSWORD|}</install.database.admin.password>
     <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -1718,7 +1717,7 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-    <testcontainers.version>1.19.6</testcontainers.version>
+    <testcontainers.version>1.19.7</testcontainers.version>
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>opennms</test.storepass>
     <test.keyalias>opennms-keystore-key</test.keyalias>
@@ -1929,8 +1928,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
-    <okhttp3Version>3.10.0</okhttp3Version>
-    <okioGrafanaVersion>1.17.6</okioGrafanaVersion>
+    <okhttp3Version>4.9.2</okhttp3Version>
+    <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.1</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
@@ -3558,6 +3557,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrdtool-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3569,6 +3573,11 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-jrobin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-rrd-rrdtool</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

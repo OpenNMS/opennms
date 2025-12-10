@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.situation-feedback</groupId>
     <artifactId>org.opennms.features.situation-feedback.rest</artifactId>
-    <version>34.1.0</version>
+    <version>35.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.situation-feedback.rest</groupId>
@@ -72,8 +72,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

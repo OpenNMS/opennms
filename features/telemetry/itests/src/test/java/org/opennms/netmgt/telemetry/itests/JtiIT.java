@@ -93,6 +93,7 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-openconfig-components.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
@@ -155,9 +156,9 @@ public class JtiIT {
             socket.send(packet);
         }
 
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     @Test
@@ -181,9 +182,9 @@ public class JtiIT {
             socket.send(packet);
         }
 
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.rrd")).toFile().canRead(), equalTo(true));
 
         // now change script file
         content = content.replaceAll("ifOutOctets", "FooBar");
@@ -198,7 +199,7 @@ public class JtiIT {
             }
 
             return rrdBaseDir.toPath()
-                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.jrb"))
+                    .resolve(Paths.get("1", "ge_0_0_3", "FooBar.rrd"))
                     .toFile()
                     .canRead();
         }, equalTo(true));

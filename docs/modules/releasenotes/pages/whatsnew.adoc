@@ -1,96 +1,54 @@
-[[releasenotes-34]]
+[[releasenotes-35]]
 
-= What's New in OpenNMS Horizon 34
-
+= What's New in OpenNMS Horizon 35
 
 == System requirements and Dependencies ==
 
-* Java 17: Horizon 34 requires JDK 17.
+* Java 17: Horizon 35 requires JDK 17.
 * PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
-* Elasticsearch: Horizon 34 requires Elasticsearch 8 for flow processing.
-
+* Elasticsearch: Horizon 35 requires Elasticsearch 8 for flow processing.
 
 == New features and important changes
 
-=== Time To Value Improvements to the Menu Structure
-One of our 2025-26 goals is to reduce the time it takes a new user from learning about our product to discovering and visualizing the status of their network infrastructure.
-Our first step in this approach is the reorganization of the menu structure, with a responsive side menu that streamlines the IT Operator’s actions.
-Coming soon: exciting new features to enhance your workflow, including the ability to add Windows Management Interface nodes directly from the Quick Add Node page and improved navigation within the Structured Node List.
 
-See xref:operation:deep-dive/menu/introduction.adoc[menu documentation] for more information.
+=== Event Configuration Moved to Database
 
-=== Support for Composable Index Templates and Elasticsearch 8.x in Flow Processing
-OpenNMS Flow processing now supports Elasticsearch 8.x, ensuring compatibility with the latest versions of the Elastic stack.
-Additionally, support has been added for https://www.elastic.co/docs/manage-data/data-store/templates[composable templates], enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
+Event definitions are now stored in the database, enabling dynamic management without requiring eventd restarts. Core OpenNMS events are pre-loaded automatically. Vendor-specific event files are available in `$\{OPENNMS_HOME}/etc/examples/events/` and can be uploaded through the UI or REST API as needed.
 
-=== Enhanced Keystore Support in Secure Credentials Vault
-The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
+See xref:operation:deep-dive/events/event-configuration.adoc[Event Configuration] for details.
 
-=== IPFix support for vendor-specific Information Elements
-OpenNMS now supports the definition of vendor-specific information elements.
-This allows users to collect additional metrics that are not part of the standard IPFix definitions, enabling customized data collection for specific devices or vendors.
+* Legacy file-based event configuration (`etc/eventconf.xml`) is deprecated; changes to these files are not reflected in the running system.
+* Vendor event files moved from `etc/events/` to `etc/examples/events/` and must be uploaded manually.
 
-=== NetFlow Telemetry Adapters
-The new range of NetFlow telemetry adapters (v5, v9, IPFix) allows users to process NetFlow data using custom scripts, e.g. to store values from NetFlow datasets as metrics.
+=== Simplified Datasource Configuration
 
-=== ServiceNow Plugin (Paid Subscription Required) ===
-For our paid customers, you can now forward your events/alarms/tickets to ServiceNow. You can also populate an OpenNMS requisition with the configuration items (nodes) managed by ServiceNow, avoiding blind spots in your management strategy.
+The `opennms-datasources.xml` configuration file has been simplified by making the `factory` and `class-name` attributes optional with sensible defaults. The `factory` attribute now defaults to `org.opennms.core.db.HikariCPConnectionFactory` and the `class-name` attribute defaults to `org.postgresql.Driver`. Existing configurations with these attributes explicitly set will continue to work unchanged. New installations and users updating their configurations can omit these attributes for cleaner, more maintainable configuration files.
 
-=== OpenNMS as a Virtual Appliance
-OpenNMS is now available as a Virtual Appliance delivered as an OVA image for rapid deployment and evaluation. This pre-configured solution allows users to quickly evaluate OpenNMS, reducing setup complexity and time-to-value for our network management platform.
+=== Simplified Service Configuration
 
-=== Updates to Structured Node List
-We have made some updates to the Structured Node List. This will eventually replace the existing Node List page once we have feature equivalence.
+The `service-configuration.xml` configuration file has been simplified by moving service implementation details (class names, attributes, and invoke methods) to defaults in the classpath. Users now only need to specify the service name and enabled status. A complete reference configuration is available in `etc/examples/service-configuration.xml.default`. Existing configurations continue to work unchanged.
 
-More information can be found xref:operation:deep-dive/structured-node-list/introduction.adoc[here].
+=== Removed TestLoadLibraries Service
+
+The `TestLoadLibraries` service has been removed as a separate service entry in `service-configuration.xml`. Its functionality (testing ICMP and localhost resolution) is now executed automatically as part of the Manager service initialization. This simplifies the service configuration and reduces the number of service entries that must be managed.
+
+=== OpenConfig Support on Minion
+
+OpenConfig telemetry streaming is now supported on Minion. See xref:reference:telemetryd/protocols/openconfig.adoc#minion-setup[Set up OpenConfig on Minion] for configuration details.
+
 
 == Breaking changes
-The default time series storage strategy is now by default RRDTool.
 
-IMPORTANT: If you use JRobin, make sure you set the property.
-You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
-If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
+=== Debian path updates
 
-IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
+With this release, we’re streamlining the installation process for OpenNMS on both Debian and RPM-based systems by standardizing the installation location to `/opt/opennms`. This update provides a consistent deployment path, simplifies future upgrades, and minimizes conflicts caused by differing directories.
 
-.Configure explicitly JRobin for Horizon 34.x if required
-[source, console]
-----
-org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
-----
+Before upgrading, we strongly recommend backing up your existing installation including configuration files, databases, and any custom scripts or integrations to prevent data loss or disruption.
 
-=== Deprecation of JRobin as timeseries storage
 
-The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
-The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
+=== Removed JRobin implementation
 
-=== Deprecation of Tl1d
-The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-=== Deprecation of AsteriskGateway
-The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-=== Deprecation of Reportd service
-
-The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
-
-=== Node Cache configuration
-
-Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
-The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
-
-=== OpenNMS Minion environment variables changes
-The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
-Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
-
-=== SNMP4J upgrade
-The SNMP4J library has been upgraded to version 2.8.15.
-As part of this upgrade, the SNMP4J logger configuration has been updated to use the SLF4J logging implementation:
-
-`snmp4j.LogFactory=org.opennms.netmgt.snmp.snmp4j.Slf4jLogFactory`
-
-NOTE: If you are upgrading from an older version and have overridden this property (e.g., still using org.snmp4j.log.Log4jLogFactory), you must update it manually. Retaining the old value may cause OpenNMS to fail to start.
-
-=== Improvements to JDBC Collection configuration
-The `jdbc-datacollection-config.xml` has been broken down into individual files, which now reside in `$OPENNMS_HOME/etc/jdbc-datacollection.d/`. Additionally, we have added new collections for Oracle and Microsoft SQL Server.
+JRobin, the pure-Java RRD implementation has been removed.
+The class `org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy` is no longer available.
+The Utilities to convert and analyze JRobin files (`.jrb`) are still available and usable.
 

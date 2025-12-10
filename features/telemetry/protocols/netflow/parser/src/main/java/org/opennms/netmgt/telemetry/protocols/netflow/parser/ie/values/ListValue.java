@@ -35,6 +35,7 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.DataRecord;
@@ -102,12 +103,12 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |                              ...                              |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
-    public static InformationElement parserWithBasicList(final String name, final Optional<Semantics> semantics) {
+    public static InformationElement parserWithBasicList(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final InformationElementDatabase database, final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
-                final FieldSpecifier field = new FieldSpecifier(buffer);
+                final FieldSpecifier field = new FieldSpecifier(database, buffer);
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.isReadable()) {
@@ -145,10 +146,10 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |                              ...                              |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
-    public static InformationElement parserWithSubTemplateList(final String name, final Optional<Semantics> semantics) {
+    public static InformationElement parserWithSubTemplateList(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final InformationElementDatabase database, final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
                 final int templateId = uint16(buffer);
 
@@ -232,10 +233,10 @@ public class ListValue extends Value<List<List<Value<?>>>> {
      |      ...      |
      +-+-+-+-+-+-+-+-+
     */
-    public static InformationElement parserWithSubTemplateMultiList(final String name, final Optional<Semantics> semantics) {
+    public static InformationElement parserWithSubTemplateMultiList(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final InformationElementDatabase database, final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
 
                 final List<List<Value<?>>> values = new LinkedList<>();

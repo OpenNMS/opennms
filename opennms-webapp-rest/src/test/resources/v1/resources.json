@@ -18,12 +18,12 @@
                             "SwapIn": {
                                 "name": "SwapIn", 
                                 "relativePath": "snmp/1", 
-                                "rrdFile": "SwapIn.jrb"
+                                "rrdFile": "SwapIn.rrd"
                             }, 
                             "SwapOut": {
                                 "name": "SwapOut", 
                                 "relativePath": "snmp/1", 
-                                "rrdFile": "SwapOut.jrb"
+                                "rrdFile": "SwapOut.rrd"
                             }
                         }, 
                         "typeLabel": "SNMP Node Data", 

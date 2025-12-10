@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import org.apache.commons.io.IOUtils;
-import org.jrobin.core.RrdDb;
-import org.jrobin.core.RrdDef;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -38,8 +36,8 @@ import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.AbstractJniRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy;
 import org.opennms.test.FileAnticipator;
 
 import junit.framework.TestCase;
@@ -50,7 +48,7 @@ import junit.framework.TestCase;
 public class DefaultRrdDaoIntegrationTest extends TestCase {
     private FileAnticipator m_fileAnticipator;
 
-    private RrdStrategy<RrdDef,RrdDb> m_rrdStrategy;
+    private AbstractJniRrdStrategy<MultithreadedJniRrdStrategy.CreateCommand, MultithreadedJniRrdStrategy.UpdateCommand> m_rrdStrategy;
 
     private DefaultRrdDao m_dao;
 
@@ -58,14 +56,14 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        m_rrdStrategy = new JRobinRrdStrategy();
+        m_rrdStrategy = new MultithreadedJniRrdStrategy();
         
         m_fileAnticipator = new FileAnticipator();
         
         m_dao = new DefaultRrdDao();
         m_dao.setRrdStrategy(m_rrdStrategy);
         m_dao.setRrdBaseDirectory(m_fileAnticipator.getTempDir());
-        m_dao.setRrdBinaryPath("/bin/true");
+        m_dao.setRrdBinaryPath("rrdtool");
         m_dao.afterPropertiesSet();
     }
     
@@ -97,7 +95,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         
         OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
-        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "snmp/1/eth0", "ifInOctets.jrb");
+        OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", "snmp/1/eth0", "ifInOctets.rrd");
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
@@ -110,11 +108,12 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
         File intf = m_fileAnticipator.tempDir(node, childResource.getName());
         
         RrdDataSource rrdDataSource = new RrdDataSource(attribute.getName(), RrdAttributeType.GAUGE, 600, "U", "U");
-        RrdDef def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+        MultithreadedJniRrdStrategy.CreateCommand def = m_rrdStrategy.createDefinition("test", intf.getAbsolutePath(), attribute.getName(), 600, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
+
         m_rrdStrategy.createFile(def);
         File rrdFile = m_fileAnticipator.expecting(intf, attribute.getName() + m_rrdStrategy.getDefaultFileExtension());
         
-        RrdDb rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
+        MultithreadedJniRrdStrategy.UpdateCommand rrdFileObject = m_rrdStrategy.openFile(rrdFile.getAbsolutePath());
         for (int i = 0; i < 10; i++) {
             m_rrdStrategy.updateFile(rrdFileObject, "test", (start/1000 + 300*i) + ":1");
         }
@@ -132,7 +131,7 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     	//long endTime = 1312838400L;
     	long endTime = 1312839213L;
     	long startTime = endTime - 86400L;
-    	String command = "/sw/bin/rrdtool graph -" +
+    	String command = "rrdtool graph -" +
     			" --imgformat PNG" +
     			" --font DEFAULT:7" +
     			" --font TITLE:10" +
@@ -141,15 +140,15 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     			" --title=\"Netscreen Memory Utilization\"" +
     			" --units-exponent=0 " + 
     			" --lower-limit=0" + 
-    			" DEF:value1=netscreen-host-resources.jrb:NetScrnMemAlloc:AVERAGE" + 
-    			" DEF:value1min=netscreen-host-resources.jrb:NetScrnMemAlloc:MIN" + 
-    			" DEF:value1max=netscreen-host-resources.jrb:NetScrnMemAlloc:MAX" + 
-    			" DEF:value2=netscreen-host-resources.jrb:NetScrnMemLeft:AVERAGE" + 
-    			" DEF:value2min=netscreen-host-resources.jrb:NetScrnMemLeft:MIN" + 
-    			" DEF:value2max=netscreen-host-resources.jrb:NetScrnMemLeft:MAX" + 
-    			" DEF:value3=netscreen-host-resources.jrb:NetScrnMemFrag:AVERAGE" + 
-    			" DEF:value3min=netscreen-host-resources.jrb:NetScrnMemFrag:MIN" + 
-    			" DEF:value3max=netscreen-host-resources.jrb:NetScrnMemFrag:MAX" + 
+    			" DEF:value1=netscreen-host-resources.rrd:NetScrnMemAlloc:AVERAGE" +
+    			" DEF:value1min=netscreen-host-resources.rrd:NetScrnMemAlloc:MIN" +
+    			" DEF:value1max=netscreen-host-resources.rrd:NetScrnMemAlloc:MAX" +
+    			" DEF:value2=netscreen-host-resources.rrd:NetScrnMemLeft:AVERAGE" +
+    			" DEF:value2min=netscreen-host-resources.rrd:NetScrnMemLeft:MIN" +
+    			" DEF:value2max=netscreen-host-resources.rrd:NetScrnMemLeft:MAX" +
+    			" DEF:value3=netscreen-host-resources.rrd:NetScrnMemFrag:AVERAGE" +
+    			" DEF:value3min=netscreen-host-resources.rrd:NetScrnMemFrag:MIN" +
+    			" DEF:value3max=netscreen-host-resources.rrd:NetScrnMemFrag:MAX" +
     			" LINE2:value1#0000ff:\"1  minute\"" + 
     			" GPRINT:value1:AVERAGE:\"Avg \\: %10.2lf\"" + 
     			" GPRINT:value1:MIN:\"Min \\: %10.2lf\"" + 
@@ -168,7 +167,5 @@ public class DefaultRrdDaoIntegrationTest extends TestCase {
     	final RrdGraphDetails details = m_rrdStrategy.createGraphReturnDetails(command, workDir);
     	final File outputFile = File.createTempFile("img", "png");
     	IOUtils.copy(details.getInputStream(), new FileOutputStream(outputFile));
-    	
-    	
     }
 }

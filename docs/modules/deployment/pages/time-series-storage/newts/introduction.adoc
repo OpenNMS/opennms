@@ -4,7 +4,7 @@
 :description: Introduction to OpenNMS Newts, a time-series data store based on Apache Cassandra, for horizontal scaling.
 
 link:http://newts.io/[Newts] is a time series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
-It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontal scaling] for your time series database and is an alternative to link:https://github.com/OpenNMS/jrobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontal scaling] for your time series database and is an alternative to link:http://oss.oetiker.ch/rrdtool/[RRDtool].
 
 This section describes how to xref:time-series-storage/newts/newts.adoc#newts-configure[configure] {page-component-title} to use an existing Cassandra cluster, including how to initialize the Newts keyspace using `newts init` with STCS without production-ready tuning, and verify that time series data is stored and can be accessed
 
@@ -35,4 +35,4 @@ Make sure you have the following:
 * Cassandra cluster with access to the Cassandra client port `9042/tcp`
 
 Note that you must make configurations in the `etc` directory relative to the {page-component-title} Core home directory.
-Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/opt/opennms` for Debian/Ubuntu and for CentOS/RHEL.

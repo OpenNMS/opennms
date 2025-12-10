@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.CommandTestUtils;

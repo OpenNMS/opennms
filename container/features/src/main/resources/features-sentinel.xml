@@ -100,7 +100,7 @@
         <feature>dropwizard-metrics</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
-
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <feature>opennms-core-daemon</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-dao-api</feature>

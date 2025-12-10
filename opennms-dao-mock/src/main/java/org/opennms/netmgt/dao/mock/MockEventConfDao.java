@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.EnterpriseIdPartition;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
@@ -133,11 +134,6 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     }
 
     @Override
-    public void saveCurrent() {
-            m_events.save(m_resource);
-    }
-
-    @Override
     public List<Event> getEventsByLabel() {
         SortedSet<Event> events = m_events.forEachEvent(new TreeSet<Event>(new EventLabelComparator()), new EventCallback<SortedSet<Event>>() {
             @Override
@@ -152,16 +148,6 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     @Override
     public void addEvent(final Event event) {
         m_events.addEvent(event);
-    }
-
-    @Override
-    public void addEventToProgrammaticStore(final Event event) {
-        m_events.addEvent(event);
-    }
-
-    @Override
-    public boolean removeEventFromProgrammaticStore(final Event event) {
-        return m_events.removeEvent(event);
     }
 
     @Override
@@ -187,5 +173,11 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     public Events getRootEvents() {
         return m_events;
     }
+
+    @Override
+    public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+
+    }
+
 
 }

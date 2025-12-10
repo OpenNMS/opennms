@@ -48,7 +48,7 @@ These minimum configuration parameters are available in all monitors and describ
 | response-time
 
 | rrd-base-name *
-| The file name of the RRD file (minus the `.rrd` or `.jrb` file extension) within the specified rrd-repository path in which to persist this service monitor's response-time samples.
+| The file name of the RRD file (minus the `.rrd` file extension) within the specified rrd-repository path in which to persist this service monitor's response-time samples.
 | value of `ds-name`
 
 | rrd-repository *

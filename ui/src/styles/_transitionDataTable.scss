@@ -1,0 +1,20 @@
+@use "@featherds/styles/mixins/elevation";
+
+.data-table tr,
+.data-table div {
+  @for $i from 1 through 50 {
+    &:nth-child(#{$i}) {
+      transition: all 0.3s ease $i * 0.05s;
+    }
+  }
+}
+.data-table-enter-active,
+.data-table-leave-active {
+  transform: translateX(0px);
+  opacity:1;
+}
+.data-table-enter-from,
+.data-table-leave-to {
+  transform: translateX(30px);
+  opacity:0;
+}

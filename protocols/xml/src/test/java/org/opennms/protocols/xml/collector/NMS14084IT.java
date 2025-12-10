@@ -49,14 +49,14 @@ public class NMS14084IT extends XmlCollectorITCase {
 
         executeCollectorTest(parameters, 4);
 
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/blupp/xml-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bar/xml-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/foo/xml-mapping-test.jrb").exists());
-        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bla/xml-mapping-test.jrb").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/blupp/xml-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bar/xml-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/foo/xml-mapping-test.rrd").exists());
+        Assert.assertTrue(new File(getSnmpRootDirectory(), "1/input/bla/xml-mapping-test.rrd").exists());
 
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/foo/xml-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{100.0, 10.0, 10.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/bar/xml-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{200.0, 20.0, 20.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/blupp/xml-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{300.0, 30.0, 30.0});
-        validateJrb(new File(getSnmpRootDirectory(), "1/input/bla/xml-mapping-test.jrb"), new String[]{"input", "read", "write"}, new Double[]{400.0, 40.0, 40.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/foo/xml-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{100.0, 10.0, 10.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/bar/xml-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{200.0, 20.0, 20.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/blupp/xml-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{300.0, 30.0, 30.0});
+        validateRrd(new File(getSnmpRootDirectory(), "1/input/bla/xml-mapping-test.rrd"), new String[]{"input", "read", "write"}, new Double[]{400.0, 40.0, 40.0});
     }
 }

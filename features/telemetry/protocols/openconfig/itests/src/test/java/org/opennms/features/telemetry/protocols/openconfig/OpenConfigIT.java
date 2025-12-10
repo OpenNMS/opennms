@@ -130,6 +130,10 @@ public class OpenConfigIT {
                 .setForeignId("1")
                 .setType(OnmsNode.NodeType.ACTIVE);
         nb.addInterface("127.0.0.1");
+        nb.setNodeMetaDataEntry("device","oc.port","50054");
+        nb.setNodeMetaDataEntry("device","oc.mode","jti");
+        nb.setNodeMetaDataEntry("device","oc.mode","/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp");
+
         OnmsServiceType onmsServiceType = new OnmsServiceType("OpenConfig");
         serviceTypeDao.save(onmsServiceType);
         nb.addService(onmsServiceType);
@@ -149,9 +153,9 @@ public class OpenConfigIT {
         updateDaoWithConfig(getConfig(true));
         // Start the daemon
         telemetryd.start();
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth0", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     @Test
@@ -161,9 +165,9 @@ public class OpenConfigIT {
         updateDaoWithConfig(getConfig(false));
         // Start the daemon
         telemetryd.start();
-        // Wait until the JRB archive is created
+        // Wait until the RRD archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
-                .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+                .resolve(Paths.get("1", "eth1", "ifInOctets.rrd")).toFile().canRead(), equalTo(true));
     }
 
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {

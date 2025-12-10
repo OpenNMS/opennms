@@ -60,9 +60,9 @@ import com.google.common.collect.Iterables;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties = {
-        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy",
+        "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy",
         "org.opennms.timeseries.strategy=rrd",
-        "rrd.base.dir=src/test/resources/share/jrb",
+        "rrd.base.dir=src/test/resources/share/rrd",
         "rrd.binary=rrdtool"
 })
 @JUnitTemporaryDatabase
