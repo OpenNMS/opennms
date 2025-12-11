@@ -5,7 +5,7 @@
     <parent>
         <artifactId>themes</artifactId>
         <groupId>org.opennms.features</groupId>
-        <version>34.0.2</version>
+        <version>34.1.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.themes</groupId>
     <artifactId>jmxconfiggenerator-theme</artifactId>

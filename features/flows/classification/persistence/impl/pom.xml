@@ -3,7 +3,7 @@
   <parent>
       <groupId>org.opennms.features.flows.classification</groupId>
       <artifactId>org.opennms.features.flows.classification.persistence</artifactId>
-      <version>34.0.2</version>
+      <version>34.1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows.classification.persistence</groupId>

@@ -4,7 +4,7 @@
     <parent>
       <groupId>org.opennms.core.ipc</groupId>
       <artifactId>org.opennms.core.ipc.common</artifactId>
-      <version>34.0.2</version>
+      <version>34.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.common</groupId>

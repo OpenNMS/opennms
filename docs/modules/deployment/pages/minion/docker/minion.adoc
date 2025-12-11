@@ -52,7 +52,7 @@ endif::[]
 <6> Keystore file with encrypted credentials for authenticating broker endpoints.
 Initially this line should be commented out, and will need to be activated after the file has been created on the local system.
 <7> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
-<8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the Karaf shell.
+<8> Publish ports for Syslog, SNMP trap listener, and the SSH access to the xref:reference:karaf-shell/karaf-shell.adoc[Karaf shell].
 
 The Minion process in the container runs as a non-root user and can't open privileged ports < 1024.
 We open the listener for privileged (514/udp, 162/udp) and don't have to give additional permissions to the Minion process in the container.

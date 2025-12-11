@@ -12,6 +12,7 @@
       menuFooter
       @update:expanded="() => menuStore.setSideMenuExpanded(true)"
       @update:collapsed="() => menuStore.setSideMenuExpanded(false)"
+      @update:="() => menuStore.setSideMenuExpanded(false)"
     />
   </div>
 </template>
@@ -59,7 +60,7 @@ const getMenuLink = (menuItem: MenuItem) => {
   return '#'
 }
 
-const createTopMenuIcon = (menuItem: MenuItem) => {
+const createMenuIcon = (menuItem: MenuItem) => {
   const icon: (DefineComponent | null) = getIcon(menuItem.icon)
 
   return (icon ?? IconHome) as typeof FeatherIcon
@@ -78,11 +79,18 @@ const createMenuListEntry = (menuItem: MenuItem) => {
 
   const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
 
+  let icon: any
+
+  if (menuItem.icon) {
+    icon = createMenuIcon(menuItem)
+  }
+
   return {
     id: menuItem.id ?? menuItem.name,
     type: 'item',
     title: menuItem.name,
     href: getMenuLink(menuItem),
+    icon: icon,
     target,
     onClick
   } as MenuListEntry
@@ -118,7 +126,7 @@ const createTopMenuListEntry = (topMenuItem: MenuItem) => {
     type: 'item',
     title: topMenuItem.name,
     content: '',
-    icon: createTopMenuIcon(topMenuItem),
+    icon: createMenuIcon(topMenuItem),
     component: markRaw(FeatherMenuList),
     componentProps: {
       items: topMenuItem.items?.map(createMenuListEntry) ?? []
@@ -156,18 +164,6 @@ const createPluginsMenu = (useFake: boolean) => {
   return topMenuItem
 }
 
-const createFlowsMenu = () => {
-  const flowsMenuLink = mainMenu.value?.flowsMenu?.url ?? 'admin/classification/index.jsp'
-  const flowsMenuName = mainMenu.value?.flowsMenu?.name ?? 'Flows Management'
-
-  const flowsMenuItem = {
-    ...createMenuItem('flows-management', flowsMenuName),
-    url: flowsMenuLink
-  }
-
-  return createTopMenuItem('flowsMenu', 'Flows', [flowsMenuItem])
-}
-
 const topPanels = computed<MenuListEntry[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
@@ -178,11 +174,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
   const allMenus = [
     ...mainMenu.value.menus ?? []
   ]
-
-  // Flows menu
-  if (mainMenu.value.flowsMenu?.url?.length) {
-    allMenus.push(createFlowsMenu())
-  }
 
   // Plugins menu
   if (plugins.value && plugins.value.length > 0) {

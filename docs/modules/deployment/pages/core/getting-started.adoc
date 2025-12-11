@@ -1,7 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
+:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS 9, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
@@ -42,6 +42,7 @@ Use this quick starting point to evaluate and explore how to configure Horizon b
 endif::[]
 
 
+[[requirements]]
 == Requirements
 
 The following components and settings are required to set up a new {page-component-title} instance:
@@ -50,7 +51,7 @@ ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
 * A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
-* Internet access to download the installation packages.
+* Internet access to download the installation packages. xref:system-requirements.adoc
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
 * A SELinux policy that permits binding to the ICMP service, if necessary.
@@ -69,18 +70,17 @@ include::../time-sync.adoc[]
 == Set up PostgreSQL
 
 TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before installing the {page-component-title} core instance.
+If you use older versions of PostgreSQL, you should change the method to `md5` in the `pg_hba.conf` before installing the {page-component-title} core instance.
 
 == Pool size and maximum database connections
 
-You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to at least twice the maximum pool size in {page-component-title}.
+You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to allow at least 70 connections.
+The number of connections is defined by the `maxPool` setting for each datasource (opennms 50 + opennms-admin 10 + opennms-monitoring 10).
+The `maxSize` is not used with the `HikariCPConnectionFactory`, which is deprecated and just here for backward compatibility.
 
-The default maximum pool size value in {page-component-title} is 50, but it applies to each connect in `opennms-datasources.xml`: `opennms` (the main connection used at runtime) and `opennms-admin` (the connection used during administrative operations, including installation).
-Therefore, your `max_connections` setting should be at least 100.
-
-If you change the default pool size, make sure you also update the `max_connections`.
+If you change the max pool size, make sure you also update the `max_connections`.
 You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
-You must restart the PostgreSQL server for the changes to take effect.
+You must restart the PostgreSQL server to take effect.
 
 NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
 As with all third-party tools, we do not endorse or guarantee it.
@@ -88,10 +88,10 @@ Use it at your own discretion.
 
 [{tabs}]
 ====
-CentOS/RHEL 9::
+CentOS 9::
 +
 --
-include::centos-rhel9/postgresql.adoc[]
+include::centos9/postgresql.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
@@ -117,10 +117,10 @@ Do not expose the web console or sign in pages directly to the Internet without 
 
 [{tabs}]
 ====
-CentOS/RHEL 9::
+CentOS 9::
 +
 --
-include::centos-rhel9/install-core.adoc[]
+include::centos9/install-core.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
@@ -149,10 +149,10 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 9::
+CentOS 9::
 +
 --
-include::centos-rhel/initialize-core.adoc[]
+include::centos/initialize-core.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
