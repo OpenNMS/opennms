@@ -1,18 +1,20 @@
 #! /bin/sh
-# postrm script for opennms-common
+# preinst script for opennms-common
 #
 # vim:set ai et sts=4 sw=4 tw=0:
 
+ts=$(date +%s)
 
 if [ -d /usr/share/opennms ]; then
     echo "Backing up existing /usr/share/opennms  ..."
-    mv /usr/share/opennms /usr/share/opennms.backup.$(date +%s)
+    mv /usr/share/opennms /usr/share/opennms.backup.$ts
 fi
 
 # If the user has /etc/opennms lets back it up
-if [ -d /etc/opennms  ]; then
+if [ -d /etc/opennms  ] && [ ! -L /etc/opennms ]; then
     echo "Backing up existing /etc/opennms ..."
-    mv /etc/opennms /etc/opennms.backup.$(date +%s)
+    mv /etc/opennms /etc/opennms.backup.$ts
+    echo "$ts" > /etc/opennms.backup.timestamp
 fi
 
 exit 0

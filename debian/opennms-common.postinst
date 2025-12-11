@@ -41,10 +41,12 @@ fi
 
 case "$1" in
     configure)
-        if [ -d /etc/opennms ]; then
-            echo "Merging /etc/opennms into /opt/opennms/etc..."
-            rsync -av --ignore-existing /etc/opennms/ /opt/opennms/etc/ 2>/dev/null || true
-        fi
+      ts=$(cat /etc/opennms.backup.timestamp 2>/dev/null || true)
+
+      if [ -n "$ts" ] && [ -d "/etc/opennms.backup.$ts" ]; then
+        echo "Merging /etc/opennms.backup.$ts into /opt/opennms/etc..."
+        rsync -av --ignore-existing "/etc/opennms.backup.$ts"/ /opt/opennms/etc/
+      fi
 
       /opt/opennms/bin/ensure-user-ping.sh || echo "WARNING: Unable to enable ping by the opennms user. Try running /opt/opennms/bin/ensure-user-ping.sh manually."
       /opt/opennms/bin/update-package-permissions opennms-common
