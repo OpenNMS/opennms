@@ -45,6 +45,14 @@ With this release, we’re streamlining the installation process for OpenNMS on 
 
 Before upgrading, we strongly recommend backing up your existing installation including configuration files, databases, and any custom scripts or integrations to prevent data loss or disruption.
 
+To prepare your environment, you can run the following commands:
+
+```
+sudo systemctl stop opennms
+sudo mkdir -p /opt/opennms/etc
+sudo cp -r /etc/opennms/* /opt/opennms/etc
+sudo chown -R opennms:opennms /opt/opennms
+```
 
 === Removed JRobin implementation
 
