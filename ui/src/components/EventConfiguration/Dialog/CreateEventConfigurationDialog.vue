@@ -117,19 +117,26 @@ const handleSave = async () => {
       vendor.value,
       description.value
     )
-    if (response && response === 201) {
+
+    if (response && typeof response === 'object' && response.status === 201) {
+      // Success: response contains { id, name, fileOrder, status: 201 }
       resetForm()
-      store.refreshSourcesFilters()
-      store.fetchEventConfigs().then(() => {
-        successMessage.value = true
-        newId.value = store.sources[0].id // Assuming the newly created source is at the top
-      })
-    } else if (response && response === 409 ) {
+      successMessage.value = true
+      newId.value = response.id
+    } else if (response === 409) {
+      // Conflict: duplicate name
       snackbar.showSnackBar({
         msg: 'An event configuration source with this name already exists.',
         error: true
       })
+    } else if (response === 400) {
+      // Bad request: validation error
+      snackbar.showSnackBar({
+        msg: 'Invalid request. Please check your input and try again.',
+        error: true
+      })
     } else {
+      // 500 or any other error
       snackbar.showSnackBar({
         msg: 'Failed to create event configuration source. Please try again.',
         error: true
