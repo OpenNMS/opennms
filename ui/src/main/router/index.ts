@@ -217,6 +217,22 @@ const router = createRouter({
       }
     },
     {
+      path: '/snmp-config',
+      name: 'SNMP Config',
+      component: () => import('@/containers/SnmpConfiguration.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!adminRole.value) {
+            showSnackBar({ msg: 'Must be admin to access SCV.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
+    },
+    {
       path: '/usage-statistics',
       name: 'Usage Statistics',
       component: () => import('@/containers/UsageStatistics.vue'),
@@ -297,4 +313,3 @@ router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
 export { isLegacyPlugin }
-
