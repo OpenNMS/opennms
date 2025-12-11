@@ -29,11 +29,15 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Mask;
+import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Varbind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -142,5 +146,25 @@ public class EventConfServiceHelper {
             event.setModifiedBy(username);
             return event;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Compare two events to determine if they represent the same event definition.
+     * Events match if they have the same UEI and the same mask (maskelements + varbinds).
+     * The mask is what defines how traps/syslogs are mapped to events.
+     * Note: This compares only UEI and mask, not other fields like description, severity, etc.
+     *
+     * @param event1 First event to compare
+     * @param event2 Second event to compare
+     * @return true if events have the same UEI and mask, false otherwise
+     */
+    public static boolean eventsMatch(Event event1, Event event2) {
+        // Compare UEI
+        if (!Objects.equals(event1.getUei(), event2.getUei())) {
+            return false;
+        }
+
+        // Compare masks using their equals() method
+        return Objects.equals(event1.getMask(), event2.getMask());
     }
 }

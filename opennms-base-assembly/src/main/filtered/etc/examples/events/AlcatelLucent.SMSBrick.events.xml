@@ -21,31 +21,31 @@ An internal error has been reported on	the Brick.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLastErrorCodeNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -81,31 +81,31 @@ Security Management Server.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSMSSubsystemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLastErrorCodeNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsSMSError trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -143,35 +143,35 @@ password.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserSourceIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSMSUserId&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUnauthSMSConnReason&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsUnauthSMSConn trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -207,27 +207,27 @@ password.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickLost trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -262,59 +262,59 @@ Check the SMS for further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmCodeNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleSourceIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleSourcePort&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleDestIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleDestPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleProtocol&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsZoneAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -356,67 +356,67 @@ a message from the RealSecure Internet Security System (ISS).&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEvent&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSRealSecureEngineName&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventSourceIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventSourcePort&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventSourceGroupName&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventDestIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventDestPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventDestGroupName&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventProtocol&lt;/b>&lt;/td>&lt;td>
-	%parm[#15]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmISSEventSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#16]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsISSAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -462,31 +462,31 @@ the threshold. Check the SMS for further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrickPMFirstExceededParameter&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -523,27 +523,27 @@ the threshold. Check the SMS for further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSMSPMFirstExceededParameter&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsSMSPMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -578,59 +578,59 @@ further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthGroupName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthSourceIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthSourcePort&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthDestIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthDestPort&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthProtocol&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthUserId&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthAuthType&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmUserAuthReason&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsUserAuthAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -673,35 +673,35 @@ Check SMS for further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsVGCLocalMapPoolAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -736,35 +736,35 @@ Check SMS for further details.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickInterfaceDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -800,27 +800,27 @@ Brick failover occured. Active Brick switched over to standby.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickFailoverEvent trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -854,39 +854,39 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLocalTEPDeviceName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmRemoteTEPDeviceName&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmRemoteTEPIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsLanToLanTunnelDown trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -922,41 +922,41 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLSMSPeerType&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		source(-4195544)
 		target(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLSMSName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLSMSPeerStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
 		lost(-4195544)
 		contacted(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsLSMSStatusChange trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -992,27 +992,27 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickFound trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1045,35 +1045,35 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickInterfaceUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1108,70 +1108,70 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsQosBWExceeded trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1212,70 +1212,70 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsQosRuleLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1316,66 +1316,66 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsQosZoneLimitThrottle trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1415,70 +1415,70 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneRuleNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
-	%parm[#14]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsQosRuleGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1519,66 +1519,66 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmZoneName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkIfIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosDirection&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>
 		in(-4195544)
 		out(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosType&lt;/b>&lt;/td>&lt;td>
-	%parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
 		limit(-4195544)
 		guarantee(-4195544)
 		userDefined(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmQosUnits&lt;/b>&lt;/td>&lt;td>
-	%parm[#13]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>
 		bitsPerSecond(-4195544)
 		packetsPerSecond(-4195544)
 		newSessionsPerSecond(-4195544)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsQosZoneGuaranteeUnmet trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1618,35 +1618,35 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSLAProbeID&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSLAPercentAboveThreshold&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmSLAConfiguredThreshold&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsSLARoundTripDelayAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1681,39 +1681,39 @@ for this tunnel&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLocalTEPDeviceName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLocalTEPIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmRemoteTEPDeviceName&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmRemoteTEPIpAddress&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsLanToLanTunnelUp trap received 
 			lsmsAlarmIndex=%parm[#1]% 
@@ -1751,43 +1751,43 @@ in brick ICM configuration.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmDetails&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmLogEntry&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkName&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmTriggerName&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmPercentBrkCacheUsedBeforeICM&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmPercentBrkCacheUsedAfterICM&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkSessionsBeforeICM&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	lsmsAlarmBrkSessionsAfterICM&lt;/b>&lt;/td>&lt;td>
-	%parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lsmsBrickICMAlarm trap received 
 			lsmsAlarmIndex=%parm[#1]% 

@@ -51,7 +51,8 @@ describe('DeleteEventConfigSourceDialog', () => {
       activeTab: 0,
       uploadedSourceNames: [],
       uploadedEventConfigFilesReportDialogState: { visible: false },
-      changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null }
+      changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
+      createEventConfigSourceDialogState: { visible: false }
     }
 
     wrapper = mount(DeleteEventConfigSourceDialog, {

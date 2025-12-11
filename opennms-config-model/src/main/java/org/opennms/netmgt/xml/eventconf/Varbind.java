@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name="varbind")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
-@XmlType(propOrder={"m_vbnumber", "m_values"})
+@XmlType(propOrder={"m_vbnumber", "m_vboid", "m_values"})
 public class Varbind implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -54,8 +54,11 @@ public class Varbind implements Serializable {
     @XmlAttribute(name="textual-convention", required=false)
     private String m_textualConvention;
 
-    @XmlElement(name="vbnumber", required=true)
+    @XmlElement(name="vbnumber", required=false)
     private Integer m_vbnumber;
+
+    @XmlElement(name="vboid", required=false)
+    private String m_vboid;
 
     @XmlElement(name="vbvalue", required=true)
     private List<String> m_values = new ArrayList<>();
@@ -76,7 +79,7 @@ public class Varbind implements Serializable {
     }
 
     public void setVbnumber(final Integer vbnumber) {
-        m_vbnumber = ConfigUtils.assertNotNull(vbnumber, "vbnumber");
+        m_vbnumber = vbnumber;
     }
 
     public List<String> getVbvalues() {
@@ -97,9 +100,18 @@ public class Varbind implements Serializable {
         return m_values.remove(value);
     }
 
+
+    public String getVboid() {
+        return m_vboid;
+    }
+
+    public void setVboid(final String vboid) {
+        this.m_vboid = vboid;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(m_textualConvention, m_vbnumber, m_values);
+        return Objects.hash(m_textualConvention, m_vbnumber, m_vboid, m_values);
     }
 
     @Override
@@ -111,33 +123,49 @@ public class Varbind implements Serializable {
             final Varbind that = (Varbind) obj;
             return Objects.equals(this.m_textualConvention, that.m_textualConvention) &&
                     Objects.equals(this.m_vbnumber, that.m_vbnumber) &&
+                    Objects.equals(this.m_vboid, that.m_vboid) &&
                     Objects.equals(this.m_values, that.m_values);
         }
         return false;
     }
 
     public EventMatcher constructMatcher() {
-        if (m_vbnumber == null) return EventMatchers.trueMatcher();
+        if (m_vbnumber == null && m_vboid == null) return EventMatchers.trueMatcher();
 
-        List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
-        for(final String value : m_values) {
-            if (value == null) continue;
-            if (value.startsWith("~")) {
-                valueMatchers.add(valueMatchesRegexMatcher(varbind(m_vbnumber), value));
-            } else if (value.endsWith("%")) {
-                valueMatchers.add(valueStartsWithMatcher(varbind(m_vbnumber), value));
+        if (m_vbnumber != null) {
+            final List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
+            for(final String value : m_values) {
+                if (value == null) continue;
+                if (value.startsWith("~")) {
+                    valueMatchers.add(valueMatchesRegexMatcher(varbind(m_vbnumber), value));
+                } else if (value.endsWith("%")) {
+                    valueMatchers.add(valueStartsWithMatcher(varbind(m_vbnumber), value));
+                } else {
+                    valueMatchers.add(valueEqualsMatcher(varbind(m_vbnumber), value));
+                }
+            }
+
+            if (valueMatchers.size() == 1) {
+                return valueMatchers.get(0);
             } else {
-                valueMatchers.add(valueEqualsMatcher(varbind(m_vbnumber), value));
+                final EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
+                return EventMatchers.or(matchers);
+            }
+        } else {
+            final List<EventMatcher> valueMatchers = new ArrayList<EventMatcher>(m_values.size());
+            for(final String value : m_values) {
+                if (value == null) {
+                    continue;
+                }
+                valueMatchers.add(valueEqualsMatcher(varbind(m_vboid), value));
+            }
+
+            if (valueMatchers.size() == 1) {
+                return valueMatchers.get(0);
+            } else {
+                final EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
+                return EventMatchers.or(matchers);
             }
         }
-
-        if (valueMatchers.size() == 1) {
-            return valueMatchers.get(0);
-        } else {
-            EventMatcher[] matchers = valueMatchers.toArray(new EventMatcher[valueMatchers.size()]);
-            return EventMatchers.or(matchers);
-        }
-
-    }	
-
+    }
 }

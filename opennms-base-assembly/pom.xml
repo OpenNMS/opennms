@@ -457,8 +457,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-rrd-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

@@ -48,7 +48,7 @@ import org.opennms.netmgt.rrd.model.AbstractDS;
 import org.opennms.netmgt.rrd.model.AbstractRRA;
 import org.opennms.netmgt.rrd.model.AbstractRRD;
 import org.opennms.netmgt.rrd.model.Row;
-import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.util.RrdConvertUtils;
 import org.opennms.newts.api.Counter;
 import org.opennms.newts.api.Gauge;
 import org.opennms.newts.api.MetricType;

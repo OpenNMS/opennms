@@ -1,9 +1,11 @@
 .Install PostgreSQL client and server
 [source, console]
 ----
-sudo apt -y install postgresql
+sudo apt install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt -y install postgresql-{postgresql-version}
 ----
- 
+
 .Create an opennms database user and password
 [source, console]
 ----
@@ -11,7 +13,7 @@ sudo -u postgres createuser -P opennms
 ----
 
 IMPORTANT: You must provide a password for the `opennms` database user.
-         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder. 
+         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder.
          Please set a secure password.
 
 .Create an empty database and set the owner to the opennms user

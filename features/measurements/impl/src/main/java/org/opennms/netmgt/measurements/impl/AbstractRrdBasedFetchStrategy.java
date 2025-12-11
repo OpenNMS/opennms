@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jrobin.core.RrdException;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
@@ -41,6 +40,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,12 +147,12 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
     }
 
     /**
-     *  Performs the actual retrieval of the values from the RRD/JRB files.
+     *  Performs the actual retrieval of the values from the RRD files.
      *
      *  If relaxed is <code>true</code> an empty response will be generated if there
-     *  are no RRD/JRB files to query.
+     *  are no RRD files to query.
      *
-     *  If relaxed is <code>true</code> and one or more RRD/JRB files are present,
+     *  If relaxed is <code>true</code> and one or more RRD files are present,
      *  then {@link FetchResults} will be populated with {@link Double#NaN} for all missing entries.
      */
     private FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
@@ -171,7 +171,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
     }
 
     /**
-     * Performs the actual retrieval of the values from the RRD/JRB files.
+     * Performs the actual retrieval of the values from the RRD files.
      */
     protected abstract FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
             Map<Source, String> rrdsBySource, Map<String, Object> constants, QueryMetadata metadata) throws RrdException;

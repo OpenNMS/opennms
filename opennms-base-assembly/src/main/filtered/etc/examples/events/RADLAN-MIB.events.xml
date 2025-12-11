@@ -22,16 +22,16 @@ interface number.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rxOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -61,16 +61,16 @@ The bound variable rndErrorDesc provides the interface number.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			txOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -100,16 +100,16 @@ Table is used for IP routing algorithm (RIP).&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			routeTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -141,16 +141,16 @@ using the variable rndAction.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			resetRequired trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -182,16 +182,16 @@ text and severity respectively.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			endTftp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -222,16 +222,16 @@ provides the actual  message text  and severity  respectively.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			abortTftp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -262,16 +262,16 @@ question&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			startTftp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -300,16 +300,16 @@ question&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			faultBackUp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -338,16 +338,16 @@ question&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			mainLinkUp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -378,16 +378,16 @@ provides the actual  message text and severity respectively.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			ipxRipTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -418,16 +418,16 @@ provides the actual  message text and severity respectively.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			ipxSapTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -459,16 +459,16 @@ interface Number.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			facsAccessVoilation trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -498,16 +498,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== info )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			autoConfigurationCompleted trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -538,16 +538,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			forwardingTabOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -578,16 +578,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			framRelaySwitchConnectionUp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -618,16 +618,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			framRelaySwitchConnectionDown trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -657,16 +657,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			errorsDuringInit trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -695,16 +695,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanDynPortAdded trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -733,16 +733,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanDynPortRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -771,16 +771,16 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsSDclientsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -810,16 +810,16 @@ and is thought to be inactive.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsSDinactiveServer trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -848,16 +848,16 @@ and is thought to be inactive.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrConnectionsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -887,16 +887,16 @@ no available IP virtual address to allocate to it.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrReqStaticConnNotAccepted trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -927,16 +927,16 @@ it will not be further allocated to new connections.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrVirtualIpAsSource trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -968,16 +968,16 @@ specific source IP.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrNotAllocVirtualIp trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1009,16 +1009,16 @@ configuration to an NMS.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsSnmpSetRequestInSpecialCfgState trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1057,16 +1057,16 @@ if any responses were received:
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsPingCompletion trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1097,16 +1097,16 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			pppSecurityViolation trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1135,16 +1135,16 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			frDLCIStatudChange trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1173,16 +1173,16 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			papFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1211,16 +1211,16 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			chapFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1250,16 +1250,16 @@ up after failure a trap of this type is issued.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsWSDRedundancySwitch trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1290,16 +1290,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rsDhcpAllocationFailure trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1328,16 +1328,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIpFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1366,16 +1366,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIpFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1404,16 +1404,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIpxFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1442,16 +1442,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIpxFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1480,16 +1480,16 @@ available IP addresses.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIpmFftOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1519,16 +1519,16 @@ changed&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlPhysicalDescriptionChanged trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1558,24 +1558,24 @@ transitions from the Learning state to the Forwarding state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rldot1dStpTrapVrblifIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rldot1dStpTrapVrblVID&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rldot1dStpPortStateForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1607,24 +1607,24 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rldot1dStpTrapVrblifIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rldot1dStpTrapVrblVID&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rldot1dStpPortStateNotForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1655,16 +1655,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlPolicyDropPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1693,16 +1693,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlPolicyForwardPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1731,16 +1731,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIgmpProxyTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1769,16 +1769,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlIgmpV1MsgReceived trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1807,16 +1807,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlVrrpEntriesDeleted trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1845,16 +1845,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlHotSwapTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1883,16 +1883,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortAddedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1921,16 +1921,16 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortRemovedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1960,16 +1960,16 @@ a trunk because of device limitations or diffrent swIfType.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortNotCapableTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -1999,16 +1999,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlLockPortTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2037,16 +2037,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanDynVlanAdded trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2075,16 +2075,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanDynVlanRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2113,16 +2113,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanDynamicToStatic trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2151,16 +2151,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			vlanStaticToDynamic trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2189,16 +2189,16 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			dstrSysLog trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2233,16 +2233,16 @@ The error text will specify the fan index, fan description and the exact fan sta
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonFanStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2277,16 +2277,16 @@ The error text will specify the power supply index, power supply description and
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonPowerSupplyStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2317,16 +2317,16 @@ The error text will specify the power supply index, power supply description and
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlStackStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2356,16 +2356,16 @@ device specific safe temperature threshold.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonTemperatureRisingAlarm trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2395,16 +2395,16 @@ a copy operation successfully.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlCopyFinished trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2433,16 +2433,16 @@ a copy operation successfully.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlCopyFailed trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2472,16 +2472,16 @@ failed due to full hash chain.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlBrgMacAddFailedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2510,16 +2510,16 @@ failed due to full hash chain.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rldot1xPortStatusAuthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2548,16 +2548,16 @@ failed due to full hash chain.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rldot1xPortStatusUnauthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2586,16 +2586,16 @@ failed due to full hash chain.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			swIfTablePortLock trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2624,16 +2624,16 @@ failed due to full hash chain.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			swIfTablePortUnLock trap received 
 			rndErrorDesc=%parm[#1]% 
@@ -2663,16 +2663,16 @@ number of consecutives unsuccessful login attempts.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			rlAAAUserLocked trap received 
 			rndErrorDesc=%parm[#1]% 

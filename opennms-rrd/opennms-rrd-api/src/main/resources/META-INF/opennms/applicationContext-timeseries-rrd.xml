@@ -36,9 +36,6 @@
                 <prop key="org.opennms.rrd.queuing.writethread.sleepTime">50</prop>
                 <prop key="org.opennms.rrd.queuing.writethread.exitDelay">60000</prop>
 
-                <!-- JRobinRrdStrategy-specific properties -->
-                <prop key="org.jrobin.core.RrdBackendFactory">FILE</prop>
-
                 <!-- TcpRrdStrategy-specific properties, blank by default to disable this output -->
                 <prop key="org.opennms.rrd.tcp.host" />
                 <prop key="org.opennms.rrd.tcp.port">0</prop>

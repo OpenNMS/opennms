@@ -20,15 +20,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpCardInserted trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -59,15 +59,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpCardRemoved trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -98,15 +98,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpBlownFuse trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -137,11 +137,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpRmtAlmClear trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -171,11 +171,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpRmtAlm trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -205,11 +205,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpExt1AlmClear trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -239,11 +239,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpExt1Alm trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -273,11 +273,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpExt2AlmClear trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -307,11 +307,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpExt2Alm trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -341,11 +341,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpBusApwrAlmClear trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -375,11 +375,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpBusApowerAlm trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -409,11 +409,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpBusBpwrAlmClear trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -443,11 +443,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpBusBpowerAlm trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -477,15 +477,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpInService trap received 
 			adTrapInformSeqNum=%parm[#1]% 
@@ -516,15 +516,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysName&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			adCtrpOutOfService trap received 
 			adTrapInformSeqNum=%parm[#1]% 

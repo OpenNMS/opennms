@@ -50,7 +50,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
 /**
- * Used in conjunction with RRD/JRB strategies that persist
+ * Used in conjunction with RRD strategies that persist
  * metrics to the local disk.
  *
  * @author jwhite

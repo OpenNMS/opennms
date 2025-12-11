@@ -147,7 +147,7 @@ public abstract class ConfigFileConstants {
     public static final int VACUUMD_CONFIG_FILE_NAME;
 
     /**
-     * The config file specifying the rrd config (ie JRobin vs JNI)
+     * The config file specifying the rrd config (ie RRD implementation)
      */
     public static final int RRD_CONFIG_FILE_NAME;
 

@@ -225,6 +225,21 @@ This will match varbind 1 with any String beginning with "Error:".
 REMINDER: The order in which events are listed is very important.
 Put the most specific events first.
 
+To compare variables whose order is unknown, the OID can also be specified.
+To do this, use the `vboid` element instead of the `vbnumber` element.
+
+[source, xml]
+----
+<varbind>
+    <vboid>.1.3.6.1.4.1.28458.1.26.3.1.1.13.0</vboid>
+    <vbvalue>1</vbvalue>
+</varbind>
+----
+
+This refers to the variable in the mask using the OID and compares its value, ignoring the variable order.
+
+NOTE: Please note that specifying both `vbnumber` and `vboid` within a `varbind` element is not permitted.
+
 == Decode varbinds
 
 A lot of MIBs define specific variables to code the value of some OIDs.

@@ -31,7 +31,8 @@ To build and run {page-component-title} from source, you must install the follow
 * OpenJDK 17 development kit; verify the correct `javac` and `java` executables are in your search path
 * xref:deployment:core/getting-started.adoc#install-core-instance[OpenNMS package repositories]
 * JICMP and JICMP6 packages to allow sending ICMP messages with Java
-* RRDtool from the official package repositories and JRRD2 to use RRDtool as it is now the default over the deprecated Java-based RRD implementation JRobin
+* RRDtool from the official package repositories and JRRD2 to use RRDtool as it is now the default
+* The Java-based RRD implementation JRobin has been removed and is no longer available.
 * link:https://git-scm.com/[git-scm] to check out the source code from the link:https://github.com/OpenNMS/opennms[OpenNMS GitHub repository]
 * xref:deployment:core/getting-started.adoc#setup-postgresql[PostgreSQL server] (installed and initialized)
 * Perl to run the convenient compile and assemble helper scripts

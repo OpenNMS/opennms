@@ -58,11 +58,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <artifactId>opennms-rrdtool-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
+      <artifactId>opennms-rrd-util</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

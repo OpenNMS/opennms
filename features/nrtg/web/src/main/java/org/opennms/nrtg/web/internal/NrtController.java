@@ -323,7 +323,7 @@ public class NrtController {
 
         logger.debug("getMetaDataForReport: " + rrdGraphAttributes);
 
-        //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
+        //get all metaData for RrdGraphAttributes from the meta files next to the RRD files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
             // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
             // by the ResourceStorageDao.
@@ -335,7 +335,7 @@ public class NrtController {
                 }
                 pathToMetaFile = ResourcePath.get(path.split(":"));
             } else {
-                final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+                final String knownExtensions[] = new String[]{".rrd"};
                 String metaFileNameWithoutExtension = attr.getRrdFile();
                 for (final String ext : knownExtensions) {
                     if (metaFileNameWithoutExtension.endsWith(ext)) {
