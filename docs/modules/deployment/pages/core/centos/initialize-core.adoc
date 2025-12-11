@@ -28,7 +28,7 @@ NOTE: **Optional**: Define any necessary xref:operation:deep-dive/admin/configur
 [source, console]
 ----
 echo "JAVA_HEAP_SIZE=16384" | sudo tee /opt/opennms/etc/opennms.conf
-echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee /opt/opennms/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee -a /opt/opennms/etc/opennms.conf
 ----
 NOTE: These values are provided as examples; ideal values will vary based on your environment and workload
 
