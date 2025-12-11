@@ -62,7 +62,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
   it('renders the dialog when visible is true', () => {
     const header = document.body.querySelector('[data-ref-id="feather-dialog-header"]')
     expect(header).not.toBeNull()
-    expect(header!.textContent).toBe('Create Event Configuration Source')
+    expect(header!.textContent).toBe('Create New Event Source')
   })
 
   it('renders informational note', () => {

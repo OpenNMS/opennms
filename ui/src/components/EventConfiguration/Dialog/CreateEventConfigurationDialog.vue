@@ -87,7 +87,7 @@ const snackbar = useSnackbar()
 const store = useEventConfigStore()
 const newId: Ref<number> = ref(0)
 const labels = {
-  title: 'Create Event Configuration Source'
+  title: 'Create New Event Source'
 }
 const error = computed(() => {
   let error: any = {}
