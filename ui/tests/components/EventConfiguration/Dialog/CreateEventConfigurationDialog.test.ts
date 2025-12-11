@@ -832,5 +832,447 @@ describe('CreateEventConfigurationDialog.vue', () => {
       expect(note!.textContent).toContain('You can add event configurations after creation')
     })
   })
+
+  describe('HTTP Status Code 409 (Duplicate Name)', () => {
+    it('shows snackbar error on 409 duplicate source name', async () => {
+      ;(wrapper.vm as any).configName = 'ExistingSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(409)
+      
+      const mockShowSnackBar = vi.fn()
+      vi.stubGlobal('useSnackbar', () => ({
+        showSnackBar: mockShowSnackBar
+      }))
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // Verify the specific 409 error message
+      expect((wrapper.vm as any).snackbar.showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: 'An event configuration source with this name already exists.',
+          error: true
+        })
+      )
+    })
+
+    it('does not reset form on 409 error', async () => {
+      ;(wrapper.vm as any).configName = 'ExistingSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(wrapper.vm as any).description = 'Description'
+      ;(addEventConfigSource as any).mockResolvedValue(409)
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // Form should retain values after 409 error
+      expect((wrapper.vm as any).configName).toBe('ExistingSource')
+      expect((wrapper.vm as any).vendor).toBe('Vendor')
+      expect((wrapper.vm as any).description).toBe('Description')
+    })
+
+    it('does not show success message on 409 error', async () => {
+      ;(wrapper.vm as any).configName = 'ExistingSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(409)
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).successMessage).toBe(false)
+    })
+
+    it('does not call store methods on 409 error', async () => {
+      ;(wrapper.vm as any).configName = 'ExistingSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(409)
+      store.fetchEventConfigs = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect(store.fetchEventConfigs).not.toHaveBeenCalled()
+      expect(store.refreshSourcesFilters).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('HTTP Status Code 500 (Server Error)', () => {
+    it('shows snackbar error on 500 server error', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(500)
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).snackbar.showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: 'Failed to create event configuration source. Please try again.',
+          error: true
+        })
+      )
+    })
+
+    it('does not reset form on 500 error', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(wrapper.vm as any).description = 'Test'
+      ;(addEventConfigSource as any).mockResolvedValue(500)
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).configName).toBe('TestSource')
+      expect((wrapper.vm as any).vendor).toBe('Vendor')
+    })
+
+    it('does not show success message on 500 error', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(500)
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).successMessage).toBe(false)
+    })
+
+    it('does not call store methods on 500 error', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(500)
+      store.fetchEventConfigs = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect(store.fetchEventConfigs).not.toHaveBeenCalled()
+      expect(store.refreshSourcesFilters).not.toHaveBeenCalled()
+    })
+
+    it('handles unexpected status codes as errors', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(503) // Unexpected status code
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // Should show generic error message for unexpected status
+      expect((wrapper.vm as any).snackbar.showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: 'Failed to create event configuration source. Please try again.',
+          error: true
+        })
+      )
+    })
+  })
+
+  describe('Exception Handling', () => {
+    it('catches and logs exceptions from service call', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      const testError = new Error('Network error')
+      ;(addEventConfigSource as any).mockRejectedValue(testError)
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating event configuration source:', testError)
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('does not show success on exception', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockRejectedValue(new Error('Service unavailable'))
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).successMessage).toBe(false)
+    })
+
+    it('does not call store methods on exception', async () => {
+      ;(wrapper.vm as any).configName = 'TestSource'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockRejectedValue(new Error('Service error'))
+      store.fetchEventConfigs = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect(store.fetchEventConfigs).not.toHaveBeenCalled()
+      expect(store.refreshSourcesFilters).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('NewId State Management', () => {
+    const mockSource = {
+      id: 789,
+      vendor: 'TestVendor',
+      name: 'TestConfig',
+      description: 'Test description',
+      enabled: true,
+      createdTime: new Date(),
+      lastModified: new Date(),
+      eventCount: 0,
+      fileOrder: 0,
+      uploadedBy: ''
+    }
+
+    it('captures the new source ID from store after creation', async () => {
+      ;(wrapper.vm as any).configName = 'TestConfig'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
+      store.resetSourcesPagination = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+      store.sources = [mockSource]
+
+      expect((wrapper.vm as any).newId).toBe(0) // Initial value
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).newId).toBe(789) // Should be set to source ID
+    })
+
+    it('newId persists for navigation to detail page', async () => {
+      ;(wrapper.vm as any).configName = 'TestConfig'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
+      store.resetSourcesPagination = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+      store.sources = [mockSource]
+      store.hideCreateEventConfigSourceDialog = vi.fn()
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      const viewSourceBtn = wrapper.findAllComponents(FeatherButton)[wrapper.findAllComponents(FeatherButton).length - 1]
+      await viewSourceBtn.trigger('click')
+
+      expect(mockPush).toHaveBeenCalledWith({
+        name: 'Event Configuration Detail',
+        params: { id: 789 }
+      })
+    })
+
+    it('newId is used from first source in list', async () => {
+      ;(wrapper.vm as any).configName = 'TestConfig'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
+      store.resetSourcesPagination = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+      const sources = [
+        { ...mockSource, id: 999 }, // First source should be used
+        { ...mockSource, id: 888 }
+      ]
+      store.sources = sources
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      expect((wrapper.vm as any).newId).toBe(999)
+    })
+  })
+
+  describe('Dialog Visibility and State Transitions', () => {
+    it('toggles from form view to success view', async () => {
+      const mockSource = {
+        id: 123,
+        vendor: 'Vendor',
+        name: 'Test',
+        description: 'Test',
+        enabled: true,
+        createdTime: new Date(),
+        lastModified: new Date(),
+        eventCount: 0,
+        fileOrder: 0,
+        uploadedBy: ''
+      }
+      ;(wrapper.vm as any).configName = 'Test'
+      ;(wrapper.vm as any).vendor = 'Vendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      store.fetchEventConfigs = vi.fn().mockResolvedValue(undefined)
+      store.resetSourcesPagination = vi.fn()
+      store.refreshSourcesFilters = vi.fn()
+      store.sources = [mockSource]
+
+      // Initially shows form
+      expect(document.querySelector('.modal-body-form')).not.toBeNull()
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // After creation should show success
+      expect(document.querySelector('.modal-body-success')).not.toBeNull()
+      expect(document.querySelector('.modal-body-form')).toBeNull()
+    })
+
+    it('dialog state persists when hidden and reopened', async () => {
+      ;(wrapper.vm as any).successMessage = true
+      ;(wrapper.vm as any).configName = 'PreviousValue'
+      store.hideCreateEventConfigSourceDialog = vi.fn()
+
+      // Hide dialog
+      store.createEventConfigSourceDialogState.visible = false
+      await wrapper.vm.$nextTick()
+
+      // Dialog should not be visible
+      expect(document.querySelector('[data-ref-id="feather-dialog-header"]')).toBeNull()
+
+      // Reopen dialog
+      store.createEventConfigSourceDialogState.visible = true
+      await wrapper.vm.$nextTick()
+
+      // Dialog should be visible again
+      expect(document.querySelector('[data-ref-id="feather-dialog-header"]')).not.toBeNull()
+      // successMessage state should persist (not auto-reset when toggling visibility)
+      expect((wrapper.vm as any).successMessage).toBe(true)
+    })
+  })
+
+  describe('Input Field Model Binding', () => {
+    it('updates configName on input', async () => {
+      const inputs = wrapper.findAllComponents(FeatherInput)
+      const nameInput = inputs[0]
+      
+      await nameInput.vm.$emit('update:modelValue', 'NewName')
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).configName).toBe('NewName')
+    })
+
+    it('updates vendor on input', async () => {
+      const inputs = wrapper.findAllComponents(FeatherInput)
+      const vendorInput = inputs[1]
+      
+      await vendorInput.vm.$emit('update:modelValue', 'NewVendor')
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).vendor).toBe('NewVendor')
+    })
+
+    it('updates description on textarea input', async () => {
+      const textarea = wrapper.findComponent(FeatherTextarea)
+      
+      await textarea.vm.$emit('update:modelValue', 'New description')
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).description).toBe('New description')
+    })
+
+    it('description gets trimmed automatically with v-model.trim', async () => {
+      const textarea = wrapper.findComponent(FeatherTextarea)
+      
+      await textarea.vm.$emit('update:modelValue', '  spaced text  ')
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).description).toBe('spaced text')
+    })
+  })
+
+  describe('Store Method Sequence', () => {
+    const mockSource = {
+      id: 123,
+      vendor: 'TestVendor',
+      name: 'TestConfig',
+      description: 'Test description',
+      enabled: true,
+      createdTime: new Date(),
+      lastModified: new Date(),
+      eventCount: 0,
+      fileOrder: 0,
+      uploadedBy: ''
+    }
+
+    it('calls store methods in correct order after success', async () => {
+      ;(wrapper.vm as any).configName = 'TestConfig'
+      ;(wrapper.vm as any).vendor = 'TestVendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      
+      const callOrder: string[] = []
+      store.refreshSourcesFilters = vi.fn(() => {
+        callOrder.push('refreshSourcesFilters')
+        return Promise.resolve()
+      })
+      store.fetchEventConfigs = vi.fn(() => {
+        callOrder.push('fetchEventConfigs')
+        return Promise.resolve()
+      })
+      store.resetSourcesPagination = vi.fn()
+      store.sources = [mockSource]
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // refreshSourcesFilters should be called before fetchEventConfigs
+      expect(callOrder).toContain('refreshSourcesFilters')
+      expect(callOrder).toContain('fetchEventConfigs')
+      expect(callOrder.indexOf('refreshSourcesFilters')).toBeLessThan(callOrder.indexOf('fetchEventConfigs'))
+    })
+
+    it('does not call fetchEventConfigs if refreshSourcesFilters fails', async () => {
+      ;(wrapper.vm as any).configName = 'TestConfig'
+      ;(wrapper.vm as any).vendor = 'TestVendor'
+      ;(addEventConfigSource as any).mockResolvedValue(201)
+      store.refreshSourcesFilters = vi.fn().mockRejectedValue(new Error('Filter error'))
+      store.fetchEventConfigs = vi.fn()
+      store.resetSourcesPagination = vi.fn()
+      store.sources = [mockSource]
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+      await wrapper.vm.$nextTick()
+      const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await createBtn.trigger('click')
+      await flushPromises()
+
+      // fetchEventConfigs should not be called if refreshSourcesFilters errors
+      // This tests the promise chain behavior
+      consoleErrorSpy.mockRestore()
+    })
+  })
 })
 

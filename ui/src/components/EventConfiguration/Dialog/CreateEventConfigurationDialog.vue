@@ -27,7 +27,7 @@
         <FeatherTextarea
           v-model.trim="description"
           data-test="event-description"
-          label=""
+          label="Description"
           hint="Provide a detailed description for the event configuration source (optional)."
           rows="10"
           auto
