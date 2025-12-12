@@ -1,7 +1,7 @@
 version: 2
 updates:
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "pnpm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
     target-branch: "develop"
@@ -22,7 +22,7 @@ updates:
           - "minor"
           - "patch"
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "pnpm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
     target-branch: "develop"
