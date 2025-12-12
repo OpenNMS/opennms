@@ -90,15 +90,3 @@ updates:
     schedule:
       interval: "daily"
 
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "develop"
-    reviewers:
-      - "OpenNMS/dependabot-reviewers-maven"
-    labels:
-      - "dependency update"
-    commit-message:
-      prefix: "build"
-      include: "scope"
-    schedule:
-      interval: "weekly"
