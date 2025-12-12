@@ -41,7 +41,7 @@
           <minInclusive value="1"/>
           <maxInclusive value="65535"/>
         </restriction>
-      </simpleType>      
+      </simpleType>
     </attribute>
 
       <attribute name="retry" type="int" use="optional">
@@ -87,7 +87,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      
+
       <attribute name="max-vars-per-pdu" type="int" use="optional" default="10" >
         <annotation>
           <documentation>
@@ -95,7 +95,7 @@
           </documentation>
         </annotation>
       </attribute>
-      
+
       <attribute name="max-repetitions" type="int" use="optional" default="2" >
         <annotation>
           <documentation>
@@ -108,7 +108,7 @@
         <annotation>
           <documentation>(SNMP4J specific) Specifies the maximum number of bytes that may be
           encoded into an individual SNMP PDU request by Collectd. Provides a
-          means to limit the size of outgoing PDU requests. Default is 65535, must be 
+          means to limit the size of outgoing PDU requests. Default is 65535, must be
           at least 484.</documentation>
         </annotation>
       </attribute>
@@ -135,7 +135,7 @@
         <annotation>
           <documentation>SNMPv3</documentation>
         </annotation>
-        
+
         <simpleType>
           <restriction base="int">
             <minInclusive value="1" />
@@ -203,9 +203,9 @@
           <documentation>SNMPv3</documentation>
         </annotation>
       </attribute>
-  
+
   </complexType>
-  
+
   <element name="snmp-config">
     <annotation>
       <documentation>Top-level element for the snmp-config.xml configuration
@@ -228,12 +228,12 @@
               </annotation>
             </element>
           </sequence>
-          
+
         </extension>
       </complexContent>
     </complexType>
   </element>
-          
+
   <element name="definition">
     <annotation>
       <documentation>Provides a mechanism for associating one or more specific
@@ -253,18 +253,27 @@
               </annotation>
             </element>
 
-            <element maxOccurs="unbounded" minOccurs="0" name="specific"
-                 type="string">
+            <element maxOccurs="unbounded" minOccurs="0" name="specific">
               <annotation>
                 <documentation>Specific IP address to which this definition
                   applies.</documentation>
               </annotation>
+              <complexType>
+                <simpleContent>
+                  <extension base="string"/>
+                </simpleContent>
+              </complexType>
             </element>
 
-            <element maxOccurs="unbounded" minOccurs="0" ref="this:ip-match">
+            <element maxOccurs="unbounded" minOccurs="0" name="ip-match">
               <annotation>
                 <documentation>Match Octets (as in IPLIKE)</documentation>
               </annotation>
+              <complexType>
+                <simpleContent>
+                  <extension base="this:ip-match"/>
+                </simpleContent>
+              </complexType>
             </element>
           </sequence>
 
@@ -328,18 +337,15 @@
     </complexType>
   </element>
 
-  <element name="ip-match">
+  <simpleType name="ip-match">
     <annotation>
       <documentation>Octet Range</documentation>
     </annotation>
-
-    <simpleType>
       <restriction base="string">
         <pattern value="([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)"/>
       </restriction>
-    </simpleType>
-    
-  </element>
+  </simpleType>
+
   <simpleType name="pdu-size-limit">
     <restriction base="int">
       <fractionDigits value="0"/>

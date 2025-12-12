@@ -89,6 +89,12 @@ public class ConfigurationManagerServiceMock implements ConfigurationManagerServ
             def = XsdHelper.buildConfigDefinition("provisiond", "provisiond-configuration.xsd",
                     "provisiond-configuration", ConfigurationManagerService.BASE_PATH);
         }
+
+        if ("snmp-config".equals(configName)) {
+            def = XsdHelper.buildConfigDefinition("snmp-config", "snmp-config.xsd",
+                    "snmp-config", ConfigurationManagerService.BASE_PATH);
+        }
+
         return Optional.ofNullable(def);
     }
 

@@ -22,11 +22,16 @@
 package org.opennms.netmgt.config;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.mock.MockSnmpPeerFactory;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
+import org.opennms.netmgt.dao.jaxb.DefaultSnmpConfigDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -35,6 +40,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
         // Can't use minimal-conf here
         //"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"

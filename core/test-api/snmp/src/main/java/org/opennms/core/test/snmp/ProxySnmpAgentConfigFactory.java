@@ -27,8 +27,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
@@ -40,7 +43,7 @@ public class ProxySnmpAgentConfigFactory extends SnmpPeerFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(ProxySnmpAgentConfigFactory.class);
 
     public ProxySnmpAgentConfigFactory(final InputStream config) throws FileNotFoundException {
-        super(new InputStreamResource(config));
+       super(new InputStreamResource(config));
     }
 
     @Override

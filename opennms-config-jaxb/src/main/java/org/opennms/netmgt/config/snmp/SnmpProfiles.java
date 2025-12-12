@@ -39,18 +39,18 @@ import org.opennms.core.xml.ValidateUsing;
 public class SnmpProfiles {
 
     @XmlElement(name="profile")
-    private List<SnmpProfile> snmpProfiles = new ArrayList<>();
+    private List<SnmpProfile> profile = new ArrayList<>();
 
     public List<SnmpProfile> getSnmpProfiles() {
-        return snmpProfiles;
+        return profile;
     }
 
     public void setSnmpProfiles(List<SnmpProfile> snmpProfiles) {
-        this.snmpProfiles = snmpProfiles;
+        this.profile = snmpProfiles;
     }
 
     public void addSnmpProfile(SnmpProfile snmpProfile) {
-        this.snmpProfiles.add(snmpProfile);
+        this.profile.add(snmpProfile);
     }
 
     @Override
@@ -58,11 +58,11 @@ public class SnmpProfiles {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SnmpProfiles that = (SnmpProfiles) o;
-        return Objects.equals(snmpProfiles, that.snmpProfiles);
+        return Objects.equals(profile, that.profile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(snmpProfiles);
+        return Objects.hash(profile);
     }
 }

@@ -27,12 +27,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="profile")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
+@XmlType(propOrder={"label", "filter"})
 public class SnmpProfile extends Configuration {
 
     private static final long serialVersionUID = 6047134979704016780L;
@@ -58,12 +60,12 @@ public class SnmpProfile extends Configuration {
                        String privacyProtocol,
                        String enterpriseId,
                        String label,
-                       String filterExpression) {
+                       String filter) {
 
         super(port, retry, timeout, readCommunity, writeCommunity, proxyHost, version, maxVarsPerPdu,
                 maxRepetitions, maxRequestSize, securityName, securityLevel, authPassphrase, authProtocol,
                 engineId, contextEngineId, contextName, privacyPassphrase, privacyProtocol, enterpriseId);
-        this.filterExpression = filterExpression;
+        this.filter = filter;
         this.label = label;
     }
 
@@ -74,15 +76,15 @@ public class SnmpProfile extends Configuration {
     private String label;
 
     @XmlElement(name="filter")
-    private String filterExpression;
+    private String filter;
 
 
     public String getFilterExpression() {
-        return filterExpression;
+        return filter;
     }
 
     public void setFilterExpression(String filterExpression) {
-        this.filterExpression = filterExpression;
+        this.filter = filterExpression;
     }
 
     public String getLabel() {
@@ -104,11 +106,11 @@ public class SnmpProfile extends Configuration {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         SnmpProfile that = (SnmpProfile) o;
-        return Objects.equals(filterExpression, that.filterExpression);
+        return Objects.equals(filter, that.filter);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), filterExpression);
+        return Objects.hash(super.hashCode(), filter);
     }
 }

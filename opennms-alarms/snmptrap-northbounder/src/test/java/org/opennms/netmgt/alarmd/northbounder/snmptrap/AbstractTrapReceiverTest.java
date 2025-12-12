@@ -40,6 +40,7 @@ import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.mock.MockSnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
@@ -78,6 +79,8 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
      */
     @Before
     public void setUp() throws Exception {
+        SnmpPeerFactory.setInstance(new MockSnmpPeerFactory());
+
         final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("remote", new Credentials("john", "doe"));

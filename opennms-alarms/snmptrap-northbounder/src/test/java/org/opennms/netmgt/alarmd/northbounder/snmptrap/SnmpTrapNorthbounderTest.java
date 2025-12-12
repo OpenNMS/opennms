@@ -26,6 +26,8 @@ import java.net.InetAddress;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -39,12 +41,17 @@ import org.springframework.core.io.FileSystemResource;
 import org.junit.Assert;
 
 import com.google.common.collect.Lists;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * The Test Class for SnmpTrapNorthbounder.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
+})
 public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
 
     /**
