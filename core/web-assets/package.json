@@ -81,6 +81,7 @@
         "yargs": "^16.2.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.7.2",
         "@uirouter/angularjs": "^1.1.1",
         "@uirouter/core": "^6.1.1",
         "angular": "^1.8.3",
@@ -109,7 +110,6 @@
         "flot.axislabels": "https://github.com/RangerRick/flot-axislabels.git#master",
         "flot.navigate": "https://github.com/OpenNMS/flot-navigate.git#master",
         "flot.saveas": "https://github.com/RangerRick/flot-saveas.git#master",
-        "font-awesome": "^4.7.0",
         "holderjs": "^2.9.6",
         "ionicons": "^2.0.1",
         "ip-address": "^10.0.1",

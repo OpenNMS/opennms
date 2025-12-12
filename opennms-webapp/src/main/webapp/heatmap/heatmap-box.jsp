@@ -299,7 +299,7 @@
         <div class="row">
             <div class="col-sm-7 col-md-7" style="padding-right: 0 !important">
                 <span class="text-nowrap">
-                    <span class="fa fa-retweet" aria-hidden="true"></span>&nbsp;
+                    <span class="fas fa-retweet" aria-hidden="true"></span>&nbsp;
                     <%
                         if ("outages".equals(mode)) {
                     %>
@@ -314,7 +314,7 @@
                 </span>
                 &nbsp;
                 <span class="text-nowrap">
-                    <span class="fa fa-retweet" aria-hidden="true"></span>&nbsp;
+                    <span class="fas fa-retweet" aria-hidden="true"></span>&nbsp;
                     <%
                         if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
                     %>
@@ -338,19 +338,19 @@
                 <%
                     if ("outages".equals(mode)) {
                 %>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#336600"></span>&nbsp;0% down</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;10% down</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;20% down</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;40% down</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;100% down</span>
                 <%
                 } else {
                 %>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
-                <span class="text-nowrap"><span class="fa fa-th-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#336600"></span>&nbsp;Normal</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FFCC00"></span>&nbsp;Warning</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FF9900"></span>&nbsp;Minor</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#FF3300"></span>&nbsp;Major</span>
+                <span class="text-nowrap"><span class="fas fa-table-cells-large" aria-hidden="true" style="color:#CC0000"></span>&nbsp;Critical</span>
                 <%
                     }
                 %>

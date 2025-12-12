@@ -1,7 +1,7 @@
 <div class="card-body">
     <div class="pull-right mb-2">
-        <button id="action.addGrafanaEndpoint" class="btn btn-sm btn-primary" title="Add new endpoint" ng-click="addNewEndpoint()"><i class="fa fa-plus"></i></button>
-        <button id="action.refreshGrafanaEndpoints" class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button id="action.addGrafanaEndpoint" class="btn btn-sm btn-primary" title="Add new endpoint" ng-click="addNewEndpoint()"><i class="fas fa-plus"></i></button>
+        <button id="action.refreshGrafanaEndpoints" class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fas fa-arrows-rotate"></i></button>
     </div>
     <div>
         <span ng-if="endpoints.length == 0" class="ml-2 text-muted">No data available</span>
@@ -42,8 +42,8 @@
                             confirm-button-type="danger"
                             cancel-button-type="secondary"
                             confirm-text="Yes"
-                            cancel-text="No"><i class="fa fa-trash-o"></i></button>
-                    <button id="action.edit.{{endpoint.id}}"   class="btn btn-secondary btn-sm" ng-click="editEndpoint(endpoint)"   title="Edit Endpoint"   ><i class="fa fa-pencil"></i></button>
+                            cancel-text="No"><i class="fas fa-trash-can"></i></button>
+                    <button id="action.edit.{{endpoint.id}}"   class="btn btn-secondary btn-sm" ng-click="editEndpoint(endpoint)"   title="Edit Endpoint"   ><i class="fas fa-pencil"></i></button>
                 </td>
             </tr>
             </tbody>

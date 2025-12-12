@@ -61,7 +61,7 @@
                    <div class="input-group">
                     <input type="text" class="form-control" id="byuser_user" name="user"/>
                     <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary" id="btn_search_by_user"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary" id="btn_search_by_user"><i class="fas fa-magnifying-glass"></i></button>
                     </div>
                    </div>
                  </div>
@@ -78,7 +78,7 @@
                    <div class="input-group">
                     <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
                     <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary" id="btn_search_by_notice"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary" id="btn_search_by_notice"><i class="fas fa-magnifying-glass"></i></button>
                     </div>
                    </div>
                  </div>

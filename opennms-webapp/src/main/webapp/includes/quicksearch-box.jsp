@@ -45,7 +45,7 @@
         <input class="form-control" type="text" id="nodeId" name="nodeId" placeholder="Node ID"/>
         <input type="hidden" name="listInterfaces" value="false"/>
         <div class="input-group-append">
-          <button name="nodeIdSearchButton" class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+          <button name="nodeIdSearchButton" class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
@@ -55,7 +55,7 @@
         <input class="form-control" type="text" id="nodename" name="nodename" placeholder="localhost"/>
         <input type="hidden" name="listInterfaces" value="true"/>
         <div class="input-group-append">
-          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+          <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
@@ -65,7 +65,7 @@
         <input class="form-control" type="text" id="iplike" name="iplike" placeholder="*.*.*.* or *:*:*:*:*:*:*:*"/>
         <input type="hidden" name="listInterfaces" value="false"/>
         <div class="input-group-append">
-          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+          <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>
@@ -79,7 +79,7 @@
         </select>
         <input type="hidden" name="listInterfaces" value="false"/>
         <div class="input-group-append">
-          <button class="btn btn-secondary" type="submit"><i class="fa fa-search"></i></button>
+          <button class="btn btn-secondary" type="submit"><i class="fas fa-magnifying-glass"></i></button>
         </div>
       </div>
     </form>

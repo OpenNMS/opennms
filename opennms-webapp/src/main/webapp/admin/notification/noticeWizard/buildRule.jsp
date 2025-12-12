@@ -142,8 +142,8 @@
       </table>
     <div class="card-footer">
             <input type="reset" class="btn btn-secondary" value="Reset Address and Services"/>
-        <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fa fa-arrow-right"></i></a>
-        <a class="btn btn-secondary" href="javascript:skipVerification()">Skip results validation <i class="fa fa-arrow-right"></i></a>
+        <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fas fa-arrow-right"></i></a>
+        <a class="btn btn-secondary" href="javascript:skipVerification()">Skip results validation <i class="fas fa-arrow-right"></i></a>
     </div>
 </div>
 </form>

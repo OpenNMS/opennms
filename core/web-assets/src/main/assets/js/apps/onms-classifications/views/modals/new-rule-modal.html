@@ -20,7 +20,7 @@
         <label class="col-form-label" for="rule.position">Position</label>
         <button class="btn btn-link"
                 uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
-                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"></i></button>
+                popover-trigger="'outsideClick'"><i class="fas fa-circle-question"></i></button>
         <input class="form-control" id="rule.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="classification.position"
                ng-class="{ 'is-invalid' : ruleForm.position.$invalid || error.position }">
         <div ng-show="ruleForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
@@ -73,7 +73,7 @@
         <label class="col-form-label" for="rule.exporterFilter">Exporter Filter</label>
         <button class="btn btn-link"
                 uib-popover-html="'<div>The rule is only applied if the exporter of the flow matches the defined <a href=https://docs.opennms.com/horizon/latest/reference/configuration/filters/filters.html target=_blank>filter</a>.</div>'"
-                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"></i></button>
+                popover-trigger="'outsideClick'"><i class="fas fa-circle-question"></i></button>
         <input class="form-control" type="text" id="rule.exporterFilter" name="exporterFilter" placeholder="categoryName == 'Exporters' | ipAddr == '10.0.0.1'" ng-model="classification.exporterFilter"
                ng-class="{ 'is-invalid' : ruleForm.exporterFilter.$invalid || error.exporterFilter }">
         <div ng-show="error.exporterFilter" class="invalid-feedback">{{error.exporterFilter}}</div>
@@ -91,7 +91,7 @@
                typeahead-editable="false"
                ng-class="{ 'is-invalid' : ruleForm.protocol.$invalid || error.protocol }">
         <span ng-repeat="protocol in selectedProtocols" class="badge badge-secondary mt-2 mr-2">
-          {{protocol.keyword | uppercase}} <a href class="text-danger" name="remove-protocol" ng-click="removeProtocol(protocol)"><i class="fa fa-remove" title="remove protocol"></i></a>
+          {{protocol.keyword | uppercase}} <a href class="text-danger" name="remove-protocol" ng-click="removeProtocol(protocol)"><i class="fas fa-xmark" title="remove protocol"></i></a>
         </span>
         <div ng-show="error.protocol" class="invalid-feedback">{{error.protocol}}</div>
       </div>

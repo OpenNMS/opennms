@@ -1,5 +1,4 @@
 <%--
-
     Licensed to The OpenNMS Group, Inc (TOG) under one or more
     contributor license agreements.  See the LICENSE.md file
     distributed with this work for additional information
@@ -19,7 +18,6 @@
     either express or implied.  See the License for the specific
     language governing permissions and limitations under the
     License.
-
 --%>
 <%@page language="java"
 	contentType="text/html"
@@ -34,16 +32,14 @@
 
 <%
 	UserManager userFactory;
-  	Map<String,User> users = null;
+  Map<String,User> users = null;
 	
-	try
-    	{
+	try {
 		UserFactory.init();
 		userFactory = UserFactory.getInstance();
-      		users = userFactory.getUsers();
+    users = userFactory.getUsers();
 	}
-	catch(Throwable e)
-	{
+	catch(Throwable e) {
 		throw new ServletException("User:list " + e.getMessage());
 	}
 %>
@@ -61,12 +57,10 @@
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
-
     function addNewUser()
     {
         document.allUsers.action="admin/userGroupView/users/newUser.jsp?action=new";
         document.allUsers.submit();
-        
     }
     
     function detailUser(userID)
@@ -111,29 +105,27 @@
           document.allUsers.submit();
         }
     }
-    
 </script>
 
-
 <form method="post" name="allUsers">
-<input type="hidden" name="redirect"/>
-<input type="hidden" name="userID"/>
-<input type="hidden" name="newID"/>
-<input type="hidden" name="password"/>
-<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+  <input type="hidden" name="redirect"/>
+  <input type="hidden" name="userID"/>
+  <input type="hidden" name="newID"/>
+  <input type="hidden" name="password"/>
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-<p>
-  Click on the <i>User ID</i> link to view detailed information about a
-  user.
-</p>
+  <p>
+    Click on the <i>User ID</i> link to view detailed information about a
+    user.
+  </p>
 
-<p>
-  <a id="doNewUser" href="javascript:addNewUser()">
-    <i class="fa fa-plus-circle fa-2x"></i> Add new user
-  </a>
-</p>
+  <p>
+    <a id="doNewUser" href="javascript:addNewUser()">
+      <i class="fas fa-circle-plus fa-2x"></i> Add new user
+    </a>
+  </p>
 
-   <div class="card">
+  <div class="card">
      <table class="table table-sm table-bordered">
         <thead>
           <tr>
@@ -151,28 +143,28 @@
         <% 
            int row = 0;
            for (User curUser : users.values()) {
-	      String userid = curUser.getUserId();
-	      String email = userFactory.getEmail(userid);
-	      String pagerEmail = userFactory.getPagerEmail(userid);
-	      String xmppAddress = userFactory.getXMPPAddress(userid);
-	      String numericService = userFactory.getNumericPage(userid);
-	      String textService = userFactory.getTextPage(userid);
-	      String numericPin = userFactory.getNumericPin(userid);
-	      String textPin = userFactory.getTextPin(userid);
-	      String sanitizedUserId = WebSecurityUtils.sanitizeString(curUser.getUserId());
+              String userid = curUser.getUserId();
+              String email = userFactory.getEmail(userid);
+              String pagerEmail = userFactory.getPagerEmail(userid);
+              String xmppAddress = userFactory.getXMPPAddress(userid);
+              String numericService = userFactory.getNumericPage(userid);
+              String textService = userFactory.getTextPage(userid);
+              String numericPin = userFactory.getNumericPin(userid);
+              String textPin = userFactory.getTextPin(userid);
+              String sanitizedUserId = WebSecurityUtils.sanitizeString(curUser.getUserId());
          %>
          <tr id="user-<%= userid %>">
           <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
           <td rowspan="2" class="text-center"> 
-            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fa fa-trash-o fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doDelete" %>" href="javascript:deleteUser('<%=sanitizedUserId%>')" onclick="return confirm('Are you sure you want to delete the user <%=sanitizedUserId%>?')"><i class="fas fa-trash-can fa-2x"></i></a>
           </td>
           <% } else { %>
-          <td rowspan="2" class="text-center">
-            <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
+          <td rowspan="2" class="text-center" style="color: var(--feather-clickable-normal);">
+            <i class="fas fa-trash-can fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
           </td>
           <% } %>
           <td rowspan="2" class="text-center">
-            <a id="<%= "users("+sanitizedUserId+").doModify" %>" href="javascript:modifyUser('<%=sanitizedUserId%>')"><i class="fa fa-edit fa-2x"></i></a>
+            <a id="<%= "users("+sanitizedUserId+").doModify" %>" href="javascript:modifyUser('<%=sanitizedUserId%>')"><i class="fas fa-pen-to-square fa-2x"></i></a>
           </td>
           <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>

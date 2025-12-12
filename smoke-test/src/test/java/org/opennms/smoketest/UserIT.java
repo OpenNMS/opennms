@@ -311,7 +311,10 @@ public class UserIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure Users, Groups and On-Call Roles").click();
         findElementByLink("Configure Users").click();
 
-        findElementById("users(user).doDelete").click();
+        WebElement deleteGroupLink = findElementById("users(user).doDelete");
+        clickElementUsingScript(deleteGroupLink);
+
+        // findElementById("users(user).doDelete").click();
         handleAlert("Are you sure you want to delete the user user?");
     }
 }
