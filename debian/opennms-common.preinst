@@ -15,6 +15,13 @@ if [ -d /etc/opennms  ] && [ ! -L /etc/opennms ]; then
     echo "Backing up existing /etc/opennms ..."
     mv /etc/opennms /etc/opennms.backup.$ts
     echo "$ts" > /etc/opennms.backup.timestamp
+
+    if [ ! -d /opt/opennms ]; then
+        mkdir -p /opt/opennms
+    fi
+
+    echo "Restoring configuration from /etc/opennms ..."
+    cp -a /etc/opennms.backup.$ts /opt/opennms/etc 
 fi
 
 exit 0
