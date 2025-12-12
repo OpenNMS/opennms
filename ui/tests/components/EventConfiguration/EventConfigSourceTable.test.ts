@@ -114,7 +114,7 @@ describe('EventConfigSourceTable.vue', () => {
     await wrapper.vm.$nextTick()
 
     await wrapper.get('[data-test="refresh-button"]').trigger('click') // Assuming data-test added or use selector for refresh button
-    expect(store.refreshSourcesfilters).toHaveBeenCalledTimes(1)
+    expect(store.refreshSourcesFilters).toHaveBeenCalledTimes(1)
   })
 
   it('handles search input changes with debouncing', async () => {

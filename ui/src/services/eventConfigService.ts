@@ -326,6 +326,62 @@ export const getEventConfSourceById = async (sourceId: string): Promise<EventCon
   }
 }
 
+/**
+ * Makes a POST request to the REST endpoint to add a new event configuration source.
+ *
+ * @param sourceName The name of the event configuration source to add.
+ * @param vendor The vendor of the event configuration source to add.
+ * @param description The description of the event configuration source to add (optional).
+ * @returns A promise that resolves to an object containing the new source data and HTTP status code,
+ *          or returns the status code (400, 409, 500) on error.
+ */
+export const addEventConfigSource = async (
+  sourceName: string,
+  vendor: string,
+  description: string
+): Promise<{ id: number; name: string; fileOrder: number; status: 201 } | 400 | 409 | 500> => {
+  const endpoint = '/eventconf/sources/eventConfSource'
+  const payload = {
+    name: sourceName,
+    description: description,
+    vendor: vendor
+  }
+
+  try {
+    const response = await v2.post(endpoint, payload)
+    if (response.status === 201) {
+      return {
+        id: response.data.id,
+        name: response.data.name,
+        fileOrder: response.data.fileOrder,
+        status: 201
+      }
+    }
+    // Shouldn't reach here, but handle unexpected success status codes
+    return 500
+  } catch (error: any) {
+    console.error('Error adding event config source:', error)
+
+    // Handle HTTP error responses
+    if (error.response) {
+      const status = error.response.status
+      if (status === 409) {
+        // Conflict: duplicate source name
+        return 409
+      } else if (status === 400) {
+        // Bad request: validation error
+        return 400
+      } else if (status === 500) {
+        // Internal server error
+        return 500
+      }
+    }
+
+    // For network errors or other unexpected errors, return 500
+    return 500
+  }
+}
+
 const extractFilenameFromContentDisposition = (
   headers: Record<string, any> | undefined,
   defaultName: string
@@ -355,3 +411,4 @@ const saveBlobAsFile = (blob: Blob, filename: string): void => {
   a.remove()
   URL.revokeObjectURL(url)
 }
+
