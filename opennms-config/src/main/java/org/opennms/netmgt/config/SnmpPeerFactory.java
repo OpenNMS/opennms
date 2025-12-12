@@ -207,7 +207,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     @Override
     public void saveCurrent() {
-        getSnmpConfigDao().updateConfig(m_config);
+        getWriteLock().lock();
+        try {
+            getSnmpConfigDao().updateConfig(m_config);
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     private static synchronized Scope getSecureCredentialsScope() {
