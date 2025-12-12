@@ -285,6 +285,15 @@ install: build
 	find debian/temp -name .gitignore -o -name .gwtignore -o -name .readme | xargs rm -rf
 	if [ `find debian/temp -type f | wc -l` -gt 0 ]; then echo "FAILED, files in debian/temp that have not been packaged:"; find debian/temp -type f; exit 1; fi
 
+
+# Let see if we can create opennms-common.conffiles dynamically
+override_dh_installdeb:
+   dh_installdeb
+   # Generate conffiles list dynamically
+   find debian/tmp/etc/opennms -type f \
+       | sed 's#^debian/tmp##' \
+       > debian/opennms-common.conffiles
+
 # Build architecture-independent files here.
 binary-indep: build install
 	dh_testdir
