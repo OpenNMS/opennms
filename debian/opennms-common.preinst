@@ -5,11 +5,11 @@
 
 ts=$(date +%s)
 
-if [ -d /usr/share/opennms ]; then
-    echo "Backing up existing /usr/share/opennms  ..."
-    mv /usr/share/opennms /usr/share/opennms.share.backup.$ts
-    echo "$ts" > /usr/share/opennms.share.backup.timestamp
-fi
+# if [ -d /usr/share/opennms ]; then
+#     echo "Backing up existing /usr/share/opennms  ..."
+#     mv /usr/share/opennms /usr/share/opennms.share.backup.$ts
+#     echo "$ts" > /usr/share/opennms.share.backup.timestamp
+# fi
 
 # If the user has /etc/opennms lets back it up
 if [ -d /etc/opennms  ] && [ ! -L /etc/opennms ]; then
