@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,7 +62,6 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
     @Override
     public Sql[] generateSql(EventConfSqlStatement statement, Database database,
                              SqlGeneratorChain sqlGeneratorChain) {
-        LOG.info("=== EventConfGenerator.generateSql() called ===");
 
         try {
             // Get connection from database
@@ -118,17 +116,14 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
                 } catch (Exception e) {
                     LOG.error("Failed to convert XML for id={}", id, e);
                     // Continue with other records
-                }
+                    throw new RuntimeException(String.format("Failed to convert XML for id=%d", id), e);                }
             }
 
             return sqlStatements.toArray(new Sql[0]);
 
-        } catch (SQLException e ) {
-            LOG.error("Database error in EventConfGenerator", e);
-            return new Sql[0];
         } catch (Exception e) {
-            LOG.error("Unexpected error in EventConfGenerator", e);
-            return new Sql[0];
+            LOG.error("Database error in EventConfGenerator", e);
+            throw new RuntimeException("Database error in EventConfGenerator", e);
         }
     }
 
@@ -140,7 +135,7 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
             return jsonContent;
         } catch (Exception e) {
             LOG.error("Failed to convert XML to JSON", e);
-            return "{\"error\": \"conversion_failed\"}";
+            throw new RuntimeException("Failed to convert XML to JSON", e);
         }
     }
 

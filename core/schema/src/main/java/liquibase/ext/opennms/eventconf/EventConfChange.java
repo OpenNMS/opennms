@@ -38,7 +38,6 @@ public class EventConfChange extends AbstractChange {
 
     @Override
     public SqlStatement[] generateStatements(Database database) {
-        LOG.info("=== EventConfChange.generateStatements() called ===");
 
         // Create and return a custom SQL statement that will be processed by our generator
         return new SqlStatement[] {
