@@ -3,13 +3,20 @@
 #
 # vim:set ai et sts=4 sw=4 tw=0:
 
-# ts=$(date +%s)
+ts=$(date +%s)
 
-# if [ -d /usr/share/opennms/jetty-webapps ]; then
-#     echo "Backing up existing /usr/share/opennms/jetty-webapps ..."
-#     mv /usr/share/opennms/jetty-webapps /usr/share/opennms/jetty-webapps.backup.$ts
-#     echo "$ts" > /usr/share/jetty-webapps.backup.timestamp
-# fi
+if [ -d /usr/share/opennms/jetty-webapps ]; then
+    echo "Backing up existing /usr/share/opennms/jetty-webapps ..."
+    if [ ! -d /opt/opennms/backups ]; then
+        mkdir -p /opt/opennms/backups
+        chown opennms:opennms /opt/opennms/backups
+        chmod 700 /opt/opennms/backups
+    fi
+    mv /usr/share/opennms/jetty-webapps /opt/opennms/backups/jetty-webapps.backup.$ts
+
+    # remove /usr/share/opennms if empty
+    rmdir /usr/share/opennms 2>/dev/null || true
+fi
 
 
 exit 0
