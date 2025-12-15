@@ -65,6 +65,10 @@
     </bean>
 
 
+    <bean id="noOpProduer" class="org.opennms.features.kafka.producer.NoOpProducer">
+    </bean>
+
+
     <bean id="kafkaProducer" class="org.opennms.features.kafka.producer.OpennmsKafkaProducer"
           init-method="init" destroy-method="destroy">
     <argument ref="protobufMapper"/>

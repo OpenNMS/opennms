@@ -366,6 +366,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             return;
         }
 
+        if (!kafkaProducerManager.hasConfigurationForMessageType(messageType)) {
+            LOG.debug("Skipping message of type {} as no Kafka configuration is available", messageType);
+            return;
+        }
+
         final ProducerRecord<byte[], byte[]> record;
         try {
             record = callable.call();
@@ -376,6 +381,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         // Get the appropriate producer for the  message type
         Producer<byte[], byte[]> topicProducer = kafkaProducerManager.getProducerForMessageType(messageType);
+
+        if (topicProducer == null) {
+            LOG.debug("No producer available for message type: {}", messageType);
+            return;
+        }
 
         // Rather than attempt to send, we instead queue the record to avoid blocking since KafkaProducer's send()
         // method can block if Kafka is not available when metadata is attempted to be retrieved

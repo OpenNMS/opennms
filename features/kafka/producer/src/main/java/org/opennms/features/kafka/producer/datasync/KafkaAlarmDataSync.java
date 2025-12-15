@@ -114,7 +114,17 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             return;
         }
 
+        if (!kafkaProducerManager.hasConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM)) {
+            LOG.warn("No Kafka configuration found for alarms. Alarm synchronization will not be initialized.");
+            return;
+        }
+
         final Properties streamProperties = loadStreamsProperties();
+        if (streamProperties == null || !streamProperties.containsKey("bootstrap.servers")) {
+            LOG.warn("No bootstrap.servers configured for alarm synchronization. Skipping initialization.");
+            return;
+        }
+
         final StreamsBuilder builder = new StreamsBuilder();
         final GlobalKTable<String, byte[]> alarmBytesKtable = builder.globalTable(alarmTopic, Consumed.with(Serdes.String(), Serdes.ByteArray()),
                 Materialized.as(ALARM_STORE_NAME));
@@ -290,12 +300,17 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         // Copy common properties from client configuration, which should save the user from having to configure
         // properties for the stream client 99% of time
         Properties clientProperties = kafkaProducerManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM);
-        if (clientProperties != null) {
-            copyPropertyIfSet(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clientProperties, streamsProperties);
-            copyPropertyIfSet(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, clientProperties, streamsProperties);
-            copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, clientProperties, streamsProperties);
-            copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, clientProperties, streamsProperties);
+
+        if (clientProperties == null || clientProperties.isEmpty()) {
+            LOG.warn("No Kafka configuration found for alarms. Cannot load streams properties.");
+            return null;
         }
+
+
+        copyPropertyIfSet(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, clientProperties, streamsProperties);
 
         // Now add all of the stream properties, overriding any of the properties inherited from the producer config
         final Dictionary<String, Object> properties = getConfigurationAdmin().getConfiguration(KAFKA_STREAMS_PID).getProperties();
@@ -309,6 +324,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         // Override the deserializers unconditionally
         streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass());
+
+        if (!streamsProperties.containsKey("bootstrap.servers")) {
+            LOG.warn("No bootstrap.servers configured in alarm synchronization properties.");
+            return null;
+        }
         return streamsProperties;
     }
 
