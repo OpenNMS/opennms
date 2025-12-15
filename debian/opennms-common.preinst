@@ -14,6 +14,12 @@ fi
 # If the user has /etc/opennms lets back it up
 if [ -d /etc/opennms  ] && [ ! -L /etc/opennms ]; then
     echo "Backing up existing /etc/opennms ..."
+    if [ ! -d /opt/opennms/etc ]; then
+        cp -r /etc/opennms /opt/opennms/etc
+    else
+        cp -r /etc/opennms/* /opt/opennms/etc/
+    fi
+
     mv /etc/opennms /etc/opennms.etc.backup.$ts
     echo "$ts" > /etc/opennms.etc.backup.timestamp
 fi
