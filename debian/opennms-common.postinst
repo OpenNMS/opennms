@@ -41,26 +41,33 @@ fi
 
 case "$1" in
     configure)
-      ts=$(cat /etc/opennms.backup.timestamp 2>/dev/null || true)
-      if [ -n "$ts" ] && [ -d "/etc/opennms.backup.$ts" ]; then
+      ts=$(cat /etc/opennms.share.backup.timestamp 2>/dev/null || true)
+      if [ -n "$ts" ] && [ -d "/etc/opennms.share.backup.$ts" ]; then
          if [ ! -d /opt/opennms/backups ]; then
              mkdir -p /opt/opennms/backups
              chown opennms:opennms /opt/opennms/backups
              chmod 700 /opt/opennms/backups
          fi
-         mv "/etc/opennms.backup.$ts" /opt/opennms/backups/
-         rm /etc/opennms.backup.timestamp
+         mv "/etc/opennms.share.backup.$ts" /opt/opennms/backups/
+         rm /etc/opennms.share.backup.timestamp
       fi
 
-      ts=$(cat /usr/share/opennms.backup.timestamp 2>/dev/null || true)
-      if [ -n "$ts" ] && [ -d "/usr/share/opennms.backup.$ts" ]; then
+      ts=$(cat /usr/share/opennms.etc.backup.timestamp 2>/dev/null || true)
+      if [ -n "$ts" ] && [ -d "/usr/share/opennms.etc.backup.$ts" ]; then
          if [ ! -d /opt/opennms/backups ]; then
              mkdir -p /opt/opennms/backups
              chown opennms:opennms /opt/opennms/backups
              chmod 700 /opt/opennms/backups
          fi
-         mv "/usr/share/opennms.backup.$ts" /opt/opennms/backups/
-         rm /usr/share/opennms.backup.timestamp
+         mv "/usr/share/opennms.etc.backup.$ts" /opt/opennms/backups/
+         rm /usr/share/opennms.etc.backup.timestamp
+
+         if [ ! -d /opt/opennms/etc ]; then
+             mkdir -p /opt/opennms/etc
+             chown opennms:opennms /opt/opennms/etc
+             chmod 700 /opt/opennms/etc
+         fi
+         cp -r /opt/opennms/backups/opennms.etc.backup.$ts/* /opt/opennms/etc/
       fi
 
       # ts=$(cat /usr/share/jetty-webapps.backup.timestamp 2>/dev/null || true)
