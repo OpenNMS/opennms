@@ -4,7 +4,7 @@
   "description": "JavaScript library for mobile-friendly interactive maps",
   "devDependencies": {
     "eslint": "^3.5.0 <3.6.0",
-    "eslint-config-mourner": "^2.0.1",
+    "eslint-config-mourner": "^4.1.0",
     "git-rev": "^0.2.1",
     "happen": "~0.3.1",
     "jake": "~8.0.12",
