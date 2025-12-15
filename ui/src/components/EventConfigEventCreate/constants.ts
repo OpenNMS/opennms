@@ -73,6 +73,21 @@ export const MaskElementNameOptions: ISelectItemType[] = [
   { _text: MaskElementName.Trapoid, _value: MaskElementName.Trapoid }
 ]
 
+export enum MaskVarbindsTypeText {
+  vbNumber = 'Varbind Number',
+  vboid = 'Varbind OID'
+}
+
+export enum MaskVarbindsTypeValue {
+  vbNumber = 'vbnumber',
+  vboid = 'vboid'
+}
+
+export const MaskVarbindsTypeOptions: ISelectItemType[] = [
+  { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber },
+  { _text: MaskVarbindsTypeText.vboid, _value: MaskVarbindsTypeValue.vboid }
+]
+
 export enum AlarmType {
   One = '1',
   Two = '2',

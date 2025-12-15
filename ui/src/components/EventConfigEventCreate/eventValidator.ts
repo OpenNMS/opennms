@@ -1,4 +1,5 @@
 import { EventFormErrors } from '@/types/eventConfig'
+import { MaskVarbindsTypeValue } from './constants'
 
 export const validateEvent = (
   uei: string,
@@ -13,7 +14,7 @@ export const validateEvent = (
   autoClean: boolean,
   clearKey: string,
   maskElements: Array<{ name?: { _text?: string; _value?: string }; value?: string }>,
-  varbinds: Array<{ index: string; value: string }>,
+  varbinds: Array<{ index: string; value: string; type: { _text?: string; _value?: string } }>,
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
 ): EventFormErrors => {
   const errors: EventFormErrors = {}
@@ -71,16 +72,41 @@ export const validateEvent = (
     maskElementErrors[index] = elementErrors
   })
 
-  if (maskElementErrors.some(err => Object.keys(err).length > 0)) {
+  if (maskElementErrors.some((err) => Object.keys(err).length > 0)) {
     errors.maskElements = maskElementErrors
   }
 
   if (varbinds && varbinds.length > 0) {
-    const varbindErrors: Array<{ index?: string; value?: string }> = []
+    const varbindErrors: Array<{ index?: string; value?: string; type?: string }> = []
     varbinds.forEach((varbind, index) => {
-      const varbindError: { index?: string; value?: string } = {}
+      const varbindError: { index?: string; value?: string; type?: string } = {}
+
+      if (
+        !varbind.type._value ||
+        (varbind.type._value !== MaskVarbindsTypeValue.vbNumber && varbind.type._value !== MaskVarbindsTypeValue.vboid)
+      ) {
+        varbindError.type = 'Type is required and must be either vbnumber or vboid.'
+      }
+
       if (!varbind.index || varbind.index.trim() === '') {
-        varbindError.index = 'Index is required.'
+        if (varbind.type._value === MaskVarbindsTypeValue.vbNumber) {
+          varbindError.index = 'Varbind Number is required.'
+        } else if (varbind.type._value === MaskVarbindsTypeValue.vboid) {
+          varbindError.index = 'Varbind OID is required.'
+        } else {
+          varbindError.index = 'Index is required.'
+        }
+      } else if (varbind.type._value === MaskVarbindsTypeValue.vbNumber) {
+        // For vbnumber type, index must be a valid number
+        if (isNaN(Number(varbind.index))) {
+          varbindError.index = 'Index must be a valid number for vbnumber type.'
+        }
+      } else if (varbind.type._value === MaskVarbindsTypeValue.vboid) {
+        // For vboid type, index should be a valid OID format (e.g., .1.3.6.1.4.1)
+        const oidPattern = /^\.?\d+(\.\d+)*$/
+        if (!oidPattern.test(varbind.index)) {
+          varbindError.index = 'Index must be a valid OID format for vboid type (e.g., .1.3.6.1.4.1).'
+        }
       }
 
       if (!varbind.value || varbind.value.trim() === '') {
@@ -90,7 +116,7 @@ export const validateEvent = (
       varbindErrors[index] = varbindError
     })
 
-    if (varbindErrors.some(err => Object.keys(err).length > 0)) {
+    if (varbindErrors.some((err) => Object.keys(err).length > 0)) {
       errors.varbinds = varbindErrors
     }
   }
@@ -118,7 +144,7 @@ export const validateEvent = (
           decodeErrors[decodeIndex] = decodeError
         })
 
-        if (decodeErrors.some(err => Object.keys(err).length > 0)) {
+        if (decodeErrors.some((err) => Object.keys(err).length > 0)) {
           varbindDecodeError.decode = decodeErrors
         }
       }
@@ -126,7 +152,7 @@ export const validateEvent = (
       varbindDecodeErrors[index] = varbindDecodeError
     })
 
-    if (varbindDecodeErrors.some(err => Object.keys(err).length > 0)) {
+    if (varbindDecodeErrors.some((err) => Object.keys(err).length > 0)) {
       errors.varbindsDecode = varbindDecodeErrors
     }
   }

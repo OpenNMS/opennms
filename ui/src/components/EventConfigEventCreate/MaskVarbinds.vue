@@ -22,10 +22,31 @@
         class="form-row"
       >
         <div class="dropdown">
+          <FeatherSelect
+            label="Varbind Type"
+            :options="MaskVarbindsTypeOptions"
+            :modelValue="MaskVarbindsTypeOptions.find(
+              (o: ISelectItemType) => o._value === row.type._value
+            )"
+            @update:modelValue="$emit('setVarbinds', 'setVarbindType', $event, index)"
+            :error="errors.varbinds?.[index]?.type"
+            data-test="varbind-oid-input"
+          />
+        </div>
+        <div v-if="row.type._value === MaskVarbindsTypeValue.vbNumber" class="dropdown">
           <FeatherInput
             type="number"
-            label="Varbind Index"
+            label="Varbind Number"
             min="0"
+            :model-value="row.index"
+            @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
+            data-test="varbind-index-input"
+            :error="errors.varbinds?.[index]?.index"
+          />
+        </div>
+        <div v-if="row.type._value === MaskVarbindsTypeValue.vboid" class="dropdown">
+          <FeatherInput
+            label="Varbind OID"
             :model-value="row.index"
             @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
             data-test="varbind-index-input"
@@ -61,21 +82,22 @@ import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import { FeatherInput } from '@featherds/input'
-import { ISelectItemType } from '@featherds/select'
+import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { MaskVarbindsTypeOptions, MaskVarbindsTypeValue } from './constants'
 
 const emit = defineEmits<{
   (e: 'setVarbinds', key: string, value: any, index: number): void
 }>()
 
 const props = defineProps<{
-  varbinds: Array<{ index: string; value: string }>
+  varbinds: Array<{ index: string; value: string, type: ISelectItemType }>
   maskElements: Array<{ name: ISelectItemType; value: string }>
   errors: EventFormErrors
 }>()
 
 const store = useEventModificationStore()
 const { varbinds, maskElements, errors } = toRefs(props)
-const maskVarbinds = ref<Array<{ index: string; value: string }>>([])
+const maskVarbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([])
 const hasMaskElements = computed(() => maskElements.value.length > 0)
 
 watch(() => varbinds, (newVarbinds) => {
