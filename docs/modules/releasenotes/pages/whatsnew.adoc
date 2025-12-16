@@ -50,7 +50,7 @@ To preserve local changes in `/etc/opennms`, copy the folder to `/opt/opennms/et
 Prepare `/opt/opennms/etc` with the following commands:
 
 ```
-sudo install -d -g opennms -o opennms /opt/opennms/etc
+sudo install -d -o opennms -g opennms /opt/opennms/etc
 sudo -u opennms cp -r /etc/opennms/* /opt/opennms/etc
 ```
 
