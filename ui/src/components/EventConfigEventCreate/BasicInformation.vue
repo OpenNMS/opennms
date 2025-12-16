@@ -197,7 +197,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskElementNameOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -224,7 +224,7 @@ const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
 const varbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([
-  { index: '0', value: '', type: MaskElementNameOptions[0] }
+  { index: '0', value: '', type: MaskVarbindsTypeOptions[0] }
 ])
 const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
 
@@ -336,24 +336,20 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       const vbnumberElement = varbindList[i].getElementsByTagName('vbnumber')[0]
       const vboidElement = varbindList[i].getElementsByTagName('vboid')[0]
       const vbvalueElement = varbindList[i].getElementsByTagName('vbvalue')[0]
-      
+
       if (vbnumberElement?.textContent) {
+        const numberTypeOption = MaskVarbindsTypeOptions.find((option) => option._value === MaskVarbindsTypeValue.vbNumber) || MaskVarbindsTypeOptions[0]
         varbinds.value.push({
           index: vbnumberElement.textContent || '',
           value: vbvalueElement?.textContent || '',
-          type: {
-            _text: MaskVarbindsTypeText.vbNumber,
-            _value: MaskVarbindsTypeValue.vbNumber
-          }
+          type: numberTypeOption
         })
       } else if (vboidElement?.textContent) {
+        const oidTypeOption = MaskVarbindsTypeOptions.find((option) => option._value === MaskVarbindsTypeValue.vboid) || MaskVarbindsTypeOptions[0]
         varbinds.value.push({
           index: vboidElement.textContent || '',
           value: vbvalueElement?.textContent || '',
-          type: {
-            _text: MaskVarbindsTypeText.vboid,
-            _value: MaskVarbindsTypeValue.vboid
-          }
+          type: oidTypeOption
         })
       }
     }

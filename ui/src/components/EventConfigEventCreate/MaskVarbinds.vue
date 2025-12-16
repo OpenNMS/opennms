@@ -100,15 +100,15 @@ const { varbinds, maskElements, errors } = toRefs(props)
 const maskVarbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([])
 const hasMaskElements = computed(() => maskElements.value.length > 0)
 
-watch(() => varbinds, (newVarbinds) => {
-  maskVarbinds.value = [...newVarbinds.value]
+watch(varbinds, () => {
+  maskVarbinds.value = [...props.varbinds]
 }, { deep: true, immediate: true })
 
-watch(() => maskElements, (newMaskElements) => {
-  if (newMaskElements.value.length === 0) {
+watch(maskElements, () => {
+  if (props.maskElements.length === 0) {
     emit('setVarbinds', 'clearAllVarbinds', null, -1)
   }
-}, { immediate: true })
+}, { deep: true, immediate: true })
 </script>
 
 <style scoped lang="scss">

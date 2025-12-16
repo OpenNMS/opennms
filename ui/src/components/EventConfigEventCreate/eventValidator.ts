@@ -85,23 +85,23 @@ export const validateEvent = (
         !varbind.type._value ||
         (varbind.type._value !== MaskVarbindsTypeValue.vbNumber && varbind.type._value !== MaskVarbindsTypeValue.vboid)
       ) {
-        varbindError.type = 'Type is required and must be either vbnumber or vboid.'
+        varbindError.type = 'Type is required and must be either Varbind Number or Varbind OID.'
       }
 
       if (!varbind.index || varbind.index.trim() === '') {
-        if (varbind.type._value === MaskVarbindsTypeValue.vbNumber) {
+        if (varbind.type?._value === MaskVarbindsTypeValue.vbNumber) {
           varbindError.index = 'Varbind Number is required.'
-        } else if (varbind.type._value === MaskVarbindsTypeValue.vboid) {
+        } else if (varbind.type?._value === MaskVarbindsTypeValue.vboid) {
           varbindError.index = 'Varbind OID is required.'
         } else {
           varbindError.index = 'Index is required.'
         }
-      } else if (varbind.type._value === MaskVarbindsTypeValue.vbNumber) {
+      } else if (varbind.type?._value === MaskVarbindsTypeValue.vbNumber) {
         // For vbnumber type, index must be a valid number
         if (isNaN(Number(varbind.index))) {
           varbindError.index = 'Index must be a valid number for vbnumber type.'
         }
-      } else if (varbind.type._value === MaskVarbindsTypeValue.vboid) {
+      } else if (varbind.type?._value === MaskVarbindsTypeValue.vboid) {
         // For vboid type, index should be a valid OID format (e.g., .1.3.6.1.4.1)
         const oidPattern = /^\.?\d+(\.\d+)*$/
         if (!oidPattern.test(varbind.index)) {
