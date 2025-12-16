@@ -2,6 +2,19 @@
 
 = Changelog
 
+[[releasenotes-changelog-35.0.1]]
+
+== Release 35.0.1
+
+=== Bug
+
+* Update confd service-template to match the new compact layout (Issue https://issues.opennms.org/browse/NMS-19249[NMS-19249])
+* Upgrade to OpenNMS 35 on Debian breaks installation (Issue https://issues.opennms.org/browse/NMS-19228[NMS-19228])
+
+=== New Feature
+
+* FE: Change Structured Node page pagination values (Issue https://issues.opennms.org/browse/NMS-19162[NMS-19162])
+
 [[releasenotes-changelog-35.0.0]]
 
 == Release 35.0.0
@@ -280,6 +293,3 @@ It is introducing new features, including event definitions are now stored in th
 === Upgrade
 
 * Move test utility classes from source to test directory for better code organization (Issue https://issues.opennms.org/browse/NMS-19032[NMS-19032])
-
-
-
