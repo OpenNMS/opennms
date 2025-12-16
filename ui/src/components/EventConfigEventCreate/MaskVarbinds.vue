@@ -30,7 +30,7 @@
             )"
             @update:modelValue="$emit('setVarbinds', 'setVarbindType', $event, index)"
             :error="errors.varbinds?.[index]?.type"
-            data-test="varbind-oid-input"
+            data-test="varbind-type-select"
           />
         </div>
         <div v-if="row.type._value === MaskVarbindsTypeValue.vbNumber" class="dropdown">
@@ -40,7 +40,7 @@
             min="0"
             :model-value="row.index"
             @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
-            data-test="varbind-index-input"
+            data-test="varbind-number-input"
             :error="errors.varbinds?.[index]?.index"
           />
         </div>
@@ -49,7 +49,7 @@
             label="Varbind OID"
             :model-value="row.index"
             @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
-            data-test="varbind-index-input"
+            data-test="varbind-oid-input"
             :error="errors.varbinds?.[index]?.index"
           />
         </div>
