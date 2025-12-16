@@ -1,11 +1,78 @@
 import {
   EventConfigEvent,
+  EventConfigEventJsonStructure,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
   EventConfigSourcesResponse
 } from '@/types/eventConfig'
 import vkbeautify from 'vkbeautify'
+
+const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure => {
+  const payload = {} as EventConfigEventJsonStructure
+  payload.uei = event.uei
+  payload.eventLabel = event.eventLabel
+  payload.descr = event.description
+  payload.operinstruct = event.operinstruct
+
+  if (Object.keys(event).includes('alarmType')) {
+    payload.alarmData = {
+      alarmType: event.alarmType,
+      reductionKey: event.reductionKey,
+      autoClean: event.autoClean,
+      clearKey: event.clearKey
+    }
+  }
+
+  payload.logmsg = {
+    dest: event.logmsg?.dest || '',
+    content: event.logmsg?.content || ''
+  }
+
+  payload.severity = event.severity
+
+  if (Object.keys(event).includes('mask')) {
+    if (Object.keys(event.mask).includes('maskelements')) {
+      payload.mask = {
+        maskelements: event.mask?.maskelements?.map((me: any) => ({
+          mename: me.mename,
+          mevalue: me.mevalues[0] || ''
+        }))
+      }
+    }
+    if (Object.keys(event.mask).includes('varbinds')) {
+      payload.mask = {
+        ...payload.mask,
+        varbinds: event.mask?.varbinds?.map((vb: any) => {
+          if (Object.keys(vb).includes('vbnumber')) {
+            return {
+              vbnumber: vb.vbnumber,
+              vbvalues: vb.vbvalues[0] || ''
+            }
+          }
+          if (Object.keys(vb).includes('vboid')) {
+            return {
+              vboid: vb.vboid,
+              vbvalues: vb.vbvalues[0] || ''
+            }
+          }
+        })
+      }
+    }
+  }
+
+  if (Object.keys(event).includes('varbindsdecodes')) {
+    payload.varbindsdecodes = event.varbindsdecodes?.map((vbd: any) => ({
+      parmId: vbd.parmid,
+      decode: vbd.decodes.map((dec: any) => ({
+        varbindvalue: dec.varbindvalue,
+        varbinddecodedstring: dec.varbinddecodedstring
+      }))
+    }))
+  }
+
+  return payload
+}
 
 export const mapUploadedEventConfigFilesResponseFromServer = (response: any): EventConfigFilesUploadResponse => {
   return {
@@ -70,6 +137,7 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
     severity: extractSeverity(event.xmlContent) || '',
     enabled: event.enabled,
     xmlContent: event.xmlContent,
+    jsonContent: mapEventConfEventFromServer(JSON.parse(event.content)),
     createdTime: new Date(event.createdTime),
     lastModified: new Date(event.lastModified),
     modifiedBy: event.modifiedBy,

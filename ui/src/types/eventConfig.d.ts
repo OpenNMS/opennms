@@ -21,6 +21,7 @@ export type EventConfigEvent = {
   severity: string
   enabled: boolean
   xmlContent: string
+  jsonContent?: EventConfigEventJsonStructure 
   createdTime: Date
   lastModified: Date
   modifiedBy: string
@@ -137,3 +138,38 @@ export type EventFormErrors = {
   clearKey?: string
 }
 
+export type EventConfigEventJsonStructure = {
+  eventLabel: string
+  uei: string
+  mask?: {
+    maskelements?: {
+      mename: string
+      mevalue: string
+    }[]
+    varbinds?: {
+      vbnumber?: number
+      vboid?: string
+      vbvalue: string
+    }[]
+  }
+  varbindsdecodes?: {
+    parmid: string
+    decodes: {
+      varbindvalue: string
+      varbinddecodedstring: string
+    }[]
+  }[]
+  descr: string
+  logmsg: {
+    dest: string
+    content: string
+  }
+  severity: string
+  operinstruct: string
+  alarmData?: {
+    reductionKey: string
+    alarmType: number
+    autoClean: boolean
+    clearKey?: string
+  }
+}
