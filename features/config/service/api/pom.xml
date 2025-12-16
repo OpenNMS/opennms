@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.service</artifactId>
-        <version>35.0.1-SNAPSHOT</version>
+        <version>35.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.service</groupId>
