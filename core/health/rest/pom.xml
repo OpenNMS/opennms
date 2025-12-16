@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.health</artifactId>
-        <version>35.0.0</version>
+        <version>35.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.health</groupId>
