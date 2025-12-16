@@ -217,6 +217,21 @@ const router = createRouter({
       }
     },
     {
+      path: '/snmp-config',
+      name: 'SNMP Config',
+      component: () => import('@/containers/SnmpConfiguration.vue')
+    },
+    {
+      path: '/snmp-config/definitions/:id',
+      name: 'SNMP Config Definition',
+      component: () => import('@/components/SnmpConfiguration/SnmpConfigEditDefinition.vue')
+    },
+    {
+      path: '/snmp-config/profiles/:id',
+      name: 'SNMP Config Profile',
+      component: () => import('@/components/SnmpConfiguration/SnmpConfigEditProfile.vue')
+    },
+    {
       path: '/usage-statistics',
       name: 'Usage Statistics',
       component: () => import('@/containers/UsageStatistics.vue'),
@@ -297,4 +312,3 @@ router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
 export { isLegacyPlugin }
-
