@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-rrd</artifactId>
     <groupId>org.opennms</groupId>
-    <version>35.0.1</version>
+    <version>35.0.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-model</artifactId>
