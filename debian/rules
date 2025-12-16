@@ -209,7 +209,7 @@ install: build
 	mv debian/temp/bin/* debian/opennms-common/opt/opennms/bin/
 	find debian/opennms-common/opt/opennms/bin -type f -execdir chmod 755 {} \;
 	find debian/temp/etc/ -type f -print | \
-                grep -v -e '.jasper' -e examples -e profile.cfg -e org.ops4j.pax.url.mvn.cfg -e custom.properties -e config.properties -e opennms.properties -e org.apache.karaf -e log4j2.xml -e startup.properties -e THIRD-PARTY.txt | \
+                grep -v -e '.jasper' -e examples -e profile.cfg -e org.ops4j.pax.url.mvn.cfg -e custom.properties -e config.properties -e opennms.properties -e org.apache.karaf -e log4j2.xml -e startup.properties -e THIRD-PARTY.txt -e overrides.properties | \
                 sed 's/debian\/temp\/etc\//\/opt\/opennms\/etc\//g' > debian/opennms-common.conffiles
 	mv debian/temp/etc/* debian/opennms-common/opt/opennms/etc/
 	mv debian/temp/lib   debian/opennms-common/opt/opennms/
