@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "foundation-2025"
+    target-branch: "release-35.x"
     reviewers:
       - "OpenNMS/dependabot-reviewers-node"
     labels:
@@ -25,7 +25,7 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
-    target-branch: "foundation-2023"
+    target-branch: "release-35.x"
     versioning-strategy: "increase-if-necessary"
     reviewers:
       - "OpenNMS/dependabot-reviewers-node"
@@ -79,7 +79,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "foundation-2023"
+    target-branch: "release-35.x"
     reviewers:
       - "OpenNMS/dependabot-reviewers-maven"
     labels:
@@ -92,7 +92,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "release-35.x"
     reviewers:
       - "OpenNMS/dependabot-reviewers-maven"
     labels:
