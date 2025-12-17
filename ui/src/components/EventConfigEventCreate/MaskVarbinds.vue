@@ -39,16 +39,16 @@
             label="Varbind Number"
             min="0"
             :model-value="row.index"
-            @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
+            @update:model-value="$emit('setVarbinds', 'setVarbindNumber', $event, index)"
             data-test="varbind-number-input"
             :error="errors.varbinds?.[index]?.index"
           />
         </div>
-        <div v-if="row.type._value === MaskVarbindsTypeValue.vboid" class="dropdown">
+        <div v-if="row.type._value === MaskVarbindsTypeValue.vbOid" class="dropdown">
           <FeatherInput
             label="Varbind OID"
             :model-value="row.index"
-            @update:model-value="$emit('setVarbinds', 'setIndex', $event, index)"
+            @update:model-value="$emit('setVarbinds', 'setVarbindOid', $event, index)"
             data-test="varbind-oid-input"
             :error="errors.varbinds?.[index]?.index"
           />

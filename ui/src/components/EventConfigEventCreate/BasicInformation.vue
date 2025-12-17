@@ -240,9 +240,8 @@ const xmlContent = computed(() => {
             </maskelement>`).join('')}
           ${varbinds.value.map(vb => `
             <varbind>
-              ${vb.type._value === MaskVarbindsTypeValue.vbNumber ? `<vbnumber>${vb.index}</vbnumber>` : ''}
-              ${vb.type._value === MaskVarbindsTypeValue.vboid ? `<vboid>${vb.index}</vboid>` : ''}
-              <vbvalue>${vb.value}</vbvalue>
+              ${vb.type._value === MaskVarbindsTypeValue.vbNumber ? `<vbnumber>${vb.index}</vbnumber><vbvalue>${vb.value}</vbvalue>` : ''}
+              ${vb.type._value === MaskVarbindsTypeValue.vbOid ? `<vboid>${vb.index}</vboid><vbvalue>${vb.value}</vbvalue>` : ''}
             </varbind>`).join('')}
         </mask>` : ''}
         ${varbindsDecode.value.map(vb => `
@@ -336,20 +335,17 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       const vbnumberElement = varbindList[i].getElementsByTagName('vbnumber')[0]
       const vboidElement = varbindList[i].getElementsByTagName('vboid')[0]
       const vbvalueElement = varbindList[i].getElementsByTagName('vbvalue')[0]
-
       if (vbnumberElement?.textContent) {
-        const numberTypeOption = MaskVarbindsTypeOptions.find((option) => option._value === MaskVarbindsTypeValue.vbNumber) || MaskVarbindsTypeOptions[0]
         varbinds.value.push({
           index: vbnumberElement.textContent || '',
           value: vbvalueElement?.textContent || '',
-          type: numberTypeOption
+          type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber }
         })
       } else if (vboidElement?.textContent) {
-        const oidTypeOption = MaskVarbindsTypeOptions.find((option) => option._value === MaskVarbindsTypeValue.vboid) || MaskVarbindsTypeOptions[0]
         varbinds.value.push({
           index: vboidElement.textContent || '',
           value: vbvalueElement?.textContent || '',
-          type: oidTypeOption
+          type: { _text: MaskVarbindsTypeText.vbOid, _value: MaskVarbindsTypeValue.vbOid }
         })
       }
     }
@@ -437,7 +433,15 @@ const setVarbinds = (key: string, value: any, index: number) => {
     return
   }
 
-  if (key === 'setIndex') {
+  if (key === 'setVarbindNumber') {
+    if (isNaN(Number(value)) || Number(value) < 0) {
+      varbinds.value[index].index = '0'
+    } else {
+      varbinds.value[index].index = value
+    }
+  }
+
+  if (key === 'setVarbindOid') {
     varbinds.value[index].index = value
   }
 
@@ -492,7 +496,11 @@ const setVarbindsDecode = (key: string, value: any, index: number, decodeIndex: 
   }
 
   if (key === 'setDecodeValue') {
-    varbindsDecode.value[index].decode[decodeIndex].value = value
+    if (isNaN(Number(value)) || Number(value) < 0) {
+      varbindsDecode.value[index].decode[decodeIndex].value = '0'
+    } else {
+      varbindsDecode.value[index].decode[decodeIndex].value = value
+    }
   }
 }
 
