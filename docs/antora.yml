@@ -9,10 +9,12 @@ asciidoc:
     source-language: asciidoc@
     xrefstyle: short@
     compatible-centos7: '7.x'
-    compatible-centos-stream: 'CentOS Stream 9.x'
+    compatible-centos-stream9: '9.x'
+    compatible-centos-stream10: '10.x'
     compatible-rhel7: '7.x'
     compatible-rhel8: '8.x'
     compatible-rhel9: '9.x'
+    compatible-rhel10: '10.x'
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
     compatible-rocky-linux: '9.x'
