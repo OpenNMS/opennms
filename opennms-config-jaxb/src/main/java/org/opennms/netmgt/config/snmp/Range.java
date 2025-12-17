@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="range")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_begin", "m_end"})
+@XmlType(propOrder={"begin", "end"})
 public class Range implements Serializable {
     private static final long serialVersionUID = 3817543154652004131L;
 
@@ -43,51 +43,51 @@ public class Range implements Serializable {
      * Starting IP address of the range.
      */
     @XmlAttribute(name="begin", required=true)
-    private String m_begin;
+    private String begin;
 
     /**
      * Ending IP address of the range.
      */
     @XmlAttribute(name="end", required=true)
-    private String m_end;
+    private String end;
 
     public Range() {
         super();
     }
 
     public Range(final String begin, final String end) {
-        m_begin = begin;
-        m_end = end;
+        this.begin = begin;
+        this.end = end;
     }
 
     /**
      * Starting IP address of the range.
      */
     public String getBegin() {
-        return m_begin;
+        return begin;
     }
 
     public void setBegin(final String begin) {
-        m_begin = begin;
+        this.begin = begin;
     }
 
     /**
      * Ending IP address of the range.
      */
     public String getEnd() {
-        return m_end;
+        return end;
     }
 
     public void setEnd(final String end) {
-        m_end = end;
+        this.end = end;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((m_begin == null) ? 0 : m_begin.hashCode());
-        result = prime * result + ((m_end == null) ? 0 : m_end.hashCode());
+        result = prime * result + ((begin == null) ? 0 : begin.hashCode());
+        result = prime * result + ((end == null) ? 0 : end.hashCode());
         return result;
     }
 
@@ -103,18 +103,18 @@ public class Range implements Serializable {
             return false;
         }
         Range other = (Range) obj;
-        if (m_begin == null) {
-            if (other.m_begin != null) {
+        if (begin == null) {
+            if (other.begin != null) {
                 return false;
             }
-        } else if (!m_begin.equals(other.m_begin)) {
+        } else if (!begin.equals(other.begin)) {
             return false;
         }
-        if (m_end == null) {
-            if (other.m_end != null) {
+        if (end == null) {
+            if (other.end != null) {
                 return false;
             }
-        } else if (!m_end.equals(other.m_end)) {
+        } else if (!end.equals(other.end)) {
             return false;
         }
         return true;
@@ -122,6 +122,6 @@ public class Range implements Serializable {
 
     @Override
     public String toString() {
-        return "Range [begin=" + m_begin + ", end=" + m_end + "]";
+        return "Range [begin=" + begin + ", end=" + end + "]";
     }
 }

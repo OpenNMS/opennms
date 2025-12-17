@@ -10,4 +10,7 @@
     <bean name="provisiondCmJaxbConfigDao" class="org.opennms.features.config.service.impl.ProvisiondCmJaxbConfigTestDao">
     </bean>
 
+    <bean name="snmpConfigCmJaxbConfigDao" class="org.opennms.features.config.service.impl.SnmpConfigCmJaxbConfigTestDao">
+    </bean>
+
 </beans>

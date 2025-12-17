@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="cpape" id="register-schema-snmp-config">
+        <cm:registerSchema id="snmp-config"/>
+        <cm:importSchemaFromXsd id="snmp-config" xsdFileName="snmp-config.xsd" xsdFileHash="5a894df89fa3afd7e48d885802384b54e9cc92ba88573374dd6b35fd9d0ab517" rootElement="snmp-config"/>
+        <cm:importConfig schemaId="snmp-config" filePath="snmp-config.xml"/>
+    </changeSet>
+
+</databaseChangeLog>

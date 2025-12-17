@@ -21,26 +21,8 @@
  */
 package org.opennms.netmgt.config;
 
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.core.mate.api.EntityScopeProvider;
@@ -50,7 +32,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -61,6 +42,7 @@ import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.slf4j.Logger;
@@ -69,8 +51,19 @@ import org.springframework.beans.FatalBeanException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
 
 /**
  * This class is the main repository for SNMP configuration information used by
@@ -94,7 +87,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
     protected static final String ENCRYPTION_ENABLED = "org.opennms.snmp.encryption.enabled";
 
-    private static File s_configFile;
+    protected static SnmpConfigDao snmpConfigDao;
 
     /**
      * The singleton instance of this factory
@@ -123,33 +116,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private static Scope secureCredentialsVaultScope;
 
-    /**
-     * <p>Constructor for SnmpPeerFactory.</p>
-     *
-     * @param resource a {@link org.springframework.core.io.Resource} object.
-     */
+    public SnmpPeerFactory() {
+        LOG.debug("creating new instance: {}", this);
+    }
+
     public SnmpPeerFactory(final Resource resource) {
-        LOG.debug("creating new instance for resource {}: {}", resource, this);
-
-        final SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
-        try {
-            final File file = resource.getFile();
-            if (file != null) {
-                m_callback = new FileReloadCallback<SnmpConfig>() {
-                    @Override
-                    public SnmpConfig reload(final SnmpConfig object, final Resource resource) throws IOException {
-                        return JaxbUtils.unmarshal(SnmpConfig.class, resource);
-                    }
-                };
-                m_container = new FileReloadContainer<SnmpConfig>(config, resource, m_callback);
-                return;
-            }
-        } catch (final IOException e) {
-            LOG.debug("No file associated with resource {}, skipping reload container initialization. Reason: ", resource, e.getMessage());
-        }
-
-        // if we fall through to here, then the file was null, or something else went wrong store the config directly
-        m_config = config;
+        LOG.debug("creating new instance: {}", this);
+        setResource(resource);
     }
 
     private Lock getReadLock() {
@@ -162,11 +135,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     public static synchronized void init() throws IOException {
         if (!s_loaded.get()) {
-            final File cfgFile = getFile();
-            LOG.debug("init: config file path: {}", cfgFile.getPath());
-            final FileSystemResource resource = new FileSystemResource(cfgFile);
-
-            s_singleton = new SnmpPeerFactory(resource);
+            s_singleton = new SnmpPeerFactory();
             s_loaded.set(true);
         }
         if (s_singleton.encryptionEnabled) {
@@ -177,11 +146,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private void encryptSnmpConfig() {
         initializeTextEncryptor();
         if (textEncryptor != null) {
-            try {
-                s_singleton.saveCurrent();
-            } catch (IOException e) {
-                LOG.debug("Exception while saving encrypted credentials");
-            }
+            s_singleton.saveCurrent();
         }
     }
 
@@ -216,63 +181,35 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         s_loaded.set(true);
     }
 
-    public static synchronized File getFile() throws IOException {
-        if (s_configFile == null) {
-            setFile(ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME));
-        }
-        return s_configFile;
+    public static synchronized void setFile(final File configFile) {
+        setResource(new FileSystemResource(configFile));
     }
 
-    /**
-     * <p>setFile</p>
-     *
-     * @param configFile a {@link java.io.File} object.
-     */
-    public static synchronized void setFile(final File configFile) {
-        final File oldFile = s_configFile;
-        s_configFile = configFile;
+    public static synchronized void setResource(final Resource resource) {
+        SnmpPeerFactory.snmpConfigDao = new SnmpConfigDao() {
+            SnmpConfig snmpConfig = JaxbUtils.unmarshal(SnmpConfig.class, resource);
 
-        // if the file changed then we need to reload the config
-        if (oldFile == null || s_configFile == null || !oldFile.equals(s_configFile)) {
-            s_singleton = null;
-            s_loaded.set(false);
-        }
+            @Override
+            public SnmpConfig getConfig() {
+                return snmpConfig;
+            }
+
+            @Override
+            public void updateConfig(final SnmpConfig config) {
+                snmpConfig = config;
+            }
+        };
+        s_loaded.set(false);
     }
 
     /**
      * Saves the current settings to disk
-     *
-     * @throws java.io.IOException if any.
      */
     @Override
-    public void saveCurrent() throws IOException {
-        saveToFile(getFile());
-    }
-
-    public void saveToFile(final File file) throws UnsupportedEncodingException, FileNotFoundException, IOException {
-        // Marshal to a string first, then write the string to the file. This
-        // way the original config isn't lost if the XML from the marshal is hosed.
+    public void saveCurrent() {
         getWriteLock().lock();
         try {
-            final String marshalledConfig = getSnmpConfigAsString();
-
-            FileOutputStream out = null;
-            Writer fileWriter = null;
-            try {
-                if (marshalledConfig != null) {
-                    out = new FileOutputStream(file);
-                    fileWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-                    fileWriter.write(marshalledConfig);
-                    fileWriter.flush();
-                    fileWriter.close();
-                    if (m_container != null) {
-                        m_container.reload();
-                    }
-                }
-            } finally {
-                IOUtils.closeQuietly(fileWriter);
-                IOUtils.closeQuietly(out);
-            }
+            getSnmpConfigDao().updateConfig(m_config);
         } finally {
             getWriteLock().unlock();
         }
@@ -294,6 +231,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
 
         return secureCredentialsVaultScope;
+    }
+
+    private synchronized SnmpConfigDao getSnmpConfigDao() {
+        if (SnmpPeerFactory.snmpConfigDao == null) {
+            SnmpPeerFactory.snmpConfigDao = BeanUtils.getBean("daoContext", "snmpConfigDao", SnmpConfigDao.class);
+        }
+        return SnmpPeerFactory.snmpConfigDao;
     }
 
     /**
@@ -502,14 +446,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public SnmpConfig getSnmpConfig() {
         getReadLock().lock();
         try {
-            if (m_container == null) {
-                decryptSnmpConfig(m_config);
-                return m_config;
-            } else {
-                SnmpConfig config = m_container.getObject();
-                decryptSnmpConfig(config);
-                return config;
-            }
+            this.m_config = getSnmpConfigDao().getConfig();
+            decryptSnmpConfig(m_config);
+            return m_config;
         } finally {
             getReadLock().unlock();
         }
@@ -560,13 +499,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             getWriteLock().unlock();
         }
         if (succeeded) {
-            try {
-                saveCurrent();
-                LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
-            } catch (IOException e) {
-                // This never should happen, we currently don't support rollback of configuration.
-                LOG.error("Exception while saving current config", e);
-            }
+            saveCurrent();
+            LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
         }
         return succeeded;
     }
@@ -647,12 +581,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         setDefinitionFromAgentConfig(definition, snmpAgentConfig);
         saveDefinition(definition);
         LOG.info("Definition saved for {} by module {}", ipAddress, module);
-        try {
-            saveCurrent();
-        } catch (IOException e) {
-            // This never should happen, we currently don't support rollback of configuration.
-            LOG.error("Exception while saving current config", e);
-        }
+        saveCurrent();
     }
 
 

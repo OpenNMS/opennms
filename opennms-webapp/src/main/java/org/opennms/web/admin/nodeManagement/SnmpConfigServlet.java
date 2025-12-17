@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.io.Files;
 
 /**
  * A servlet that handles configuring SNMP.
@@ -128,7 +127,6 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
-		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), StandardCharsets.UTF_8));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
 		dispatcher.forward(request, response);
