@@ -197,7 +197,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -224,7 +224,7 @@ const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
 const varbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([
-  { index: '0', value: '', type: MaskVarbindsTypeOptions[0] }
+  { index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } }
 ])
 const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
 
