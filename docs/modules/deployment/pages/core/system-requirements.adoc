@@ -35,10 +35,12 @@ OpenNMS {page-component-title} requires one of the following operating systems:
 | Operating System  | Compatible Versions (64-bit)
 
 | RHEL
-| {compatible-rhel9}
+| {compatible-rhel9} +
+{compatible-rhel10}
 
 | CentOS
-| {compatible-centos-stream}
+| {compatible-centos-stream9} +
+{compatible-centos-stream10}
 
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian
