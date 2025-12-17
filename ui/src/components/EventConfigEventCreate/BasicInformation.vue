@@ -463,6 +463,7 @@ const setVarbinds = (key: string, value: any, index: number) => {
 
   if (key === 'setVarbindType') {
     varbinds.value[index].type = value
+    varbinds.value[index].index = '0'
   }
 }
 
