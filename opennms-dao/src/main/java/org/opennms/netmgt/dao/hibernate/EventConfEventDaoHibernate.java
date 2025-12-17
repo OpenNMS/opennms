@@ -138,12 +138,12 @@ public class EventConfEventDaoHibernate
             if ("severity".equalsIgnoreCase(sortField)) {
                 orderBy = " order by case upper(e.severity) " +
                         " when 'INDETERMINATE' then 1 " +
-                        " when 'NORMAL' then 2 " +
-                        " when 'WARNING' then 3 " +
-                        " when 'MINOR' then 4 " +
-                        " when 'MAJOR' then 5 " +
-                        " when 'CRITICAL' then 6 " +
-                        " when 'CLEARED' then 7 " +
+                        " when 'CLEARED' then 2 " +
+                        " when 'NORMAL' then 3 " +
+                        " when 'WARNING' then 4 " +
+                        " when 'MINOR' then 5 " +
+                        " when 'MAJOR' then 6 " +
+                        " when 'CRITICAL' then 7 " +
                         " else 999 end " + sortOrder;
             } else {
                 orderBy = " order by e." + sortField + " " + sortOrder;

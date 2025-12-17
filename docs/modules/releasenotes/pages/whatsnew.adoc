@@ -41,10 +41,18 @@ OpenConfig telemetry streaming is now supported on Minion. See xref:reference:te
 
 === Debian path updates
 
-With this release, we’re streamlining the installation process for OpenNMS on both Debian and RPM-based systems by standardizing the installation location to /opt/opennms. This update provides a consistent deployment path, simplifies future upgrades, and minimizes conflicts caused by differing directories.
+With this release, we’re streamlining the installation process for OpenNMS on both Debian and RPM-based systems by standardizing the installation location to `/opt/opennms`. This update provides a consistent deployment path, simplifies future upgrades, and minimizes conflicts caused by differing directories.
 
 Before upgrading, we strongly recommend backing up your existing installation including configuration files, databases, and any custom scripts or integrations to prevent data loss or disruption.
 
+To preserve local changes in `/etc/opennms`, copy the folder to `/opt/opennms/etc` while keeping file ownership and permissions intact. 
+
+Prepare `/opt/opennms/etc` with the following commands:
+
+```
+sudo install -d -o opennms -g opennms /opt/opennms/etc
+sudo -u opennms cp -r /etc/opennms/* /opt/opennms/etc
+```
 
 === Removed JRobin implementation
 
