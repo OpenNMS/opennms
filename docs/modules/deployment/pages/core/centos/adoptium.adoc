@@ -1,4 +1,4 @@
-.Add Adoptium repository. See official https://adoptium.net/en-GB/installation[docs] for more information.
+.Add Adoptium repository. See official https://adoptium.net/installation[docs] for more information.
 [source, console]
 ----
 sudo bash -c 'cat <<EOF > /etc/yum.repos.d/adoptium.repo
