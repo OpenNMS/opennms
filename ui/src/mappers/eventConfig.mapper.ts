@@ -12,15 +12,15 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
   const payload = {} as EventConfigEventJsonStructure
   payload.uei = event.uei
   payload.eventLabel = event.eventLabel
-  payload.descr = event.description
+  payload.descr = event.descr
   payload.operinstruct = event.operinstruct
 
-  if (Object.keys(event).includes('alarmType')) {
+  if (Object.keys(event).includes('alarmData')) {
     payload.alarmData = {
-      alarmType: event.alarmType,
-      reductionKey: event.reductionKey,
-      autoClean: event.autoClean,
-      clearKey: event.clearKey
+      alarmType: event.alarmData.alarmType || 1,
+      reductionKey: event.alarmData.reductionKey || '',
+      autoClean: event.alarmData.autoClean || false,
+      clearKey: event.alarmData.clearKey || ''
     }
   }
 
@@ -36,27 +36,30 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
       payload.mask = {
         maskelements: event.mask?.maskelements?.map((me: any) => ({
           mename: me.mename,
-          mevalue: me.mevalues[0] || ''
+          mevalue: me.mevalues?.[0] || ''
         }))
       }
     }
     if (Object.keys(event.mask).includes('varbinds')) {
       payload.mask = {
         ...payload.mask,
-        varbinds: event.mask?.varbinds?.map((vb: any) => {
-          if (Object.keys(vb).includes('vbnumber')) {
-            return {
-              vbnumber: vb.vbnumber,
-              vbvalues: vb.vbvalues[0] || ''
+        varbinds: event.mask?.varbinds
+          ?.map((vb: any) => {
+            if (Object.keys(vb).includes('vbnumber')) {
+              return {
+                vbnumber: vb.vbnumber,
+                vbvalues: vb.vbvalues[0] || ''
+              }
             }
-          }
-          if (Object.keys(vb).includes('vboid')) {
-            return {
-              vboid: vb.vboid,
-              vbvalues: vb.vbvalues[0] || ''
+            if (Object.keys(vb).includes('vboid')) {
+              return {
+                vboid: vb.vboid,
+                vbvalues: vb.vbvalues[0] || ''
+              }
             }
-          }
-        })
+            return undefined
+          })
+          ?.filter((vbMapped: any) => vbMapped !== undefined)
       }
     }
   }
@@ -64,7 +67,7 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
   if (Object.keys(event).includes('varbindsdecodes')) {
     payload.varbindsdecodes = event.varbindsdecodes?.map((vbd: any) => ({
       parmId: vbd.parmid,
-      decode: vbd.decodes.map((dec: any) => ({
+      decode: vbd.decodes?.map((dec: any) => ({
         varbindvalue: dec.varbindvalue,
         varbinddecodedstring: dec.varbinddecodedstring
       }))

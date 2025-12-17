@@ -130,9 +130,6 @@ const onAddEventClick = (source: EventConfigSource) => {
 onMounted(async () => {
   if (route.params.id) {
     await store.fetchSourceById(route.params.id as string)
-
-    console.log(store.events)
-    
   }
 })
 </script>
