@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
@@ -127,7 +127,7 @@ describe('BasicInformation Component', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     store = useEventModificationStore()
-
+    vi.clearAllMocks()
     store.selectedSource = mockSource
     store.eventModificationState = {
       eventConfigEvent: mockEvent,
@@ -378,12 +378,15 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
-    expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    await saveButton.trigger('click')
+    wrapper.vm.eventUei = ''
+    await wrapper.vm.$nextTick()
 
-    expect(updateSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.isValid).toBe(false)
+
+    await wrapper.find('[data-test="save-event-button"]').trigger('click')
+    await flushPromises()
+
+    expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })
 
   it('should display error messages for invalid fields', async () => {
