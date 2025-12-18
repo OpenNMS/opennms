@@ -481,11 +481,11 @@ const handleSaveEvent = async () => {
     return
   }
 
-  try {
-    if (!isValid.value) {
-      return
-    }
+  if (!isValid.value) {
+    return
+  }
 
+  try {
     let response = null
     if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
       response = await updateEventConfigEventById(
