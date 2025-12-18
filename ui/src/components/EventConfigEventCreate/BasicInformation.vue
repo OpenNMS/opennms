@@ -309,10 +309,21 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
       value: me.mevalue
     }))
 
-    varbinds.value = (val?.jsonContent?.mask?.varbinds || []).map((vb) => ({
-      index: String(vb.vbnumber || 0),
-      value: vb.vbvalue
-    }))
+    varbinds.value = (val?.jsonContent?.mask?.varbinds || []).map((vb) => {
+      if (Object.keys(vb).includes('vbnumber')) {
+        return {
+          index: String(vb.vbnumber || 0),
+          value: vb.vbvalue
+        }
+      }
+      if (Object.keys(vb).includes('vboid')) {
+        return {
+          index: String(vb.vboid || 0),
+          value: vb.vbvalue
+        }
+      }
+      return { index: '0', value: '' }
+    })
 
     varbindsDecode.value = (val?.jsonContent?.varbindsdecodes || []).map((vbd) => ({
       parmId: vbd.parmid,
@@ -320,7 +331,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
         key: dec.varbinddecodedstring,
         value: dec.varbindvalue
       }))
-    }))    
+    }))
   } else {
     resetValues()
   }
