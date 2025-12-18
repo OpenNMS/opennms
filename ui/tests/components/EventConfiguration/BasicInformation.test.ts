@@ -106,7 +106,49 @@ const mockEvent = {
   modifiedBy: 'user1',
   sourceName: 'Test Source',
   vendor: 'Test Vendor',
-  fileOrder: 1
+  fileOrder: 1,
+  jsonContent: {
+    uei: 'uei.test.event1',
+    eventLabel: 'Test Event 1',
+    descr: 'Description 1',
+    operinstruct: 'Operator instructions',
+    logmsg: {
+      dest: 'logndisplay',
+      content: 'Log message content'
+    },
+    severity: 'Major',
+    alarmData: {
+      reductionKey: 'test-key',
+      alarmType: 1,
+      autoClean: true,
+      clearKey: 'clear-key'
+    },
+    mask: {
+      maskelements: [
+        {
+          mename: 'uei',
+          mevalue: 'test-value'
+        }
+      ],
+      varbinds: [
+        {
+          vbnumber: 0,
+          vbvalue: 'varbind-value'
+        }
+      ]
+    },
+    varbindsdecodes: [
+      {
+        parmid: 'param1',
+        decodes: [
+          {
+            varbinddecodedstring: 'key1',
+            varbindvalue: 'value1'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 const router = createRouter({
@@ -378,8 +420,15 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
+    const ueiInput = wrapper.find('[data-test="event-uei"]').find('input')
+    await ueiInput.setValue('')
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+
+    const updateSpy = vi.mocked(updateEventConfigEventById)
+    updateSpy.mockClear()
+
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
 

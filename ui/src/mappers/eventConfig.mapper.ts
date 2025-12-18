@@ -25,7 +25,7 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
   }
 
   payload.logmsg = {
-    dest: event.logmsg?.dest || '',
+    dest: event.logmsg?.dest.toLowerCase() || '',
     content: event.logmsg?.content || ''
   }
 
@@ -48,13 +48,13 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
             if (Object.keys(vb).includes('vbnumber')) {
               return {
                 vbnumber: vb.vbnumber,
-                vbvalues: vb.vbvalues[0] || ''
+                vbvalue: vb.vbvalues[0] || ''
               }
             }
             if (Object.keys(vb).includes('vboid')) {
               return {
                 vboid: vb.vboid,
-                vbvalues: vb.vbvalues[0] || ''
+                vbvalue: vb.vbvalues[0] || ''
               }
             }
             return undefined
@@ -66,8 +66,8 @@ const mapEventConfEventFromServer = (event: any): EventConfigEventJsonStructure 
 
   if (Object.keys(event).includes('varbindsdecodes')) {
     payload.varbindsdecodes = event.varbindsdecodes?.map((vbd: any) => ({
-      parmId: vbd.parmid,
-      decode: vbd.decodes?.map((dec: any) => ({
+      parmid: vbd.parmid,
+      decodes: vbd.decodes?.map((dec: any) => ({
         varbindvalue: dec.varbindvalue,
         varbinddecodedstring: dec.varbinddecodedstring
       }))
