@@ -88,17 +88,4 @@ updates:
       prefix: "build"
       include: "scope"
     schedule:
-      interval: "daily"
-
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "release-35.x"
-    reviewers:
-      - "OpenNMS/dependabot-reviewers-maven"
-    labels:
-      - "dependency update"
-    commit-message:
-      prefix: "build"
-      include: "scope"
-    schedule:
       interval: "weekly"
