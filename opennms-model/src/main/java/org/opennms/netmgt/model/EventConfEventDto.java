@@ -57,6 +57,7 @@ public class EventConfEventDto {
         this.description = description;
         this.enabled = enabled;
         this.xmlContent = xmlContent;
+        this.content = content;
         this.createdTime = createdTime;
         this.lastModified = lastModified;
         this.modifiedBy = modifiedBy;
@@ -113,6 +114,14 @@ public class EventConfEventDto {
         this.fileOrder = fileOrder;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String getSeverity() { return severity; }
 
     public void setSeverity(String severity) { this.severity = severity; }
@@ -127,6 +136,7 @@ public class EventConfEventDto {
                         e.getDescription(),
                         e.getEnabled(),
                         e.getXmlContent(),
+                        e.getContent(),
                         e.getCreatedTime(),
                         e.getLastModified(),
                         e.getModifiedBy(),
