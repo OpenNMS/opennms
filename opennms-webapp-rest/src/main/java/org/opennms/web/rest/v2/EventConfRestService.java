@@ -71,6 +71,8 @@ public class EventConfRestService implements EventConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
 
+    private static final int VENDOR_MAX_LENGTH = 128;
+
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
 
@@ -531,6 +533,14 @@ public class EventConfRestService implements EventConfRestApi {
 
         if (request.getVendor() == null || request.getVendor().isBlank()) {
             throw new IllegalArgumentException("Vendor must not be null or blank.");
+        }
+
+        final String vendor = request.getVendor().trim();
+
+        if (vendor.length() > VENDOR_MAX_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
+            );
         }
     }
 

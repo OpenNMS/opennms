@@ -876,6 +876,20 @@ public class EventConfRestServiceIT {
         resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequest,securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
+        // Vendor length > 128
+        final var eventConfSourceBadRequestVendorLength =
+                new AddEventConfSourceRequest(
+                        "testaa",
+                        "Test Source Description",
+                        "v".repeat(129));
+
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequestVendorLength, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(
+                resp.getEntity().toString()
+                        .contains("Vendor length must not exceed 128 characters")
+        );
+
         // Test when eventConfSource already exists with the same name.
         final var  eventConfSourceNameExistsRequest =
                 new AddEventConfSourceRequest("addEventConfSource","Duplicate source test description","test");
