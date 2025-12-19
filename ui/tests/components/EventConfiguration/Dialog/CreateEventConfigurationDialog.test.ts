@@ -44,19 +44,19 @@ describe('CreateEventConfigurationDialog.vue', () => {
   it('renders the dialog when visible is true', () => {
     const header = document.body.querySelector('[data-ref-id="feather-dialog-header"]')
     expect(header).not.toBeNull()
-    expect(header!.textContent).toBe('Create Event Configuration')
+    expect(header!.textContent).toBe('Create Event Configuration Source')
   })
 
   it('renders informational note', () => {
     const p = document.body.querySelector('.modal-body p')
     expect(p).not.toBeNull()
-    expect(p!.textContent).toContain('will be created with 0 events')
+    expect(p!.textContent).toContain('will be created with 0 event configurations')
   })
 
   it('renders input field with correct label', () => {
     const inputComp = wrapper.findComponent(FeatherInput)
     expect(inputComp.exists()).toBe(true)
-    expect(inputComp.props('label')).toBe('Event Configuration Name')
+    expect(inputComp.props('label')).toBe('Event Configuration Source Name')
   })
 
   it('renders Cancel and Create buttons', () => {
@@ -67,28 +67,28 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('shows error when input empty', async () => {
-    (wrapper.vm as any).configName = ''
+    ;(wrapper.vm as any).configName = ''
     await wrapper.vm.$nextTick()
     const inputComp = wrapper.findComponent(FeatherInput)
-    expect(inputComp.props('error')).toBe('Event Configuration Name is required')
+    expect(inputComp.props('error')).toBe('Event Configuration Source Name is required')
   })
 
   it('clears error when input has value', async () => {
-    (wrapper.vm as any).configName = 'X'
+    ;(wrapper.vm as any).configName = 'X'
     await wrapper.vm.$nextTick()
     const inputComp = wrapper.findComponent(FeatherInput)
     expect(inputComp.props('error')).toBe('')
   })
 
   it('disables Create button when invalid', async () => {
-    (wrapper.vm as any).configName = '   '
+    ;(wrapper.vm as any).configName = '   '
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     expect(createBtn.attributes('aria-disabled') === 'true' || createBtn.attributes('disabled')).toBeTruthy()
   })
 
   it('enables Create button when valid', async () => {
-    (wrapper.vm as any).configName = 'Valid'
+    ;(wrapper.vm as any).configName = 'Valid'
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     expect(createBtn.attributes('aria-disabled')).toBeUndefined()
@@ -102,8 +102,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('does not save when invalid create clicked', async () => {
-    store.hideCreateEventConfigSourceDialog = vi.fn();
-    (wrapper.vm as any).configName = '   '
+    store.hideCreateEventConfigSourceDialog = vi.fn()
+    ;(wrapper.vm as any).configName = '   '
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     await createBtn.trigger('click')
@@ -111,8 +111,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('saves and closes when valid', async () => {
-    store.hideCreateEventConfigSourceDialog = vi.fn();
-    (wrapper.vm as any).configName = 'ConfigA'
+    store.hideCreateEventConfigSourceDialog = vi.fn()
+    ;(wrapper.vm as any).configName = 'ConfigA'
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     await createBtn.trigger('click')
@@ -120,8 +120,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('resets form after save', async () => {
-    store.hideCreateEventConfigSourceDialog = vi.fn();
-    (wrapper.vm as any).configName = 'ResetMe'
+    store.hideCreateEventConfigSourceDialog = vi.fn()
+    ;(wrapper.vm as any).configName = 'ResetMe'
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     await createBtn.trigger('click')
@@ -129,21 +129,21 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('whitespace-only treated invalid', async () => {
-    (wrapper.vm as any).configName = '   '
+    ;(wrapper.vm as any).configName = '   '
     await wrapper.vm.$nextTick()
     const inputComp = wrapper.findComponent(FeatherInput)
-    expect(inputComp.props('error')).toBe('Event Configuration Name is required')
+    expect(inputComp.props('error')).toBe('Event Configuration Source Name is required')
   })
 
   it('multiple valid saves call hide each time', async () => {
     store.hideCreateEventConfigSourceDialog = vi.fn()
-    const createBtn = wrapper.findAllComponents(FeatherButton)[1];
+    const createBtn = wrapper.findAllComponents(FeatherButton)[1]
 
-    (wrapper.vm as any).configName = 'One'
+    ;(wrapper.vm as any).configName = 'One'
     await wrapper.vm.$nextTick()
-    await createBtn.trigger('click');
+    await createBtn.trigger('click')
 
-    (wrapper.vm as any).configName = 'Two'
+    ;(wrapper.vm as any).configName = 'Two'
     await wrapper.vm.$nextTick()
     await createBtn.trigger('click')
 
@@ -159,7 +159,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('maintains form state before save', async () => {
-    (wrapper.vm as any).configName = 'Persist'
+    ;(wrapper.vm as any).configName = 'Persist'
     await wrapper.vm.$nextTick()
     const inputComp = wrapper.findComponent(FeatherInput)
     expect(inputComp.props('modelValue')).toBe('Persist')
@@ -179,11 +179,11 @@ describe('CreateEventConfigurationDialog.vue', () => {
 
   it('shows error on initial mount (empty name)', () => {
     const input = wrapper.findComponent(FeatherInput)
-    expect(input.props('error')).toBe('Event Configuration Name is required')
+    expect(input.props('error')).toBe('Event Configuration Source Name is required')
   })
 
   it('treats trimmed non-empty as valid', async () => {
-    (wrapper.vm as any).configName = '   X   '
+    ;(wrapper.vm as any).configName = '   X   '
     await wrapper.vm.$nextTick()
     const input = wrapper.findComponent(FeatherInput)
     expect(input.props('error')).toBe('')
@@ -210,11 +210,12 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('disabled state updates when reverting to empty', async () => {
-    (wrapper.vm as any).configName = 'Valid'
-    await wrapper.vm.$nextTick();
-    (wrapper.vm as any).configName = ''
+    ;(wrapper.vm as any).configName = 'Valid'
+    await wrapper.vm.$nextTick()
+    ;(wrapper.vm as any).configName = ''
     await wrapper.vm.$nextTick()
     const createBtn = wrapper.findAllComponents(FeatherButton)[1]
     expect(createBtn.attributes('aria-disabled') === 'true' || createBtn.attributes('disabled')).toBeTruthy()
   })
 })
+

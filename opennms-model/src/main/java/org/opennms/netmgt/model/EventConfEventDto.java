@@ -43,26 +43,27 @@ public class EventConfEventDto {
     private String sourceName;
     private String vendor;
     private Integer fileOrder;
+    private String severity;
 
     public EventConfEventDto() {
     }
 
     public EventConfEventDto(Long id, String uei, String eventLabel, String description, Boolean enabled,
                              String xmlContent, String content, Date createdTime, Date lastModified, String modifiedBy,
-                             String sourceName, String vendor, Integer fileOrder) {
+                             String sourceName, String vendor, Integer fileOrder, String severity) {
         this.id = id;
         this.uei = uei;
         this.eventLabel = eventLabel;
         this.description = description;
         this.enabled = enabled;
         this.xmlContent = xmlContent;
-        this.content=content;
         this.createdTime = createdTime;
         this.lastModified = lastModified;
         this.modifiedBy = modifiedBy;
         this.sourceName = sourceName;
         this.vendor = vendor;
         this.fileOrder = fileOrder;
+        this.severity = severity;
     }
 
     // Getters and Setters
@@ -112,13 +113,9 @@ public class EventConfEventDto {
         this.fileOrder = fileOrder;
     }
 
-    public String getContent() {
-        return content;
-    }
+    public String getSeverity() { return severity; }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public void setSeverity(String severity) { this.severity = severity; }
 
     public static List<EventConfEventDto> fromEntity(List<EventConfEvent> entityList) {
 
@@ -130,13 +127,13 @@ public class EventConfEventDto {
                         e.getDescription(),
                         e.getEnabled(),
                         e.getXmlContent(),
-                        e.getContent(),
                         e.getCreatedTime(),
                         e.getLastModified(),
                         e.getModifiedBy(),
                         e.getSource() != null ? e.getSource().getName() : null,
                         e.getSource() != null ? e.getSource().getVendor() : null,
-                        e.getSource() != null ? e.getSource().getFileOrder() : null
+                        e.getSource() != null ? e.getSource().getFileOrder() : null,
+                        e.getSeverity()
                 ))
                 .collect(Collectors.toList());
     }
