@@ -169,4 +169,24 @@
         </sql>
     </changeSet>
 
+    <changeSet author="aurangzeb" id="35.0.0-eventconf-sources-name-unique">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_sources"/>
+                <sqlCheck expectedResult="0">
+                    SELECT COUNT(*)
+                    FROM information_schema.table_constraints
+                    WHERE table_name = 'eventconf_sources'
+                    AND constraint_type = 'UNIQUE'
+                    AND constraint_name = 'uk_eventconf_sources_name'
+                </sqlCheck>
+            </and>
+        </preConditions>
+
+        <addUniqueConstraint
+                tableName="eventconf_sources"
+                columnNames="name"
+                constraintName="uk_eventconf_sources_name"/>
+    </changeSet>
+
 </databaseChangeLog>

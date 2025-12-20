@@ -535,7 +535,7 @@ public class EventConfRestService implements EventConfRestApi {
             throw new IllegalArgumentException("Vendor must not be null or blank.");
         }
 
-        final String vendor = request.getVendor().trim();
+        final String vendor = request.getVendor();
 
         if (vendor.length() > VENDOR_MAX_LENGTH) {
             throw new IllegalArgumentException(
