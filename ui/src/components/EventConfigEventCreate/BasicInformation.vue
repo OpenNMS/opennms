@@ -336,7 +336,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
         }
       }
       return undefined
-    }).filter((vb) => vb !== undefined)
+    }).filter((vb) => vb !== undefined) as Array<{ index: string; value: string, type: ISelectItemType }>
 
     varbindsDecode.value = (val?.jsonContent?.varbindsdecodes || []).map((vbd) => ({
       parmId: vbd.parmid,
