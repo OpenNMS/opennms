@@ -97,7 +97,7 @@ const mockEvent = {
       </varbind>
       <varbindsdecode>
         <parmid>param1</parmid>
-        <decode varbinddecodedstring="key1" varbindvalue="value1" />
+        <decode varbinddecodedstring="key1" varbindvalue="01" />
       </varbindsdecode>
     </event>
   `,
@@ -304,7 +304,7 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
     expect(wrapper.vm.varbindsDecode[0].decode).toHaveLength(1)
     expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key1')
-    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('value1')
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('01')
   })
 
   it('should update validation state when form data changes', async () => {
