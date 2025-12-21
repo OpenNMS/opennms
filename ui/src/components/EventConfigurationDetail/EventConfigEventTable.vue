@@ -2,7 +2,7 @@
   <TableCard class="event-config-event-table">
     <div class="header">
       <div class="title-container">
-        <span class="title"> Events </span>
+        <span class="title"> Event Configurations </span>
       </div>
       <div class="action-container">
         <div class="search-container">
@@ -48,8 +48,6 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
-            <th>Severity</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -201,7 +199,9 @@ const emptyListContent = {
 const expandedRows = ref<number[]>([])
 const columns = computed(() => [
   { id: 'uei', label: 'Event UEI' },
-  { id: 'eventLabel', label: 'Event Label' }
+  { id: 'eventLabel', label: 'Event Label' },
+  { id: 'severity', label: 'Severity' },
+  { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({

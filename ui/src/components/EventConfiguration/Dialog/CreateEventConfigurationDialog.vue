@@ -8,14 +8,14 @@
     <div class="modal-body">
       <div>
         <FeatherInput
-          label="Event Configuration Name"
+          label="Event Configuration Source Name"
           v-model="configName"
           :error="error"
         />
       </div>
       <div>
         <p>
-          Please note that the event configuration will be created with 0 events. You can add events after creation.
+          Please note that this source will be created with 0 event configurations. You can add event configurations after creation.
         </p>
       </div>
     </div>
@@ -40,11 +40,11 @@ import { FeatherInput } from '@featherds/input'
 
 const configName = ref('')
 const error = computed(() => {
-  return configName.value.trim() === '' ? 'Event Configuration Name is required' : ''
+  return configName.value.trim() === '' ? 'Event Configuration Source Name is required' : ''
 })
 const store = useEventConfigStore()
 const labels = {
-  title: 'Create Event Configuration'
+  title: 'Create Event Configuration Source'
 }
 
 const resetForm = () => {

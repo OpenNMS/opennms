@@ -97,7 +97,7 @@ const mockEvent = {
       </varbind>
       <varbindsdecode>
         <parmid>param1</parmid>
-        <decode varbinddecodedstring="key1" varbindvalue="value1" />
+        <decode varbinddecodedstring="key1" varbindvalue="01" />
       </varbindsdecode>
     </event>
   `,
@@ -133,7 +133,11 @@ const mockEvent = {
       varbinds: [
         {
           vbnumber: 0,
-          vbvalue: 'varbind-value'
+          vbvalue: 'varbind-value-1'
+        },
+        {
+          vboid: 1,
+          vbvalue: 'varbind-value-2'
         }
       ]
     },
@@ -143,7 +147,7 @@ const mockEvent = {
         decodes: [
           {
             varbinddecodedstring: 'key1',
-            varbindvalue: 'value1'
+            varbindvalue: '0'
           }
         ]
       }
@@ -211,7 +215,7 @@ describe('BasicInformation Component', () => {
 
   it('should display correct title for edit mode', () => {
     const title = wrapper.find('h3')
-    expect(title.text()).toBe('Edit Event Details')
+    expect(title.text()).toBe('Edit Event Configuration Details')
   })
 
   it('should display correct title for create mode', async () => {
@@ -219,7 +223,7 @@ describe('BasicInformation Component', () => {
     await wrapper.vm.$nextTick()
 
     const title = wrapper.find('h3')
-    expect(title.text()).toBe('Create New Event')
+    expect(title.text()).toBe('Create New Event Configuration')
   })
 
   it('should render all basic information form fields', () => {
@@ -336,9 +340,11 @@ describe('BasicInformation Component', () => {
   })
 
   it('should load varbinds correctly', () => {
-    expect(wrapper.vm.varbinds).toHaveLength(1)
+    expect(wrapper.vm.varbinds).toHaveLength(2)
     expect(wrapper.vm.varbinds[0].index).toBe('0')
-    expect(wrapper.vm.varbinds[0].value).toBe('varbind-value')
+    expect(wrapper.vm.varbinds[0].value).toBe('varbind-value-1')
+    expect(wrapper.vm.varbinds[1].index).toBe('1')
+    expect(wrapper.vm.varbinds[1].value).toBe('varbind-value-2')
   })
 
   it('should load varbinds decode correctly', () => {
@@ -346,7 +352,7 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
     expect(wrapper.vm.varbindsDecode[0].decode).toHaveLength(1)
     expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key1')
-    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('value1')
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('0')
   })
 
   it('should update validation state when form data changes', async () => {

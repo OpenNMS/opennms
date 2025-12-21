@@ -14,16 +14,16 @@
           </FeatherBackButton>
         </div>
         <div>
-          <h1>Event Configuration Details</h1>
+          <h1>Manage Event Config for a Source</h1>
         </div>
       </div>
       <div class="action-container">
         <FeatherButton
           primary
-          data-test="add-event"
+          data-test="add-event-config"
           @click="onAddEventClick(store.selectedSource)"
         >
-          Add Event
+          Add Event Config
         </FeatherButton>
         <FeatherButton
           primary
@@ -49,7 +49,7 @@
     >
       <div class="config-row">
         <div class="config-field">
-          <span class="field-label">Name:</span>
+          <span class="field-label">Source:</span>
           <span class="field-value">{{ store.selectedSource.name }}</span>
         </div>
         <div class="config-field">
