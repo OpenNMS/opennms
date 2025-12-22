@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>35.0.0-SNAPSHOT</version>
+    <version>35.0.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -265,7 +265,6 @@
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
-                <feature>webconsole</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
 
@@ -329,7 +328,6 @@
                 <feature>standard</feature>
                 <feature>system</feature>
                 <feature>war</feature>
-                <feature>webconsole</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
                 <feature>pax-http</feature>

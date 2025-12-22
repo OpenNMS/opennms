@@ -3,10 +3,20 @@
     class="main-content"
     v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
   >
-    <div>
-      <h3>
-        {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
-      </h3>
+    <div class="header">
+      <div>
+        <FeatherBackButton
+          data-test="back-button"
+          @click="handleCancel"
+        >
+          Go Back
+        </FeatherBackButton>
+      </div>
+      <div>
+        <h3>
+          {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event Configuration' : 'Edit Event Configuration Details' }}
+        </h3>
+      </div>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -178,6 +188,7 @@ import { createEventConfigEvent, updateEventConfigEventById } from '@/services/e
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
+import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
@@ -186,7 +197,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -212,8 +223,8 @@ const addAlarmData = ref(false)
 const reductionKey = ref('')
 const autoClean = ref(false)
 const clearKey = ref('')
-const varbinds = ref<Array<{ index: string; value: string }>>([
-  { index: '0', value: '' }
+const varbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([
+  { index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } }
 ])
 const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
 
@@ -229,8 +240,8 @@ const xmlContent = computed(() => {
             </maskelement>`).join('')}
           ${varbinds.value.map(vb => `
             <varbind>
-              <vbnumber>${vb.index}</vbnumber>
-              <vbvalue>${vb.value}</vbvalue>
+              ${vb.type._value === MaskVarbindsTypeValue.vbNumber ? `<vbnumber>${vb.index}</vbnumber><vbvalue>${vb.value}</vbvalue>` : ''}
+              ${vb.type._value === MaskVarbindsTypeValue.vbOid ? `<vboid>${vb.index}</vboid><vbvalue>${vb.value}</vbvalue>` : ''}
             </varbind>`).join('')}
         </mask>` : ''}
         ${varbindsDecode.value.map(vb => `
@@ -321,10 +332,22 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
     const varbindList = xmlDoc.getElementsByTagName('varbind')
     varbinds.value = []
     for (let i = 0; i < varbindList.length; i++) {
-      varbinds.value.push({
-        index: varbindList[i].getElementsByTagName('vbnumber')[0].textContent || '',
-        value: varbindList[i].getElementsByTagName('vbvalue')[0].textContent || ''
-      })
+      const vbnumberElement = varbindList[i].getElementsByTagName('vbnumber')[0]
+      const vboidElement = varbindList[i].getElementsByTagName('vboid')[0]
+      const vbvalueElement = varbindList[i].getElementsByTagName('vbvalue')[0]
+      if (vbnumberElement?.textContent) {
+        varbinds.value.push({
+          index: vbnumberElement.textContent || '',
+          value: vbvalueElement?.textContent || '',
+          type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber }
+        })
+      } else if (vboidElement?.textContent) {
+        varbinds.value.push({
+          index: vboidElement.textContent || '',
+          value: vbvalueElement?.textContent || '',
+          type: { _text: MaskVarbindsTypeText.vbOid, _value: MaskVarbindsTypeValue.vbOid }
+        })
+      }
     }
     const varbindsDecodeList = xmlDoc.getElementsByTagName('varbindsdecode')
     varbindsDecode.value = []
@@ -410,7 +433,15 @@ const setVarbinds = (key: string, value: any, index: number) => {
     return
   }
 
-  if (key === 'setIndex' && Number(value)) {
+  if (key === 'setVarbindNumber') {
+    if (isNaN(Number(value)) || Number(value) < 0) {
+      varbinds.value[index].index = '0'
+    } else {
+      varbinds.value[index].index = value
+    }
+  }
+
+  if (key === 'setVarbindOid') {
     varbinds.value[index].index = value
   }
 
@@ -419,7 +450,7 @@ const setVarbinds = (key: string, value: any, index: number) => {
   }
 
   if (key === 'addVarbindRow') {
-    varbinds.value.push({ index: '0', value: '' })
+    varbinds.value.push({ index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } })
   }
 
   if (key === 'removeVarbindRow') {
@@ -428,6 +459,11 @@ const setVarbinds = (key: string, value: any, index: number) => {
 
   if (key === 'clearAllVarbinds') {
     varbinds.value = []
+  }
+
+  if (key === 'setVarbindType') {
+    varbinds.value[index].type = value
+    varbinds.value[index].index = '0'
   }
 }
 
@@ -461,7 +497,11 @@ const setVarbindsDecode = (key: string, value: any, index: number, decodeIndex: 
   }
 
   if (key === 'setDecodeValue') {
-    varbindsDecode.value[index].decode[decodeIndex].value = value
+    if (isNaN(Number(value)) || Number(value) < 0) {
+      varbindsDecode.value[index].decode[decodeIndex].value = '0'
+    } else {
+      varbindsDecode.value[index].decode[decodeIndex].value = value
+    }
   }
 }
 
@@ -490,17 +530,7 @@ const handleSaveEvent = async () => {
 
     if (response) {
       snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
-      resetValues()
-      const id = store.selectedSource.id
-      store.resetEventModificationState()
-      if (id) {
-        router.push({
-          name: 'Event Configuration Detail',
-          params: { id }
-        })
-      } else {
-        router.push({ name: 'Event Configuration' })
-      }
+      handleCancel()
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -511,6 +541,7 @@ const handleSaveEvent = async () => {
 }
 
 const handleCancel = () => {
+  resetValues()
   const id = store.selectedSource?.id
   store.resetEventModificationState()
   if (id) {
@@ -559,6 +590,12 @@ onMounted(() => {
 
   border-radius: 8px;
   background-color: #ffffff;
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
   .basic-info {
     border-width: 1px;

@@ -133,7 +133,7 @@ public class EventConfPersistenceService {
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
             eventConfEvent.setContent(JsonUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
-
+            eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(payload.getEvent().getSeverity()));
             eventConfEventDao.saveOrUpdate(eventConfEvent);
 
         } catch (Exception e) {

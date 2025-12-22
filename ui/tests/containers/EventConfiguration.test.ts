@@ -32,7 +32,7 @@ describe('EventConfig.vue', () => {
     })
 
     expect(store).toBeDefined()
-    expect(wrapper.find('h1').text()).toBe('Event Configuration')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Configurations')
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
   })
 
@@ -66,7 +66,7 @@ describe('EventConfig.vue', () => {
 
     expect(items).toHaveLength(2)
     expect(items[0]).toEqual({ label: 'Home', to: '/home', isAbsoluteLink: true })
-    expect(items[1]).toEqual({ label: 'Event Configuration', to: '#', position: 'last' })
+    expect(items[1]).toEqual({ label: 'Manage Event Configurations', to: '#', position: 'last' })
   })
 
   it('renders BreadCrumbs with undefined homeUrl when mainMenu is not set', () => {
@@ -84,7 +84,7 @@ describe('EventConfig.vue', () => {
 
     expect(items).toHaveLength(2)
     expect(items[0]).toEqual({ label: 'Home', to: undefined, isAbsoluteLink: true })
-    expect(items[1]).toEqual({ label: 'Event Configuration', to: '#', position: 'last' })
+    expect(items[1]).toEqual({ label: 'Manage Event Configurations', to: '#', position: 'last' })
   })
 
   it('renders CreateEventConfigurationDialog component', () => {
@@ -113,7 +113,7 @@ describe('EventConfig.vue', () => {
 
     const button = wrapper.find('button')
     expect(button.exists()).toBe(true)
-    expect(button.text()).toBe('Create New Event Configuration')
+    expect(button.text()).toBe('Create New Event Source')
   })
 
   it('calls store method when Create button is clicked', async () => {
@@ -227,7 +227,7 @@ describe('EventConfig.vue', () => {
     await wrapper.find('button').trigger('click')
 
     expect(wrapper.find('.event-config').exists()).toBe(true)
-    expect(wrapper.find('h1').text()).toBe('Event Configuration')
+    expect(wrapper.find('h1').text()).toBe('Manage Event Configurations')
   })
 
   it('renders feather-row and feather-col structure', () => {
@@ -316,3 +316,4 @@ describe('EventConfig.vue', () => {
     expect(() => wrapper.unmount()).not.toThrow()
   })
 })
+

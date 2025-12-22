@@ -52,6 +52,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -750,6 +751,7 @@ public class EventConfPersistenceServiceIT {
         event.setEnabled(true);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
+        event.setSeverity(severity);
         event.setModifiedBy("JUnitTest");
 
         eventConfEventDao.saveOrUpdate(event);
@@ -1017,5 +1019,96 @@ public class EventConfPersistenceServiceIT {
         assertEquals("Major", eventFromJson.getSeverity());
     }
 
+
+    @Test
+    @Transactional
+    public void testFilterConfEventsBySourceId_ShouldReturnFilteredAndSortedResults() {
+        EventConfSource m_source = new EventConfSource();
+        m_source.setName("testSeveritySorting");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-critical",
+                "Trigger configuration changed CRITICAL",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Critical");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-major",
+                "Trigger configuration changed MAJOR",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Major");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-minor",
+                "Trigger configuration changed MINOR",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Minor");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-warning",
+                "Trigger configuration changed WARNING",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Warning");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-normal",
+                "Trigger configuration changed NORMAL",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Normal");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-cleared",
+                "Trigger configuration changed CLEARED",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Cleared");
+
+        insertEvent(m_source,
+                "uei.opennms.org/internal/trigger-indeterminate",
+                "Trigger configuration changed INDETERMINATE",
+                "The Trigger configuration has been changed and should be reloaded",
+                "Indeterminate");
+
+        // Validate severity in DESC order
+        Map<String, Object> descResult = eventConfPersistenceService.filterConfEventsBySourceId(
+                m_source.getId(), "", "severity", "desc", 0, 0, 10);
+
+        final var descList = (List<EventConfEvent>) descResult.get("eventConfEventList");
+        Assert.assertEquals(7, descList.size());
+
+        final var expectedDesc = Arrays.asList(
+                "Critical", "Major", "Minor", "Warning", "Normal", "Cleared", "Indeterminate"
+        );
+
+
+        Assert.assertEquals("DESC alphabetical sort failed",
+                expectedDesc,
+                descList.stream().map(EventConfEvent::getSeverity).toList());
+
+       // Validate severity in asc order
+        final var ascResult = eventConfPersistenceService.filterConfEventsBySourceId(
+                m_source.getId(), "", "severity", "asc", 0, 0, 10);
+
+        final var ascList = (List<EventConfEvent>) ascResult.get("eventConfEventList");
+        Assert.assertEquals(7, ascList.size());
+
+        final var expectedAsc = Arrays.asList(
+                "Indeterminate", "Cleared", "Normal", "Warning", "Minor", "Major", "Critical"
+        );
+
+        Assert.assertEquals("ASC alphabetical sort failed",
+                expectedAsc,
+                ascList.stream().map(EventConfEvent::getSeverity).toList());
+    }
 }
 
