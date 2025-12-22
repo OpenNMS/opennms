@@ -1098,7 +1098,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                     !Strings.isNullOrEmpty(event.getAlarmData().getClearKey())) {
                     final String arr[] = event.getAlarmData().getClearKey().split(":");
                     if (arr.length > 0 && uei.equals(arr[0])) {
-                        ueis.add(arr[0]);
+                        ueis.add(event.getUei());
                     }
                 }
                 return ueis;
