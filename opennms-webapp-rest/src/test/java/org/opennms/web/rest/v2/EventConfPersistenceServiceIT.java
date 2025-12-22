@@ -747,6 +747,7 @@ public class EventConfPersistenceServiceIT {
         event.setEventLabel(label);
         event.setDescription(description);
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setContent("{\"event\":{\"uei\":\"" + uei + "\"}}");
         event.setSource(m_source);
         event.setEnabled(true);
         event.setCreatedTime(new Date());

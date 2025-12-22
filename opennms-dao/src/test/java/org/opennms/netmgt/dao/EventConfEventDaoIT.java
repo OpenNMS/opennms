@@ -130,6 +130,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setEventLabel(label);
         event.setDescription(description);
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setContent("{\"event\":{\"uei\":\"" + uei + "\"}}");
         event.setSource(m_source);
         event.setSeverity(severity);
         event.setEnabled(true);
@@ -326,6 +327,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setEventLabel("Bulk Event " + i);
         event.setDescription("Test bulk event " + i);
         event.setXmlContent("<event><uei>uei.opennms.org/test/bulk/" + i + "</uei></event>");
+        event.setContent("{\"event\":{\"uei\":\"uei.opennms.org/test/bulk/" + i + "\"}}");
         event.setSource(m_source);
         event.setEnabled(true);
         event.setSeverity("Normal");
