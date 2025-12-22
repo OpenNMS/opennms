@@ -12,6 +12,8 @@
 	<bean id="eventConfPersistenceService" class="org.opennms.web.rest.v2.EventConfPersistenceService"/>
 	<bean id="eventConfRestApi" class="org.opennms.web.rest.v2.EventConfRestService"/>
 
+	<bean id="snmpConfigRestApi" class="org.opennms.web.rest.v2.SnmpConfigRestService"/>
+
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
 		<constructor-arg value="file:target/test-classes/collectd-configuration.xml" />
@@ -37,5 +39,4 @@
 
 	<import resource="classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml"/>
 	<import resource="classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"/>
-
 </beans>
