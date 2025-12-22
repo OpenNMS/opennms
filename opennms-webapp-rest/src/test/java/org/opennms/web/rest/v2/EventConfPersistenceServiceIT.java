@@ -751,6 +751,7 @@ public class EventConfPersistenceServiceIT {
         event.setEnabled(true);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
+        event.setSeverity(severity);
         event.setModifiedBy("JUnitTest");
 
         eventConfEventDao.saveOrUpdate(event);
