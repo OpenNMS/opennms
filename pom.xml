@@ -1939,7 +1939,7 @@
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
-    <lz4JavaVersion>1.8.0</lz4JavaVersion>
+    <lz4JavaVersion>1.8.1</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>

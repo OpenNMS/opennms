@@ -32,6 +32,7 @@
       <feature>minion-core-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-ipc-sink-api</feature>
+      <bundle dependency="true" start-level="${earlyStartLevel}">wrap:mvn:at.yawk.lz4/lz4-java/${lz4JavaVersion}</bundle>
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.producer/${project.version}</bundle>
     </feature>

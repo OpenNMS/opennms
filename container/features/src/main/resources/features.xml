@@ -457,7 +457,7 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle dependency="true" start-level="${earlyStartLevel}">wrap:mvn:at.yawk.lz4/lz4-java/${lz4JavaVersion}</bundle>
         <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: API">
@@ -992,7 +992,7 @@
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaVersion}</bundle>
-        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle dependency="true" start-level="${earlyStartLevel}">wrap:mvn:at.yawk.lz4/lz4-java/${lz4JavaVersion}</bundle>
         <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
         <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scalaVersion}/${scalaLoggingVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjniVersion}</bundle>
@@ -1004,6 +1004,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:at.yawk.lz4/lz4-java/${lz4JavaVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
