@@ -106,7 +106,53 @@ const mockEvent = {
   modifiedBy: 'user1',
   sourceName: 'Test Source',
   vendor: 'Test Vendor',
-  fileOrder: 1
+  fileOrder: 1,
+  jsonContent: {
+    uei: 'uei.test.event1',
+    eventLabel: 'Test Event 1',
+    descr: 'Description 1',
+    operinstruct: 'Operator instructions',
+    logmsg: {
+      dest: 'logndisplay',
+      content: 'Log message content'
+    },
+    severity: 'Major',
+    alarmData: {
+      reductionKey: 'test-key',
+      alarmType: 1,
+      autoClean: true,
+      clearKey: 'clear-key'
+    },
+    mask: {
+      maskelements: [
+        {
+          mename: 'uei',
+          mevalue: 'test-value'
+        }
+      ],
+      varbinds: [
+        {
+          vbnumber: 0,
+          vbvalue: 'varbind-value-1'
+        },
+        {
+          vboid: 1,
+          vbvalue: 'varbind-value-2'
+        }
+      ]
+    },
+    varbindsdecodes: [
+      {
+        parmid: 'param1',
+        decodes: [
+          {
+            varbinddecodedstring: 'key1',
+            varbindvalue: '0'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 const router = createRouter({
@@ -294,9 +340,11 @@ describe('BasicInformation Component', () => {
   })
 
   it('should load varbinds correctly', () => {
-    expect(wrapper.vm.varbinds).toHaveLength(1)
+    expect(wrapper.vm.varbinds).toHaveLength(2)
     expect(wrapper.vm.varbinds[0].index).toBe('0')
-    expect(wrapper.vm.varbinds[0].value).toBe('varbind-value')
+    expect(wrapper.vm.varbinds[0].value).toBe('varbind-value-1')
+    expect(wrapper.vm.varbinds[1].index).toBe('1')
+    expect(wrapper.vm.varbinds[1].value).toBe('varbind-value-2')
   })
 
   it('should load varbinds decode correctly', () => {
@@ -304,7 +352,7 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
     expect(wrapper.vm.varbindsDecode[0].decode).toHaveLength(1)
     expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key1')
-    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('01')
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('0')
   })
 
   it('should update validation state when form data changes', async () => {
@@ -378,8 +426,15 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
+    const ueiInput = wrapper.find('[data-test="event-uei"]').find('input')
+    await ueiInput.setValue('')
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+
+    const updateSpy = vi.mocked(updateEventConfigEventById)
+    updateSpy.mockClear()
+
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
 

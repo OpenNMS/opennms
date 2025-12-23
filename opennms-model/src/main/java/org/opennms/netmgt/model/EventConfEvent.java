@@ -22,6 +22,7 @@
 package org.opennms.netmgt.model;
 
 
+import org.hibernate.annotations.ColumnTransformer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -65,6 +66,10 @@ public class EventConfEvent implements Serializable {
 
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;
+
+    @Column(name = "content", columnDefinition = "jsonb", nullable = false)
+    @ColumnTransformer(write = "coalesce(?::jsonb, '{}'::jsonb)") //if content is null then write '{}' as default value.
+    private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_time")
@@ -134,6 +139,14 @@ public class EventConfEvent implements Serializable {
 
     public void setXmlContent(String xmlContent) {
         this.xmlContent = xmlContent;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getCreatedTime() {

@@ -34,6 +34,7 @@ public class EventConfEventDto {
     private String description;
     private Boolean enabled;
     private String xmlContent;
+    private String content;
     private Date createdTime;
     private Date lastModified;
     private String modifiedBy;
@@ -48,7 +49,7 @@ public class EventConfEventDto {
     }
 
     public EventConfEventDto(Long id, String uei, String eventLabel, String description, Boolean enabled,
-                             String xmlContent, Date createdTime, Date lastModified, String modifiedBy,
+                             String xmlContent, String content, Date createdTime, Date lastModified, String modifiedBy,
                              String sourceName, String vendor, Integer fileOrder, String severity) {
         this.id = id;
         this.uei = uei;
@@ -56,6 +57,7 @@ public class EventConfEventDto {
         this.description = description;
         this.enabled = enabled;
         this.xmlContent = xmlContent;
+        this.content = content;
         this.createdTime = createdTime;
         this.lastModified = lastModified;
         this.modifiedBy = modifiedBy;
@@ -112,6 +114,14 @@ public class EventConfEventDto {
         this.fileOrder = fileOrder;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public String getSeverity() { return severity; }
 
     public void setSeverity(String severity) { this.severity = severity; }
@@ -126,6 +136,7 @@ public class EventConfEventDto {
                         e.getDescription(),
                         e.getEnabled(),
                         e.getXmlContent(),
+                        e.getContent(),
                         e.getCreatedTime(),
                         e.getLastModified(),
                         e.getModifiedBy(),

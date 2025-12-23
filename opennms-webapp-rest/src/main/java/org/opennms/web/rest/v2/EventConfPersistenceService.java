@@ -24,10 +24,11 @@ package org.opennms.web.rest.v2;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
@@ -130,6 +131,7 @@ public class EventConfPersistenceService {
             eventConfEvent.setDescription(payload.getEvent().getDescr());
             eventConfEvent.setEnabled(payload.getEnabled());
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
+            eventConfEvent.setContent(JsonUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
             eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(payload.getEvent().getSeverity()));
             eventConfEventDao.saveOrUpdate(eventConfEvent);
