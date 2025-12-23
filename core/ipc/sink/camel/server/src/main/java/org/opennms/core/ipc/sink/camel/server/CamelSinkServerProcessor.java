@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -82,14 +83,15 @@ public class CamelSinkServerProcessor implements Processor {
         Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn(), tracingInfo);
         // Update metrics.
         messageSize.update(messageBytes.length);
-        try (Scope scope = spanBuilder.startActive(true);
+        final Span span = spanBuilder.start();
+        try (Scope scope = getTracer().scopeManager().activate(span);
              Timer.Context context = dispatchTime.time()) {
             // Set tags for this span.
-            scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
-            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            span.setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
+            span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             if (exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER) instanceof String) {
                 String topic = exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER, String.class);
-                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
+                span.setTag(TracerConstants.TAG_TOPIC, topic);
             }
             final Message message = module.unmarshal(messageBytes);
             consumerManager.dispatch(module, message);
@@ -116,5 +118,12 @@ public class CamelSinkServerProcessor implements Processor {
         }
         return spanBuilder;
 
+    }
+
+    public Tracer getTracer() {
+        if (tracerRegistry != null) {
+            return tracerRegistry.getTracer();
+        }
+        return GlobalTracer.get();
     }
 }

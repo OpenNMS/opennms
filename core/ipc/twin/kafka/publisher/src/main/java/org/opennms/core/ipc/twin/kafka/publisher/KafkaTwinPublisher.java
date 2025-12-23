@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@ import java.util.Properties;
 import com.codahale.metrics.MetricRegistry;
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -154,9 +155,10 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
             String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                     tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
-            try (Scope scope = spanBuilder.startActive(true)) {
+            final Span span = spanBuilder.start();
+            try (final Scope scope = getTracer().scopeManager().activate(span)) {
                 final var response = this.getTwin(request);
-                addTracingInfo(scope.span(), response);
+                addTracingInfo(span, response);
                 this.handleSinkUpdate(response);
             }
         } catch (Exception e) {

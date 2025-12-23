@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2021-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2021-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
@@ -131,9 +132,10 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
                 String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
                 Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                         tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
-                try(Scope scope = spanBuilder.startActive(true)) {
+                final Span span = spanBuilder.start();
+                try (final Scope scope = getTracer().scopeManager().activate(span)) {
                     TwinUpdate twinUpdate = getTwin(twinRequest);
-                    addTracingInfo(scope.span(), twinUpdate);
+                    addTracingInfo(span, twinUpdate);
                     TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                     exchange.getOut().setBody(twinResponseProto.toByteArray());
                     callback.done(false);

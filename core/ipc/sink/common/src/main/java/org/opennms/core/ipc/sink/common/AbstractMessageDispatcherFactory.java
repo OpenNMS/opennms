@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -46,7 +46,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.Timer.Context;
 
-import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 /**
@@ -81,8 +81,9 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
      * Invokes dispatch within a timer context.
      */
     private <S extends Message, T extends Message> void timedDispatch(DispatcherState<W, S,T> state, T message) {
-        try (Context ctx = state.getDispatchTimer().time();
-             Scope scope = getTracer().buildSpan(state.getModule().getId()).startActive(true)) {
+        final Span span = getTracer().buildSpan(state.getModule().getId()).start();
+        try (final Context ctx = state.getDispatchTimer().time()) {
+            getTracer().scopeManager().activate(span);
             dispatch(state.getModule(), state.getMetaData(), message);
         }
     }

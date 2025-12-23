@@ -1803,7 +1803,7 @@
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
-    <opentracingVersion>0.32.0</opentracingVersion>
+    <opentracingVersion>0.33.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
