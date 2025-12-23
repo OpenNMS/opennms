@@ -13,12 +13,6 @@ The following implementations are installed by default:
 |===
 | Time Series Database  | Description
 
-| JRobin
-| JRobin is a clone of RRDtool written in Java and is the default time series database when you install {page-component-title}.
-It does not fully cover the latest RRDtool feature set.
-Data is stored on the local file system of the {page-component-title} node.
-Depending on I/O capabilities, it works well for small- to medium-size installations.
-
 | RRDtool
 | RRDtool is actively maintained and the de-facto standard for time series data.
 Data is stored on the local file system of the {page-component-title} node.
@@ -27,6 +21,12 @@ Depending on I/O capabilities it works well for small- to medium-size installati
 | Newts
 | http://opennms.github.io/newts/[Newts] is an OpenNMS database schema for http://cassandra.apache.org[Cassandra].
 The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist at a large scale.
+
+| JRobin
+| JRobin is a clone of RRDtool written in Java and was the default time series database in prior releases of {page-component-title}.
+It does not fully cover the latest RRDtool feature set.
+Data is stored on the local file system of the {page-component-title} node.
+It is deprecated and support for its use will be removed in a future release.
 
 |===
 
