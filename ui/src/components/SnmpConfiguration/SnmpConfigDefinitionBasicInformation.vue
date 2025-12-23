@@ -130,7 +130,7 @@ const loadInitialValues = () => {
     currentDefinition.value = getDefaultSnmpDefinition()
   } else {
     // TODO: ensure definitionId is in range
-    currentDefinition.value = store.config.definitions.find(d => d.id === props.definitionId) ?? getDefaultSnmpDefinition()
+    currentDefinition.value = store.config.definition.find(d => d.id === props.definitionId) ?? getDefaultSnmpDefinition()
   }
 
   if (currentDefinition.value.version === 'v1') {
@@ -141,8 +141,8 @@ const loadInitialValues = () => {
     snmpVersion.value = SnmpVersions[2]
   }
     
-  firstIpAddress.value = currentDefinition.value.ranges?.[0]?.begin ?? ''
-  secondIpAddress.value = currentDefinition.value.ranges?.[0]?.end ?? ''
+  firstIpAddress.value = currentDefinition.value.range?.[0]?.begin ?? ''
+  secondIpAddress.value = currentDefinition.value.range?.[0]?.end ?? ''
 }
 
 const handleSaveDefinition = async () => {

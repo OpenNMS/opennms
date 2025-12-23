@@ -104,7 +104,7 @@ const loadInitialValues = () => {
     currentProfile.value = getDefaultSnmpProfile()
   } else {
     // TODO: ensure profileId is in range
-    currentProfile.value = store.config.profiles.find(p => p.id === props.profileId) ?? getDefaultSnmpProfile()
+    currentProfile.value = store.config.profiles?.profile?.find(p => p.id === props.profileId) ?? getDefaultSnmpProfile()
   }
 
   label.value = currentProfile.value.label ?? ''

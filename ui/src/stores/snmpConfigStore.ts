@@ -20,9 +20,11 @@
 /// License.
 ///
 
-import { SnmpConfig, SnmpConfigStoreState, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { defineStore } from 'pinia'
-import { CreateEditMode } from '@/types'
+import { getSnmpConfig, lookupSnmpConfig } from '@/services/snmpConfigService'
+import { getMonitoringLocations } from '@/services/monitoringLocationService'
+import { CreateEditMode, MonitoringLocation } from '@/types'
 
 export const DEFAULT_SNMP_VERSION = 'v2c'
 export const DEFAULT_SNMP_TIMEOUT = 3000
@@ -60,7 +62,7 @@ export const getDefaultSnmpDefinition = () => {
     readCommunity: 'public',
     writeCommunity: 'private',
     encrypted: false,
-    ranges: [],
+    range: [],
     specifics: [],
     ipMatches: [],
     location: 'Default',
@@ -80,21 +82,25 @@ export const getDefaultSnmpProfile = () => {
 
 export const getEmptySnmpConfig = () => {
   return {
-    definitions: [],
-    profiles: []
+    definition: [],
+    profiles: {
+      profile: []
+    }
   } as SnmpConfig
 }
 
 export const getDefaultSnmpConfig = () => {
   return {
-    definitions: [{ ...getDefaultSnmpDefinition(), id: 0 }],
-    profiles: []
+    definition: [{ ...getDefaultSnmpDefinition(), id: 0 }],
+    profiles: {
+      profile: []
+    }
   } as SnmpConfig
 }
 
 export const getMockSnmpConfiguration = () => {
   return {
-    definitions: [
+    definition: [
       {
         ...getDefaultSnmpDefinition(),
         id: 0
@@ -104,7 +110,7 @@ export const getMockSnmpConfiguration = () => {
         readCommunity: 'public',
         writeCommunity: 'private',
         encrypted: false,
-        ranges: [
+        range: [
           {
             begin: '10.0.0.0',
             end: '10.0.0.99'
@@ -117,37 +123,89 @@ export const getMockSnmpConfiguration = () => {
         profileLabel: ''
       }
     ],
-    profiles: [
-      {
-        id: 0,
-        readCommunity: 'public',
-        writeCommunity: 'private',
-        encrypted: false,
-        label: 'My Profile',
-        filterExpression: 'ip like 10.0.0.*'
-      }
-    ]
+    profiles: {
+      profile: [
+        {
+          id: 0,
+          readCommunity: 'public',
+          writeCommunity: 'private',
+          encrypted: false,
+          label: 'My Profile',
+          filterExpression: 'ip like 10.0.0.*'
+        }
+      ]
+    }
   } as SnmpConfig
 }
 
 /**
  * 
  */
-export const useSnmpConfigStore = defineStore('useSnmpConfigStore', {
-  state: (): SnmpConfigStoreState => ({
-    config: getEmptySnmpConfig(),
-    isLoading: false,
-    activeTab: 0,
-    createEditMode: CreateEditMode.None,
-    definitionId: -1,
-    profileId: -1
-  }),
-  actions: {
-    populateInitialSnmpConfig() {
-      this.config = getMockSnmpConfiguration()
-    },
-    async refresh() {
-      console.log('Refreshing...')
+export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
+  const config = ref<SnmpConfig>({
+    definition: [],
+    profiles: {
+      profile: []
     }
+  })
+  const isLoading = ref(false)
+  const activeTab = ref(0)
+  const createEditMode = ref(CreateEditMode.None)
+  const definitionId = ref(0)
+  const profileId = ref(0)
+  const monitoringLocations = ref<MonitoringLocation[]>([])
+
+  const populateSnmpConfig = async () => {
+    console.log('snmpStore, populateSnmpConfig...')
+
+    const resp = await getSnmpConfig()
+  
+    console.log('| got populateSnmpConfig resp:')
+    console.dir(resp)
+  
+    if (resp) {
+      config.value = resp
+    }
+  }
+    
+  const fetchMonitoringLocations = async () => {
+    console.log('snmpStore, fetchMonitoringLocations...')
+
+    const resp = await getMonitoringLocations()
+
+    console.log('| got fetchMonitoringLocations resp:')
+    console.dir(resp)
+
+    if (resp) {
+      monitoringLocations.value = resp.location
+    }
+  }
+
+  const lookupIpAddress = async (ipAddress: string, location: string): Promise<SnmpAgentConfig | null> => {
+    console.log('snmpStore, lookupIpAddress...')
+
+    const resp = await lookupSnmpConfig(ipAddress, location)
+
+    console.log('| got lookupIpAddress resp:')
+    console.dir(resp)
+
+    if (!resp) {
+      return null
+    }
+
+    return resp
+  }
+
+  return {
+    activeTab,
+    config,
+    isLoading,
+    createEditMode,
+    definitionId,
+    monitoringLocations,
+    profileId,
+    fetchMonitoringLocations,
+    lookupIpAddress,
+    populateSnmpConfig
   }
 })

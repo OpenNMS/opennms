@@ -24,7 +24,7 @@
             primary
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.refresh()"
+            @click="store.populateSnmpConfig()"
           >
             <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
           </FeatherButton>
@@ -151,7 +151,7 @@ const sort = reactive({
 }) as any
 
 const getRangeType = (d: SnmpDefinition) => {
-  if (d.ranges?.length > 0) {
+  if (d.range?.length > 0) {
     return 'Range'
   }
 
@@ -168,10 +168,10 @@ const getRangeType = (d: SnmpDefinition) => {
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
   // IP Range
-  if (d.ranges?.length) {
-    let s = `${d.ranges[0].begin} - ${d.ranges[0].end}`
+  if (d.range?.length) {
+    let s = `${d.range[0].begin} - ${d.range[0].end}`
 
-    if (d.ranges.length > 1) {
+    if (d.range.length > 1) {
       s += '...'
     }
 
@@ -204,16 +204,20 @@ const createIpAddressLabel = (d: SnmpDefinition) => {
 }
 
 const definitions = computed(() => {
-  return store.config.definitions?.map(d => {
-    return {
-      id: d.id ?? -1,
-      label: d.id === 0 ? 'Global' : '--',
-      rangeType: getRangeType(d),
-      ipAddresses: createIpAddressLabel(d),
-      location: d.location,
-      profileLabel: d.profileLabel ?? '--'
-    }
-  })
+  if (store.config.definition) {
+    return store.config.definition?.map(d => {
+      return {
+        id: d.id ?? -1,
+        label: d.id === 0 ? 'Global' : '--',
+        rangeType: getRangeType(d),
+        ipAddresses: createIpAddressLabel(d),
+        location: d.location,
+        profileLabel: d.profileLabel ?? '--'
+      }
+    })
+  }
+
+  return []
 })
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {

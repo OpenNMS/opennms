@@ -23,10 +23,10 @@ export interface SnmpBaseConfiguration {
   version?: string
 
   /** Default write community string */
-  writeCommunity: string
+  writeCommunity?: string
 
   /** Default read community string */
-  readCommunity: string
+  readCommunity?: string
 
   /** Default timeout (in milliseconds) */
   timeout?: number
@@ -38,7 +38,7 @@ export interface SnmpBaseConfiguration {
   port?: number
 
   ttl?: number
-  encrypted: boolean
+  encrypted?: boolean
 
   // The following are SNMPv3 only
   securityName?: string
@@ -65,7 +65,7 @@ export interface IpAddressRange {
  */
 export interface SnmpDefinition extends SnmpBaseConfiguration {
   /** IP address range to which this definition applies. */
-  ranges: IpAddressRange[]
+  range: IpAddressRange[]
 
   /** Specific IP address to which this definition applies. */
   specifics: string[]
@@ -82,19 +82,28 @@ export interface SnmpProfile extends SnmpBaseConfiguration {
   filterExpression: string
 }
 
-export interface SnmpConfig {
-  definitions: SnmpDefinition[]
-  profiles: SnmpProfile[]
+export interface SnmpAgentConfig extends SnmpBaseConfiguration {
+  ipAddress?: string
+  proxyFor?: string
+  profileLabel?: string
+  isDefault?: boolean
 }
 
-export type SnmpConfigStoreState = {
-  config: SnmpConfig
-  isLoading: boolean
-  activeTab: number
-  createEditMode: CreateEditMode
-  definitionId: number
-  profileId: number
+export interface SnmpConfig extends SnmpBaseConfiguration {
+  definition: SnmpDefinition[]
+  profiles: {
+    profile: SnmpProfile[]
+  }
 }
+
+// export type SnmpConfigStoreState = {
+//   config: SnmpConfig
+//   isLoading: boolean
+//   activeTab: number
+//   createEditMode: CreateEditMode
+//   definitionId: number
+//   profileId: number
+// }
 
 export type SnmpDefinitionFormErrors = {
   snmpVersion?: string
