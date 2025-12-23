@@ -196,5 +196,11 @@
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.prometheus-collector</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
   </dependencies>
 </project>
