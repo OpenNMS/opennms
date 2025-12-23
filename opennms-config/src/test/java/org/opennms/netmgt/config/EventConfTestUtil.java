@@ -108,6 +108,7 @@ public final class EventConfTestUtil {
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
+            event.setSeverity(parsed.getSeverity());
             event.setXmlContent(JaxbUtils.marshal(parsed));
             event.setCreatedTime(now);
             event.setLastModified(now);
