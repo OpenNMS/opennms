@@ -118,8 +118,8 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
             return sqlStatements.toArray(new Sql[0]);
 
         } catch (Exception e) {
-            LOG.error("Database error in EventConfGenerator", e);
-            throw new RuntimeException("Database error in EventConfGenerator", e);
+            LOG.error("Database error in EventConfSqlGenerator", e);
+            throw new RuntimeException("Database error in EventConfSqlGenerator", e);
         }
     }
 
