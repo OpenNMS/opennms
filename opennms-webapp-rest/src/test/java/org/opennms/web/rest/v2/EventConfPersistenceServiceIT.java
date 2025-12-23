@@ -904,7 +904,7 @@ public class EventConfPersistenceServiceIT {
         source.setEnabled(true);
         source.setCreatedTime(new Date());
         source.setFileOrder(1);
-        source.setDescription("Copmarison of JSON Event with XML Event");
+        source.setDescription("Comparison of JSON Event with XML Event");
         source.setVendor("opennms");
         source.setUploadedBy("JUnit");
         source.setEventCount(1);
