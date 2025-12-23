@@ -132,10 +132,5 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
             throw new RuntimeException("Failed to convert XML to JSON", e);
         }
     }
-
-    private String escapeSql(String str) {
-        if (str == null) return "";
-        return str.replace("'", "''");
-    }
 }
 
