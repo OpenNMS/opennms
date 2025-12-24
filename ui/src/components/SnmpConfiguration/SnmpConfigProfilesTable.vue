@@ -12,7 +12,7 @@
             primary
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.refresh()"
+            @click="store.populateSnmpConfig"
           >
             <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
           </FeatherButton>
@@ -132,13 +132,17 @@ const createFilterExpressionLabel = (profile: SnmpProfile) => {
 }
 
 const profiles = computed(() => {
-  return store.config.profiles?.map(profile => {
-    return {
-      id: profile.id ?? -1,
-      label: profile.label ?? '--',
-      filterExpression: createFilterExpressionLabel(profile)
-    }
-  })
+  if (store.config.snmpProfiles?.snmpProfiles) {
+    return store.config.snmpProfiles.snmpProfiles.map(profile => {
+      return {
+        id: profile.id ?? -1,
+        label: profile.label ?? '--',
+        filterExpression: createFilterExpressionLabel(profile)
+      }
+    })
+  }
+
+  return []
 })
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {

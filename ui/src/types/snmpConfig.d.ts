@@ -19,14 +19,18 @@ export interface SnmpBaseConfiguration {
    */
   maxRequestSize?: number
 
-  /** If set, forces SNMP data collection to the specified version. */
-  version?: string
+  /**
+   * If set, forces SNMP data collection to the specified version.
+   * May be a numeric version, e.g. 1, 2, 3, or a string version, e.g. 'v1', 'v2c', 'v3'.
+   * If not set, the server will attempt to auto-detect the SNMP version during collection.
+   */
+  version?: string | number
 
   /** Default write community string */
-  writeCommunity: string
+  writeCommunity?: string
 
   /** Default read community string */
-  readCommunity: string
+  readCommunity?: string
 
   /** Default timeout (in milliseconds) */
   timeout?: number
@@ -38,7 +42,7 @@ export interface SnmpBaseConfiguration {
   port?: number
 
   ttl?: number
-  encrypted: boolean
+  encrypted?: boolean
 
   // The following are SNMPv3 only
   securityName?: string
@@ -82,18 +86,23 @@ export interface SnmpProfile extends SnmpBaseConfiguration {
   filterExpression: string
 }
 
-export interface SnmpConfig {
+export interface SnmpConfig extends SnmpBaseConfiguration {
   definitions: SnmpDefinition[]
-  profiles: SnmpProfile[]
+  snmpProfiles: {
+    snmpProfiles: SnmpProfile[]
+  }
 }
 
-export type SnmpConfigStoreState = {
-  config: SnmpConfig
-  isLoading: boolean
-  activeTab: number
-  createEditMode: CreateEditMode
-  definitionId: number
-  profileId: number
+export interface SnmpAgentConfig extends SnmpBaseConfiguration {
+  /** The IP address that this config applies to. */
+  address?: string
+
+  /** The monitoring location that this config applies to. */
+  location?: string
+
+  isDefault?: boolean
+  proxyFor?: string
+  profileLabel?: string
 }
 
 export type SnmpDefinitionFormErrors = {

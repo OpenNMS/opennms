@@ -37,8 +37,12 @@ export const isConvertibleToInteger = (value: any) => {
 /**
  * Returns true if value is non-null and is a primitive string or a String object
  */
-export const isString = (value: any) => {
-  return value !== null && (typeof value === 'string' || value instanceof String)
+export const isString = (value?: any) => {
+  return value !== undefined && value !== null && (typeof value === 'string' || value instanceof String)
+}
+
+export const isNonEmptyString = (value?: any) => {
+  return isString(value) && (value as string)?.length > 0
 }
 
 export const ellipsify = (text: string, count: number) => {

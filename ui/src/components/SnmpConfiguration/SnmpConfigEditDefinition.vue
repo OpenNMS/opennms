@@ -1,11 +1,11 @@
 <template>
   <div
     class="feather-drawer-custom-padding"
-    v-if="store.definitionId >= -1"
+    v-if="store.currentDefinition"
   >
     <SnmpConfigDefinitionBasicInformation
       :isCreate="store.createEditMode === CreateEditMode.Create"
-      :definitionId="store.definitionId"
+      :definition="store.currentDefinition"
     />
   </div>
   <div
@@ -29,7 +29,7 @@ import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { CreateEditMode } from '@/types'
 
 const router = useRouter()
-const route = useRoute()
+// const route = useRoute()
 const store = useSnmpConfigStore()
 
 const goBack = () => {
@@ -37,11 +37,12 @@ const goBack = () => {
 }
 
 onMounted(() => {
-  const id = route.params.id ?? ''
-  const definitionId = id === 'create' ? -1 : Number(id)
+  // const id = route.params.id ?? ''
+  // const definitionId = id === 'create' ? -1 : Number(id)
 
-  store.definitionId = definitionId
-  store.createEditMode = id === 'create' ? CreateEditMode.Create : CreateEditMode.Edit
+  // assumes store.currentDefinition and store.createEditMode were previously set
+  // store.definitionId = definitionId
+  // store.createEditMode = id === 'create' ? CreateEditMode.Create : CreateEditMode.Edit
 })
 </script>
 
