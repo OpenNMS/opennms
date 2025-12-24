@@ -76,7 +76,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     private static final String PASSWORD = "21232F297A57A5A743894A0E4A801FC3";

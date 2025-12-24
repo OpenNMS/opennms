@@ -86,7 +86,7 @@ import static org.mockito.Mockito.when;
 
 })
 
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class EventConfRestServiceIT {
 

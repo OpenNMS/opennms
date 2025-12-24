@@ -69,7 +69,7 @@ import static org.junit.Assert.assertTrue;
         "classpath:/applicationContext-rest-test.xml"
 
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class EventConfPersistenceServiceIT {
 
