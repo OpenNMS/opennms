@@ -428,6 +428,26 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.service</groupId>
+      <artifactId>org.opennms.features.config.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.config</groupId>
+      <artifactId>org.opennms.features.config.test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <!--OpenAPI-->
     <dependency>
       <groupId>org.apache.cxf</groupId>

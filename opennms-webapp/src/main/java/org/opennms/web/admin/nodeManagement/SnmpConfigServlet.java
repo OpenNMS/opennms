@@ -22,8 +22,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
