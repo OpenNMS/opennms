@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <!-- SNMP Data Collection Configuration Database Schema -->
+
+    <!-- 1. Collection Profiles -->
+    <changeSet author="cgorantla" id="36.0.0-snmp-collection-profiles-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_profiles"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_profiles">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="rrd_step" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rrd_rras" type="text"/>
+            <column name="storage_flag" type="varchar(50)" defaultValue="select">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_names" type="text"/>
+            <column name="max_vars_per_pdu" type="integer"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="snmp_collection_profiles_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_profiles"/>
+        </rollback>
+    </changeSet>
+
+    <!-- 2. DataCollection Sources (vendor-specific definitions) -->
+    <changeSet author="cgorantla" id="36.0.0-snmp-collection-sources-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_sources"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_sources">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="vendor" type="varchar(128)"/>
+            <column name="description" type="text"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <column name="uploaded_by" type="varchar(256)"/>
+        </createTable>
+
+        <createSequence sequenceName="snmp_collection_sources_id_seq" startValue="1" incrementBy="1"/>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_sources"/>
+        </rollback>
+    </changeSet>
+
+    <!-- 3. SystemDefs (device matchers) -->
+    <changeSet author="cgorantla" id="36.0.0-snmp-collection-systemdefs-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_systemdefs"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_systemdefs">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="datacollection_group_id" type="integer">
+                <constraints nullable="false"
+                             foreignKeyName="fk_systemdefs_source"
+                             references="snmp_collection_sources(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sysoid" type="varchar(256)"/>
+            <column name="sysoid_mask" type="varchar(256)"/>
+            <column name="ip_addresses" type="text"/>
+            <column name="ip_address_masks" type="text"/>
+            <column name="mib_group_names" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="snmp_collection_systemdefs_id_seq" startValue="1" incrementBy="1"/>
+
+        <addUniqueConstraint tableName="snmp_collection_systemdefs"
+                             columnNames="datacollection_group_id, name"
+                             constraintName="uq_systemdefs_source_name"/>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_systemdefs"/>
+        </rollback>
+    </changeSet>
+
+    <!-- 4. MIB Object Groups  -->
+    <changeSet author="cgorantla" id="36.0.0-snmp-collection-mib-groups-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_mib_groups"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_mib_groups">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="datacollection_group_id" type="integer">
+                <constraints nullable="false"
+                             foreignKeyName="fk_mibgroups_source"
+                             references="snmp_collection_sources(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+                <!-- NO UNIQUE constraint - duplicates allowed across sources -->
+            </column>
+            <column name="if_type" type="varchar(50)"/>
+            <column name="mib_group_names" type="text"/>
+            <column name="mib_objects" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mib_obj_properties" type="text"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="snmp_collection_mib_groups_id_seq" startValue="1" incrementBy="1"/>
+
+        <createIndex tableName="snmp_collection_mib_groups" indexName="idx_mibgroups_name">
+            <column name="name"/>
+        </createIndex>
+
+        <createIndex tableName="snmp_collection_mib_groups" indexName="idx_mibgroups_enabled">
+            <column name="enabled"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_mib_groups"/>
+        </rollback>
+    </changeSet>
+
+    <!-- 5. Resource Types  -->
+    <changeSet author="cgorantla" id="36.0.0-snmp-collection-resource-types-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="snmp_collection_resource_types"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="snmp_collection_resource_types">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="datacollection_group_id" type="integer">
+                <constraints nullable="false"
+                             foreignKeyName="fk_resourcetypes_source"
+                             references="snmp_collection_sources(id)"
+                             deleteCascade="true"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+                <!-- NO UNIQUE constraint - duplicates allowed across sources -->
+            </column>
+            <column name="label" type="varchar(256)"/>
+            <column name="resource_label" type="varchar(512)"/>
+            <column name="persistence_selector_strategy" type="varchar(256)"/>
+            <column name="persistence_selector_params" type="text"/>
+            <column name="storage_strategy" type="varchar(256)"/>
+            <column name="storage_strategy_params" type="text"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="snmp_collection_resource_types_id_seq" startValue="1" incrementBy="1"/>
+
+        <createIndex tableName="snmp_collection_resource_types" indexName="idx_resourcetypes_name">
+            <column name="name"/>
+        </createIndex>
+
+        <createIndex tableName="snmp_collection_resource_types" indexName="idx_resourcetypes_enabled">
+            <column name="enabled"/>
+        </createIndex>
+
+        <rollback>
+            <dropTable tableName="snmp_collection_resource_types"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
