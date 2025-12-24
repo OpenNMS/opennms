@@ -68,7 +68,7 @@ public class EventConfEvent implements Serializable {
     private String xmlContent;
 
     @Column(name = "content", columnDefinition = "jsonb", nullable = false)
-    @ColumnTransformer(write = "coalesce(?::jsonb, '{}'::jsonb)") //if content is null, then write '{}' as default value.
+    @ColumnTransformer(write = "coalesce(?::jsonb, '{}'::jsonb)") //If content is null, then write '{}' as default value.
     private String content;
 
     @Temporal(TemporalType.TIMESTAMP)
