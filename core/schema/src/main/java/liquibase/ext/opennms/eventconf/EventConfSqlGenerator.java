@@ -26,7 +26,6 @@ import liquibase.database.core.PostgresDatabase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.ValidationErrors;
 import liquibase.sql.Sql;
-import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import org.opennms.core.xml.JaxbUtils;
@@ -92,56 +91,46 @@ public class EventConfSqlGenerator extends AbstractSqlGenerator<EventConfSqlStat
             // Generate SQL statements for each event
             List<Sql> sqlStatements = new ArrayList<>();
 
-            for (Map.Entry<Long, String> entry : eventsToUpdate.entrySet()) {
-                Long id = entry.getKey();
-                String xmlContent = entry.getValue();
-
-                try {
-                    // Convert XML to JSON (simplified version - adjust as needed)
-                    String jsonContent = convertXmlToJson(xmlContent);
-
-                    // Create the SQL update statement
-                    String updateSql = String.format(
-                            "UPDATE eventconf_events " +
-                                    "SET content = '%s', " +
-                                    "    modified_by = 'system-upgrade', " +
-                                    "    last_modified = CURRENT_TIMESTAMP " +
-                                    "WHERE id = %d",
-                            escapeSql(jsonContent), id
-                    );
-
-                    sqlStatements.add(new UnparsedSql(updateSql));
-                    LOG.info("Generated update for id={}", id);
-
-                } catch (Exception e) {
-                    LOG.error("Failed to convert XML for id={}", id, e);
-                    // Continue with other records
-                    throw new RuntimeException(String.format("Failed to convert XML for id=%d", id), e);                }
+            String updateSql = "UPDATE eventconf_events " +
+                    "SET content = ?::jsonb, " +
+                    "    modified_by = 'system-upgrade', " +
+                    "    last_modified = CURRENT_TIMESTAMP " +
+                    "WHERE id = ?";
+            try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                for (Map.Entry<Long, String> entry : eventsToUpdate.entrySet()) {
+                    Long id = entry.getKey();
+                    String xmlContent = entry.getValue();
+                    try {
+                        // Convert XML to JSON (simplified version - adjust as needed)
+                        String jsonContent = convertXmlToJson(xmlContent);
+                        // Execute the SQL update using a prepared statement
+                        updatePs.setString(1, jsonContent);
+                        updatePs.setLong(2, id);
+                        updatePs.executeUpdate();
+                        LOG.info("Updated eventconf_events for id={}", id);
+                    } catch (Exception e) {
+                        LOG.error("Failed to convert XML for id={}", id, e);
+                        throw new RuntimeException(String.format("Failed to convert XML for id=%d", id), e);
+                    }
+                }
             }
 
             return sqlStatements.toArray(new Sql[0]);
 
         } catch (Exception e) {
-            LOG.error("Database error in EventConfGenerator", e);
-            throw new RuntimeException("Database error in EventConfGenerator", e);
+            LOG.error("Database error in EventConfSqlGenerator", e);
+            throw new RuntimeException("Database error in EventConfSqlGenerator", e);
         }
     }
 
     private String convertXmlToJson(String xmlContent) {
         try {
             Event xmlEvent = JaxbUtils.unmarshal(Event.class, xmlContent);
-            // Marshal Event object to JSON
-            String jsonContent = JsonUtils.marshal(xmlEvent);
-            return jsonContent;
+            return JsonUtils.marshal(xmlEvent);
         } catch (Exception e) {
             LOG.error("Failed to convert XML to JSON", e);
             throw new RuntimeException("Failed to convert XML to JSON", e);
         }
-    }
-
-    private String escapeSql(String str) {
-        if (str == null) return "";
-        return str.replace("'", "''");
     }
 }
 
