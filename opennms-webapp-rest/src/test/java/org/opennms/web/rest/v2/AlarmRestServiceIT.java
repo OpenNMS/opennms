@@ -89,7 +89,10 @@ import com.google.common.collect.ImmutableMap;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment(systemProperties="org.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger")
+@JUnitConfigurationEnvironment(systemProperties={
+        "org.apache.cxf.Logger=org.apache.cxf.common.logging.Slf4jLogger",
+        "org.opennms.timeseries.strategy=integration"
+})
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {

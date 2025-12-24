@@ -70,7 +70,7 @@ import static org.junit.Assert.*;
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class InfoRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(InfoRestServiceIT.class);
