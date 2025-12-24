@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.integration.api.v1.config.events.LogMsgDestType;
@@ -141,7 +142,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
                     List<EventConfEvent> candidatesWithSameUei = dbEventsByUei.get(currentEvent.getUei());
                     if (candidatesWithSameUei != null) {
                         for (EventConfEvent dbEvent : candidatesWithSameUei) {
-                            Event dbEventParsed = JaxbUtils.unmarshal(Event.class, dbEvent.getXmlContent());
+                            Event dbEventParsed = JsonUtils.unmarshal(Event.class, dbEvent.getContent());
                             if (EventConfServiceHelper.eventsMatch(currentEvent, dbEventParsed)) {
                                 matchedDbEvent = dbEvent;
                                 break;
@@ -151,11 +152,12 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
 
                     if (matchedDbEvent != null) {
                         // Found matching event - update it
-                        String newXmlContent = JaxbUtils.marshal(currentEvent);
-                        if (!newXmlContent.equals(matchedDbEvent.getXmlContent())) {
+                        String newJsonContent = JsonUtils.marshal(currentEvent);
+                        if (!newJsonContent.equals(matchedDbEvent.getContent())) {
                             matchedDbEvent.setEventLabel(currentEvent.getEventLabel());
                             matchedDbEvent.setDescription(currentEvent.getDescr());
-                            matchedDbEvent.setXmlContent(newXmlContent);
+                            matchedDbEvent.setXmlContent(JaxbUtils.marshal(currentEvent));
+                            matchedDbEvent.setContent(newJsonContent);
                             matchedDbEvent.setLastModified(now);
                             matchedDbEvent.setModifiedBy(USERNAME);
                             eventsToUpdate.add(matchedDbEvent);

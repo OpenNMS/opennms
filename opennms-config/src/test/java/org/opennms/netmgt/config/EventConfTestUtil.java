@@ -23,6 +23,7 @@ package org.opennms.netmgt.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
@@ -108,7 +109,9 @@ public final class EventConfTestUtil {
             event.setEventLabel(parsed.getEventLabel());
             event.setDescription(parsed.getDescr());
             event.setEnabled(true);
+            event.setSeverity(parsed.getSeverity());
             event.setXmlContent(JaxbUtils.marshal(parsed));
+            event.setContent(JsonUtils.marshal(parsed));
             event.setCreatedTime(now);
             event.setLastModified(now);
             event.setModifiedBy(username);

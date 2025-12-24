@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
@@ -399,14 +400,14 @@ public class EventConfRestService implements EventConfRestApi {
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))) {
                 Events events = new Events();
                 for (final var  eventConfEvent : eventConfEvents) {
-                    if (eventConfEvent == null || eventConfEvent.getXmlContent() == null) {
+                    if (eventConfEvent == null || eventConfEvent.getContent() == null) {
                         continue;
                     }
                     try {
-                        Event event = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
+                        Event event = JsonUtils.unmarshal(Event.class, eventConfEvent.getContent());
                         events.addEvent(event);
                     } catch (Exception e) {
-                        LOG.error("Failed to parse event XML for source {}: {}", sourceId, e.getMessage());
+                        LOG.error("Failed to parse event JSON for source {}: {}", sourceId, e.getMessage());
                     }
                 }
                 JaxbUtils.marshal(events, writer);

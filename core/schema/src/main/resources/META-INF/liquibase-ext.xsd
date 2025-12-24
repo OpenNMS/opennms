@@ -17,6 +17,13 @@
 			<attribute name="value" type="int" use="optional" />
 		</complexType>
 	</element>
+
+    <element name="eventConfEventChange">
+        <complexType>
+            <attribute name="tableName" type="string" />
+            <attribute name="value" type="string" use="optional" />
+        </complexType>
+    </element>
 	
 	<element name="table">
 		<complexType>
