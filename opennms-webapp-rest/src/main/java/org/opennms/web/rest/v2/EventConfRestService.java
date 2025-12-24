@@ -44,6 +44,7 @@ import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
@@ -454,11 +455,9 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     public Response addEventConfSource(final AddEventConfSourceRequest request,
-                                       SecurityContext securityContext) throws Exception {
-
+                                       SecurityContext securityContext) {
         final Date now = new Date();
 
-        // Validate request
         try {
             validateAddSourceRequest(request);
         } catch (IllegalArgumentException ex) {
@@ -511,13 +510,25 @@ public class EventConfRestService implements EventConfRestApi {
                     ))
                     .build();
 
-        } catch (Exception ex) {
+        }   catch (DataIntegrityViolationException ex) {
+
+            LOG.warn("Data integrity violation while creating EventConfSource name='{}'. Cause={}",
+                    request.getName(),
+                    ex.getMostSpecificCause().getMessage(),
+                    ex);
+
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("EventConfSource could not be created due to a data integrity violation. "
+                            + "It may already exist or violate database constraints.")
+                    .build();
+        }
+        catch (Exception ex) {
+
             LOG.error("Failed to create EventConfSource name='{}'. Error={}",
                     request.getName(), ex.getMessage(), ex);
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred while creating EventConfSource: "
-                            + ex.getMessage())
+                    .entity("Unexpected error occurred while creating EventConfSource")
                     .build();
         }
     }
