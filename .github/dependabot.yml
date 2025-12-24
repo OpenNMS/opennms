@@ -88,4 +88,4 @@ updates:
       prefix: "build"
       include: "scope"
     schedule:
-      interval: "weekly"
+      interval: "daily"
