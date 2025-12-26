@@ -24,6 +24,8 @@ package org.opennms.features.kafka.producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -107,7 +109,6 @@ public class KafkaProducerManager {
             var config = configAdmin.getConfiguration(pid, null);
             if (config != null && config.getProperties() != null && !config.getProperties().isEmpty()) {
                 Dictionary<String, Object> properties = config.getProperties();
-                LOG.error(" its using the PID {} and bootstrap.servers {} ", pid, properties.get("bootstrap.servers"));
                 return properties.get("bootstrap.servers") != null;
             }
             return false;
@@ -129,10 +130,7 @@ public class KafkaProducerManager {
             return GLOBAL_KAFKA_CLIENT_PID;
         }
 
-        if (hasValidConfiguration(GLOBAL_KAFKA_CLIENT_PID) && !hasValidConfiguration(topicSpecificPid)) {
-            LOG.warn("No topic-specific configuration for {} and global configuration is missing. " +
-                    "Messages of type {} will not be forwarded.", messageType, messageType);
-        }
+        LOG.debug("No configuration available for message type: {}", messageType);
 
         return null;
     }
@@ -156,7 +154,6 @@ public class KafkaProducerManager {
                 return GLOBAL_KAFKA_CLIENT_PID;
         }
     }
-
 
 
     private Producer<byte[], byte[]> createProducerForMessageType(MessageType messageType) {
@@ -208,8 +205,9 @@ public class KafkaProducerManager {
     private Producer<byte[], byte[]> initializeProducerForPid(String pid) {
         try {
             final Properties producerConfig = getConfigurationForPid(pid);
-            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
-            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
+
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
+            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
 
             LOG.info("Creating Kafka producer for PID: {} with bootstrap.servers: {}",
@@ -233,7 +231,7 @@ public class KafkaProducerManager {
     public Properties getConfigurationForPid(String pid) {
         try {
             final Properties config = new Properties();
-            final Dictionary<String, Object> properties = configAdmin.getConfiguration(pid,null).getProperties();
+            final Dictionary<String, Object> properties = configAdmin.getConfiguration(pid, null).getProperties();
 
             if (properties != null) {
                 final Enumeration<String> keys = properties.keys();
@@ -251,11 +249,14 @@ public class KafkaProducerManager {
             return new Properties();
         }
     }
+
     public boolean hasConfigurationForMessageType(MessageType messageType) {
         String effectivePid = getEffectivePidForMessageType(messageType);
         return effectivePid != null && hasValidConfiguration(effectivePid);
     }
+
     public ConfigurationAdmin getConfigAdmin() {
         return configAdmin;
     }
 }
+

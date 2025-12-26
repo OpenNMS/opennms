@@ -70,23 +70,18 @@ public class KafkaPersisterFactory implements PersisterFactory {
     }
 
     public void init() throws IOException {
-        // Create the Kafka producer
         String metricsPid = KafkaProducerManager.METRICS_KAFKA_CLIENT_PID;
         String globalPid = OpennmsKafkaProducer.KAFKA_CLIENT_PID;
 
         final Properties producerConfig = new Properties();
         Dictionary<String, Object> properties = null;
-            properties = configAdmin.getConfiguration(metricsPid).getProperties();
-            if (hasValidConfiguration(properties)) {
-                LOG.info("Using metrics-specific Kafka configuration");
-            }
 
-
-        if (properties == null || properties.isEmpty() || properties.size() == 0) {
-            LOG.debug("Using global Kafka configuration for metrics");
-            properties = configAdmin.getConfiguration(globalPid).getProperties();
+        properties = configAdmin.getConfiguration(metricsPid).getProperties();
+        if (hasValidConfiguration(properties)) {
+            LOG.info("Using metrics-specific Kafka configuration");
         } else {
-            LOG.debug("Using metrics-specific Kafka configuration");
+            LOG.debug("Metrics-specific config not valid, falling back to global");
+            properties = configAdmin.getConfiguration(globalPid).getProperties();
         }
 
         // Load properties
