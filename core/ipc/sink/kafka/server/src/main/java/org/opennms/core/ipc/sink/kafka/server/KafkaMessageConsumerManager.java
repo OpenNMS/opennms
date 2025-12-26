@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -40,6 +41,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -111,6 +114,9 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Autowired
     private Identity identity;
 
+    private final Set<String> validatedSinkTopics = ConcurrentHashMap.newKeySet();
+
+
 
     public KafkaMessageConsumerManager() {
         this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX, KAFKA_COMMON_CONFIG_SYS_PROP_PREFIX));
@@ -153,6 +159,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         public void run() {
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             try {
+                validateSinkTopicIfNeeded(topic);
                 consumer.subscribe(Arrays.asList(topic));
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(CONSUMER_POLL_DURATION);
@@ -342,6 +349,33 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         return metricRegistry;
     }
 
+    private void validateSinkTopicIfNeeded(String topic) {
+        if (!validatedSinkTopics.add(topic)) return;
+        try {
+            final Properties adminProps = new Properties();
+            adminProps.putAll(kafkaConfig);
+            adminProps.putIfAbsent("request.timeout.ms", "5000");
+
+            try (AdminClient admin = Utils.runWithGivenClassLoader(() -> AdminClient.create(adminProps), AdminClient.class.getClassLoader())) {
+                final ListTopicsResult listTopicsResult = admin.listTopics();
+                final Set<String> names = listTopicsResult.names().get();
+                if (!names.contains(topic)) {
+                    LOG.error("Sink topic '{}' does not exist. If Kafka auto.create.topics.enable is disabled, you must create it manually before Core/Sentinel can consume it.", topic);
+                    LOG.error("╔════════════════════════════════════════════════════════════════════════════╗");
+                    LOG.error("║  KAFKA TOPIC VALIDATION                                                    ║");
+                    LOG.error("╠════════════════════════════════════════════════════════════════════════════╣");
+                    LOG.error("║                                                                            ║");
+                    LOG.error("║ Sink topic '{}' does not exist. , ", topic);
+                    LOG.error("║    • {}", String.format("%-68s", topic) + "║");
+                    LOG.error("║                                                                            ║");
+                    LOG.error("╚════════════════════════════════════════════════════════════════════════════╝");
+
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to validate existence of Sink topic '{}' before subscribing (will proceed). Reason: {}", topic, e.getMessage());
+        }
+    }
     public void setMetricRegistry(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
     }
