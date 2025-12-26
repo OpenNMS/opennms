@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -61,10 +62,7 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
-import org.opennms.core.ipc.common.kafka.KafkaRpcConstants;
-import org.opennms.core.ipc.common.kafka.KafkaTopicProvider;
-import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.core.ipc.common.kafka.*;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProto;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
@@ -137,6 +135,8 @@ public class KafkaRpcServerManager {
     private Bulkhead bulkhead;
     private AtomicInteger activeThreads = new AtomicInteger(0);
     private AtomicInteger extraThreadsBeyondThreshold = new AtomicInteger(0);
+    private KafkaTopicValidator topicValidator;
+    private final Set<String> validatedTopics = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public KafkaRpcServerManager(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.kafkaConfigProvider = configProvider;
@@ -177,8 +177,25 @@ public class KafkaRpcServerManager {
                 .maxWaitDuration(java.time.Duration.ofMillis(maxWaitDuration))
                 .build();
         bulkhead = Bulkhead.of("ipc-rpc-kafka", bulkheadConfig);
+        topicValidator = new KafkaTopicValidator(kafkaConfig);
+        validateGlobalRpcTopics();
     }
 
+    private void validateGlobalRpcTopics() {
+        try {
+            String responseTopic = kafkaRpcTopicProvider.getResponseTopic("ANY_MODULE");
+            Set<String> topics = Collections.singleton(responseTopic);
+
+            KafkaTopicValidator.ValidationResult result = topicValidator.validateTopics(topics);
+            if (!result.isValid()) {
+                topicValidator.logValidationResult(result);
+            } else {
+                validatedTopics.add(responseTopic);
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to validate global RPC topics during init", e);
+        }
+    }
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void bind(RpcModule module) throws Exception {
         if (module != null) {

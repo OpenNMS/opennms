@@ -29,10 +29,15 @@ import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_PRODUCER_DOMAIN;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -89,6 +94,17 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private int maxBufferSize;
 
+    private final Set<String> validatedSinkTopics = ConcurrentHashMap.newKeySet();
+    private final Set<String> validatedAtInit = ConcurrentHashMap.newKeySet();
+
+    private static final Collection<String> PREDEFINED_SINK_MODULE_IDS = Arrays.asList(
+            "Telemetry-IPFIX",
+            "Telemetry-Netflow5",
+            "Telemetry-Netflow9",
+            "Telemetry-NetflowSFlow",
+            "Trap",
+            "Heartbeat"
+    );
     @Override
     public <S extends Message, T extends Message> String getModuleMetadata(final SinkModule<S, T> module) {
         final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX, module.getId());
@@ -99,6 +115,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, String topic, T message) {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.trace("dispatch({}): sending message {}", topic, message);
+            validateSinkTopicIfNeeded(topic);
             byte[] sinkMessageContent = module.marshal(message);
             String messageId = UUID.randomUUID().toString();
             final String messageKey = module.getRoutingKey(message).orElse(messageId);
@@ -303,5 +320,39 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public void setMetrics(MetricRegistry metrics) {
         this.metrics = metrics;
+    }
+
+    private void validateSinkTopicIfNeeded(String topic) {
+        if (!validatedSinkTopics.add(topic)) return;
+        try {
+            final Properties adminProps = new Properties();
+            adminProps.putAll(kafkaConfig);
+            adminProps.putIfAbsent("request.timeout.ms", "5000");
+            try (AdminClient admin = Utils.runWithGivenClassLoader(() -> AdminClient.create(adminProps), AdminClient.class.getClassLoader())) {
+                final ListTopicsResult listTopicsResult = admin.listTopics();
+                final Set<String> names = listTopicsResult.names().get();
+                if (!names.contains(topic)) {
+                    LOG.error("╔════════════════════════════════════════════════════════════════════════════╗");
+                    LOG.error("║  KAFKA TOPIC VALIDATION                                                    ║");
+                    LOG.error("╠════════════════════════════════════════════════════════════════════════════╣");
+                    LOG.error("║                                                                            ║");
+                    LOG.error("║ Sink topic '{}' does not exist. , ", topic);
+                    LOG.error("║    • {}", String.format("%-68s", topic) + "║");
+                    LOG.error("║                                                                            ║");
+                    LOG.error("╚════════════════════════════════════════════════════════════════════════════╝");
+                }
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to validate existence of Sink topic '{}' (will proceed). Reason: {}", topic, e.getMessage());
+        }
+    }
+
+    private void validateKnownSinkTopicsAtInit() {
+        for (String id : PREDEFINED_SINK_MODULE_IDS) {
+            final String topic = new JmsQueueNameFactory(KafkaSinkConstants.KAFKA_TOPIC_PREFIX, id).getName();
+            if (validatedAtInit.add(topic)) {
+                validateSinkTopicIfNeeded(topic);
+            }
+        }
     }
 }
