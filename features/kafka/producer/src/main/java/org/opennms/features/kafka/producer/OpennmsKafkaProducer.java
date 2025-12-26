@@ -24,12 +24,9 @@ package org.opennms.features.kafka.producer;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
@@ -42,12 +39,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -68,7 +63,6 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyVertex;
 import org.opennms.netmgt.topologies.service.api.TopologyVisitor;
 import org.opennms.netmgt.xml.event.Event;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
@@ -94,7 +88,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private final ProtobufMapper protobufMapper;
     private final NodeCache nodeCache;
-    private final ConfigurationAdmin configAdmin;
+    private final KafkaProducerManager kafkaProducerManager;
     private final EventSubscriptionService eventSubscriptionService;
     private KafkaAlarmDataSync dataSync;
 
@@ -120,7 +114,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private final CountDownLatch forwardedTopologyVertexMessage = new CountDownLatch(1);
     private final CountDownLatch forwardedTopologyEdgeMessage = new CountDownLatch(1);
 
-    private KafkaProducer<byte[], byte[]> producer;
 
     private final Map<String, OpennmsModelProtos.Alarm> outstandingAlarms = new ConcurrentHashMap<>();
     private final AlarmEqualityChecker alarmEqualityChecker =
@@ -137,33 +130,19 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String encoding = "UTF8";
     private int numEventListenerThreads = 4;
 
-    public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
-                                ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
+    public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache, KafkaProducerManager kafkaProducerManager,
+                                 EventSubscriptionService eventSubscriptionService,
                                 OnmsTopologyDao topologyDao, int nodeAsyncUpdateThreads) {
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
         this.nodeCache = Objects.requireNonNull(nodeCache);
-        this.configAdmin = Objects.requireNonNull(configAdmin);
+        this.kafkaProducerManager = Objects.requireNonNull(kafkaProducerManager);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.topologyDao = Objects.requireNonNull(topologyDao);
         this.nodeUpdateExecutor = Executors.newFixedThreadPool(nodeAsyncUpdateThreads, nodeUpdateThreadFactory);
     }
 
     public void init() throws IOException {
-        // Create the Kafka producer
-        final Properties producerConfig = new Properties();
-        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
-        if (properties != null) {
-            final Enumeration<String> keys = properties.keys();
-            while (keys.hasMoreElements()) {
-                final String key = keys.nextElement();
-                producerConfig.put(key, properties.get(key));
-            }
-        }
-        // Overwrite the serializers, since we rely on these
-        producerConfig.put("key.serializer", ByteArraySerializer.class.getCanonicalName());
-        producerConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-        // Class-loader hack for accessing the kafka classes when initializing producer.
-        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
+
         // Start processing records that have been queued for sending
         if (kafkaSendQueueCapacity <= 0) {
             kafkaSendQueueCapacity = 1000;
@@ -184,10 +163,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         kafkaSendQueueExecutor.shutdownNow();
         nodeUpdateExecutor.shutdownNow();
 
-        if (producer != null) {
-            producer.close();
-            producer = null;
-        }
+      kafkaProducerManager.destroy();
 
         if (forwardEvents) {
             eventSubscriptionService.removeEventListener(this);
@@ -218,7 +194,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void forwardTopologyEdgeMessage(byte[] refid, byte[] message) {
-        sendRecord(() -> {
+        sendRecord(KafkaProducerManager.MessageType.TOPOLOGY_EDGE,() -> {
             return new ProducerRecord<>(topologyEdgeTopic, refid, message);
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
@@ -253,7 +229,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
 
         // Forward!
-        sendRecord(() -> {
+        sendRecord(KafkaProducerManager.MessageType.EVENT,() -> {
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
             LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
             return new ProducerRecord<>(eventTopic, mappedEvent.toByteArray());
@@ -304,7 +280,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             outstandingAlarms.remove(reductionKey);
 
             // The alarm was deleted, push a null record to the reduction key
-            sendRecord(() -> {
+            sendRecord(KafkaProducerManager.MessageType.ALARM,() -> {
                 LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
                 return new ProducerRecord<>(alarmTopic, reductionKey.getBytes(encoding), null);
             }, recordMetadata -> {
@@ -330,7 +306,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
 
         // Forward!
-        sendRecord(() -> {
+        sendRecord(KafkaProducerManager.MessageType.ALARM,() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
             return new ProducerRecord<>(alarmTopic, reductionKey.getBytes(encoding), mappedAlarm.toByteArray());
@@ -362,14 +338,14 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
             if (node == null) {
                 // The node was deleted, push a null record
-                sendRecord(() -> {
+                sendRecord(KafkaProducerManager.MessageType.NODE,() -> {
                     LOG.debug("Deleting node with criteria: {}", nodeCriteria);
                     return new ProducerRecord<>(nodeTopic, nodeCriteria.getBytes(encoding), null);
                 });
                 return;
             }
 
-            sendRecord(() -> {
+            sendRecord(KafkaProducerManager.MessageType.NODE,() -> {
                 final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
                 LOG.debug("Sending node with criteria: {}", nodeCriteria);
                 return new ProducerRecord<>(nodeTopic, nodeCriteria.getBytes(encoding), mappedNode.toByteArray());
@@ -381,12 +357,17 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         });
     }
 
-    private void sendRecord(Callable<ProducerRecord<byte[], byte[]>> callable) {
-        sendRecord(callable, null);
+    private void sendRecord(KafkaProducerManager.MessageType messageType, Callable<ProducerRecord<byte[], byte[]>> callable) {
+        sendRecord(messageType,callable, null);
     }
 
-    private void sendRecord(Callable<ProducerRecord<byte[], byte[]>> callable, Consumer<RecordMetadata> callback) {
-        if (producer == null) {
+    private void sendRecord(KafkaProducerManager.MessageType messageType, Callable<ProducerRecord<byte[], byte[]>> callable, Consumer<RecordMetadata> callback) {
+        if (kafkaProducerManager == null) {
+            return;
+        }
+
+        if (!kafkaProducerManager.hasConfigurationForMessageType(messageType)) {
+            LOG.debug("Skipping message of type {} as no Kafka configuration is available", messageType);
             return;
         }
 
@@ -398,12 +379,20 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             throw new RuntimeException(e);
         }
 
+        // Get the appropriate producer for the  message type
+        Producer<byte[], byte[]> topicProducer = kafkaProducerManager.getProducerForMessageType(messageType);
+
+        if (topicProducer == null) {
+            LOG.debug("No producer available for message type: {}", messageType);
+            return;
+        }
+
         // Rather than attempt to send, we instead queue the record to avoid blocking since KafkaProducer's send()
         // method can block if Kafka is not available when metadata is attempted to be retrieved
 
         // Any offer that fails due to capacity overflow will simply be dropped and will have to wait until the next
         // sync to be processed so this is just a best effort attempt
-        if (!kafkaSendDeque.offer(new KafkaRecord(record, callback))) {
+        if (!kafkaSendDeque.offer(new KafkaRecord(record, callback, topicProducer))) {
             RATE_LIMITED_LOGGER.warn("Dropped a Kafka record due to queue capacity being full.");
         }
     }
@@ -415,7 +404,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                 KafkaRecord kafkaRecord = kafkaSendDeque.take();
                 ProducerRecord<byte[], byte[]> producerRecord = kafkaRecord.getProducerRecord();
                 Consumer<RecordMetadata> consumer = kafkaRecord.getConsumer();
-
+                Producer<byte[], byte[]> producer = kafkaRecord.getProducer();
                 try {
                     producer.send(producerRecord, (recordMetadata, e) -> {
                         if (e != null) {
@@ -564,7 +553,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
 
         // NOTE: This will currently block while waiting for Kafka metadata if Kafka is not available.
-        alarmFeedback.forEach(feedback -> sendRecord(() -> {
+        alarmFeedback.forEach(feedback -> sendRecord(KafkaProducerManager.MessageType.ALARM_FEEDBACK,() -> {
             LOG.debug("Sending alarm feedback with key: {}", feedback.getAlarmKey());
 
             return new ProducerRecord<>(alarmFeedbackTopic, feedback.getAlarmKey().getBytes(encoding),
@@ -621,10 +610,14 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private static final class KafkaRecord {
         private final ProducerRecord<byte[], byte[]> producerRecord;
         private final Consumer<RecordMetadata> consumer;
+        private final Producer<byte[], byte[]> producer;
 
-        KafkaRecord(ProducerRecord<byte[], byte[]> producerRecord, Consumer<RecordMetadata> consumer) {
+        KafkaRecord(ProducerRecord<byte[], byte[]> producerRecord,
+                    Consumer<RecordMetadata> consumer,
+                    Producer<byte[], byte[]> producer) {
             this.producerRecord = producerRecord;
             this.consumer = consumer;
+            this.producer = producer;
         }
 
         ProducerRecord<byte[], byte[]> getProducerRecord() {
@@ -633,6 +626,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         Consumer<RecordMetadata> getConsumer() {
             return consumer;
+        }
+
+        Producer<byte[], byte[]> getProducer() {
+            return producer;
         }
     }
 

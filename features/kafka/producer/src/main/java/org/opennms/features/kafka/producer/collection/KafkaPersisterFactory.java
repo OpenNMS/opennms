@@ -22,10 +22,13 @@
 package org.opennms.features.kafka.producer.collection;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.Utils;
+import org.opennms.features.kafka.producer.KafkaProducerManager;
+import org.opennms.features.kafka.producer.NoOpProducer;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -45,7 +48,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterFactory.class);
     private CollectionSetMapper collectionSetMapper;
 
-    private KafkaProducer<String, byte[]> producer;
+    private Producer<String, byte[]> producer;
     private ConfigurationAdmin configAdmin;
     private String topicName;
     private boolean disableMetricsSplitting = false;
@@ -67,23 +70,46 @@ public class KafkaPersisterFactory implements PersisterFactory {
     }
 
     public void init() throws IOException {
-        // Create the Kafka producer
+        String metricsPid = KafkaProducerManager.METRICS_KAFKA_CLIENT_PID;
+        String globalPid = OpennmsKafkaProducer.KAFKA_CLIENT_PID;
+
         final Properties producerConfig = new Properties();
-        final Dictionary<String, Object> properties = configAdmin
-                .getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
-        if (properties != null) {
+        Dictionary<String, Object> properties = null;
+
+        properties = configAdmin.getConfiguration(metricsPid).getProperties();
+        if (hasValidConfiguration(properties)) {
+            LOG.info("Using metrics-specific Kafka configuration");
+        } else {
+            LOG.debug("Metrics-specific config not valid, falling back to global");
+            properties = configAdmin.getConfiguration(globalPid).getProperties();
+        }
+
+        // Load properties
+        if (hasValidConfiguration(properties)) {
             final Enumeration<String> keys = properties.keys();
             while (keys.hasMoreElements()) {
                 final String key = keys.nextElement();
                 producerConfig.put(key, properties.get(key));
             }
+
+            // Overwrite the serializers
+            producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
+            producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
+            // Class-loader hack for accessing the kafka classes when initializing producer.
+            producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
+            LOG.info(" kafka producer initialized with {} ", producerConfig);
+        } else {
+            producer = new NoOpProducer<String, byte[]>();
+            LOG.warn("No Kafka configuration found for metrics. Using NoOpProducer.");
         }
-        // Overwrite the serializers
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
-        // Class-loader hack for accessing the kafka classes when initializing producer.
-        producer = Utils.runWithGivenClassLoader(() -> new KafkaProducer<>(producerConfig), KafkaProducer.class.getClassLoader());
-        LOG.info(" kafka producer initialized with {} ", producerConfig);
+
+
+    }
+
+    private boolean hasValidConfiguration(Dictionary<String, Object> properties) {
+        return properties != null &&
+                !properties.isEmpty() &&
+                properties.get("bootstrap.servers") != null;
     }
 
     public void destroy() {
