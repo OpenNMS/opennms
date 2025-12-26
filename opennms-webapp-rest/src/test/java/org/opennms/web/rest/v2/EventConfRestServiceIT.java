@@ -43,6 +43,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -843,6 +844,57 @@ public class EventConfRestServiceIT {
         Response respNotFound = eventConfRestApi.getEventsByVendor("unknownVendor", securityContext);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respNotFound.getStatus());
         assertTrue(respNotFound.getEntity().toString().contains("No events found for vendor"));
+    }
+
+    @Test
+    @Transactional
+    public void testAddEventConfSource_ShouldReturnExpectedResponses() throws Exception {
+        EventConfSource source = new EventConfSource();
+        source.setName("addEventConfSource");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setFileOrder(1);
+        source.setDescription("Test addEventConfSource");
+        source.setVendor("Cisco");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        source.setLastModified(new Date());
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        // Success scenario
+        final var  eventConfSourceRequest =
+                new AddEventConfSourceRequest("addEventConfSourceNew","Testing addEventConfSource","test");
+
+        Response resp = eventConfRestApi.addEventConfSource(eventConfSourceRequest,securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+
+        // Test when eventConfSource name is empty
+        final var  eventConfSourceBadRequest =
+                new AddEventConfSourceRequest("","Test Source Description","test");
+
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequest,securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Vendor length > 128
+        final var eventConfSourceBadRequestVendorLength =
+                new AddEventConfSourceRequest(
+                        "testaa",
+                        "Test Source Description",
+                        "v".repeat(129));
+
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequestVendorLength, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(
+                resp.getEntity().toString()
+                        .contains("Vendor length must not exceed 128 characters")
+        );
+
+        // Test when eventConfSource already exists with the same name.
+        final var  eventConfSourceNameExistsRequest =
+                new AddEventConfSourceRequest("addEventConfSource","Duplicate source test description","test");
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceNameExistsRequest,securityContext);
+        assertEquals(Response.Status.CONFLICT.getStatusCode(), resp.getStatus());
     }
 
 }

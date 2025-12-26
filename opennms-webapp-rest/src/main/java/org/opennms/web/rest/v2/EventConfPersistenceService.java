@@ -139,6 +139,11 @@ public class EventConfPersistenceService {
         }
     }
 
+    @Transactional
+    public Long createEventConfSource(final EventConfSource eventConfSource) {
+        return eventConfSourceDao.save(eventConfSource);
+    }
+
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = eventConfSourceDao.findByName(eventConfSourceMetadataDto.getFilename());
         if (source == null) {
