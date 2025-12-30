@@ -43,9 +43,24 @@ Sink topics are used for one-way message streaming from Minion to Core (e.g., ev
 
 Format: `{instanceId}.Sink.{moduleId}`
 
-=== Core Sink Topics
+=== Required Sink Topic
 
-.Core Sink Topics
+The Heartbeat topic must always exist:
+
+.Required Sink Topic
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Heartbeat
+| Minion heartbeat messages (required for minion health monitoring)
+|===
+
+=== Optional Sink Topics
+
+These topics are only needed when the corresponding feature is enabled:
+
+.Optional Core Sink Topics
 [cols="1,2"]
 |===
 | Module ID | Description
@@ -53,11 +68,11 @@ Format: `{instanceId}.Sink.{moduleId}`
 | Events
 | Event forwarding from Minion
 
-| Heartbeat
-| Minion heartbeat messages
-
 | Syslog
 | Syslog messages
+
+| Trap
+| SNMP trap messages
 
 | DeviceConfig
 | Device configuration backup
@@ -89,6 +104,9 @@ Telemetry and flow topics use the module ID format `Telemetry-{queueName}`. The 
 
 | Telemetry-NXOS
 | Cisco NX-OS telemetry data
+
+| Telemetry-BMP
+| BGP Monitoring Protocol data
 
 | Telemetry-OpenConfig
 | OpenConfig telemetry data
@@ -133,39 +151,125 @@ Per-location response topic: `{instanceId}.twin.response.{location}`
 ----
 OpenNMS.twin.request
 OpenNMS.twin.response
-OpenNMS.twin.response.Default
+OpenNMS.twin.response.MINION
 ----
 
-== Topic Creation Commands
+== Verifying Topics
 
-Use the Kafka CLI to create topics before starting {page-component-title}:
+Use the `kafka-ipc-topics` command from the Karaf shell to verify which IPC topics exist:
 
-[source, console]
+[source, karaf]
 ----
-# RPC Topics
-kafka-topics.sh --create --topic OpenNMS.Default.rpc-request --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.rpc-response --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-
-# Core Sink Topics
-kafka-topics.sh --create --topic OpenNMS.Sink.Events --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Heartbeat --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Syslog --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.DeviceConfig --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-
-# Flow/Telemetry Sink Topics (create based on your telemetry configuration)
-kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-Netflow-5 --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-Netflow-9 --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-IPFIX --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-SFlow --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-OpenConfig --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-
-# Twin Topics
-kafka-topics.sh --create --topic OpenNMS.twin.request --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.twin.response --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
-kafka-topics.sh --create --topic OpenNMS.twin.response.Default --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+opennms:kafka-ipc-topics
 ----
 
-NOTE: Adjust the `--partitions` and `--replication-factor` values according to your cluster configuration. Replace `Default` with your actual Minion location name(s).
+.Example output on Core
+----
+Kafka IPC Topics Status
+=======================
+
+Kafka Connectivity:
+  Connecting to Kafka                                          [OK]
+
+RPC Topics (required):
+  OpenNMS.rpc-response                                         [OK]
+
+RPC Topics (per-location - required):
+  OpenNMS.MINION.rpc-request                                   [OK]
+
+Sink Topics (required):
+  OpenNMS.Sink.Heartbeat                                       [OK]
+
+Sink Topics (optional - feature dependent):
+  OpenNMS.Sink.Events                                          [EXISTS]
+  OpenNMS.Sink.Syslog                                          [NOT CONFIGURED]
+  OpenNMS.Sink.Trap                                            [EXISTS]
+  OpenNMS.Sink.DeviceConfig                                    [EXISTS]
+
+Sink Topics (telemetry - optional):
+  OpenNMS.Sink.Telemetry-Netflow-5                             [EXISTS]
+  OpenNMS.Sink.Telemetry-Netflow-9                             [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-IPFIX                                 [EXISTS]
+  OpenNMS.Sink.Telemetry-SFlow                                 [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-JTI                                   [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-NXOS                                  [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-BMP                                   [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-OpenConfig                            [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-Graphite                              [NOT CONFIGURED]
+
+Twin Topics (required):
+  OpenNMS.twin.request                                         [OK]
+  OpenNMS.twin.response                                        [OK]
+
+Twin Topics (per-location - required):
+  OpenNMS.twin.response.MINION                                 [OK]
+
+Summary: All required topics exist
+----
+
+=== Command Behavior
+
+On **Core**: The command queries all configured monitoring locations from the database and shows expected topics for each location.
+
+On **Minion**: The command shows only the topics for its own location (MonitoringLocationDao is not available).
+
+=== Status Indicators
+
+The command first checks Kafka connectivity, then uses different status indicators for required and optional topics:
+
+.Kafka Connectivity
+[cols="1,3"]
+|===
+| Status | Meaning
+
+| `[OK]`
+| Successfully connected to Kafka broker
+
+| `[MISSING]`
+| Failed to connect - check Kafka configuration and broker availability
+|===
+
+.Required Topics (RPC, Heartbeat, Twin)
+[cols="1,3"]
+|===
+| Status | Meaning
+
+| `[OK]`
+| Topic exists - system will function correctly
+
+| `[MISSING]`
+| Topic does not exist - this is a problem that needs to be fixed
+|===
+
+.Optional Topics (Events, Syslog, Trap, DeviceConfig, Telemetry)
+[cols="1,3"]
+|===
+| Status | Meaning
+
+| `[EXISTS]`
+| Topic exists - the feature is configured and ready
+
+| `[NOT CONFIGURED]`
+| Topic does not exist - this is normal if the feature is not enabled
+|===
+
+NOTE: The summary only counts required topics as "missing". Optional topics with `[NOT CONFIGURED]` status are not considered errors.
+
+=== Command Options
+
+[cols="1,3"]
+|===
+| Option | Description
+
+| `-t, --timeout`
+| Connection timeout for Kafka Server (ms)
+|===
+
+.Example: Custom timeout
+[source, karaf]
+----
+opennms:kafka-ipc-topics -t 10000
+----
 
 == Troubleshooting
 
@@ -180,6 +284,7 @@ Verify that:
 1. The topic exists in your Kafka cluster
 2. The topic name matches the expected format (check instance ID and location)
 3. The Kafka user has appropriate read/write permissions for the topic
+4. Run `opennms:kafka-ipc-topics` from the Karaf shell to see the status of all IPC topics
 
 You can list existing topics using:
 
