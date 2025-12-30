@@ -41,6 +41,7 @@ NOTE: You can set module-specific config for modules `sink`, `rpc`, and `twin` w
 Module-specific config takes precedence over common config with prefix `org.opennms.core.ipc.kafka`.
 
 NOTE: {page-component-title} Core requires the Kafka broker configuration option `auto.create.topics.enable` to be set to `true`.
+If you are running in production with `auto.create.topics.enable=false`, see xref:deployment:core/message-broker/kafka-topics.adoc[Required Kafka Topics for IPC] for a list of topics that must be created manually.
 
 .Restart the {page-component-title} Core instance to apply the changes
 [source, console]

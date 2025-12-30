@@ -1,0 +1,189 @@
+= Required Kafka Topics for IPC
+
+When deploying {page-component-title} in production environments with `auto.create.topics.enable=false` on the Kafka broker, all required topics must be created manually before starting Core, Minion, and Sentinel components.
+
+== Topic Naming Convention
+
+All IPC topics use the following format:
+
+----
+{instanceId}.{component}.{endpoint}[.{location}]
+----
+
+Where:
+
+* `{instanceId}` = OpenNMS instance ID (default: `OpenNMS`)
+* `{component}` = IPC component type (e.g., `rpc-request`, `rpc-response`, `Sink`, `twin`)
+* `{endpoint}` = Module or endpoint identifier
+* `{location}` = Minion location (where applicable)
+
+== RPC Topics
+
+RPC (Remote Procedure Call) topics are used for request/response communication between Core and Minion.
+
+=== Request Topics (per location)
+
+Format: `{instanceId}.{location}.rpc-request`
+
+Example: `OpenNMS.Default.rpc-request`
+
+NOTE: One request topic is required per Minion location.
+
+=== Response Topic (global)
+
+Format: `{instanceId}.rpc-response`
+
+Example: `OpenNMS.rpc-response`
+
+NOTE: A single response topic is used for all RPC responses.
+
+== Sink Topics
+
+Sink topics are used for one-way message streaming from Minion to Core (e.g., events, traps, telemetry, flows).
+
+Format: `{instanceId}.Sink.{moduleId}`
+
+=== Core Sink Topics
+
+.Core Sink Topics
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Events
+| Event forwarding from Minion
+
+| Heartbeat
+| Minion heartbeat messages
+
+| Syslog
+| Syslog messages
+
+| DeviceConfig
+| Device configuration backup
+|===
+
+=== Telemetry/Flow Sink Topics
+
+Telemetry and flow topics use the module ID format `Telemetry-{queueName}`. The queue name is defined in `telemetryd-configuration.xml`.
+
+.Common Telemetry/Flow Topics
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Telemetry-Netflow-5
+| Netflow v5 flow data
+
+| Telemetry-Netflow-9
+| Netflow v9 flow data
+
+| Telemetry-IPFIX
+| IPFIX flow data
+
+| Telemetry-SFlow
+| sFlow data
+
+| Telemetry-JTI
+| Juniper Telemetry Interface data
+
+| Telemetry-NXOS
+| Cisco NX-OS telemetry data
+
+| Telemetry-OpenConfig
+| OpenConfig telemetry data
+
+| Telemetry-Graphite
+| Graphite metrics
+|===
+
+NOTE: The actual telemetry topic names depend on your telemetry daemon configuration. The queue name is specified in `telemetryd-configuration.xml` and the module ID is `Telemetry-{queueName}`.
+
+.Example Sink Topics
+----
+OpenNMS.Sink.Events
+OpenNMS.Sink.Heartbeat
+OpenNMS.Sink.Syslog
+OpenNMS.Sink.DeviceConfig
+OpenNMS.Sink.Telemetry-Netflow-5
+OpenNMS.Sink.Telemetry-Netflow-9
+OpenNMS.Sink.Telemetry-IPFIX
+OpenNMS.Sink.Telemetry-SFlow
+OpenNMS.Sink.Telemetry-JTI
+OpenNMS.Sink.Telemetry-OpenConfig
+----
+
+== Twin Topics
+
+Twin topics are used for configuration synchronization between Core and Minion.
+
+=== Request Topic (global)
+
+Format: `{instanceId}.twin.request`
+
+Example: `OpenNMS.twin.request`
+
+=== Response Topics
+
+Global response topic: `{instanceId}.twin.response`
+
+Per-location response topic: `{instanceId}.twin.response.{location}`
+
+.Example Twin Topics
+----
+OpenNMS.twin.request
+OpenNMS.twin.response
+OpenNMS.twin.response.Default
+----
+
+== Topic Creation Commands
+
+Use the Kafka CLI to create topics before starting {page-component-title}:
+
+[source, console]
+----
+# RPC Topics
+kafka-topics.sh --create --topic OpenNMS.Default.rpc-request --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.rpc-response --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+
+# Core Sink Topics
+kafka-topics.sh --create --topic OpenNMS.Sink.Events --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Heartbeat --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Syslog --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.DeviceConfig --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+
+# Flow/Telemetry Sink Topics (create based on your telemetry configuration)
+kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-Netflow-5 --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-Netflow-9 --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-IPFIX --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-SFlow --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.Sink.Telemetry-OpenConfig --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+
+# Twin Topics
+kafka-topics.sh --create --topic OpenNMS.twin.request --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.twin.response --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+kafka-topics.sh --create --topic OpenNMS.twin.response.Default --partitions 10 --replication-factor 1 --bootstrap-server localhost:9092
+----
+
+NOTE: Adjust the `--partitions` and `--replication-factor` values according to your cluster configuration. Replace `Default` with your actual Minion location name(s).
+
+== Troubleshooting
+
+If you encounter errors about missing topics in the logs, such as:
+
+----
+Failed to send RPC request to topic 'OpenNMS.Default.rpc-request'. Topic does not exist.
+----
+
+Verify that:
+
+1. The topic exists in your Kafka cluster
+2. The topic name matches the expected format (check instance ID and location)
+3. The Kafka user has appropriate read/write permissions for the topic
+
+You can list existing topics using:
+
+[source, console]
+----
+kafka-topics.sh --list --bootstrap-server localhost:9092
+----

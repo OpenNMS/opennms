@@ -33,6 +33,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.errors.TopicAuthorizationException;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.Utils;
@@ -114,10 +116,20 @@ public class KafkaTwinSubscriber extends AbstractTwinSubscriber {
 
         try {
             TwinRequestProto twinRequestProto = mapTwinRequestToProto(twinRequest);
-            final var record = new ProducerRecord<>(Topic.request(), twinRequest.getKey(), twinRequestProto.toByteArray());
+            final var topic = Topic.request();
+            final var record = new ProducerRecord<>(topic, twinRequest.getKey(), twinRequestProto.toByteArray());
             this.producer.send(record, (meta, ex) -> {
                 if (ex != null) {
-                    RATE_LIMITED_LOG.error("Error sending request", ex);
+                    if (ex instanceof UnknownTopicOrPartitionException) {
+                        RATE_LIMITED_LOG.error("Failed to send Twin request to topic '{}'. Topic does not exist. " +
+                                "If auto.create.topics.enable=false on the broker, ensure this topic is created manually. " +
+                                "Key: {}", topic, twinRequest.getKey(), ex);
+                    } else if (ex instanceof TopicAuthorizationException) {
+                        RATE_LIMITED_LOG.error("Failed to send Twin request to topic '{}'. Authorization denied. " +
+                                "Ensure the Kafka user has write permissions for this topic. Key: {}", topic, twinRequest.getKey(), ex);
+                    } else {
+                        RATE_LIMITED_LOG.error("Error sending Twin request to topic '{}': {}", topic, ex.getMessage(), ex);
+                    }
                 }
             });
         } catch (Exception e) {

@@ -39,6 +39,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.errors.TopicAuthorizationException;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.common.kafka.OnmsKafkaConfigProvider;
@@ -133,7 +135,16 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
             final var record = new ProducerRecord<>(topic, sinkUpdate.getKey(), proto.toByteArray());
             this.producer.send(record, (meta, ex) -> {
                 if (ex != null) {
-                    RATE_LIMITED_LOG.error("Error publishing update", ex);
+                    if (ex instanceof UnknownTopicOrPartitionException) {
+                        RATE_LIMITED_LOG.error("Failed to send Twin update to topic '{}'. Topic does not exist. " +
+                                "If auto.create.topics.enable=false on the broker, ensure this topic is created manually. " +
+                                "Key: {}", topic, sinkUpdate.getKey(), ex);
+                    } else if (ex instanceof TopicAuthorizationException) {
+                        RATE_LIMITED_LOG.error("Failed to send Twin update to topic '{}'. Authorization denied. " +
+                                "Ensure the Kafka user has write permissions for this topic. Key: {}", topic, sinkUpdate.getKey(), ex);
+                    } else {
+                        RATE_LIMITED_LOG.error("Error publishing Twin update to topic '{}': {}", topic, ex.getMessage(), ex);
+                    }
                 }
             });
         } catch (Exception e) {

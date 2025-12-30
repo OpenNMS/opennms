@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.TopicAuthorizationException;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -154,6 +156,18 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             try {
                 consumer.subscribe(Arrays.asList(topic));
+            } catch (TopicAuthorizationException e) {
+                LOG.error("Failed to subscribe to Sink topic '{}'. Authorization denied. " +
+                        "Ensure the Kafka user has read permissions for this topic.", topic, e);
+                consumer.close();
+                return;
+            } catch (Exception e) {
+                LOG.error("Failed to subscribe to Sink topic '{}'. " +
+                        "If auto.create.topics.enable=false on the broker, ensure this topic is created manually.", topic, e);
+                consumer.close();
+                return;
+            }
+            try {
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(CONSUMER_POLL_DURATION);
                     for (ConsumerRecord<String, byte[]> record : records) {

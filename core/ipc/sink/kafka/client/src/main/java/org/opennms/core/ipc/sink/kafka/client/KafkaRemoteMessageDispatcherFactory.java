@@ -37,6 +37,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
+import org.apache.kafka.common.errors.TopicAuthorizationException;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -167,12 +169,21 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 Thread.currentThread().interrupt();
                 break;
             } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
                 // Timeout typically happens when Kafka is Offline or it didn't initialize yet.
                 // For this case keep sending the message until it delivers, will cause sink messages to buffer.
-                if (e.getCause() != null && e.getCause() instanceof TimeoutException) {
-                    LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                if (cause instanceof TimeoutException) {
+                    LOG.warn("Timeout occurred while sending message to topic '{}', it will be attempted again.", topic);
+                } else if (cause instanceof UnknownTopicOrPartitionException) {
+                    LOG.error("Failed to send Sink message to topic '{}'. Topic does not exist. " +
+                            "If auto.create.topics.enable=false on the broker, ensure this topic is created manually.", topic, e);
+                    break;
+                } else if (cause instanceof TopicAuthorizationException) {
+                    LOG.error("Failed to send Sink message to topic '{}'. Authorization denied. " +
+                            "Ensure the Kafka user has write permissions for this topic.", topic, e);
+                    break;
                 } else {
-                    LOG.error("Exception occured while sending message to topic {} ", e);
+                    LOG.error("Exception occurred while sending message to topic '{}': {}", topic, e.getMessage(), e);
                     break;
                 }
             }
