@@ -23,7 +23,6 @@ package org.opennms.web.rest.v2;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -36,8 +35,8 @@ import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
@@ -206,16 +205,12 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
      * If so, return the location, otherwise return null for an invalid location.
      */
     private String convertToValidLocation(String location) {
-        final boolean isDefaultLocation = Strings.isNullOrEmpty(location) || location.equalsIgnoreCase(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
-
-        if (isDefaultLocation) {
+        if (MonitoringLocationUtils.isDefaultLocationName(location)) {
             return MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
         }
 
         // If a non-default location was specified, check if it is a valid monitoring location
-        final List<OnmsMonitoringLocation> locationList = monitoringLocationDao.findAll();
-
-        if (locationList.stream().noneMatch(loc -> loc.getLocationName().equals(location))) {
+        if (monitoringLocationDao.get(location) == null) {
             return null;
         }
 
@@ -244,7 +239,8 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             if (!Strings.isNullOrEmpty(ipAddress)) {
                 addr = InetAddressUtils.addr(ipAddress);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            LOG.debug("Invalid IP address: {}", ipAddress, e);
         }
 
         return addr;
