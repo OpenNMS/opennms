@@ -63,7 +63,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       try {
         const response = await getEventConfSourceById(id)
         this.selectedSource = response
-        await this.fetchEventsBySourceId()
+        await this.refreshEventConfigEvents()
       } catch (error) {
         console.error('Error fetching source by ID:', id, error)
       }
