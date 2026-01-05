@@ -243,6 +243,13 @@ public class CollectionSetMapper {
                 }
             }
         }
+
+        if (nodeCriteria == null) {
+            // attempt to get node ID from tags instead
+            if (resource.getTags() != null) {
+                nodeCriteria = resource.getTags().get("node_id");
+            }
+        }
         return nodeCriteria;
     }
 
