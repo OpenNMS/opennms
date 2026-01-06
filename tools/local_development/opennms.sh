@@ -27,11 +27,16 @@ RELEASE="$(.circleci/scripts/pom2version.sh pom.xml)"
 usage(){
     echo "Usage: $0 [options]"
     echo "Options:"
-    echo "  --help                   Show this help message"
+    echo "  --help                  Show this help message"
     echo "  --enable-jrrd2          Enable jrrd2 library,from prebuilt binaries"
+    echo "  --skip-cleanup          Skip cleanup of previous build artifacts"
+    echo "  --enable-tests          Enable running tests during build"
     exit 1
 }
 
+# Default options
+ENABLE_TESTS="no"
+SKIP_CLEANUP="no"
 ENABLE_JRRD2=${ENABLE_JRRD2:-"no"}
 # INSTALL_JICMP=${INSTALL_JICMP:-"no"}
 # INSTALL_JICMP6=${INSTALL_JICMP6:-"no"}
@@ -43,6 +48,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --enable-jrrd2 )
             ENABLE_JRRD2="yes"
+            shift
+            ;;
+        --enable-tests )
+            ENABLE_TESTS="yes"
+            shift
+            ;;
+        --skip-cleanup )
+            SKIP_CLEANUP="yes"
             shift
             ;;
         --all)
@@ -81,15 +94,16 @@ if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
     echo "OpenNMS already built. Lets stop existing."
     ./target/opennms/bin/opennms stop || true
 
-    echo "Cleaning previous build artifacts..."
-    rm -rf ./target
-    rm -rf ./features/minion/container/karaf/target
+    if [[ "$SKIP_CLEANUP" == "yes" ]]; then
+        echo "Skipping cleanup of previous build artifacts."
+    else
+        echo "Cleaning previous build artifacts..."
+        rm -rf ./target
+        rm -rf ./features/minion/container/karaf/target
+        ./clean.pl
+    fi
 
-    echo "Compiling & assembling (skip tests)..."
-    ./clean.pl && ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
 fi
-
-env 
 
 echo "Checking ulimit..."
 ULIMIT_OUTPUT=$(ulimit -n || true)
@@ -102,7 +116,20 @@ else
 fi
 
 echo "Compiling & assembling (skip tests)..."
-./clean.pl && ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
+if [[ "$SKIP_CLEANUP" == "yes" ]]; then
+    echo "Skipping cleanup of previous build artifacts."
+else
+    echo "Cleaning previous build artifacts..."
+    ./clean.pl
+fi
+
+if [[ "$ENABLE_TESTS" == "yes" ]]; then
+    echo "Compiling & assembling (with tests)..."
+    ./compile.pl && ./assemble.pl
+else
+    echo "Compiling & assembling (skip tests)..."
+    ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
+fi
 
 echo "Preparing symlink for OpenNMS release $RELEASE"
 mkdir -p "./target/opennms-$RELEASE"
