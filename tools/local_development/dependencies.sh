@@ -16,7 +16,7 @@ usage(){
     echo "Options:"
     echo "  --help                  Show this help message"
     echo "  --check-dependencies    Check if required dependencies are installed (default action)"
-    echo "  --install-postgresql    Install and setup PostgreSQL using Docker"
+    echo "  --deploy-postgresql    Deploy and setup PostgreSQL using Docker"
     echo "  --install-jrrd2         Install jrrd2 library,from prebuilt binaries"
     echo "  --install-jrrd2-from-source  Compile and install jrrd2 from source code"
     # echo "  --install-jicmp         Install jicmp library"
@@ -29,7 +29,7 @@ if [[ $# -eq 0 ]]; then
     CHECK_DEPENDENCIES="yes"
 fi
 
-INSTALL_POSTGRESQL="no"
+DEPLOY_POSTGRESQL="no"
 INSTALL_JRRD2="no" # install prebuilt jrrd2
 INSTALL_JRRD2_FROM_SOURCE="no"
 # INSTALL_JICMP="no"
@@ -44,8 +44,8 @@ while [[ $# -gt 0 ]]; do
             CHECK_DEPENDENCIES="yes"
             shift
             ;;
-        --install-postgresql)
-            INSTALL_POSTGRESQL="yes"
+        --deploy-postgresql)
+            DEPLOY_POSTGRESQL="yes"
             shift
             ;;
         --install-jrrd2 )
@@ -58,7 +58,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --all)
-            INSTALL_POSTGRESQL="yes"
+            DEPLOY_POSTGRESQL="yes"
             INSTALL_JRRD2_FROM_SOURCE="yes"
             # INSTALL_JICMP="yes"
             # INSTALL_JICMP6="yes"
@@ -198,10 +198,10 @@ start_postgres_docker(){
 }
 
 setup_postgres(){
-if [[ "$INSTALL_POSTGRESQL" == "yes" || "$POSTGRES_VERSION" == "unknown"  ]]; then
+if [[ "$DEPLOY_POSTGRESQL" == "yes" || "$POSTGRES_VERSION" == "unknown"  ]]; then
     start_postgres_docker
 else
-    echo "INSTALL_POSTGRESQL is set to 'no'. Skipping"
+    echo "DEPLOY_POSTGRESQL is set to 'no'. Skipping"
     return 
 fi
 }   
@@ -355,7 +355,7 @@ if [[ "${CHECK_DEPENDENCIES:-}" == "yes" ]]; then
     exit 0
 fi
 
-if [[ "$INSTALL_POSTGRESQL" == "yes" ]]; then
+if [[ "$DEPLOY_POSTGRESQL" == "yes" ]]; then
     setup_postgres
 fi
 
@@ -374,10 +374,6 @@ fi
 exit 1
 
 install_icmp_libs(){
-
-}
-
-install_postgresql(){
 
 }
 

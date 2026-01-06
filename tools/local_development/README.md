@@ -11,7 +11,7 @@ Usage: ./tools/local_development/dependencies.sh [options]
 Options:
   --help                   Show this help message
   --check-dependencies    Check if required dependencies are installed (default action)
-  --install-postgresql     Install and setup PostgreSQL using Docker
+  --deploy-postgresql    Deploy and setup PostgreSQL using Docker
   --install-jrrd2         Install jrrd2 library,from prebuilt binaries
   --install-jrrd2-from-source  Compile and install jrrd2 from source code
 ```
