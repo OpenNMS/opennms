@@ -378,12 +378,19 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
+    // Make the form invalid by clearing a required field
+    const ueiInput = wrapper.find('[data-test="event-uei"]').find('input')
+    await ueiInput.setValue('')
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+
+    vi.mocked(updateEventConfigEventById).mockClear()
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
+    await wrapper.vm.$nextTick()
 
-    expect(updateSpy).not.toHaveBeenCalled()
+    expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })
 
   it('should display error messages for invalid fields', async () => {

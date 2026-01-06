@@ -100,13 +100,32 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
   })
 
   it('does not call delete if eventConfigSource is null', async () => {
-    store.deleteEventConfigSourceDialogState.eventConfigSource = null
-    await wrapper.vm.$nextTick()
+    vi.restoreAllMocks()
+
+    const pinia = createTestingPinia({
+      createSpy: vi.fn,
+      stubActions: false
+    })
+
+    const localStore = useEventConfigDetailStore()
+    localStore.$state.deleteEventConfigSourceDialogState = {
+      visible: true,
+      eventConfigSource: null
+    }
+
+    const localWrapper = mount(DeleteEventConfigSourceDialog, {
+      global: {
+        plugins: [pinia],
+        components: { FeatherButton, FeatherDialog }
+      }
+    })
+
+    await flushPromises()
 
     const mockDelete = vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
-    const deleteBtn = wrapper.findAllComponents(FeatherButton).at(1)
-    expect(deleteBtn.exists()).toBe(true)
-    await deleteBtn.trigger('click')
+    const deleteBtn = localWrapper.findAllComponents(FeatherButton).at(1)
+    expect(deleteBtn?.exists()).toBe(true)
+    await deleteBtn?.trigger('click')
     await flushPromises()
 
     expect(mockDelete).not.toHaveBeenCalled()
