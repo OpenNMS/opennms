@@ -347,6 +347,11 @@ if [[ "${CHECK_DEPENDENCIES:-}" == "yes" ]]; then
     echo ""
     echo "Maven version: $MAVEN_VERSION"
     echo "Maven Java version: $MAVEN_JAVA_VERSION (Java major version: $JAVA_MAJOR_VERSION)"
+    echo "Node.js version: $(node -v)"
+    echo "Python version: $($PYTHON --version 2>&1)"
+    echo "Git version: $(git --version)"
+    echo "Docker version: $(docker --version)"
+
     # echo "RRDtool version: $RRDTOOL_VERSION"
 
     detect_jdk_version_required
