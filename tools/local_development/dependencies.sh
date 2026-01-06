@@ -19,6 +19,7 @@ usage(){
     echo "  --deploy-postgresql    Deploy and setup PostgreSQL using Docker"
     echo "  --install-jrrd2         Install jrrd2 library,from prebuilt binaries"
     echo "  --install-jrrd2-from-source  Compile and install jrrd2 from source code"
+    echo "  --enable-jrrd2        Update OpenNMS configuration to use jrrd2 library that is detected/installed"
     # echo "  --install-jicmp         Install jicmp library"
     # echo "  --install-jicmp6        Install jicmp6 library"
     exit 1
@@ -32,6 +33,7 @@ fi
 DEPLOY_POSTGRESQL="no"
 INSTALL_JRRD2="no" # install prebuilt jrrd2
 INSTALL_JRRD2_FROM_SOURCE="no"
+ENABLE_JRRD2_CONFIGURATION="no"
 # INSTALL_JICMP="no"
 # INSTALL_JICMP6="no"
 
@@ -55,6 +57,10 @@ while [[ $# -gt 0 ]]; do
         --install-jrrd2-from-source)
             INSTALL_JRRD2="no"
             INSTALL_JRRD2_FROM_SOURCE="yes"
+            shift
+            ;;
+        --enable-jrrd2 )
+            ENABLE_JRRD2_CONFIGURATION="yes"
             shift
             ;;
         --all)
@@ -385,6 +391,27 @@ fi
 
 if [[ "$INSTALL_JRRD2_FROM_SOURCE" == "yes" ]]; then
     install_jrrd2_from_source
+fi
+
+if [[ "$ENABLE_JRRD2_CONFIGURATION" == "yes" ]]; then
+   detect_jrrd2_location
+   if [[ -n "$JRRD_JAR" && -n "$JRRD_LIB" ]]; then
+       echo "Enabling jrrd2 configuration in OpenNMS..."
+       if [[ ! -d "$ROOT/target/opennms/etc/opennms.properties.d" ]]; then
+           echo "You need to build OpenNMS at least once before enabling jrrd2 configuration." >&2
+           exit 1
+       fi
+    echo "
+    org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+    org.opennms.rrd.interfaceJar=$JRRD_JAR
+    opennms.library.jrrd2=$JRRD_LIB
+    org.opennms.web.graphs.engine=rrdtool
+    rrd.binary=/usr/bin/rrdtool
+    " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
+   else
+       echo "jrrd2 library or jar not found. Cannot enable jrrd2 configuration." >&2
+       exit 1
+   fi
 fi
 # ----------------------------------------------------------------------
 # 2. Install dependencies
