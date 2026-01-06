@@ -176,7 +176,7 @@ MAVEN_VERSION=$(mvn -v | awk '/Apache Maven/ {print $3}')
 MAVEN_JAVA_VERSION=$(mvn -v | awk '/Java version/ {print $3}'| tr -d ',')
 JAVA_MAJOR_VERSION=$(echo "$MAVEN_JAVA_VERSION" | awk -F. '{print $1}')
 
-RRDTOOL_VERSION=$(rrdtool --version | head -n1 | awk '{print $2}')
+# RRDTOOL_VERSION=$(rrdtool --version | head -n1 | awk '{print $2}')
 
 POSTGRES_VERSION=""
 
@@ -347,7 +347,7 @@ if [[ "${CHECK_DEPENDENCIES:-}" == "yes" ]]; then
     echo ""
     echo "Maven version: $MAVEN_VERSION"
     echo "Maven Java version: $MAVEN_JAVA_VERSION (Java major version: $JAVA_MAJOR_VERSION)"
-    echo "RRDtool version: $RRDTOOL_VERSION"
+    # echo "RRDtool version: $RRDTOOL_VERSION"
 
     detect_jdk_version_required
     echo "Required JDK version: $REQUIRED_VERSION"
