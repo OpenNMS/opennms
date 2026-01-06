@@ -4,19 +4,86 @@
     <title>Current Status</title>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'unsafe-eval' 'unsafe-inline' 'self' *.opennms.com www.opennms.ca opennms.ca fonts.googleapis.com fonts.gstatic.com js.hs-scripts.com js.hscollectedforms.net js.hs-banner.com js.hs-analytics.net forms.hsforms.com forms.hubspot.com www.googletagmanager.com s.w.org circleci.com;" />
-    <style type="text/css">
+    <style>
+      /* Variables */
+      :root {
+        --bg: #ffffff;
+        --fg: #000000;
+        --link: #0645ad;
+        --badge-filter: none;
+      }
+
+      /* Auto dark mode */
+      @media (prefers-color-scheme: dark) {
+        :root:not(.light) {
+          --bg: #121212;
+          --fg: #e0e0e0;
+          --link: #9ecbff;
+          --badge-filter: brightness(0.9) saturate(1.2);
+        }
+      }
+
+      /* Dark */
+      :root.dark {
+        --bg: #121212;
+        --fg: #e0e0e0;
+        --link: #9ecbff;
+        --badge-filter: brightness(0.9) saturate(1.2);
+      }
+
+      /* Light */
+      :root.light {
+        --bg: #ffffff;
+        --fg: #000000;
+        --link: #0645ad;
+        --badge-filter: none;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: sans-serif;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      a {
+        color: var(--link);
+      }
+
+      img {
+        filter: var(--badge-filter);
+      }
+
       table {
         display: inline-block;
         vertical-align: top;
         padding: 5px;
       }
+
       td {
         padding-left: 5px;
         padding-right: 5px;
       }
+
+      /* Toggle button */
+      #theme-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        border: 1px solid #888;
+        background: var(--bg);
+        color: var(--fg);
+        cursor: pointer;
+        border-radius: 4px;
+      }
     </style>
   </head>
+
   <body>
+
+    <button id="theme-toggle">Toggle Theme</button>
+
     <table>
       <!--
       <tr>
@@ -237,5 +304,39 @@
         <td><a href="https://app.circleci.com/pipelines/github/OpenNMS/docs.opennms.com?branch=master">Documentation</a></td><td><a href="https://app.circleci.com/pipelines/github/OpenNMS/docs.opennms.com?branch=master"><img alt="Documentation" src="https://circleci.com/gh/OpenNMS/docs.opennms.com/tree/master.svg?style=svg" /></a></td>
       </tr>
     </table>
+
+        <script>
+      const root = document.documentElement;
+      const btn = document.getElementById("theme-toggle");
+
+      // Load saved theme
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") root.classList.add("dark");
+      if (saved === "light") root.classList.add("light");
+
+      btn.addEventListener("click", () => {
+        // Toggle between light and dark ONLY
+        if (root.classList.contains("dark")) {
+          root.classList.remove("dark");
+          root.classList.add("light");
+          localStorage.setItem("theme", "light");
+        } else if (root.classList.contains("light")) {
+          root.classList.remove("light");
+          root.classList.add("dark");
+          localStorage.setItem("theme", "dark");
+        } else {
+          // No override yet → determine system preference
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (prefersDark) {
+            root.classList.add("light");
+            localStorage.setItem("theme", "light");
+          } else {
+            root.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+          }
+        }
+      });
+    </script>
+
   </body>
 </html>
