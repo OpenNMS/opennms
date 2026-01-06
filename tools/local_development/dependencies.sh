@@ -248,6 +248,7 @@ install_jrrd2_from_source(){
 
     rm -rf jrrd2
 
+    echo "Successfully installed jrrd2 from source: $JRRD_JAR, $JRRD_LIB"
 }
 
 BASE_URL="https://debian.opennms.org/dists/stable/main"
@@ -321,7 +322,7 @@ install_jrrd2_prebuilt(){
     JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
     JRRD_LIB="$ROOT/built_dependencies/lib/libjrrd2.so"
 
-   # echo "Successfully installed prebuilt jrrd2: $JRRD_JAR, $JRRD_LIB"
+    echo "Successfully installed prebuilt jrrd2: $JRRD_JAR, $JRRD_LIB"
 }
 
 # ----------------------------------------------------------------------
