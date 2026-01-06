@@ -102,19 +102,19 @@ describe('DeleteEventConfigSourceDialog', () => {
     expect(store.fetchEventConfigs).toHaveBeenCalled()
   })
 
-it('does not attempt to delete if eventConfigSource is null', async () => {
-  store.$state.deleteEventConfigSourceDialogState.eventConfigSource = null
-  await wrapper.vm.$forceUpdate()
-  await wrapper.vm.$nextTick()
-  await flushPromises()
-  
-  vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
-  const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
-  await deleteButton.trigger('click')
-  await flushPromises()
-  
-  expect(eventConfigService.deleteEventConfigSourceById).not.toHaveBeenCalled()
-})
+  it('does not attempt to delete if eventConfigSource is null', async () => {
+    store.$state.deleteEventConfigSourceDialogState.eventConfigSource = null
+    await wrapper.vm.$forceUpdate()
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
+    vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
+    const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
+    await deleteButton.trigger('click')
+    await flushPromises()
+
+    expect(eventConfigService.deleteEventConfigSourceById).not.toHaveBeenCalled()
+  })
 
   it('hides the dialog when visible is false', async () => {
     store.$state.deleteEventConfigSourceDialogState.visible = false
