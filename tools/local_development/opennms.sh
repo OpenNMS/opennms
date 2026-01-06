@@ -91,6 +91,16 @@ fi
 
 env 
 
+echo "Checking ulimit..."
+ULIMIT_OUTPUT=$(ulimit -n || true)
+echo "Current ulimit -n: $ULIMIT_OUTPUT"
+if [[ "$ULIMIT_OUTPUT" == "unlimited" || "$ULIMIT_OUTPUT" -gt 20000 ]]; then
+    echo "ulimit is sufficient."
+else
+    echo "Setting ulimit to 20000"
+    ulimit -n 20000 || echo "Failed to set ulimit. You may need to run this script with elevated permissions."
+fi
+
 echo "Compiling & assembling (skip tests)..."
 ./clean.pl && ./compile.pl -DskipTests=true && ./assemble.pl -DskipTests=true
 

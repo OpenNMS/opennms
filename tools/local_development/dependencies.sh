@@ -104,6 +104,11 @@ command -v java >/dev/null 2>&1 || {
     exit 1
 }
 
+command -v javac >/dev/null 2>&1 || {
+    echo "Java compiler (javac) is not installed. Please install JDK 11 or higher." >&2
+    exit 1
+}
+
 command -v mvn >/dev/null 2>&1 || {
     echo "Maven is not installed. Please install Maven 3.6 or higher." >&2
     exit 1
@@ -129,6 +134,16 @@ command -v perl >/dev/null 2>&1 || {
     exit 1
 }
 
+command -v node >/dev/null 2>&1 || {
+    echo "Node.js is not installed. Please install Node.js." >&2
+    if [[ "$OS_NAME" == "Linux" ]]; then
+      echo "On Debian/Ubuntu you can install it via: sudo apt-get install nodejs" >&2
+    elif [[ "$OS_NAME" == "macOS" ]]; then
+      echo "On macOS you can install it via: brew install node" >&2
+    fi
+    exit 1
+}
+
 if command -v python3 >/dev/null 2>&1; then
     PYTHON=python3
 elif command -v python >/dev/null 2>&1; then
@@ -138,15 +153,15 @@ else
     exit 1
 fi
 
-command -v rrdtool >/dev/null 2>&1 || {
-    echo "rrdtool is not installed. Please install rrdtool." >&2
-    if [[ "$OS_NAME" == "Linux" ]]; then
-      echo "On Debian/Ubuntu you can install it via: sudo apt-get install rrdtool" >&2
-    elif [[ "$OS_NAME" == "macOS" ]]; then
-      echo "On macOS you can install it via: brew install rrdtool" >&2
-    fi
-    exit 1
-}
+# command -v rrdtool >/dev/null 2>&1 || {
+#     echo "rrdtool is not installed. Please install rrdtool." >&2
+#     if [[ "$OS_NAME" == "Linux" ]]; then
+#       echo "On Debian/Ubuntu you can install it via: sudo apt-get install rrdtool" >&2
+#     elif [[ "$OS_NAME" == "macOS" ]]; then
+#       echo "On macOS you can install it via: brew install rrdtool" >&2
+#     fi
+#     exit 1
+# }
 
 # ----------------------------------------------------------------------
 # Resolve variables
