@@ -132,6 +132,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setDescription(description);
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
+        event.setSeverity(severity);
         event.setEnabled(true);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
@@ -328,6 +329,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>uei.opennms.org/test/bulk/" + i + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setSeverity("Normal");
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("testUser");

@@ -1,3 +1,12 @@
+opennms-sentinel (35.0.1-1) stable; urgency=low
+
+  * Release 35.0.1 contains a couple of bug fixes and enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/35.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 16 Dec 2025 12:56:06 -0500
+
 opennms-sentinel (35.0.0-1) stable; urgency=low
 
   * Release 35.0.0 introduces new features, including event definitions

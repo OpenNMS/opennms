@@ -92,7 +92,7 @@
   </div> <!-- card-body -->
   <div class="card-footer">
       <input type="reset" class="btn btn-secondary"/>
-      <a class="btn btn-secondary" href="javascript:document.groupIntervals.submit()">Next Step <i class="fa fa-arrow-right"></i></a>
+      <a class="btn btn-secondary" href="javascript:document.groupIntervals.submit()">Next Step <i class="fas fa-arrow-right"></i></a>
   </div> <!-- card-footer -->
 </div> <!-- panel -->
 

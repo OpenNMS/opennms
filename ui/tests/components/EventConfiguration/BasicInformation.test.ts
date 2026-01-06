@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
@@ -97,7 +97,7 @@ const mockEvent = {
       </varbind>
       <varbindsdecode>
         <parmid>param1</parmid>
-        <decode varbinddecodedstring="key1" varbindvalue="value1" />
+        <decode varbinddecodedstring="key1" varbindvalue="01" />
       </varbindsdecode>
     </event>
   `,
@@ -127,7 +127,7 @@ describe('BasicInformation Component', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     store = useEventModificationStore()
-
+    vi.clearAllMocks()
     store.selectedSource = mockSource
     store.eventModificationState = {
       eventConfigEvent: mockEvent,
@@ -304,7 +304,7 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
     expect(wrapper.vm.varbindsDecode[0].decode).toHaveLength(1)
     expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key1')
-    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('value1')
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('01')
   })
 
   it('should update validation state when form data changes', async () => {
@@ -378,12 +378,15 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
-    expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    await saveButton.trigger('click')
+    wrapper.vm.eventUei = ''
+    await wrapper.vm.$nextTick()
 
-    expect(updateSpy).not.toHaveBeenCalled()
+    expect(wrapper.vm.isValid).toBe(false)
+
+    await wrapper.find('[data-test="save-event-button"]').trigger('click')
+    await flushPromises()
+
+    expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })
 
   it('should display error messages for invalid fields', async () => {

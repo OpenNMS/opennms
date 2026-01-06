@@ -1,6 +1,6 @@
 <div class="mx-2 my-2">
     <div class="mb-4">
-        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()" title="Refresh"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()" title="Refresh"><i class="fas fa-arrows-rotate"></i></button>
         <button class="btn btn-secondary"
                 ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && scheduledReports.length > 0"
                 id="action.deleteAll"
@@ -13,7 +13,7 @@
                 confirm-text="Yes"
                 cancel-text="No"
                 title="Delete All">
-            <i class="fa fa-trash"></i>
+            <i class="fas fa-trash-can"></i>
         </button>
     </div>
     <div ng-if="scheduledReports.length == 0">
@@ -35,8 +35,8 @@
             <tbody>
             <tr ng-repeat="schedule in scheduledReports">
                 <td>
-                    <button class="btn btn-sm btn-danger" title="Delete Schedule" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" ng-click="delete(schedule)"><i class="fa fa-trash"></i></button>
-                    <button class="btn btn-sm btn-primary" id="action.edit.{{schedule.triggerName}}" ng-click="edit(schedule.triggerName, schedule.reportId)" title="Show Report Parameters"><i class="fa fa-cogs"></i></button>
+                    <button class="btn btn-sm btn-danger" title="Delete Schedule" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" ng-click="delete(schedule)"><i class="fas fa-trash-can"></i></button>
+                    <button class="btn btn-sm btn-primary" id="action.edit.{{schedule.triggerName}}" ng-click="edit(schedule.triggerName, schedule.reportId)" title="Show Report Parameters"><i class="fas fa-gears"></i></button>
                 </td>
                 <td>{{schedule.reportId}}</td>
                 <td>
@@ -45,22 +45,22 @@
                 </td>
                 <td>
                     <span ng-if="schedule.deliveryOptions.persist || false" title="Persist to Disk">
-                        <i class="fa fa-save"></i>
+                        <i class="fas fa-floppy-disk"></i>
                     </span>
                 </td>
                 <td>
                     <span ng-if="schedule.deliveryOptions.sendMail || false" title="Mail to {{schedule.deliveryOptions.mailTo}}">
-                        <i class="fa fa-envelope-o"></i>
+                        <i class="far fa-envelope"></i>
                     </span>
                 </td>
                 <td>
                     <span ng-if="schedule.deliveryOptions.webhook || false" title="POST to {{schedule.deliveryOptions.webhookUrl}}">
-                        <i class="fa fa-paper-plane-o"></i>
+                        <i class="far fa-paper-plane"></i>
                     </span>
                 </td>
                 <td>
                     <span title="Cron Expression">
-                        <i class="fa fa-clock-o"></i> <small>{{schedule.cronExpression}}</small>
+                        <i class="far fa-clock"></i> <small>{{schedule.cronExpression}}</small>
                     </span>
                 </td>
                 <td>{{schedule.triggerName}}</td>

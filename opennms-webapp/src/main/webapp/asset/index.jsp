@@ -89,7 +89,7 @@
                       <% } %>
                     </select>
                     <div class="input-group-append">
-                        <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                     </div>
                   </div>
                   <input type="hidden" name="column" value="category" />

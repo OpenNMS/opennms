@@ -103,6 +103,7 @@ describe('DeleteEventConfigEventDialog', () => {
   })
 
   it('shows snackbar error if IDs are missing', async () => {
+    vi.clearAllMocks()
     store.$state.selectedSource = null as any
     await wrapper.vm.$nextTick()
 

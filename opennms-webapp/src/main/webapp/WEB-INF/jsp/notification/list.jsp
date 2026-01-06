@@ -64,10 +64,10 @@
         throw new ServletException( "Missing a required attribute." );
     }
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"far fa-square-plus\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"far fa-square-minus\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fas fa-square-caret-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fas fa-square-caret-left\"></i>");
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>

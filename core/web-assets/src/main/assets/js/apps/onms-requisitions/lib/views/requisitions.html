@@ -25,26 +25,26 @@
       <div class="input-group ml-auto">
         <div class="input-group-prepend">
           <div class="input-group-text">
-            <i class="fa fa-search"></i>
+            <i class="fas fa-magnifying-glass"></i>
           </div>
         </div>
         <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter" id="search-requisitions">
       </div>
       <div class="pl-1 ml-auto my-4">
         <button type="button" class="btn btn-secondary" ng-click="refreshData()" id="refresh-requisitions" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-refresh"></span> Refresh
+          <span class="fas fa-arrows-rotate"></span> Refresh
         </button>
         <button type="button" class="btn btn-secondary" ng-click="quickAddNode()" id="quick-add-node" ng-disabled="timingStatus.isRunning" ng-show="requisitionsData.requisitions.length > 0">
-          <span class="fa fa-upload"></span> Quick Add Node
+          <span class="fas fa-upload"></span> Quick Add Node
         </button>
         <button type="button" class="btn btn-secondary" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
-          <span class="fa fa-edit"></span> Edit Default FS
+          <span class="fas fa-pen-to-square"></span> Edit Default FS
         </button>
         <button type="button" class="btn btn-secondary" ng-click="resetDefaultForeignSource()" id="reset-default-foreign-source" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-retweet"></span> Reset Default
+          <span class="fas fa-retweet"></span> Reset Default
         </button>
         <button type="button" class="btn btn-secondary" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
-          <span class="fa fa-plus"></span> Add Requisition
+          <span class="fas fa-plus"></span> Add Requisition
         </button>
       </div>
     </form>
@@ -100,41 +100,41 @@
                         uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
                         ng-disabled="timingStatus.isRunning"
                         ng-click="edit(requisition.foreignSource)">
-                  <span class="fa fa-pencil"></span>
+                  <span class="fas fa-pencil"></span>
                 </button>
                 <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                         ng-disabled="timingStatus.isRunning"
                         ng-click="synchronize(requisition)">
-                  <span class="fa fa-exchange"></span>
+                  <span class="fas fa-right-left"></span>
                 </button>
 
                 <div class="btn-group" uib-dropdown dropdown-append-to-body>
                   <button id="btn-append-to-to-body" uib-tooltip="More actions for requisition {{requisition.foreignSource}}" type="button" class="btn btn-secondary btn-sm" uib-dropdown-toggle>
-                    <span class="fa fa-ellipsis-h"></span>
+                    <span class="fas fa-ellipsis"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="refresh(requisition)">
-                      <span class="fa fa-refresh"></span>&nbsp;&nbsp;Refresh deployed stats</a></li>
+                      <span class="fas fa-arrows-rotate"></span>&nbsp;&nbsp;Refresh deployed stats</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            id="editForeignSource-{{requisition.foreignSource}}"
                                            ng-click="editForeignSource(requisition.foreignSource)">
-                      <span class="fa fa-edit"></span>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
+                      <span class="fas fa-pen-to-square"></span>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
-                      <span class="fa fa-random"></span>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
+                      <span class="fas fa-shuffle"></span>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
                     <li class="divider"></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
-                      <span class="fa fa-remove"></span>&nbsp;&nbsp;Remove all nodes</a></li>
+                      <span class="fas fa-xmark"></span>&nbsp;&nbsp;Remove all nodes</a></li>
                     <li role="menuitem" class="dropdown-item"><a style="padding:1px"
                                            ng-disabled="requisition.nodesInDatabase &gt; 0 || timingStatus.isRunning"
                                            ng-click="delete(requisition.foreignSource)">
-                      <span class="fa fa-trash"></span>&nbsp;&nbsp;Delete requisition</a></li>
+                      <span class="fas fa-trash-can"></span>&nbsp;&nbsp;Delete requisition</a></li>
                   </ul>
                 </div>
               </span>

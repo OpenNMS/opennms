@@ -92,10 +92,10 @@
     // optional bookmark
     final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"far fa-square-plus\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"far fa-square-minus\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fas fa-square-caret-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fas fa-square-caret-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
     
     // get sound constants from session, request or opennms.properties
@@ -376,12 +376,12 @@
       <c:when test="${favorite == null}">
       <button class="btn btn-secondary" onclick="createFavorite()">
         <!-- Star outline -->
-        <i class="fa fa-lg fa-star-o"></i>
+        <i class="far fa-lg fa-star"></i>
       </button>
       </c:when>
       <c:otherwise>
       <button class="btn btn-secondary" onclick="deleteFavorite(${favorite.id})">
-        <i class="fa fa-lg fa-star"></i>
+        <i class="fas fa-lg fa-star"></i>
       </button>
       </c:otherwise>
       </c:choose>
@@ -559,10 +559,10 @@
                 <br />
             </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <i class="fa fa-comment-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getStickyMemo().getBody()) %>"></i>
+                <i class="far fa-comment" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getStickyMemo().getBody()) %>"></i>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <i class="fa fa-sticky-note-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getReductionKeyMemo().getBody()) %>"></i>
+                <i class="far fa-note-sticky" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getReductionKeyMemo().getBody()) %>"></i>
             </c:if>
 
           <c:if test="${param.display == 'long'}">
@@ -594,21 +594,21 @@
                   if (alarms[i].isSituation()) {
                       if(parms.getFilters().contains(new SituationFilter(true))) {
               %>
-              <i class="fa fa-check-square-o"></i>
+              <i class="far fa-square-check"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="fa fa-check-square-o"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="far fa-square-check"></i></a>
               <%
                   }
               } else {
                   if(parms.getFilters().contains(new SituationFilter(false))) {
               %>
-              <i class="fa fa-square-o"></i>
+              <i class="far fa-square"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="fa fa-square-o"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="far fa-square"></i></a>
               <%
                       }
                   }

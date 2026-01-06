@@ -199,6 +199,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             jpaEvent.setDescription(xmlEvent.getDescr());
             jpaEvent.setXmlContent(xmlEvent.toString());
             jpaEvent.setEnabled(true);
+            jpaEvent.setSeverity(xmlEvent.getSeverity());
             jpaEvent.setCreatedTime(new Date());
             jpaEvent.setLastModified(new Date());
             jpaEvent.setModifiedBy("XMLTest");
@@ -260,6 +261,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
                 jpaEvent.setEnabled(true);
+                jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
@@ -325,6 +327,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
                 jpaEvent.setEnabled(true);
+                jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
@@ -381,6 +384,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
                 jpaEvent.setEnabled(true);
+                jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
                 jpaEvent.setLastModified(new Date());
                 jpaEvent.setModifiedBy("XMLTest");
@@ -581,6 +585,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
         event.setSource(m_source);
         event.setEnabled(true);
+        event.setSeverity(severity);
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");

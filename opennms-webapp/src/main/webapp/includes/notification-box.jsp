@@ -66,7 +66,7 @@
 	<ul class="list-unstyled mb-0">
 		<% if( nodeIdString == null ) { %>
 			<li>
-			<i class="fa fa-fw fa-user"></i>
+			<i class="fas fa-fw fa-user"></i>
 			You have 
 			<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
 			<%
@@ -84,7 +84,7 @@
 			</a>
 			</li>
 			<li>
-			<i class="fa fa-fw fa-users"></i>
+			<i class="fas fa-fw fa-users"></i>
 				<%
 					count = repository.countMatchingNotifications(
 							new NotificationCriteria(
@@ -104,7 +104,7 @@
 				%>
 			</a>
 			</li>
-			<li><i class="fa fa-fw fa-calendar"></i> <a href="roles">On-Call Schedule</a></li>
+			<li><i class="fas fa-fw fa-calendar"></i> <a href="roles">On-Call Schedule</a></li>
 		<% } else { %>
 			<li><a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
 				Your outstanding notifications for this node 

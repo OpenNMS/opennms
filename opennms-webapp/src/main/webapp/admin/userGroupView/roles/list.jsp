@@ -120,7 +120,7 @@
 				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${e:forJavaScript(role.name)}?')"/>
 				
 				<tr>
-				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
+				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fas fa-trash-can fa-2x"></i></a></td>
 				<td><a href="${viewUrl}">${fn:escapeXml(role.name)}</a></td>
 				<td>
 				  <c:set var="supervisorUser">${role.defaultUser}</c:set>

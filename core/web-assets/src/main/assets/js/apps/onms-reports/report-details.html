@@ -26,8 +26,8 @@
         <!-- Grafana Parameters -->
         <div ng-show="report.isGrafanaReport() && !options.hideEndpointsChooser" class="form-group">
             <label>Grafana Endpoint</label>
-            <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
-            <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
+            <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fas fa-plug"></i></a>
+            <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fas fa-arrows-rotate"></i></a>
             <ui-select
                     ng-model="selected.endpoint"
                     ng-show="endpoints.length > 0"
@@ -54,8 +54,8 @@
         </div>
         <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
             <label>Grafana Dashboard</label>
-            <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dashboard" target="_blank"> <i class="fa fa-dashboard"></i></a>
-            <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
+            <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dashboard" target="_blank"> <i class="fas fa-gauge"></i></a>
+            <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fas fa-arrows-rotate"></i></a>
             <ui-select
                     ng-model="selected.dashboard"
                     ng-show="dashboards.length > 0"
@@ -210,7 +210,7 @@
             </ui-select>
             <div ng-show="!report.timezoneEditable" class="text-horizon mt-1" style="font-size: 80%">
                 Time Zone has been explicitly configured in the Grafana Dashboard.
-                This can be modified by changing <i>Timezone</i> in <a href="{{selected.endpoint.url}}/{{selected.dashboard.url}}?editview=settings" target="_blank">Time Options <i class="fa fa-external-link"></i></a>.
+                This can be modified by changing <i>Timezone</i> in <a href="{{selected.endpoint.url}}/{{selected.dashboard.url}}?editview=settings" target="_blank">Time Options <i class="fas fa-up-right-from-square"></i></a>.
             </div>
             <div ng-show="report.errors[parameter.name]" class="text-danger mt-1" style="font-size: 80%">{{report.errors[parameter.name]}}</div>
         </div>
@@ -238,7 +238,7 @@
                data-placement="right"
                title="Deliver report to file system or via e-mail"
                for="deliverReport" >
-            <i class="fa fa-share"></i> Deliver this report
+            <i class="fas fa-share"></i> Deliver this report
         </label>
     </div>
     <div class="" ng-if="options.showDeliveryOptions && options.deliverReport">
@@ -248,7 +248,7 @@
                 <label for="instanceId">Unique name</label>
                 <button class="btn btn-link text-secondary px-0"
                         popover-trigger="'mouseenter'"
-                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"></i>
+                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fas fa-circle-info"></i>
                 </button>
                 <input ng-disabled="!options.canEditTriggerName"
                        id="instanceId"
@@ -305,7 +305,7 @@
                 <label for="mailRecipient">Recipient</label>
                 <button class="btn btn-link text-secondary px-0"
                         popover-trigger="'mouseenter'"
-                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fa fa-info-circle"></i>
+                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fas fa-circle-info"></i>
                 </button>
                 <input id="mailRecipient"
                        name="mailRecipient"
@@ -338,7 +338,7 @@
                             <strong>Example</strong> <br>
                             <span>http://localhost:8080/files?instanceId=:instanceId&format=:format&option=:parameter_option</pre>
                         </div>'">
-                    <i class="fa fa-info-circle"></i>
+                    <i class="fas fa-circle-info"></i>
                 </button>
                 <input id="webhookUrl"
                        name="webhookUrl"
@@ -366,7 +366,7 @@
                data-placement="right"
                title="Schedule this report"
                for="createSchedule" >
-            <i class="fa fa-clock-o"></i> Schedule this report
+            <i class="far fa-clock"></i> Schedule this report
         </label>
     </div>
     <div class="" ng-if="options.showScheduleOptions && options.scheduleReport">

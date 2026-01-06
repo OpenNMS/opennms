@@ -37,12 +37,14 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
@@ -69,6 +71,8 @@ import java.util.stream.Collectors;
 public class EventConfRestService implements EventConfRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfRestService.class);
+
+    private static final int VENDOR_MAX_LENGTH = 128;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -446,6 +450,108 @@ public class EventConfRestService implements EventConfRestApi {
                     .entity("Error while retrieving events for vendor: " + vendorName
                             + ". Cause: " + ex.getMessage())
                     .build();
+        }
+    }
+
+    @Override
+    public Response addEventConfSource(final AddEventConfSourceRequest request,
+                                       SecurityContext securityContext) {
+        final Date now = new Date();
+
+        try {
+            validateAddSourceRequest(request);
+        } catch (IllegalArgumentException ex) {
+            LOG.warn("Validation failed for addEventConfSource request. reason={}", ex.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        }
+
+        try {
+            // Duplicate check
+            if (eventConfSourceDao.findByName(request.getName()) != null) {
+                LOG.warn("Attempt to create duplicate EventConfSource. name='{}'", request.getName());
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("An EventConfSource with the same name already exists")
+                        .build();
+            }
+
+            final String username = getUsername(securityContext);
+
+            int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
+            int newOrder = maxFileOrder + 1;
+
+            LOG.debug("Assigned fileOrder={} for new EventConfSource name='{}'",
+                    newOrder, request.getName());
+
+            EventConfSource eventConfSource = new EventConfSource();
+            eventConfSource.setName(request.getName());
+            eventConfSource.setDescription(request.getDescription());
+            eventConfSource.setVendor(request.getVendor());
+            eventConfSource.setEnabled(true);
+            eventConfSource.setEventCount(0);
+            eventConfSource.setCreatedTime(now);
+            eventConfSource.setLastModified(now);
+            eventConfSource.setFileOrder(newOrder);
+            eventConfSource.setUploadedBy(username);
+
+            LOG.debug("Persisting EventConfSource name='{}'", request.getName());
+
+            Long eventConfSourceId = eventConfPersistenceService.createEventConfSource(eventConfSource);
+
+            LOG.info("Successfully created EventConfSource id={}, name='{}', user='{}'",
+                    eventConfSourceId, request.getName(), username);
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(Map.of(
+                            "id", eventConfSourceId,
+                            "name", eventConfSource.getName(),
+                            "fileOrder", eventConfSource.getFileOrder()
+                    ))
+                    .build();
+
+        }   catch (DataIntegrityViolationException ex) {
+
+            LOG.warn("Data integrity violation while creating EventConfSource name='{}'. Cause={}",
+                    request.getName(),
+                    ex.getMostSpecificCause().getMessage(),
+                    ex);
+
+            return Response.status(Response.Status.CONFLICT)
+                    .entity("EventConfSource could not be created due to a data integrity violation. "
+                            + "It may already exist or violate database constraints.")
+                    .build();
+        }
+        catch (Exception ex) {
+
+            LOG.error("Failed to create EventConfSource name='{}'. Error={}",
+                    request.getName(), ex.getMessage(), ex);
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while creating EventConfSource")
+                    .build();
+        }
+    }
+
+    private void validateAddSourceRequest(final AddEventConfSourceRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request must not be null.");
+        }
+
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new IllegalArgumentException("Source name must not be null or blank.");
+        }
+
+        if (request.getVendor() == null || request.getVendor().isBlank()) {
+            throw new IllegalArgumentException("Vendor must not be null or blank.");
+        }
+
+        final String vendor = request.getVendor();
+
+        if (vendor.length() > VENDOR_MAX_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
+            );
         }
     }
 

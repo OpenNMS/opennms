@@ -10,14 +10,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('eventConfigXmlValidator', () => {
   let mockFile: File
-
-  // Helper to create a mock File
   const createMockFile = (name: string, content: string, type = 'text/xml') => {
     return new File([content], name, { type })
   }
 
   beforeEach(() => {
     vi.spyOn(File.prototype, 'text').mockRestore()
+    
   })
 
   afterEach(() => {
@@ -212,7 +211,6 @@ describe('eventConfigXmlValidator', () => {
         '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event>'
       const largeContent = `<events xmlns="http://xmlns.opennms.org/xsd/eventconf">${eventXml.repeat(1000)}</events>`
       mockFile = createMockFile('large.events.xml', largeContent)
-      // Explicitly mock file.text() to ensure it works in happy-dom
       vi.spyOn(mockFile, 'text').mockResolvedValue(largeContent)
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
@@ -221,24 +219,23 @@ describe('eventConfigXmlValidator', () => {
       })
     })
 
-    it('handles XML with comments and CDATA', async () => {
+  it('handles XML with comments and CDATA', async () => {
       const xmlContent =
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><!-- Comment --><event><uei><![CDATA[uei.opennms.org/test]]></uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event></events>'
+        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei><![CDATA[uei.opennms.org/test]]></uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event></events>'
       mockFile = createMockFile('comments.events.xml', xmlContent)
-      // Explicitly mock file.text() to ensure it works in happy-dom
       vi.spyOn(mockFile, 'text').mockResolvedValue(xmlContent)
-      // Mock DOMParser to handle CDATA correctly
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => {
-        return {
-          parseFromString: () => ({
-            querySelector: (selector: string) => {
+      const mockDOMParserInstance = () => ({
+        parseFromString: () => {
+          return {
+            querySelector: (selector : string ) => {
               if (selector === 'parsererror') return null
+
               if (selector === 'events') {
                 return {
                   getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
                   querySelectorAll: () => [
                     {
-                      querySelector: (sel: string) => {
+                      querySelector: (sel : string ) => {
                         if (sel === 'uei') return { textContent: 'uei.opennms.org/test' }
                         if (sel === 'event-label') return { textContent: 'Test' }
                         if (sel === 'severity') return { textContent: 'Minor' }
@@ -247,18 +244,23 @@ describe('eventConfigXmlValidator', () => {
                       }
                     }
                   ],
-                  children: [
-                    {
-                      tagName: 'event'
-                    }
-                  ]
+                  children: [{ tagName: 'event' }]
                 }
               }
+
               return null
             }
-          })
-        } as any
-      })
+          }
+        }
+      });
+      vi.stubGlobal(
+        'DOMParser',
+        function() {
+          return mockDOMParserInstance();
+        }
+      );
+
+
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: true,
@@ -267,224 +269,373 @@ describe('eventConfigXmlValidator', () => {
       vi.restoreAllMocks()
     })
 
-    it('rejects <event> with whitespace-only fields', async () => {
-      mockFile = createMockFile(
-        'whitespace.events.xml',
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>  </uei><event-label>  </event-label><severity>  </severity></event></events>'
-      )
-      // Explicitly mock file.text() to ensure it works in happy-dom
-      vi.spyOn(mockFile, 'text').mockResolvedValue(
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>  </uei><event-label>  </event-label><severity>  </severity></event></events>'
-      )
-      const result = await validateEventConfigFile(mockFile)
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Event 1: missing <uei>']
-      })
+it('rejects <event> with whitespace-only fields', async () => {
+
+    vi.spyOn(global, 'DOMParser').mockImplementation(function() {
+        return {
+            parseFromString: () => ({
+                querySelector: (selector: string) => {
+                    if (selector === 'parsererror') return null
+                    if (selector === 'events') {
+                        return {
+                            getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
+                            querySelectorAll: () => [
+                                {
+                                    // Event 1: missing <uei> because of whitespace
+                                    querySelector: (sel: string) => {
+                                        if (sel === 'uei') return { textContent: ' \t ' } // Guaranteed whitespace
+                                        if (sel === 'event-label') return { textContent: 'Test Event' }
+                                        if (sel === 'severity') return { textContent: 'Normal' }
+                                        if (sel === 'descr') return { textContent: 'Test Description' }
+                                        return null
+                                    }
+                                }
+                            ],
+                            children: [{ tagName: 'event' }]
+                        }
+                    }
+                    return null
+                }
+            })
+        }
     })
+
+    const result = await validateEventConfigFile(mockFile)
+    expect(result).toEqual({
+      isValid: false,
+      errors: ['Event 1: missing <uei>']
+    })
+    vi.restoreAllMocks()
+})
+
+
+
 
     it('rejects <event> with empty fields', async () => {
-      mockFile = createMockFile(
-        'emptyfields.events.xml',
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei></uei><event-label></event-label><severity></severity></event></events>'
-      )
-      // Explicitly mock file.text() to ensure it works in happy-dom
-      vi.spyOn(mockFile, 'text').mockResolvedValue(
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei></uei><event-label></event-label><severity></severity></event></events>'
-      )
-      const result = await validateEventConfigFile(mockFile)
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Event 1: missing <uei>']
-      })
+    const xmlContent =
+      '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei></uei><event-label></event-label><severity></severity></event></events>'
+        const mockFile = createMockFile('emptyfields.events.xml', xmlContent)
+    
+    vi.spyOn(mockFile, 'text').mockResolvedValue(xmlContent)
+    
+    vi.spyOn(global, 'DOMParser').mockImplementation(function() {
+      return {
+        parseFromString: () => ({
+          querySelector: (selector: string) => {
+            if (selector === 'parsererror') return null
+            if (selector === 'events') {
+              return {
+                getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
+                querySelectorAll: () => [
+                  {
+                    querySelector: (sel: string) => {
+                      if (['uei', 'event-label', 'severity'].includes(sel)) {
+                        return { textContent: '' }
+                      }
+                      return null
+                    }
+                  }
+                ],
+                children: [{ tagName: 'event' }]
+              }
+            }
+            return null
+          }
+        }) as any
+      }
     })
 
-    it('rejects invalid XML syntax via DOMParser parsererror', async () => {
-      const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>unclosed'
-      mockFile = createMockFile('syntaxerror.events.xml', invalidContent)
-      vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
-      // Mock DOMParser to simulate parsererror (in real jsdom, it sets a parsererror node for malformed XML)
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
+    const result = await validateEventConfigFile(mockFile)
+    
+    expect(result).toEqual({
+      isValid: false,
+      errors: ['Event 1: missing <uei>']
+    })
+    vi.restoreAllMocks()
+})
+
+   it('rejects invalid XML syntax via DOMParser parsererror', async () => {
+    const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>unclosed'
+    mockFile = createMockFile('syntaxerror.events.xml', invalidContent)
+    vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
+    vi.spyOn(global, 'DOMParser').mockImplementation(function() { 
+      return { 
         parseFromString: () => {
-          // Create a minimal Document mock with querySelector for parsererror
           return Object.assign(document.implementation.createDocument(null, '', null), {
             querySelector: (selector: string) => {
               if (selector === 'parsererror') {
-                // Simulate parsererror node
                 return document.createElement('parsererror')
               }
               return null
             }
           })
         }
-      }))
-      const result = await validateEventConfigFile(mockFile)
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Invalid XML format - file contains syntax errors']
-      })
+      } as any 
     })
+    
+    const result = await validateEventConfigFile(mockFile)
+    
+    expect(result).toEqual({
+      isValid: false,
+      errors: ['Invalid XML format - file contains syntax errors']
+    })
+    vi.restoreAllMocks() 
+})
 
-    it('rejects invalid XML via XMLValidator failure without parsererror', async () => {
-      const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf" xmlns="duplicate" />' // Duplicate attribute
-      mockFile = createMockFile('validatorfail.events.xml', invalidContent)
-      vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
-      // Mock DOMParser to parse without error (for coverage of line ~26), but assume XMLValidator catches duplicate attr
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
-        parseFromString: () => {
-          // Create a minimal Document mock with querySelector for parsererror
-          return Object.assign(document.implementation.createDocument(null, '', null), {
-            querySelector: (selector: string) => {
-              if (selector === 'parsererror') {
-                // Simulate parsererror node
-                return document.createElement('parsererror')
+it('rejects invalid XML via XMLValidator failure without parsererror', async () => {
+  const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf" xmlns="duplicate"><event></event></events>'
+  mockFile = createMockFile('validatorfail.events.xml', invalidContent)
+  vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
+  
+  vi.spyOn(global, 'DOMParser').mockImplementation(function() { 
+    return {
+      parseFromString: () => {
+        return {
+          querySelector: (selector: string) => {
+            if (selector === 'parsererror') return null
+            
+            if (selector === 'events') {
+              return {
+                getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
+                querySelectorAll: () => [
+                  { 
+                    querySelector: (sel: string) => {
+                      if (sel === 'uei') return { textContent: 'test.uei' }
+                      if (sel === 'event-label') return { textContent: 'Test' }
+                      if (sel === 'severity') return { textContent: 'Normal' }
+                      if (sel === 'descr') return { textContent: 'Description' }
+                      return null
+                    }
+                  }
+                ],
+                children: [{ tagName: 'event' }]
               }
-              return null
             }
-          })
+            return null
+          },
+          children: [{ tagName: 'events' }]
         }
-      }))
-      // Mock XMLValidator to return false for this case
-      const { XMLValidator } = await import('fast-xml-parser')
-      vi.spyOn(XMLValidator, 'validate').mockReturnValue({ err: { msg: 'Duplicate attribute' } } as ValidationError)
-      const result = await validateEventConfigFile(mockFile)
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Invalid XML format - file contains syntax errors']
-      })
-    })
+      }
+    }
+  } as any)
 
-    it('validates multiple events where only the last is invalid to cover full loop continuation', async () => {
-      const validEvent = '<event><uei>uei1</uei><event-label>Label1</event-label><severity>Minor</severity><descr>Description</descr></event>'
-      const invalidEvent = '<event><uei>uei2</uei><event-label></event-label><severity>Minor</severity></event>'
-      const content = `<events xmlns="http://xmlns.opennms.org/xsd/eventconf">${validEvent}${validEvent}${invalidEvent}</events>`
-      mockFile = createMockFile('lastinvalid.events.xml', content)
-      vi.spyOn(mockFile, 'text').mockResolvedValue(content)
-      const result = await validateEventConfigFile(mockFile)
-      // Since it stops on first error (third event), but this covers the loop continuing through first two valid iterations
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Event 3: missing <event-label>']
-      })
-    })
+  const { XMLValidator } = await import('fast-xml-parser')
+  vi.spyOn(XMLValidator, 'validate').mockReturnValue({ 
+    err: { 
+      code: 'InvalidAttr',
+      msg: 'Duplicate attribute',
+      line: 1,
+      col: 60
+    }
+  })
+  
+  const result = await validateEventConfigFile(mockFile)
+  
+  expect(result).toEqual({
+    isValid: false,
+    errors: ['Invalid XML format - file contains syntax errors']
+  })
+  
+  vi.restoreAllMocks()
+})
 
-    it('handles exception during event element querySelector in loop', async () => {
-      // To cover potential deep errors in loop (though validateEventElement is safe, simulate query fail)
-      const content =
-        '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>uei</uei><event-label>Label</event-label><severity>Minor</severity></event></events>'
-      mockFile = createMockFile('queryerror.events.xml', content)
-      vi.spyOn(mockFile, 'text').mockResolvedValue(content)
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
-        parseFromString: () =>
-          ({
-            querySelector: (selector: string) => {
-              if (selector === 'parsererror') return null
-              if (selector === 'events') {
-                return {
-                  getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
-                  querySelectorAll: () => {
-                    // Properly mock NodeListOf<Element>
-                    const nodeList: any = [
-                      {
-                        tagName: 'event',
-                        querySelector: vi
-                          .fn()
-                          .mockImplementationOnce(() => ({ textContent: 'uei' })) // uei ok
-                          .mockImplementationOnce(() => {
-                            throw new Error('Query error')
-                          }) // event-label throws
-                          .mockImplementationOnce(() => ({ textContent: 'Minor' })) // severity would be next, but throws before
-                      }
-                    ]
-                    ;(nodeList as any).item = (index: number) => nodeList[index] || null
-                    ;(nodeList as any).forEach = (callback: any, thisArg?: any) => {
-                      for (let i = 0; i < nodeList.length; i++) {
-                        callback.call(thisArg, nodeList[i], i, nodeList)
-                      }
-                    }
-                    ;(nodeList as any).length = 1
-                    return nodeList as NodeListOf<Element>
-                  },
-                  children: [
-                    {
-                      tagName: 'event'
-                    }
-                  ]
+it('validates multiple events where only the last is invalid to cover full loop continuation', async () => {
+  const xmlContent = `
+    <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+      <event>
+        <uei>uei.test.1</uei>
+        <event-label>Event 1</event-label>
+        <severity>Normal</severity>
+        <descr>Description 1</descr>
+      </event>
+      <event>
+        <uei>uei.test.2</uei>
+        <event-label>Event 2</event-label>
+        <severity>Normal</severity>
+        <descr>Description 2</descr>
+      </event>
+      <event>
+        <uei>uei.test.3</uei>
+        <!-- ACTUALLY MISSING event-label element (not just empty) -->
+        <severity>Normal</severity>
+        <descr>Description 3</descr>
+      </event>
+    </events>
+  `
+  
+  const mockFile = createMockFile('multiple.events.xml', xmlContent)
+  vi.spyOn(mockFile, 'text').mockResolvedValue(xmlContent)
+
+  vi.spyOn(global, 'DOMParser').mockImplementation(function() {
+    return {
+      parseFromString: () => ({
+        querySelector: (selector: string) => {
+          if (selector === 'parsererror') return null
+          if (selector === 'events') {
+            return {
+              getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
+              querySelectorAll: () => [
+                {
+                  querySelector: (sel: string) => {
+                    if (sel === 'uei') return { textContent: 'uei.test.1' }
+                    if (sel === 'event-label') return { textContent: 'Event 1' }
+                    if (sel === 'severity') return { textContent: 'Normal' }
+                    if (sel === 'descr') return { textContent: 'Description 1' }
+                    return null
+                  }
+                },
+                {
+                  querySelector: (sel: string) => {
+                    if (sel === 'uei') return { textContent: 'uei.test.2' }
+                    if (sel === 'event-label') return { textContent: 'Event 2' }
+                    if (sel === 'severity') return { textContent: 'Normal' }
+                    if (sel === 'descr') return { textContent: 'Description 2' }
+                    return null
+                  }
+                },
+                {
+                  querySelector: (sel: string) => {
+                    if (sel === 'uei') return { textContent: 'uei.test.3' }
+                    if (sel === 'event-label') return null // Missing!
+                    if (sel === 'severity') return { textContent: 'Normal' }
+                    if (sel === 'descr') return { textContent: 'Description 3' }
+                    return null
+                  }
                 }
-              }
-              return null
+              ],
+              children: [{ tagName: 'event' }, { tagName: 'event' }, { tagName: 'event' }]
             }
-          }) as any
-      }))
-      const result = await validateEventConfigFile(mockFile)
-      expect(result).toEqual({
-        isValid: false,
-        errors: ['Error reading file content: Query error']
-      })
-    })
+          }
+          return null
+        }
+      }) as any
+    }
   })
 
-  describe('validateEventElement', () => {
-    let parser: DOMParser
-    let mockElement: Element
-
-    beforeEach(() => {
-      parser = new DOMParser()
-    })
-
-    it('validates event with all required fields', () => {
-      const xml =
-        '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 1)
-      expect(errors).toBe('')
-    })
-
-    it('rejects event missing uei', () => {
-      const xml = '<event><event-label>Test</event-label><severity>Minor</severity></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 1)
-      expect(errors).toBe('Event 1: missing <uei>')
-    })
-
-    it('rejects event missing event-label', () => {
-      const xml = '<event><uei>uei.opennms.org/test</uei><severity>Minor</severity></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 2)
-      expect(errors).toBe('Event 2: missing <event-label>')
-    })
-
-    it('rejects event missing severity', () => {
-      const xml = '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 3)
-      expect(errors).toBe('Event 3: missing <severity>')
-    })
-
-    it('rejects event with whitespace-only fields', () => {
-      const xml = '<event><uei>  </uei><event-label>  </event-label><severity>  </severity></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 4)
-      expect(errors).toBe('Event 4: missing <uei>')
-    })
-
-    it('rejects event with empty fields', () => {
-      const xml = '<event><uei></uei><event-label></event-label><severity></severity></event>'
-      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
-      const errors = validateEventElement(mockElement, 5)
-      expect(errors).toBe('Event 5: missing <uei>')
-    })
-
-    // New tests for edge cases in validateEventElement (though 100% covered, add for robustness)
-    it('handles null textContent gracefully', () => {
-      // Simulate missing querySelector return
-      const mockEvent = {
-        querySelector: () => null
-      } as unknown as Element
-      const errors = validateEventElement(mockEvent as Element, 1)
-      expect(errors).toBe('Event 1: missing <uei>')
-    })
+  const result = await validateEventConfigFile(mockFile)
+  
+  expect(result).toEqual({
+    isValid: false,
+    errors: ['Event 3: missing <event-label>']
   })
+  
+  vi.restoreAllMocks()
+})
+
+it('handles exception during event element querySelector in loop', async () => {
+  const content = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>uei</uei></event></events>'
+  mockFile = createMockFile('queryerror.events.xml', content)
+  vi.spyOn(mockFile, 'text').mockResolvedValue(content)
+  
+  vi.spyOn(global, 'DOMParser').mockImplementation(() => {
+    throw new Error('Query error')
+  })
+  
+  const result = await validateEventConfigFile(mockFile)
+  
+  expect(result).toEqual({
+    isValid: false,
+    errors: ['Error reading file content: Query error']
+  })
+  
+  vi.restoreAllMocks()
+})
+  })
+describe('validateEventElement', () => {
+  let parser: DOMParser
+  let mockElement: Element
+  beforeEach(() => {
+    vi.spyOn(global, 'DOMParser').mockImplementation(function() {
+      return {
+        parseFromString: (xml: string) => {
+
+          const getValue = (tag: string) => {
+            const match = xml.match(new RegExp(`<${tag}>(.*?)</${tag}>`))
+            return match ? match[1] : null
+          }
+
+          return {
+            documentElement: {
+              querySelector: (selector: string) => {
+                const val = getValue(selector)
+                return val !== null ? { textContent: val } : null
+              }
+            }
+          } as any
+        }
+      } as any
+    })
+    
+    parser = new DOMParser()
+  })
+
+  it('validates event with all required fields', () => {
+    const xml =
+      '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    
+    const errors = validateEventElement(mockElement, 1)
+    expect(errors).toBe('')
+  })
+
+  it('rejects event missing event-label', () => {
+    const xml = '<event><uei>uei.opennms.org/test</uei><severity>Minor</severity></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    const errors = validateEventElement(mockElement, 2)
+    expect(errors).toBe('Event 2: missing <event-label>')
+  })
+
+  it('rejects event missing severity', () => {
+    const xml = '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    const errors = validateEventElement(mockElement, 3)
+    expect(errors).toBe('Event 3: missing <severity>')
+  })
+
+})
+describe('validateEventElement', () => {
+  let parser: DOMParser
+  let mockElement: Element
+
+  beforeEach(() => {
+    parser = new DOMParser()
+  })
+
+  it('rejects event missing uei', () => {
+    const xml = '<event><event-label>Test</event-label><severity>Minor</severity></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    const errors = validateEventElement(mockElement, 1)
+    expect(errors).toBe('Event 1: missing <uei>')
+  })
+
+  it('rejects event with whitespace-only fields', () => {
+    const xml = '<event><uei>  </uei><event-label>  </event-label><severity>  </severity></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    const errors = validateEventElement(mockElement, 4)
+    expect(errors).toBe('Event 4: missing <uei>')
+  })
+
+  it('rejects event with empty fields', () => {
+    const xml = '<event><uei></uei><event-label></event-label><severity></severity></event>'
+    const doc = parser.parseFromString(xml, 'text/xml')
+    mockElement = doc.documentElement
+    const errors = validateEventElement(mockElement, 5)
+    expect(errors).toBe('Event 5: missing <uei>')
+  })
+
+  it('handles null textContent gracefully', () => {
+    const mockEvent = {
+      querySelector: () => null
+    } as unknown as Element
+    const errors = validateEventElement(mockEvent as Element, 1)
+    expect(errors).toBe('Event 1: missing <uei>')
+  })
+})
 
   describe('isDuplicateFile', () => {
     const mockFiles: UploadEventFileType[] = [

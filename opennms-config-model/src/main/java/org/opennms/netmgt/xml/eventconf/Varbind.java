@@ -157,7 +157,13 @@ public class Varbind implements Serializable {
                 if (value == null) {
                     continue;
                 }
-                valueMatchers.add(valueEqualsMatcher(varbind(m_vboid), value));
+                if (value.startsWith("~")) {
+                    valueMatchers.add(valueMatchesRegexMatcher(varbind(m_vboid), value));
+                } else if (value.endsWith("%")) {
+                    valueMatchers.add(valueStartsWithMatcher(varbind(m_vboid), value));
+                } else {
+                    valueMatchers.add(valueEqualsMatcher(varbind(m_vboid), value));
+                }
             }
 
             if (valueMatchers.size() == 1) {

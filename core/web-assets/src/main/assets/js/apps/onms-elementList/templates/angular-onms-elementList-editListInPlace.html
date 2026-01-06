@@ -2,21 +2,21 @@
 	<!-- Show all of the current values -->
 <span ng-repeat="value in values">
 	<button class="btn btn-sm btn-secondary" ng-click="confirmAndRemove(values, value)" style="margin-bottom:3px;margin-right:3px;">
-		{{value}}&nbsp;<i class="fa fa-close"></i>
+		{{value}}&nbsp;<i class="fas fa-xmark"></i>
 	</button>
 </span>
 
 <!-- Edit button -->
 <span style="line-height:24px;" ng-hide="editing">
-	<a href style="text-decoration: none;" ng-click="edit()"><i class="fa fa-edit fa-lg"></i></a>&nbsp;
+	<a href style="text-decoration: none;" ng-click="edit()"><i class="fas fa-pen-to-square fa-lg"></i></a>&nbsp;
 </span>
 
 <!-- TODO: Add the ability to support select controls -->
 <!-- Input for new item -->
 <span ng-show="editing" class="text-nowrap">
 	<input type="{{valueType}}" ng-keyup="onKeyup($event)" ng-model="newValue">
-	<a href style="text-decoration: none;" ng-click="add(values, newValue)"><i class="fa fa-plus fa-lg"></i></a>
-	<a href style="text-decoration: none;" ng-click="unedit()"><i class="fa fa-close fa-lg"></i></a>
+	<a href style="text-decoration: none;" ng-click="add(values, newValue)"><i class="fas fa-plus fa-lg"></i></a>
+	<a href style="text-decoration: none;" ng-click="unedit()"><i class="fas fa-xmark fa-lg"></i></a>
 </span>
 
 <!-- Transclude any content inside the tag -->

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to The OpenNMS Group, Inc (TOG) under one or more
  * contributor license agreements.  See the LICENSE.md file
  * distributed with this work for additional information
@@ -19,8 +19,43 @@
  * language governing permissions and limitations under the
  * License.
  */
-$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
-@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "~@fortawesome/fontawesome-free/scss/solid.scss";
-@import "~@fortawesome/fontawesome-free/scss/regular.scss";
-@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+package org.opennms.web.rest.v2.model;
+
+public class AddEventConfSourceRequest {
+
+    private String name;
+    private String description;
+    private String vendor;
+
+    public AddEventConfSourceRequest() {
+    }
+    public AddEventConfSourceRequest(String name, String description, String vendor) {
+        this.name = name;
+        this.description = description;
+        this.vendor = vendor;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+}

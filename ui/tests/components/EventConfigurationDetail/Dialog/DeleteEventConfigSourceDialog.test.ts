@@ -100,6 +100,7 @@ describe('DeleteEventConfigSourceDialog.vue', () => {
   })
 
   it('does not call delete if eventConfigSource is null', async () => {
+    vi.clearAllMocks()
     store.deleteEventConfigSourceDialogState.eventConfigSource = null
     await wrapper.vm.$nextTick()
 
