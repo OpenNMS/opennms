@@ -170,6 +170,6 @@ echo "Initialize the Java environment..."
 echo "Initialize the database schema..."
 "$ROOT/target/opennms/bin/install" -dis
 
-echo "Starting OpenNMS..."
-"$ROOT/target/opennms/bin/opennms" -t start
+echo "Starting OpenNMS (foreground)..."
+"$ROOT/target/opennms/bin/opennms" -f -t start
 
