@@ -67,6 +67,20 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# ------------------------------------------------------
+# Pre-build setup
+# ------------------------------------------------------
+
+echo "Checking ulimit..."
+ULIMIT_OUTPUT=$(ulimit -n || true)
+echo "Current ulimit -n: $ULIMIT_OUTPUT"
+if [[ "$ULIMIT_OUTPUT" == "unlimited" || "$ULIMIT_OUTPUT" -gt 20000 ]]; then
+    echo "ulimit is sufficient."
+else
+    echo "Setting ulimit to 20000"
+    ulimit -n 20000 || echo "Failed to set ulimit. You may need to run this script with elevated permissions."
+fi
+
 
 # run dependency setup
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -115,16 +129,6 @@ if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
         ./clean.pl
     fi
 
-fi
-
-echo "Checking ulimit..."
-ULIMIT_OUTPUT=$(ulimit -n || true)
-echo "Current ulimit -n: $ULIMIT_OUTPUT"
-if [[ "$ULIMIT_OUTPUT" == "unlimited" || "$ULIMIT_OUTPUT" -gt 20000 ]]; then
-    echo "ulimit is sufficient."
-else
-    echo "Setting ulimit to 20000"
-    ulimit -n 20000 || echo "Failed to set ulimit. You may need to run this script with elevated permissions."
 fi
 
 echo "Compiling & assembling (skip tests)..."
