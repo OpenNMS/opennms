@@ -32,7 +32,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Manage Event Configurations', to: '#', position: 'last' }
+  { label: 'SNMP Data Collection', to: '#', position: 'last' }
 ]))
 </script>
 
