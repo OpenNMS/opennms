@@ -28,7 +28,7 @@ usage(){
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  --help                  Show this help message"
-    echo "  --enable-jrrd2          Enable jrrd2 library,from prebuilt binaries"
+    echo "  --disable-jrrd2         Disable building jrrd2 library"
     echo "  --skip-cleanup          Skip cleanup of previous build artifacts"
     echo "  --enable-tests          Enable running tests during build"
     exit 1
@@ -37,17 +37,15 @@ usage(){
 # Default options
 ENABLE_TESTS="no"
 SKIP_CLEANUP="no"
-ENABLE_JRRD2=${ENABLE_JRRD2:-"no"}
-# INSTALL_JICMP=${INSTALL_JICMP:-"no"}
-# INSTALL_JICMP6=${INSTALL_JICMP6:-"no"}
+DISABLE_JRRD2=${DISABLE_JRRD2:-"false"}
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         --help)
             usage
             ;;
-        --enable-jrrd2 )
-            ENABLE_JRRD2="yes"
+        --disable-jrrd2 )
+            DISABLE_JRRD2="true"
             shift
             ;;
         --enable-tests )
@@ -59,7 +57,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --all)
-            ENABLE_JRRD2="yes"
+            DISABLE_JRRD2="false"
             shift
             ;;
         *)
@@ -74,15 +72,20 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-if [[ "$ENABLE_JRRD2" == "yes" ]]; then
+if [[ "$DISABLE_JRRD2" != "true" ]]; then
    detect_jrrd2_location
+   if [[ -z "$JRRD_JAR" ]] || [[ ! -f "$JRRD_JAR" ]] || [[ -z "$JRRD_LIB" ]] || [[ ! -f "$JRRD_LIB" ]]; then
+     # Build JRRD2 from source then run the rest of script
+     "$SCRIPT_DIR/dependencies.sh" --install-jrrd2-from-source || true
+     detect_jrrd2_location  
+   fi
 fi
-
 
 detect_postgres_installed
 
 if [[ ${POSTGRES_VERSION:-} == "unknown" ]]; then
-    echo "PostgreSQL not detected. "
+    echo "PostgreSQL not detected. You may deploy PostgreSQL using Docker by running:"
+    echo "  $SCRIPT_DIR/dependencies.sh --deploy-postgres"
     exit 1
 fi
 
@@ -140,7 +143,7 @@ tar -zxvf "./target/opennms-$RELEASE.tar.gz" -C "$ROOT/target/opennms-$RELEASE"
 echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
-if [[ "$ENABLE_JRRD2" == "yes" ]]; then 
+if [[ "$DISABLE_JRRD2" != "true" ]]; then 
     # Figureout where rrdtool is installed
     RRD_TOOL_PATH=$(which rrdtool || echo "/usr/local/bin/rrdtool")
     echo "Detected rrdtool at: $RRD_TOOL_PATH"
