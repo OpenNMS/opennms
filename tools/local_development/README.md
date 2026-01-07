@@ -1,8 +1,5 @@
 # Helper scripts for setting up and bringing up OpenNMS Development Environment
 
-
-## 
-
 # `dependencies.sh`
 
 ```
@@ -18,6 +15,8 @@ Options:
 ```
 
 # `opennms.sh`
+
+**Note:** Script will check if `POSTGRES_PASSWORD` environment variable has been set with the required password for opennms user to connect to Postgres. If it's not set, it will use a default password
 
 ```
 $ ./tools/local_development/opennms.sh --help
