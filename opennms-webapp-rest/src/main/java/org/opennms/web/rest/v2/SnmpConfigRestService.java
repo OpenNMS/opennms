@@ -100,7 +100,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             }
 
             SnmpAgentConfig agentConfig =
-                SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), validLocation, false);
+                SnmpPeerFactory.getInstance().getAgentConfig(addr, validLocation, false);
 
             return Response.ok(agentConfig).build();
         } catch (Exception e) {
@@ -126,8 +126,12 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 return createBadRequestResponse("Invalid 'lastIpAddress'.");
             }
 
-            if (convertToValidLocation(dto.getLocation()) == null) {
+            final String convertedLocation = convertToValidLocation(dto.getLocation());
+
+            if (convertedLocation == null) {
                 return createBadRequestResponse("Missing or invalid 'location'.");
+            } else {
+                dto.setLocation(convertedLocation);
             }
 
             SnmpEventInfo eventInfo = dto.createEventInfo(dto.getFirstIpAddress(), dto.getLastIpAddress());
@@ -182,7 +186,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             throw createServerException("Error removing SNMP definition.");
         }
 
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     /**

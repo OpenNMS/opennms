@@ -86,7 +86,7 @@ public interface SnmpConfigRestApi {
             operationId = "removeDefinition"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "SNMP configuration definition for the given item removed successfully",
+            @ApiResponse(responseCode = "204", description = "SNMP configuration definition for the given item removed successfully",
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
                     content = @Content)
