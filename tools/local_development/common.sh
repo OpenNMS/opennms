@@ -52,8 +52,8 @@ detect_postgres_installed(){
 detect_jrrd2_location(){
 export JRRD_JAR=${JRRD_JAR:-$( \
   for path in \
-    "$ROOT"/built_dependencies/jrrd2-*.jar \
-    "$ROOT"/built_dependencies/jrrd2*.jar \
+    "$ROOT"/built/jrrd2-*.jar \
+    "$ROOT"/built/jrrd2*.jar \
     ./java/jrrd2.jar \
     /usr/share/java/jrrd2.jar \
     /usr/local/lib/jrrd2.jar
@@ -68,7 +68,7 @@ export JRRD_JAR=${JRRD_JAR:-$( \
 
 export JRRD_LIB=${JRRD_LIB:-$( \
   for path in \
-    "$ROOT"/built_dependencies/lib/libjrrd2.so \
+    "$ROOT"/built/lib/libjrrd2.so \
     ./lib/libjrrd2.so \
     /usr/lib64/libjrrd2.so \
     /usr/local/lib/libjrrd2.dylib
