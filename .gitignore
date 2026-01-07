@@ -24,6 +24,7 @@ build.properties
 nb-configuration.xml
 .idea
 .jqwik-database
+built/
 dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log

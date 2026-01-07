@@ -73,6 +73,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 if [[ "$DISABLE_JRRD2" != "true" ]]; then
+   # if $JAVA_HOME is not set, ask user to setup JAVA_HOME
+   if [[ -z "${JAVA_HOME:-}" ]]; then
+     echo "JAVA_HOME is not set. Detecting required JDK version from pom.xml..."
+     detect_jdk_version_required
+     echo "Detected required JDK version: $REQUIRED_VERSION"
+     echo "Please set JAVA_HOME to a JDK $REQUIRED_VERSION installation and re-run this script."
+     exit 1
+   fi
+
    detect_jrrd2_location
    if [[ -z "$JRRD_JAR" ]] || [[ ! -f "$JRRD_JAR" ]] || [[ -z "$JRRD_LIB" ]] || [[ ! -f "$JRRD_LIB" ]]; then
      # Build JRRD2 from source then run the rest of script
