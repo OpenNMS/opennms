@@ -30,6 +30,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -193,6 +194,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             jpaEvent.setUei(xmlEvent.getUei());
             jpaEvent.setDescription(xmlEvent.getDescr());
             jpaEvent.setXmlContent(xmlEvent.toString());
+            jpaEvent.setContent(JsonUtils.marshal(xmlEvent));
             jpaEvent.setEnabled(true);
             jpaEvent.setSeverity(xmlEvent.getSeverity());
             jpaEvent.setCreatedTime(new Date());
@@ -255,6 +257,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setUei(xmlEvent.getUei());
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
+                jpaEvent.setContent(JsonUtils.marshal(xmlEvent));
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
@@ -321,6 +324,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setUei(xmlEvent.getUei());
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
+                jpaEvent.setContent(JsonUtils.marshal(xmlEvent));
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
@@ -378,6 +382,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 jpaEvent.setUei(xmlEvent.getUei());
                 jpaEvent.setDescription(xmlEvent.getDescr());
                 jpaEvent.setXmlContent(xmlEvent.toString());
+                jpaEvent.setContent(JsonUtils.marshal(xmlEvent));
                 jpaEvent.setEnabled(true);
                 jpaEvent.setSeverity(xmlEvent.getSeverity());
                 jpaEvent.setCreatedTime(new Date());
@@ -578,6 +583,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         event.setEventLabel(label);
         event.setDescription(description);
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setContent("{\"event\":{\"uei\":\"" + uei + "\"}}");
         event.setSource(m_source);
         event.setEnabled(true);
         event.setSeverity(severity);

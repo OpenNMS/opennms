@@ -240,32 +240,21 @@ describe('EventConfigurationDetail.vue', () => {
     expect(store.showDeleteEventConfigSourceDialog).toHaveBeenCalledWith(mockConfig)
   })
 
-  it('should fetch events on mount when route id matches selected source', async () => {
-    store.fetchEventsBySourceId = vi.fn()
+  it('should fetch the source on mount when route id is provided', async () => {
     wrapper = await createWrapper()
     await wrapper.vm.$nextTick()
 
-    expect(store.fetchEventsBySourceId).toHaveBeenCalled()
+    expect(store.fetchSourceById).toHaveBeenCalledTimes(1)
+    expect(store.fetchSourceById).toHaveBeenCalledWith('1')
   })
 
-  it('should not fetch events when route id does not match', async () => {
+  it('should re-fetch the source when selected source id differs from the route param', async () => {
     const differentConfig = { ...mockConfig, id: 999 }
-    store.selectedSource = differentConfig
-    store.fetchEventsBySourceId = vi.fn()
-    wrapper = mount(EventConfigurationDetail, {
-      global: {
-        stubs: {
-          FeatherBackButton: true,
-          FeatherButton: true,
-          EventConfigEventTable: true,
-          DeleteEventConfigSourceDialog: true,
-          ChangeEventConfigSourceStatusDialog: true
-        }
-      }
-    })
+    wrapper = await createWrapper(differentConfig)
     await wrapper.vm.$nextTick()
-    expect(store.fetchEventsBySourceId).toHaveBeenCalledTimes(1)
-    expect(store.fetchEventsBySourceId).toHaveBeenCalledWith()
+
+    expect(store.fetchSourceById).toHaveBeenCalledTimes(1)
+    expect(store.fetchSourceById).toHaveBeenCalledWith('1')
   })
 
   it('should render EventConfigEventTable component', async () => {
@@ -385,15 +374,36 @@ describe('EventConfigurationDetail.vue', () => {
     expect(wrapper.find('.action-container').exists()).toBe(true) // undefined !== 'OpenNMS'
   })
 
-  it('should call store.resetFilters and fetchEventsBySourceId on successful mount', async () => {
-    store.refreshEventConfigEvents = vi.fn()
-    store.fetchEventsBySourceId = vi.fn()
-    wrapper = await createWrapper(mockConfig)
+  it('should reset filters and fetch events after fetching the source on mount', async () => {
+    store.selectedSource = null
+
+    vi.mocked(useRoute).mockReturnValue({ params: { id: '1' } } as any)
+
+    const fetchEventsSpy = vi.fn().mockResolvedValue(undefined)
+    const refreshSpy = vi.fn().mockImplementation(async () => {
+      await store.fetchEventsBySourceId()
+    })
+    const fetchSourceSpy = vi.fn().mockImplementation(async () => {
+      store.selectedSource = mockConfig
+      await refreshSpy()
+    })
+
+    store.fetchEventsBySourceId = fetchEventsSpy
+    store.refreshEventConfigEvents = refreshSpy
+    store.fetchSourceById = fetchSourceSpy
+
+    wrapper = mount(EventConfigurationDetail, {
+      global: {
+        stubs: globalStubs
+      }
+    })
+
+    await wrapper.vm.$nextTick()
     await flushPromises()
 
-    expect(store.refreshEventConfigEvents).toHaveBeenCalledOnce()
-    expect(store.fetchEventsBySourceId).toHaveBeenCalledOnce()
-    expect(store.fetchEventsBySourceId).toHaveBeenCalledWith() // Pass source ID
+    expect(fetchSourceSpy).toHaveBeenCalledWith('1')
+    expect(refreshSpy).toHaveBeenCalledOnce()
+    expect(fetchEventsSpy).toHaveBeenCalledOnce()
     expect(store.selectedSource).toEqual(mockConfig)
   })
 

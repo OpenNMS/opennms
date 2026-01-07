@@ -197,7 +197,7 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import vkbeautify from 'vkbeautify'
 import AlarmDataInfo from './AlarmDataInfo.vue'
-import { AlarmTypeName, AlarmTypeValue, DestinationOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
+import { AlarmTypeOptions, DestinationOptions, MaskVarbindsTypeText, MaskVarbindsTypeValue, MAX_MASK_ELEMENTS, SeverityOptions } from './constants'
 import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
@@ -271,9 +271,10 @@ const resetValues = () => {
   eventUei.value = ''
   eventLabel.value = ''
   eventDescription.value = ''
-  severity.value = { _text: '', _value: '' }
-  destination.value = { _text: '', _value: '' }
+  operatorInstructions.value = ''
   logMessage.value = ''
+  destination.value = { _text: '', _value: '' }
+  severity.value = { _text: '', _value: '' }
   addAlarmData.value = false
   reductionKey.value = ''
   alarmType.value = { _text: '', _value: '' }
@@ -285,85 +286,65 @@ const resetValues = () => {
 }
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
-  if (val) {
-    const parser = new DOMParser()
-    const xmlDoc = parser.parseFromString(val.xmlContent || '', 'application/xml')
-    const logmsgElement = xmlDoc.getElementsByTagName('logmsg')[0]
-    logMessage.value = logmsgElement ? logmsgElement.textContent || '' : ''
-    const destAttr = logmsgElement?.getAttribute('dest') || ''
+  if (val?.jsonContent) {
+    eventUei.value = val?.jsonContent?.uei || ''
+    eventLabel.value = val?.jsonContent?.eventLabel || ''
+    eventDescription.value = val?.jsonContent?.descr || ''
+    operatorInstructions.value = val?.jsonContent?.operinstruct || ''
+    logMessage.value = val?.jsonContent?.logmsg?.content || ''
+    const dest = val?.jsonContent?.logmsg?.dest || ''
     destination.value = {
-      _text: destAttr,
-      _value: destAttr
+      _text: dest,
+      _value: dest
     }
-    eventDescription.value = val.description || ''
-    operatorInstructions.value = xmlDoc.getElementsByTagName('operinstruct')[0]?.textContent || ''
-    eventUei.value = val.uei || ''
-    eventLabel.value = val.eventLabel || ''
     severity.value = {
-      _text: val.severity || '',
-      _value: val.severity || ''
+      _text: val?.jsonContent?.severity || '',
+      _value: val?.jsonContent?.severity || ''
     }
-    addAlarmData.value = xmlDoc.getElementsByTagName('alarm-data')[0] ? true : false
-    if (addAlarmData.value) {
-      const alarmDataElement = xmlDoc.getElementsByTagName('alarm-data')[0]
-      reductionKey.value = alarmDataElement?.getAttribute('reduction-key') || ''
-      const alarmTypeAttr = alarmDataElement?.getAttribute('alarm-type') as AlarmTypeValue
-      const matchedKey = Object.keys(AlarmTypeValue).find(
-        (key) => AlarmTypeValue[key as keyof typeof AlarmTypeValue] === alarmTypeAttr
-      ) as keyof typeof AlarmTypeValue
+    addAlarmData.value = Object.keys(val?.jsonContent || {}).includes('alarmData') && val?.jsonContent?.alarmData ? true : false
+    if (addAlarmData.value && val?.jsonContent?.alarmData) {
+      reductionKey.value = val.jsonContent.alarmData.reductionKey || ''
       alarmType.value = {
-        _text: AlarmTypeName[matchedKey] || '',
-        _value: alarmTypeAttr || ''
+        _text: AlarmTypeOptions.find(option => option._value === String(val.jsonContent?.alarmData?.alarmType))?._text,
+        _value: String(val.jsonContent.alarmData.alarmType)
       }
-      autoClean.value = alarmDataElement?.getAttribute('auto-clean') === 'true' ? true : false
-      clearKey.value = alarmDataElement?.getAttribute('clear-key') || ''
+      autoClean.value = val.jsonContent.alarmData.autoClean
+      clearKey.value = val.jsonContent.alarmData.clearKey || ''
     }
-    const maskElementList = xmlDoc.getElementsByTagName('maskelement')
-    maskElements.value = []
-    for (let i = 0; i < maskElementList.length; i++) {
-      maskElements.value.push({
-        name: {
-          _text: maskElementList[i].getElementsByTagName('mename')[0].textContent || '',
-          _value: maskElementList[i].getElementsByTagName('mename')[0].textContent || ''
-        },
-        value: maskElementList[i].getElementsByTagName('mevalue')[0].textContent || ''
-      })
-    }
-    const varbindList = xmlDoc.getElementsByTagName('varbind')
-    varbinds.value = []
-    for (let i = 0; i < varbindList.length; i++) {
-      const vbnumberElement = varbindList[i].getElementsByTagName('vbnumber')[0]
-      const vboidElement = varbindList[i].getElementsByTagName('vboid')[0]
-      const vbvalueElement = varbindList[i].getElementsByTagName('vbvalue')[0]
-      if (vbnumberElement?.textContent) {
-        varbinds.value.push({
-          index: vbnumberElement.textContent || '',
-          value: vbvalueElement?.textContent || '',
+
+    maskElements.value = (val?.jsonContent?.mask?.maskelements || []).map((me) => ({
+      name: {
+        _text: me.mename,
+        _value: me.mename
+      },
+      value: me.mevalue
+    }))
+
+    varbinds.value = (val?.jsonContent?.mask?.varbinds || []).map((vb) => {
+      if (Object.keys(vb).includes('vbnumber')) {
+        return {
+          index: String(vb.vbnumber || 0),
+          value: vb.vbvalue,
           type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber }
-        })
-      } else if (vboidElement?.textContent) {
-        varbinds.value.push({
-          index: vboidElement.textContent || '',
-          value: vbvalueElement?.textContent || '',
+        }
+      }
+      if (Object.keys(vb).includes('vboid')) {
+        return {
+          index: String(vb.vboid || 0),
+          value: vb.vbvalue,
           type: { _text: MaskVarbindsTypeText.vbOid, _value: MaskVarbindsTypeValue.vbOid }
-        })
+        }
       }
-    }
-    const varbindsDecodeList = xmlDoc.getElementsByTagName('varbindsdecode')
-    varbindsDecode.value = []
-    for (let i = 0; i < varbindsDecodeList.length; i++) {
-      const decodeList = varbindsDecodeList[i].getElementsByTagName('decode')
-      varbindsDecode.value.push({
-        parmId: varbindsDecodeList[i].getElementsByTagName('parmid')[0].textContent || '',
-        decode: []
-      })
-      for (let j = 0; j < decodeList.length; j++) {
-        varbindsDecode.value[i].decode.push({
-          key: decodeList[j].getAttribute('varbinddecodedstring') || '',
-          value: decodeList[j].getAttribute('varbindvalue') || ''
-        })
-      }
-    }
+      return undefined
+    }).filter((vb) => vb !== undefined) as Array<{ index: string; value: string, type: ISelectItemType }>
+
+    varbindsDecode.value = (val?.jsonContent?.varbindsdecodes || []).map((vbd) => ({
+      parmId: vbd.parmid,
+      decode: vbd.decodes.map((dec) => ({
+        key: dec.varbinddecodedstring,
+        value: dec.varbindvalue
+      }))
+    }))
   } else {
     resetValues()
   }

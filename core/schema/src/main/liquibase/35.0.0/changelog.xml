@@ -2,7 +2,7 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:opennms="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <!-- EventConf Database Schema -->
@@ -131,6 +131,41 @@
                 splitStatements="true"
                 endDelimiter=";"
                 stripComments="true"/>
+    </changeSet>
+    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-add-content-column">
+        <addColumn tableName="eventconf_events">
+            <column name="content" type="jsonb" defaultValue="{}">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="eventconf_events" columnName="content" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="35.0.0-eventconf-events-update-content-column-value"
+               author="mwajahatabbasi">
+
+        <!--
+            Precondition:
+            Run only if at least one row still contains the default '{}' JSON.
+            If not, Liquibase marks the change as executed and skips the Java change.
+        -->
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="eventconf_events"/>
+            <columnExists tableName="eventconf_events" columnName="content"/>
+            <sqlCheck expectedResult="1">
+                SELECT CASE
+                WHEN EXISTS (
+                SELECT 1 FROM eventconf_events
+                WHERE xml_content IS NOT NULL AND content = '{}'
+                ) THEN 1 ELSE 0
+                END;
+            </sqlCheck>
+        </preConditions>
+
+        <!-- Custom Java Change -->
+        <opennms:eventConfEventChange/>
     </changeSet>
 
     <changeSet author="aurangzeb" id="35.0.0-add-severity-column-eventconf-events">

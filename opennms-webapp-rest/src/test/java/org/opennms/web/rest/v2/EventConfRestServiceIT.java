@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -490,6 +491,7 @@ public class EventConfRestServiceIT {
         event.setEventLabel(label);
         event.setDescription(description);
         event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setContent("{\"event\":{\"uei\":\"" + uei + "\"}}");
         event.setSource(m_source);
         event.setEnabled(true);
         event.setCreatedTime(new Date());
@@ -739,6 +741,14 @@ public class EventConfRestServiceIT {
 
         Events uploaded = JaxbUtils.unmarshal(Events.class, new StringReader(uploadedXml));
         Events downloaded = JaxbUtils.unmarshal(Events.class, new StringReader(downloadedXml));
+
+        //converting events object to json
+        String uploadedJson = JsonUtils.marshal(uploaded);
+        String downloadedJson = JsonUtils.marshal(downloaded);
+
+        //rebuilding events object from json
+        uploaded = JsonUtils.unmarshal(Events.class, uploadedJson);
+        downloaded = JsonUtils.unmarshal(Events.class, downloadedJson);
 
         final var uploadedEvents = new ArrayList<>(uploaded.getEvents());
         final var downloadedEvents = new ArrayList<>(downloaded.getEvents());

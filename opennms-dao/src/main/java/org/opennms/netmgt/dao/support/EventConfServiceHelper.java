@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.support;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.core.xml.JsonUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -69,6 +70,7 @@ public class EventConfServiceHelper {
         eventConfEvent.setEnabled(true);
         eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(event.getSeverity()));
         eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+        eventConfEvent.setContent(JsonUtils.marshal(event));
         eventConfEvent.setCreatedTime(timestamp);
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
@@ -138,6 +140,7 @@ public class EventConfServiceHelper {
             event.setEnabled(true);
             event.setSeverity(EventConfServiceHelper.getValidSeverity(parsed.getSeverity()));
             event.setXmlContent(JaxbUtils.marshal(parsed));
+            event.setContent(JsonUtils.marshal(parsed));
             event.setCreatedTime(timestamp);
             event.setLastModified(timestamp);
             event.setModifiedBy(username);
