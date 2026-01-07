@@ -141,13 +141,17 @@ echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
 if [[ "$ENABLE_JRRD2" == "yes" ]]; then 
-    echo "
-    org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
-    org.opennms.rrd.interfaceJar=$JRRD_JAR
-    opennms.library.jrrd2=$JRRD_LIB
-    org.opennms.web.graphs.engine=rrdtool
-    rrd.binary=/usr/bin/rrdtool
-    " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
+    # Figureout where rrdtool is installed
+    RRD_TOOL_PATH=$(which rrdtool || echo "/usr/local/bin/rrdtool")
+    echo "Detected rrdtool at: $RRD_TOOL_PATH"
+
+    echo "Configuring OpenNMS to use jrrd2 library..."
+    echo "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=$JRRD_JAR
+opennms.library.jrrd2=$JRRD_LIB
+org.opennms.web.graphs.engine=rrdtool
+rrd.binary=$RRD_TOOL_PATH
+" > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
 fi
 
 
