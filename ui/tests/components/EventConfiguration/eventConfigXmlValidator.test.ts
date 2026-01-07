@@ -357,7 +357,8 @@ describe('eventConfigXmlValidator', () => {
     })
 
     it('validates multiple events where only the last is invalid to cover full loop continuation', async () => {
-      const validEvent = '<event><uei>uei1</uei><event-label>Label1</event-label><severity>Minor</severity><descr>Description</descr></event>'
+      const validEvent =
+        '<event><uei>uei1</uei><event-label>Label1</event-label><severity>Minor</severity><descr>Description</descr></event>'
       const invalidEvent = '<event><uei>uei2</uei><event-label></event-label><severity>Minor</severity></event>'
       const content = `<events xmlns="http://xmlns.opennms.org/xsd/eventconf">${validEvent}${validEvent}${invalidEvent}</events>`
       mockFile = createMockFile('lastinvalid.events.xml', content)
@@ -398,14 +399,14 @@ describe('eventConfigXmlValidator', () => {
                           return { textContent: 'Minor' }
                         }
                       }
-                    ];
-                    (nodeList as any).item = (index: number) => nodeList[index] || null;
-                    (nodeList as any).forEach = (callback: any, thisArg?: any) => {
+                    ]
+                    ;(nodeList as any).item = (index: number) => nodeList[index] || null
+                    ;(nodeList as any).forEach = (callback: any, thisArg?: any) => {
                       for (let i = 0; i < nodeList.length; i++) {
                         callback.call(thisArg, nodeList[i], i, nodeList)
                       }
                     }
-                    (nodeList as any).length = 1
+                    ;(nodeList as any).length = 1
                     return nodeList as NodeListOf<Element>
                   },
                   children: [
