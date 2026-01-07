@@ -7,7 +7,7 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>Manage Event Configurations</h1>
+        <h1>Manage SNMP Data Collection Sources</h1>
       </div>
       <div class="action">
         <FeatherButton primary> Create New Data Collection Source </FeatherButton>

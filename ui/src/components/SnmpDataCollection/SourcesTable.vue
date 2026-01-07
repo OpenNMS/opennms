@@ -1,7 +1,9 @@
 <template>
   <TableCard class="snmp-data-collection-source-table">
     <div class="header">
-      <div class="title-container">Data Collection Sources</div>
+      <div class="title-container">
+        <h2 class="title">Data Collection Sources</h2>
+      </div>
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
@@ -47,7 +49,6 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -174,7 +175,7 @@ onMounted(async () => {
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
 
-.snmp-data-collection-sources-table {
+.snmp-data-collection-source-table {
     margin-top: 10px;
     padding: 25px;
 
