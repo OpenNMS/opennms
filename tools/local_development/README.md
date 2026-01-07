@@ -21,11 +21,10 @@ Options:
 
 ```
 $ ./tools/local_development/opennms.sh --help
-Detected OS: macOS
 Usage: ./tools/local_development/opennms.sh [options]
 Options:
   --help                  Show this help message
-  --enable-jrrd2          Enable jrrd2 library,from prebuilt binaries
+  --disable-jrrd2         Disable building jrrd2 library
   --skip-cleanup          Skip cleanup of previous build artifacts
   --enable-tests          Enable running tests during build
 ```
