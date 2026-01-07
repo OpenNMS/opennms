@@ -71,7 +71,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);

@@ -295,7 +295,6 @@ const onChangeSearchTerm = debounce(async (value: string) => {
       }
 
       td {
-        white-space: nowrap;
         box-shadow: none;
         border-bottom: 1px solid var(variables.$border-on-surface);
 

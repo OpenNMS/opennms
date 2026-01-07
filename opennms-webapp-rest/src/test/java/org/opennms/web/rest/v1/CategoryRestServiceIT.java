@@ -68,7 +68,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 

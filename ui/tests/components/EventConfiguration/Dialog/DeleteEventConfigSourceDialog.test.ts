@@ -103,17 +103,49 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('does not attempt to delete if eventConfigSource is null', async () => {
-    store.$state.deleteEventConfigSourceDialogState.eventConfigSource = null
-    await wrapper.vm.$forceUpdate()
-    await wrapper.vm.$nextTick()
+    vi.restoreAllMocks()
+
+    const pinia = createTestingPinia({
+      createSpy: vi.fn,
+      stubActions: false
+    })
+
+    const localStore = useEventConfigStore()
+    localStore.$state = {
+      deleteEventConfigSourceDialogState: {
+        visible: true,
+        eventConfigSource: null
+      },
+      sources: [],
+      sourcesPagination: { page: 1, pageSize: 10, total: 0 },
+      sourcesSearchTerm: '',
+      sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
+      isLoading: false,
+      activeTab: 0,
+      uploadedSourceNames: [],
+      uploadedEventConfigFilesReportDialogState: { visible: false },
+      changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
+      createEventConfigSourceDialogState: { visible: false }
+    }
+
+    const localWrapper = mount(DeleteEventConfigSourceDialog, {
+      global: {
+        plugins: [pinia],
+        components: {
+          FeatherButton,
+          FeatherDialog
+        }
+      }
+    })
+
     await flushPromises()
 
-    vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
-    const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
-    await deleteButton.trigger('click')
+    const mockDelete = vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
+    const deleteButton = localWrapper.findAllComponents(FeatherButton).at(1)
+    expect(deleteButton?.exists()).toBe(true)
+    await deleteButton?.trigger('click')
     await flushPromises()
-
-    expect(eventConfigService.deleteEventConfigSourceById).not.toHaveBeenCalled()
+    expect(mockDelete).not.toHaveBeenCalled()
   })
 
   it('hides the dialog when visible is false', async () => {
