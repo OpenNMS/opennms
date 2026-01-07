@@ -32,6 +32,7 @@ detect_postgres_installed(){
         if ! nc -z localhost 5432; then
             # echo "PostgreSQL not reachable"
             # setup_postgres
+            # need netcat-openbsd package on Ubuntu
             POSTGRES_VERSION="unknown"
         else
             # echo "PostgreSQL is already reachable"

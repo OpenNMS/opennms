@@ -230,11 +230,11 @@ fi
 install_jrrd2_from_source(){
     echo "Compiling jrrd2 from source..."
     # create a simple folder for compiling jrrd2 if not present
-    if [[ ! -d "$ROOT/built_dependencies" ]]; then
-      mkdir -p "$ROOT/built_dependencies"
+    if [[ ! -d "$ROOT/built" ]]; then
+      mkdir -p "$ROOT/built"
     else
-      rm -rf "$ROOT/built_dependencies"
-      mkdir -p "$ROOT/built_dependencies"
+      rm -rf "$ROOT/built"
+      mkdir -p "$ROOT/built"
     fi
     
     if [[ -d "$ROOT/jrrd2" ]]; then
@@ -251,19 +251,19 @@ install_jrrd2_from_source(){
     JRRD_JAR=$(find "$ROOT/jrrd2" -name "jrrd2-*-$JRRD_VERSION.jar" | head -n 1)
     JRRD_LIB=$(find "$ROOT/jrrd2" -name "libjrrd2.so" | head -n 1)
     
-    if [[ ! -d "$ROOT/built_dependencies/lib" ]]; then
-      mkdir -p "$ROOT/built_dependencies/lib"
+    if [[ ! -d "$ROOT/built/lib" ]]; then
+      mkdir -p "$ROOT/built/lib"
     fi
     
-    cp $JRRD_LIB $ROOT/built_dependencies/lib/
-    cp $JRRD_JAR $ROOT/built_dependencies/
+    cp $JRRD_LIB $ROOT/built/lib/
+    cp $JRRD_JAR $ROOT/built/
     if [[ "$OS_NAME" == "macOS" ]]; then
-       ln -s $ROOT/built_dependencies/lib/libjrrd2.so $ROOT/built_dependencies/lib/libjrrd2.dylib
+       ln -s $ROOT/built/lib/libjrrd2.so $ROOT/built/lib/libjrrd2.dylib
     fi
-    ln -s $ROOT/build_dependencies/jrrd2-*-$JRRD_VERSION.jar $ROOT/built_dependencies/jrrd2.jar
+    ln -s $ROOT/built/jrrd2-*-$JRRD_VERSION.jar $ROOT/built/jrrd2.jar
     
-    JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
-    JRRD_LIB="$ROOT/built_dependencies/lib/$(basename $JRRD_LIB)"  
+    JRRD_JAR="$ROOT/built/jrrd2.jar"
+    JRRD_LIB="$ROOT/built/lib/$(basename $JRRD_LIB)"  
     cd ..
     echo "Successfully built jrrd2 locally: $JRRD_JAR, $JRRD_LIB"
 
@@ -287,17 +287,17 @@ install_jrrd2_prebuilt(){
     echo "Installing prebuilt jrrd2..."
 
     # create a simple folder for compiling jrrd2 if not present
-    if [[ ! -d "$ROOT/built_dependencies" ]]; then
-      mkdir -p "$ROOT/built_dependencies"
-      mkdir -p "$ROOT/built_dependencies/lib"
+    if [[ ! -d "$ROOT/built" ]]; then
+      mkdir -p "$ROOT/built"
+      mkdir -p "$ROOT/built/lib"
       
     else
-      rm -rf "$ROOT/built_dependencies"
-      mkdir -p "$ROOT/built_dependencies"
-      mkdir -p "$ROOT/built_dependencies/lib"
+      rm -rf "$ROOT/built"
+      mkdir -p "$ROOT/built"
+      mkdir -p "$ROOT/built/lib"
     fi
 
-    cd "$ROOT/built_dependencies" || exit 1
+    cd "$ROOT/built" || exit 1
     mkdir tmp
     cd tmp || exit 1
 
@@ -329,19 +329,19 @@ install_jrrd2_prebuilt(){
       tar -xvf data.tar.gz 2>/dev/null 1>&2 || true
     fi
 
-    mv usr/share/java/jrrd2.jar $ROOT/built_dependencies/
-    mv usr/lib/jni/libjrrd2.so $ROOT/built_dependencies/lib
+    mv usr/share/java/jrrd2.jar $ROOT/built/
+    mv usr/lib/jni/libjrrd2.so $ROOT/built/lib
 
     cd .. || exit 1
 
     rm -rf tmp
 
     if [[ "$OS_NAME" == "macOS" ]]; then
-       ln -s $ROOT/built_dependencies/lib/libjrrd2.so $ROOT/built_dependencies/lib/libjrrd2.dylib
+       ln -s $ROOT/built/lib/libjrrd2.so $ROOT/built/lib/libjrrd2.dylib
     fi
 
-    JRRD_JAR="$ROOT/built_dependencies/jrrd2.jar"
-    JRRD_LIB="$ROOT/built_dependencies/lib/libjrrd2.so"
+    JRRD_JAR="$ROOT/built/jrrd2.jar"
+    JRRD_LIB="$ROOT/built/lib/libjrrd2.so"
 
     echo "Successfully installed prebuilt jrrd2: $JRRD_JAR, $JRRD_LIB"
 }
