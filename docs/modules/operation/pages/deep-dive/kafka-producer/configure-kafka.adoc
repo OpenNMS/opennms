@@ -152,6 +152,7 @@ Or add following line at `$OPENNMS_HOME/etc/org.opennms.features.kafka.producer.
 ```
 disable.metrics.splitting = true
 ```
+
 === Enable exclusive metric forwarding
 
 Once metric forwarding is enabled, you can use this as the exclusive persistence strategy by setting the following system property:

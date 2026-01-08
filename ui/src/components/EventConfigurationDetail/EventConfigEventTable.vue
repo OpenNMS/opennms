@@ -48,8 +48,6 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
-            <th>Severity</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -201,7 +199,9 @@ const emptyListContent = {
 const expandedRows = ref<number[]>([])
 const columns = computed(() => [
   { id: 'uei', label: 'Event UEI' },
-  { id: 'eventLabel', label: 'Event Label' }
+  { id: 'eventLabel', label: 'Event Label' },
+  { id: 'severity', label: 'Severity' },
+  { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
@@ -295,7 +295,6 @@ const onChangeSearchTerm = debounce(async (value: string) => {
       }
 
       td {
-        white-space: nowrap;
         box-shadow: none;
         border-bottom: 1px solid var(variables.$border-on-surface);
 

@@ -131,12 +131,17 @@ public class EventConfPersistenceService {
             eventConfEvent.setEnabled(payload.getEnabled());
             eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
-
+            eventConfEvent.setSeverity(EventConfServiceHelper.getValidSeverity(payload.getEvent().getSeverity()));
             eventConfEventDao.saveOrUpdate(eventConfEvent);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
         }
+    }
+
+    @Transactional
+    public Long createEventConfSource(final EventConfSource eventConfSource) {
+        return eventConfSourceDao.save(eventConfSource);
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {

@@ -20,7 +20,6 @@ export const validateEventConfigFile = async (file: File) => {
     }
 
     if (validationErrors.length === 0) {
-    
       let parser: any
       try {
         parser = new (DOMParser as any)()
@@ -34,9 +33,9 @@ export const validateEventConfigFile = async (file: File) => {
         return { isValid: false, errors: validationErrors }
       }
       if (result !== true) {
-  validationErrors.push('Invalid XML format - file contains syntax errors')
-  return { isValid: false, errors: validationErrors }
-}
+        validationErrors.push('Invalid XML format - file contains syntax errors')
+        return { isValid: false, errors: validationErrors }
+      }
 
       const eventsElement = xmlDoc.querySelector('events')
       if (!eventsElement) {
@@ -61,13 +60,20 @@ export const validateEventConfigFile = async (file: File) => {
         validationErrors.push('No <event> entries found within <events> element')
         return { isValid: false, errors: validationErrors }
       } else {
-        const eventList = Array.from(eventElements as any[]) as Element[]
-        for (const [idx, event] of eventList.entries()) {
-          const eventErrors = validateEventElement(event as any, idx + 1)
-          if (eventErrors) {
-            validationErrors.push(eventErrors)
-            return { isValid: false, errors: validationErrors }
+        try {
+          const eventList = Array.from(eventElements as any[]) as Element[]
+          for (const [idx, event] of eventList.entries()) {
+            const eventErrors = validateEventElement(event as any, idx + 1)
+            if (eventErrors) {
+              validationErrors.push(eventErrors)
+              return { isValid: false, errors: validationErrors }
+            }
           }
+        } catch (error) {
+          validationErrors.push(
+            `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
+          return { isValid: false, errors: validationErrors }
         }
       }
     }
@@ -92,12 +98,16 @@ export const validateEventElement = (event: Element | any, eventNumber: number):
     try {
       if (typeof el.querySelector === 'function') node = el.querySelector(tag)
     } catch (e) {
+      // Re-throw Error objects as these are unexpected errors
+      if (e instanceof Error) throw e
       node = null
     }
     if (!node) {
       try {
         if (typeof el.getElementsByTagName === 'function') node = el.getElementsByTagName(tag)[0]
       } catch (e) {
+        // Re-throw Error objects as these are unexpected errors
+        if (e instanceof Error) throw e
         node = null
       }
     }

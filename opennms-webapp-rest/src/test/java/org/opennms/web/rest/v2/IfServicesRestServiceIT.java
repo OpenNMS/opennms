@@ -66,7 +66,7 @@ import org.w3c.dom.NodeList;
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(IfServicesRestServiceIT.class);

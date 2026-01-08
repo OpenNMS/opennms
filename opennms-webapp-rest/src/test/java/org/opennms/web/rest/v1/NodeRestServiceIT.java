@@ -97,7 +97,7 @@ import org.springframework.transaction.annotation.Transactional;
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestServiceIT.class);
