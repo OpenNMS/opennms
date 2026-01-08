@@ -26,16 +26,16 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import java.util.Collection;
 import java.util.List;
 
-public interface SnmpCollectionSystemDefDao extends OnmsDao<SnmpCollectionSystemDef, Long> {
-    SnmpCollectionSystemDef get(Long id);
+public interface SnmpCollectionSystemDefDao extends OnmsDao<SnmpCollectionSystemDef, Integer> {
+    SnmpCollectionSystemDef get(Integer id);
 
-    SnmpCollectionSystemDef findByNameAndSource(String name, Long sourceId);
+    SnmpCollectionSystemDef findByNameAndSource(String name, Integer sourceId);
 
     List<SnmpCollectionSystemDef> findAll();
 
     List<SnmpCollectionSystemDef> findAllEnabled();
 
-    List<SnmpCollectionSystemDef> findAllBySource(Long sourceId);
+    List<SnmpCollectionSystemDef> findAllBySource(Integer sourceId);
 
     void saveOrUpdate(SnmpCollectionSystemDef systemDef);
 

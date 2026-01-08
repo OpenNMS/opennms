@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -80,6 +81,7 @@ public class SnmpCollectionResourceTypeDaoIT {
         source.setName("JUnit Source");
         source.setEnabled(true);
         source.setDescription("JUnit Source Description");
+        source.setCreatedTime(new Date());
         snmpSourceDao.saveOrUpdate(source);
         snmpSourceDao.flush();
 

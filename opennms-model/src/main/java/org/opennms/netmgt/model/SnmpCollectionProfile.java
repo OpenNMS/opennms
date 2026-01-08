@@ -45,7 +45,7 @@ public class SnmpCollectionProfile implements Serializable {
             sequenceName = "snmp_collection_profiles_id_seq",
             allocationSize = 1
     )
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false, length = 256, unique = true)
     private String name;
@@ -90,11 +90,11 @@ public class SnmpCollectionProfile implements Serializable {
         this.enabled = enabled;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

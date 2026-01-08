@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 
-public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate<SnmpCollectionResourceType, Long>  implements SnmpCollectionResourceTypeDao {
+public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate<SnmpCollectionResourceType, Integer>  implements SnmpCollectionResourceTypeDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionResourceTypeDaoHibernate.class);
 
@@ -39,18 +39,18 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public SnmpCollectionResourceType get(Long id) {
+    public SnmpCollectionResourceType get(Integer id) {
         return super.get(id);
     }
 
     @Override
-    public SnmpCollectionResourceType findByNameAndSource(String name, Long sourceId) {
+    public SnmpCollectionResourceType findByNameAndSource(String name, Integer sourceId) {
         List<SnmpCollectionResourceType> list = find(
                 "from SnmpCollectionResourceType t where t.name = ? and t.collectionSource.id = ?", name, sourceId);
         return list.isEmpty() ? null : list.get(0);    }
 
     @Override
-    public List<SnmpCollectionResourceType> findAllBySource(Long sourceId) {
+    public List<SnmpCollectionResourceType> findAllBySource(Integer sourceId) {
         return find("from SnmpCollectionResourceType t where t.collectionSource.id = ?", sourceId);
     }
 

@@ -26,14 +26,14 @@ import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import java.util.Collection;
 import java.util.List;
 
-public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionResourceType, Long> {
-    SnmpCollectionResourceType get(Long id);
+public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionResourceType, Integer> {
+    SnmpCollectionResourceType get(Integer id);
 
-    SnmpCollectionResourceType findByNameAndSource(String name, Long sourceId);
+    SnmpCollectionResourceType findByNameAndSource(String name, Integer sourceId);
 
     List<SnmpCollectionResourceType> findAll();
 
-    List<SnmpCollectionResourceType> findAllBySource(Long sourceId);
+    List<SnmpCollectionResourceType> findAllBySource(Integer sourceId);
 
     List<SnmpCollectionResourceType> findAllEnabled();
 

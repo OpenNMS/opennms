@@ -44,7 +44,7 @@ public class SnmpCollectionMibGroup  implements Serializable {
             sequenceName = "snmp_collection_mib_groups_id_seq",
             allocationSize = 1
     )
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "datacollection_group_id", nullable = false)
@@ -84,11 +84,11 @@ public class SnmpCollectionMibGroup  implements Serializable {
         this.enabled = enabled;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

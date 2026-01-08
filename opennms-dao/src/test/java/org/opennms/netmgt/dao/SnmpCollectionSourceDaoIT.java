@@ -72,11 +72,12 @@ public class SnmpCollectionSourceDaoIT {
 
         // Add default SNMP source
         source = new SnmpCollectionSource();
+        Date now = new Date();
         source.setName("JUnit Source");
         source.setEnabled(true);
         source.setDescription("JUnit Description");
-        source.setCreatedTime(new Date());
-        source.setLastModified(new Date());
+        source.setCreatedTime(now);
+        source.setLastModified(now);
         snmpDao.saveOrUpdate(source);
         snmpDao.flush();
     }

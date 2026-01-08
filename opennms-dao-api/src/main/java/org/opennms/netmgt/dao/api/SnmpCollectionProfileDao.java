@@ -26,9 +26,9 @@ import org.opennms.netmgt.model.SnmpCollectionProfile;
 import java.util.Collection;
 import java.util.List;
 
-public interface SnmpCollectionProfileDao extends OnmsDao<SnmpCollectionProfile, Long> {
+public interface SnmpCollectionProfileDao extends OnmsDao<SnmpCollectionProfile, Integer> {
 
-    SnmpCollectionProfile get(Long id);
+    SnmpCollectionProfile get(Integer id);
 
     SnmpCollectionProfile findByName(String name);
 

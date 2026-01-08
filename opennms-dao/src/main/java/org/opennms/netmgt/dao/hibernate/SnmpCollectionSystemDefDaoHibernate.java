@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 
-public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSystemDef, Long> implements SnmpCollectionSystemDefDao {
+public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSystemDef, Integer> implements SnmpCollectionSystemDefDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionSystemDefDaoHibernate.class);
 
@@ -38,12 +38,12 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public SnmpCollectionSystemDef get(Long id) {
+    public SnmpCollectionSystemDef get(Integer id) {
         return super.get(id);
     }
 
     @Override
-    public SnmpCollectionSystemDef findByNameAndSource(String name, Long sourceId) {
+    public SnmpCollectionSystemDef findByNameAndSource(String name, Integer sourceId) {
         List<SnmpCollectionSystemDef> list = find(
                 "from SnmpCollectionSystemDef d where d.name = ? and d.collectionSource.id = ?", name, sourceId);
         return list.isEmpty() ? null : list.get(0);
@@ -56,7 +56,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public List<SnmpCollectionSystemDef> findAllBySource(Long sourceId) {
+    public List<SnmpCollectionSystemDef> findAllBySource(Integer sourceId) {
         return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?", sourceId);
     }
 

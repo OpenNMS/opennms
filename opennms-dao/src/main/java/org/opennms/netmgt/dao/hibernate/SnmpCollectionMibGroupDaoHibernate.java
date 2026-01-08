@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 
-public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<SnmpCollectionMibGroup, Long> implements SnmpCollectionMibGroupDao {
+public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<SnmpCollectionMibGroup, Integer> implements SnmpCollectionMibGroupDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionMibGroupDaoHibernate.class);
 
@@ -38,12 +38,12 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
-    public SnmpCollectionMibGroup get(Long id) {
+    public SnmpCollectionMibGroup get(Integer id) {
         return super.get(id);
     }
 
     @Override
-    public SnmpCollectionMibGroup findByNameAndSource(String name, Long sourceId) {
+    public SnmpCollectionMibGroup findByNameAndSource(String name, Integer sourceId) {
         List<SnmpCollectionMibGroup> list = find(
                 "from SnmpCollectionMibGroup s where s.name = ? and s.collectionSource.id = ?", name, sourceId);
         return list.isEmpty() ? null : list.get(0);
@@ -55,7 +55,7 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
-    public List<SnmpCollectionMibGroup> findAllBySource(Long sourceId) {
+    public List<SnmpCollectionMibGroup> findAllBySource(Integer sourceId) {
         return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?", sourceId);
     }
 

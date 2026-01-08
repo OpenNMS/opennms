@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 
-public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSource, Long> implements SnmpCollectionSourceDao {
+public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSource, Integer> implements SnmpCollectionSourceDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(SnmpCollectionSourceDaoHibernate.class);
 
@@ -38,7 +38,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     }
 
     @Override
-    public SnmpCollectionSource get(Long id) {
+    public SnmpCollectionSource get(Integer id) {
         return super.get(id);
     }
 
