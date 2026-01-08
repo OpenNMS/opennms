@@ -181,15 +181,15 @@ Sink Topics (required):
   OpenNMS.Sink.Heartbeat                                       [OK]
 
 Sink Topics (optional - feature dependent):
-  OpenNMS.Sink.Events                                          [EXISTS]
+  OpenNMS.Sink.Events                                          [OK]
   OpenNMS.Sink.Syslog                                          [NOT CONFIGURED]
-  OpenNMS.Sink.Trap                                            [EXISTS]
-  OpenNMS.Sink.DeviceConfig                                    [EXISTS]
+  OpenNMS.Sink.Trap                                            [OK]
+  OpenNMS.Sink.DeviceConfig                                    [OK]
 
 Sink Topics (telemetry - optional):
-  OpenNMS.Sink.Telemetry-Netflow-5                             [EXISTS]
+  OpenNMS.Sink.Telemetry-Netflow-5                             [OK]
   OpenNMS.Sink.Telemetry-Netflow-9                             [NOT CONFIGURED]
-  OpenNMS.Sink.Telemetry-IPFIX                                 [EXISTS]
+  OpenNMS.Sink.Telemetry-IPFIX                                 [OK]
   OpenNMS.Sink.Telemetry-SFlow                                 [NOT CONFIGURED]
   OpenNMS.Sink.Telemetry-JTI                                   [NOT CONFIGURED]
   OpenNMS.Sink.Telemetry-NXOS                                  [NOT CONFIGURED]
@@ -229,28 +229,19 @@ The command first checks Kafka connectivity, then uses different status indicato
 | Failed to connect - check Kafka configuration and broker availability
 |===
 
-.Required Topics (RPC, Heartbeat, Twin)
+.Status Indicators
 [cols="1,3"]
 |===
 | Status | Meaning
 
 | `[OK]`
-| Topic exists - system will function correctly
+| Topic exists
 
 | `[MISSING]`
-| Topic does not exist - this is a problem that needs to be fixed
-|===
-
-.Optional Topics (Events, Syslog, Trap, DeviceConfig, Telemetry)
-[cols="1,3"]
-|===
-| Status | Meaning
-
-| `[EXISTS]`
-| Topic exists - the feature is configured and ready
+| Required topic does not exist - this is a problem that needs to be fixed
 
 | `[NOT CONFIGURED]`
-| Topic does not exist - this is normal if the feature is not enabled
+| Optional topic does not exist - this is normal if the feature is not enabled
 |===
 
 NOTE: The summary only counts required topics as "missing". Optional topics with `[NOT CONFIGURED]` status are not considered errors.

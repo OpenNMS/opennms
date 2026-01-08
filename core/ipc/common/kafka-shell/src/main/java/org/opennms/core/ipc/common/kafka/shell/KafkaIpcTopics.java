@@ -59,13 +59,10 @@ public class KafkaIpcTopics implements Action {
 
     private static final int DEFAULT_TIMEOUT = 5000;
 
-    // Status indicators for required topics (must exist for system to work)
+    // Status indicators
     private static final String STATUS_OK = "[OK]";
-    private static final String STATUS_MISSING = "[MISSING]";
-
-    // Status indicators for optional topics (only needed when feature is enabled)
-    private static final String STATUS_EXISTS = "[EXISTS]";
-    private static final String STATUS_NOT_CONFIGURED = "[NOT CONFIGURED]";
+    private static final String STATUS_MISSING = "[MISSING]";           // Required topic missing (problem)
+    private static final String STATUS_NOT_CONFIGURED = "[NOT CONFIGURED]"; // Optional topic not present (normal)
 
     // Required sink module (must exist)
     private static final String REQUIRED_SINK_MODULE = "Heartbeat";  // HeartbeatModule.MODULE_ID
@@ -309,7 +306,7 @@ public class KafkaIpcTopics implements Action {
     }
 
     private void printOptionalTopicLine(String topic, boolean exists) {
-        String status = exists ? STATUS_EXISTS : STATUS_NOT_CONFIGURED;
+        String status = exists ? STATUS_OK : STATUS_NOT_CONFIGURED;
         System.out.printf("  %-60s %s%n", topic, status);
     }
 }
