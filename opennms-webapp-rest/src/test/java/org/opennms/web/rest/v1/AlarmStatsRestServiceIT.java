@@ -83,7 +83,7 @@ import com.google.common.collect.Lists;
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {

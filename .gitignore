@@ -39,6 +39,8 @@ ui/.pnpm-debug.log
 ui/dist/
 ui/src/main/dist/
 ui/src/menu/dist-menu/
+ui/src/main/node_modules/
+ui/src/menu/node_modules/
 ui/node_modules/
 ui/package-lock.json
 ui/devConfig.ts

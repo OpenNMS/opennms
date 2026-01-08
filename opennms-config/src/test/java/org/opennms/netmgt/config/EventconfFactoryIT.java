@@ -91,14 +91,16 @@ public class EventconfFactoryIT {
     @Before
     public void setUp() throws Exception {
        m_eventConfDao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource("etc/eventconf.xml"));
+        Resource configResource = new ClassPathResource("etc/eventconf.xml");
+        m_eventConfDao.setConfigResource(configResource);
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(configResource);
         m_eventConfDao.loadEventsFromDB(eventConfEventList);
     }
 
     @Test
     public void testIsSecureTagWhenExists() {
-       //In the new implementation of loadEventsFromDB, we are no longer saving the global attribute and its corresponding value.
-       assertFalse("isSecureTag(\"logmsg\") should be true", m_eventConfDao.isSecureTag("logmsg"));
+       // Global settings (including security/doNotOverride tags) are now loaded from eventconf.xml
+       assertTrue("isSecureTag(\"logmsg\") should be true", m_eventConfDao.isSecureTag("logmsg"));
     }
 
     @Test

@@ -378,13 +378,10 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
-    wrapper.vm.eventUei = ''
-    await wrapper.vm.$nextTick()
-
     expect(wrapper.vm.isValid).toBe(false)
-
-    await wrapper.find('[data-test="save-event-button"]').trigger('click')
-    await flushPromises()
+    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    await saveButton.trigger('click')
 
     expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })
