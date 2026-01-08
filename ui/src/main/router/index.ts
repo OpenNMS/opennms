@@ -226,11 +226,6 @@ const router = createRouter({
       name: 'SNMP Config Definition',
       component: () => import('@/components/SnmpConfiguration/SnmpConfigEditDefinition.vue')
     },
-    // {
-    //   path: '/snmp-config/definitions/:id',
-    //   name: 'SNMP Config Definition',
-    //   component: () => import('@/components/SnmpConfiguration/SnmpConfigEditDefinition.vue')
-    // },
     {
       path: '/snmp-config/profiles/:id',
       name: 'SNMP Config Profile',

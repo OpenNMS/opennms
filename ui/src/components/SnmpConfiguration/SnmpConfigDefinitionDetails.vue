@@ -167,14 +167,14 @@
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
+import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { validateDefinition } from './snmpValidator'
 import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
+import { isNonEmptyString } from '@/lib/utils'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinitionFormErrors } from '@/types/snmpConfig'
-import { isNonEmptyString } from '@/lib/utils'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
 
 const props = defineProps<{
   isCreate: boolean,

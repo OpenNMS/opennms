@@ -93,7 +93,7 @@ const getSnmpConfig = async (): Promise<SnmpConfig | false> => {
 }
 
 const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<SnmpAgentConfig | false> => {
-  const fullEndpoint = `${endpoint}/lookup?ipAddress=${ipAddress}&llocation=${location ?? 'Default'}`
+  const fullEndpoint = `${endpoint}/lookup?ipAddress=${ipAddress}&location=${location ?? 'Default'}`
 
   try {
     const resp = await v2.get(fullEndpoint)

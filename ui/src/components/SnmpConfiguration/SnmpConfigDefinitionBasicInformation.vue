@@ -177,8 +177,6 @@ const loadInitialValues = () => {
   if (!props.definition) {
     currentDefinition.value = getDefaultSnmpDefinition()
   } else {
-    // TODO: ensure definitionId is in range
-    // currentDefinition.value = store.config.definitions.find(d => d.id === props.definitionId) ?? getDefaultSnmpDefinition()
     currentDefinition.value = props.definition
   }
 

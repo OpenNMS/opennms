@@ -29,21 +29,11 @@ import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { CreateEditMode } from '@/types'
 
 const router = useRouter()
-// const route = useRoute()
 const store = useSnmpConfigStore()
 
 const goBack = () => {
   router.push({ name: 'SNMP Config' })
 }
-
-onMounted(() => {
-  // const id = route.params.id ?? ''
-  // const definitionId = id === 'create' ? -1 : Number(id)
-
-  // assumes store.currentDefinition and store.createEditMode were previously set
-  // store.definitionId = definitionId
-  // store.createEditMode = id === 'create' ? CreateEditMode.Create : CreateEditMode.Edit
-})
 </script>
 
 <style lang="scss" scoped>
