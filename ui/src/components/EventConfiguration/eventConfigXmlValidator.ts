@@ -70,7 +70,9 @@ export const validateEventConfigFile = async (file: File) => {
             }
           }
         } catch (error) {
-          validationErrors.push(`Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          validationErrors.push(
+            `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
           return { isValid: false, errors: validationErrors }
         }
       }

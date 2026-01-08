@@ -400,13 +400,13 @@ describe('eventConfigXmlValidator', () => {
                         }
                       }
                     ]
-                    ;(nodeList as any).item = (index: number) => nodeList[index] || null
-                    ;(nodeList as any).forEach = (callback: any, thisArg?: any) => {
+                    nodeList.item = (index: number) => nodeList[index] || null
+                    nodeList.forEach = (callback: any, thisArg?: any) => {
                       for (let i = 0; i < nodeList.length; i++) {
                         callback.call(thisArg, nodeList[i], i, nodeList)
                       }
                     }
-                    ;(nodeList as any).length = 1
+                    nodeList.length = 1
                     return nodeList as NodeListOf<Element>
                   },
                   children: [
@@ -552,3 +552,4 @@ describe('eventConfigXmlValidator', () => {
     })
   })
 })
+
