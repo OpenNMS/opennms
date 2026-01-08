@@ -24,6 +24,7 @@ package org.opennms.features.kafka.producer.collection;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos.CollectionSetResource;
@@ -50,7 +51,7 @@ public class KafkaPersister implements Persister {
 
     private final ServiceParameters m_params;
 
-    private KafkaProducer<String, byte[]> producer;
+    private Producer<String, byte[]> producer;
     
     private String topicName = "metrics";
 
@@ -210,7 +211,7 @@ public class KafkaPersister implements Persister {
         }
     }
 
-    public void setProducer(KafkaProducer<String, byte[]> producer) {
+    public void setProducer(Producer<String, byte[]> producer) {
         this.producer = producer;
     }
 

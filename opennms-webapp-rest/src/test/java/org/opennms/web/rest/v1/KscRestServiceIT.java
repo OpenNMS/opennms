@@ -68,7 +68,7 @@ import com.google.common.io.Files;
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
