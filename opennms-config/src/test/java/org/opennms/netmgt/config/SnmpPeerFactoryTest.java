@@ -62,6 +62,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         final TemporaryFolder temporaryFolder = new TemporaryFolder();
         temporaryFolder.create();
         final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
+
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("myv1community", new Credentials("username", "specificv1"));
         secureCredentialsVault.setCredentials("myv2community", new Credentials("username", "specificv2c"));
@@ -76,7 +77,6 @@ public class SnmpPeerFactoryTest extends TestCase {
     public void setVersion(int version) {
         m_version = version;
     }
-
 
     /**
      * String representing snmp-config.xml
@@ -262,19 +262,13 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     private String myVersion() {
-        switch (m_version) {
-        case SnmpAgentConfig.VERSION1 :
-            return "v1";
-        case SnmpAgentConfig.VERSION2C :
-            return "v2c";
-        case SnmpAgentConfig.VERSION3 :
-            return "v3";
-        default :
-            return "v1";
-        }
+        return switch (m_version) {
+            case SnmpAgentConfig.VERSION1 -> "v1";
+            case SnmpAgentConfig.VERSION2C -> "v2c";
+            case SnmpAgentConfig.VERSION3 -> "v3";
+            default -> "v1";
+        };
     }
-
-
 
     @Override
     protected void tearDown() {
@@ -501,7 +495,8 @@ public class SnmpPeerFactoryTest extends TestCase {
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
         assertEquals(2, profiles.size());
-        for(SnmpProfile snmpProfile : profiles) {
+
+        for (SnmpProfile snmpProfile : profiles) {
             SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().
                     getAgentConfigFromProfile(snmpProfile, InetAddressUtils.addr("10.1.12.1"));
             assertEquals("profileContext", snmpAgentConfig.getContextName());
@@ -519,6 +514,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     public void testMergingWithMetadata() throws Exception {
         TemporaryFolder temporaryFolder = new TemporaryFolder();
         temporaryFolder.create();
+
         final var file = new File(temporaryFolder.getRoot(), "snmp-config.xml");
 
         try (var filewriter = new FileWriter(file)) {
@@ -526,6 +522,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         }
 
         final URL url = file.toURI().toURL();
+
         try (final InputStream inputStream = url.openStream()) {
             final SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(inputStream));
             SnmpPeerFactory.setFile(file);
@@ -569,5 +566,165 @@ public class SnmpPeerFactoryTest extends TestCase {
             final SnmpConfig snmpConfig2 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
             assertEquals(2, snmpConfig2.getDefinitions().size());
         }
+    }
+    public void testSaveNewProfile() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // confirm initial conditions - 2 profiles
+        assertEquals(2, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+
+        // Save a new profile
+        final String newProfileLabel = "newProfile";
+        final Integer newProfilePort = 199;
+        final String newProfileReadCommunity = "read3";
+        final String newProfileWriteCommunity = "write3";
+        final String newProfileFilter = "filter3";
+
+        final SnmpProfile newProfile = new SnmpProfile(
+            newProfilePort,
+      null,
+    null,
+            newProfileReadCommunity,
+            newProfileWriteCommunity,
+            "",
+            "v2c",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            newProfileLabel,
+            newProfileFilter
+        );
+
+        SnmpPeerFactory.getInstance().saveProfile(newProfile);
+        profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // make sure profile was added and did not replace others
+        assertEquals(3, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals(newProfileLabel)).count());
+
+        // check new profile for correct info
+        final SnmpProfile addedProfile = profiles.stream().filter(p -> p.getLabel().equals(newProfileLabel)).findFirst().orElse(null);
+
+        assertNotNull(addedProfile);
+        assertEquals(newProfileLabel, addedProfile.getLabel());
+        assertEquals(newProfileFilter, addedProfile.getFilterExpression());
+
+        assertNotNull(addedProfile.getPort());
+        assertEquals(newProfilePort.intValue(), addedProfile.getPort().intValue());
+
+        assertEquals(newProfileReadCommunity, addedProfile.getReadCommunity());
+        assertEquals(newProfileWriteCommunity, addedProfile.getWriteCommunity());
+    }
+
+    public void testSaveUpdatedProfile() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // confirm initial conditions
+        assertEquals(2, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+
+        // Save an updated profile
+        final String updatedProfileLabel = "profile2";
+        final Integer updatedProfilePort = 199;
+        final String updatedProfileReadCommunity = "read222";
+        final String updatedProfileWriteCommunity = "write222";
+        final String updatedProfileFilter = "filter222";
+
+        final SnmpProfile updatedProfile = new SnmpProfile(
+                updatedProfilePort,
+                null,
+                null,
+                updatedProfileReadCommunity,
+                updatedProfileWriteCommunity,
+                "",
+                "v2c",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                updatedProfileLabel,
+                updatedProfileFilter
+        );
+
+        SnmpPeerFactory.getInstance().saveProfile(updatedProfile);
+        profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // make sure profile replaced existing one
+        assertEquals(2, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+
+        // check updated profile for correct info
+        final SnmpProfile profile = profiles.stream().filter(p -> p.getLabel().equals(updatedProfileLabel)).findFirst().orElse(null);
+
+        assertNotNull(profile);
+        assertEquals(updatedProfileLabel, profile.getLabel());
+        assertEquals(updatedProfileFilter, profile.getFilterExpression());
+
+        assertNotNull(profile.getPort());
+        assertEquals(updatedProfilePort.intValue(), profile.getPort().intValue());
+
+        assertEquals(updatedProfileReadCommunity, profile.getReadCommunity());
+        assertEquals(updatedProfileWriteCommunity, profile.getWriteCommunity());
+    }
+
+    public void testRemoveProfile() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // confirm initial conditions
+        assertEquals(2, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+
+        final String profileToRemove = "profile2";
+        boolean succeeded = SnmpPeerFactory.getInstance().removeProfile(profileToRemove);
+
+        assertTrue(succeeded);
+
+        profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // make sure profile was removed
+        assertEquals(1, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(0, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
+
+        final String nonExistentProfile = "profile999";
+        succeeded = SnmpPeerFactory.getInstance().removeProfile(nonExistentProfile);
+
+        assertFalse(succeeded);
+
+        profiles = SnmpPeerFactory.getInstance().getProfiles();
+
+        // make sure nothing was changed
+        assertEquals(1, profiles.size());
+        assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
+        assertEquals(0, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
     }
 }

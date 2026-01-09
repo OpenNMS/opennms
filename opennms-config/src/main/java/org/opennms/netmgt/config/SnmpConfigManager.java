@@ -22,12 +22,16 @@
 package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.Strings;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.config.snmp.SnmpProfiles;
 
 /**
  * This class handles merging a new Definition into the current running SNMP
@@ -38,8 +42,12 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
 public class SnmpConfigManager {
 
     private static final String DEFAULT_LOCATION = "Default";
-    private SnmpConfig m_config;
-	private List<MergeableDefinition> m_definitions = new ArrayList<>();
+    private final SnmpConfig m_config;
+	private final List<MergeableDefinition> m_definitions = new ArrayList<>();
+
+	public SnmpConfigManager() {
+		m_config = new SnmpConfig();
+	}
 
 	/**
 	 * <p>
@@ -50,7 +58,8 @@ public class SnmpConfigManager {
 	 *            a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
 	 */
 	public SnmpConfigManager(SnmpConfig config) {
-		m_config = config;
+		m_config = config != null ? config : new SnmpConfig();
+
 		for (Definition def : m_config.getDefinitions()) {
 			m_definitions.add(new MergeableDefinition(def));
 		}
@@ -112,6 +121,7 @@ public class SnmpConfigManager {
 	private void removeEmptyDefinitions() {
 		for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
 			MergeableDefinition def = iter.next();
+
 			if (def.isEmpty()) {
 				getConfig().removeDefinition(def.getConfigDef());
 				iter.remove();
@@ -130,20 +140,22 @@ public class SnmpConfigManager {
 		removeDefaults(eventDef); 
 		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
 
-        removeDefinitionsthatDontMatchLocation(eventDef);
+        removeDefinitionsThatDoNotMatchLocation(eventDef);
 		// remove pass
 		purgeRangesFromDefinitions(eventToMerge);
 
-		if (eventToMerge.isTrivial()) return;
+		if (eventToMerge.isTrivial()) {
+			return;
+		}
 
 		// add pass
 		MergeableDefinition matchingDef = findMatchingDefinition(eventToMerge);
+
 		if (matchingDef == null) {
 			addDefinition(eventToMerge);
 		} else {
 			matchingDef.mergeMatchingAttributeDef(eventToMerge);
 		}
-
 	}
 
 	/**
@@ -154,23 +166,108 @@ public class SnmpConfigManager {
 	public boolean removeDefinition(final Definition definition) {
 		MergeableDefinition removableDefinition = new MergeableDefinition(definition);
 
-		removeDefinitionsthatDontMatchLocation(definition);
+		removeDefinitionsThatDoNotMatchLocation(definition);
+
 		// Find a matching definition and remove range from that definition
 		MergeableDefinition matchingDef = findMatchingDefinition(removableDefinition);
+
 		if (matchingDef != null) {
 			matchingDef.removeRanges(removableDefinition);
 			removeEmptyDefinitions();
 			return true;
 		}
+
 		return false;
 	}
 
-    private void removeDefinitionsthatDontMatchLocation(Definition eventToDef) {
+	/**
+	 * Merge an SnmpProfile into the current configuration.
+	 * If the profile has the same label as an existing profile, replace it.
+	 * Otherwise add it as a new profile.
+	 * @param profile a {@link org.opennms.netmgt.config.snmp.SnmpProfile} object.
+	 */
+	public void mergeProfileIntoConfig(final SnmpProfile profile) throws IllegalArgumentException {
+		if (profile == null || Strings.isNullOrEmpty(profile.getLabel())) {
+			throw new IllegalArgumentException("profile must not be null and must have a label");
+		}
 
+		final SnmpProfiles snmpProfiles = getConfig().getSnmpProfiles();
+		final List<SnmpProfile> existingProfileList =
+			Objects.requireNonNullElseGet(snmpProfiles.getSnmpProfiles(), ArrayList::new);
+
+		ArrayList<SnmpProfile> updatedProfiles = new ArrayList<>();
+
+		// find existing profile with same label, if any
+		final SnmpProfile existingProfile = findExistingProfile(profile.getLabel());
+
+		if (existingProfile != null) {
+			// profile exists, replace it
+			updatedProfiles =
+				new ArrayList<>(
+					existingProfileList.stream()
+					.map(p -> p.getLabel().equals(profile.getLabel()) ? profile : p)
+					.toList());
+		} else {
+			// add a new profile
+			updatedProfiles = new ArrayList<>(existingProfileList);
+			updatedProfiles.add(profile);
+		}
+
+		snmpProfiles.setSnmpProfiles(updatedProfiles);
+		getConfig().setSnmpProfiles(snmpProfiles);
+	}
+
+	/**
+	 * Remove profile with the given label from the config.
+	 * @param label label of the profile to remove.
+	 * @return true when profile is removed else false.
+	 */
+	public boolean removeProfile(final String label) {
+		if (Strings.isNullOrEmpty(label)) {
+			throw new IllegalArgumentException("label must exist");
+		}
+
+		final SnmpProfiles snmpProfiles = getConfig().getSnmpProfiles();
+		final List<SnmpProfile> existingProfileList = snmpProfiles.getSnmpProfiles();
+
+		// find existing profile with same label
+		final SnmpProfile existingProfile = findExistingProfile(label);
+
+		if (existingProfile != null) {
+			ArrayList<SnmpProfile> updatedProfiles =
+				new ArrayList<>(
+				    existingProfileList.stream()
+					.filter(p -> !p.getLabel().equals(label))
+					.toList());
+
+			snmpProfiles.setSnmpProfiles(updatedProfiles);
+			getConfig().setSnmpProfiles(snmpProfiles);
+
+			return true;
+		}
+
+		// most likely could not find profile with given label
+		return false;
+	}
+
+	private SnmpProfile findExistingProfile(final String label) {
+		final List<SnmpProfile> existingProfileList = getConfig().getSnmpProfiles().getSnmpProfiles();
+
+		// find existing profile with same label, if any
+		final SnmpProfile existingProfile = existingProfileList.stream()
+			.filter(p -> p.getLabel().equals(label))
+			.findFirst()
+			.orElse(null);
+
+		return existingProfile;
+	}
+
+    private void removeDefinitionsThatDoNotMatchLocation(Definition eventToDef) {
         for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
             MergeableDefinition def = iter.next();
             String location = def.getConfigDef().getLocation();
             String locationFromEvent = eventToDef.getLocation();
+
             if (DEFAULT_LOCATION.equals(location)) {
                 location = null;
                 def.getConfigDef().setLocation(location);
@@ -183,13 +280,11 @@ public class SnmpConfigManager {
                 iter.remove();
             }
         }
-
     }
 
     /**
 	 * This method purges specifics and ranges from definitions that don't match
 	 * the attributes specified in the event (the updateDef)
-	 * 
 	 *
 	 * @param eventDefinition
 	 */
@@ -197,9 +292,9 @@ public class SnmpConfigManager {
 		for (MergeableDefinition def : getDefinitions()) {
 			def.removeRanges(eventDefinition);
 		}
+
 		removeEmptyDefinitions();
 	}
-
 
 	private MergeableDefinition findMatchingDefinition(MergeableDefinition def) {
 		for (MergeableDefinition d : getDefinitions()) {
@@ -225,6 +320,7 @@ public class SnmpConfigManager {
 	 */
 	protected static final <T> boolean areEquals(T obj1, T obj2) {
 		boolean match = false;
+
         if (obj1 == null && obj2 == null) {
             match = true;
         } else if (obj1 == null || obj2 == null) {
@@ -232,6 +328,7 @@ public class SnmpConfigManager {
         } else if (obj1.equals(obj2)) {
             match = true;
         }
+
         return match;
 	}
 }

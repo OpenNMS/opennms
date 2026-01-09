@@ -195,6 +195,16 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
+        public void saveProfile(SnmpProfile profile) {
+
+        }
+
+        @Override
+        public boolean removeProfile(String label) {
+            return false;
+        }
+
+        @Override
         public List<SnmpProfile> getProfiles() {
             return null;
         }

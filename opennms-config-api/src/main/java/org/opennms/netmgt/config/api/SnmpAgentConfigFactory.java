@@ -83,11 +83,23 @@ public interface SnmpAgentConfigFactory {
     void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module);
 
     /**
+     * Save an SnmpProfile. The given profile must include a label.
+     * If a profile with the label exists, replace it, otherwise add a new profile.
+     * Only fields that differ from defaults (for new profiles), or override any existing values (for
+     * updated profiles) should be non-null.
+     */
+    void saveProfile(SnmpProfile profile);
+
+    /**
+     * Remove the SnmpProfile with the given label.
+     */
+    boolean removeProfile(String label);
+
+    /**
      * Get all the SNMP profiles from SNMP Config.
      * @return a List of snmp profiles.
      */
     List<SnmpProfile> getProfiles();
 
     public SnmpConfig getSnmpConfig();
-
 }
