@@ -182,7 +182,7 @@ MAVEN_VERSION=$(mvn -v | awk '/Apache Maven/ {print $3}')
 MAVEN_JAVA_VERSION=$(mvn -v | awk '/Java version/ {print $3}'| tr -d ',')
 JAVA_MAJOR_VERSION=$(echo "$MAVEN_JAVA_VERSION" | awk -F. '{print $1}')
 
-# RRDTOOL_VERSION=$(rrdtool --version | head -n1 | awk '{print $2}')
+RRDTOOL_VERSION=$( (rrdtool --version || true) | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' )
 
 POSTGRES_VERSION=""
 
@@ -354,11 +354,32 @@ if [[ "${CHECK_DEPENDENCIES:-}" == "yes" ]]; then
     echo "Maven version: $MAVEN_VERSION"
     echo "Maven Java version: $MAVEN_JAVA_VERSION (Java major version: $JAVA_MAJOR_VERSION)"
     echo "Node.js version: $(node -v)"
+    echo "NPM version: $(npm -v)"
     echo "Python version: $($PYTHON --version 2>&1)"
     echo "Git version: $(git --version)"
     echo "Docker version: $(docker --version)"
 
-    # echo "RRDtool version: $RRDTOOL_VERSION"
+    if ! command -v nc >/dev/null 2>&1; then
+    NC_VERSION="not installed"
+    else
+    NC_VERSION=$(
+        strings "$(command -v nc)" |
+        grep -i -E 'netcat|PROJECT' |
+        grep -oE '[0-9]+(\.[0-9]+)*' |
+        head -n1
+    )
+    NC_VERSION=${NC_VERSION:-unknown}
+    fi
+
+    echo "Netcat version: $NC_VERSION"
+
+    echo "RRDtool version: $RRDTOOL_VERSION"
+    echo "Cmake version: $(cmake --version | head -n1)"
+
+    echo "pkg-config version: $(pkg-config --version)"
+    if [[ "$OS_NAME" == "Linux" ]]; then
+        echo "librrd-dev installed: $(dpkg -s librrd-dev 2>/dev/null | grep 'Version' || echo 'not installed')"
+    fi
 
     detect_jdk_version_required
     echo "Required JDK version: $REQUIRED_VERSION"
