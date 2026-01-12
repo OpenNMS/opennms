@@ -67,6 +67,27 @@ git clone https://github.com/OpenNMS/opennms.git ~/dev/opennms
 cd ~/dev/opennms
 ----
 
+== (Automated) Compile and assemble from source
+A script is provided to help with building and bringing up OpenNMS on both Mac and Linux (Ubuntu).
+
+=== Check for dependencies
+You can check required dependencies by running 
+
+.Check installed dependencies
+[source, console]
+----
+./tools/local_development/dependencies.sh --check-dependencies
+----
+
+=== Build and run OpenNMS
+You can build and run OpenNMS by running the following command.
+
+.Build and run OpenNMS
+[source, console]
+----
+./tools/local_development/opennms.sh
+----
+
 == Compile and assemble from source
 
 The build is divided into two steps.
