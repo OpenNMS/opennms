@@ -90,6 +90,12 @@ public class EventSinkModule extends AbstractXmlSinkModule<Event, Log> {
             public Log build(Log accumulator) {
                 return accumulator;
             }
+
+            @Override
+            public int getBatchSize() {
+                return m_config.getBatchSize();
+            }
+
         };
     }
 

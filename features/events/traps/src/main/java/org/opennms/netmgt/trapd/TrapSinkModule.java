@@ -105,6 +105,12 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
             public TrapLogDTO build(TrapLogDTO accumulator) {
                 return accumulator;
             }
+
+            @Override
+            public int getBatchSize() {
+                return config.getBatchSize();
+            }
+
         };
     }
 

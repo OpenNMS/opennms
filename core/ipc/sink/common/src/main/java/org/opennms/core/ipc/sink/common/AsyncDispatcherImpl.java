@@ -103,6 +103,12 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
 
         state.getMetrics().register(queueSizeMetricName(), (Gauge<Integer>) activeDispatchers::get);
 
+        if (state.getModule() != null) {
+            state.getMetrics().register(
+                    batchSizeMetricName(),
+                    (Gauge<Integer>) () -> state.getModule().getAggregationPolicy().getBatchSize()
+            );
+        }
         droppedCounter = state.getMetrics().counter(MetricRegistry.name(state.getModule().getId(), "dropped"));
 
         executor = Executors.newFixedThreadPool(asyncPolicy.getNumThreads(),
@@ -114,6 +120,11 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
     private String queueSizeMetricName() {
         return MetricRegistry.name(state.getModule().getId(), "queue-size");
     }
+
+    private String batchSizeMetricName() {
+        return MetricRegistry.name(state.getModule().getId(), "batch-size");
+    }
+
 
     private void dispatchFromQueue() {
         while (true) {

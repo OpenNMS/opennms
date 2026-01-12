@@ -138,6 +138,10 @@ public class TelemetrySinkModule implements SinkModule<TelemetryMessage, Telemet
             public TelemetryProtos.TelemetryMessageLog build(TelemetryProtos.TelemetryMessageLog.Builder accumulator) {
                 return accumulator.build();
             }
+            @Override
+            public int getBatchSize() {
+                return TelemetrySinkModule.this.queueConfig.getBatchSize().orElse(DEFAULT_BATCH_SIZE);
+            }
         };
     }
 

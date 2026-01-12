@@ -96,4 +96,6 @@ public interface AggregationPolicy<S, T, U> {
      */
      T build(U accumulator);
 
+
+     int getBatchSize();
 }

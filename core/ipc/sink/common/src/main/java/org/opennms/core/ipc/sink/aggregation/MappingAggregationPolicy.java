@@ -59,4 +59,8 @@ public abstract class MappingAggregationPolicy<S, T extends Message> implements 
         return accumulator;
     }
 
+    @Override
+    public int getBatchSize() {
+        return 1;
+    }
 }

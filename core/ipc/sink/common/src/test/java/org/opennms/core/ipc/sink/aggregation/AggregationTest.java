@@ -321,6 +321,12 @@ public class AggregationTest {
                 public UDPPacketLog build(UDPPacketLog accumulator) {
                     return accumulator;
                 }
+
+                @Override
+                public int getBatchSize() {
+                    return COMPLETION_SIZE;
+                }
+
             };
         }
     }
@@ -359,6 +365,13 @@ public class AggregationTest {
                 public UDPPacketLog build(UDPPacketLog accumulator) {
                     return accumulator;
                 }
+
+                @Override
+                public int getBatchSize() {
+                    return COMPLETION_SIZE;
+                }
+
+
             };
         }
     }
@@ -397,6 +410,10 @@ public class AggregationTest {
                 @Override
                 public UDPPacketLog build(UDPPacketLog accumulator) {
                     return accumulator;
+                }
+                @Override
+                public int getBatchSize() {
+                    return 1;
                 }
             };
         }

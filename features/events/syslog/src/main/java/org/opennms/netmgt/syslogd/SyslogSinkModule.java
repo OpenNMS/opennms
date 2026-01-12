@@ -90,6 +90,10 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
             public SyslogMessageLogDTO build(SyslogMessageLogDTO accumulator) {
                 return accumulator;
             }
+            @Override
+            public int getBatchSize() {
+                return config.getBatchSize();
+            }
         };
     }
 

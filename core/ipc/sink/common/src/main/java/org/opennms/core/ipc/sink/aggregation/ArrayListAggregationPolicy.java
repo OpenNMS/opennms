@@ -64,6 +64,11 @@ public class ArrayListAggregationPolicy<S> implements AggregationPolicy<S, List<
     }
 
     @Override
+    public int getBatchSize() {
+        return m_completionSize;
+    }
+
+    @Override
     public int getCompletionSize() {
         return m_completionSize;
     }

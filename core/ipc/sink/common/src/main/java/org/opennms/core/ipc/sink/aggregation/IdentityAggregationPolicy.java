@@ -48,6 +48,11 @@ public class IdentityAggregationPolicy<T extends Message> implements Aggregation
     }
 
     @Override
+    public int getBatchSize() {
+        return 1;
+    }
+
+    @Override
     public int getCompletionSize() {
         return 1;
     }
