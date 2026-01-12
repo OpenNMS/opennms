@@ -182,20 +182,22 @@
             Cancel
           </FeatherButton>
           <FeatherButton
-            secondary
-            @click="openCreateSourceDialog()"
-            data-test="create-source-button"
-            :disabled="!isValidWithoutSource"
-          >
-            Create Source and Save
-          </FeatherButton>
-          <FeatherButton
+            v-if="store.selectedSource !== null || selectedSource?._value"
             primary
             @click="handleSaveEvent"
             data-test="save-event-button"
             :disabled="!isValid"
           >
             {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create Event' : 'Save Changes' }}
+          </FeatherButton>
+          <FeatherButton
+            v-if="store.selectedSource === null && !selectedSource?._value"
+            primary
+            @click="openCreateSourceDialog()"
+            data-test="create-source-button"
+            :disabled="!isValid"
+          >
+            Create Source and Save
           </FeatherButton>
         </div>
       </div>
@@ -292,7 +294,6 @@ const operatorInstructions = ref('')
 const logMessage = ref('')
 const errors = ref<EventFormErrors>({})
 const isValid = ref(false)
-const isValidWithoutSource = ref(false)
 const snackbar = useSnackbar()
 const destination = ref<ISelectItemType>({ _text: '', _value: '' })
 const severity = ref<ISelectItemType>({ _text: '', _value: '' })
@@ -372,7 +373,9 @@ const resetValues = () => {
 const loadInitialValues = (val: EventConfigEvent | null) => {
   if (store.selectedSource) {
     const source = eventConfigStore.uploadedSourceNames.find((x) => x === store.selectedSource?.name)
-    selectedSource.value = { _text: source || '', _value: source || '' }
+    selectedSource.value = { _text: source, _value: source }
+  } else {
+    selectedSource.value = { _text: '', _value: '' }
   }
   if (val) {
     const parser = new DOMParser()
@@ -660,19 +663,20 @@ watchEffect(() => {
     varbinds.value,
     varbindsDecode.value
   )
-  isValid.value = Object.keys(currentErrors).length === 0 && (selectedSource.value?._value ? true : false)
-  isValidWithoutSource.value = Object.keys(currentErrors).length === 0
+  isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as EventFormErrors
 })
 
 const setSelectedSource = (item: any) => {
   if (item) {
     selectedSource.value = item
+  } else {
+    selectedSource.value = { _text: '', _value: '' }
   }
 }
 
 const createNewSource = async () => {
-  if (sourceFormErrors.value || !isValidWithoutSource.value) {
+  if (sourceFormErrors.value || !isValid.value) {
     snackbar.showSnackBar({ msg: 'Please fill out all fields', error: true })
     return
   }
@@ -692,6 +696,7 @@ const createNewSource = async () => {
 
       if (eventResponse) {
         snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
+        await eventConfigStore.fetchAllSourcesNames()
         resetValues()
         store.resetEventModificationState()
         router.push({ name: 'Event Configuration Detail', params: { id: response.id } })
@@ -796,6 +801,11 @@ onMounted(async () => {
     justify-content: flex-end;
     gap: 10px;
   }
+
+}
+
+.modal-body-form {
+  width: 50rem;
 }
 </style>
 

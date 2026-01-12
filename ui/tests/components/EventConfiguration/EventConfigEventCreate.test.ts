@@ -72,6 +72,7 @@ describe('EventConfigSourceDetail.vue', () => {
 
   it('renders BasicInformation when both selected source and event config event exist', async () => {
     modificationStore.selectedSource = mockSource
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.Create
     modificationStore.eventModificationState.eventConfigEvent = mockEvent
 
     await wrapper.vm.$forceUpdate()

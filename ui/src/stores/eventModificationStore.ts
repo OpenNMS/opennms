@@ -29,6 +29,10 @@ export const useEventModificationStore = defineStore('useEventModificationStore'
       this.eventModificationState.isEditMode = isEditMode
       this.eventModificationState.eventConfigEvent = eventConfigEvent
     },
+    openCreateWithoutSource(isEditMode: CreateEditMode, eventConfigEvent: EventConfigEvent | null) {
+      this.eventModificationState.isEditMode = isEditMode
+      this.eventModificationState.eventConfigEvent = eventConfigEvent
+    },
     resetEventModificationState() {
       this.selectedSource = null
       this.eventModificationState.isEditMode = CreateEditMode.None

@@ -56,7 +56,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 const goToCreateEventConfig = () => {
   const modificationStore = useEventModificationStore()
-  modificationStore.setSelectedEventConfigSource(null as any, CreateEditMode.Create, getDefaultEventConfigEvent())
+  modificationStore.openCreateWithoutSource(CreateEditMode.Create, getDefaultEventConfigEvent())
   router.push({ name: 'Event Configuration Create' })
 }
 </script>
