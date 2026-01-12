@@ -11,7 +11,7 @@
     "build:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
     "build:dev:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/ --minify false",
-    "build:all:dev": "pnpm run build:dev && pnpm run build:dev:menu",
+    "build:dev:all": "pnpm run build:dev && pnpm run build:dev:menu",
     "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",
     "watch:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false --watch",
     "serve": "vite preview",

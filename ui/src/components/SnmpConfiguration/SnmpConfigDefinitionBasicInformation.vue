@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="main-content"
-  >
+  <div class="main-content">
     <div class="header">
       <div>
         <FeatherBackButton
@@ -20,65 +18,97 @@
     <div class="spacer"></div>
     <div class="basic-info">
       <div class="section-content">
-        <label class="label">ID:</label>
+        <div class="feather-row" v-if="(currentDefinition?.specifics?.length ?? 0) > 0">
+          <div class="feather-col-4">
+            <label class="label">Specific IPs:</label>
+          </div>
+          <div class="feather-col-8">
+            <span>{{ currentDefinition?.specifics.join(', ') }}</span>
+          </div>
+        </div>
+        <div class="feather-row" v-if="(currentDefinition?.ranges?.length ?? 0) > 0">
+          <div class="feather-col-4">
+            <label class="label">IP Ranges:</label>
+          </div>
+          <div class="feather-col-8">
+            <span>{{ currentDefinition?.ranges?.map(r => `${r.begin}-${r.end}`).join(', ') }}</span>
+          </div>
+        </div>
+        <div class="feather-row" v-if="(currentDefinition?.ipMatches?.length ?? 0) > 0">
+          <div class="feather-col-4">
+            <label class="label">IP Matches:</label>
+          </div>
+          <div class="feather-col-8">
+            <span>{{ currentDefinition?.ipMatches?.join(', ') }}</span>
+          </div>
+        </div>
+
+        <div class="section-content">
+          <SnmpConfigDefinitionDetails
+            v-if="snmpAgentConfig"
+            :isCreate="false"
+            :ipAddress="firstIpAddress"
+            :config="snmpAgentConfig"
+            @cancel="onDetailsCancel"
+            @validation-error="onDetailsValidationError"
+            @save="onDetailsSave"
+          />
+        </div>
+
         <div class="spacer"></div>
-        <span class="label">{{ definitionId }}</span>
+        <hr />
         <div class="spacer"></div>
 
-        <label class="label">Version:</label>
-        <div class="spacer"></div>
-        <div class="dropdown">
-          <FeatherSelect
-            label="Version"
-            data-test="snmp-definition-version"
-            hint="Select the SNMP version."
-            :options="SnmpVersions"
-            v-model="snmpVersion"
-          >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
+        <div class="feather-row">
+          <div class="feather-col-4">
+            <label class="label">First IP Address:</label>
+          </div>
+          <div class="feather-col-8">
+            <FeatherInput
+              label=""
+              data-test="snmp-definition-first-ip-address"
+              :error="errors.firstIpAddress"
+              v-model.trim="firstIpAddress"
+              hint="First IP Address in range"
+            >
+            </FeatherInput>
+          </div>
         </div>
-  
-        <div class="spacer"></div>
-        <label class="label">First IP Address:</label>
-        <div class="spacer"></div>
-        <FeatherInput
-          label=""
-          data-test="snmp-definition-first-ip-address"
-          :error="errors.firstIpAddress"
-          v-model.trim="firstIpAddress"
-          hint="First IP Address in range"
-        >
-        </FeatherInput>
-        <div class="spacer"></div>
-        <label class="label">Second IP Address:</label>
-        <div class="spacer"></div>
-        <FeatherInput
-          label=""
-          data-test="snmp-definition-second-ip-address"
-          :error="errors.secondIpAddress"
-          v-model.trim="secondIpAddress"
-          hint="Second IP Address in range"
-        >
-        </FeatherInput>
-  
-        <div class="spacer"></div>
-        <div class="action-container">
-          <FeatherButton
-            secondary
-            @click="handleCancel"
-            data-test="cancel-snmp-definition-button"
-          >
-            Cancel
-          </FeatherButton>
-          <FeatherButton
-            primary
-            @click="handleSaveDefinition"
-            data-test="save-definition-button"
-            :disabled="!isValid"
-          >
-            {{ isCreate ? 'Create Definition' : 'Save Changes' }}
-          </FeatherButton>
+        <div class="feather-row">
+          <div class="feather-col-4">
+            <label class="label">Second IP Address:</label>
+          </div>
+          <div class="feather-col-8">
+            <FeatherInput
+              label=""
+              data-test="snmp-definition-second-ip-address"
+              :error="errors.secondIpAddress"
+              v-model.trim="secondIpAddress"
+              hint="Second IP Address in range"
+            >
+            </FeatherInput>
+          </div>
+        </div>
+        <div class="feather-row">
+          <div class="feather-col-12">
+            <div class="action-container">
+              <FeatherButton
+                primary
+                @click="handleSaveDefinition"
+                data-test="save-definition-button"
+                :disabled="!isValid"
+              >
+                {{ isCreate ? 'Create Definition' : 'Save Changes' }}
+              </FeatherButton>
+              <FeatherButton
+                secondary
+                @click="handleCancel"
+                data-test="cancel-snmp-definition-button"
+              >
+                Cancel
+              </FeatherButton>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -88,61 +118,82 @@
 <script setup lang="ts">
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
 import { FeatherInput } from '@featherds/input'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { SnmpDefinition, SnmpDefinitionFormErrors } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpDefinition, SnmpDefinitionFormErrors } from '@/types/snmpConfig'
 import { validateDefinition } from './snmpValidator'
-import { useSnmpConfigStore, getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
+import { convertSnmpVersionToString } from '@/services/snmpConfigService'
+import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
 import useSnackbar from '@/composables/useSnackbar'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
-
-const SnmpVersions: ISelectItemType[] = [
-  { _text: 'v1', _value: 'v1' },
-  { _text: 'v2c', _value: 'v2c' },
-  { _text: 'v3', _value: 'v3' }
-]
+import SnmpConfigDefinitionDetails from './SnmpConfigDefinitionDetails.vue'
 
 const props = defineProps<{
   isCreate: boolean,
-  definitionId: number
+  definition: SnmpDefinition | null
 }>()
  
 const router = useRouter()
-const store = useSnmpConfigStore()
 const snackbar = useSnackbar()
 const isValid = ref(false)
 const errors = ref<SnmpDefinitionFormErrors>({})
 
 const currentDefinition = ref<SnmpDefinition>()
-const snmpVersion = ref(SnmpVersions[1])
 const firstIpAddress = ref('')
 const secondIpAddress = ref('')
 
+const snmpAgentConfig = computed(() => {
+  const config = {
+    version: convertSnmpVersionToString(currentDefinition.value?.version ?? 'v2c'),
+    readCommunity: currentDefinition.value?.readCommunity ?? '',
+    writeCommunity: currentDefinition.value?.writeCommunity ?? '',
+    timeout: currentDefinition.value?.timeout ?? undefined,
+    retry: currentDefinition.value?.retry ?? undefined,
+    port: currentDefinition.value?.port ?? undefined,
+    proxyHost: currentDefinition.value?.proxyHost ?? '',
+    maxRequestSize: currentDefinition.value?.maxRequestSize ?? undefined,
+    maxVarsPerPdu: currentDefinition.value?.maxVarsPerPdu ?? undefined,
+    maxRepetitions: currentDefinition.value?.maxRepetitions ?? undefined,
+    ttl: currentDefinition.value?.ttl ?? undefined,
+    securityName: currentDefinition.value?.securityName ?? '',
+    securityLevel: currentDefinition.value?.securityLevel ?? undefined,
+    authPassphrase: currentDefinition.value?.authPassphrase ?? '',
+    authProtocol: currentDefinition.value?.authProtocol ?? '',
+    engineId: currentDefinition.value?.engineId ?? '',
+    contextEngineId: currentDefinition.value?.contextEngineId ?? '',
+    contextName: currentDefinition.value?.contextName ?? '',
+    privacyPassphrase: currentDefinition.value?.privacyPassphrase ?? '',
+    privacyProtocol: currentDefinition.value?.privacyProtocol ?? '',
+    enterpriseId: currentDefinition.value?.enterpriseId ?? ''
+  } as SnmpAgentConfig
+
+  return config
+})
+
 const resetValues = () => {
-  snmpVersion.value = SnmpVersions[1]
   firstIpAddress.value = ''
   secondIpAddress.value = ''
 }
 
 const loadInitialValues = () => {
-  if (props.definitionId < 0) {
+  if (!props.definition) {
     currentDefinition.value = getDefaultSnmpDefinition()
   } else {
-    // TODO: ensure definitionId is in range
-    currentDefinition.value = store.config.definitions.find(d => d.id === props.definitionId) ?? getDefaultSnmpDefinition()
+    currentDefinition.value = props.definition
   }
 
-  if (currentDefinition.value.version === 'v1') {
-    snmpVersion.value = SnmpVersions[0]
-  } else if (currentDefinition.value.version === 'v2c') {
-    snmpVersion.value = SnmpVersions[1]
-  } else if (currentDefinition.value.version === 'v3') {
-    snmpVersion.value = SnmpVersions[2]
-  }
-    
   firstIpAddress.value = currentDefinition.value.ranges?.[0]?.begin ?? ''
   secondIpAddress.value = currentDefinition.value.ranges?.[0]?.end ?? ''
+}
+
+const onDetailsCancel = () => {
+  alert('onDetailsCancel')
+}
+
+const onDetailsValidationError = (formErrors: SnmpDefinitionFormErrors) => {
+  alert(`onDetailsValidationError with firstIp of: ${formErrors.firstIpAddress ?? ''}`)
+}
+
+const onDetailsSave = (config: SnmpAgentConfig, firstIp?: string, lastIp?: string) => {
+  alert(`onDetailsSave with config: ${config.id ?? ''}, firstIp: ${firstIp}, lastIp: ${lastIp}`)
 }
 
 const handleSaveDefinition = async () => {
@@ -170,10 +221,8 @@ const handleCancel = () => {
 }
 
 const handleValidate = () => {
-  const version = String(snmpVersion.value?._value || '')
-
   const currentErrors = validateDefinition(
-    version,
+    convertSnmpVersionToString(currentDefinition.value?.version ?? ''),
     firstIpAddress.value,
     secondIpAddress.value
   )
@@ -181,7 +230,7 @@ const handleValidate = () => {
   errors.value = currentErrors as SnmpDefinitionFormErrors
 }
 
-watch([() => props.definitionId, () => props.isCreate], () => {
+watch([() => props.definition, () => props.isCreate], () => {
   loadInitialValues()
 })
 
@@ -197,6 +246,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
+@use "@featherds/table/scss/table";
 
 .main-content {
   padding: 30px;

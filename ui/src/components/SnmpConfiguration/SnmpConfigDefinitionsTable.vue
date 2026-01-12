@@ -24,7 +24,7 @@
             primary
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.refresh()"
+            @click="store.populateSnmpConfig"
           >
             <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
           </FeatherButton>
@@ -57,21 +57,26 @@
           tag="tbody"
         >
           <tr
-            v-for="definition of definitions"
+            v-for="(definition, index) of definitions"
             :key="`${definition.label ?? ''}-${definition.id}`"
           >
             <td>{{ definition.id }}</td>
             <td>{{ definition.label }}</td>
             <td>{{ definition.rangeType }}</td>
-            <td>{{ definition.ipAddresses }}</td>
-            <td>{{ definition.location }}</td>
+            <td v-if="definition.ipAddresses.length > 1">
+              <div v-for="ipAddr of definition.ipAddresses" :key="ipAddr">
+                {{ ipAddr }}
+              </div>
+            </td>
+            <td v-else>{{ definition.ipAddresses?.[0] ?? '--' }}</td>
+            <td>{{ definition.location ?? 'Default' }}</td>
             <td>{{ definition.profileLabel }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton
                   icon="Edit"
                   data-test="edit-button"
-                  @click="onDefinitionEdit(definition.id)"
+                  @click="onDefinitionEdit(store.config.definitions?.[index])"
                 >
                   <FeatherIcon :icon="IconEdit"> </FeatherIcon>
                 </FeatherButton>
@@ -79,7 +84,7 @@
                   v-if="definition.label !== 'Global'"
                   icon="Delete"
                   data-test="delete-button"
-                  @click="onDefinitionDelete(definition.id)"
+                  @click="onDefinitionDelete(store.config.definitions?.[index])"
                 >
                   <FeatherIcon :icon="IconDelete"> </FeatherIcon>
                 </FeatherButton>
@@ -125,6 +130,7 @@ import { SnmpDefinition } from '@/types/snmpConfig'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import IconRefresh from '@featherds/icon/navigation/Refresh'
+import { CreateEditMode } from '@/types'
 
 const store = useSnmpConfigStore()
 const router = useRouter()
@@ -151,69 +157,65 @@ const sort = reactive({
 }) as any
 
 const getRangeType = (d: SnmpDefinition) => {
+  const rangeTypes: string[] = []
+
   if (d.ranges?.length > 0) {
-    return 'Range'
+    rangeTypes.push('Range')
   }
 
   if (d.specifics?.length > 0) {
-    return 'Specific'
+    rangeTypes.push('Specific')
   }
 
   if (d.ipMatches?.length > 0) {
-    return 'IP Match'
+    rangeTypes.push('IP Match')
+  }
+
+  if (rangeTypes.length > 0) {
+    return rangeTypes.join(', ')
   }
 
   return '--'
 }
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
+  const items: string[] = []
+
+
   // IP Range
   if (d.ranges?.length) {
-    let s = `${d.ranges[0].begin} - ${d.ranges[0].end}`
-
-    if (d.ranges.length > 1) {
-      s += '...'
-    }
-
-    return s
+    const ranges = d.ranges.map(r => `${r.begin} - ${r.end}`)
+    items.push(...ranges)
   }
 
   // Specific IPs
   if (d.specifics?.length) {
-    let s = d.specifics[0]
-
-    if (d.specifics.length > 1) {
-      s += '...'
-    }
-
-    return s
+    items.push(...d.specifics)
   }
 
   // IP Match
   if (d.ipMatches?.length) {
-    let s = d.ipMatches[0]
-
-    if (d.ipMatches.length > 1) {
-      s += '...'
-    }
-
-    return s
+    items.push(...d.ipMatches)
   }
 
-  return '--'
+  return items
 }
 
 const definitions = computed(() => {
-  return store.config.definitions?.map(d => {
-    return {
-      id: d.id ?? -1,
-      label: d.id === 0 ? 'Global' : '--',
-      rangeType: getRangeType(d),
-      ipAddresses: createIpAddressLabel(d),
-      location: d.location,
-      profileLabel: d.profileLabel ?? '--'
-    }
-  })
+  if (store.config.definitions) {
+    return store.config.definitions?.map((d, index) => {
+      return {
+        id: d.id ?? index,
+        label: d.id === 0 ? 'Global' : '--',
+        rangeType: getRangeType(d),
+        ipAddresses: createIpAddressLabel(d),
+        location: d.location,
+        profileLabel: d.profileLabel ?? '--'
+      }
+    })
+  }
+
+  return []
 })
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
@@ -229,15 +231,22 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   sort[sortObj.property] = sortObj.value
 }
 
-const onDefinitionDelete = (index: number) => {
-  alert(`Deleting index: ${index} (not yet implemented)`)
+const onDefinitionDelete = (definition?: SnmpDefinition) => {
+  if (definition) {
+    alert('Deleting definition: (not yet implemented)')
+  }
 }
 
-const onDefinitionEdit = (index: number) => {
-  router.push({
-    name: 'SNMP Config Definition',
-    params: { id: String(index) }
-  })
+const onDefinitionEdit = (definition?: SnmpDefinition) => {
+  if (definition) {
+    store.setCreateEditMode(CreateEditMode.Edit)
+    store.setCurrentDefinition(definition)
+
+    router.push({
+      name: 'SNMP Config Definition'
+      // params: { id: String(index) }
+    })
+  }
 }
 </script>
 

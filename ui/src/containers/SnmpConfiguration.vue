@@ -65,7 +65,8 @@ const onCreateProfile = () => {
 }
 
 onMounted(async () => {
-  store.populateInitialSnmpConfig()
+  store.fetchMonitoringLocations()
+  store.populateSnmpConfig()
 })
 </script>
 
