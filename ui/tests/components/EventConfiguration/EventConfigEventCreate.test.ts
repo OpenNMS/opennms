@@ -14,6 +14,19 @@ vi.mock('vue-router', () => ({
   })
 }))
 
+vi.mock('@/services/eventConfigService', () => ({
+  createEventConfigEvent: vi.fn(),
+  updateEventConfigEventById: vi.fn(),
+  addEventConfigSource: vi.fn()
+}))
+
+vi.mock('@/stores/eventConfigStore', () => ({
+  useEventConfigStore: vi.fn(() => ({
+    uploadedSourceNames: ['Test Source'],
+    fetchAllSourcesNames: vi.fn().mockResolvedValue(undefined)
+  }))
+}))
+
 const mockSource = {
   id: 1,
   name: 'Test Source',

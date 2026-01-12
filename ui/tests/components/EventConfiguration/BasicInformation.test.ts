@@ -47,7 +47,15 @@ vi.mock('@/composables/useSnackbar', () => ({
 
 vi.mock('@/services/eventConfigService', () => ({
   createEventConfigEvent: vi.fn(),
-  updateEventConfigEventById: vi.fn()
+  updateEventConfigEventById: vi.fn(),
+  addEventConfigSource: vi.fn()
+}))
+
+vi.mock('@/stores/eventConfigStore', () => ({
+  useEventConfigStore: vi.fn(() => ({
+    uploadedSourceNames: ['Test Source'],
+    fetchAllSourcesNames: vi.fn().mockResolvedValue(undefined)
+  }))
 }))
 
 vi.mock('vkbeautify', () => ({
