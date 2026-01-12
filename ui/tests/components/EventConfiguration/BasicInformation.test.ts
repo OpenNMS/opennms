@@ -424,5 +424,181 @@ describe('BasicInformation Component', () => {
     expect(xmlContent).toContain('logndisplay')
     expect(xmlContent).toContain('Major')
   })
+
+  // Source selection and autocomplete tests
+  it('should render source autocomplete field', () => {
+    expect(wrapper.find('[data-test="source-name"]').exists()).toBe(true)
+  })
+
+  it('should update selectedSource when autocomplete value changes', async () => {
+    const newSource = { _text: 'New Source', _value: 'New Source' }
+    wrapper.vm.setSelectedSource(newSource)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.selectedSource).toEqual(newSource)
+  })
+
+  // Button visibility tests
+  it('should show "Save Changes" button when store.selectedSource exists', async () => {
+    store.selectedSource = mockSource
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    expect(saveButton.exists()).toBe(true)
+  })
+
+  it('should show "Create Event" button in create mode when selectedSource._value exists', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: 'Test', _value: 'Test' }
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    expect(saveButton.exists()).toBe(true)
+    expect(saveButton.text()).toBe('Create Event')
+  })
+
+  it('should show "Create Source and Save" button when no source is selected', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    await wrapper.vm.$nextTick()
+
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    expect(createSourceButton.exists()).toBe(true)
+    expect(createSourceButton.text()).toBe('Create Source and Save')
+  })
+
+  it('should not show both "Save Event" and "Create Source and Save" buttons at the same time', async () => {
+    store.selectedSource = mockSource
+    wrapper.vm.selectedSource = { _text: 'Test', _value: 'Test' }
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    
+    expect(saveButton.exists()).toBe(true)
+    expect(createSourceButton.exists()).toBe(false)
+  })
+
+  // Create source dialog tests
+  it('should open create source dialog when "Create Source and Save" button is clicked', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    wrapper.vm.isValid = true
+    await wrapper.vm.$nextTick()
+
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    await createSourceButton.trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.createSourceDialog).toBe(true)
+  })
+
+  it('should close create source dialog', async () => {
+    wrapper.vm.createSourceDialog = true
+    await wrapper.vm.$nextTick()
+
+    wrapper.vm.closeSourceCreationDialog()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.createSourceDialog).toBe(false)
+  })
+
+  it('should have a configName field in create source dialog', async () => {
+    wrapper.vm.createSourceDialog = true
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.configName).toBeDefined()
+  })
+
+  it('should have a vendor field in create source dialog', async () => {
+    wrapper.vm.createSourceDialog = true
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.vendor).toBeDefined()
+  })
+
+  // Button disabled state tests
+  it('should disable "Save Event" button when isValid is false', async () => {
+    store.selectedSource = mockSource
+    wrapper.vm.isValid = false
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    expect(saveButton.exists()).toBe(true)
+    
+    const buttonComponent = saveButton.findComponent(FeatherButton)
+    expect(buttonComponent.props('disabled')).toBe(true)
+  })
+
+  it('should enable "Save Event" button when isValid is true and source exists', async () => {
+    store.selectedSource = mockSource
+    wrapper.vm.isValid = true
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    const buttonComponent = saveButton.findComponent(FeatherButton)
+    expect(buttonComponent.props('disabled')).toBe(false)
+  })
+
+  it('should disable "Create Source and Save" button when isValid is false', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    wrapper.vm.isValid = false
+    await wrapper.vm.$nextTick()
+
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    expect(createSourceButton.exists()).toBe(true)
+    
+    const buttonComponent = createSourceButton.findComponent(FeatherButton)
+    expect(buttonComponent.props('disabled')).toBe(true)
+  })
+
+  it('should enable "Create Source and Save" button when isValid is true', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    wrapper.vm.isValid = true
+    await wrapper.vm.$nextTick()
+
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    const buttonComponent = createSourceButton.findComponent(FeatherButton)
+    expect(buttonComponent.props('disabled')).toBe(false)
+  })
+
+  it('should show "Save Event" button when store.selectedSource is set', async () => {
+    store.selectedSource = mockSource
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    
+    expect(saveButton.exists()).toBe(true)
+    expect(createSourceButton.exists()).toBe(false)
+  })
+
+  it('should show "Save Event" button when selectedSource._value is set', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: 'Source', _value: 'Source' }
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    
+    expect(saveButton.exists()).toBe(true)
+    expect(createSourceButton.exists()).toBe(false)
+  })
+
+  it('should show "Create Source and Save" button when both store.selectedSource and selectedSource._value are null', async () => {
+    store.selectedSource = null
+    wrapper.vm.selectedSource = { _text: '', _value: '' }
+    await wrapper.vm.$nextTick()
+
+    const saveButton = wrapper.find('[data-test="save-event-button"]')
+    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    
+    expect(saveButton.exists()).toBe(false)
+    expect(createSourceButton.exists()).toBe(true)
+  })
 })
 

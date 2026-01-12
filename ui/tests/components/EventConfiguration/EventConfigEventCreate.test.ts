@@ -56,12 +56,15 @@ const mockEvent = {
   fileOrder: 1
 }
 
-describe('EventConfigSourceDetail.vue', () => {
+describe('EventConfigEventCreate.vue', () => {
   let detailStore: ReturnType<typeof useEventConfigDetailStore>
   let modificationStore: ReturnType<typeof useEventModificationStore>
   let wrapper: VueWrapper<any>
 
   beforeEach(() => {
+    vi.clearAllMocks()
+    mockPush.mockClear()
+
     const pinia = createTestingPinia({
       createSpy: vi.fn,
       stubActions: false
@@ -83,7 +86,7 @@ describe('EventConfigSourceDetail.vue', () => {
     })
   })
 
-  it('renders BasicInformation when both selected source and event config event exist', async () => {
+  it('renders BasicInformation when isEditMode is Create', async () => {
     modificationStore.selectedSource = mockSource
     modificationStore.eventModificationState.isEditMode = CreateEditMode.Create
     modificationStore.eventModificationState.eventConfigEvent = mockEvent
@@ -92,5 +95,70 @@ describe('EventConfigSourceDetail.vue', () => {
 
     expect(wrapper.findComponent({ name: 'BasicInformation' }).exists()).toBe(true)
     expect(wrapper.text()).not.toContain('No event configuration found.')
+  })
+
+  it('renders BasicInformation when isEditMode is Edit', async () => {
+    modificationStore.selectedSource = mockSource
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.Edit
+    modificationStore.eventModificationState.eventConfigEvent = mockEvent
+
+    await wrapper.vm.$forceUpdate()
+
+    expect(wrapper.findComponent({ name: 'BasicInformation' }).exists()).toBe(true)
+    expect(wrapper.text()).not.toContain('No event configuration found.')
+  })
+
+  it('renders "No event configuration found" message when isEditMode is None', async () => {
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.None
+
+    await wrapper.vm.$forceUpdate()
+
+    expect(wrapper.findComponent({ name: 'BasicInformation' }).exists()).toBe(false)
+    expect(wrapper.text()).toContain('No event configuration found.')
+    expect(wrapper.find('button').exists()).toBe(true)
+    expect(wrapper.find('button').text()).toBe('Go Back')
+  })
+
+  it('navigates to Event Configuration Detail when Go Back is clicked and selectedSource.id exists', async () => {
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.None
+    modificationStore.selectedSource = mockSource
+
+    await wrapper.vm.$forceUpdate()
+
+    const goBackButton = wrapper.find('button')
+    await goBackButton.trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration Detail',
+      params: { id: mockSource.id }
+    })
+  })
+
+  it('navigates to Event Configuration when Go Back is clicked and selectedSource.id does not exist', async () => {
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.None
+    modificationStore.selectedSource = null
+
+    await wrapper.vm.$forceUpdate()
+
+    const goBackButton = wrapper.find('button')
+    await goBackButton.trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration'
+    })
+  })
+
+  it('navigates to Event Configuration when Go Back is clicked and selectedSource has no id', async () => {
+    modificationStore.eventModificationState.isEditMode = CreateEditMode.None
+    modificationStore.selectedSource = { ...mockSource, id: undefined } as any
+
+    await wrapper.vm.$forceUpdate()
+
+    const goBackButton = wrapper.find('button')
+    await goBackButton.trigger('click')
+
+    expect(mockPush).toHaveBeenCalledWith({
+      name: 'Event Configuration'
+    })
   })
 })
