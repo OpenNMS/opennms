@@ -1,0 +1,48 @@
+<datacollection-config rrdRepository="%rrdRepository%">
+    <snmp-collection name="default" snmpStorageFlag="select">
+        <rrd step="1">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+        </rrd>
+
+        <resourceType name="the-instance" label="word" resourceLabel="word-${index}">
+            <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+            <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+        </resourceType>
+
+        <resourceType name="the-instance-2" label="word" resourceLabel="word-${index}">
+            <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+            <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+        </resourceType>
+
+        <groups>
+            <group name="snmp-json-mapping-numeric" ifType="all">
+                <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.37" instance="the-instance" alias="word" type="string"/>
+                <property instance="the-instance" alias="wordGauge" class-name="org.opennms.netmgt.collectd.JsonPropertyExtender">
+                    <parameter key="source-attribute" value="word"/>
+                    <parameter key="target-type" value="gauge"/>
+                    <parameter key="json-path" value="$.valuex"/>
+                    <parameter key="default-value" value="5.43"/>
+                </property>
+            </group>
+            <group name="snmp-json-mapping-string" ifType="all">
+                <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.37" instance="the-instance-2" alias="word" type="string"/>
+                <property instance="the-instance-2" alias="wordString" class-name="org.opennms.netmgt.collectd.JsonPropertyExtender">
+                    <parameter key="source-attribute" value="word"/>
+                    <parameter key="target-type" value="string"/>
+                    <parameter key="json-path" value="$.valuey"/>
+                    <parameter key="default-value" value="xxx"/>
+                </property>
+            </group>
+        </groups>
+
+        <systems>
+            <systemDef name="JSON Mapping Test">
+                <sysoidMask>.1.3.6.1.4.1.1588.</sysoidMask>
+                <collect>
+                    <includeGroup>snmp-json-mapping-numeric</includeGroup>
+                    <includeGroup>snmp-json-mapping-string</includeGroup>
+                </collect>
+            </systemDef>
+        </systems>
+    </snmp-collection>
+</datacollection-config>

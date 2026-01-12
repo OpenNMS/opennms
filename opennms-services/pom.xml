@@ -395,6 +395,12 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${jsonPathVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-security-dependencies</artifactId>
       <type>pom</type>

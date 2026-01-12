@@ -287,6 +287,9 @@
         <feature>sentinel-config-dao-thresholding</feature>
         <feature>sentinel-config-dao-poll-outages</feature>
         <feature>fst</feature>
+        <bundle>mvn:net.minidev/accessors-smart/${accessorsSmartVersion}</bundle>
+        <bundle>mvn:net.minidev/json-smart/${jsonSmartVersion}</bundle>
+        <bundle>wrap:mvn:com.jayway.jsonpath/json-path/${jsonPathVersion}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.snmp-collector/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
