@@ -1,11 +1,10 @@
 <template>
   <div
     class="feather-drawer-custom-padding"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
   >
     <BasicInformation />
   </div>
-  <div
+  <!-- <div
     v-else
     class="not-found-container"
   >
@@ -16,24 +15,24 @@
     >
       Go Back
     </FeatherButton>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
-import { useEventModificationStore } from '@/stores/eventModificationStore'
-import { FeatherButton } from '@featherds/button'
+// import { useEventModificationStore } from '@/stores/eventModificationStore'
+// import { FeatherButton } from '@featherds/button'
 
-const router = useRouter()
-const store = useEventModificationStore()
+// const router = useRouter()
+// const store = useEventModificationStore()
 
-const goBack = () => {
-  if (store.selectedSource?.id) {
-    router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id } })
-  } else {
-    router.push({ name: 'Event Configuration' })
-  }
-}
+// const goBack = () => {
+//   if (store.selectedSource?.id) {
+//     router.push({ name: 'Event Configuration Detail', params: { id: store.selectedSource.id } })
+//   } else {
+//     router.push({ name: 'Event Configuration' })
+//   }
+// }
 </script>
 
 <style lang="scss" scoped>

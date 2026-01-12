@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="varbinds-decode-info"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
-  >
+  <div class="varbinds-decode-info">
     <div class="section-content">
       <div class="varbinds-decode-header">
         <div>
@@ -97,7 +94,6 @@
 </template>
 
 <script setup lang="ts">
-import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -105,7 +101,6 @@ import Add from '@featherds/icon/action/Add'
 import Delete from '@featherds/icon/action/Delete'
 import { FeatherInput } from '@featherds/input'
 
-const store = useEventModificationStore()
 const props = defineProps<{
   varbindsDecode: Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>
   errors: EventFormErrors

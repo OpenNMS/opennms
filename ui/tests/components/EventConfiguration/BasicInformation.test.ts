@@ -153,20 +153,6 @@ describe('BasicInformation Component', () => {
     expect(wrapper.find('.main-content').exists()).toBe(true)
   })
 
-  it('should not render when no selected source', async () => {
-    store.selectedSource = null
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.find('.main-content').exists()).toBe(false)
-  })
-
-  it('should not render when no event config event', async () => {
-    store.eventModificationState.eventConfigEvent = null
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.find('.main-content').exists()).toBe(false)
-  })
-
   it('should display correct title for edit mode', () => {
     const title = wrapper.find('h3')
     expect(title.text()).toBe('Edit Event Configuration Details')
