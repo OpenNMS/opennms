@@ -119,19 +119,8 @@ fi
 if [[ -f "$ROOT/target/opennms/bin/opennms" ]]; then
     echo "OpenNMS already built. Lets stop existing."
     ./target/opennms/bin/opennms stop || true
-
-    if [[ "$SKIP_CLEANUP" == "yes" ]]; then
-        echo "Skipping cleanup of previous build artifacts."
-    else
-        echo "Cleaning previous build artifacts..."
-        rm -rf ./target
-        rm -rf ./features/minion/container/karaf/target
-        ./clean.pl
-    fi
-
 fi
 
-echo "Compiling & assembling (skip tests)..."
 if [[ "$SKIP_CLEANUP" == "yes" ]]; then
     echo "Skipping cleanup of previous build artifacts."
 else

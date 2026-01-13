@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 # ----------------------------------------------------------------------
 # Setup dependencies for local development
@@ -7,7 +6,7 @@ set -euo pipefail          # Fail fast & catch unset vars
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-
+# Detect JDF Version we need from root pom.xml
 detect_jdk_version_required(){
     # Can't use grep since MacOS doesn't support -P option :(
     REQUIRED_VERSION=$(sed -n 's:.*<source>\(.*\)</source>.*:\1:p' "$ROOT_POM")
@@ -17,6 +16,7 @@ detect_jdk_version_required(){
     fi
 }
 
+# Function to detect if PostgreSQL is installed and its version
 detect_postgres_installed(){
     if command -v pg_isready >/dev/null; then
         if ! pg_isready -q; then
@@ -47,8 +47,7 @@ detect_postgres_installed(){
     
 }
 
-
-
+# Function to detect jrrd2 locations
 detect_jrrd2_location(){
 export JRRD_JAR=${JRRD_JAR:-$( \
   for path in \
@@ -92,7 +91,5 @@ if [[ ! -f "$JRRD_LIB" ]]; then
 else
   echo "Found libjrrd2 at $JRRD_LIB"
 fi
-
-
 }
 

@@ -191,9 +191,7 @@ echo "Project root: $ROOT"
 echo "Product name: $PRODUCT_NAME"
 echo "Project version: $OPENNMS_VERSION"
 
-
-
-
+# Start PostgreSQL Docker container
 start_postgres_docker(){
     if [[ "$(docker ps -q -f name=opennms-postgres)" ]]; then
         echo "PostgreSQL Docker container is already running."
@@ -218,6 +216,7 @@ start_postgres_docker(){
 
 }
 
+# Ensure PostgreSQL is setup
 setup_postgres(){
 if [[ "$DEPLOY_POSTGRESQL" == "yes" || "$POSTGRES_VERSION" == "unknown"  ]]; then
     start_postgres_docker
@@ -227,6 +226,7 @@ else
 fi
 }   
 
+# Install jrrd2 from source and save the artifacts in built directory
 install_jrrd2_from_source(){
     echo "Compiling jrrd2 from source..."
     # create a simple folder for compiling jrrd2 if not present
@@ -276,6 +276,7 @@ BASE_URL="https://debian.opennms.org/dists/stable/main"
 BASE_ARM64="$BASE_URL/binary-arm64/"
 BASE_AMD64="$BASE_URL/binary-amd64/"
 
+# Function to get the latest jrrd2 deb package URL
 get_latest_deb() {
   local base_url=$1
   # Fetch directory listing, filter jrrd, sort by version, pick last
@@ -283,6 +284,7 @@ get_latest_deb() {
   echo "$base_url$latest"
 }
 
+# Copy jrrd2 library from prebuilt deb packages and place it in built directory
 install_jrrd2_prebuilt(){
     echo "Installing prebuilt jrrd2..."
 
