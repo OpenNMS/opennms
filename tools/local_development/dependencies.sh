@@ -17,7 +17,7 @@ usage(){
     echo "  --help                       Show this help message"
     echo "  --check-dependencies         Check if required dependencies are installed (default action)"
     echo "  --deploy-postgresql          Deploy and setup PostgreSQL using Docker"
-    echo "  --install-jrrd2              Install jrrd2 library,from prebuilt binaries"
+    echo "  --install-jrrd2              Install jrrd2 library, from prebuilt binaries"
     echo "  --install-jrrd2-from-source  Compile and install jrrd2 from source code"
     echo "  --enable-jrrd2               Update OpenNMS configuration to use jrrd2 library that is detected/installed"
     # echo "  --install-jicmp         Install jicmp library"
@@ -255,15 +255,15 @@ install_jrrd2_from_source(){
       mkdir -p "$ROOT/built/lib"
     fi
     
-    cp $JRRD_LIB $ROOT/built/lib/
-    cp $JRRD_JAR $ROOT/built/
+    cp "$JRRD_LIB" "$ROOT/built/lib/"
+    cp "$JRRD_JAR" "$ROOT/built/"
     if [[ "$OS_NAME" == "macOS" ]]; then
-       ln -s $ROOT/built/lib/libjrrd2.so $ROOT/built/lib/libjrrd2.dylib
+       ln -s "$ROOT/built/lib/libjrrd2.so" "$ROOT/built/lib/libjrrd2.dylib"
     fi
-    ln -s $ROOT/built/jrrd2-*-$JRRD_VERSION.jar $ROOT/built/jrrd2.jar
+    ln -s "$ROOT/built/jrrd2-*-$JRRD_VERSION.jar" "$ROOT/built/jrrd2.jar"
     
     JRRD_JAR="$ROOT/built/jrrd2.jar"
-    JRRD_LIB="$ROOT/built/lib/$(basename $JRRD_LIB)"  
+    JRRD_LIB="$ROOT/built/lib/$(basename "$JRRD_LIB")"  
     cd ..
     echo "Successfully built jrrd2 locally: $JRRD_JAR, $JRRD_LIB"
 
@@ -329,15 +329,15 @@ install_jrrd2_prebuilt(){
       tar -xvf data.tar.gz 2>/dev/null 1>&2 || true
     fi
 
-    mv usr/share/java/jrrd2.jar $ROOT/built/
-    mv usr/lib/jni/libjrrd2.so $ROOT/built/lib
+    mv usr/share/java/jrrd2.jar "$ROOT/built/"
+    mv usr/lib/jni/libjrrd2.so "$ROOT/built/lib"
 
     cd .. || exit 1
 
     rm -rf tmp
 
     if [[ "$OS_NAME" == "macOS" ]]; then
-       ln -s $ROOT/built/lib/libjrrd2.so $ROOT/built/lib/libjrrd2.dylib
+       ln -s "$ROOT/built/lib/libjrrd2.so" "$ROOT/built/lib/libjrrd2.dylib"
     fi
 
     JRRD_JAR="$ROOT/built/jrrd2.jar"

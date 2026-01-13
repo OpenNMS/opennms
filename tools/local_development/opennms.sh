@@ -157,7 +157,7 @@ echo "RUNAS=$(id -u -n)" > "$ROOT/target/opennms/etc/opennms.conf"
 
 # If jrrd2 is installed, setup config
 if [[ "$DISABLE_JRRD2" != "true" ]]; then 
-    # Figureout where rrdtool is installed
+    # Figure out where rrdtool is installed
     RRD_TOOL_PATH=$(which rrdtool || echo "/usr/local/bin/rrdtool")
     echo "Detected rrdtool at: $RRD_TOOL_PATH"
 

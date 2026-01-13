@@ -60,7 +60,7 @@ export JRRD_JAR=${JRRD_JAR:-$( \
   do
     # Handle wildcards safely
     if compgen -G "$path" > /dev/null; then
-      ls -1 $path | sort -V | head -n1
+      ls -1 -- "$path" | sort -V | head -n1
       break
     fi
   done
