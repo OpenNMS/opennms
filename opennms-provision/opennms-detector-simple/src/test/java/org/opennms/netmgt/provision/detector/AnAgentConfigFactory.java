@@ -74,6 +74,16 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
     }
 
     @Override
+    public void saveProfile(SnmpProfile profile) {
+
+    }
+
+    @Override
+    public boolean removeProfile(String label) {
+        return false;
+    }
+
+    @Override
     public List<SnmpProfile> getProfiles() {
         return null;
     }
@@ -82,5 +92,4 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
     public SnmpConfig getSnmpConfig() {
         return null;
     }
-
 }
