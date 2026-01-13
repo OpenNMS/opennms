@@ -505,6 +505,38 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return succeeded;
     }
 
+    @Override
+    public void saveProfile(final SnmpProfile profile) {
+        getWriteLock().lock();
+        try {
+            final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+            mgr.mergeProfileIntoConfig(profile);
+            saveCurrent();
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean removeProfile(final String label) {
+        boolean succeeded = false;
+        getWriteLock().lock();
+
+        try {
+            final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+            succeeded = mgr.removeProfile(label);
+        } finally {
+            getWriteLock().unlock();
+        }
+
+        if (succeeded) {
+            saveCurrent();
+            LOG.info("Removed profile {}", label);
+        }
+
+        return succeeded;
+    }
+
     private Definition findMatchingDefinition(InetAddress inetAddress, String location) {
         SnmpConfig config = getSnmpConfig();
         List<Definition> definitions = config.getDefinitions();
@@ -571,7 +603,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return inRange;
     }
 
-
     @Override
     public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
         Definition definition = new Definition();
@@ -583,7 +614,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         LOG.info("Definition saved for {} by module {}", ipAddress, module);
         saveCurrent();
     }
-
 
     @Override
     public List<SnmpProfile> getProfiles() {
@@ -604,6 +634,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         StringWriter writer = null;
         SnmpConfig snmpConfig = getSnmpConfig();
         encryptSnmpConfig(snmpConfig);
+
         try {
             writer = new StringWriter();
             JaxbUtils.marshal(snmpConfig, writer);
@@ -611,6 +642,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         } finally {
             IOUtils.closeQuietly(writer);
         }
+
         return marshalledConfig;
     }
 
@@ -622,8 +654,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (textEncryptor == null) {
             return;
         }
+
         encryptConfig(snmpConfig);
         snmpConfig.getDefinitions().forEach(this::encryptConfig);
+
         if (snmpConfig.getSnmpProfiles() != null) {
             snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::encryptConfig);
         }
@@ -640,15 +674,17 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         decryptConfig(snmpConfig);
 
         snmpConfig.getDefinitions().forEach(this::decryptConfig);
+
         if (snmpConfig.getSnmpProfiles() != null) {
             snmpConfig.getSnmpProfiles().getSnmpProfiles().forEach(this::decryptConfig);
         }
     }
 
     private void decryptConfig(Configuration config) {
-        if(!config.getEncrypted()) {
+        if (!config.getEncrypted()) {
             return;
         }
+
         try {
             if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
                 String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
@@ -676,6 +712,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (config.getEncrypted()) {
             return;
         }
+
         try {
             if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
                 String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
@@ -697,7 +734,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         } catch (Exception e) {
             LOG.error("Exception while trying to encrypt snmp config", e);
         }
-
     }
 
     private void initializeTextEncryptor() {
@@ -714,7 +750,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     Boolean getEncryptionEnabled() {
         return encryptionEnabled;
     }
-
 
     @VisibleForTesting
     void setTextEncryptor(TextEncryptor textEncryptor) {

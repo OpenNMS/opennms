@@ -34,6 +34,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -41,6 +42,7 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
+import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +87,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     }
 
     @Override
-    public Response getConfigForIp(String ipAddress, String location) {
+    public Response getConfigForIp(final String ipAddress, final String location) {
         try {
             InetAddress addr = safeGetInetAddress(ipAddress);
 
@@ -162,7 +164,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     }
 
     @Override
-    public Response removeDefinition(String ipAddress, String location) {
+    public Response removeDefinition(final String ipAddress, final String location) {
         try {
             InetAddress addr = safeGetInetAddress(ipAddress);
 
@@ -187,6 +189,37 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         }
 
         return Response.noContent().build();
+    }
+
+    @Override
+    public Response saveProfile(SnmpConfigProfileDto dto) {
+        if (Strings.isNullOrEmpty(dto.getLabel())) {
+            return createBadRequestResponse("Missing or invalid 'label'.");
+        }
+
+        // incoming DTO should have any fields filled out that differ from defaults
+        final SnmpProfile updatedProfile = SnmpConfigProfileDto.toSnmpProfile(dto);
+
+        // Save to config
+        SnmpPeerFactory.getInstance().saveProfile(updatedProfile);
+
+        return Response.noContent().build();
+    }
+
+    @Override
+    public Response removeProfile(final String label) {
+        if (Strings.isNullOrEmpty(label)) {
+            return createBadRequestResponse("Missing or invalid 'label'.");
+        }
+
+        boolean success = SnmpPeerFactory.getInstance().removeProfile(label);
+
+        if (success) {
+            return Response.noContent().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Profile with label " + label + " not found.").build();
+        }
     }
 
     /**

@@ -16,12 +16,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
+import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -94,4 +97,37 @@ public interface SnmpConfigRestApi {
     Response removeDefinition(
             @QueryParam("ipAddress") String ipAddress,
             @QueryParam("location") String location);
+
+    @POST
+    @Path("/profile")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add or update an SNMP configuration profile",
+            description = "Add or update an SNMP configuration profile.",
+            operationId = "saveProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "SNMP configuration profile added or updated successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content)
+    })
+    Response saveProfile(SnmpConfigProfileDto dto);
+
+    @DELETE
+    @Path("/profile")
+    @Operation(
+            summary = "Delete an SNMP configuration profile",
+            description = "Delete an SNMP configuration profile with the given label.",
+            operationId = "removeProfile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "SNMP configuration profile with the given label removed successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found – profile with given label not found",
+                    content = @Content)
+    })
+    Response removeProfile(@QueryParam("label") final String label);
 }
