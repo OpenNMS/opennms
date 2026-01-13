@@ -23,7 +23,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     isLoading: false,
     activeTab: 0,
-    uploadedSourceNames: [],
+    uploadedSources: [],
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -44,7 +44,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
       this.isLoading = true
       try {
         const response = await getAllSourceNames()
-        this.uploadedSourceNames = response
+        this.uploadedSources = response
         this.isLoading = false
       } catch (error) {
         console.error('Error fetching all event configuration source names:', error)

@@ -54,7 +54,7 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     void deleteBySourceIds(List<Long> sourceIds);
 
-    List<String> findAllNames();
+    List<Map.Entry<Long, String>> findAllNames();
 
     Integer findMaxFileOrder();
 

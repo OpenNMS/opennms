@@ -33,7 +33,7 @@
           label="New File Name"
           :error="error"
           :error-message="error || ''"
-          placeholder="Enter new file name (must end with .events.xml)"
+          placeholder="Enter new file name (must end with .xml)"
           @update:model-value="onChangeFileName"
           data-test="file-name"
         />
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { UploadEventFileType } from '@/types/eventConfig'
+import { UploadedSourceNamesResponse, UploadEventFileType } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
 import { FeatherDialog } from '@featherds/dialog'
@@ -63,7 +63,7 @@ import { FeatherInput } from '@featherds/input'
 const props = defineProps<{
   visible: boolean,
   fileBucket: UploadEventFileType[],
-  alreadyExistsNames: string[],
+  alreadyExistsNames: UploadedSourceNamesResponse[],
   index: number
 }>()
 
@@ -90,13 +90,13 @@ const validateName = () => {
   let isValid = false
   if (newFileName.value === '') {
     error.value = 'File name cannot be empty.'
-  } else if (!newFileName.value.endsWith('.events.xml')) {
-    error.value = 'File name must end with .events.xml'
+  } else if (!newFileName.value.endsWith('.xml')) {
+    error.value = 'File name must end with .xml'
   } else if (newFileName.value === originalFileName.value) {
     error.value = 'New file name must be different from the original name.'
   } else if (props.fileBucket.map(f => f.file.name.toLowerCase()).includes(newFileName.value.trim().toLowerCase())) {
     error.value = 'A file with this name already exists in the current upload list.'
-  } else if (props.alreadyExistsNames.map(n => n.replace('.xml', '').toLowerCase()).includes(newFileName.value.trim().replace('.xml', '').toLowerCase())) {
+  } else if (props.alreadyExistsNames.map(s => s.name.replace('.xml', '').toLowerCase()).includes(newFileName.value.trim().replace('.xml', '').toLowerCase())) {
     error.value = 'A file with this name already exists in the system.'
   } else {
     error.value = undefined

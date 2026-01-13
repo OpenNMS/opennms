@@ -402,7 +402,8 @@ public class EventConfSourceDaoIT implements InitializingBean {
             assertFalse("Source should be disabled", source.getEnabled());
 
             List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
-            assertFalse("Events should still be enabled when cascade=false", events.isEmpty() && events.stream().anyMatch(EventConfEvent::getEnabled));
+            assertFalse("Events should not be empty", events.isEmpty());
+            assertTrue("Events should still be enabled when cascade=false", events.stream().allMatch(EventConfEvent::getEnabled));
         }
 
         m_dao.updateEnabledFlag(allSourceIds, true, true);
@@ -420,11 +421,11 @@ public class EventConfSourceDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindAllNamesReturnsPersistedNames() {
-        List<String> names = m_dao.findAllNames();
+        List<Map.Entry<Long, String>> names = m_dao.findAllNames();
 
         assertNotNull("Names list should not be null", names);
         assertFalse("Names list should not be empty", names.isEmpty());
-        assertTrue("Names should contain the persisted source", names.contains("JUnit Source"));
+        assertTrue("Names should contain the persisted source", names.stream().anyMatch(e -> "JUnit Source".equals(e.getValue())));
     }
 
     @Test
@@ -456,9 +457,13 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
         m_dao.flush();
 
-        List<String> names = m_dao.findAllNames();
+        List<Map.Entry<Long, String>> names = m_dao.findAllNames();
 
         assertNotNull(names);
+        // Verify ordering: Source-A (fileOrder=1) should appear before Source-B (fileOrder=2)
+        List<String> nameValues = names.stream().map(Map.Entry::getValue).toList();
+        assertTrue("Source-A should come before Source-B according to fileOrder",
+                nameValues.indexOf("Source-A") < nameValues.indexOf("Source-B"));
     }
 
     @Test
@@ -467,7 +472,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_dao.deleteAll(m_dao.findAll());
         m_dao.flush();
 
-        List<String> names = m_dao.findAllNames();
+        List<Map.Entry<Long, String>> names = m_dao.findAllNames();
 
         assertNotNull("Names list should not be null even if empty", names);
         assertTrue("Names list should be empty when no sources exist", names.isEmpty());
@@ -588,3 +593,4 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_eventDao.saveOrUpdate(event);
     }
 }
+

@@ -39,7 +39,7 @@ describe('EventConfigUploadFilesTab', () => {
 
   beforeEach(() => {
     store = reactive({
-      uploadedSourceNames: [],
+      uploadedSources: [],
       uploadedEventConfigFilesReportDialogState: { visible: false }
     } as any)
     vi.mocked(useEventConfigStore).mockReturnValue(store)
@@ -132,7 +132,7 @@ describe('EventConfigUploadFilesTab', () => {
   })
 
   it('displays warning icon for duplicate files', async () => {
-    store.uploadedSourceNames = ['test.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'test.events.xml' }]
     const file = mockFile('test.events.xml')
     await wrapper.vm.eventFiles.push({
       file,
@@ -359,13 +359,13 @@ describe('EventConfigUploadFilesTab', () => {
   })
 
   it('ellipsifies long file names', () => {
-    const longName = 'a'.repeat(50) + '.events.xml'
+    const longName = 'a'.repeat(50) + '.xml'
     const result = wrapper.vm.ellipsify(longName, 39)
     expect(result.length).toBeLessThanOrEqual(39)
     expect(result).toContain('\u2026')
   })
 
-  it('prevents upload if files are not .events.xml', async () => {
+  it('prevents upload if files are not .xml', async () => {
     const file = mockFile('test.xml')
     await wrapper.vm.eventFiles.push({
       file,
@@ -374,15 +374,17 @@ describe('EventConfigUploadFilesTab', () => {
       isDuplicate: false
     })
     await wrapper.find('[data-test="upload-button"]').trigger('click')
-    expect(uploadEventConfigFiles).not.toHaveBeenCalled()
-    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
-      msg: 'All files must be XML files with .events.xml extension',
-      error: true
-    })
+    await flushPromises()
+    
+    expect(uploadEventConfigFiles).toHaveBeenCalled()
+    expect(uploadEventConfigFiles).toHaveBeenCalledWith([file])
+    expect(wrapper.vm.eventFiles.length).toBe(0)
+    expect(store.uploadedEventConfigFilesReportDialogState.visible).toBe(true)
+    expect(snackbar.showSnackBar).not.toHaveBeenCalled()
   })
 
   it('handles mixed valid, invalid, and duplicate files during upload', async () => {
-    store.uploadedSourceNames = ['duplicate.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'duplicate.events.xml' }]
     vi.mocked(validateEventConfigFile).mockImplementation(async (file) => {
       if (file.name.includes('invalid')) {
         return { isValid: false, errors: ['Invalid XML schema'] }
@@ -656,7 +658,7 @@ describe('EventConfigUploadFilesTab', () => {
   })
 
   it('handles large file list with mixed validation outcomes', async () => {
-    store.uploadedSourceNames = ['duplicate.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'duplicate.events.xml' }]
     vi.mocked(validateEventConfigFile).mockImplementation(async (file) => {
       if (file.name.includes('invalid')) {
         return { isValid: false, errors: ['Invalid XML schema'] }
@@ -711,7 +713,7 @@ describe('EventConfigUploadFilesTab', () => {
   })
 
   it('handles rapid file uploads with validation and rename', async () => {
-    store.uploadedSourceNames = ['test.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'test.events.xml' }]
     vi.mocked(validateEventConfigFile).mockImplementation(async (file) => ({
       isValid: !file.name.includes('invalid'),
       errors: file.name.includes('invalid') ? ['Invalid XML'] : []
@@ -797,22 +799,18 @@ describe('EventConfigUploadFilesTab', () => {
     await flushPromises()
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.eventFiles.length).toBe(3)
+    // Only .xml files are processed, .txt is filtered out by the component
+    expect(wrapper.vm.eventFiles.length).toBe(2)
     expect(wrapper.vm.eventFiles).toEqual([
       expect.objectContaining({ file: expect.objectContaining({ name: 'valid.events.xml' }), isValid: true }),
-      expect.objectContaining({ file: expect.objectContaining({ name: 'invalid.txt' }), isValid: false }),
       expect.objectContaining({ file: expect.objectContaining({ name: 'noevent.xml' }), isValid: false })
     ])
-    expect(snackbar.showSnackBar).toHaveBeenCalledTimes(2)
-    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
-      msg: 'Error processing file invalid.txt.',
-      error: true
-    })
+    expect(snackbar.showSnackBar).toHaveBeenCalledTimes(1)
     expect(snackbar.showSnackBar).toHaveBeenCalledWith({
       msg: 'Error processing file noevent.xml.',
       error: true
     })
-    expect(wrapper.findAll('.error-icon').length).toBe(2)
+    expect(wrapper.findAll('.error-icon').length).toBe(1)
   })
 
   it('reorders files when dragged', async () => {
@@ -934,14 +932,14 @@ describe('EventConfigUploadFilesTab', () => {
     expect(uploadEventConfigFiles).not.toHaveBeenCalled()
   })
 
-  it('updates duplicate status when store.uploadedSourceNames changes', async () => {
+  it('updates duplicate status when store.uploadedSources changes', async () => {
     // Add a file
     const file = mockFile('test.events.xml')
     await wrapper.vm.eventFiles.push({ file, isValid: true, errors: [], isDuplicate: false })
     await wrapper.vm.$nextTick()
 
     // Update the reactive store
-    store.uploadedSourceNames = ['test.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'test.events.xml' }]
     await wrapper.vm.$nextTick()
 
     // Verify isDuplicate and UI
@@ -984,14 +982,11 @@ describe('EventConfigUploadFilesTab', () => {
     })
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-test="upload-button"]').trigger('click')
-    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
-      msg: 'All files must be XML files with .events.xml extension',
-      error: true
-    })
+    expect(snackbar.showSnackBar).not.toHaveBeenCalled()
     consoleErrorSpy.mockRestore()
   })
 
-  it('', async () => {
+  it('handles file upload, rename duplicate, and re-validation workflow', async () => {
     const firstFile = mockFile('test.events.xml')
     const secondFile = mockFile('test.events.xml')
     const input = wrapper.find('input[type="file"]')
@@ -1026,7 +1021,7 @@ describe('EventConfigUploadFilesTab', () => {
     await wrapper.vm.$nextTick()
     expect(store.uploadedEventConfigFilesReportDialogState.visible).toBe(false)
 
-    store.uploadedSourceNames = ['test.events.xml']
+    store.uploadedSources = [{ id: 1, name: 'test.events.xml' }]
     // Re-upload the same file
     Object.defineProperty(input.element, 'files', { value: [secondFile], writable: true })
     await input.trigger('change')
@@ -1126,7 +1121,7 @@ describe('EventConfigUploadFilesTab', () => {
     const file = mockFile('test.events.xml')
     await wrapper.vm.eventFiles.push({ file, isValid: true, errors: [], isDuplicate: false })
     wrapper.vm.isLoading = true // Simulate upload start
-    store.uploadedSourceNames = ['test.events.xml'] // Trigger watch
+    store.uploadedSources = [{ id: 1, name: 'test.events.xml' }] // Trigger watch
     await wrapper.vm.$nextTick()
     expect(wrapper.vm.eventFiles[0].isDuplicate).toBe(true) // Updates even mid-upload
     wrapper.vm.isLoading = false // End upload
@@ -1156,6 +1151,155 @@ describe('EventConfigUploadFilesTab', () => {
     await wrapper.vm.overwriteFile()
     expect(consoleErrorSpy).toHaveBeenCalledWith('Invalid index for overwriting file')
     consoleErrorSpy.mockRestore()
+  })
+
+  // Folder Upload Tests
+  it('triggers folder input click when "Choose folder to upload" button is clicked', async () => {
+    const folderInput = wrapper.findAll('input[type="file"]')[1] // Second input is folder
+    const spy = vi.spyOn(folderInput.element as HTMLElement, 'click')
+    const buttons = wrapper.findAllComponents(FeatherButton)
+    await buttons[1].trigger('click') // Second button is folder upload
+    expect(spy).toHaveBeenCalled()
+  })
+
+  it('handles folder upload with .events.xml files', async () => {
+    vi.mocked(validateEventConfigFile).mockClear().mockResolvedValue({ isValid: true, errors: [] })
+    const files = [
+      mockFile('test1.events.xml'),
+      mockFile('test2.events.xml'),
+      mockFile('other.txt')
+    ]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(2) // Only .events.xml files
+    expect(wrapper.vm.eventFiles[0].file.name).toBe('test1.events.xml')
+    expect(wrapper.vm.eventFiles[1].file.name).toBe('test2.events.xml')
+    expect(snackbar.showSnackBar).not.toHaveBeenCalled()
+  })
+
+  it('shows snackbar when folder contains no .events.xml files', async () => {
+    const files = [mockFile('test.txt'), mockFile('test.json')]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(0)
+    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
+      msg: 'Folder contains no .xml files',
+      error: true
+    })
+  })
+
+  it('skips duplicate files during folder upload', async () => {
+    vi.mocked(isDuplicateFile).mockImplementation((name, existingFiles) => {
+      return name === 'dup.events.xml' || existingFiles.some(f => f.file.name === name)
+    })
+    vi.mocked(validateEventConfigFile).mockClear().mockResolvedValue({ isValid: true, errors: [] })
+    
+    const files = [
+      mockFile('new.events.xml'),
+      mockFile('dup.events.xml')
+    ]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(1)
+    expect(wrapper.vm.eventFiles[0].file.name).toBe('new.events.xml')
+  })
+
+  it('skips already uploaded files during folder upload', async () => {
+    store.uploadedSources = [{ id: 1, name: 'existing.events.xml' }]
+    vi.mocked(isDuplicateFile).mockReturnValue(false)
+    vi.mocked(validateEventConfigFile).mockClear().mockResolvedValue({ isValid: true, errors: [] })
+    
+    const files = [
+      mockFile('new.events.xml'),
+      mockFile('existing.events.xml')
+    ]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(1)
+    expect(wrapper.vm.eventFiles[0].file.name).toBe('new.events.xml')
+  })
+
+  it('shows snackbar for invalid files during folder upload', async () => {
+    vi.mocked(validateEventConfigFile).mockImplementation(async (file) => {
+      if (file.name.includes('invalid')) {
+        return { isValid: false, errors: ['Invalid XML'] }
+      }
+      return { isValid: true, errors: [] }
+    })
+    
+    const files = [
+      mockFile('valid.events.xml'),
+      mockFile('invalid.events.xml')
+    ]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(2)
+    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
+      msg: 'Error processing invalid.events.xml',
+      error: true
+    })
+  })
+
+  it('handles file read error during folder upload', async () => {
+    vi.mocked(validateEventConfigFile).mockRejectedValueOnce({ message: 'Read failed' })
+    const files = [mockFile('error.events.xml')]
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: files,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(wrapper.vm.eventFiles.length).toBe(0)
+    expect(snackbar.showSnackBar).toHaveBeenCalledWith({
+      msg: 'Error reading error.events.xml',
+      error: true
+    })
+  })
+
+  it('logs warning when no folder is selected', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const folderInput = wrapper.findAll('input[type="file"]')[1]
+    Object.defineProperty(folderInput.element, 'files', {
+      value: null,
+      writable: true
+    })
+    await folderInput.trigger('change')
+    await flushPromises()
+    
+    expect(consoleWarnSpy).toHaveBeenCalledWith('No folder selected')
+    consoleWarnSpy.mockRestore()
   })
 })
 

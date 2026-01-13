@@ -14,8 +14,8 @@ export const validateEventConfigFile = async (file: File) => {
       return { isValid: false, errors: validationErrors }
     }
 
-    if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-      validationErrors.push('File does not appear to be an event configuration file (expected .events.xml extension)')
+    if (!file.name.endsWith('.xml') && !file.name.includes('event')) {
+      validationErrors.push('File does not appear to be an event configuration file (expected .xml extension)')
       return { isValid: false, errors: validationErrors }
     }
 

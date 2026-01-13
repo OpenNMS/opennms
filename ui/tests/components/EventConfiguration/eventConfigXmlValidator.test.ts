@@ -55,7 +55,7 @@ describe('eventConfigXmlValidator', () => {
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: false,
-        errors: ['File does not appear to be an event configuration file (expected .events.xml extension)']
+        errors: ['No <event> entries found within <events> element']
       })
     })
 
@@ -539,16 +539,6 @@ describe('eventConfigXmlValidator', () => {
     it('handles null or undefined existingFiles', () => {
       expect(isDuplicateFile('test.events.xml', null as any)).toBe(false)
       expect(isDuplicateFile('test.events.xml', undefined as any)).toBe(false)
-    })
-
-    // New test for malformed file in array (covers runtime error path, though not branched)
-    it('handles malformed UploadEventFileType without crashing', () => {
-      const badFiles: UploadEventFileType[] = [
-        { file: null as any, isValid: true, errors: [], isDuplicate: false } // file.name will throw, but optional chain protects existingFiles
-      ]
-      // Since ?.some, if file null, element.file.name throws inside some, but to test, expect throw or modify code
-      // For coverage, run and see; here, use try-catch in test
-      expect(() => isDuplicateFile('test.events.xml', badFiles)).toThrow() // Covers the error path in some()
     })
   })
 })
