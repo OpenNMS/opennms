@@ -173,7 +173,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
 
         // Integrations Menu
-        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
+        clickMenuItem("integrationsMenu", "SNMP Agent Configuration (Legacy)");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Configure SNMP by IP')]")));
 
         clickMenuItem("integrationsMenu", "Geocoding Services");
