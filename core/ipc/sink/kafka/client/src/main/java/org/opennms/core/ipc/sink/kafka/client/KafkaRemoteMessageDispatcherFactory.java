@@ -37,7 +37,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
-import org.apache.kafka.common.errors.TopicAuthorizationException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -175,13 +174,10 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 if (cause instanceof TimeoutException) {
                     LOG.warn("Timeout occurred while sending message to topic '{}', it will be attempted again.", topic);
                 } else if (cause instanceof UnknownTopicOrPartitionException) {
-                    LOG.error("Failed to send Sink message to topic '{}'. Topic does not exist. " +
-                            "If auto.create.topics.enable=false on the broker, ensure this topic is created manually.", topic, e);
-                    break;
-                } else if (cause instanceof TopicAuthorizationException) {
-                    LOG.error("Failed to send Sink message to topic '{}'. Authorization denied. " +
-                            "Ensure the Kafka user has write permissions for this topic.", topic, e);
-                    break;
+                    // Topic might not exist yet if auto.create.topics.enable is true but delayed,
+                    // or topic is being created. Keep retrying as this can be transient.
+                    LOG.warn("Topic '{}' does not exist yet, it will be attempted again. " +
+                            "If auto.create.topics.enable=false, ensure this topic is created manually.", topic);
                 } else {
                     LOG.error("Exception occurred while sending message to topic '{}': {}", topic, e.getMessage(), e);
                     break;

@@ -82,6 +82,8 @@ These topics are only needed when the corresponding feature is enabled:
 
 Telemetry and flow topics use the module ID format `Telemetry-{queueName}`. The queue name is defined in `telemetryd-configuration.xml`.
 
+NOTE: These are default queue names. If queue names were customized in `telemetryd-configuration.xml`, topic names will differ.
+
 .Common Telemetry/Flow Topics
 [cols="1,2"]
 |===
@@ -187,6 +189,8 @@ Sink Topics (optional - feature dependent):
   OpenNMS.Sink.DeviceConfig                                    [OK]
 
 Sink Topics (telemetry - optional):
+  Note: These are default queue names, if queue names were customized in
+        telemetryd-configuration.xml, below topics may differ
   OpenNMS.Sink.Telemetry-Netflow-5                             [OK]
   OpenNMS.Sink.Telemetry-Netflow-9                             [NOT CONFIGURED]
   OpenNMS.Sink.Telemetry-IPFIX                                 [OK]

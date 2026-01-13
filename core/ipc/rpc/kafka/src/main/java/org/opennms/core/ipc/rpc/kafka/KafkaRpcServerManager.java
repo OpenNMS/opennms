@@ -56,7 +56,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.TopicAuthorizationException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -272,18 +271,7 @@ public class KafkaRpcServerManager {
             try {
                 consumer.subscribe(Arrays.asList(topic));
                 LOG.info("subscribed to topic {}", topic);
-            } catch (TopicAuthorizationException e) {
-                LOG.error("Failed to subscribe to RPC request topic '{}'. Authorization denied. " +
-                        "Ensure the Kafka user has read permissions for this topic.", topic, e);
-                consumer.close();
-                return;
-            } catch (Exception e) {
-                LOG.error("Failed to subscribe to RPC request topic '{}'. " +
-                        "If auto.create.topics.enable=false on the broker, ensure this topic is created manually.", topic, e);
-                consumer.close();
-                return;
-            }
-            try {
+
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(java.time.Duration.ofMillis(Long.MAX_VALUE));
                     for (ConsumerRecord<String, byte[]> record : records) {
@@ -344,6 +332,8 @@ public class KafkaRpcServerManager {
                 if (!closed.get()) {
                     throw e;
                 }
+            } catch (Exception e) {
+                LOG.error("Error in RPC consumer for topic '{}': {}", topic, e.getMessage(), e);
             } finally {
                 consumer.close();
             }
@@ -440,9 +430,6 @@ public class KafkaRpcServerManager {
                         RATE_LIMITED_LOG.error("Failed to send RPC response to topic '{}'. Topic does not exist. " +
                                 "If auto.create.topics.enable=false on the broker, ensure this topic is created manually. " +
                                 "RPC id: {}", topic, rpcId, e);
-                    } else if (e instanceof TopicAuthorizationException) {
-                        RATE_LIMITED_LOG.error("Failed to send RPC response to topic '{}'. Authorization denied. " +
-                                "Ensure the Kafka user has write permissions for this topic. RPC id: {}", topic, rpcId, e);
                     } else {
                         RATE_LIMITED_LOG.error("RPC response with id {} couldn't be sent to topic '{}': {}", rpcId, topic, e.getMessage(), e);
                     }

@@ -59,7 +59,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.PartitionInfo;
-import org.apache.kafka.common.errors.TopicAuthorizationException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -213,9 +212,6 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                                 RATE_LIMITED_LOG.error("Failed to send RPC request to topic '{}'. Topic does not exist. " +
                                         "If auto.create.topics.enable=false on the broker, ensure this topic is created manually. " +
                                         "RPC id: {}", requestTopic, rpcId, e);
-                            } else if (e instanceof TopicAuthorizationException) {
-                                RATE_LIMITED_LOG.error("Failed to send RPC request to topic '{}'. Authorization denied. " +
-                                        "Ensure the Kafka user has write permissions for this topic. RPC id: {}", requestTopic, rpcId, e);
                             } else {
                                 RATE_LIMITED_LOG.error("RPC request with id {} couldn't be sent to topic '{}': {}", rpcId, requestTopic, e.getMessage(), e);
                             }
@@ -582,15 +578,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 synchronized (topics) {
                     // Topic subscriptions are not incremental. This list will replace the current assignment (if there is one).
                     LOG.info("Subscribing Kafka RPC consumer to topics named: {}", topics);
-                    try {
-                        consumer.subscribe(topics);
-                    } catch (TopicAuthorizationException e) {
-                        LOG.error("Failed to subscribe to RPC response topics '{}'. Authorization denied. " +
-                                "Ensure the Kafka user has read permissions for these topics.", topics, e);
-                    } catch (Exception e) {
-                        LOG.error("Failed to subscribe to RPC response topics '{}'. " +
-                                "If auto.create.topics.enable=false on the broker, ensure these topics are created manually.", topics, e);
-                    }
+                    consumer.subscribe(topics);
                     topicAdded.set(false);
                 }
             }

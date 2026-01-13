@@ -85,9 +85,6 @@ public class KafkaIpcTopics implements Action {
             "JTI", "NXOS", "BMP", "OpenConfig", "Graphite"
     );
 
-    // Default location - Core-only operations, Kafka IPC not used
-    private static final String DEFAULT_LOCATION = "Default";
-
     @Reference
     private Identity identity;
 
@@ -203,7 +200,7 @@ public class KafkaIpcTopics implements Action {
         System.out.println("RPC Topics (per-location - required):");
         for (String location : locations) {
             // Skip Default location - Kafka IPC not used for Core-only operations
-            if (DEFAULT_LOCATION.equals(location)) {
+            if (MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location)) {
                 continue;
             }
 
@@ -243,6 +240,8 @@ public class KafkaIpcTopics implements Action {
 
         // Section 3: Telemetry Sink Topics (optional)
         System.out.println("Sink Topics (telemetry - optional):");
+        System.out.println("  Note: These are default queue names, if queue names were customized in");
+        System.out.println("        telemetryd-configuration.xml, below topics may differ");
         String telemetryPrefix = sinkPrefix + TELEMETRY_MODULE_PREFIX;
 
         // Show known telemetry queues
@@ -278,15 +277,19 @@ public class KafkaIpcTopics implements Action {
         printRequiredTopicLine(twinRequest, requestExists);
         printRequiredTopicLine(twinResponse, responseExists);
 
-        if (!requestExists) missingCount++;
-        if (!responseExists) missingCount++;
+        if (!requestExists) {
+            missingCount++;
+        }
+        if (!responseExists) {
+            missingCount++;
+        }
         System.out.println();
 
         // Per-location Twin response topics (required)
         System.out.println("Twin Topics (per-location - required):");
         for (String location : locations) {
             // Skip Default location - Kafka IPC not used for Core-only operations
-            if (DEFAULT_LOCATION.equals(location)) {
+            if (MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location)) {
                 continue;
             }
 
