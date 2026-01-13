@@ -6,7 +6,7 @@ set -euo pipefail          # Fail fast & catch unset vars
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Detect JDF Version we need from root pom.xml
+# Detect JDK Version we need from root pom.xml
 detect_jdk_version_required(){
     # Can't use grep since MacOS doesn't support -P option :(
     REQUIRED_VERSION=$(sed -n 's:.*<source>\(.*\)</source>.*:\1:p' "$ROOT_POM")
