@@ -585,8 +585,8 @@ public class SnmpPeerFactoryTest extends TestCase {
 
         final SnmpProfile newProfile = new SnmpProfile(
             newProfilePort,
-      null,
-    null,
+            null,
+            null,
             newProfileReadCommunity,
             newProfileWriteCommunity,
             "",
