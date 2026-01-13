@@ -26,6 +26,11 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Karaf-Commands>*</Karaf-Commands>
+            <Import-Package>
+              org.opennms.netmgt.dao.api;resolution:=optional,
+              org.opennms.netmgt.model.monitoringLocations;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -43,7 +48,12 @@
       <artifactId>org.apache.karaf.shell.core</artifactId>
       <version>${karafVersion}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>

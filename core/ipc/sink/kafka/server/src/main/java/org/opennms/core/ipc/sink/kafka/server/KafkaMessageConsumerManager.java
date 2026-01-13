@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -161,6 +162,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             Logging.putPrefix(MessageConsumerManager.LOG_PREFIX);
             try {
                 consumer.subscribe(Arrays.asList(topic));
+
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(CONSUMER_POLL_DURATION);
                     for (ConsumerRecord<String, byte[]> record : records) {
@@ -232,6 +234,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                 if (!closed.get()) {
                     throw e;
                 }
+            } catch (Exception e) {
+                LOG.error("Error in Sink consumer for topic '{}': {}", topic, e.getMessage(), e);
             } finally {
                 consumer.close();
             }

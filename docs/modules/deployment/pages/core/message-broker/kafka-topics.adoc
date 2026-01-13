@@ -1,0 +1,289 @@
+= Required Kafka Topics for IPC
+
+When deploying {page-component-title} in production environments with `auto.create.topics.enable=false` on the Kafka broker, all required topics must be created manually before starting Core, Minion, and Sentinel components.
+
+== Topic Naming Convention
+
+All IPC topics use the following format:
+
+----
+{instanceId}.{component}.{endpoint}[.{location}]
+----
+
+Where:
+
+* `{instanceId}` = OpenNMS instance ID (default: `OpenNMS`)
+* `{component}` = IPC component type (e.g., `rpc-request`, `rpc-response`, `Sink`, `twin`)
+* `{endpoint}` = Module or endpoint identifier
+* `{location}` = Minion location (where applicable)
+
+== RPC Topics
+
+RPC (Remote Procedure Call) topics are used for request/response communication between Core and Minion.
+
+=== Request Topics (per location)
+
+Format: `{instanceId}.{location}.rpc-request`
+
+Example: `OpenNMS.Default.rpc-request`
+
+NOTE: One request topic is required per Minion location.
+
+=== Response Topic (global)
+
+Format: `{instanceId}.rpc-response`
+
+Example: `OpenNMS.rpc-response`
+
+NOTE: A single response topic is used for all RPC responses.
+
+== Sink Topics
+
+Sink topics are used for one-way message streaming from Minion to Core (e.g., events, traps, telemetry, flows).
+
+Format: `{instanceId}.Sink.{moduleId}`
+
+=== Required Sink Topic
+
+The Heartbeat topic must always exist:
+
+.Required Sink Topic
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Heartbeat
+| Minion heartbeat messages (required for minion health monitoring)
+|===
+
+=== Optional Sink Topics
+
+These topics are only needed when the corresponding feature is enabled:
+
+.Optional Core Sink Topics
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Events
+| Event forwarding from Minion
+
+| Syslog
+| Syslog messages
+
+| Trap
+| SNMP trap messages
+
+| DeviceConfig
+| Device configuration backup
+|===
+
+=== Telemetry/Flow Sink Topics
+
+Telemetry and flow topics use the module ID format `Telemetry-{queueName}`. The queue name is defined in `telemetryd-configuration.xml`.
+
+NOTE: These are default queue names. If queue names were customized in `telemetryd-configuration.xml`, topic names will differ.
+
+.Common Telemetry/Flow Topics
+[cols="1,2"]
+|===
+| Module ID | Description
+
+| Telemetry-Netflow-5
+| Netflow v5 flow data
+
+| Telemetry-Netflow-9
+| Netflow v9 flow data
+
+| Telemetry-IPFIX
+| IPFIX flow data
+
+| Telemetry-SFlow
+| sFlow data
+
+| Telemetry-JTI
+| Juniper Telemetry Interface data
+
+| Telemetry-NXOS
+| Cisco NX-OS telemetry data
+
+| Telemetry-BMP
+| BGP Monitoring Protocol data
+
+| Telemetry-OpenConfig
+| OpenConfig telemetry data
+
+| Telemetry-Graphite
+| Graphite metrics
+|===
+
+NOTE: The actual telemetry topic names depend on your telemetry daemon configuration. The queue name is specified in `telemetryd-configuration.xml` and the module ID is `Telemetry-{queueName}`.
+
+.Example Sink Topics
+----
+OpenNMS.Sink.Events
+OpenNMS.Sink.Heartbeat
+OpenNMS.Sink.Syslog
+OpenNMS.Sink.DeviceConfig
+OpenNMS.Sink.Telemetry-Netflow-5
+OpenNMS.Sink.Telemetry-Netflow-9
+OpenNMS.Sink.Telemetry-IPFIX
+OpenNMS.Sink.Telemetry-SFlow
+OpenNMS.Sink.Telemetry-JTI
+OpenNMS.Sink.Telemetry-OpenConfig
+----
+
+== Twin Topics
+
+Twin topics are used for configuration synchronization between Core and Minion.
+
+=== Request Topic (global)
+
+Format: `{instanceId}.twin.request`
+
+Example: `OpenNMS.twin.request`
+
+=== Response Topics
+
+Global response topic: `{instanceId}.twin.response`
+
+Per-location response topic: `{instanceId}.twin.response.{location}`
+
+.Example Twin Topics
+----
+OpenNMS.twin.request
+OpenNMS.twin.response
+OpenNMS.twin.response.MINION
+----
+
+== Verifying Topics
+
+Use the `kafka-ipc-topics` command from the Karaf shell to verify which IPC topics exist:
+
+[source, karaf]
+----
+opennms:kafka-ipc-topics
+----
+
+.Example output on Core
+----
+Kafka IPC Topics Status
+=======================
+
+Kafka Connectivity:
+  Connecting to Kafka                                          [OK]
+
+RPC Topics (required):
+  OpenNMS.rpc-response                                         [OK]
+
+RPC Topics (per-location - required):
+  OpenNMS.MINION.rpc-request                                   [OK]
+
+Sink Topics (required):
+  OpenNMS.Sink.Heartbeat                                       [OK]
+
+Sink Topics (optional - feature dependent):
+  OpenNMS.Sink.Events                                          [OK]
+  OpenNMS.Sink.Syslog                                          [NOT CONFIGURED]
+  OpenNMS.Sink.Trap                                            [OK]
+  OpenNMS.Sink.DeviceConfig                                    [OK]
+
+Sink Topics (telemetry - optional):
+  Note: These are default queue names, if queue names were customized in
+        telemetryd-configuration.xml, below topics may differ
+  OpenNMS.Sink.Telemetry-Netflow-5                             [OK]
+  OpenNMS.Sink.Telemetry-Netflow-9                             [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-IPFIX                                 [OK]
+  OpenNMS.Sink.Telemetry-SFlow                                 [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-JTI                                   [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-NXOS                                  [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-BMP                                   [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-OpenConfig                            [NOT CONFIGURED]
+  OpenNMS.Sink.Telemetry-Graphite                              [NOT CONFIGURED]
+
+Twin Topics (required):
+  OpenNMS.twin.request                                         [OK]
+  OpenNMS.twin.response                                        [OK]
+
+Twin Topics (per-location - required):
+  OpenNMS.twin.response.MINION                                 [OK]
+
+Summary: All required topics exist
+----
+
+=== Command Behavior
+
+On **Core**: The command queries all configured monitoring locations from the database and shows expected topics for each location.
+
+On **Minion**: The command shows only the topics for its own location (MonitoringLocationDao is not available).
+
+=== Status Indicators
+
+The command first checks Kafka connectivity, then uses different status indicators for required and optional topics:
+
+.Kafka Connectivity
+[cols="1,3"]
+|===
+| Status | Meaning
+
+| `[OK]`
+| Successfully connected to Kafka broker
+
+| `[MISSING]`
+| Failed to connect - check Kafka configuration and broker availability
+|===
+
+.Status Indicators
+[cols="1,3"]
+|===
+| Status | Meaning
+
+| `[OK]`
+| Topic exists
+
+| `[MISSING]`
+| Required topic does not exist - this is a problem that needs to be fixed
+
+| `[NOT CONFIGURED]`
+| Optional topic does not exist - this is normal if the feature is not enabled
+|===
+
+NOTE: The summary only counts required topics as "missing". Optional topics with `[NOT CONFIGURED]` status are not considered errors.
+
+=== Command Options
+
+[cols="1,3"]
+|===
+| Option | Description
+
+| `-t, --timeout`
+| Connection timeout for Kafka Server (ms)
+|===
+
+.Example: Custom timeout
+[source, karaf]
+----
+opennms:kafka-ipc-topics -t 10000
+----
+
+== Troubleshooting
+
+If you encounter errors about missing topics in the logs, such as:
+
+----
+Failed to send RPC request to topic 'OpenNMS.Default.rpc-request'. Topic does not exist.
+----
+
+Verify that:
+
+1. The topic exists in your Kafka cluster
+2. The topic name matches the expected format (check instance ID and location)
+3. The Kafka user has appropriate read/write permissions for the topic
+4. Run `opennms:kafka-ipc-topics` from the Karaf shell to see the status of all IPC topics
+
+You can list existing topics using:
+
+[source, console]
+----
+kafka-topics.sh --list --bootstrap-server localhost:9092
+----
