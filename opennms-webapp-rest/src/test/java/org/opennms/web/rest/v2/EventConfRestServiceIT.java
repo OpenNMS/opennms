@@ -46,6 +46,7 @@ import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
+import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -527,19 +528,19 @@ public class EventConfRestServiceIT {
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
         @SuppressWarnings("unchecked")
-        List<String> sourceNames = (List<String>) resp.getEntity();
+        List<SourceNameDto> sourceNames = (List<SourceNameDto>) resp.getEntity();
 
         assertNotNull(sourceNames);
         assertFalse(sourceNames.isEmpty());
-        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace")));
+        assertTrue(sourceNames.stream().anyMatch(dto -> dto.getName().contains("Cisco.airespace")));
 
         // test when no sources exists in db
-        final var  eventConfSources = eventConfSourceDao.findAll();
+        final var eventConfSources = eventConfSourceDao.findAll();
         eventConfSourceDao.deleteAll(eventConfSources);
         Response sourceNamesResponse = eventConfRestApi.getEventConfSourcesNames(securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), sourceNamesResponse.getStatus());
         @SuppressWarnings("unchecked")
-        final var  eventConfEmptySourceNames = (List<String>) sourceNamesResponse.getEntity();
+        final var eventConfEmptySourceNames = (List<SourceNameDto>) sourceNamesResponse.getEntity();
         assertNotNull(eventConfEmptySourceNames);
         assertTrue("Expected empty list when no EventConfSources exist", eventConfEmptySourceNames.isEmpty());
     }
