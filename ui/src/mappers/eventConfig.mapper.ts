@@ -91,8 +91,8 @@ export const mapEventConfEventEditRequest = (content: any, status: boolean): str
   return vkbeautify.xml(`<eventEdit><enabled>${status}</enabled>${content as string}</eventEdit>`)
 }
 
-export const mapUploadedSourceNamesFromServer = (response: any): Array<UploadedSourceNamesResponse> => {
-  return response.uploadedSourceNames.map((source: any) => ({
+export const mapUploadedSourceNamesFromServer = (content: any): Array<UploadedSourceNamesResponse> => {
+  return content.map((source: any) => ({
     id: source.id,
     name: source.name
   } as UploadedSourceNamesResponse))

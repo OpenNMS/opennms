@@ -49,7 +49,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
       isLoading: false,
       activeTab: 0,
-      uploadedSourceNames: [],
+      uploadedSources: [],
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }
@@ -121,7 +121,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
       isLoading: false,
       activeTab: 0,
-      uploadedSourceNames: [],
+      uploadedSources: [],
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }

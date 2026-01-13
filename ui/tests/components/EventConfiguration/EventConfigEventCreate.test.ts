@@ -22,7 +22,16 @@ vi.mock('@/services/eventConfigService', () => ({
 
 vi.mock('@/stores/eventConfigStore', () => ({
   useEventConfigStore: vi.fn(() => ({
-    uploadedSourceNames: ['Test Source'],
+    uploadedSources: [
+      {
+        id: 1,
+        name: 'Test Source'
+      },
+      {
+        id: 2,
+        name: 'Another Source'
+      }
+    ],
     fetchAllSourcesNames: vi.fn().mockResolvedValue(undefined)
   }))
 }))

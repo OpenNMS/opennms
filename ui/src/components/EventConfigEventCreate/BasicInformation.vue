@@ -4,7 +4,7 @@
       <div>
         <FeatherBackButton
           data-test="back-button"
-          @click="handleCancel"
+          @click="handleCancel(store.selectedSource?.id)"
         >
           Go Back
         </FeatherBackButton>
@@ -176,7 +176,7 @@
         <div class="action-container">
           <FeatherButton
             secondary
-            @click="handleCancel"
+            @click="handleCancel(store.selectedSource?.id)"
             data-test="cancel-event-button"
           >
             Cancel
@@ -372,8 +372,8 @@ const resetValues = () => {
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
   if (store.selectedSource) {
-    const source = eventConfigStore.uploadedSourceNames.find((x) => x === store.selectedSource?.name)
-    selectedSource.value = { _text: source, _value: source }
+    const source = eventConfigStore.uploadedSources?.find((s) => s.id === store.selectedSource?.id)
+    selectedSource.value = { _text: source?.name, _value: source?.id }
   } else {
     selectedSource.value = { _text: '', _value: '' }
   }
@@ -598,31 +598,37 @@ const setVarbindsDecode = (key: string, value: any, index: number, decodeIndex: 
 }
 
 const handleSaveEvent = async () => {
-  if (!store.eventModificationState.eventConfigEvent || !store.selectedSource) {
+  if (!isValid.value) {
     return
   }
 
   try {
-    if (!isValid.value) {
+    const sourceId = store.selectedSource?.id || selectedSource.value?._value as number
+
+    if (!sourceId) {
+      snackbar.showSnackBar({ msg: 'Source is required', error: true })
       return
     }
 
     let response = null
-    if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
+    const isEditMode = store.eventModificationState.isEditMode === CreateEditMode.Edit
+
+    if (isEditMode && store.eventModificationState.eventConfigEvent) {
       response = await updateEventConfigEventById(
         xmlContent.value,
-        store.selectedSource.id,
+        sourceId,
         store.eventModificationState.eventConfigEvent.id,
         store.eventModificationState.eventConfigEvent.enabled
       )
     }
     if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEvent(xmlContent.value, store.selectedSource.id)
+      response = await createEventConfigEvent(xmlContent.value, sourceId)
     }
 
     if (response) {
-      snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
-      handleCancel()
+      const msg = isEditMode ? 'Event updated successfully' : 'Event created successfully'
+      snackbar.showSnackBar({ msg, error: false })
+      handleCancel(sourceId)
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -632,9 +638,8 @@ const handleSaveEvent = async () => {
   }
 }
 
-const handleCancel = () => {
+const handleCancel = (id?: number) => {
   resetValues()
-  const id = store.selectedSource?.id
   store.resetEventModificationState()
   if (id) {
     router.push({
@@ -688,7 +693,6 @@ const createNewSource = async () => {
     )
 
     if (response && typeof response === 'object' && response.status === 201) {
-      // Success: response contains { id, name, fileOrder, status: 201 }
       let eventResponse = null
       if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
         eventResponse = await createEventConfigEvent(xmlContent.value, response.id)
@@ -731,11 +735,10 @@ const search = (query: string) => {
   loading.value = true
   clearTimeout(timeout.value)
   timeout.value = window.setTimeout(() => {
-    results.value = eventConfigStore.uploadedSourceNames
-      .filter((x) => x.toLowerCase().indexOf(query.toLowerCase()) > -1)
+    results.value = eventConfigStore.uploadedSources?.filter((s) => s.name.toLowerCase().indexOf(query.toLowerCase()) > -1)
       .map((x) => ({
-        _text: x,
-        _value: x
+        _text: x.name,
+        _value: x.id
       }))
     loading.value = false
   }, 500)

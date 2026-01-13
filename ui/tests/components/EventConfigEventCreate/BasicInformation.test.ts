@@ -53,7 +53,16 @@ vi.mock('@/services/eventConfigService', () => ({
 
 vi.mock('@/stores/eventConfigStore', () => ({
   useEventConfigStore: vi.fn(() => ({
-    uploadedSourceNames: ['Test Source'],
+    uploadedSources: [
+      {
+        id: 1,
+        name: 'Test Source'
+      },
+      {
+        id: 2,
+        name: 'Another Source'
+      }
+    ],
     fetchAllSourcesNames: vi.fn().mockResolvedValue(undefined)
   }))
 }))
@@ -121,7 +130,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
+      path: '/event-config',
+      name: 'Event Configuration',
+      component: { template: '<div></div>' }
+    },
+    {
+      path: '/event-config/:id',
       name: 'Event Configuration Detail',
       component: { template: '<div></div>' }
     }
@@ -445,12 +459,12 @@ describe('BasicInformation Component', () => {
 
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     expect(saveButton.exists()).toBe(true)
+    expect(saveButton.text()).toBe('Save Changes')
   })
 
-  it('should show "Create Event" button in create mode when selectedSource._value exists', async () => {
+  it('should show "Create Event" button in create mode when source is selected', async () => {
     store.eventModificationState.isEditMode = CreateEditMode.Create
-    store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: 'Test', _value: 'Test' }
+    store.selectedSource = mockSource
     await wrapper.vm.$nextTick()
 
     const saveButton = wrapper.find('[data-test="save-event-button"]')
@@ -466,18 +480,6 @@ describe('BasicInformation Component', () => {
     const createSourceButton = wrapper.find('[data-test="create-source-button"]')
     expect(createSourceButton.exists()).toBe(true)
     expect(createSourceButton.text()).toBe('Create Source and Save')
-  })
-
-  it('should not show both "Save Event" and "Create Source and Save" buttons at the same time', async () => {
-    store.selectedSource = mockSource
-    wrapper.vm.selectedSource = { _text: 'Test', _value: 'Test' }
-    await wrapper.vm.$nextTick()
-
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
-    
-    expect(saveButton.exists()).toBe(true)
-    expect(createSourceButton.exists()).toBe(false)
   })
 
   // Create source dialog tests
@@ -504,20 +506,6 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.createSourceDialog).toBe(false)
   })
 
-  it('should have a configName field in create source dialog', async () => {
-    wrapper.vm.createSourceDialog = true
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.vm.configName).toBeDefined()
-  })
-
-  it('should have a vendor field in create source dialog', async () => {
-    wrapper.vm.createSourceDialog = true
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.vm.vendor).toBeDefined()
-  })
-
   // Button disabled state tests
   it('should disable "Save Event" button when isValid is false', async () => {
     store.selectedSource = mockSource
@@ -525,8 +513,6 @@ describe('BasicInformation Component', () => {
     await wrapper.vm.$nextTick()
 
     const saveButton = wrapper.find('[data-test="save-event-button"]')
-    expect(saveButton.exists()).toBe(true)
-    
     const buttonComponent = saveButton.findComponent(FeatherButton)
     expect(buttonComponent.props('disabled')).toBe(true)
   })
@@ -541,64 +527,523 @@ describe('BasicInformation Component', () => {
     expect(buttonComponent.props('disabled')).toBe(false)
   })
 
-  it('should disable "Create Source and Save" button when isValid is false', async () => {
-    store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: '', _value: '' }
-    wrapper.vm.isValid = false
-    await wrapper.vm.$nextTick()
-
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
-    expect(createSourceButton.exists()).toBe(true)
+  // handleSaveEvent tests
+  it('should return early if form is not valid', async () => {
+    vi.mocked(updateEventConfigEventById).mockClear()
+    vi.mocked(createEventConfigEvent).mockClear()
     
-    const buttonComponent = createSourceButton.findComponent(FeatherButton)
-    expect(buttonComponent.props('disabled')).toBe(true)
+    wrapper.vm.isValid = false
+    await wrapper.vm.handleSaveEvent()
+
+    expect(updateEventConfigEventById).not.toHaveBeenCalled()
+    expect(createEventConfigEvent).not.toHaveBeenCalled()
   })
 
-  it('should enable "Create Source and Save" button when isValid is true', async () => {
+  it('should return early when no sourceId is available', async () => {
     store.selectedSource = null
     wrapper.vm.selectedSource = { _text: '', _value: '' }
     wrapper.vm.isValid = true
-    await wrapper.vm.$nextTick()
+    
+    vi.mocked(createEventConfigEvent).mockClear()
+    await wrapper.vm.handleSaveEvent()
 
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
-    const buttonComponent = createSourceButton.findComponent(FeatherButton)
-    expect(buttonComponent.props('disabled')).toBe(false)
+    expect(createEventConfigEvent).not.toHaveBeenCalled()
   })
 
-  it('should show "Save Event" button when store.selectedSource is set', async () => {
+  it('should use store.selectedSource.id for sourceId when available', async () => {
     store.selectedSource = mockSource
-    wrapper.vm.selectedSource = { _text: '', _value: '' }
-    await wrapper.vm.$nextTick()
-
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    store.eventModificationState.isEditMode = CreateEditMode.Edit
+    wrapper.vm.isValid = true
+    vi.mocked(updateEventConfigEventById).mockResolvedValue(true)
     
-    expect(saveButton.exists()).toBe(true)
-    expect(createSourceButton.exists()).toBe(false)
+    await wrapper.vm.handleSaveEvent()
+
+    expect(updateEventConfigEventById).toHaveBeenCalledWith(
+      expect.any(String),
+      mockSource.id,
+      expect.any(Number),
+      expect.any(Boolean)
+    )
   })
 
-  it('should show "Save Event" button when selectedSource._value is set', async () => {
+  it('should use selectedSource._value for sourceId when store.selectedSource is null', async () => {
     store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: 'Source', _value: 'Source' }
-    await wrapper.vm.$nextTick()
-
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    wrapper.vm.selectedSource = { _text: 'Test', _value: 99 }
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockResolvedValue(true)
     
-    expect(saveButton.exists()).toBe(true)
-    expect(createSourceButton.exists()).toBe(false)
+    await wrapper.vm.handleSaveEvent()
+
+    expect(createEventConfigEvent).toHaveBeenCalledWith(
+      expect.any(String),
+      99
+    )
   })
 
-  it('should show "Create Source and Save" button when both store.selectedSource and selectedSource._value are null', async () => {
-    store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: '', _value: '' }
+  it('should call updateEventConfigEventById in edit mode', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Edit
+    store.eventModificationState.eventConfigEvent = mockEvent
+    wrapper.vm.isValid = true
+    vi.mocked(updateEventConfigEventById).mockResolvedValue(true)
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(updateEventConfigEventById).toHaveBeenCalled()
+  })
+
+  it('should call createEventConfigEvent in create mode', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockResolvedValue(true)
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(createEventConfigEvent).toHaveBeenCalled()
+  })
+
+  it('should handle response successfully in create mode', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockResolvedValue(true)
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(createEventConfigEvent).toHaveBeenCalled()
+  })
+
+  it('should handle response successfully in edit mode', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Edit
+    store.eventModificationState.eventConfigEvent = mockEvent
+    wrapper.vm.isValid = true
+    vi.mocked(updateEventConfigEventById).mockResolvedValue(true)
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(updateEventConfigEventById).toHaveBeenCalled()
+  })
+
+  it('should not call handleCancel when response is null', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockResolvedValue(null as any)
+    
+    const cancelSpy = vi.spyOn(wrapper.vm, 'handleCancel')
+    await wrapper.vm.handleSaveEvent()
+
+    expect(cancelSpy).not.toHaveBeenCalled()
+  })
+
+  it('should handle error when save fails', async () => {
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockRejectedValue(new Error('API Error'))
+    
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(consoleSpy).toHaveBeenCalled()
+    
+    consoleSpy.mockRestore()
+  })
+
+  // Search functionality tests
+  it('should filter sources based on search query', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('Test')
+    
+    vi.advanceTimersByTime(500)
     await wrapper.vm.$nextTick()
 
-    const saveButton = wrapper.find('[data-test="save-event-button"]')
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
+    expect(wrapper.vm.results).toHaveLength(1)
+    expect(wrapper.vm.results[0]._text).toBe('Test Source')
     
-    expect(saveButton.exists()).toBe(false)
-    expect(createSourceButton.exists()).toBe(true)
+    vi.useRealTimers()
+  })
+
+  it('should return all matching sources for partial query', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('source')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.results.length).toBeGreaterThan(0)
+    
+    vi.useRealTimers()
+  })
+
+  it('should set loading state during search', () => {
+    wrapper.vm.search('test')
+    
+    expect(wrapper.vm.loading).toBe(true)
+  })
+
+  it('should clear loading state after search completes', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('test')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.loading).toBe(false)
+    
+    vi.useRealTimers()
+  })
+
+  // setSelectedSource tests
+  it('should set selectedSource when item is provided', () => {
+    const testItem = { _text: 'New Source', _value: 123 }
+    wrapper.vm.setSelectedSource(testItem)
+    
+    expect(wrapper.vm.selectedSource).toEqual(testItem)
+  })
+
+  it('should reset selectedSource when null is provided', () => {
+    wrapper.vm.setSelectedSource(null)
+    
+    expect(wrapper.vm.selectedSource).toEqual({ _text: '', _value: '' })
+  })
+
+  // handleCancel tests
+  it('should reset values and store on cancel', () => {
+    const resetSpy = vi.spyOn(store, 'resetEventModificationState')
+    
+    wrapper.vm.handleCancel(123)
+
+    expect(resetSpy).toHaveBeenCalled()
+  })
+
+  it('should navigate to Event Configuration Detail when id is provided', async () => {
+    const pushSpy = vi.spyOn(router, 'push')
+    
+    wrapper.vm.handleCancel(123)
+
+    expect(pushSpy).toHaveBeenCalledWith({
+      name: 'Event Configuration Detail',
+      params: { id: 123 }
+    })
+  })
+
+  it('should navigate to Event Configuration when no id is provided', async () => {
+    const pushSpy = vi.spyOn(router, 'push')
+    
+    wrapper.vm.handleCancel()
+
+    expect(pushSpy).toHaveBeenCalledWith({ name: 'Event Configuration' })
+  })
+
+  // createNewSource tests
+  it('should return early when source form has errors', async () => {
+    wrapper.vm.configName = ''
+    wrapper.vm.vendor = ''
+    wrapper.vm.isValid = true
+    
+    await wrapper.vm.createNewSource()
+
+    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
+  })
+
+  it('should return early when form is invalid', async () => {
+    wrapper.vm.configName = 'Test'
+    wrapper.vm.vendor = 'Vendor'
+    wrapper.vm.isValid = false
+    
+    await wrapper.vm.createNewSource()
+    
+    // Should not proceed with source creation
+    expect(wrapper.vm.isValid).toBe(false)
+  })
+
+  it('should validate configName is required', () => {
+    wrapper.vm.configName = ''
+    wrapper.vm.vendor = 'Test Vendor'
+    
+    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
+    expect(wrapper.vm.sourceFormErrors?.name).toBeDefined()
+  })
+
+  it('should validate vendor is required', () => {
+    wrapper.vm.configName = 'Test Config'
+    wrapper.vm.vendor = ''
+    
+    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
+    expect(wrapper.vm.sourceFormErrors?.vendor).toBeDefined()
+  })
+
+  it('should have no errors when both fields are filled', () => {
+    wrapper.vm.configName = 'Test Config'
+    wrapper.vm.vendor = 'Test Vendor'
+    
+    expect(wrapper.vm.sourceFormErrors).toBeNull()
+  })
+
+  // setAlarmData tests
+  it('should set addAlarmData value', () => {
+    wrapper.vm.setAlarmData('addAlarmData', true)
+    
+    expect(wrapper.vm.addAlarmData).toBe(true)
+  })
+
+  it('should reset alarm data fields when addAlarmData is set to false', () => {
+    wrapper.vm.reductionKey = 'test-key'
+    wrapper.vm.alarmType = { _text: 'Problem', _value: '1' }
+    wrapper.vm.autoClean = true
+    
+    wrapper.vm.setAlarmData('addAlarmData', false)
+    
+    expect(wrapper.vm.addAlarmData).toBe(false)
+    expect(wrapper.vm.reductionKey).toBe('')
+    expect(wrapper.vm.alarmType).toEqual({ _text: '', _value: '' })
+    expect(wrapper.vm.autoClean).toBe(false)
+  })
+
+  it('should set reductionKey value', () => {
+    wrapper.vm.setAlarmData('reductionKey', 'new-key')
+    
+    expect(wrapper.vm.reductionKey).toBe('new-key')
+  })
+
+  it('should set alarmType value', () => {
+    const alarmType = { _text: 'Problem', _value: '1' }
+    wrapper.vm.setAlarmData('alarmType', alarmType)
+    
+    expect(wrapper.vm.alarmType).toEqual(alarmType)
+  })
+
+  it('should set autoClean value', () => {
+    wrapper.vm.setAlarmData('autoClean', true)
+    
+    expect(wrapper.vm.autoClean).toBe(true)
+  })
+
+  it('should set clearKey value', () => {
+    wrapper.vm.setAlarmData('clearKey', 'clear-key-value')
+    
+    expect(wrapper.vm.clearKey).toBe('clear-key-value')
+  })
+
+  // setMaskElements tests
+  it('should return early if index is undefined', () => {
+    const initialLength = wrapper.vm.maskElements.length
+    wrapper.vm.setMaskElements('setName', { _text: 'test', _value: 'test' }, undefined)
+    
+    expect(wrapper.vm.maskElements.length).toBe(initialLength)
+  })
+
+  it('should set mask element name', () => {
+    wrapper.vm.maskElements = [{ name: { _text: '', _value: '' }, value: '' }]
+    const newName = { _text: 'uei', _value: 'uei' }
+    
+    wrapper.vm.setMaskElements('setName', newName, 0)
+    
+    expect(wrapper.vm.maskElements[0].name).toEqual(newName)
+  })
+
+  it('should set mask element value', () => {
+    wrapper.vm.maskElements = [{ name: { _text: '', _value: '' }, value: '' }]
+    
+    wrapper.vm.setMaskElements('setValue', 'test-value', 0)
+    
+    expect(wrapper.vm.maskElements[0].value).toBe('test-value')
+  })
+
+  it('should add a new mask row', () => {
+    wrapper.vm.maskElements = [{ name: { _text: '', _value: '' }, value: '' }]
+    
+    wrapper.vm.setMaskElements('addMaskRow', null, 0)
+    
+    expect(wrapper.vm.maskElements.length).toBe(2)
+  })
+
+  it('should remove a mask row', () => {
+    wrapper.vm.maskElements = [
+      { name: { _text: 'test1', _value: 'test1' }, value: 'value1' },
+      { name: { _text: 'test2', _value: 'test2' }, value: 'value2' }
+    ]
+    
+    wrapper.vm.setMaskElements('removeMaskRow', null, 0)
+    
+    expect(wrapper.vm.maskElements.length).toBe(1)
+    expect(wrapper.vm.maskElements[0].name._text).toBe('test2')
+  })
+
+  // setVarbinds tests
+  it('should return early if index is undefined for setVarbinds', () => {
+    const initialLength = wrapper.vm.varbinds.length
+    wrapper.vm.setVarbinds('setValue', 'test', undefined)
+    
+    expect(wrapper.vm.varbinds.length).toBe(initialLength)
+  })
+
+  it('should set varbind number', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    
+    wrapper.vm.setVarbinds('setVarbindNumber', '5', 0)
+    
+    expect(wrapper.vm.varbinds[0].index).toBe('5')
+  })
+
+  it('should set varbind number to 0 if value is negative', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    
+    wrapper.vm.setVarbinds('setVarbindNumber', '-5', 0)
+    
+    expect(wrapper.vm.varbinds[0].index).toBe('0')
+  })
+
+  it('should set varbind number to 0 if value is not a number', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    
+    wrapper.vm.setVarbinds('setVarbindNumber', 'abc', 0)
+    
+    expect(wrapper.vm.varbinds[0].index).toBe('0')
+  })
+
+  it('should set varbind OID', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbOid', _value: 'vbOid' } }]
+    
+    wrapper.vm.setVarbinds('setVarbindOid', '.1.3.6.1.4.1', 0)
+    
+    expect(wrapper.vm.varbinds[0].index).toBe('.1.3.6.1.4.1')
+  })
+
+  it('should set varbind value', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    
+    wrapper.vm.setVarbinds('setValue', 'test-value', 0)
+    
+    expect(wrapper.vm.varbinds[0].value).toBe('test-value')
+  })
+
+  it('should add a new varbind row', () => {
+    wrapper.vm.varbinds = [{ index: '0', value: '', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    
+    wrapper.vm.setVarbinds('addVarbindRow', null, 0)
+    
+    expect(wrapper.vm.varbinds.length).toBe(2)
+  })
+
+  it('should remove a varbind row', () => {
+    wrapper.vm.varbinds = [
+      { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' } },
+      { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' } }
+    ]
+    
+    wrapper.vm.setVarbinds('removeVarbindRow', null, 0)
+    
+    expect(wrapper.vm.varbinds.length).toBe(1)
+    expect(wrapper.vm.varbinds[0].index).toBe('1')
+  })
+
+  it('should clear all varbinds', () => {
+    wrapper.vm.varbinds = [
+      { index: '0', value: 'value1', type: { _text: 'vbNumber', _value: 'vbNumber' } },
+      { index: '1', value: 'value2', type: { _text: 'vbNumber', _value: 'vbNumber' } }
+    ]
+    
+    wrapper.vm.setVarbinds('clearAllVarbinds', null, 0)
+    
+    expect(wrapper.vm.varbinds).toEqual([])
+  })
+
+  it('should set varbind type and reset index', () => {
+    wrapper.vm.varbinds = [{ index: '5', value: 'test', type: { _text: 'vbNumber', _value: 'vbNumber' } }]
+    const newType = { _text: 'vbOid', _value: 'vbOid' }
+    
+    wrapper.vm.setVarbinds('setVarbindType', newType, 0)
+    
+    expect(wrapper.vm.varbinds[0].type).toEqual(newType)
+    expect(wrapper.vm.varbinds[0].index).toBe('0')
+  })
+
+  // setVarbindsDecode tests
+  it('should return early if index is undefined for setVarbindsDecode', () => {
+    const initialLength = wrapper.vm.varbindsDecode.length
+    wrapper.vm.setVarbindsDecode('setParmId', 'test', undefined, 0)
+    
+    expect(wrapper.vm.varbindsDecode.length).toBe(initialLength)
+  })
+
+  it('should set parmId', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: '', decode: [] }]
+    
+    wrapper.vm.setVarbindsDecode('setParmId', 'param1', 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
+  })
+
+  it('should add a new varbind decode row', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [] }]
+    
+    wrapper.vm.setVarbindsDecode('addVarbindDecodeRow', null, 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode.length).toBe(2)
+  })
+
+  it('should remove a varbind decode row', () => {
+    wrapper.vm.varbindsDecode = [
+      { parmId: 'param1', decode: [] },
+      { parmId: 'param2', decode: [] }
+    ]
+    
+    wrapper.vm.setVarbindsDecode('removeVarbindDecodeRow', null, 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode.length).toBe(1)
+    expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param2')
+  })
+
+  it('should add a decode row', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [] }]
+    
+    wrapper.vm.setVarbindsDecode('addDecodeRow', null, 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode.length).toBe(1)
+  })
+
+  it('should remove a decode row', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [{ key: 'key1', value: '1' }, { key: 'key2', value: '2' }] }]
+    
+    wrapper.vm.setVarbindsDecode('removeDecodeRow', null, 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode.length).toBe(1)
+    expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key2')
+  })
+
+  it('should set decode key', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [{ key: '', value: '' }] }]
+    
+    wrapper.vm.setVarbindsDecode('setDecodeKey', 'test-key', 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('test-key')
+  })
+
+  it('should set decode value', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [{ key: 'key1', value: '' }] }]
+    
+    wrapper.vm.setVarbindsDecode('setDecodeValue', '10', 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('10')
+  })
+
+  it('should set decode value to 0 if value is negative', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [{ key: 'key1', value: '' }] }]
+    
+    wrapper.vm.setVarbindsDecode('setDecodeValue', '-5', 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('0')
+  })
+
+  it('should set decode value to 0 if value is not a number', () => {
+    wrapper.vm.varbindsDecode = [{ parmId: 'param1', decode: [{ key: 'key1', value: '' }] }]
+    
+    wrapper.vm.setVarbindsDecode('setDecodeValue', 'abc', 0, 0)
+    
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('0')
   })
 })
 

@@ -41,6 +41,7 @@ import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
+import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -310,8 +311,9 @@ public class EventConfRestService implements EventConfRestApi {
     @Override
     public Response getEventConfSourcesNames(SecurityContext securityContext) throws Exception {
         try {
-            final var  sourceNames = eventConfSourceDao.findAllNames();
-            return Response.ok(sourceNames).build();
+            Map<Long, String> results = eventConfSourceDao.findAllNames();
+            List<SourceNameDto> dtoList = SourceNameDto.fromEntity(results);
+            return Response.ok(dtoList).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Failed to fetch EventConf source names: " + e.getMessage()).build();

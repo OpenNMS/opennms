@@ -203,15 +203,14 @@ public class EventConfSourceDaoHibernate
         );
         LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
     }
+
     @Override
-    public List<Map.Entry<Long, String>> findAllNames() {
+    public Map<Long, String> findAllNames() {
         return findObjects(Object[].class, "select s.id, s.name from EventConfSource s")
                 .stream()
                 .map(row -> new AbstractMap.SimpleEntry<>((Long) row[0], (String) row[1]))
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
-
-
 
     @Override
     public void saveOrUpdate(EventConfSource source) {
