@@ -641,7 +641,7 @@ const handleSaveEvent = async () => {
 const handleCancel = (id?: number) => {
   resetValues()
   store.resetEventModificationState()
-  if (id) {
+  if (id && id > 0) {
     router.push({
       name: 'Event Configuration Detail',
       params: { id }

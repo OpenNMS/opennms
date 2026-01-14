@@ -143,7 +143,7 @@ const handleCancel = () => {
 const visitCreatedEventConfigSource = () => {
   successMessage.value = false
   store.hideCreateEventConfigSourceDialog()
-  if (newId.value !== 0) {
+  if (newId.value > 0) {
     router.push({
       name: 'Event Configuration Detail',
       params: { id: newId.value }
