@@ -2,7 +2,7 @@
   <div class="varbinds-decode-info">
     <div class="section-content">
       <div class="varbinds-decode-header">
-        <div>
+        <div class="varbinds-decode-title">
           <h3>Varbinds Decoding</h3>
           <p>
             Convert the following numeric values for the varbind parm to the decoded string value when displaying the
@@ -125,6 +125,10 @@ watch(varbindsDecode, (newVarbindsDecode) => {
     align-items: center;
     margin-bottom: 15px;
     gap: 20px;
+
+    .varbinds-decode-title {
+      flex: 1;
+    }
   }
 
   .form-row {
