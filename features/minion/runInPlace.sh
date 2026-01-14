@@ -16,6 +16,7 @@ CONTAINERDIR="${MYDIR}/../container/minion"
 JAVA_OPTS="-Xmx2g -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 export PATH CONTAINERDIR JAVA_OPTS
+ulimit -n 20000
 
 BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:minion,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository"
 

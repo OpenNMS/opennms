@@ -1,0 +1,54 @@
+
+= Json Property Extender
+:description: Json property extender in {page-component-title} allows to lookup values in Json data returned by SNMP.
+
+Some devices return Json data via SNMP. This property extender allows to extract values from this data and persist as time-series metrics.
+
+== Configuration
+
+The Json property extender expects zero or more parameters.
+There are currently three parameters with fixed names:
+
+[options="autowidth"]
+|===
+| Name  | Description   | Default Value
+
+3+| *Required*
+
+| source-attribute
+| The alias name of the property containing the Json data
+| _Blank_
+
+| target-type
+| The target data-type (for example, `gauge`).
+| string
+
+| json-path
+| The Json path expression used to lookup the value to store.
+| string
+
+3+| *Optional*
+
+| default-value
+| The value for entries that cannot be found in the given Json data.
+| _Blank_
+|===
+
+The following example shows how to extract a numerical value, and store it as a separate metric.
+This example assumes that the OID returns `{ valuex: 1.23, valuey: "yyy" }`.
+These values will be stored by default as a string value.
+The Json property extender extracts the value `valuex` and stores it as a `gauge` value.
+If no value can be extracted by the givon Json path expression, the default value `0.0` will be stored.
+
+[source, xml]
+----
+<group name="json-property-example" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.2.3.4.5.6.7.8" instance="the-instance" alias="jsonData" type="string"/>
+    <property instance="the-instance" alias="jsonGauge" class-name="org.opennms.netmgt.collectd.JsonPropertyExtender">
+        <parameter key="source-attribute" value="jsonData"/>
+        <parameter key="target-type" value="gauge"/>
+        <parameter key="json-path" value="$.valuex"/>
+        <parameter key="default-value" value="0.0"/>
+    </property>
+</group>
+----
