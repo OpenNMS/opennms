@@ -108,7 +108,7 @@ detect_postgres_installed
 
 if [[ ${POSTGRES_VERSION:-} == "unknown" ]]; then
     echo "PostgreSQL not detected. You may deploy PostgreSQL using Docker by running:"
-    echo "  $SCRIPT_DIR/dependencies.sh --deploy-postgres"
+    echo "  $SCRIPT_DIR/dependencies.sh --deploy-postgresql"
     exit 1
 fi
 
