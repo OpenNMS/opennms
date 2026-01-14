@@ -77,6 +77,9 @@ public class EventConfEvent implements Serializable {
     @Column(name = "modified_by", length = 256)
     private String modifiedBy;
 
+    @Column(name="severity", nullable = false)
+    private String severity;
+
     public Long getId() {
         return id;
     }
@@ -156,4 +159,8 @@ public class EventConfEvent implements Serializable {
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
+
+    public String getSeverity() { return severity; }
+
+    public void setSeverity(String severity) { this.severity = severity; }
 }

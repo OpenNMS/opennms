@@ -22,6 +22,7 @@ describe('eventConfigXmlValidator', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   describe('MAX_FILES_UPLOAD', () => {
@@ -227,10 +228,10 @@ describe('eventConfigXmlValidator', () => {
       mockFile = createMockFile('comments.events.xml', xmlContent)
       // Explicitly mock file.text() to ensure it works in happy-dom
       vi.spyOn(mockFile, 'text').mockResolvedValue(xmlContent)
-      // Mock DOMParser to handle CDATA correctly
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => {
-        return {
-          parseFromString: () => ({
+      // Mock DOMParser to handle CDATA correctly using class syntax
+      class MockDOMParser {
+        parseFromString() {
+          return {
             querySelector: (selector: string) => {
               if (selector === 'parsererror') return null
               if (selector === 'events') {
@@ -256,15 +257,16 @@ describe('eventConfigXmlValidator', () => {
               }
               return null
             }
-          })
-        } as any
-      })
+          }
+        }
+      }
+      vi.stubGlobal('DOMParser', MockDOMParser)
+
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: true,
         errors: []
       })
-      vi.restoreAllMocks()
     })
 
     it('rejects <event> with whitespace-only fields', async () => {
@@ -303,21 +305,21 @@ describe('eventConfigXmlValidator', () => {
       const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>unclosed'
       mockFile = createMockFile('syntaxerror.events.xml', invalidContent)
       vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
-      // Mock DOMParser to simulate parsererror (in real jsdom, it sets a parsererror node for malformed XML)
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
-        parseFromString: () => {
-          // Create a minimal Document mock with querySelector for parsererror
+      // Mock DOMParser to simulate parsererror using class syntax
+      class MockDOMParser {
+        parseFromString() {
           return Object.assign(document.implementation.createDocument(null, '', null), {
             querySelector: (selector: string) => {
               if (selector === 'parsererror') {
-                // Simulate parsererror node
                 return document.createElement('parsererror')
               }
               return null
             }
           })
         }
-      }))
+      }
+      vi.stubGlobal('DOMParser', MockDOMParser)
+
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: false,
@@ -329,21 +331,21 @@ describe('eventConfigXmlValidator', () => {
       const invalidContent = '<events xmlns="http://xmlns.opennms.org/xsd/eventconf" xmlns="duplicate" />' // Duplicate attribute
       mockFile = createMockFile('validatorfail.events.xml', invalidContent)
       vi.spyOn(mockFile, 'text').mockResolvedValue(invalidContent)
-      // Mock DOMParser to parse without error (for coverage of line ~26), but assume XMLValidator catches duplicate attr
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
-        parseFromString: () => {
-          // Create a minimal Document mock with querySelector for parsererror
+      // Mock DOMParser using class syntax
+      class MockDOMParser {
+        parseFromString() {
           return Object.assign(document.implementation.createDocument(null, '', null), {
             querySelector: (selector: string) => {
               if (selector === 'parsererror') {
-                // Simulate parsererror node
                 return document.createElement('parsererror')
               }
               return null
             }
           })
         }
-      }))
+      }
+      vi.stubGlobal('DOMParser', MockDOMParser)
+
       // Mock XMLValidator to return false for this case
       const { XMLValidator } = await import('fast-xml-parser')
       vi.spyOn(XMLValidator, 'validate').mockReturnValue({ err: { msg: 'Duplicate attribute' } } as ValidationError)
@@ -374,35 +376,36 @@ describe('eventConfigXmlValidator', () => {
         '<events xmlns="http://xmlns.opennms.org/xsd/eventconf"><event><uei>uei</uei><event-label>Label</event-label><severity>Minor</severity></event></events>'
       mockFile = createMockFile('queryerror.events.xml', content)
       vi.spyOn(mockFile, 'text').mockResolvedValue(content)
-      vi.spyOn(global, 'DOMParser').mockImplementation(() => ({
-        parseFromString: () =>
-          ({
+
+      // Create a proper class mock for DOMParser
+      let callCount = 0
+      class MockDOMParser {
+        parseFromString() {
+          return {
             querySelector: (selector: string) => {
               if (selector === 'parsererror') return null
               if (selector === 'events') {
                 return {
                   getAttribute: () => 'http://xmlns.opennms.org/xsd/eventconf',
                   querySelectorAll: () => {
-                    // Properly mock NodeListOf<Element>
                     const nodeList: any = [
                       {
                         tagName: 'event',
-                        querySelector: vi
-                          .fn()
-                          .mockImplementationOnce(() => ({ textContent: 'uei' })) // uei ok
-                          .mockImplementationOnce(() => {
-                            throw new Error('Query error')
-                          }) // event-label throws
-                          .mockImplementationOnce(() => ({ textContent: 'Minor' })) // severity would be next, but throws before
+                        querySelector: () => {
+                          callCount++
+                          if (callCount === 1) return { textContent: 'uei' } // uei ok
+                          if (callCount === 2) throw new Error('Query error') // event-label throws
+                          return { textContent: 'Minor' }
+                        }
                       }
-                    ]
-                    ;(nodeList as any).item = (index: number) => nodeList[index] || null
-                    ;(nodeList as any).forEach = (callback: any, thisArg?: any) => {
+                    ];
+                    (nodeList as any).item = (index: number) => nodeList[index] || null;
+                    (nodeList as any).forEach = (callback: any, thisArg?: any) => {
                       for (let i = 0; i < nodeList.length; i++) {
                         callback.call(thisArg, nodeList[i], i, nodeList)
                       }
                     }
-                    ;(nodeList as any).length = 1
+                    (nodeList as any).length = 1
                     return nodeList as NodeListOf<Element>
                   },
                   children: [
@@ -414,8 +417,11 @@ describe('eventConfigXmlValidator', () => {
               }
               return null
             }
-          }) as any
-      }))
+          } as any
+        }
+      }
+      vi.stubGlobal('DOMParser', MockDOMParser)
+
       const result = await validateEventConfigFile(mockFile)
       expect(result).toEqual({
         isValid: false,

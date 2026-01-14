@@ -64,7 +64,7 @@ import static org.junit.Assert.assertNotNull;
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTestCase {
 

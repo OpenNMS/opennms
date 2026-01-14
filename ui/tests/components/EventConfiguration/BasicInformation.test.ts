@@ -97,7 +97,7 @@ const mockEvent = {
       </varbind>
       <varbindsdecode>
         <parmid>param1</parmid>
-        <decode varbinddecodedstring="key1" varbindvalue="value1" />
+        <decode varbinddecodedstring="key1" varbindvalue="01" />
       </varbindsdecode>
     </event>
   `,
@@ -304,7 +304,7 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.varbindsDecode[0].parmId).toBe('param1')
     expect(wrapper.vm.varbindsDecode[0].decode).toHaveLength(1)
     expect(wrapper.vm.varbindsDecode[0].decode[0].key).toBe('key1')
-    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('value1')
+    expect(wrapper.vm.varbindsDecode[0].decode[0].value).toBe('01')
   })
 
   it('should update validation state when form data changes', async () => {
@@ -378,12 +378,19 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
+    // Make the form invalid by clearing a required field
+    const ueiInput = wrapper.find('[data-test="event-uei"]').find('input')
+    await ueiInput.setValue('')
+    await wrapper.vm.$nextTick()
+
     expect(wrapper.vm.isValid).toBe(false)
-    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
+
+    vi.mocked(updateEventConfigEventById).mockClear()
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
+    await wrapper.vm.$nextTick()
 
-    expect(updateSpy).not.toHaveBeenCalled()
+    expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })
 
   it('should display error messages for invalid fields', async () => {

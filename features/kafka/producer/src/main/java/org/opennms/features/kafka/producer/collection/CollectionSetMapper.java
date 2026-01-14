@@ -301,8 +301,8 @@ public class CollectionSetMapper {
                 if (node != null) {
                     nodeResourceBuilder.setNodeId(node.getId());
                     getString(node.getLabel()).ifPresent(nodeResourceBuilder::setNodeLabel);
-                    getString(node.getForeignSource()).ifPresent(nodeResourceBuilder::setForeignId);
-                    getString(node.getForeignId()).ifPresent(nodeResourceBuilder::setForeignSource);
+                    getString(node.getForeignId()).ifPresent(nodeResourceBuilder::setForeignId);
+                    getString(node.getForeignSource()).ifPresent(nodeResourceBuilder::setForeignSource);
                     if (node.getLocation() != null) {
                         nodeResourceBuilder.setLocation(node.getLocation().getLocationName());
                     }
