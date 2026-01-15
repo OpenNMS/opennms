@@ -411,7 +411,7 @@ Note that you must include the `monitor` section for each service in your defini
 ----
 <1> OID for `ciscoEnvMonSupplyStatusEntry`
 <2> Enable walk mode to test every entry in the table against the test criteria.
-<3> `~` spefifies that the operand is a regular expression 
+<3> `~` specifies that the operand is a regular expression 
 <4> The regular expression `(?:[15]+)` is "Any character of: '1', '5' (1 or more times, matching the most amount possible)"
 <5> Test in walk mode has to pass for every entry in the table.
 <6> Encode MIB status in the reason code to give more detailed information if the service goes down.
