@@ -257,10 +257,12 @@ install_jrrd2_from_source(){
     
     cp "$JRRD_LIB" "$ROOT/built/lib/"
     cp "$JRRD_JAR" "$ROOT/built/"
+    
     if [[ "$OS_NAME" == "macOS" ]]; then
        ln -s "$ROOT/built/lib/libjrrd2.so" "$ROOT/built/lib/libjrrd2.dylib"
     fi
-    ln -s "$ROOT/built/jrrd2-*-$JRRD_VERSION.jar" "$ROOT/built/jrrd2.jar"
+    BUILT_JRRD_JAR=$(find "$ROOT/built" -maxdepth 1 -name "jrrd2-*-$JRRD_VERSION.jar" | head -n 1)  
+    ln -s "$BUILT_JRRD_JAR" "$ROOT/built/jrrd2.jar"
     
     JRRD_JAR="$ROOT/built/jrrd2.jar"
     JRRD_LIB="$ROOT/built/lib/$(basename "$JRRD_LIB")"  
@@ -320,7 +322,7 @@ install_jrrd2_prebuilt(){
       echo "Downloading jrrd2 from $DEB_URL"
     fi
 
-    if [[ ! -z "$DEB_URL" ]]; then
+    if [[ -n "$DEB_URL" ]]; then  
       curl -s -LO "$DEB_URL"
       DEB_FILE=$(basename "$DEB_URL")
     fi
@@ -424,12 +426,13 @@ if [[ "$ENABLE_JRRD2_CONFIGURATION" == "yes" ]]; then
            echo "You need to build OpenNMS at least once before enabling jrrd2 configuration." >&2
            exit 1
        fi
+    RRDTOOL_BINARY="$(which rrdtool 2>/dev/null || echo /usr/bin/rrdtool)"
     echo "
     org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
     org.opennms.rrd.interfaceJar=$JRRD_JAR
     opennms.library.jrrd2=$JRRD_LIB
     org.opennms.web.graphs.engine=rrdtool
-    rrd.binary=/usr/bin/rrdtool
+    rrd.binary=$RRDTOOL_BINARY
     " > "$ROOT/target/opennms/etc/opennms.properties.d/timeseries.properties"
    else
        echo "jrrd2 library or jar not found. Cannot enable jrrd2 configuration." >&2
