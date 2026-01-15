@@ -31,6 +31,7 @@ usage(){
     echo "  --disable-jrrd2         Disable building jrrd2 library"
     echo "  --skip-cleanup          Skip cleanup of previous build artifacts"
     echo "  --enable-tests          Enable running tests during build"
+    echo "  --run-opennms-foreground    Start OpenNMS in foreground after build"
     exit 1
 }
 
@@ -38,6 +39,7 @@ usage(){
 ENABLE_TESTS="no"
 SKIP_CLEANUP="no"
 DISABLE_JRRD2=${DISABLE_JRRD2:-"false"}
+RUN_OPENNMS_FOREGROUND="no"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -54,6 +56,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --skip-cleanup )
             SKIP_CLEANUP="yes"
+            shift
+            ;;
+        --run-opennms-foreground )
+            RUN_OPENNMS_FOREGROUND="yes"
             shift
             ;;
         --all)
@@ -172,6 +178,10 @@ echo "Initialize the Java environment..."
 echo "Initialize the database schema..."
 "$ROOT/target/opennms/bin/install" -dis
 
-echo "Starting OpenNMS (foreground)..."
-"$ROOT/target/opennms/bin/opennms" -f -t start
-
+if [[ "$RUN_OPENNMS_FOREGROUND" == "yes" ]]; then
+  echo "Starting OpenNMS (foreground)..."
+  "$ROOT/target/opennms/bin/opennms" -f -t start
+else
+  echo "Starting OpenNMS (background)..."
+  "$ROOT/target/opennms/bin/opennms" -vt start
+fi
