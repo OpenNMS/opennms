@@ -26,8 +26,7 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSystemDef, Integer> implements SnmpCollectionSystemDefDao {
 
@@ -63,5 +62,128 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     @Override
     public void deleteAll(final Collection<SnmpCollectionSystemDef> list) {
         super.deleteAll(list);
+    }
+
+    @Override
+    public void saveAll(Collection<SnmpCollectionSystemDef> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+
+        int batchSize = 50;
+        int i = 0;
+        for (SnmpCollectionSystemDef systemDef : list) {
+            getHibernateTemplate().saveOrUpdate(systemDef);
+            i++;
+            if (i % batchSize == 0) {
+                getHibernateTemplate().flush();
+                getHibernateTemplate().clear();
+            }
+
+        }
+        getHibernateTemplate().flush();
+        getHibernateTemplate().clear();
+    }
+
+    @Override
+    public void deleteBySourceId(Integer sourceId) {
+        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionSystemDef d where d.collectionSource.id = ?", sourceId);
+    }
+
+    @Override
+    public List<SnmpCollectionSystemDef> filterSystemDefsConf(String name, String vendor, String collectionSourceName, int offset, int limit) {
+        List<Object> queryParamList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from SnmpCollectionSystemDef d where 1=1 ");
+        if (name != null && !name.trim().isEmpty()) {
+            queryBuilder.append(" and lower(d.name) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (vendor != null && !vendor.trim().isEmpty()) {
+            queryBuilder.append(" and lower(d.collectionSource.vendor) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
+        }
+
+        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
+            queryBuilder.append(" and lower(d.collectionSource.name) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
+        }
+
+        queryBuilder.append(" order by d.createdTime desc ");
+
+        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    @Override
+    public Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefsFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        List<Object> queryParams = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        String whereClause = "where d.collectionSource.id = ? ";
+        queryParams.add(dataCollectionGroupId);
+
+        // Add filter conditions dynamically
+        if (systemDefsFilter != null && !systemDefsFilter.trim().isEmpty()) {
+            String escapedFilter = "%" + escapeLike(systemDefsFilter.trim().toLowerCase()) + "%";
+            conditions.add("lower(d.name) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+
+        }
+
+        whereClause = whereClause + (conditions.isEmpty() ? "" : " AND ( " + String.join(" OR ", conditions)+ ")");
+
+        // COUNT QUERY: get total matching records if not already provided
+        if (resultCount == 0) {
+            String countQuery = "select count(d.id) from SnmpCollectionSystemDef d " + whereClause;
+            resultCount = super.queryInt(countQuery, queryParams.toArray());
+        }
+
+        // DATA QUERY: fetch paginated results if resultCount > 0
+        List<SnmpCollectionSystemDef> systemDefsList = Collections.emptyList();
+        if (resultCount > 0) {
+
+            String orderBy;
+            String sortField = sortBy;
+
+            String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+            Set<String> allowedSortFields = Set.of("name");
+
+            if (sortBy == null || !allowedSortFields.contains(sortBy)) {
+                sortField = "name";
+            }
+
+            orderBy = " order by d." + sortField + " " + sortOrder;
+
+
+
+            String dataQuery = "from SnmpCollectionSystemDef d " + whereClause + orderBy;
+            systemDefsList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+        }
+
+        // Return map with results
+        return Map.of("totalRecords", resultCount, "systemDefsList", systemDefsList);
+    }
+
+    /**
+     * Escapes special characters (% , _ , \, ., /, [, ]) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace(".", "\\.");
     }
 }
