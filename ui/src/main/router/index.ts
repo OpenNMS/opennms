@@ -292,6 +292,11 @@ const router = createRouter({
       component: () => import('@/containers/SnmpDataCollection.vue')
     },
     {
+      path: '/snmp-data-collection/import',
+      name: 'SNMP Data Collection Import',
+      component: () => import('@/containers/SnmpDataCollectionSourceImport.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
