@@ -53,7 +53,7 @@
             </plugin>
             <!-- We generate a big onejar.jar file to make Deployment easier -->
             <plugin>
-                <groupId>org.dstovall</groupId>
+                <groupId>com.jolira</groupId>
                 <artifactId>onejar-maven-plugin</artifactId>
                 <configuration>
                     <filename>${project.artifactId}-${project.version}-onejar.jar</filename>
