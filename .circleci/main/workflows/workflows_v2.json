@@ -117,7 +117,7 @@
             "extends": [
                 "build",
                 "tarball-assembly-only",
-                "trivy-analyze"
+                "trivy-analyze-workflow"
             ]
         }
     },
@@ -329,7 +329,7 @@
                 "tarball-assembly-only"
             ]
         },       
-        "trivy-analyze":{
+        "trivy-analyze-workflow":{
             "requires": [
                 "horizon-image-single-arch-linux-amd64-trivy",
                 "sentinel-image-single-arch-linux-amd64-trivy",
