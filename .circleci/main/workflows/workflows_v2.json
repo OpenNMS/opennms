@@ -328,7 +328,7 @@
                 "tarball-assembly-only"
             ]
         },       
-        "trivy-analyze-workflow":{
+        "trivy-analyze":{
             "requires": [
                 "horizon-image-single-arch-linux-amd64-trivy",
                 "sentinel-image-single-arch-linux-amd64-trivy",
