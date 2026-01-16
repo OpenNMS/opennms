@@ -106,9 +106,14 @@
                 "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
+        "trivy-analyze-workflow": {
+            "extends": [
+                "trivy-scan"
+            ]
+        },
         "trivy-analyze": {
             "extends": [
-                "horizn-image-single-arch-linux-amd64-trivy-anaolyze",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze",
                 "sentinel-image-single-arch-linux-amd64-trivy-analyze",
                 "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
