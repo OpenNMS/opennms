@@ -115,6 +115,8 @@
         },
         "experimental": {
             "extends": [
+                "build",
+                "tarball-assembly-only",
                 "trivy-analyze"
             ]
         }
