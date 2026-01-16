@@ -87,7 +87,7 @@
         "trivy-scan-analyze": {
             "extends": [
                 "trivy-scan",
-                "trivy-analyze-workflow"
+                "trivy-analyze"
             ]
         },
         "weekly-coverage": {
