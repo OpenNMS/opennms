@@ -108,7 +108,7 @@
         },
         "trivy-analyze": {
             "extends": [
-                "horizon-image-single-arch-linux-amd64-trivy-analyze",
+                "horizn-image-single-arch-linux-amd64-trivy-anaolyze",
                 "sentinel-image-single-arch-linux-amd64-trivy-analyze",
                 "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
@@ -328,7 +328,14 @@
             "requires": [
                 "tarball-assembly-only"
             ]
-        },        
+        },       
+        "trivy-analyze":{
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        }, 
         "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
             "context": [
                 "CircleCI",
