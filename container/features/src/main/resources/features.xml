@@ -961,7 +961,7 @@
 
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
         <feature>jax-rs-connector</feature>
-        <feature>pax-http</feature>
+        <feature>pax-web-http-jetty</feature>
         <feature>opennms-alarm-history-api</feature>
         <feature>opennms-es-rest</feature>
         <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/${project.version}</bundle>
@@ -1912,7 +1912,7 @@
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
         <bundle dependency="true" start-level="${systemStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
-        <capability>http-service;provider:=pax-http</capability>
+        <capability>http-service;provider:=pax-web-http-jetty</capability>
         <conditional>
             <condition>webconsole</condition>
             <bundle start-level="${earlyStartLevel}">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/${karafVersion}</bundle>
