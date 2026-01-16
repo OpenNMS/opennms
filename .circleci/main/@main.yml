@@ -31,4 +31,5 @@ jobs:
   #jobs:merge-foundation-branch#
   #jobs:create-merge-meridian-branch#
   #jobs:merge-poweredby-branch#
+  #jobs:trivy-analyze#
   #jobs:publish#
