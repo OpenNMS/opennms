@@ -86,7 +86,7 @@ commands:
           path: ~/project/artifacts
           destination: trivy-reports
 
-  trivy-analyze:
+  trivy-analyze2:
     steps:
       - download-download-artifacts
       - cached-checkout

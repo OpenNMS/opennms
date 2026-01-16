@@ -1,0 +1,11 @@
+commands:
+  trivy-analyze:
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: what is in workspace
+          command: |
+            echo "Workspace contents:"
+            ls -la ~/project/
+        

@@ -115,7 +115,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "trivy-analyze"
             ]
         }
     },
