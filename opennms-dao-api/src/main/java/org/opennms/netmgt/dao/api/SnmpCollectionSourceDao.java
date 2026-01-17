@@ -41,6 +41,8 @@ public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, I
 
     void deleteAll(final Collection<SnmpCollectionSource> list);
 
+    Map<Integer, String> getIdToNameMap();
+
     Map<String, Object> filterDataCollectionSource(final String filter, final String sortBy, final String order, Integer totalRecords,
                                               Integer offset, Integer limit);
 

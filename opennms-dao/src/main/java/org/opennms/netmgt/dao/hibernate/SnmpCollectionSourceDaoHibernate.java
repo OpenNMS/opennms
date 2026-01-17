@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSource, Integer> implements SnmpCollectionSourceDao {
 
@@ -55,6 +56,16 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     @Override
     public void deleteAll(final Collection<SnmpCollectionSource> list) {
         super.deleteAll(list);
+    }
+
+    @Override
+    public Map<Integer, String> getIdToNameMap() {
+        return findObjects(Object[].class,
+                "select s.id, s.name from SnmpCollectionSource s").stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (String) row[1]
+                ));
     }
 
     @Override

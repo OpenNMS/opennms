@@ -34,6 +34,7 @@ import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 
 import org.opennms.web.rest.v2.api.DataCollectionConfRestApi;
+import org.opennms.web.rest.v2.model.SnmpCollectionSourceNamesAndIdsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -226,6 +227,45 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         // Build response
         return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "dataCollectionSystemDefsList", dtoList))
                 .build();
+    }
+
+    @Override
+    public Response getSnmpDataCollectionSourceById(Integer collectionSourceId, SecurityContext securityContext) {
+        try {
+            if (collectionSourceId == null || collectionSourceId <= 0) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(Map.of("error", "Invalid collectionSourceId provided"))
+                        .build();
+            }
+            final var snmpCollectionSource = dataCollectionConfPersistenceService.getSnmpCollectionSourceById(collectionSourceId);
+            if (snmpCollectionSource == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Map.of("error", "snmpCollectionSource not found for id: " + collectionSourceId))
+                        .build();
+            }
+            SnmpCollectionSourceDto snmpCollectionSourceDto = SnmpCollectionSourceDto.fromEntity(snmpCollectionSource);
+            return Response.ok(snmpCollectionSourceDto).build();
+
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", e.getMessage()))
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(Map.of("error", "Unexpected error occurred: " + e.getMessage()))
+                    .build();
+        }
+    }
+
+    @Override
+    public Response getSnmpCollectionSourceNamesAndIds(SecurityContext securityContext) throws Exception {
+        try {
+            final var  map = dataCollectionConfPersistenceService.getSnmpCollectionSourceNamesAndIds();
+            return Response.ok(SnmpCollectionSourceNamesAndIdsResponse.fromMap(map)).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch SnmpCollection source names: " + e.getMessage()).build();
+        }
     }
 
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {

@@ -90,6 +90,10 @@ public class DataCollectionConfPersistenceService {
         return source.getId();
     }
 
+    public SnmpCollectionSource getSnmpCollectionSourceById(Integer collectionSourceId){
+        return snmpCollectionSourceDao.get(collectionSourceId);
+    }
+
     public Map<String, Object> filterSnmpCollectionSources(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         return snmpCollectionSourceDao.filterDataCollectionSource(filter, sortBy, order, totalRecords, offset, limit);
     }
@@ -110,6 +114,10 @@ public class DataCollectionConfPersistenceService {
                                                                      String order, Integer totalRecords, Integer offset,
                                                                      Integer limit) {
         return snmpCollectionSystemDefDao.findByDataCollectionGroupId(dataCollectionGroupId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
+    }
+
+    public Map<Integer,String> getSnmpCollectionSourceNamesAndIds(){
+        return snmpCollectionSourceDao.getIdToNameMap();
     }
 
 

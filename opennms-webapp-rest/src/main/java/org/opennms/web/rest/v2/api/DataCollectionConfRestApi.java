@@ -202,5 +202,39 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext
     );
 
+    @GET
+    @Path("/collectsources/{collectionSourceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get SnmpCollectionSource by ID",
+            description = "Retrieve an SnmpCollectionSource by its unique identifier.",
+            operationId = "getEventConfSourceById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SnmpCollectionSource retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSource not found"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+
+    })
+    Response getSnmpDataCollectionSourceById(
+            @PathParam("collectionSourceId") Integer collectionSourceId,
+            @Context SecurityContext securityContext
+    );
+
+    @GET
+    @Path("/collectsources/names-and-ids")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get SnmpCollection Source Names",
+            description = "Retrieve the names and Ids of all SnmpCollection sources stored in the database.",
+            operationId = "getEventConfSourcesNames"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved source names"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getSnmpCollectionSourceNamesAndIds(@Context SecurityContext securityContext) throws Exception;
+
 
 }
