@@ -154,3 +154,4 @@ describe('DeleteEventConfigSourceDialog', () => {
     expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
   })
 })
+

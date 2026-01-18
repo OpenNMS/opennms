@@ -53,6 +53,12 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${jsonPathVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
@@ -66,6 +72,5 @@
       <artifactId>org.opennms.core.test-api.db</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

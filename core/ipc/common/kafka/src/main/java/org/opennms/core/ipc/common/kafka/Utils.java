@@ -73,7 +73,7 @@ public class Utils {
             OnmsKafkaConfigProvider kafkaConfigProvider = new OnmsKafkaConfigProvider(sysPropPrefix, KAFKA_IPC_CONFIG_SYS_PROP_PREFIX);
             return kafkaConfigProvider.getProperties();
         } else {
-            String pid = null;
+            String pid;
             if(identity.getType().equals(SystemType.Minion.name())) {
                 pid = type.equals(KafkaSinkConstants.KAFKA_TOPIC_PREFIX) ?
                         KafkaSinkConstants.KAFKA_CONFIG_PID : KafkaRpcConstants.KAFKA_RPC_CONFIG_PID;
