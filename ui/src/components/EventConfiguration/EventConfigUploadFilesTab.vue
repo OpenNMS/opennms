@@ -271,7 +271,9 @@ const handleFolderUpload = async (e: Event) => {
     }
   }
 
+  // Reset the input value to allow re-uploading the same file if needed
   input.value = ''
+  input.files = null
 }
 
 
@@ -418,7 +420,6 @@ watch(
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
-@import "@featherds/styles/themes/variables";
 
 .upload-files-tab {
   background: var(variables.$surface);
@@ -493,7 +494,7 @@ watch(
           }
 
           .invalid-text {
-            color: var($error);
+            color: var(variables.$error);
           }
         }
 
