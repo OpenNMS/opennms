@@ -2,6 +2,35 @@
 
 = Changelog
 
+[[releasenotes-changelog-35.0.2]]
+
+== Release 35.0.2
+
+=== Bug
+
+* Event translator problem after upgrade to 35 (Issue https://issues.opennms.org/browse/NMS-19276[NMS-19276])
+* UI : Event config events display gets cut off when label is longer than normal (Issue https://issues.opennms.org/browse/NMS-19359[NMS-19359])
+* WS-Man datacollection failures with new WS-Man Client v1.3.2 (Issue https://issues.opennms.org/browse/NMS-18072[NMS-18072])
+
+=== Enhancement
+
+* Enable Kafka Producer to sent separate topics to different Kafka Servers (Issue https://issues.opennms.org/browse/NMS-19082[NMS-19082])
+* FE: Make Severity and Status coulmns sortable on Event Config details UI (Issue https://issues.opennms.org/browse/NMS-19214[NMS-19214])
+* Handle new Event Conf UI due to changes in NMS-19070 (Issue https://issues.opennms.org/browse/NMS-19182[NMS-19182])
+* Improve error handling when Kafka topics don't exist (Issue https://issues.opennms.org/browse/NMS-19117[NMS-19117])
+* JSON parsing SNMP Property Extender (Issue https://issues.opennms.org/browse/NMS-19147[NMS-19147])
+
+=== Epic
+
+* Investigate and implement use of a more modern Javascript package manager (Issue https://issues.opennms.org/browse/NMS-19190[NMS-19190])
+
+=== Task
+
+* Add support to sort by Severity and Status for eventconf events (Issue https://issues.opennms.org/browse/NMS-19099[NMS-19099])
+* Expose rest endpoint for creating/updating source (Issue https://issues.opennms.org/browse/NMS-19134[NMS-19134])
+* FE: Integrate api for creating/updating the source (Issue https://issues.opennms.org/browse/NMS-19161[NMS-19161])
+* Fix tests that are failing due to missing jrrd2 (Issue https://issues.opennms.org/browse/NMS-19308[NMS-19308])
+
 [[releasenotes-changelog-35.0.1]]
 
 == Release 35.0.1
@@ -293,6 +322,3 @@ It is introducing new features, including event definitions are now stored in th
 === Upgrade
 
 * Move test utility classes from source to test directory for better code organization (Issue https://issues.opennms.org/browse/NMS-19032[NMS-19032])
-
-
-
