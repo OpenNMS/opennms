@@ -25,6 +25,7 @@ import org.opennms.netmgt.model.SnmpCollectionSource;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, Integer> {
 
@@ -39,5 +40,10 @@ public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, I
     void delete(SnmpCollectionSource source);
 
     void deleteAll(final Collection<SnmpCollectionSource> list);
+
+    Map<Integer, String> getIdToNameMap();
+
+    Map<String, Object> filterDataCollectionSource(final String filter, final String sortBy, final String order, Integer totalRecords,
+                                              Integer offset, Integer limit);
 
 }

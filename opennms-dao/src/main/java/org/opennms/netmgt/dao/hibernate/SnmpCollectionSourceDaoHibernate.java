@@ -26,8 +26,8 @@ import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSource, Integer> implements SnmpCollectionSourceDao {
 
@@ -56,5 +56,94 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     @Override
     public void deleteAll(final Collection<SnmpCollectionSource> list) {
         super.deleteAll(list);
+    }
+
+    @Override
+    public Map<Integer, String> getIdToNameMap() {
+        return findObjects(Object[].class,
+                "select s.id, s.name from SnmpCollectionSource s").stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (String) row[1]
+                ));
+    }
+
+    @Override
+    public Map<String, Object> filterDataCollectionSource(final String filter, final String sortBy,final  String order, Integer totalRecords, Integer offset, Integer limit) {
+
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        List<SnmpCollectionSource> dataCollectionSourceList = Collections.emptyList();
+        try {
+            List<Object> queryParams = new ArrayList<>();
+            List<String> conditions = new ArrayList<>();
+
+            // Add filter conditions dynamically
+            if (filter != null && !filter.trim().isEmpty()) {
+                String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
+                conditions.add("lower(s.name) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.vendor) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.description) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+
+            }
+
+            String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+
+            // COUNT QUERY: get total matching records if not already provided
+            if (resultCount == 0) {
+                String countQuery = "select count(s.id) from SnmpCollectionSource s " + whereClause;
+                resultCount = super.queryInt(countQuery, queryParams.toArray());
+            }
+
+            // DATA QUERY: fetch paginated results
+            if (resultCount > 0) {
+
+                String orderBy = "";
+                String sortField = sortBy;
+
+                String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description");
+
+                if (!allowedSortFields.contains(sortBy)) {
+                    sortField = "name";
+                }
+
+                orderBy = " order by " + sortField + " " + sortOrder;
+
+                String dataQuery = "from SnmpCollectionSource s " + whereClause + orderBy;
+                dataCollectionSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            }
+
+        } catch (Exception e ) {
+            LOG.debug("Error filterDataCollectionSource method while fetching the records {} ", e);
+        }
+
+        // Return map with results
+        return Map.of("totalRecords", resultCount, "dataCollectionSourceList", dataCollectionSourceList);
+    }
+
+    /**
+     * Escapes special characters (%, _, \, /, [, ]) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace(".", "\\.");
     }
 }

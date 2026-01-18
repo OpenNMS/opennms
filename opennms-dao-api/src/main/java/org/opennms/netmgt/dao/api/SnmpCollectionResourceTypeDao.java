@@ -25,6 +25,7 @@ import org.opennms.netmgt.model.SnmpCollectionResourceType;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionResourceType, Integer> {
     SnmpCollectionResourceType get(Integer id);
@@ -42,5 +43,14 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
     void delete(SnmpCollectionResourceType resourceType);
 
     void deleteAll(final Collection<SnmpCollectionResourceType> list);
+
+    void saveAll(Collection<SnmpCollectionResourceType> list);
+
+    void deleteBySourceId(Integer sourceId);
+
+    List<SnmpCollectionResourceType> filterEventConf(String name,String label, String vendor, String collectionSourceName, int offset, int limit);
+
+    Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+
 
 }
