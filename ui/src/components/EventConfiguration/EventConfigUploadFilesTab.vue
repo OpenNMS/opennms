@@ -411,6 +411,7 @@ watch(
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
+@import "@featherds/styles/themes/variables";
 
 .upload-files-tab {
   background: var(variables.$surface);
@@ -485,7 +486,7 @@ watch(
           }
 
           .invalid-text {
-            color: var(variables.$error);
+            color: var($error);
           }
         }
 
