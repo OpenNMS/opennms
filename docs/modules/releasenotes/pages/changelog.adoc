@@ -24,10 +24,6 @@
 
 * Investigate and implement use of a more modern Javascript package manager (Issue https://issues.opennms.org/browse/NMS-19190[NMS-19190])
 
-=== New Feature
-
-* Implement JSON-Based Marshalling and Unmarshalling Support for Event Configuration Handling (Issue https://issues.opennms.org/browse/NMS-19092[NMS-19092])
-
 === Task
 
 * Add support to sort by Severity and Status for eventconf events (Issue https://issues.opennms.org/browse/NMS-19099[NMS-19099])
