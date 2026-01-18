@@ -123,13 +123,19 @@
         </FeatherButton>
       </div>
     </div>
+    <DataCollectionFilesUploadReportDialog
+      :report="uploadFilesReport"
+      :dialogVisible="uploadedDataCollectionFilesReportDialogState"
+      @close="closeUploadReportDialog"
+      @view="gotoViewTab"
+    />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
-import { UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
+import { SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
@@ -142,14 +148,18 @@ import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
 import Draggable from 'vuedraggable'
 import TableCard from '../Common/TableCard.vue'
-import { isDuplicateFile, MAX_FILES_UPLOAD, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
+import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
+import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
+import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
 
 const sourceFolderInput = ref<HTMLInputElement | null>(null)
 const sourceFileInput = ref<HTMLInputElement | null>(null)
-// const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as SnmpDataCollectionSourceUploadResponse)
+const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as SnmpDataCollectionSourceUploadResponse)
 const sourceFiles = ref<UploadSnmpDataCollectionFileType[]>([])
 const isLoading = ref(false)
 const snackbar = useSnackbar()
+const router = useRouter()
+const uploadedDataCollectionFilesReportDialogState = ref(false)
 const shouldUploadDisabled = computed(() => {
   return (
     sourceFiles.value.length === 0 ||
@@ -181,25 +191,17 @@ const handleSourceFileUpload = async (event: Event) => {
           continue
         }
         const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
-        if (sourceFiles.value.length >= MAX_FILES_UPLOAD) {
+        sourceFiles.value.push({
+          file,
+          isValid: isValid,
+          errors: errors,
+          isDuplicate: isDuplicateFile(file.name, sourceFiles.value)
+        })
+        if (!isValid) {
           snackbar.showSnackBar({
-            msg: `You can upload a maximum of ${MAX_FILES_UPLOAD} files at a time.`,
+            msg: `Error processing file ${file.name}.`,
             error: true
           })
-          break
-        } else {
-          sourceFiles.value.push({
-            file,
-            isValid: isValid,
-            errors: errors,
-            isDuplicate: isDuplicateFile(file.name, sourceFiles.value)
-          })
-          if (!isValid) {
-            snackbar.showSnackBar({
-              msg: `Error processing file ${file.name}.`,
-              error: true
-            })
-          }
         }
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
@@ -209,43 +211,91 @@ const handleSourceFileUpload = async (event: Event) => {
         })
       }
     }
+    // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
+    input.files = null
+  } else {
+    console.warn('No files selected')
   }
 }
 
-const handleSourceFolderUpload = (event: Event) => {
+const handleSourceFolderUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files)
     for (const file of files) {
-      console.log('Folder file:', file.name)
+      try {
+        if (isDuplicateFile(file.name, sourceFiles.value)) {
+          continue
+        }
+        const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
+        sourceFiles.value.push({
+          file,
+          isValid: isValid,
+          errors: errors,
+          isDuplicate: isDuplicateFile(file.name, sourceFiles.value)
+        })
+        if (!isValid) {
+          snackbar.showSnackBar({
+            msg: `Error processing file ${file.name}.`,
+            error: true
+          })
+        }
+      } catch (error) {
+        console.error(`Error processing file ${file.name}:`, error)
+        snackbar.showSnackBar({
+          msg: `Error processing file ${file.name}.`,
+          error: true
+        })
+      }
     }
 
+    // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
+    input.files = null
   }
 }
 
 const uploadFiles = async () => {
+  if (sourceFiles.value.length === 0) {
+    console.warn('No files to upload')
+    return
+  }
+  if (!sourceFiles.value.every(f => f.file.name.endsWith('.xml'))) {
+    snackbar.showSnackBar({
+      msg: 'All files must be XML files with .xml extension',
+      error: true
+    })
+    return
+  }
   isLoading.value = true
   try {
-    // Simulate file upload process
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    // Here you would typically send the files to the server
-    // uploadFilesReport.value = {
-    //   successCount: sourceFiles.value.length,
-    //   failureCount: 0,
-    //   details: sourceFiles.value.map(f => ({
-    //     fileName: f.file.name,
-    //     status: 'success',
-    //     message: 'File uploaded successfully'
-    //   }))
-    // }
-    sourceFiles.value = []
-  } catch (error) {
-    console.error('Error uploading files:', error)
-  } finally {
+    const response = await uploadDataCollectionFiles(sourceFiles.value.filter(f => f.isValid).map(f => f.file))
+    uploadFilesReport.value = {
+      errors: [...response.errors],
+      success: [...response.success]
+    }
     isLoading.value = false
+    sourceFiles.value = []
+    sourceFileInput.value!.value = ''
+    uploadedDataCollectionFilesReportDialogState.value = true
+  } catch (err) {
+    console.error(err)
+    isLoading.value = false
+    snackbar.showSnackBar({
+      msg: 'Error uploading files',
+      error: true
+    })
   }
+}
+
+const closeUploadReportDialog = () => {
+  uploadedDataCollectionFilesReportDialogState.value = false
+}
+
+const gotoViewTab = () => {
+  uploadedDataCollectionFilesReportDialogState.value = false
+  router.push({ name: 'SNMP Data Collection' })
 }
 </script>
 
