@@ -17,3 +17,24 @@ export type SnmpCollectionSource = {
   uploadedBy: string
 }
 
+export type SnmpDataCollectionSourceUploadResponse = {
+  errors: [
+    {
+      file: string
+      error: string
+    }
+  ]
+  success: [
+    {
+      file: string
+    }
+  ]
+}
+
+export type UploadSnmpDataCollectionFileType = {
+  file: File
+  isValid: boolean
+  errors: string[]
+  isDuplicate: boolean
+}
+
