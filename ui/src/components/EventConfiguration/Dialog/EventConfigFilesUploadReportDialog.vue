@@ -76,12 +76,14 @@ const gotoViewTab = async () => {
 </script>
 
 <style scoped lang="scss">
-@use "@featherds/styles/themes/variables";
+@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/typography';
+@import "@featherds/styles/themes/variables";
+@import "@featherds/styles/mixins/typography";
 
 .text-danger {
-  color: var(variables.$error);
+  color: var($error);
 }
-
 .upload-report-scroll {
   max-height: 50vh;
   overflow-y: auto;
@@ -97,11 +99,11 @@ const gotoViewTab = async () => {
 }
 
 .text-danger {
-  color: var(variables.$error);
+  color: var($error);
 }
 
 .text-success {
-  color: var(variables.$success);
+  color: var($success);
 }
 </style>
 
