@@ -81,6 +81,7 @@ const gotoViewTab = async () => {
 .text-danger {
   color: var(variables.$error);
 }
+
 .upload-report-scroll {
   max-height: 50vh;
   overflow-y: auto;
