@@ -123,6 +123,38 @@
         </FeatherButton>
       </div>
     </div>
+    <div class="info-section">
+      <h3>Instructions:</h3>
+      <ul>
+        <li>Event configuration files must be in XML format with a .xml extension.</li>
+        <li>When uploading using "Choose files to upload", you can select multiple files at once.</li> 
+        <li>When uploading using "Choose folder to upload", all files in the folder will be uploaded.</li>
+        <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
+        <li>
+          Files that are valid and ready for upload will be flagged with icon
+          <FeatherIcon
+            :icon="CheckCircle"
+            class="success-icon-text"
+          />.
+        </li>
+        <li>
+          Files with duplicate names (excluding the .xml extension) will be flagged with icon
+          <FeatherIcon
+            :icon="Warning"
+            class="warning-icon-text"
+          />
+          indicating renaming or overwriting is required. It can be done by clicking on the icon.
+        </li>
+        <li>
+          Invalid files will be flagged with icon
+          <FeatherIcon
+            :icon="Error"
+            class="error-icon-text"
+          />
+          and error messages indicating the issues found during validation of the file contents and schema compliance.
+        </li>
+      </ul>
+    </div>
     <DataCollectionFilesUploadReportDialog
       :report="uploadFilesReport"
       :dialogVisible="uploadedDataCollectionFilesReportDialogState"
@@ -401,6 +433,29 @@ const gotoViewTab = () => {
           width: 1.5rem !important;
         }
       }
+    }
+  }
+
+  .info-section {
+    .success-icon-text {
+      color: var(variables.$success);
+      vertical-align: middle;
+      height: 2em;
+      width: 2em;
+    }
+
+    .error-icon-text {
+      color: var(variables.$error);
+      vertical-align: middle;
+      height: 2em;
+      width: 2em;
+    }
+
+    .warning-icon-text {
+      color: var(variables.$major);
+      vertical-align: middle;
+      height: 2em;
+      width: 2em;
     }
   }
 }
