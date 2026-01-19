@@ -86,6 +86,14 @@
         <include>THIRD-PARTY.txt</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <filtered>false</filtered>
+      <outputDirectory>etc</outputDirectory>
+      <includes>
+        <include>COPYING</include>
+      </includes>
+    </fileSet>
     <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->
     <fileSet>
       <directory>${project.build.directory}/dependency/org.opennms.container.karaf-${project.version}/lib/boot</directory>
