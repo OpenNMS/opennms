@@ -38,3 +38,7 @@ export type UploadSnmpDataCollectionFileType = {
   isDuplicate: boolean
 }
 
+export type SnmpCollectionDetailState = {
+  selectedCollectionSource: SnmpCollectionSource | null
+}
+

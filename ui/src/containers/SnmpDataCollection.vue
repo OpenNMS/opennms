@@ -15,14 +15,14 @@
       </div>
     </div>
     <div class="container">
-        <SourcesTable />         
+        <SnmpDataCollectionSourcesTable />         
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import SourcesTable from '@/components/SnmpDataCollection/SourcesTable.vue'
+import SnmpDataCollectionSourcesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourcesTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 import { FeatherButton } from '@featherds/button'
