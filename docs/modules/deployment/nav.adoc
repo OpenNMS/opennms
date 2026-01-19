@@ -2,7 +2,7 @@
 .Deployment
 * xref:core/introduction.adoc[]
 ** xref:core/system-requirements.adoc[]
-** xref:core/getting-started.adoc[]
+** xref:core/install.adoc[]
 ** xref:core/containers.adoc[]
 ** xref:core/setup-message-broker.adoc[]
 ** xref:core/admin-password-reset.adoc[]
