@@ -87,7 +87,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${session.executionRootDirectory}</directory>
+      <directory>${project.basedir}/..</directory>
       <filtered>false</filtered>
       <outputDirectory>etc</outputDirectory>
       <includes>
