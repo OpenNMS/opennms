@@ -16,7 +16,21 @@ commands:
       - run:
           name: Combine Trivy Reports
           command: |
-            python3 ~/project/project/.circleci/pyscripts/combine_trivy_reports.py
+            # Locate the combine_trivy_reports.py script
+            PY_SCRIPT_PATH=~/project/.circleci/pyscripts/combine_trivy_reports.py
+            if [[ ! -f "$PY_SCRIPT_PATH" ]]; then
+              echo "Error: combine_trivy_reports.py not found at $PY_SCRIPT_PATH"
+              echo "Trying to locate script..."
+              PY_SCRIPT_PATH=$(find ~/project -name combine_trivy_reports.py | head -1)
+              if [[ -n "$PY_SCRIPT_PATH" ]]; then
+                echo "Found script at: $PY_SCRIPT_PATH"
+              else
+                echo "Error: Could not find combine_trivy_reports.py anywhere in workspace!"
+                exit 1
+              fi
+            fi
+            echo "Executing combine_trivy_reports.py script..."
+            python3 "$PY_SCRIPT_PATH"
       
       - store_artifacts:
           path: ~/project/artifacts/filtered_vulnerabilities.txt
