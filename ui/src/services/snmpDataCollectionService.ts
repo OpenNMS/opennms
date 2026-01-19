@@ -1,5 +1,15 @@
-import { mapUploadedDataCollectionFilesResponseFromServer } from '@/mappers/snmpDataCollection.mapper'
-import { SnmpDataCollectionSourceUploadResponse } from '@/types/snmpDataCollection'
+import {
+  mapDataCollectionSourceFromServer,
+  mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
+  mapSnmpDataCollectionSourceResponseFromServer,
+  mapUploadedDataCollectionFilesResponseFromServer
+} from '@/mappers/snmpDataCollection.mapper'
+import {
+  SnmpCollectionSource,
+  SnmpDataCollectionSourceNamesAndIds,
+  SnmpDataCollectionSourceResponse,
+  SnmpDataCollectionSourceUploadResponse
+} from '@/types/snmpDataCollection'
 import { v2 } from './axiosInstances'
 
 export const uploadDataCollectionFiles = async (files: File[]): Promise<SnmpDataCollectionSourceUploadResponse> => {
@@ -21,3 +31,66 @@ export const uploadDataCollectionFiles = async (files: File[]): Promise<SnmpData
   }
 }
 
+export const filterSnmpCollectionSources = async (
+  offset: number,
+  limit: number,
+  filter: string,
+  sortBy: string,
+  order: string
+): Promise<SnmpDataCollectionSourceResponse> => {
+  const endpoint = '/datacollectionconf/filter/collectsources'
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        filter,
+        sortBy,
+        order
+      }
+    })
+
+    if (response.status === 200) {
+      return mapSnmpDataCollectionSourceResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection sources:', error)
+    throw error
+  }
+}
+
+export const getAllSnmpCollectionSourcesNamesAndIds = async (): Promise<SnmpDataCollectionSourceNamesAndIds> => {
+  const endpoint = '/datacollectionconf/collectsources/names-and-ids'
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection source names and IDs:', error)
+    throw error
+  }
+}
+
+export const getSnmpDataCollectionSourceById = async (id: number): Promise<SnmpCollectionSource> => {
+  const endpoint = `/datacollectionconf/collectsources/${id}`
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return mapDataCollectionSourceFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error(`Error fetching SNMP data collection source with ID ${id}:`, error)
+    throw error
+  }
+}

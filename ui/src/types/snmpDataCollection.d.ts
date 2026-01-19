@@ -1,12 +1,14 @@
-export type SnmpDataCollectionStoreState = {
+export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
   selectedSource: SnmpCollectionSource | null
   sourcesPagination: Pagination
   sourcesSearchTerm: string
   sourcesSorting: Sorting
+  isLoading: boolean
+  uploadedSourceNames: SnmpDataCollectionSourceNamesAndIdsResponse
 }
 
-export type SnmpCollectionSource = {
+export interface SnmpCollectionSource {
   id: number
   name: string
   vendor: string
@@ -17,7 +19,7 @@ export type SnmpCollectionSource = {
   uploadedBy: string
 }
 
-export type SnmpDataCollectionSourceUploadResponse = {
+export interface SnmpDataCollectionSourceUploadResponse {
   errors: [
     {
       file: string
@@ -31,14 +33,24 @@ export type SnmpDataCollectionSourceUploadResponse = {
   ]
 }
 
-export type UploadSnmpDataCollectionFileType = {
+export interface UploadSnmpDataCollectionFileType {
   file: File
   isValid: boolean
   errors: string[]
   isDuplicate: boolean
 }
 
-export type SnmpCollectionDetailState = {
+export interface SnmpCollectionDetailState {
   selectedCollectionSource: SnmpCollectionSource | null
+}
+
+export interface SnmpDataCollectionSourceResponse {
+  sources: SnmpCollectionSource[]
+  totalRecords: number
+}
+
+export interface SnmpDataCollectionSourceNamesAndIds {
+  id: number
+  name: string
 }
 
