@@ -65,34 +65,36 @@
             <td>{{ source.uploadedBy }}</td>
             <td>{{ source.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
-              <FeatherButton
-                icon="View Details"
-                data-test="view-button"
-                @click="onSourceClick(source)"
-              >
-                <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-              </FeatherButton>
-              <FeatherButton
-                icon="Download XML"
-                data-test="download-button"
-              >
-                <FeatherIcon :icon="Download"> </FeatherIcon>
-              </FeatherButton>
-              <FeatherDropdown>
-                <template v-slot:trigger="{ attrs, on }">
-                  <FeatherButton
-                    link
-                    href="#"
-                    v-bind="attrs"
-                    v-on="on"
-                    :icon="`More actions for ${source.name}`"
-                  >
-                    <FeatherIcon :icon="MenuIcon" />
-                  </FeatherButton>
-                </template>
-                <FeatherDropdownItem data-test="edit-source-button"> Edit Source </FeatherDropdownItem>
-                <FeatherDropdownItem data-test="delete-source-button"> Delete Source </FeatherDropdownItem>
-              </FeatherDropdown>
+              <div class="action-container">
+                <FeatherButton
+                  icon="View Details"
+                  data-test="view-button"
+                  @click="onSourceClick(source)"
+                >
+                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherButton
+                  icon="Download XML"
+                  data-test="download-button"
+                >
+                  <FeatherIcon :icon="Download"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherDropdown>
+                  <template v-slot:trigger="{ attrs, on }">
+                    <FeatherButton
+                      link
+                      href="#"
+                      v-bind="attrs"
+                      v-on="on"
+                      :icon="`More actions for ${source.name}`"
+                    >
+                      <FeatherIcon :icon="MenuIcon" />
+                    </FeatherButton>
+                  </template>
+                  <FeatherDropdownItem data-test="edit-source-button"> Edit Source </FeatherDropdownItem>
+                  <FeatherDropdownItem data-test="delete-source-button"> Delete Source </FeatherDropdownItem>
+                </FeatherDropdown>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
@@ -123,6 +125,7 @@ import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
+const router = useRouter()
 const store = useSnmpDataCollectionStore()
 const emptyListContent = {
   msg: 'No results found.'
@@ -143,8 +146,10 @@ const sort = reactive({
 }) as any
 
 const onSourceClick = (source: any) => {
-  // Navigate to source detail page
-  console.log('Source clicked:', source)
+  router.push({
+    name: 'SNMP Data Collection Detail',
+    params: { id: source.id }
+  })
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
@@ -176,78 +181,78 @@ onMounted(async () => {
 @use '@/styles/_transitionDataTable';
 
 .snmp-data-collection-source-table {
-    margin-top: 10px;
-    padding: 25px;
+  margin-top: 10px;
+  padding: 25px;
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 
-        .title-container {
-            display: flex;
-            align-items: center;
+    .title-container {
+      display: flex;
+      align-items: center;
 
-            .title {
-                @include typography.headline3;
-            }
+      .title {
+        @include typography.headline3;
+      }
+    }
+
+    .action-container {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 5px;
+      width: 30%;
+
+      .search-container {
+        width: 80%;
+      }
+    }
+  }
+
+  .container {
+    table {
+      width: 100%;
+      @include table.table;
+
+      thead {
+        background: var(variables.$background);
+        text-transform: uppercase;
+      }
+
+      td {
+        white-space: nowrap;
+        box-shadow: none;
+        border-bottom: 1px solid var(variables.$border-on-surface);
+
+        div {
+          border-radius: 5px;
+          padding: 0px 5px 0px 5px;
         }
 
         .action-container {
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            gap: 5px;
-            width: 30%;
+          display: flex;
+          align-items: center;
+          gap: 5px;
 
-            .search-container {
-                width: 80%;
-            }
-        }
-    }
+          button {
+            margin: 0px;
+          }
 
-    .container {
-        table {
-            width: 100%;
-            @include table.table;
-
-            thead {
-                background: var(variables.$background);
-                text-transform: uppercase;
-            }
-
-            td {
-                white-space: nowrap;
-                box-shadow: none;
-                border-bottom: 1px solid var(variables.$border-on-surface);
-
-                div {
-                    border-radius: 5px;
-                    padding: 0px 5px 0px 5px;
+          :deep(.feather-menu-dropdown) {
+            .feather-dropdown {
+              li {
+                a {
+                  padding: 8px 16px !important;
                 }
-
-                .action-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-
-                    button {
-                        margin: 0px;
-                    }
-
-                    :deep(.feather-menu-dropdown) {
-                        .feather-dropdown {
-                            li {
-                                a {
-                                    padding: 8px 16px !important;
-                                }
-                            }
-                        }
-                    }
-                }
+              }
             }
+          }
         }
+      }
     }
+  }
 }
 </style>
 

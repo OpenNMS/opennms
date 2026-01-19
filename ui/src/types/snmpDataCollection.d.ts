@@ -17,3 +17,7 @@ export type SnmpCollectionSource = {
   uploadedBy: string
 }
 
+export type SnmpCollectionDetailState = {
+  selectedCollectionSource: SnmpCollectionSource | null
+}
+
