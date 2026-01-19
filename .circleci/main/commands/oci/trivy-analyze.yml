@@ -1,17 +1,15 @@
 commands:
   trivy-analyze:
     steps:
+      - download-download-artifacts
+      - cached-checkout
       - attach_workspace:
           at: ~/project
       - run:
-          name: what is in workspace
+          name: Verify workspace and artifacts
           command: |
-            echo "Workspace contents:"
+            echo "Verifying workspace and artifacts..."
             ls -la ~/project/
-      - run:
-          name: What is under artifacts
-          command: |
-            echo "Artifacts contents:"
             ls -la ~/project/artifacts/
       - run:
           name: Combine Trivy Reports
