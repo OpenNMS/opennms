@@ -65,14 +65,14 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 if __name__ == "__main__":
-    for json_file in glob.glob('~~/project/artifacts/*-_filtered_vulnerabilities.json'):
+    for json_file in glob.glob('~/project/artifacts/*-_filtered_vulnerabilities.json'):
         
         print(f"Processing JSON file: {json_file}")
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
         # For this example, we assume that the filtered files are already generated
         import subprocess
         subprocess.run([
-            "python3", ".circleci/pyscripts/analyze_trivy_report.py", json_file
+            "python3", "~/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
         ])
         print(f"Completed analysis for {json_file}")
 
