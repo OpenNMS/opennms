@@ -16,7 +16,7 @@ commands:
       - run:
           name: Combine Trivy Reports
           command: |
-            python3 ~/project/.circleci/pyscripts/combine_trivy_reports.py
+            python3 ~/project/project/.circleci/pyscripts/combine_trivy_reports.py
       
       - store_artifacts:
           path: ~/project/artifacts/filtered_vulnerabilities.txt
