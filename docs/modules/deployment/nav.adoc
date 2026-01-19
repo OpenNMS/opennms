@@ -6,12 +6,15 @@
 ** xref:core/containers.adoc[]
 ** xref:core/setup-message-broker.adoc[]
 ** xref:core/admin-password-reset.adoc[]
+** xref:core/installing-jdbc-driver.adoc[]
+
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
 ** xref:minion/tuning.adoc[]
 ** xref:minion/installing-jdbc-driver.adoc[]
 ** xref:minion/off-heap-storage.adoc[]
+
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 

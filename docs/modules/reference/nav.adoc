@@ -18,9 +18,6 @@
 ** xref:configuration/ttl-rpc.adoc[]
 ** xref:configuration/selinux.adoc[]
 ** xref:configuration/receive-snmp-traps.adoc[]
-** xref:configuration/install-jdbc-driver.adoc[]
-
-
 
 * xref:performance-data-collection/introduction.adoc[]
 ** xref:performance-data-collection/collectors/http.adoc[]
