@@ -25,10 +25,12 @@ import { v2 } from './axiosInstances'
 import {
   SnmpAgentConfig,
   SnmpConfig,
+  SnmpConfigInfoDto,
   SnmpDefinition,
   SnmpProfile
 } from '@/types/snmpConfig'
 import { isNumber, isString } from '@/lib/utils'
+import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
 
 const endpoint = '/snmp-config'
 
@@ -93,14 +95,13 @@ const getSnmpConfig = async (): Promise<SnmpConfig | false> => {
 }
 
 const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<SnmpAgentConfig | false> => {
-  const fullEndpoint = `${endpoint}/lookup?ipAddress=${ipAddress}&location=${location ?? 'Default'}`
+  const fullEndpoint = `${endpoint}/lookup?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location ?? 'Default')}`
 
   try {
     const resp = await v2.get(fullEndpoint)
 
-    // no content from server
-    if (resp.status === 204) {
-      return { }
+    if (resp.status !== 200) {
+      return false
     }
 
     // The Lookup API returns the SNMP version as a number, but the UI expects a string, so we need to convert it here.
@@ -116,9 +117,49 @@ const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<Sn
   }
 }
 
+const saveSnmpDefinition = async (config: SnmpConfigInfoDto): Promise<ValidationResult> => {
+  const fullEndpoint = `${endpoint}/definition`
+
+  try {
+    const resp = await v2.put(fullEndpoint, config)
+
+    if (resp.status === 201) {
+      return createSuccessResponse()
+    } else if (resp.status === 400) {
+      return createFailureResult('Invalid SNMP configuration data')
+    } else {
+      return createFailureResult('Failed to save SNMP configuration')
+    }
+  } catch (err) {
+    console.error('Error saving SNMP definition:', err)
+    return createFailureResult('Failed to save SNMP configuration')
+  }
+}
+
+const deleteSnmpDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
+  const fullEndpoint = `${endpoint}/definition?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location || 'Default')}`
+
+  try {
+    const resp = await v2.delete(fullEndpoint)
+
+    if (resp.status === 204) {
+      return createSuccessResponse()
+    } else if (resp.status === 404) {
+      return createFailureResult('SNMP definition not found')
+    } else {
+      return createFailureResult('Failed to delete SNMP definition')
+    }
+  } catch (err) {
+    console.error('Error deleting SNMP definition:', err)
+    return createFailureResult('Failed to delete SNMP definition')
+  }
+}
+
 export {
   convertSnmpVersionToNumber,
   convertSnmpVersionToString,
+  deleteSnmpDefinition,
   getSnmpConfig,
-  lookupSnmpConfig
+  lookupSnmpConfig,
+  saveSnmpDefinition
 }

@@ -20,12 +20,36 @@
 /// License.
 ///
 
-import { SnmpDefinitionFormErrors, SnmpProfileFormErrors } from '@/types/snmpConfig'
+import { isIP } from 'is-ip'
+import { SnmpBaseConfiguration, SnmpDefinitionFormErrors, SnmpProfileFormErrors } from '@/types/snmpConfig'
 
+const SNMP_VERSIONS = ['v1', 'v2c', 'v3']
+const VALID_SECURITY_LEVELS = [0, 1, 2]
+const MIN_PORT = 1
+const MAX_PORT = 65535
+const MAX_REQUEST_SIZE_MINIMUM = 484
+
+const SnmpAuthProtocols = [
+  'MD5',
+  'SHA',
+  'SHA-224',
+  'SHA-256',
+  'SHA-512'
+]
+
+const SnmpPrivacyProtocols = [
+  'DES',
+  'AES',
+  'AES192',
+  'AES256'
+]
+
+// See opennms-config-jaxb/src/main/resources/xsds/snmp-config.xsd for field definitions
 export const validateDefinition = (
+  config: SnmpBaseConfiguration,
   snmpVersion: string,
   firstIpAddress: string,
-  secondIpAddress: string
+  lastIpAddress: string
 ): SnmpDefinitionFormErrors => {
   const errors: SnmpDefinitionFormErrors = {}
 
@@ -33,13 +57,65 @@ export const validateDefinition = (
     errors.snmpVersion = 'SNMP Version is required'
   }
 
-  if (!firstIpAddress) {
-    errors.firstIpAddress = 'First IP Address is required'
+  if (snmpVersion && !SNMP_VERSIONS.includes(snmpVersion)) {
+    errors.snmpVersion = 'SNMP Version must be one of: ' + SNMP_VERSIONS.join(', ')
   }
 
-  // if (!secondIpAddress) {
-  //   errors.secondIpAddress = 'Second IP Address is required'
-  // }
+  if (firstIpAddress.length === 0) {
+    errors.firstIpAddress = 'First IP Address is required'
+  } else if (!isIP(firstIpAddress)) {
+    errors.firstIpAddress = 'First IP Address must be a valid IP address'
+  }
+
+  if (lastIpAddress?.length > 0 && !isIP(lastIpAddress)) {
+    errors.lastIpAddress = 'If provided, last IP Address must be a valid IP address'
+  }
+
+  // TODO: Add validation for IP range (first <= last)
+
+  if (config.port !== undefined) {
+    if (isNaN(config.port) || config.port < MIN_PORT || config.port > MAX_PORT) {
+      errors.port = `Port must be a number between ${MIN_PORT} and ${MAX_PORT}`
+    }
+  }
+
+  if (config.maxRequestSize !== undefined) {
+    if (isNaN(config.maxRequestSize) || config.maxRequestSize < MAX_REQUEST_SIZE_MINIMUM) {
+      errors.maxRequestSize = `If provided, Max Request Size must be a number greater than or equal to ${MAX_REQUEST_SIZE_MINIMUM}`
+    }
+  }
+
+  if (config.securityLevel !== undefined) {
+    if (isNaN(config.securityLevel) || !VALID_SECURITY_LEVELS.includes(config.securityLevel)) {
+      errors.securityLevel = 'Security Level must be one of: 0 (noAuthNoPriv), 1 (authNoPriv), 2 (authPriv)'
+    }
+  }
+
+  if (config.authProtocol !== undefined && config.authProtocol !== '' && !SnmpAuthProtocols.includes(config.authProtocol)) {
+    errors.authProtocol = 'Auth Protocol must be one of: ' + SnmpAuthProtocols.join(', ')
+  }
+
+  if (config.privacyProtocol !== undefined && config.privacyProtocol !== '' && !SnmpPrivacyProtocols.includes(config.privacyProtocol)) {
+    errors.privacyProtocol = 'Privacy Protocol must be one of: ' + SnmpPrivacyProtocols.join(', ')
+  }
+
+  // Validate that remaining numeric fields are integers
+  const numericFields: string[] = ['timeout', 'retry', 'maxVarsPerPdu', 'maxRepetitions']
+
+  const fieldDisplayNames: Record<string, string> = {
+    timeout: 'Timeout',
+    retry: 'Retries',
+    maxVarsPerPdu: 'Max Vars Per PDU',
+    maxRepetitions: 'Max Repetitions'
+  }
+
+  numericFields.forEach(field => {
+    const value = (config as any)[field]
+
+    if (value !== undefined && (isNaN(value as number) || !Number.isInteger(value as number) || (value as number) < 0)) {
+      (errors as any)[field] = `${fieldDisplayNames[field]} must be an integer greater than or equal to 0`
+    }
+  })
 
   return errors
 }

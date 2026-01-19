@@ -5,12 +5,12 @@
       v-model="store.activeTab"
     >
       <template v-slot:tabs>
-        <FeatherTab>Lookup</FeatherTab>
+        <FeatherTab>Lookup by IP</FeatherTab>
         <FeatherTab>Definitions</FeatherTab>
         <FeatherTab>Profiles</FeatherTab>
       </template>
       <FeatherTabPanel>
-        <SnmpConfigLookup />
+        <SnmpConfigLookupTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
         <SnmpConfigDefinitionsTable />
@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
-import SnmpConfigLookup from './SnmpConfigLookup.vue'
+import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
 import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
 import SnmpConfigProfilesTable from './SnmpConfigProfilesTable.vue'
 
@@ -33,4 +33,5 @@ const store = useSnmpConfigStore()
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

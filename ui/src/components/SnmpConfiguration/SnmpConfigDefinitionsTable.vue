@@ -60,8 +60,7 @@
             v-for="(definition, index) of definitions"
             :key="`${definition.label ?? ''}-${definition.id}`"
           >
-            <td>{{ definition.id }}</td>
-            <td>{{ definition.label }}</td>
+            <td>{{ definition.location ?? 'Default' }}</td>
             <td>{{ definition.rangeType }}</td>
             <td v-if="definition.ipAddresses.length > 1">
               <div v-for="ipAddr of definition.ipAddresses" :key="ipAddr">
@@ -69,7 +68,6 @@
               </div>
             </td>
             <td v-else>{{ definition.ipAddresses?.[0] ?? '--' }}</td>
-            <td>{{ definition.location ?? 'Default' }}</td>
             <td>{{ definition.profileLabel }}</td>
             <td>
               <div class="action-container">
@@ -140,11 +138,9 @@ const emptyListContent = {
 }
 
 const columns = computed(() => [
-  { id: 'id', label: 'ID' },
-  { id: 'label', label: 'Label' },
+  { id: 'location', label: 'Location' },
   { id: 'rangeType', label: 'Range Type' },
   { id: 'ipAddresses', label: 'IP Addresses' },
-  { id: 'location', label: 'Location' },
   { id: 'profileLabel', label: 'Profile Label' }
 ])
 

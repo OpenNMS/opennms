@@ -1,34 +1,15 @@
 <template>
   <div class="snmp-config-definition-details">
     <div class="feather-row">
-      <div class="feather-col-12">
-        <h4>General Parameters</h4>
-      </div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-4">
-        <label class="label">Version:</label>
-      </div>
-      <div class="feather-col-8">
-        <div class="dropdown">
-          <FeatherSelect
-            label="Version"
-            data-test="snmp-definition-version"
-            hint="Select the SNMP version."
-            :options="SnmpVersions"
-            :modelValue="snmpVersion"
-            @update:modelValue="(val: ISelectItemType | undefined) => snmpVersion = val"
-          >
-            <FeatherIcon :icon="MoreVert" />
-          </FeatherSelect>
-        </div>
-      </div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-4">
+      <div class="feather-col-6">
         <label class="label">First IP Address:</label>
       </div>
-      <div class="feather-col-8">
+      <div class="feather-col-6">
+        <label class="label">Last IP Address (for IP Range):</label>
+      </div>
+    </div>
+    <div class="feather-row">
+      <div class="feather-col-6">
         <FeatherInput
           label=""
           data-test="snmp-definition-first-ip-address"
@@ -38,103 +19,130 @@
         >
         </FeatherInput>
       </div>
-    </div>
-    <div class="feather-row">
-      <div class="feather-col-4">
-        <label class="label">Second IP Address:</label>
-      </div>
-      <div class="feather-col-8">
+      <div class="feather-col-6">
         <FeatherInput
           label=""
-          data-test="snmp-definition-second-ip-address"
-          :error="errors.secondIpAddress"
-          v-model.trim="secondIpAddress"
-          hint="Second IP Address in range"
+          data-test="snmp-definition-last-ip-address"
+          :error="errors.lastIpAddress"
+          v-model.trim="lastIpAddress"
+          hint="Last IP Address in range"
         >
         </FeatherInput>
       </div>
     </div>
 
     <div class="feather-row">
-      <div class="feather-col-4">
-        <label class="label">Location:</label>
-      </div>
-      <div class="feather-col-8">
+      <div class="feather-col-6">
         <SnmpConfigMonitoringLocationsDropdown
           :monitoringLocation="selectedMonitoringLocationValue"
           @update:modelValue="selectedMonitoringLocation = $event"
         />
       </div>
-    </div>
-
-    <div class="feather-row" v-for="field in generalParamFields" :key="field.key">
-      <div class="feather-col-4">
-        <label class="label">{{ field.label }}:</label>
+      <div class="feather-col-6">
+        <div class="dropdown">
+          <FeatherSelect
+            label="Version"
+            data-test="snmp-definition-version"
+            hint="Select the SNMP version."
+            :options="SnmpVersions"
+            :modelValue="snmpVersion"
+            @update:modelValue="onSnmpVersionUpdated"
+          >
+            <FeatherIcon :icon="MoreVert" />
+          </FeatherSelect>
+        </div>
       </div>
-      <div class="feather-col-8">
-        <FeatherInput
-          label=""
-          :data-test="field.dataTest"
-          v-model.trim="(formConfig as any)[field.key]"
-          :hint="field.hint"
-        >
-        </FeatherInput>
-      </div>
     </div>
-
-    <div class="spacer"></div>
 
     <FeatherExpansionPanel
+      v-if="displaySnmp2Params"
       class="snmp-config-expansion-panel"
-      :modelValue="displaySnmp2Params"
-      @update:modelValue="v => displaySnmp2Params = v"
+      :modelValue="snmpV2Expanded"
+      @update:modelValue="v => snmpV2Expanded = v"
     >
       <template #title>
         <h4>SNMP v1/v2c Parameters</h4>
       </template>
       <template #default>
-        <div class="feather-row" v-for="field in snmpV2Fields" :key="field.key">
-          <div class="feather-col-4">
-            <label class="label">{{ field.label }}:</label>
-          </div>
-          <div class="feather-col-8">
-            <FeatherInput
-              label=""
-              :data-test="field.dataTest"
-              v-model.trim="(formConfig as any)[field.key]"
-              :hint="field.hint"
-            >
-            </FeatherInput>
-          </div>
-        </div>
+        <SnmpConfigPairedFieldInputs
+          :fieldInfo="snmpV2Fields"
+          :config="formConfig"
+          :validationErrors="errors"
+          @onUpdate="onFieldUpdate"
+        />
       </template>
     </FeatherExpansionPanel>
 
-    <div class="large-spacer"></div>
-
     <FeatherExpansionPanel
+      v-if="displaySnmp3Params"
       class="snmp-config-expansion-panel"
-      :modelValue="displaySnmp3Params"
-      @update:modelValue="v => displaySnmp3Params = v"
+      :modelValue="snmpV3Expanded"
+      @update:modelValue="v => snmpV3Expanded = v"
     >
       <template #title>
         <h4>SNMP v3 Parameters</h4>
       </template>
       <template #default>
-        <div class="feather-row" v-for="field in snmpV3Fields" :key="field.key">
-          <div class="feather-col-4">
-            <label class="label">{{ field.label }}:</label>
-          </div>
-          <div class="feather-col-8">
-            <FeatherInput
-              label=""
-              :data-test="field.dataTest"
-              v-model.trim="(formConfig as any)[field.key]"
-              :hint="field.hint"
-            >
-            </FeatherInput>
-          </div>
-        </div>
+        <SnmpConfigPairedFieldInputs
+          :fieldInfo="snmpV3Fields"
+          :config="formConfig"
+          :validationErrors="errors"
+          @onUpdate="onFieldUpdate"
+        />
+
+        <div class="large-spacer"></div>
+
+        <FeatherCheckbox
+          label="Show Context Fields"
+          data-test="snmp-definition-show-context-fields-checkbox"
+          v-model="displaySnmpV3ContextFields"
+        />
+        <span class="show-context-fields-label">Show Context Fields</span>
+
+        <div class="large-spacer"></div>
+
+        <SnmpConfigPairedFieldInputs
+          v-if="displaySnmpV3ContextFields"
+          :fieldInfo="snmpV3ContextFields"
+          :config="formConfig"
+          :validationErrors="errors"
+          @onUpdate="onFieldUpdate"
+        />
+      </template>
+    </FeatherExpansionPanel>
+
+    <div class="large-spacer"></div>
+
+    <div class="feather-row">
+      <div class="feather-col-12">
+        <h4>General Parameters</h4>
+      </div>
+    </div>
+
+    <SnmpConfigPairedFieldInputs
+      :fieldInfo="generalParamFields"
+      :config="formConfig"
+      :validationErrors="errors"
+      @onUpdate="onFieldUpdate"
+    />
+
+    <div class="large-spacer"></div>
+
+    <FeatherExpansionPanel
+      class="snmp-config-expansion-panel"
+      :modelValue="displayAdvancedConfig"
+      @update:modelValue="v => displayAdvancedConfig = v"
+    >
+      <template #title>
+        <h4>Advanced Parameters</h4>
+      </template>
+      <template #default>
+        <SnmpConfigPairedFieldInputs
+          :fieldInfo="advancedConfigOptions"
+          :config="formConfig"
+          :validationErrors="errors"
+          @onUpdate="onFieldUpdate"
+        />
       </template>
     </FeatherExpansionPanel>
 
@@ -147,7 +155,6 @@
             primary
             @click="handleSaveDefinition"
             data-test="save-definition-button"
-            :disabled="!isValid"
           >
             {{ isCreate ? 'Create Definition' : 'Save Changes' }}
           </FeatherButton>
@@ -166,20 +173,23 @@
 
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { validateDefinition } from './snmpValidator'
-import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
 import { isNonEmptyString } from '@/lib/utils'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { SnmpAgentConfig, SnmpDefinitionFormErrors } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpDefinitionFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
+import { validateDefinition } from './snmpValidator'
+import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
+import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 
 const props = defineProps<{
   isCreate: boolean,
-  ipAddress: string,
-  config: SnmpAgentConfig
+  firstIp: string,
+  lastIp?: string,
+  config?: SnmpAgentConfig
 }>()
  
 const emit = defineEmits<{
@@ -195,16 +205,20 @@ const SnmpVersions: ISelectItemType[] = [
 ]
 
 const store = useSnmpConfigStore()
-const currentConfig = ref<SnmpAgentConfig>(getDefaultSnmpBaseConfiguration())
 const snmpVersion = ref()
 const isValid = ref(false)
 const errors = ref<SnmpDefinitionFormErrors>({})
 
 // local data for form inputs
 const firstIpAddress = ref('')
-const secondIpAddress = ref('')
+const lastIpAddress = ref('')
 const selectedMonitoringLocation = ref<ISelectItemType>()
-const formConfig = reactive(getDefaultSnmpBaseConfiguration())
+const formConfig = reactive<SnmpBaseConfiguration>(getDefaultSnmpBaseConfiguration())
+
+const snmpV2Expanded = ref(false)
+const snmpV3Expanded = ref(false)
+const displayAdvancedConfig = ref(false)
+const displaySnmpV3ContextFields = ref(false)
 
 const displaySnmp2Params = computed(() => {
   const version = String(snmpVersion.value?._value || '')
@@ -217,34 +231,44 @@ const displaySnmp3Params = computed(() => {
 })
 
 // Field metadata for v-for rendering
-const generalParamFields = [
-  { key: 'timeout' as keyof any, label: 'Timeout', hint: 'Timeout in milliseconds', dataTest: 'snmp-definition-timeout' },
-  { key: 'retry' as keyof any, label: 'Retry', hint: 'Number of retries', dataTest: 'snmp-definition-retry' },
-  { key: 'port' as keyof any, label: 'Port', hint: 'SNMP port (default: 161)', dataTest: 'snmp-definition-port' },
-  { key: 'proxyHost' as keyof any, label: 'Proxy Host', hint: 'Proxy host for SNMP communication', dataTest: 'snmp-definition-proxy-host' },
-  { key: 'maxRequestSize' as keyof any, label: 'Max Request Size', hint: 'Maximum bytes per PDU request', dataTest: 'snmp-definition-max-request-size' },
-  { key: 'maxVarsPerPdu' as keyof any, label: 'Max Vars Per PDU', hint: 'Variables per SNMP request', dataTest: 'snmp-definition-max-vars-per-pdu' },
-  { key: 'maxRepetitions' as keyof any, label: 'Max Repetitions', hint: 'Repetitions per get-bulk request', dataTest: 'snmp-definition-max-repetitions' },
-  { key: 'ttl' as keyof any, label: 'TTL', hint: 'Time to live', dataTest: 'snmp-definition-ttl' }
+const generalParamFields: SnmpFieldInfo[] = [
+  { key: 'timeout', label: 'Timeout', hint: 'Timeout in milliseconds', dataTest: 'snmp-definition-timeout', isNumeric: true },
+  { key: 'retry', label: 'Retries', hint: 'Number of retries', dataTest: 'snmp-definition-retry', isNumeric: true }
 ]
 
-const snmpV2Fields = [
-  { key: 'readCommunity' as keyof any, label: 'Read Community', hint: 'Read community string', dataTest: 'snmp-lookup-read-community' },
-  { key: 'writeCommunity' as keyof any, label: 'Write Community', hint: 'Write community string', dataTest: 'snmp-lookup-write-community' }
+const advancedConfigOptions: SnmpFieldInfo[] = [
+  { key: 'port', label: 'Port', hint: 'SNMP port (default: 161)', dataTest: 'snmp-definition-port', isNumeric: true },
+  { key: 'proxyHost', label: 'Proxy Host', hint: 'Proxy host for SNMP communication', dataTest: 'snmp-definition-proxy-host' },
+  { key: 'maxRequestSize', label: 'Max Request Size', hint: 'Maximum bytes per PDU request', dataTest: 'snmp-definition-max-request-size', isNumeric: true },
+  { key: 'maxVarsPerPdu', label: 'Max Vars Per PDU', hint: 'Variables per SNMP request', dataTest: 'snmp-definition-max-vars-per-pdu', isNumeric: true },
+  { key: 'maxRepetitions', label: 'Max Repetitions', hint: 'Repetitions per get-bulk request', dataTest: 'snmp-definition-max-repetitions', isNumeric: true },
+  { key: 'ttl', label: 'TTL', hint: 'Time to live', dataTest: 'snmp-definition-ttl', isNumeric: true }
 ]
 
-const snmpV3Fields = [
-  { key: 'securityName' as keyof any, label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name' },
-  { key: 'securityLevel' as keyof any, label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level' },
-  { key: 'authPassphrase' as keyof any, label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase' },
-  { key: 'authProtocol' as keyof any, label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol' },
-  { key: 'engineId' as keyof any, label: 'Engine ID', hint: 'SNMP engine ID', dataTest: 'snmp-definition-engine-id' },
-  { key: 'contextEngineId' as keyof any, label: 'Context Engine ID', hint: 'Context engine ID', dataTest: 'snmp-definition-context-engine-id' },
-  { key: 'contextName' as keyof any, label: 'Context Name', hint: 'SNMP context name', dataTest: 'snmp-definition-context-name' },
-  { key: 'privacyPassphrase' as keyof any, label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase' },
-  { key: 'privacyProtocol' as keyof any, label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol' },
-  { key: 'enterpriseId' as keyof any, label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
+const snmpV2Fields: SnmpFieldInfo[] = [
+  { key: 'readCommunity', label: 'Read Community String', hint: 'Read community string', dataTest: 'snmp-lookup-read-community' },
+  { key: 'writeCommunity', label: 'Write Community String', hint: 'Write community string', dataTest: 'snmp-lookup-write-community' }
 ]
+
+const snmpV3Fields: SnmpFieldInfo[] = [
+  { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name' },
+  { key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true },
+  { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase' },
+  { key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol' },
+  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase' },
+  { key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol' }
+]
+
+const snmpV3ContextFields: SnmpFieldInfo[] = [
+  { key: 'engineId', label: 'Engine ID', hint: 'SNMP engine ID', dataTest: 'snmp-definition-engine-id' },
+  { key: 'contextEngineId', label: 'Context Engine ID', hint: 'Context engine ID', dataTest: 'snmp-definition-context-engine-id' },
+  { key: 'contextName', label: 'Context Name', hint: 'SNMP context name', dataTest: 'snmp-definition-context-name' },
+  { key: 'enterpriseId', label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
+]
+
+const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
+  Object.assign(formConfig, updatedConfig)
+}
 
 const selectedMonitoringLocationValue = computed<string>(() => {
   return String(selectedMonitoringLocation.value?._value ?? '')
@@ -253,53 +277,75 @@ const selectedMonitoringLocationValue = computed<string>(() => {
 const resetValues = () => {
   snmpVersion.value = SnmpVersions[1]
   firstIpAddress.value = ''
-  secondIpAddress.value = ''
+  lastIpAddress.value = ''
 
   // Reset formConfig to defaults
   Object.assign(formConfig, getDefaultSnmpBaseConfiguration())
 }
 
 const loadInitialValues = () => {
-  currentConfig.value = props.config ?? getDefaultSnmpBaseConfiguration()
+  const currentConfig: SnmpAgentConfig = props.config ?? getDefaultSnmpBaseConfiguration()
 
-  if (currentConfig.value.version === 'v1') {
+  if (currentConfig.version === 'v1') {
     snmpVersion.value = SnmpVersions[0]
-  } else if (currentConfig.value.version === 'v2c') {
+  } else if (currentConfig.version === 'v2c') {
     snmpVersion.value = SnmpVersions[1]
-  } else if (currentConfig.value.version === 'v3') {
+  } else if (currentConfig.version === 'v3') {
     snmpVersion.value = SnmpVersions[2]
   }
     
   // For now, just set firstIpAddress
   // We will handle ranges, etc. later
-  firstIpAddress.value = isNonEmptyString(props.ipAddress) ? props.ipAddress : ''
-  secondIpAddress.value = ''
-  const matchedLoc = store.monitoringLocations.find(x => x.name === currentConfig.value.location)
+  firstIpAddress.value = isNonEmptyString(props.firstIp) ? props.firstIp : ''
+  lastIpAddress.value = isNonEmptyString(props.lastIp) ? props.lastIp! : ''
+  const matchedLoc = store.monitoringLocations.find(x => x.name === currentConfig.location)
   selectedMonitoringLocation.value = matchedLoc ? { _text: matchedLoc.name, _value: matchedLoc.name } : undefined
   
   // Load all config fields into formConfig
   Object.assign(formConfig, {
-    version: props.config.version ?? '',
-    readCommunity: props.config.readCommunity ?? '',
-    writeCommunity: props.config.writeCommunity ?? '',
-    timeout: props.config.timeout ?? undefined,
-    retry: props.config.retry ?? undefined,
-    port: props.config.port ?? undefined,
-    proxyHost: props.config.proxyHost ?? '',
-    maxRequestSize: props.config.maxRequestSize ?? undefined,
-    maxVarsPerPdu: props.config.maxVarsPerPdu ?? undefined,
-    maxRepetitions: props.config.maxRepetitions ?? undefined,
-    ttl: props.config.ttl ?? undefined,
-    securityName: props.config.securityName ?? '',
-    securityLevel: props.config.securityLevel ?? undefined,
-    authPassphrase: props.config.authPassphrase ?? '',
-    authProtocol: props.config.authProtocol ?? '',
-    engineId: props.config.engineId ?? '',
-    contextEngineId: props.config.contextEngineId ?? '',
-    contextName: props.config.contextName ?? '',
-    privacyPassphrase: props.config.privacyPassphrase ?? '',
-    privacyProtocol: props.config.privacyProtocol ?? '',
-    enterpriseId: props.config.enterpriseId ?? ''
+    version: currentConfig.version ?? '',
+    readCommunity: currentConfig.readCommunity ?? '',
+    writeCommunity: currentConfig.writeCommunity ?? '',
+    timeout: currentConfig.timeout ?? undefined,
+    retry: currentConfig.retry ?? undefined,
+    port: currentConfig.port ?? undefined,
+    proxyHost: currentConfig.proxyHost ?? '',
+    maxRequestSize: currentConfig.maxRequestSize ?? undefined,
+    maxVarsPerPdu: currentConfig.maxVarsPerPdu ?? undefined,
+    maxRepetitions: currentConfig.maxRepetitions ?? undefined,
+    ttl: currentConfig.ttl ?? undefined,
+    securityName: currentConfig.securityName ?? '',
+    securityLevel: currentConfig.securityLevel ?? undefined,
+    authPassphrase: currentConfig.authPassphrase ?? '',
+    authProtocol: currentConfig.authProtocol ?? '',
+    engineId: currentConfig.engineId ?? '',
+    contextEngineId: currentConfig.contextEngineId ?? '',
+    contextName: currentConfig.contextName ?? '',
+    privacyPassphrase: currentConfig.privacyPassphrase ?? '',
+    privacyProtocol: currentConfig.privacyProtocol ?? '',
+    enterpriseId: currentConfig.enterpriseId ?? ''
+  })
+
+  if (displaySnmp2Params.value) {
+    snmpV2Expanded.value = true
+  } else if (displaySnmp3Params.value) {
+    snmpV3Expanded.value = true
+  }
+}
+
+const onSnmpVersionUpdated = (val: ISelectItemType | undefined) => {
+  snmpVersion.value = val
+
+  if (val?._value === 'v3') {
+    snmpV3Expanded.value = true
+    snmpV2Expanded.value = false
+  } else {
+    snmpV2Expanded.value = true
+    snmpV3Expanded.value = false
+  }
+
+  Object.assign(formConfig, {
+    version: String(val?._value || '')
   })
 }
 
@@ -309,14 +355,16 @@ const handleSaveDefinition = async () => {
   try {
     if (!isValid.value) {
       emit('validation-error', errors.value)
-      // snackbar.showSnackBar({ msg: 'Invalid values', error: true })
       return
     }
 
-    // TODO: save values to store and then to Rest API
-    // snackbar.showSnackBar({ msg: props.isCreate ? 'Definition created successfully' : 'Definition updated successfully', error: false })
+    let configToSave: SnmpAgentConfig = {
+      ...formConfig,
+      location: String(selectedMonitoringLocation.value?._value ?? ''),
+      id: props.config?.id
+    }
 
-    emit('save', currentConfig.value)
+    emit('save', configToSave, firstIpAddress.value, lastIpAddress.value)
   } catch (error) {
     console.error(error)
   }
@@ -325,20 +373,18 @@ const handleSaveDefinition = async () => {
 const handleCancel = () => {
   resetValues()
   emit('cancel')
-
-  // router.push({
-  //   name: 'SNMP Config'
-  // })
 }
 
 const handleValidate = () => {
   const version = String(snmpVersion.value?._value || '')
 
   const currentErrors = validateDefinition(
+    formConfig,
     version,
     firstIpAddress.value,
-    secondIpAddress.value
+    lastIpAddress.value
   )
+
   isValid.value = Object.keys(currentErrors).length === 0
   errors.value = currentErrors as SnmpDefinitionFormErrors
 }
@@ -348,6 +394,7 @@ watch([() => props.config, () => props.isCreate], () => {
 })
 
 watchEffect(() => {
+  // TODO: Debounce validation?
   handleValidate()
 })
 
@@ -364,6 +411,11 @@ onMounted(() => {
 .snmp-config-definition-details {
   .label {
     font-weight: 600;
+  }
+
+  .show-context-fields-label {
+    margin-left: 0.1rem;
+    font-weight: 500;
   }
 
   .dropdown {

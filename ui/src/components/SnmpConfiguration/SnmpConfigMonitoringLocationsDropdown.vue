@@ -2,7 +2,7 @@
   <FeatherSelect
     label="Location"
     data-test="snmp-monitoring-location-select"
-    hint="Select the location"
+    hint="Select a monitoring location"
     :options="monitoringLocations"
     :modelValue="selectedLocation"
     @update:modelValue="handleUpdate"

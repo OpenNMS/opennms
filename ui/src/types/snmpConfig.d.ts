@@ -1,3 +1,25 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 export interface SnmpBaseConfiguration {
   // for UI use. For now it is the 0-based index into the array of definitions or profiles
   id?: number
@@ -93,6 +115,37 @@ export interface SnmpConfig extends SnmpBaseConfiguration {
   }
 }
 
+export interface SnmpInfo {
+  readCommunity?: string
+  version?: string
+  port?: number
+  retries?: number
+  timeout?: number
+  maxVarsPerPdu?: number
+  maxRepetitions?: number
+  securityName?: string
+  securityLevel?: number
+  authPassPhrase?: string
+  authProtocol?: string
+  privPassPhrase?: string
+  privProtocol?: string
+  engineId?: string
+  contextEngineId?: string
+  contextName?: string
+  enterpriseId?: string
+  maxRequestSize?: number
+  writeCommunity?: string
+  proxyHost?: string
+  location?: string
+  ttl?: number
+}
+
+/** Rest API payload for adding/saving a definition. */
+export interface SnmpConfigInfoDto extends SnmpInfo {
+  firstIpAddress: string
+  lastIpAddress?: string
+}
+
 export interface SnmpAgentConfig extends SnmpBaseConfiguration {
   /** The IP address that this config applies to. */
   address?: string
@@ -108,10 +161,26 @@ export interface SnmpAgentConfig extends SnmpBaseConfiguration {
 export type SnmpDefinitionFormErrors = {
   snmpVersion?: string
   firstIpAddress?: string
-  secondIpAddress?: string
+  lastIpAddress?: string
+  port?: string
+  maxRequestSize?: string
+  securityLevel?: string
+  authProtocol?: string
+  privacyProtocol?: string
+  timeout?: string
+  retry?: string
+  maxVarsPerPdu?: string
+  maxRepetitions?: string
 }
 
 export type SnmpProfileFormErrors = {
   label?: string
   filterExpression?: string
+}
+export interface SnmpFieldInfo {
+  key: string
+  label: string
+  hint?: string
+  dataTest: string
+  isNumeric?: boolean
 }
