@@ -8,4 +8,9 @@ commands:
           command: |
             echo "Workspace contents:"
             ls -la ~/project/
+      - run:
+        name: What is under artifacts
+        command: |
+          echo "Artifacts contents:"
+          ls -la ~/project/artifacts/
         
