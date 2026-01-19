@@ -13,4 +13,17 @@ commands:
           command: |
             echo "Artifacts contents:"
             ls -la ~/project/artifacts/
+      - run:
+          name: Combine Trivy Reports
+          command: |
+            python3 .circleci/pyscripts/combine_trivy_reports.py
+      
+      - store_artifacts:
+          path: ~/project/artifacts/filtered_vulnerabilities.txt
+          destination: filtered_vulnerabilities.txt
+
+      # - persist_to_workspace:
+      #     root: ~/project
+      #     paths:
+      #       artifacts/filtered_vulnerabilities.txt
         
