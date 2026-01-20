@@ -93,7 +93,9 @@ export const validateEventElement = (event: Element | any, eventNumber: number):
   }
 
   const getInnerText = (el: any, tag: string): string => {
-    if (!el) return ''
+    if (!el) {
+      return ''
+    }
     let node: any = null
     try {
       if (typeof el.querySelector === 'function') node = el.querySelector(tag)

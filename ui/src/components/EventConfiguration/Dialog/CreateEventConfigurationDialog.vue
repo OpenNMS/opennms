@@ -3,7 +3,7 @@
     v-model="store.createEventConfigSourceDialogState.visible"
     :labels="labels"
     hide-close
-    @hidden="handleCancel()"
+    @hidden="handleCancel"
   >
     <div
       v-if="!successMessage"
@@ -37,7 +37,7 @@
       <p>The event configuration source has been created successfully.</p>
     </div>
     <template v-slot:footer>
-      <FeatherButton @click="handleCancel()"> Cancel </FeatherButton>
+      <FeatherButton @click="handleCancel"> Cancel </FeatherButton>
       <FeatherButton
         v-if="!successMessage"
         primary
@@ -49,7 +49,7 @@
       <FeatherButton
         v-else
         primary
-        @click="visitCreatedEventConfigSource()"
+        @click="visitCreatedEventConfigSource"
       >
         View Source
       </FeatherButton>

@@ -229,7 +229,7 @@
           <FeatherButton @click="closeSourceCreationDialog()"> Cancel </FeatherButton>
           <FeatherButton
             primary
-            @click="createNewSource()"
+            @click="createNewSource"
             :disabled="Object.keys(sourceFormErrors || {}).length > 0"
           >
             Create Source
