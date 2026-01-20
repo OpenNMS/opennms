@@ -8,7 +8,7 @@ def parse_filtered_vulnerabilities(file_path):
     global vulnerabilities
 
     # Get * in *-filtered_vulnerabilities.txt
-    pattern=re.compile(r'(.*)-filtered_vulnerabilities\.txt')
+    pattern=re.compile(r'(.*)_filtered_vulnerabilities\.txt')
     print(f"Parsing filtered vulnerabilities from {file_path}")
     print("")
     match=pattern.match(file_path)
@@ -65,25 +65,26 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 if __name__ == "__main__":
-    for json_file in glob.glob('~/project/artifacts/*_filtered_vulnerabilities.json'):
+    for json_file in glob.glob('/home/circleci/project/artifacts/*_filtered_vulnerabilities.json'):
         
         print(f"Processing JSON file: {json_file}")
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
         # For this example, we assume that the filtered files are already generated
         import subprocess
         subprocess.run([
-            "python3", "~/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
+            "python3", "/home/circleci/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
         ])
         print(f"Completed analysis for {json_file}")
 
 
-    for file_path in glob.glob('~/project/*-filtered_vulnerabilities.txt'):
+    for file_path in glob.glob('/home/circleci/*_filtered_vulnerabilities.txt'):
         vulnerabilities = parse_filtered_vulnerabilities(file_path)
         print("")
         print(f"Parsed {len(vulnerabilities)} vulnerabilities from {file_path}")
 
-        with open('~/project/artifacts/filtered_vulnerabilities.txt', 'w') as outfile:
+        with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
             outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
             outfile.write("-" * 150 + "\n")
             for vuln in vulnerabilities:
+                print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
                 outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
