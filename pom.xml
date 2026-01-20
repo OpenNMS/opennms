@@ -1730,6 +1730,7 @@
     <jnaVersion>5.12.1</jnaVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
+    <jose4jVersion>0.9.6</jose4jVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
