@@ -202,7 +202,6 @@ public class EventConfSourceDaoHibernate
         );
         LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
     }
-
     @Override
     public List<String> findAllNames() {
         return findObjects(
@@ -211,6 +210,8 @@ public class EventConfSourceDaoHibernate
 
         );
     }
+
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {

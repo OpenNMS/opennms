@@ -46,7 +46,6 @@ import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
-import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;

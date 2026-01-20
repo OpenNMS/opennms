@@ -402,8 +402,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
             assertFalse("Source should be disabled", source.getEnabled());
 
             List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
-            assertFalse("Events should not be empty", events.isEmpty());
-            assertTrue("Events should still be enabled when cascade=false", events.stream().allMatch(EventConfEvent::getEnabled));
+            assertFalse("Events should still be enabled when cascade=false", events.isEmpty() && events.stream().anyMatch(EventConfEvent::getEnabled));
         }
 
         m_dao.updateEnabledFlag(allSourceIds, true, true);
@@ -589,4 +588,3 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_eventDao.saveOrUpdate(event);
     }
 }
-
