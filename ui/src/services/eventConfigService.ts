@@ -242,7 +242,7 @@ export const filterEventConfigEvents = async (
  * @returns A promise that resolves to an array of strings containing all source names.
  */
 export const getAllSourceNames = async (): Promise<Array<UploadedSourceNamesResponse>> => {
-  const endpoint = '/eventconf/sources/names'
+  const endpoint = '/eventconf/sources/names-and-ids'
   try {
     const response = await v2.get(endpoint)
     if (response.status === 200) {
