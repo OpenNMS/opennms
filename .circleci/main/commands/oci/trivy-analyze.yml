@@ -10,6 +10,8 @@ commands:
           command: |
             echo "Verifying workspace and artifacts..."
             ls -la ~/project/
+
+            echo "Printing artifacts directory contents:"
             ls -la ~/project/artifacts/
       - run:
           name: Combine Trivy Reports
@@ -28,6 +30,7 @@ commands:
               fi
             fi
             echo "Executing combine_trivy_reports.py script..."
+            echo "Using script path: $PY_SCRIPT_PATH"
             python3 "$PY_SCRIPT_PATH"
       
       - store_artifacts:
