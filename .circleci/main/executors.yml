@@ -13,10 +13,10 @@ executors:
       - image: opennms/antora:3.1.4-b10433
   integration-test-executor:
     machine:
-      image: opennms/testcase-environment:17.0-20-3.9.6
+      image: ubuntu-2204:current
   smoke-test-executor:
     machine:
-      image: opennms/testcase-environment:17.0-20-3.9.6
+      image: ubuntu-2204:current
   ui-executor:
     docker:
       - image: cimg/node:18.20.2
