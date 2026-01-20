@@ -34,11 +34,11 @@ commands:
             python3 "$PY_SCRIPT_PATH"
       
       - store_artifacts:
-          path: ~/project/artifacts/filtered_vulnerabilities.txt
+          path: /home/circleci/project/artifacts/filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
 
-      # - persist_to_workspace:
-      #     root: ~/project
-      #     paths:
-      #       artifacts/filtered_vulnerabilities.txt
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            artifacts/filtered_vulnerabilities.txt
         
