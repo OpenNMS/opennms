@@ -23,34 +23,34 @@ is: 'monCurrVal monOperator monValue'.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	monDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOID&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -58,15 +58,15 @@ is: 'monCurrVal monOperator monValue'.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: monitorTrap trap received 
 			monDescr=%parm[#1]% 
@@ -114,34 +114,34 @@ all properly configured managers.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	monDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOID&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -149,15 +149,15 @@ all properly configured managers.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: monitorEntryNotReadyTrap trap received 
 			monDescr=%parm[#1]% 
@@ -201,31 +201,31 @@ logging daemons.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLogFile&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorRegularExpression&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLastTrap&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLastMatch&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: logMonMatchTrap trap received 
 			logMonitorLogFile=%parm[#1]% 
@@ -266,31 +266,31 @@ becomes 'active(1)'.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLogFile&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorRegularExpression&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLastTrap&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorLastMatch&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	logMonitorFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: logMonNotReadyTrap trap received 
 			logMonitorLogFile=%parm[#1]% 
@@ -331,49 +331,49 @@ ntEventMonMatch events.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonLog&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		application(1)
 		security(2)
 		system(3)
 		dnsServer(4)
 		dirService(5)
 		fileRepService(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonTypeLastMatch&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		error(1)
 		warning(2)
 		information(3)
 		success(4)
 		failure(5)
 		noMatch(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonSrcLastMatch&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonDescLastMatch&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: ntEventMonMatchTrap trap received 
 			ntEventMonLog=%parm[#1]% 
@@ -416,45 +416,45 @@ becomes 'active(1)'.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonLog&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		application(1)
 		security(2)
 		system(3)
 		dnsServer(4)
 		dirService(5)
 		fileRepService(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonTypeFilter&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		error(1)
 		warning(2)
 		information(3)
 		success(4)
 		failure(5)
 		all(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonSrcFilter&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonDescFilter&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	ntEventMonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: ntEventMonNotReadyTrap trap received 
 			ntEventMonLog=%parm[#1]% 
@@ -499,34 +499,34 @@ from True to false.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	monDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOID&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -534,15 +534,15 @@ from True to false.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	monFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: monitorClearTrap trap received 
 			monDescr=%parm[#1]% 
@@ -583,15 +583,15 @@ of pmonFlags does not preclude sending Traps.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonAttribute&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		procAlive(1)
 		procMemory(2)
 		procSize(3)
@@ -609,15 +609,15 @@ of pmonFlags does not preclude sending Traps.&lt;/p>&lt;table>
 		procMajorPgFlts(15)
 		procVolCtx(16)
 		procInvolCtx(17)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -625,23 +625,23 @@ of pmonFlags does not preclude sending Traps.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonRegExpr&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrentPID&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: processStopTrap trap received 
 			pmonIndex=%parm[#1]% 
@@ -683,15 +683,15 @@ specifies  that processStart Traps should be pay.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonAttribute&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		procAlive(1)
 		procMemory(2)
 		procSize(3)
@@ -709,15 +709,15 @@ specifies  that processStart Traps should be pay.&lt;/p>&lt;table>
 		procMajorPgFlts(15)
 		procVolCtx(16)
 		procInvolCtx(17)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -725,23 +725,23 @@ specifies  that processStart Traps should be pay.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonRegExpr&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrentPID&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: processStartTrap trap received 
 			pmonIndex=%parm[#1]% 
@@ -785,15 +785,15 @@ not preclude the sending of Traps.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonAttribute&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		procAlive(1)
 		procMemory(2)
 		procSize(3)
@@ -811,15 +811,15 @@ not preclude the sending of Traps.&lt;/p>&lt;table>
 		procMajorPgFlts(15)
 		procVolCtx(16)
 		procInvolCtx(17)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -827,23 +827,23 @@ not preclude the sending of Traps.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonRegExpr&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrentPID&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: processThresholdTrap trap received 
 			pmonIndex=%parm[#1]% 
@@ -886,15 +886,15 @@ to False, this Trap is sent.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonAttribute&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		procAlive(1)
 		procMemory(2)
 		procSize(3)
@@ -912,15 +912,15 @@ to False, this Trap is sent.&lt;/p>&lt;table>
 		procMajorPgFlts(15)
 		procVolCtx(16)
 		procInvolCtx(17)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrVal&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonOperator&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		nop(1)
 		gt(2)
 		lt(3)
@@ -928,23 +928,23 @@ to False, this Trap is sent.&lt;/p>&lt;table>
 		le(5)
 		eq(6)
 		ne(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonValue&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonRegExpr&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pmonCurrentPID&lt;/b>&lt;/td>&lt;td>
-	%parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: processClearTrap trap received 
 			pmonIndex=%parm[#1]% 
@@ -988,7 +988,7 @@ the license information for that product or module.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysedgeLicenseString&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: licenseTrap trap received 
 			sysedgeLicenseString=%parm[#1]%&lt;/p>
@@ -1024,11 +1024,11 @@ be useless on multi-homed systems.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	nodename&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysedgeAddressList&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: addrChangeTrap trap received 
 			nodename=%parm[#1]% 
@@ -1058,42 +1058,42 @@ be useless on multi-homed systems.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonDescr&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonFlags&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonNumProcs&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonProcRegExpr&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonPIDList&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	pgmonStatusList&lt;/b>&lt;/td>&lt;td>
-	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SystemEdge Event: procGroupChangeTrap trap received 
 			pgmonIndex=%parm[#1]% 

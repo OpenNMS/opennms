@@ -24,9 +24,9 @@
  the new, less accessible state.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rdbmsRelState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) active(2) available(3) restricted(4) unavailable(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: RDBMS State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -54,7 +54,7 @@
  traps.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rdbmsSrvInfoDiskOutOfSpaces&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: RDBMS Out of Space.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -80,9 +80,9 @@
  in a way that makes it less accessible for use.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  oraListenerState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  up(1) down(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: Oracle Listener State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -107,9 +107,9 @@
  has been changed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  oraNavigatorState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  up(1) down(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: Navigator State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -134,8 +134,8 @@
  state has been changed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  oraCmanagerState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
- up(1) down(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>
+ up(1) down(2)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: Connection Manager State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -160,27 +160,27 @@
  an event for which it has no specific trap.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  oraAgentEventName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventService&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventTime&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventSeverity&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  clear(-1) warning(1) alert(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventUser&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventAppID&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventMessage&lt;/b>&lt;/td>&lt;td>%parm[#8]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventArguments&lt;/b>&lt;/td>&lt;td>%parm[#9]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  oraAgentEventResults&lt;/b>&lt;/td>&lt;td>%parm[#10]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Oracle Event: Enterprise Manager unknown event notification.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -205,47 +205,47 @@
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertTargetName&lt;/b>&lt;/td>&lt;td>
-        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertTargetType&lt;/b>&lt;/td>&lt;td>
-        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertHostName&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertMetricName&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertKeyName&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertKeyValue&lt;/b>&lt;/td>&lt;td>
-        %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertTimeStamp&lt;/b>&lt;/td>&lt;td>
-        %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertSeverity&lt;/b>&lt;/td>&lt;td>
-        %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertMessage&lt;/b>&lt;/td>&lt;td>
-        %parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertRuleName&lt;/b>&lt;/td>&lt;td>
-        %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         oraEM4AlertRuleOwner&lt;/b>&lt;/td>&lt;td>
-        %parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         oraEM4Alert trap received 
                         oraEM4AlertTargetName=%parm[#1]% 

@@ -24,15 +24,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ifIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	isdnLapdOperStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		inactive(1)Down
 		l1Active(2)Layer 1 Up
 		l2Active(3)Layer 2 Up
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Cisco Event: demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 
@@ -65,15 +65,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ifIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	isdnLapdOperStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		inactive(1)Down
 		l1Active(2)Layer 1 Up
 		l2Active(3)Layer 2 Up
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 
@@ -106,15 +106,15 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	ifIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	isdnLapdOperStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		inactive(1)Down
 		l1Active(2)Layer 1 Up
 		l2Active(3)Layer 2 Up
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Cisco Event: demandNbrLayer2Change trap received 
 			ifIndex=%parm[#1]% 

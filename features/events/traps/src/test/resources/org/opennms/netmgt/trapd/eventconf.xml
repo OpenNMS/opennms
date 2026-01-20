@@ -254,4 +254,70 @@
     </logmsg>
     <severity>Warning</severity>
   </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>trapoid</mename>
+        <mevalue>.1.2.3.4.5.6.7.1</mevalue>
+      </maskelement>
+     <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vboid>.1.2.3.4.5.6.7.2</vboid>
+         <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/nms19070/traps/vboid</uei>
+    <event-label>NMS19070 trap event: vboid used and matched</event-label>
+    <descr>vboid used and matched&lt;br/>
+           parm[1] = %parm[#1]%&lt;br/>
+           parm[2] = %parm[#2]%&lt;br/>
+           parm[3] = %parm[#3]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.1] = %parm[.1.2.3.4.5.6.7.1]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.2] = %parm[.1.2.3.4.5.6.7.2]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.3] = %parm[.1.2.3.4.5.6.7.3]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.99] = %parm[.1.2.3.4.5.6.7.99]%&lt;br/>
+    </descr>
+    <logmsg dest="logndisplay">vboid used and matched</logmsg>
+    <severity>Warning</severity>
+  </event>
+  <event>
+    <mask>
+      <maskelement>
+        <mename>trapoid</mename>
+        <mevalue>.1.2.3.4.5.6.7.1</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>generic</mename>
+        <mevalue>6</mevalue>
+      </maskelement>
+      <maskelement>
+        <mename>specific</mename>
+        <mevalue>1</mevalue>
+      </maskelement>
+      <varbind>
+        <vbnumber>2</vbnumber>
+        <vbvalue>2</vbvalue>
+      </varbind>
+    </mask>
+    <uei>uei.opennms.org/vendor/nms19070/traps/vbnumber</uei>
+    <event-label>NMS19070 trap event: vbnumber used and matched</event-label>
+    <descr>vbnumber used and matched&lt;br/>
+           parm[1] = %parm[#1]%&lt;br/>
+           parm[2] = %parm[#3]%&lt;br/>
+           parm[3] = %parm[#3]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.1] = %parm[.1.2.3.4.5.6.7.1]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.2] = %parm[.1.2.3.4.5.6.7.2]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.3] = %parm[.1.2.3.4.5.6.7.3]%&lt;br/>
+           parm[.1.2.3.4.5.6.7.99] = %parm[.1.2.3.4.5.6.7.99]%&lt;br/>
+    </descr>
+    <logmsg dest="logndisplay">vbnumber used and matched</logmsg>
+    <severity>Warning</severity>
+  </event>
 </events>

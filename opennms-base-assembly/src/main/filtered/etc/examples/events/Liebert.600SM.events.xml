@@ -22,7 +22,7 @@ load has exceeded the UPS's rated capacity.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverloadWarningTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -53,7 +53,7 @@ and has shut off the output.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverloadShutdownTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -82,7 +82,7 @@ UPS is currently on Battery Power.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOnBatteryTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -111,7 +111,7 @@ UPS has entered a Low Battery state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsLowBatteryWarningTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -141,7 +141,7 @@ Battery state.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsLowBatteryShutdownTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -170,7 +170,7 @@ utility power input to the UPS has been lost.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsUtilPowerFailedTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -199,7 +199,7 @@ utility power has been restored to the UPS.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsUtilPowerRestoredTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -228,7 +228,7 @@ UPS has detected a high input voltage condition.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsInputOverVoltageTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -257,7 +257,7 @@ UPS has detected a excessive temperature condition.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverTempWarningTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -287,7 +287,7 @@ and shut off the output.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverTempShutdownTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -316,7 +316,7 @@ in the lcUpsAlarmTable.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsAlarmTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -346,7 +346,7 @@ inverter or via a relay.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOffTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -376,7 +376,7 @@ inverter or via a relay.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOnTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -406,7 +406,7 @@ the tolarable level.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsDCOverVoltageShutdownTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -435,7 +435,7 @@ UPS has detected that the output voltage is too high.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOverVoltageTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -464,7 +464,7 @@ rectifier or DC capacitor fuse has failed.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsFuseBlownTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -494,7 +494,7 @@ condition.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsEmergencyPowerOffTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -523,7 +523,7 @@ the secondary control power.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsControlPowerFailureTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -552,7 +552,7 @@ shut off due to a reverse power flow condition.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsReversePowerTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -581,7 +581,7 @@ error in the bypass power.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsPhaseRotationErrorTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -610,7 +610,7 @@ been transferred to bypass power.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsLoadOnBypassTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -639,7 +639,7 @@ automatically tranferred the load to bypass power.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsEmergencyXferToBypassTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>
@@ -668,7 +668,7 @@ detected a problem with the Inverter.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	sysUpTime&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			lcUpsInverterFaultTrap trap received 
 			sysUpTime=%parm[#1]%&lt;/p>

@@ -103,12 +103,40 @@ describe('DeleteEventConfigEventDialog', () => {
   })
 
   it('shows snackbar error if IDs are missing', async () => {
-    store.$state.selectedSource = null as any
-    await wrapper.vm.$nextTick()
+    vi.restoreAllMocks()
+
+    const pinia = createTestingPinia({
+      createSpy: vi.fn,
+      stubActions: false
+    })
+
+    const localStore = useEventConfigDetailStore()
+    localStore.$state = {
+      deleteEventConfigEventDialogState: {
+        visible: true,
+        eventConfigEvent: {
+          id: 10,
+          eventLabel: 'Test Event'
+        }
+      },
+      selectedSource: null,
+      eventsPagination: { page: 1, pageSize: 10, total: 0 },
+      isLoading: false
+    } as any
+
+    const localWrapper = mount(DeleteEventConfigEventDialog, {
+      global: {
+        plugins: [pinia],
+        components: { FeatherButton, FeatherDialog }
+      }
+    })
+
+    await flushPromises()
 
     const spy = vi.spyOn(eventConfigService, 'deleteEventConfigEventBySourceId')
-    const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
-    await deleteButton.trigger('click')
+    const deleteButton = localWrapper.findAllComponents(FeatherButton).at(1)
+    expect(deleteButton?.exists()).toBe(true)
+    await deleteButton?.trigger('click')
     await flushPromises()
 
     expect(spy).not.toHaveBeenCalled()

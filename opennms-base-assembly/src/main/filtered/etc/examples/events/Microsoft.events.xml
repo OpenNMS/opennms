@@ -17,7 +17,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/bytesAvailAlert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: bytesAvailAlert</event-label>
       <descr>&lt;p>A Lan Manager Bytes Available Alert.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Bytes Available Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -43,7 +43,7 @@
  networkId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
  &lt;tr>&lt;td>&lt;b>
  numNetIOErrors&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Network I/O Errors Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -67,7 +67,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying high server errors.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  serverErrorsData&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Server Errors Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -91,7 +91,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying invalid password attempts.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  numPWViolations&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Password Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -115,7 +115,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying invalid access attempts.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  accessViolationsAlert&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Access Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -137,7 +137,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/auditLogFullAlert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLogFullAlert</event-label>
       <descr>&lt;p>A Lan Manager Alert signifying that the audit log is full..&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Audit Log Alert.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -159,7 +159,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/auditLog80Alert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: auditLog80Alert</event-label>
       <descr>&lt;p>A Lan Manager Alert signifying that the audit log is 80% full..&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Audit Log 80% Full Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -181,7 +181,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutWarnAlert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutWarnAlert</event-label>
       <descr>&lt;p>A Lan Manager Alert signifying that the power supply is at a warning state..&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Warning.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -203,7 +203,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerOutShutdownAlert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerOutShutdownAlert</event-label>
       <descr>&lt;p>A Lan Manager Alert signifying that the power supply is at a shutdown state..&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Shutdown Warning.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -225,7 +225,7 @@
       <uei>uei.opennms.org/vendor/Microsoft/traps/upsPowerRestoredAlert</uei>
       <event-label>LanMgr-Alerts-II-MIB defined trap event: upsPowerRestoredAlert</event-label>
       <descr>&lt;p>A Lan Manager Alert signifying that the power supply is now normal..&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;td>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Power Supply Normal.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -249,7 +249,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying a logon primary DC Failure.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  primaryDCName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Logon Primary DC Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -273,7 +273,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying a Replication Master Failure.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  replMasterName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Replication Master Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -297,7 +297,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying a Disk Hot Fix alert.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  diskDrive&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Disk Hot Fix Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -321,7 +321,7 @@
       <descr>&lt;p>A Lan Manager Alert signifying a Disk Hardware Error alert.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  diskDrive&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Microsoft Event: Lan Manager Disk Hardware Error Alert.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

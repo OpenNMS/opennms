@@ -21,11 +21,11 @@
  that is connected to another switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Link Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -51,11 +51,11 @@
  is connected to another switch has come up.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Link Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -81,11 +81,11 @@
  that is connected to a host.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Host Link Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -111,11 +111,11 @@
  connected to a host has come up.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Host Link Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -142,11 +142,11 @@
  This is probably caused by a hot-swap of a network module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Network Module Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -173,11 +173,11 @@
  probably caused by a hot-swap of a network module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Network Module Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -205,9 +205,9 @@
  supply failure if high loads are not applied.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Power Supply Input Voltage Failed.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -233,9 +233,9 @@
  is identified by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Power Supply Input Voltage Restored.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -262,9 +262,9 @@
  index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Power Supply Output Down.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -290,9 +290,9 @@
  that is back up is identified by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Power Supply Output Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -317,9 +317,9 @@
  fan bank that failed is identified by the fan bank index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envFanBankIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Fan Bank Failed.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -344,9 +344,9 @@
  fan bank that is back up is identified by the fan bank index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envFanBankIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Fan Bank Restored.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -373,11 +373,11 @@
  is currently down.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b> 
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Link Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -402,11 +402,11 @@
  portName is back up.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Link Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -431,13 +431,13 @@
  that is identified by the sigPathPort and sigPathVPI failed.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  sigPathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  sigPathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Links SPANS Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -462,13 +462,13 @@
  that is identified by the sigPathPort and sigPathVPI is up.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  sigPathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  sigPathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Link SPANS Up.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -494,11 +494,11 @@
  temperature sensor index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envTempSensorIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  enclosure(1) power-supply-1(2) power-supply-2(3) power-supply-3(4) power-supply-4(5) power-supply-5(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Device Over Temperature.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -524,11 +524,11 @@
  temperature sensor index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envTempSensorIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  enclosure(1) power-supply-1(2) power-supply-2(3) power-supply-3(4) power-supply-4(5) power-supply-5(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Device Temperature now Normal.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -554,9 +554,9 @@
  temperature sensor index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envFabricIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Fabric Over Temperature.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -582,9 +582,9 @@
  temperature sensor index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envFabricIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Fabric Temperature Now Normal.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -614,15 +614,15 @@
  declaration have been met.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Sonet Loss of Service.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -647,15 +647,15 @@
  by trap asxSonetLOSDetected has been cleared.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Sonet Loss of Service Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -683,15 +683,15 @@
  value 0x13 or 0x01.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET Errored C2 Path Label Byte.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -717,15 +717,15 @@
  asxSonetPathLabelDetected trap has been cleared.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET Errored C2 Path Label Byte Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -751,15 +751,15 @@
  far-end equipment.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET Line Level Alarm.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -784,15 +784,15 @@
  signaled by the asxSonetLineAISDetected trap has been
  cleared.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET Line Level Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -817,15 +817,15 @@
  detected incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -850,15 +850,15 @@
  detected clearance of incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -883,15 +883,15 @@
  detected incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Loss of Frame Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -916,15 +916,15 @@
  detected clearance of incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Loss of Frame Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -948,15 +948,15 @@
       <descr>&lt;p>This trap indicates that Loss Of Frame(LOF) is detected on
  the incoming signal.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Frame Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -981,15 +981,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Frame Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1014,15 +1014,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1047,15 +1047,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1080,15 +1080,15 @@
  detected incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1113,15 +1113,15 @@
  detected clearance of incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1146,15 +1146,15 @@
  detected incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Loss of Frame Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1179,15 +1179,15 @@
  detected clearance of incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Loss of Frame Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1212,15 +1212,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1245,15 +1245,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1278,15 +1278,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1311,15 +1311,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1344,15 +1344,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1377,15 +1377,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1410,15 +1410,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOF Alarm on DS1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1443,15 +1443,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>LOF Alarm on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1476,15 +1476,15 @@
  is detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: FERF Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1509,15 +1509,15 @@
  is cleared on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: FERF Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1542,15 +1542,15 @@
  on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1575,15 +1575,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1608,15 +1608,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: OOF Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1641,15 +1641,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: OOF Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1676,15 +1676,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LCD Alarm on E3.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1711,15 +1711,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LCD Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1744,15 +1744,15 @@
  detected incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1777,15 +1777,15 @@
  detected clearance of incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1810,15 +1810,15 @@
  on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1843,15 +1843,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm on E1.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1876,15 +1876,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOF Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1909,15 +1909,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOF Alarm on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -1942,15 +1942,15 @@
  detected incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1975,15 +1975,15 @@
  detected clearance of incoming PLCP Yellow Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP Yellow Alarm on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2008,15 +2008,15 @@
  detected incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP LOF Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2041,15 +2041,15 @@
  cleared on the specified E1 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP LOF Alarm on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2074,15 +2074,15 @@
  detected incoming LOS Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2107,15 +2107,15 @@
  cleared on the specified E1 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2140,15 +2140,15 @@
  detected incoming AIS Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on E1.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2173,15 +2173,15 @@
  cleared on the specified E1 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2206,15 +2206,15 @@
  detected incoming AIS Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2239,15 +2239,15 @@
  cleared on the specified E3 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2272,15 +2272,15 @@
  detected incoming LOS Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2305,15 +2305,15 @@
  cleared on the specified E3 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2338,15 +2338,15 @@
  detected incoming PLCP LOF Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP LOF Alarm on E3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2371,15 +2371,15 @@
  cleared on the specified E3 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PLCP LOF Alarm on E3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2404,15 +2404,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2437,15 +2437,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Yellow Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2470,15 +2470,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2503,15 +2503,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2536,15 +2536,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2569,15 +2569,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2602,15 +2602,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOF Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2635,15 +2635,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOF Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2668,15 +2668,15 @@
  detected incoming LOS Alarm.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on DS3.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2701,15 +2701,15 @@
  cleared on the specified DS3 port.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2737,15 +2737,15 @@
  defect or failure is present.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LOF Alarm.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2773,15 +2773,15 @@
  seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LOF Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2808,15 +2808,15 @@
  RDI defects lasts for 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LRDI Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2843,15 +2843,15 @@
  RDI defects are detected for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LRDI Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2878,15 +2878,15 @@
  persists for 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET PAIS Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2913,15 +2913,15 @@
  defect is absent for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET PAIS Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -2948,15 +2948,15 @@
  2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LOP Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2983,15 +2983,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LOP Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3018,15 +3018,15 @@
  2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET UNEQ Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3053,15 +3053,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET UNEQ Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3088,15 +3088,15 @@
  RDI defects lasts for 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET PRDI Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3123,15 +3123,15 @@
  RDI defects are detected for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET PRDI Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3158,15 +3158,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LCD Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3193,15 +3193,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET LCD Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3228,15 +3228,15 @@
  persists for a period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET BIP Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3263,15 +3263,15 @@
  for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SONET BIP Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3296,15 +3296,15 @@
  (IDLE) is detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Idle Maintenance Signal on DS3.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3329,15 +3329,15 @@
  (IDLE) is cleared on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Idle Maintenance Signal on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3364,15 +3364,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on DS3.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3399,15 +3399,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3434,15 +3434,15 @@
  persists for a period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: P-bit Parity Errors on DS3.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3469,15 +3469,15 @@
  Error defect is absent for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: P-bit Parity Errors on DS3 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3502,15 +3502,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: P-bit PRBS Pattern on DS1.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3535,15 +3535,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: P-bit PRBS Pattern on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3570,15 +3570,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on DS1.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3605,15 +3605,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3640,15 +3640,15 @@
  persists for a period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: CRC-6 Errors on DS1.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3675,15 +3675,15 @@
  Error defect is absent for 10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: CRC-6 Errors on DS1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3708,15 +3708,15 @@
  message was detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Trail Trace Message Change on E3.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3743,15 +3743,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on E1.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3778,15 +3778,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation on E1 Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3811,15 +3811,15 @@
  is detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: RLOC Event.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3844,15 +3844,15 @@
  is cleared on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: RLOC Event Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3877,15 +3877,15 @@
  is detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: HBER Event.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3910,15 +3910,15 @@
  is cleared on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: HBER Event Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -3943,15 +3943,15 @@
  Signal (PAIS) is detected on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PAIS Event.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -3976,15 +3976,15 @@
  SIgnal (PAIS) is cleared on the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PAIS Event Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4011,15 +4011,15 @@
  period of 2.5 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation Event.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4046,15 +4046,15 @@
  10 +/- 0.5 seconds.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Loss of Cell Deliniation Event Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4079,15 +4079,15 @@
  (TLOC) is detected.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Transmit Loss of Clock Event.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4112,15 +4112,15 @@
  (TLOC) is cleared.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Transmit Loss of Clock Event Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4145,15 +4145,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4178,15 +4178,15 @@
  the incoming signal.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  hwPortName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortBoard&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortModule&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hwPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: LOS Alarm Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4213,13 +4213,13 @@
  space on the netmod.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pshmemPriority&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  priorityUBR-ABR(1) priorityVBR(2) priorityCBR(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Output Queue Congested.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4245,13 +4245,13 @@
  dropped.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pshmemPriority&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  priorityUBR-ABR(1) priorityVBR(2) priorityCBR(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Output Queue Cell Loss.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -4279,11 +4279,11 @@
  and rebooting the rebooted.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b> 
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b> 
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Extended Mode Violation.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4309,11 +4309,11 @@
  in non-extended mode.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Nonextended Mode Warning.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -4338,9 +4338,9 @@
  memory(as indicated by crMemoryAllocated) is exceeded.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  crMemoryAllocated&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Callrecord Memory Overflow.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4366,15 +4366,15 @@
  fails.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  crXfrIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  callrecord(1) performance(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  crXfrPrimaryTrapStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  crXfrNoError(1) crXfrNoResponseFromServer(2) crXfrAccessViolation(3) crXfrDiskFullorAllocationExceeded(4) crXfrOtherError(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Call Record Transfer to Primary Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4400,15 +4400,15 @@
  crXfrSecondaryUrl) fails.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  crXfrIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  callrecord(1) performance(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  crXfrSecondaryTrapStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  crXfrNoError(1) crXfrNoResponseFromServer(2) crXfrAccessViolation(3) crXfrDiskFullorAllocationExceeded(4) crXfrOtherError(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Call Record Transfer to Secondary Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4436,9 +4436,9 @@
  the switch reboots when Callrecords is configured `on'.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  crMemoryAllocated&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Call Record Memory Allocation Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4465,11 +4465,11 @@
  an interval timer.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  crXfrIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  callrecord(1) performance(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Call Record Failure.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4494,11 +4494,11 @@
  is disabled due to failures.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpSyncState&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Automatic CDB Syncronization Disabled.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4523,15 +4523,15 @@
  control of the switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpSlot&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  slotX(1) slotY(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpSwitchOverTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Backup SCP now in Control.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4556,17 +4556,17 @@
  or removal has occurred.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpSlot&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  slotX(1) slotY(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpState&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  standalone(1) dual(2) other(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SCP Hotswap.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -4593,13 +4593,13 @@
  be in the active AIS state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on Virtual Path.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4626,13 +4626,13 @@
  to be in the inactive AIS state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: AIS Alarm on Virtual Path Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4659,13 +4659,13 @@
  in the active RDI state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: RDI Alarm on Virtual Path.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4692,13 +4692,13 @@
  to be in the inactive RDI state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: RDI Alarm on Virtual Path Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -4726,11 +4726,11 @@
  series B modules and rebooting the switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Series D Netowrk Module Inserted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -4755,11 +4755,11 @@
  module was inserted into a switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleBoard&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Unsupported Network Module Inserted.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -4784,15 +4784,15 @@
  the state of dual SCP Redundancy.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpSlot&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  slotX(1) slotY(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  dualScpRedundancyState&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Dual SCP Redundancy Established.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -4818,11 +4818,11 @@
  and has been dropped.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  ipFilterStatsVPI&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  ipFilterStatsVCI&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  ipFilterStatsIfName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: IP Filter Violation.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4851,19 +4851,19 @@
  source and destination UNI for the call.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  opathPort&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  opathVPI&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: q2391 UNI Setup Rejected.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4891,19 +4891,19 @@
  source and destination UNI for the call.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pathVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  opathPort&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  opathVPI&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: q2391 UNI Setup Rejected: Does Not Match Template.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -4929,13 +4929,13 @@
  resource limitation on the switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: q2391 UNI Creation Failure.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -4961,9 +4961,9 @@
  by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Power Supply Failed.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -4989,9 +4989,9 @@
  is identified by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Power Supply Failure Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -5017,9 +5017,9 @@
  by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Power Supply +5V Failure.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5045,9 +5045,9 @@
  is identified by the power supply index.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  envPowerSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Power Supply +5V Failure Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -5072,11 +5072,11 @@
  user logged in on the switch.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  switchCurrentUserid&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  switchCurrentLoginFrom&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: User Logged onto Switch.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5101,11 +5101,11 @@
  user's attempt to log in on the switch failed.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  switchCurrentUserid&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  switchCurrentLoginFrom&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Log On Attempt Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -5133,19 +5133,19 @@
  The switch is low on memory.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniNodeId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrSystemDate&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBytesFree&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksFree&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksAlloc&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  maxBlockSizeFree&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: TDB Guardband Memory Failed.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5173,19 +5173,19 @@
  rebooted to bring this PNNI logical node up again.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniNodeId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrSystemDate&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBytesFree&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksFree&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksAlloc&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  maxBlockSizeFree&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: TDB Inconsistant State.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5212,13 +5212,13 @@
  space on the netmod.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pShmem2Priority&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  priorityABR(1) priorityVBR(2) priorityCBR(3) priorityUBR(4) priorityRt(5) priorityNrt(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Output Queue Exceeded Length.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -5244,13 +5244,13 @@
  dropped.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pShmem2Priority&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  priorityABR(1) priorityVBR(2) priorityCBR(3) priorityUBR(4) priorityRt(5) priorityNrt(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Output Queue Overflow.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5282,7 +5282,7 @@
  PVC; bad hardware.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Excessive Level 3 Lookup Errors.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5309,7 +5309,7 @@
  in the HDCOMP lookup ASIC's data structures.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Inconsistant HDCOMP Lookup.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -5334,13 +5334,13 @@
  a better path being found.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  spvcSrcInPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  spvcSrcInVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  spvcSrcInVCI&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVC Rerouted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5364,13 +5364,13 @@
       <descr>&lt;p>This trap is generated whenever UNI signalling goes down.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: UNI Signalling Down.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5395,13 +5395,13 @@
  This trap is generated whenever UNI signalling goes up.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: UNI Signalling Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5428,9 +5428,9 @@
  caused by a hot-swap of a fabric module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Fabric Down.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5457,9 +5457,9 @@
  probably caused by a hot-swap of a fabric module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Fabric Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5487,13 +5487,13 @@
  * VP failure 
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  q2931AdminVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: q2931 Call Clearing.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5521,23 +5521,23 @@
  This trap is only sent if pnniSpvcTrapMode is all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVCI&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcDownReason&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#8]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVC Call Cleared or Deleted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5565,19 +5565,19 @@
  This trap is only sent if pnniSpvcTrapMode is failure or all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVCI&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcOldRouteCost&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcRouteCost&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVC Call Established.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5603,23 +5603,23 @@
  This trap is only sent if pnniSpvcTrapMode is failure or all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcCallingVCI&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcDownReason&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvcSrcLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#8]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVC Call Connection Failed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5647,21 +5647,21 @@
  This trap is only sent if pnniSpvpcTrapMode is all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcDownReason&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVP Call Cleared.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5689,17 +5689,17 @@
  This trap is only sent if pnniSpvpcTrapMode is all or failure.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcOldRouteCost&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcRouteCost&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVP Call Established.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5725,21 +5725,21 @@
  This trap is only sent if pnniSpvpcTrapMode is all or failure.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  boardIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcCallingVPI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcDownReason&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcName&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvpcSrcLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVP Call Connection Failed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5766,9 +5766,9 @@
  caused by a hot-swap of the port card.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portCardName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Port Card Down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -5795,9 +5795,9 @@
  probably caused by a hot-swap of the port card.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portCardName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: ATM Switch Port Card Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5824,11 +5824,11 @@
  space on the netmod.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  serviceCategoryName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Service Category Output Queue Congested.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -5854,11 +5854,11 @@
  dropped.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  serviceCategoryName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: Service Category Output Queue Cell Loss.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5883,19 +5883,19 @@
  the overload state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniNodeId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrSystemDate&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBytesFree&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksFree&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksAlloc&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  maxBlockSizeFree&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PNNI Overload.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -5920,19 +5920,19 @@
  the normal state.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniNodeId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hrSystemDate&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBytesFree&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksFree&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  numBlocksAlloc&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  maxBlockSizeFree&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PNNI Overload Cleared.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -5957,11 +5957,11 @@
  a better path being found or if a reroute is requested using a AMI command.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootPort&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVPI&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVCI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PMP ReRoute Initiated..&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -5986,15 +5986,15 @@
  This trap is only sent if pnniSpvcTrapMode is failure or all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootPort&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVPI&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVCI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyRouteCost&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PMP SPVC Call Established.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -6021,21 +6021,21 @@
  This trap is only sent if pnniSpvpcTrapMode is all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootPort&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVPI&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVCI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyDownReason&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyName&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PMP SPVC Call Cleared.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -6061,21 +6061,21 @@
  This trap is only sent if pnniSpvcTrapMode is failure or all.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootPort&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVPI&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcRootVCI&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyDownReason&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  reroute(1) failure(2) deletion(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyName&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyLastFailCause&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniPmpSpvccSrcPartyLastLocation&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: PMP SPVC Call Failure.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -6101,13 +6101,13 @@
  automatic PVC switch over enabled.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  pnniSpvxcRGroupSwitchoverCmd&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  switch2primary(1) switch2secondary(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  pnniSpvxcRGroupActivePort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SPVC Automatic Switch Over.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -6135,11 +6135,11 @@
  requiring a system reboot.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  dualScpSlot&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  slotX(1) slotY(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SVx/SPVx State Transfer Failed.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -6166,11 +6166,11 @@
  halted due to unavailablility of system resources.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  dualScpSlot&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  slotX(1) slotY(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SVx/SPVx State Transfer Restarted.&lt;/p></logmsg>
       <severity>Cleared</severity>
    </event>
@@ -6203,7 +6203,7 @@
  retrial of the transfer process.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  trapLogIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Fore Event: SVx/SPVx State Dropped Call.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>

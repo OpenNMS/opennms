@@ -79,8 +79,4 @@ watch (() => route.query, () => {
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
 
-.card {
-  padding: 40px 50px 0px 50px;
-}
-
 </style>

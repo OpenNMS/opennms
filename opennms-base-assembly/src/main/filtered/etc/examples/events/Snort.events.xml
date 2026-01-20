@@ -22,73 +22,73 @@ Alert is found applicable.&lt;/p>&lt;table>
         &lt;tr>&lt;td>&lt;b>
 
         sidaSensorVersion&lt;/b>&lt;/td>&lt;td>
-        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaSensorAddressType&lt;/b>&lt;/td>&lt;td>
-        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaSensorAddress&lt;/b>&lt;/td>&lt;td>
-        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertTimeStamp&lt;/b>&lt;/td>&lt;td>
-        %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertMsg&lt;/b>&lt;/td>&lt;td>
-        %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertMoreInfo&lt;/b>&lt;/td>&lt;td>
-        %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         <!--
         sidaAlertProtocol&lt;/b>&lt;/td>&lt;td>
         %parm[#8]%;&lt;/td>&lt;td>
-        &lt;/td;>&lt;/tr>
+        &lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
         -->
 
         sidaAlertSrcAddressType&lt;/b>&lt;/td>&lt;td>
-        %parm[#9]%;&lt;/td>&lt;td>&lt;p;>
+        %parm[#9]%;&lt;/td>&lt;td>&lt;p>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertSrcAddress&lt;/b>&lt;/td>&lt;td>
-        %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertDstAddressType&lt;/b>&lt;/td>&lt;td>
-        %parm[#11]%;&lt;/td>&lt;td>&lt;p;>
+        %parm[#11]%;&lt;/td>&lt;td>&lt;p>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertDstAddress&lt;/b>&lt;/td>&lt;td>
-        %parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertSrcPort&lt;/b>&lt;/td>&lt;td>
-        %parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
         &lt;tr>&lt;td>&lt;b>
 
         sidaAlertDstPort&lt;/b>&lt;/td>&lt;td>
-        %parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+        %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
                         Snort Event: sidaAlertGeneric trap received
                         sidaSensorVersion=%parm[#1]%

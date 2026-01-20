@@ -63,6 +63,11 @@ public class KafkaDispatcherBlueprintIT extends CamelBlueprintTest {
     }
 
     @Override
+    public boolean isUseAdviceWith() {
+        return true;
+    }
+
+    @Override
     protected String setConfigAdminInitialConfiguration(final Properties props) {
         props.put("bootstrap.servers", "127.0.0.1:9092");
         return KafkaSinkConstants.KAFKA_CONFIG_PID;

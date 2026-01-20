@@ -1,2 +1,2 @@
-repo: develop
-parent_branch: develop
+repo: release-35.x
+parent_branch: release-35.x

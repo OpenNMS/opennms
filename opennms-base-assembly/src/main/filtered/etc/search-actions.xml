@@ -137,7 +137,7 @@
         </roles>
     </action>
     <action>
-        <label>Customize Event Configurations</label>
+        <label>Manage Event Configurations</label>
         <url>ui/index.html#/event-config</url>
         <roles>
             <role>ROLE_ADMIN</role>

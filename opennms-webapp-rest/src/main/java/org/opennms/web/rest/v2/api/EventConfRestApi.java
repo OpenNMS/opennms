@@ -19,6 +19,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -299,5 +300,39 @@ public interface EventConfRestApi {
             @PathParam("sourceId") Long sourceId,
             @Context SecurityContext securityContext
     ) throws Exception;
+
+    @GET
+    @Path("/vendors/{vendorName}/events")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Get EventConf Events by Vendor",
+            description = "Returns all EventConf events associated with the specified vendor name.",
+            operationId = "getEventsByVendor"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf Events retrieved successfully",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing vendor name"),
+            @ApiResponse(responseCode = "404", description = "No events found for the specified vendor"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventsByVendor(
+            @PathParam("vendorName") String vendorName,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @POST
+    @Path("/sources/eventConfSource")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new  EventConfSource",
+            description = "Creates and adds a new  EventConfSource.",
+            operationId = "addEventConfSourceEvent")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "EventConfSource created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")})
+    Response addEventConfSource(final AddEventConfSourceRequest request, @Context SecurityContext securityContext) throws Exception;
 
 }

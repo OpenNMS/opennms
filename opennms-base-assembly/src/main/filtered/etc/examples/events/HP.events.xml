@@ -167,9 +167,9 @@
       <descr>&lt;p>Sent whenever hpHttpMgHealth changes state.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpHttpMgHealth&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(1) information(2) ok(3) warning(4) critical(5) nonrecoverable(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Mgmt HTTP Changed State&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -225,9 +225,9 @@
  hpicfMediaAvailLostTrap.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rpMauMediaAvailable&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) unknown(2) available(3) notAvailable(4) remoteFault(5) invalidSignal(6) remoteJabber(7) 
- remoteLinkLoss(8) remoteTest(9) offline(10) autoNegError(11)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ remoteLinkLoss(8) remoteTest(9) offline(10) autoNegError(11)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Link Beat Status Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -260,9 +260,9 @@
  hpicfPortPartitionTrap and the hpicfPortHealTrap.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rptrPortAutoPartitionState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  notAutoPartitioned(1) autoPartitioned(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Port Partition State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -299,10 +299,10 @@
  state is returned in the PDU.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rpMauMediaAvailable&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) unknown(2) available(3) notAvailable(4) remoteFault(5) invalidSignal(6) remoteJabber(7) remoteLinkLoss(8) 
  remoteTest(9) offline(10) autoNegError(11)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Media Now Available.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -339,10 +339,10 @@
  state is returned in the PDU.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rpMauMediaAvailable&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) unknown(2) available(3) notAvailable(4) remoteFault(5) invalidSignal(6) remoteJabber(7) 
  remoteLinkLoss(8) remoteTest(9) offline(10) autoNegError(11)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Media Lost.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -374,9 +374,9 @@
  PDU.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rptrPortAutoPartitionState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  notAutoPartitioned(1) autoPartitioned(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Port Auto-Partitioned.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -407,9 +407,9 @@
  the port that healed is returned in the PDU.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rptrPortAutoPartitionState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  notAutoPartitioned(1) autoPartitioned(2)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Port Not Partitioned.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -445,7 +445,7 @@
  recipients.).&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpicfSelfTestResultText&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Self-Test Failed: %parm[#1]%.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -474,7 +474,7 @@
  is the identifier for the new node.
  &lt;/p>&lt;p>
  Replaced by Cold Start&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>hpicfChainId&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>hpicfChainId&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub New Node on Chain.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -499,7 +499,7 @@
  been removed from the Distributed Management Chain
  connected to this agent.  The hpicfChainId returned
  is the identifier for the node that was removed.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>hpicfChainId&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>hpicfChainId&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Node Removed from Chain.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -526,11 +526,11 @@
  status value for the changed sensor.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpicfSensorStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(1) bad(2) warning(3) good(4) notPresent(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpicfSensorDescr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Chassis Sensor Change.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -555,24 +555,24 @@
  Finder creates an entry in the hpicfFfLogTable.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpicfFfLogFaultType&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  badDriver(1) badXcvr(2) badCable(3) tooLongCable(4) overBandwidth(5) bcastStorm(6) partition(7)
  misconfiguredSQE(8) polarityReversal(9) networkLoop(10) lossOfLink(11) portSecurityViolation(12)
  backupLinkTransition(13) meshingFault(14) fanFault(15) rpsFault(16) stuck10MbFault(17) lossOfStackMember(18)
  hotSwapReboot(19)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpicfFfLogAction&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  none(1) warn(2) warnAndDisable(3) warnAndSpeedReduce(4) warnAndSpeedReduceAndDisable(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpicfFfLogSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  informational(1) medium(2) critical(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpicfFfFaultInfoURL&lt;/b>&lt;/td>&lt;td>
  &lt;a HREF=&quot;%parm[#4]%&quot;>
  Device fault message&lt;/a>
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Fault Found.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -610,19 +610,19 @@
  additional information on the type of violation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hubIntruderGroup&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hubIntruderPort&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hubIntruderAddress&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hubIntruderType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  address(1) training(2) both(3) none(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hubIntruderTrainingViolation&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  noViolation(1) promiscuousViolation(2) repeaterViolation(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Port Security Violation.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -651,9 +651,9 @@
  primary link failure is included in the trap.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpicfBackupLinkState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  notActive(1) usingPrimary(2) usingBackup(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Using Backup Link.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -684,9 +684,9 @@
  state for the tranceiver that made the transition.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpVgXcvrState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(1) inUse(2) standby(3) silent(4) linkFailure(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Redundant Uplink Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -713,9 +713,9 @@
  port's status is returned in the trap.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  icfVgPortStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  active(1) inactive(2) training(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Port No Longer Active.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -759,9 +759,9 @@
  trap means sending to all configured recipients.)&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  icfVgRepeaterHealthState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) ok(2) rptrFailure(3) groupFailure(4) portFailure(5) generalFailure(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -813,9 +813,9 @@
  trap means sending to all configured recipients.)&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  icfVgRepeaterHealthState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  other(1) ok(2) rptrFailure(3) groupFailure(4) portFailure(5) generalFailure(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: ICF Hub Reset Complete.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -839,11 +839,11 @@
       <descr>&lt;p>Sent by the subagent when it starts.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcClusterState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  unknown(-1) down(0) up(1)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcClusterName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Subagent Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -868,9 +868,9 @@
  reformed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcClusterIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcClusterName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Cluster Reformed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -895,9 +895,9 @@
  first initiated.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcClusterIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcClusterName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Clustering Initiated.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -922,9 +922,9 @@
  being halted.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcClusterIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcClusterName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Clustering Halted.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -948,9 +948,9 @@
       <descr>&lt;p>Sent when the cluster configuration is modified.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcClusterIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcClusterName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Cluster Configuration Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -975,15 +975,15 @@
  run script has been started on a cluster node.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgStatus&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Package Run Script Started.&lt;/p></logmsg>
       <severity>Indeterminate</severity>
    </event>
@@ -1008,15 +1008,15 @@
  run script has completed successfully on a cluster node.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgStatus&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Package Run Script Completed Okay.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1041,15 +1041,15 @@
  halt script has been started on a cluster node.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcNodeName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgStatus&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Package Halt Script Started.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1074,13 +1074,13 @@
  halt script has completed on a cluster node.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgCurrNode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Package Halt Script Completed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1105,13 +1105,13 @@
  down on a cluster node.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgSvcIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgSvcName&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Service Down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1136,11 +1136,11 @@
  global or local switch enable has been toggled.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGPkgName&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Package State Toggled.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1164,7 +1164,7 @@
       <descr>&lt;p>Sent when ServiceGuard adds a relocatable IP address.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGPkgAddr&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard IP Address Added.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1186,7 +1186,7 @@
       <uei>uei.opennms.org/vendor/HP/traps/hpmcSGIPAddrDown</uei>
       <event-label>HP-MCSG defined trap event: hpmcSGIPAddrDown</event-label>
       <descr>&lt;p>Sent when ServiceGuard removes a relocatable IP address.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>hpmcSGPkgAddr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>hpmcSGPkgAddr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard IP Address Removed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1211,9 +1211,9 @@
  switch from one network interface to another.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hpmcSGNetIfName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hpmcSGNetIfName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Network Switch.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1236,7 +1236,7 @@
       <event-label>HP-MCSG defined trap event: hpmcSGSubnetUp</event-label>
       <descr>&lt;p>Sent when ServiceGuard detects that a previously disabled
  subnet is now operational.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>hpmcSGPkgSubnet&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>hpmcSGPkgSubnet&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Subnet Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -1259,7 +1259,7 @@
       <event-label>HP-MCSG defined trap event: hpmcSGSubnetDown</event-label>
       <descr>&lt;p>Sent when ServiceGuard detects that a previously 
  operational subnet is now down.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>hpmcSGPkgSubnet&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>hpmcSGPkgSubnet&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Service Guard Subnet Down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1351,7 +1351,7 @@
  to operate normally.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snChasPwrSupplyStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Power Supply Failure.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -1377,9 +1377,9 @@
  configured to that port.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snSwViolatorPortNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snSwViolatorMacAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Maximum MAC Addresses Exceeded on Port.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1409,13 +1409,13 @@
  Backup).&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusIpAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusState&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  down(1) loopback(2) waiting(3) pointToPoint(4) designatedRouter(5) backupDesignatedRouter(6) 
- otherDesignatedRouter(7)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ otherDesignatedRouter(7)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Interface State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1445,15 +1445,15 @@
  state (i.e., Point-to-Point).&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusAreaID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusNeighbor&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusState&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  down(1) pointToPoint(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Interface State Change.%&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1488,15 +1488,15 @@
  ospfIfStateChange.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfNbrIpAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfNbrRtrId&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfNbrState&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  down(1) attempt(2) init(3) twoWay(4) exchangeStart(5) exchange(6) loading(7) full(8)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Neighbor State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1525,15 +1525,15 @@
  progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtNbrArea&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtNbrState&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  down(1) attempt(2) init(3) twoWay(4) exchangeStart(5) exchange(6) loading(7) full(8)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Neighbor State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1563,20 +1563,20 @@
  prevents an adjacency from forming.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusIpAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketSrc&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfConfigErrorType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  badVersion(1) areaMismatch(2) unknownNbmaNbr(3) unknownVirtualNbr(4) authTypeMismatch(5) authFailure(6) 
  netMaskMismatch(7) helloIntervalMismatch(8) deadIntervalMismatch(9) optionMismatch(10)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSFP Interface Configuration Error.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1606,20 +1606,20 @@
  jacency from forming.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusAreaID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusNeighbor&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfConfigErrorType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  badVersion(1) areaMismatch(2) unknownNbmaNbr(3) unknownVirtualNbr(4) authTypeMismatch(5) authFailure(6) 
  netMaskMismatch(7) helloIntervalMismatch(8) deadIntervalMismatch(9) optionMismatch(10)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Interface Configuration Error.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1648,20 +1648,20 @@
  type.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusIpAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketSrc&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfConfigErrorType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  badVersion(1) areaMismatch(2) unknownNbmaNbr(3) unknownVirtualNbr(4) authTypeMismatch(5) authFailure(6) 
  netMaskMismatch(7) helloIntervalMismatch(8) deadIntervalMismatch(9) optionMismatch(10)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Interface Authentication Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1689,20 +1689,20 @@
  authentication key or authentication type.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusAreaID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusNeighbor&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfConfigErrorType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  badVersion(1) areaMismatch(2) unknownNbmaNbr(3) unknownVirtualNbr(4) authTypeMismatch(5) authFailure(6) 
  netMaskMismatch(7) helloIntervalMismatch(8) deadIntervalMismatch(9) optionMismatch(10)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Interface Authentication Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1728,15 +1728,15 @@
  interface that cannot be parsed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusIpAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketSrc&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Interface Receive Packet Parse Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1762,15 +1762,15 @@
  that cannot be parsed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusAreaID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusNeighbor&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Interface Receive Packet Parse Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1799,23 +1799,23 @@
  identify the LSDB entry.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfIfStatusIpAddress&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfNbrRtrId&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  routerLink(1) networkLink(2) summaryLink(3) asSummaryLink(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbLsId&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbRouterId&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Interface Packet Retransmit Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1844,23 +1844,23 @@
  the LSDB entry.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusAreaID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfVirtIfStatusNeighbor&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfPacketType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  hello(1) dbDescript(2) lsReq(3) lsUpdate(4) lsAck(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbType&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  routerLink(1) networkLink(2) summaryLink(3) asSummaryLink(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbLsId&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbRouterId&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Virtual Interface Packet Retransmit Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1892,17 +1892,17 @@
  MaxAge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbAreaId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbType&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  routerLink(1) networkLink(2) summaryLink(3) asSummaryLink(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbLsId&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbRouterId&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF New LSA Due to Topology Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1928,17 +1928,17 @@
  aged to MaxAge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbAreaId&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbType&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  routerLink(1) networkLink(2) summaryLink(3) asSummaryLink(4)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbLsId&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfLsdbRouterId&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF LSA Reached Maximum Age,&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1964,9 +1964,9 @@
  base has exceeded ospfExtLsdbLimit.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfExtLsdbLimit&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF Max LSAs Reached.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -1993,9 +1993,9 @@
  ospfExtLsdbLimit.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snOspfRouterId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snOspfExtLsdbLimit&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: OSPF LSAs at 90% of Maximum.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2020,7 +2020,7 @@
  of connections reached.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4MaxSessionLimit&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Max Sessions Reached.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2045,7 +2045,7 @@
  SYN limits reached.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TcpSynLimit&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: TCP SYN Limit Reached.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2070,9 +2070,9 @@
  real server is up.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Load Balancing Real Server Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2097,9 +2097,9 @@
  real server is down.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Load Balancing Real Server Down.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2124,11 +2124,11 @@
  real server TCP port is up.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerPort&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Load Balancing Real Server TCP Port Up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2153,11 +2153,11 @@
  real server TCP port is down.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerPort&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Load Balancing Real Server TCP Port Down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2182,11 +2182,11 @@
  maximum number of connections.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snL4TrapRealServerCurConnections&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Real Server at Maximum Connections.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2255,7 +2255,7 @@
       <event-label>HP-SN-TRAP-MIB defined trap event: snTrapModuleInserted</event-label>
       <descr>&lt;p>The SNMP trap that is generated when a module was inserted
  to the chassis during system running.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Module Inserted.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2278,7 +2278,7 @@
       <event-label>HP-SN-TRAP-MIB defined trap event: snTrapModuleRemoved</event-label>
       <descr>&lt;p>The SNMP trap that is generated when a module was removed
  from the chassis during system running.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Module Removed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2303,9 +2303,9 @@
  to operate normally.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snChasPwrSupplyIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snChasPwrSupplyDescription&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Power Supply Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2330,9 +2330,9 @@
  to operate normally.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snChasFanIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snChasFanDescription&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Fan Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2358,7 +2358,7 @@
  configured to that port.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Maximum MAC Addresses on Port.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2383,7 +2383,7 @@
  changed state from active to standby or vice-versa.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: FSRP Interface State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2408,7 +2408,7 @@
  changed state from master to backup or vice-versa.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: VRRP Interface State Change.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2433,7 +2433,7 @@
  changes redundancy state.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Management Module Redundancy State Change,&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2458,7 +2458,7 @@
  reading is above the warning temperature threshold.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: High Temperature Threshold.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -2483,7 +2483,7 @@
  by an access list.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Packet Denied by Access List.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2508,7 +2508,7 @@
  by a MAC address filter.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Packet Denied by MAC Address,&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2532,7 +2532,7 @@
       <descr>&lt;p>The SNMP trap that is generated when the connection to the remote SI is established.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Connection to Remote SI up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2556,7 +2556,7 @@
       <descr>&lt;p>The SNMP trap that is generated when the connection to the remote SI is down.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Connection to Remote SI down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2580,7 +2580,7 @@
       <descr>&lt;p>The SNMP trap that is generated when the connection to the GSLB SI is established.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Connection to GSLB SI up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2604,7 +2604,7 @@
       <descr>&lt;p>The SNMP trap that is generated when the connection to the GSLB SI is down.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Connection to GSLB SI down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2627,7 +2627,7 @@
       <event-label>HP-SN-TRAP-MIB defined trap event: snTrapL4GslbHealthCheckIpUp</event-label>
       <descr>&lt;p>The SNMP trap that is generated when GSLB health check for an address transitions
  from down to active state.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: GSLB Health Check IP Address up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2652,7 +2652,7 @@
  from active to down state.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: GSLB Health Check IP Address down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -2676,7 +2676,7 @@
       <descr>&lt;p>The SNMP trap that is generated when a given port for a health check address is up.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: GSLB Health Check Port up.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -2700,7 +2700,7 @@
       <descr>&lt;p>The SNMP trap that is generated when a given port for a health check address is down.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: GSLB Health Check Port down.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31640,7 +31640,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <event-label>HPNSATRAP-MIB defined trap event: rtConfigUpdated</event-label>
       <descr>&lt;p>Adapter-%parm[#1]%: A New Configuration has been written.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: New Configuration.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31664,15 +31664,15 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Channel-%parm[#2]%, Target-%parm[#3]%: Drive State Changed from %parm[#4]% to %parm[#5]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtChannelNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtTargetID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtOldDriveState&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtNewDriveState&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Physical Drive State Changed from %parm[#4]% to %parm[#5]%.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31696,13 +31696,13 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: State Changed from %parm[#3]% to %parm[#4]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtOldDriveState&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtNewDriveState&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Logical Drive State Changed from %parm[#3]% to %parm[#4]%.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31726,9 +31726,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Initialization Started.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Init.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31752,9 +31752,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Initialization Completed Successfully.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Init Complete.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31778,9 +31778,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Initialization Aborted by User.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Init Aborted by User.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31804,9 +31804,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Initialization Failed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Init Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -31830,9 +31830,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Check Consistency Started.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>rtAdapterNumber
  &lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Check Consistency Started.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31857,9 +31857,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Inconsistencies Found.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Check Consistency Okay.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31883,9 +31883,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Check Consistency Aborted by User.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Consistency Check Aborted by User.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31910,9 +31910,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Inconsistencies have been Cured.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Consistency Corrected.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31936,9 +31936,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]%, Logical Drive-%parm[#2]%: Check Consistency Failed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Consistency Check Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -31962,9 +31962,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]% Logical Drive-%parm[#2]% Reconstruction Started.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Reconstruction Started.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -31988,9 +31988,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]% Logical Drive-%parm[#2]% Reconstruction Completed Successfully.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Reconstruction Completed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32014,9 +32014,9 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]% Logical Drive-%parm[#2]% Reconstruction Failed.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtLogicalDriveNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Reconstruction Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32043,19 +32043,19 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Sense Key = 0x%parm[#5]%, ASC = 0x%parm[#6]%, ASCQ = 0x%parm[#7]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtChannelNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtTargetID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtDriveVendor&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtSenseKey&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASC&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASCQ&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Predictive Failures Below Threshold.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32081,19 +32081,19 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Sense Key = 0x%parm[#5]%, ASC = 0x%parm[#6]%, ASCQ = 0x%parm[#7]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtChannelNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtTargetID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtDriveVendor&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtSenseKey&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASC&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASCQ&lt;/b>&lt;/td>&lt;td>%parm[#7]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Predictive Failures Above Threshold.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -32118,17 +32118,17 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Sense_Key-0x%parm[#4]% ASC-0x%parm[#5]% ASCQ-0x%parm[#6]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtChannelNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtTargetID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtSenseKey&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASC&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtASCQ&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Drive Check Condition Status.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32152,11 +32152,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Adapter-%parm[#1]% Channel-%parm[#2]% Target-%parm[#3]%: New Device Inserted.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtChannelNumber&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  rtTargetID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: New Drive Inserted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32178,7 +32178,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <uei>uei.opennms.org/vendor/HP/traps/rtBatteryMissing</uei>
       <event-label>HPNSATRAP-MIB defined trap event: rtBatteryMissing</event-label>
       <descr>&lt;p>Adapter-%parm[#1]% Battery Module is missing.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Battery Module Missing.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32200,7 +32200,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <uei>uei.opennms.org/vendor/HP/traps/rtBatteryVolatageLow</uei>
       <event-label>HPNSATRAP-MIB defined trap event: rtBatteryVolatageLow</event-label>
       <descr>&lt;p>Adapter-%parm[#1]% Battery Module Voltage is Low.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Battery Voltage Low.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32222,7 +32222,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <uei>uei.opennms.org/vendor/HP/traps/rtBatteryTemperatureHigh</uei>
       <event-label>HPNSATRAP-MIB defined trap event: rtBatteryTemperatureHigh</event-label>
       <descr>&lt;p>Adapter-%parm[#1]% Battery Module Temperature Exceeded Danger Threshold.&lt;/p>&lt;table>
- &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;tr>&lt;td>&lt;b>rtAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Battery Temperature High.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32313,11 +32313,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  and Manager Id %parm[#3]% is discovered&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycHostAdapterID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycManagerID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Host Adapter Discovered.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32342,11 +32342,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  and Manager Id %parm[#3]% &lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycHostAdapterID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycManagerID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Host Adapter Changed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -32370,7 +32370,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>The HostAdapter# %parm[#1]% has Failed&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Host Adapter Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32394,7 +32394,7 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Host Adapter# %parm[#1]% recovered&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Host Adapter Recovered.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32419,11 +32419,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Lun# %parm[#3]% has failed &lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycScsiTargetID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycLun&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Device Failed.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -32449,15 +32449,15 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
 	has discovered &lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycScsiTargetID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycLun&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycVendor&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycProduct&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Device Discovered.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32482,11 +32482,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Lun# %parm[#3]% has recovered &lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycScsiTargetID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycLun&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Device Recovered.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -32512,15 +32512,15 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Product %parm[#5]% information &lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycScsiTargetID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycLun&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycVendor&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycProduct&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Device Changed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -32546,17 +32546,17 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
    on vendor  product %parm[#4]% with sense info %parm[#5]%.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  cycHostAdapterNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycScsiTargetID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycLun&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycVendor&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycProduct&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  cycSenseInfo&lt;/b>&lt;/td>&lt;td>%parm[#6]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Cyclone Device Predictive Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33057,11 +33057,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  in the performance of the tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Read.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33087,11 +33087,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  in the capacity of the tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Write.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33117,11 +33117,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  drive cannot correct.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive R/W Error.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33148,13 +33148,13 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. Restart the operation with a different tape&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  currentMedia&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Bad Tape.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33179,11 +33179,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Call the tape drive supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Bad Tape or Drive.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33211,11 +33211,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
    supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Test for Bad Tape or Drive.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33242,13 +33242,13 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Discard the old tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  currentMedia&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape End of Life.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33274,11 +33274,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Replace the cartridge with a data-grade tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Need Data Grade Tape.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33304,11 +33304,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  another tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Write Protected.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33334,11 +33334,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  complete before ejecting the cartridge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Eject Failed - Drive in Use.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33364,11 +33364,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  data-grade tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape is Cleaning Cartridge.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33393,11 +33393,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  which is not supported by this drive.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Type Not Supported.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33424,11 +33424,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Restart the operation with a different tape.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Snapped.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33455,11 +33455,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Call the tape drive supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Snapped- Do Not Extract.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -33484,13 +33484,13 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Do not use the cartridge for further backup operations.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  currentMedia&lt;/b>&lt;/td>&lt;td>%parm[#4]% 
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Cartridge Memory Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33516,11 +33516,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  or reading.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Manual Eject.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33545,11 +33545,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  The cartridge will appear as write-protected&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Read-Only.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33574,11 +33574,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  File search performance will be degraded.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Directory Corrupt.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33608,11 +33608,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  specific cleaning instructions.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Needs Cleaning.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33640,11 +33640,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  specific cleaning instructions.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Needs Routine Cleaning.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33672,11 +33672,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. Then use a new cleaning cartridge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Old Cleaning Cartridge.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33703,11 +33703,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. Then use a valid cleaning cartridge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Invalid Cleaning Cartridge.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33734,11 +33734,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Preventative Maintenance.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33765,11 +33765,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]% 
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Hardware Fault - Reset.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33799,11 +33799,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on turning the device power on and off.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Hardware Fault - Power Cycle.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33830,11 +33830,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Interface Error.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33861,11 +33861,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Operational Failed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33892,11 +33892,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Obtain the correct firmware and try again.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Incorrect Firmware.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33921,11 +33921,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  exceeding the humidity specifications&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Humidity High.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -33950,11 +33950,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  exceeding the temperature specifications&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Temperature High.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -33978,11 +33978,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>The voltage supply to the tape drive exceeds specifications&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Voltage High.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -34007,11 +34007,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Call the tape drive supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Predictive Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34038,11 +34038,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on running extended diagnostic tests.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Possible Hardware Fault.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34071,11 +34071,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
    supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Drive Change Communication Lost.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34105,11 +34105,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
    supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Autoloader Tape Fault.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34133,11 +34133,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>There is a problem with the autoloader mechanism.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Autoloader Fault.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34168,11 +34168,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
    supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Autoloader Door Open.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34201,11 +34201,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on turning the device power on and off.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Autoloader Hardware Fault.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34231,11 +34231,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Autoloader Magazine Missing.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34260,11 +34260,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Call the tape drive supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Changer Predictive Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34291,11 +34291,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. If problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Communication Problem.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34320,11 +34320,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  If problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Mechanism Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34352,11 +34352,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on resetting the device.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Hardware Fault - Reset.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34385,11 +34385,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on turning the device power on and off.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Hardware Fault - Power Cycle.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34416,11 +34416,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  instructions on running extended diagnostic tests.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Hardware Fault - Run Diagnostics.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34446,11 +34446,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Interface Problem.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34475,11 +34475,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  Call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Predictive Failure.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -34506,11 +34506,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Preventative Maintenance.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34535,11 +34535,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  exceeded the humidity specifications.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Humidity High.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34564,11 +34564,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  exceeded the temperature specifications.e&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Temperature High.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -34594,11 +34594,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  of a redundant power supply&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Voltage High.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -34626,11 +34626,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. If the problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Remove Cartridge.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34657,11 +34657,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. If the problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Eject Failing.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34688,11 +34688,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. If the problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Cartridge Placement.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34717,11 +34717,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  mechanism loading cartridges, or an incompatible cartridge.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Cartridge Loading.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34748,11 +34748,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  3. If the problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Door Open.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34777,11 +34777,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  library media import/export mailslot.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Media Slot Problem.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34807,11 +34807,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. Restart the operation.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Magazine Missing.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34835,11 +34835,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>Library security has been compromised&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Security Error.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34866,11 +34866,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  This is for information purposes only. No action is required.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Security Mode Changed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34894,11 +34894,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>The library has been manually turned offline and is unavailable for use.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Offline.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34923,11 +34923,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  This is for information purposes only. No action is required.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Drive Offline.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34954,11 +34954,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  2. If the problem persists, call the library supplier helpline.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Barcode Problem.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -34986,11 +34986,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
  manual for specific instructions on redoing the library inventory.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Inventory Inconsistency.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -35014,11 +35014,11 @@ it expected an alphanumeric value.&lt;/p>&lt;table>
       <descr>&lt;p>A library operation has been attempted that is invalid at this time.&lt;/p>&lt;table>
  &lt;tr>&lt;td>&lt;b>
  hbaNumber&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  hbaChannel&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  driveScsiID&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>HP Event: Tape Library Invalid Operation.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

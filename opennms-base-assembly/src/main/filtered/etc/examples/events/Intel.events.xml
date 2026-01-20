@@ -22,18 +22,18 @@
  send the 'Authentication failure' trap defined in MIB-2.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  snmpAccessIP&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snmpAccessTime&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snmpAccessProtocol&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  snmp(1) telnet(2) http(3) tftp(4) ftp(5)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  snmpAccessType&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  noAccess(1) readOnly(2) writeOnly(3) readWrite(4) readOnlySecureSNMPObjects(5) 
  readWriteSecureSNMPObjects(6)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Snmp Authentication Violation.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -58,7 +58,7 @@
  the stack.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  chassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Chassis Inserted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -83,7 +83,7 @@
  the stack.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  chassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Chassis Removed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -108,9 +108,9 @@
  the chassis.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Module Inserted into Chassis.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -135,9 +135,9 @@
  the chassis.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Module Removed from Chassis.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -162,11 +162,11 @@
  the chassis/module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  mediaModuleIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Media Module Inserted.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -191,11 +191,11 @@
  the chassis/module.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  moduleChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  moduleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  mediaModuleIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Media Module Removed.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -227,11 +227,11 @@
  port it has been configured for.
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portConfChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfModuleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Permanent Entry Violation.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -258,21 +258,21 @@
  The syntax is (Portnumber, New mode, Old mode)
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  portConfChassisIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfModuleIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
- &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfSwitchMode&lt;/b>&lt;/td>&lt;td>%parm[#4]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
  adaptiveStoreAndForward(6) notAvailable(99)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  portConfSwitchMode&lt;/b>&lt;/td>&lt;td>%parm[#5]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  cutThrough(1) adaptiveCutThrough(2) fragmentFree(3) adaptiveFragmentFree(4) storeAndForward(5) 
  adaptiveStoreAndForward(6) notAvailable(99)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Forwarding Mode Changed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -297,8 +297,8 @@
  chassis has changed
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  temperatureLevel&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>normal(1) high(2) critical(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/td>&lt;td>&lt;p>normal(1) high(2) critical(3)
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Temperature Status Change.&lt;/p></logmsg>
       <severity>Major</severity>
    </event>
@@ -323,9 +323,9 @@
  power supply has changed
  &lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>
  redundantPowerSupplyStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%
- &lt;/td>&lt;td>&lt;p;>
+ &lt;/td>&lt;td>&lt;p>
  notPresent(1) present(2) active(3)
- &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+ &lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Intel Event: Redundant Power Supply Status Change.&lt;/p></logmsg>
       <severity>Minor</severity>
    </event>
@@ -375,11 +375,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	userLoginName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	remoteHost&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Loginfailed trap received 
@@ -410,11 +410,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	userLoginName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	remoteHost&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Loginsuccess trap received 
@@ -445,11 +445,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	userLoginName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	remoteHost&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b></descr>
       <logmsg dest="logndisplay">&lt;p>
 			SecurityViolation trap received 
@@ -480,11 +480,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	eventType&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	eventDesc&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Generic trap received 
@@ -515,11 +515,11 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	userLoginName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	remoteHost&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Logout trap received 
@@ -804,7 +804,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: presenceHeartbeat trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -832,7 +832,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: coverTamper trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -860,7 +860,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: voltage_Fan_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -888,7 +888,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: lANLeash trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -916,7 +916,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: temperature trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -944,7 +944,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: processorMissing trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -972,7 +972,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: processorTemperature trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1000,7 +1000,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: watchdog trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1028,7 +1028,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: p_O_S_T trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1056,7 +1056,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: unknownEvent trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1084,7 +1084,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: processor_0_Missing trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1112,7 +1112,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: processor_1_Missing trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1140,7 +1140,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: voltage_Fan trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1168,7 +1168,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: voltage trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1196,7 +1196,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: fan trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1224,7 +1224,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: fan_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1252,7 +1252,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: voltage_Temperature trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1280,7 +1280,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: undock trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1308,7 +1308,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: eventClear trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1336,7 +1336,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: clientAdded trap received 
 			systemName=%parm[#1]%&lt;/p>
@@ -1364,7 +1364,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	systemName&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Intel: clientDeleted trap received 
 			systemName=%parm[#1]%&lt;/p>

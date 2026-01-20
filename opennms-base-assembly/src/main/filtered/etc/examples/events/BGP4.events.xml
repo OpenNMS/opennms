@@ -17,7 +17,7 @@
       <uei>uei.opennms.org/standard/rfc1657/traps/bgpEstablished</uei>
       <event-label>BGP4-MIB defined trap event: bgpEstablished</event-label>
       <descr>&lt;p>The BGP Established event is generated when
-the BGP FSM enters the ESTABLISHED state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bgpPeerLastError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>bgpPeerState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+the BGP FSM enters the ESTABLISHED state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bgpPeerLastError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>bgpPeerState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>bgpEstablished trap received bgpPeerLastError=%parm[#1]% bgpPeerState=%parm[#2]%&lt;/p></logmsg>
       <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1657/traps/bgpBackwardTransition:%dpname%:%nodeid%:%parm[names-all]%" auto-clean="true"/>
@@ -41,7 +41,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bg
       <event-label>BGP4-MIB defined trap event: bgpBackwardTransition</event-label>
       <descr>&lt;p>The BGPBackwardTransition Event is generated
 when the BGP FSM moves from a higher numbered
-state to a lower numbered state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bgpPeerLastError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>bgpPeerState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+state to a lower numbered state.&lt;/p>&lt;table>&lt;tr>&lt;td>&lt;b>bgpPeerLastError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>bgpPeerState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>idle(1) connect(2) active(3) opensent(4) openconfirm(5) established(6)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>bgpBackwardTransition trap received bgpPeerLastError=%parm[#1]% bgpPeerState=%parm[#2]%&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[names-all]%" alarm-type="1" auto-clean="true"/>

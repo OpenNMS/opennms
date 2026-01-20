@@ -29,17 +29,17 @@
             notification will be suppressed.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             none(0) responses(1) timingMark(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>TN3270 Event: Average Response Time Exceeds Threshold.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>
@@ -70,17 +70,17 @@
             set for this notification to be generated.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             none(0) responses(1) timingMark(2)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>TN3270 Event: Average Response Time Now Below Threshold.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -111,12 +111,12 @@
             (rather than a zero-length octet string).&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>
-            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>
+            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eResMapElementType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             other(1) terminal(2) printer(3) terminalOrPrinter(4)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>TN3270 Event: Response Time Data Collection Enabled.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
@@ -145,40 +145,40 @@
             set for this notification to be generated.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             tn3270eRtDataDiscontinuityTime&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#5]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataTotalRts&lt;/b>&lt;/td>&lt;td>%parm[#6]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataTotalIpRts&lt;/b>&lt;/td>&lt;td>%parm[#7]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#8]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataCountDrs&lt;/b>&lt;/td>&lt;td>%parm[#9]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataElapsRndTrpSq&lt;/b>&lt;/td>&lt;td>%parm[#10]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataElapsIpRtSq&lt;/b>&lt;/td>&lt;td>%parm[#11]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataBucket1Rts&lt;/b>&lt;/td>&lt;td>%parm[#12]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataBucket2Rts&lt;/b>&lt;/td>&lt;td>%parm[#13]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataBucket3Rts&lt;/b>&lt;/td>&lt;td>%parm[#14]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataBucket4Rts&lt;/b>&lt;/td>&lt;td>%parm[#15]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataBucket5Rts&lt;/b>&lt;/td>&lt;td>%parm[#16]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#17]%
-            &lt;/td>&lt;td>&lt;p;>
-            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>
+            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>TN3270 Event: Response Time Data Collection Ended.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>

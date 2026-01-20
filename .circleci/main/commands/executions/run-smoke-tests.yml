@@ -53,11 +53,13 @@ commands:
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
       - store_test_results:
           path: ~/test-results
+      - run:
+          name: Copy artifacts on failure
+          when: on_fail
+          command: |
+            mkdir -p ~/failure-artifacts
+            cp -R ~/test-results ~/failure-artifacts/ || true
+            cp -R ~/test-artifacts ~/failure-artifacts/ || true
       - store_artifacts:
-          when: always
-          path: ~/test-results
-          destination: test-results
-      - store_artifacts:
-          when: always
-          path: ~/test-artifacts
-          destination: test-artifacts
+          path: ~/failure-artifacts
+          destination: failure-artifacts

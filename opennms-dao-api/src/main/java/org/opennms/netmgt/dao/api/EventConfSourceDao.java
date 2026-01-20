@@ -57,4 +57,6 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
     List<String> findAllNames();
 
     Integer findMaxFileOrder();
+
+    List<String> findAllVendors();
 }

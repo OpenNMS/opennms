@@ -189,7 +189,7 @@ passive discovery:: The process by which a `newSuspect` event is detected by pro
 You can configure trapd and syslogd to generate this event when {page-component-title} receives messages from nodes that do not exist in the database (see xref:operation:deep-dive/provisioning/directed-discovery.adoc#requisition-new-suspect[Add nodes via newSuspect events]).
 
 https://www.postgresql.org/[PostgreSQL]:: A commonly used open-source relational database known for its stability.
-PostgreSQL scales up, but not out (see xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL]).
+PostgreSQL scales up, but not out (see xref:deployment:core/install.adoc#setup-postgresql[Set up PostgreSQL]).
 
 provisioning:: The process of importing node and service definitions to a {page-component-title} instance from either an external source (for example, DNS, HTTP) or via the web UI (see xref:operation:deep-dive/provisioning/introduction.adoc[]).
 

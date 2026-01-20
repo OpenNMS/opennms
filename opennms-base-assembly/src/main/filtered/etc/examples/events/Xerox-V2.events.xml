@@ -37,21 +37,21 @@ by devices of interest.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		unknown(1)
 		running(2)
 		warning(3)
 		testing(4)
 		down(5)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		commonNone(0)
 		commonOther(1)
 		commonUnknown(2)
@@ -113,15 +113,15 @@ by devices of interest.&lt;/p>&lt;table>
 		cruReplace(20005)
 		cruFault(20006)
 		reserved(40000)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmHrDevInfoV2Event trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -171,21 +171,21 @@ by requests they have submitted.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		unknown(1)
 		running(2)
 		warning(3)
 		testing(4)
 		down(5)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		commonNone(0)
 		commonOther(1)
 		commonUnknown(2)
@@ -247,19 +247,19 @@ by requests they have submitted.&lt;/p>&lt;table>
 		cruReplace(20005)
 		cruFault(20006)
 		reserved(40000)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevMgmtCommandRequest&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
 		none(1)
 		startup(2)
 		resetWarning(3)
@@ -338,11 +338,11 @@ by requests they have submitted.&lt;/p>&lt;table>
 		entityRefresh(2936)
 		entityLogin(2941)
 		entityLogout(2942)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevMgmtCommandStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
 		noError(0)
 		tooBig(1)
 		noSuchName(2)
@@ -362,7 +362,7 @@ by requests they have submitted.&lt;/p>&lt;table>
 		authorizationError(16)
 		notWritable(17)
 		inconsistentName(18)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmHrDevMgmtV2Event trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -416,11 +416,11 @@ by device details of interest.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevDetailType&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		other(1)
 		unknown(2)
 		deviceName(3)
@@ -554,11 +554,11 @@ by device details of interest.&lt;/p>&lt;table>
 		deviceRolloverValue(232)
 		deviceCPMenuControl(235)
 		deviceUsageWarningThreshold(240)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevDetailIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmHrDevDetailV2Event trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -608,30 +608,30 @@ Systems MAY add other variable-bindings from any MIB.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevAlertRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevAlertSeverityLevel&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevAlertTrainingLevel&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevAlertCodeInteger&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmHrDevAlertCodeString&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmHrDevAlertV2Event trap received 
 			xcmHrDevAlertRowStatus=%parm[#1]% 
@@ -673,7 +673,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -682,15 +682,15 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmJmxJobAdminOperation&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		other(1)
 		unknown(2)
 		cancelJob(3)
@@ -701,11 +701,11 @@ Additional variable-bindings MAY be appended to this trap:
 		suspendJob(8)
 		resumeJob(9)
 		promoteJob(10)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmJmxJobAdminStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
 		noError(0)
 		tooBig(1)
 		noSuchName(2)
@@ -725,7 +725,7 @@ Additional variable-bindings MAY be appended to this trap:
 		authorizationError(16)
 		notWritable(17)
 		inconsistentName(18)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobOperationV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -766,7 +766,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -775,11 +775,11 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobStateV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -808,7 +808,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -817,15 +817,15 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmNumberOfInterveningJobs&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobCreatedV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -855,7 +855,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -864,19 +864,19 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobKOctetsProcessed&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobImpressionsCompleted&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobCompletedV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -907,7 +907,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -916,19 +916,19 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobKOctetsProcessed&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobImpressionsCompleted&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobStoppedV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -959,7 +959,7 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobState&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknown(2)
 		pending(3)
 		pendingHeld(4)
@@ -968,15 +968,15 @@ Additional variable-bindings MAY be appended to this trap:
 		canceled(7)
 		aborted(8)
 		completed(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobStateReasons1&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmNumberOfInterveningJobs&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobConfigV2Trap trap received 
 			jmJobState=%parm[#1]% 
@@ -1006,19 +1006,19 @@ Additional variable-bindings MAY be appended to this trap:
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobKOctetsPerCopyRequested&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobKOctetsProcessed&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobImpressionsPerCopyRequested&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	jmJobImpressionsCompleted&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJmxJobProgressV2Trap trap received 
 			jmJobKOctetsPerCopyRequested=%parm[#1]% 
@@ -1140,11 +1140,11 @@ of the xcmJobClientId and xcmJobIdentifierOnSystem objects.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmJobIdentifierOnSystem&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmJobV2AlertNew trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -1216,15 +1216,15 @@ of the xcmJobClientId and xcmJobIdentifierOnSystem objects.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmJobIdentifierOnSystem&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmDocSequenceNumber&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmDocV2AlertNew trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -1267,14 +1267,14 @@ between SNMP manager and SNMP agent implementers.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmRsrcRowStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		active(1)
 		notInService(2)
 		notReady(3)
 		createAndGo(4)
 		createAndWait(5)
 		destroy(6)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmRsrcV2Event trap received 
 			xcmRsrcRowStatus=%parm[#1]%&lt;/p>
@@ -1318,18 +1318,18 @@ by associated queues of interest.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueOnSystem&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		true(1)
 		false(2)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueState&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		other(1)
 		unknown(2)
 		inoperative(3)
@@ -1339,23 +1339,23 @@ by associated queues of interest.&lt;/p>&lt;table>
 		opening(7)
 		recovering(8)
 		opened(9)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueFaultCount&lt;/b>&lt;/td>&lt;td>
-	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueFaultCode&lt;/b>&lt;/td>&lt;td>
-	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonQueueFaultString&lt;/b>&lt;/td>&lt;td>
-	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmSvcMonQueueExtV2Event trap received 
 			xcmSvcMonQueueIndex=%parm[#1]% 
@@ -1405,11 +1405,11 @@ by services of interest.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceCurrentState&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		ready(1)
 		onRequest(2)
 		unavailable(3)
@@ -1417,11 +1417,11 @@ by services of interest.&lt;/p>&lt;table>
 		busy(5)
 		initializing(6)
 		terminating(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServicePreviousState&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		ready(1)
 		onRequest(2)
 		unavailable(3)
@@ -1429,11 +1429,11 @@ by services of interest.&lt;/p>&lt;table>
 		busy(5)
 		initializing(6)
 		terminating(7)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceConditions&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmSvcMonServiceV2Event trap received 
 			xcmSvcMonServiceIndex=%parm[#1]% 
@@ -1484,11 +1484,11 @@ by requests they have submitted.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceMgmtOperation&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		none(0)
 		other(1)
 		unknown(2)
@@ -1516,11 +1516,11 @@ by requests they have submitted.&lt;/p>&lt;table>
 		serviceResetFactory(2234)
 		serviceLogin(2241)
 		serviceLogout(2242)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSvcMonServiceMgmtStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		noError(0)
 		tooBig(1)
 		noSuchName(2)
@@ -1540,7 +1540,7 @@ by requests they have submitted.&lt;/p>&lt;table>
 		authorizationError(16)
 		notWritable(17)
 		inconsistentName(18)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmSvcMonServiceMgmtV2Event trap received 
 			xcmSvcMonServiceIndex=%parm[#1]% 
@@ -1606,15 +1606,15 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	hrDeviceIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmJobIdentifierOnSystem&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSimpleJobMgmtOperation&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		none(0)
 		other(1)
 		unknown(2)
@@ -1636,11 +1636,11 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 		docRemove(1514)
 		jobManage(2401)
 		docManage(2501)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSimpleJobMgmtStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
 		noError(0)
 		tooBig(1)
 		noSuchName(2)
@@ -1660,7 +1660,7 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 		authorizationError(16)
 		notWritable(17)
 		inconsistentName(18)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmSimpleJobMgmtV2Event trap received 
 			hrDeviceIndex=%parm[#1]% 
@@ -1719,11 +1719,11 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSimpleJobInterceptClientId&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSimpleJobInterceptOperation&lt;/b>&lt;/td>&lt;td>
-	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		none(0)
 		other(1)
 		unknown(2)
@@ -1745,11 +1745,11 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 		docRemove(1514)
 		jobManage(2401)
 		docManage(2501)
-	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;/p>&lt;/td>&lt;/tr>
 	&lt;tr>&lt;td>&lt;b>
 
 	xcmSimpleJobInterceptStatus&lt;/b>&lt;/td>&lt;td>
-	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		noError(0)
 		tooBig(1)
 		noSuchName(2)
@@ -1769,7 +1769,7 @@ of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p>&lt;table>
 		authorizationError(16)
 		notWritable(17)
 		inconsistentName(18)
-	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			xcmSimpleJobInterceptV2Event trap received 
 			xcmSimpleJobInterceptClientId=%parm[#1]% 

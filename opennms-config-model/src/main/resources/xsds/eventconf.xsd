@@ -776,12 +776,18 @@
 
     <complexType mixed="true">
       <sequence minOccurs="0" maxOccurs="1">
-        <element minOccurs="1" maxOccurs="1" name="vbnumber" type="int">
-          <annotation>
-            <documentation>The varbind element number</documentation>
-          </annotation>
-        </element>
-
+        <choice>
+          <element minOccurs="1" maxOccurs="1" name="vbnumber" type="int">
+            <annotation>
+              <documentation>The varbind element number</documentation>
+            </annotation>
+          </element>
+          <element minOccurs="1" maxOccurs="1" name="vboid" type="string">
+            <annotation>
+              <documentation>The varbind oid</documentation>
+            </annotation>
+          </element>
+        </choice>
         <element minOccurs="1" maxOccurs="unbounded" name="vbvalue" type="string">
           <annotation>
             <documentation>The varbind element value</documentation>

@@ -43,6 +43,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +87,7 @@ import static org.mockito.Mockito.when;
 
 })
 
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class EventConfRestServiceIT {
 
@@ -495,6 +496,7 @@ public class EventConfRestServiceIT {
         event.setCreatedTime(new Date());
         event.setLastModified(new Date());
         event.setModifiedBy("JUnitTest");
+        event.setSeverity(severity);
 
         eventConfEventDao.saveOrUpdate(event);
     }
@@ -806,6 +808,93 @@ public class EventConfRestServiceIT {
 
         Map<String, String> notFoundBody = (Map<String, String>) resp.getEntity();
         assertTrue(notFoundBody.get("error").contains("not found"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetEventsByVendor() throws Exception {
+        EventConfSource  m_source = new EventConfSource();
+        m_source.setName("testGetEventsByVendor");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("test");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,"uei.test.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source,"uei.test.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        Response resp = eventConfRestApi.getEventsByVendor("test", securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        // validate
+        List<EventConfEventDto>  events = (List<EventConfEventDto>) resp.getEntity();
+        assertEquals(2, events.size());
+
+        Response respBadRequest = eventConfRestApi.getEventsByVendor("", securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBadRequest.getStatus());
+        assertTrue(respBadRequest.getEntity().toString().contains("Vendor name must not be null or blank"));
+
+        Response respNotFound = eventConfRestApi.getEventsByVendor("unknownVendor", securityContext);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respNotFound.getStatus());
+        assertTrue(respNotFound.getEntity().toString().contains("No events found for vendor"));
+    }
+
+    @Test
+    @Transactional
+    public void testAddEventConfSource_ShouldReturnExpectedResponses() throws Exception {
+        EventConfSource source = new EventConfSource();
+        source.setName("addEventConfSource");
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setFileOrder(1);
+        source.setDescription("Test addEventConfSource");
+        source.setVendor("Cisco");
+        source.setUploadedBy("JUnitTest");
+        source.setEventCount(0);
+        source.setLastModified(new Date());
+        eventConfSourceDao.saveOrUpdate(source);
+        eventConfSourceDao.flush();
+
+        // Success scenario
+        final var  eventConfSourceRequest =
+                new AddEventConfSourceRequest("addEventConfSourceNew","Testing addEventConfSource","test");
+
+        Response resp = eventConfRestApi.addEventConfSource(eventConfSourceRequest,securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+
+        // Test when eventConfSource name is empty
+        final var  eventConfSourceBadRequest =
+                new AddEventConfSourceRequest("","Test Source Description","test");
+
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequest,securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Vendor length > 128
+        final var eventConfSourceBadRequestVendorLength =
+                new AddEventConfSourceRequest(
+                        "testaa",
+                        "Test Source Description",
+                        "v".repeat(129));
+
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceBadRequestVendorLength, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+        assertTrue(
+                resp.getEntity().toString()
+                        .contains("Vendor length must not exceed 128 characters")
+        );
+
+        // Test when eventConfSource already exists with the same name.
+        final var  eventConfSourceNameExistsRequest =
+                new AddEventConfSourceRequest("addEventConfSource","Duplicate source test description","test");
+        resp = eventConfRestApi.addEventConfSource(eventConfSourceNameExistsRequest,securityContext);
+        assertEquals(Response.Status.CONFLICT.getStatusCode(), resp.getStatus());
     }
 
 }

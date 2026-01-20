@@ -112,7 +112,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	dot1qVlanIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: vlanRequestFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p>
@@ -140,7 +140,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	dot1qVlanIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: vlanDeleteLastTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p>
@@ -168,7 +168,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	dot1qVlanIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: vlanDefaultCfgFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p>
@@ -196,7 +196,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	dot1qVlanIndex&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: vlanRestoreFailureTrap trap received 
 			dot1qVlanIndex=%parm[#1]%&lt;/p>
@@ -247,7 +247,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	agentStpMstId&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: stpInstanceNewRootTrap trap received 
 			agentStpMstId=%parm[#1]%&lt;/p>
@@ -275,7 +275,7 @@
 	&lt;tr>&lt;td>&lt;b>
 
 	agentStpMstId&lt;/b>&lt;/td>&lt;td>
-	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			Netgear Event: stpInstanceTopologyChangeTrap trap received 
 			agentStpMstId=%parm[#1]%&lt;/p>

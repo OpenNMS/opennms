@@ -129,13 +129,26 @@ public class EventConfEventDaoHibernate
 
             String sortOrder = "ASC".equalsIgnoreCase(eventOrder) ? "ASC" : "DESC";
 
-            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "enabled");
+            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "severity", "enabled");
 
             if (eventSortBy == null || !allowedSortFields.contains(eventSortBy)) {
                 sortField = "createdTime";
             }
 
-            orderBy = " order by " + sortField + " " + sortOrder;
+            if ("severity".equalsIgnoreCase(sortField)) {
+                orderBy = " order by case upper(e.severity) " +
+                        " when 'INDETERMINATE' then 1 " +
+                        " when 'CLEARED' then 2 " +
+                        " when 'NORMAL' then 3 " +
+                        " when 'WARNING' then 4 " +
+                        " when 'MINOR' then 5 " +
+                        " when 'MAJOR' then 6 " +
+                        " when 'CRITICAL' then 7 " +
+                        " else 999 end " + sortOrder;
+            } else {
+                orderBy = " order by e." + sortField + " " + sortOrder;
+            }
+
 
             String dataQuery = "from EventConfEvent e " + whereClause + orderBy;
             eventConfEventList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
@@ -229,6 +242,11 @@ public class EventConfEventDaoHibernate
                         .executeUpdate()
         );
         LOG.info("Deleted {} EventConfEvent(s) with IDs: {} for sourceId: {}", deletedCount, eventIds, sourceId);
+    }
+
+    @Override
+    public List<EventConfEvent> findEventsByVendor(String vendor) {
+        return find("from EventConfEvent e where e.enabled = true  and  e.source.vendor = ? order by e.id asc ", vendor);
     }
 
     @Override

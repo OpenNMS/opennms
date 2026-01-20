@@ -20,7 +20,7 @@
             has transitioned to 'Master' state.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             vrrpOperMasterIpAddr&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>VRRP Event: New Master.&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
@@ -49,11 +49,11 @@
             of this trap is optional.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             vrrpTrapPacketSrc&lt;/b>&lt;/td>&lt;td>%parm[#1]%
-            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            &lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;tr>&lt;td>&lt;b>
             vrrpTrapAuthErrorType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
-            &lt;/td>&lt;td>&lt;p;>
+            &lt;/td>&lt;td>&lt;p>
             invalidAuthType(1) authTypeMismatch(2) authFailure(3)&lt;/p>
-            &lt;/td;>&lt;/tr>&lt;/table></descr>
+            &lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>VRRP Event: Authentication Failure.&lt;/p></logmsg>
       <severity>Warning</severity>
    </event>

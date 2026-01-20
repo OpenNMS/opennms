@@ -9,7 +9,8 @@ Some vendors currently using OpenConfig telemetry include Juniper, Arista, and C
 
 To enable support for OpenConfig, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` to set `enabled=true` for the OpenConfig protocol.
 
-IMPORTANT: The OpenConfig protocol is not supported on Minion.
+OpenConfig can be enabled on both {page-component-title} Core and Minion deployments.
+For Minion setup instructions, see <<minion-setup, Set up OpenConfig on Minion>>.
 
 .Enable OpenConfig protocol in telemetryd-configuration.xml
 [source, xml]
@@ -23,7 +24,8 @@ IMPORTANT: The OpenConfig protocol is not supported on Minion.
     <package name="OpenConfig-Default">
         <filter>IPADDR != '0.0.0.0'</filter>
         <parameter key="port" value="${requisition:oc.port|9000}"/>
-        <parameter key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+        <parameter key="paths" value="${requisition:oc.paths|/network-instances/network-instance[instance-name=master],/protocols/protocol/bgp}"/>
+        <parameter key="mode" value="${requisition:oc.mode|gnmi}"/>
     </package>
 </connector>
 
@@ -70,6 +72,8 @@ The data contains metadata and is structured as a list of `key:value` pairs.
     <package name="OpenConfig-Default">
         <filter>IPADDR != '0.0.0.0'</filter>
         <parameter key="port" value="${requisition:oc.port|9000}"/>
+        <parameter key="paths" value="${requisition:oc.paths|/network-instances/network-instance[instance-name=master],/protocols/protocol/bgp}"/>
+        <parameter key="mode" value="${requisition:oc.mode|gnmi}"/>
         <parameter key="retries" value="12"/>
         <parameter key="interval" value="300"/>
         <parameter key="username" value="admin"/>
@@ -77,11 +81,11 @@ The data contains metadata and is structured as a list of `key:value` pairs.
         <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
         <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
         <!-- Use groups to separate paths that need to be streamed at different frequencies -->
-        <parameter group="group1" key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+        <parameter group="group1" key="paths" value="${requisition:oc.paths|/network-instances/network-instance[instance-name=master]}"/>
         <parameter group="group1" key="frequency" value="5000"/>
-        <parameter group="group2" key="paths" value="/protocols/protocol/bgp"/>
+        <parameter group="group2" key="paths" value="${requisition:oc.paths|/protocols/protocol/bgp}"/>
         <parameter group="group2" key="frequency" value="30000"/>
-        <parameter group="group3" key="paths" value="/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters"/>
+        <parameter group="group3" key="paths" value="${requisition:oc.paths|/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters}"/>
         <parameter group="group3" key="frequency" value="60000"/>
     </package>
 </connector>
@@ -115,14 +119,14 @@ Parameters are passed to the connector and are interpolated for node/interface a
 
 | port
 | Port that OpenConfig client can connect to.
-| none
+| 9000
 
 | paths
-| Paths that need to be subscribed to.
-| none
+| One or more OpenConfig paths to subscribe to. Multiple paths can be comma-separated.
+| /network-instances/network-instance[instance-name=master],/protocols/protocol/bgp
 
 | frequency
-| Frequency at which OpenConfig data can be streamed. This is parsed as milliseconds(ms) for jti and nanoseconds(ns) for gnmi
+| Frequency at which OpenConfig data can be streamed. This is parsed as milliseconds (ms) for jti and nanoseconds (ns) for gnmi.
 | 300000
 
 3+| *Optional*
@@ -176,6 +180,74 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | Specify mode for stream format. Options include gnmi or jti.
 | gnmi
 |===
+
+=== Configure requisitions for OpenConfig
+
+To enable OpenConfig on a device, you must add metadata that defines the OpenConfig configuration.
+
+. In the web UI, click menu:Manage Inventory[Provisioning Requisitions].
+. Select an existing requisition or create a new one by clicking *Add Requisition*.
+. Edit a node or add a new node by clicking *Add Node*.
+. On the interface where you want to enable OpenConfig streaming, add the *OpenConfig* service (or the `service-name` specified in your connector configuration).
+. Click *Add Meta-Data* and define the following key-value pairs:
+.. `oc.port`: Port of the OpenConfig gRPC server (default: 9000).
+.. `oc.paths`: One or more OpenConfig paths to subscribe to; multiple paths should be comma-separated.
+.. `oc.mode`: Stream format (gnmi or jti; default: gnmi).
+.. (Optional) `oc.tls.enabled`: Set to `true` to enable TLS.
+.. (Optional) `trust.cert.path`: Path to root CA certificate for TLS verification.
+. Click *Save* to save the metadata, then *Save* again to save the requisition.
+. Click *Return*, then click *Synchronize*.
+. Choose a scan option and click *Synchronize*.
+
+The OpenConfig connector will now establish a connection to the device and begin streaming telemetry data.
+
+[[minion-setup]]
+=== Set up OpenConfig on Minion
+
+Before setting up OpenConfig on Minion, ensure that a message broker is configured.
+See xref:deployment:core/setup-message-broker.adoc[Set up message broker] for details.
+
+IMPORTANT: Currently, the Twin API distributes OpenConfig configuration to all Minions at a given location. To avoid duplicate data collection, install the `minion-telemetry-openconfig-client` feature on only one Minion per location.
+
+. On the Minion, install the OpenConfig feature:
++
+[source, console]
+----
+feature:install minion-telemetry-openconfig-client
+----
+
+. Verify that the feature is installed and started:
++
+[source, console]
+----
+admin@minion()> feature:status minion-telemetry-openconfig-client
+Started
+----
+
+. Configure the OpenConfig connector and adapter on {page-component-title} Core as described in the sections above.
+The Minion will automatically receive the configuration through the Twin API and begin streaming telemetry data from configured devices.
+
+=== Stop or disable OpenConfig on a node
+
+To stop OpenConfig on a node, you must remove the service from both the node and the requisition:
+
+. Delete the service from the node:
+.. In the side menu, click menu:Nodes[] to open the Nodes List page.
+.. Select the node where you want to stop OpenConfig.
+.. In the *Availability* section, locate the OpenConfig service (or the service name specified in the `connector` within `telemetryd-configuration.xml`).
+.. Click *Delete* to remove the service.
+This immediately stops the OpenConfig connector for this node.
+
+. Remove the service from the requisition to prevent it from being re-added:
+.. Click menu:Manage Inventory[Provisioning Requisitions].
+.. Select the requisition containing the node.
+.. Edit the node and locate the interface with the OpenConfig service.
+.. Remove the OpenConfig service from the interface.
+.. Remove any OpenConfig-related metadata (oc.port, oc.paths, oc.mode, etc.).
+.. Click *Save* to save the changes to the node, then *Save* again to save the requisition.
+.. Click *Return*, then click *Synchronize* to apply the changes.
+
+The OpenConfig service will remain stopped and will not be re-added during future synchronizations.
 
 == OpenConfig adapter
 
