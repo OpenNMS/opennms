@@ -65,7 +65,7 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 if __name__ == "__main__":
-    for json_file in glob.glob('~/project/artifacts/*-_filtered_vulnerabilities.json'):
+    for json_file in glob.glob('~/project/artifacts/*_filtered_vulnerabilities.json'):
         
         print(f"Processing JSON file: {json_file}")
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
