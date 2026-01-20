@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
-import java.util.AbstractMap;
 import java.util.stream.Collectors;
 
 public class EventConfSourceDaoHibernate
@@ -205,11 +204,12 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
-    public Map<Long, String> findAllNames() {
-        return findObjects(Object[].class, "select s.id, s.name from EventConfSource s")
-                .stream()
-                .map(row -> new AbstractMap.SimpleEntry<>((Long) row[0], (String) row[1]))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public List<String> findAllNames() {
+        return findObjects(
+                String.class,
+                "select distinct s.name from EventConfSource s "
+
+        );
     }
 
     @Override

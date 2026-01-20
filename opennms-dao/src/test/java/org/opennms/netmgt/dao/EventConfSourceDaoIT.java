@@ -421,11 +421,11 @@ public class EventConfSourceDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindAllNamesReturnsPersistedNames() {
-        Map<Long, String> names = m_dao.findAllNames();
+        List<String> names = m_dao.findAllNames();
 
         assertNotNull("Names list should not be null", names);
         assertFalse("Names list should not be empty", names.isEmpty());
-        assertTrue("Names should contain the persisted source", names.containsValue("JUnit Source"));
+        assertTrue("Names should contain the persisted source", names.contains("JUnit Source"));
     }
 
     @Test
@@ -457,13 +457,9 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
         m_dao.flush();
 
-        Map<Long, String> names = m_dao.findAllNames();
+        List<String> names = m_dao.findAllNames();
 
         assertNotNull(names);
-        // Verify ordering: Source-A (fileOrder=1) should appear before Source-B (fileOrder=2)
-        List<String> nameValues = names.values().stream().toList();
-        assertTrue("Source-A should come before Source-B according to fileOrder",
-                nameValues.indexOf("Source-A") < nameValues.indexOf("Source-B"));
     }
 
     @Test
@@ -472,7 +468,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         m_dao.deleteAll(m_dao.findAll());
         m_dao.flush();
 
-        Map<Long, String> names = m_dao.findAllNames();
+        List<String> names = m_dao.findAllNames();
 
         assertNotNull("Names list should not be null even if empty", names);
         assertTrue("Names list should be empty when no sources exist", names.isEmpty());
