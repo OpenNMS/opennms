@@ -78,7 +78,7 @@
     "is-valid-domain": "^0.1.6",
     "leaflet": "^1.8.0",
     "leaflet.markercluster": "^1.5.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "marked": "^12.0.2",
     "pinia": "^2.1.6",
     "rapidoc": "^9.3.8",
