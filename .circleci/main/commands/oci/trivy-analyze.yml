@@ -39,9 +39,17 @@ commands:
             find . -name "filtered_vulnerabilities.txt"
       
       - store_artifacts:
-          path: /home/circleci/project/artifacts/filtered_vulnerabilities.txt
-          destination: filtered_vulnerabilities.txt
+          path: /home/circleci/project/horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
 
+      - store_artifacts:
+          path: /home/circleci/project/sentinel-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: sentinel-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+
+
+      - store_artifacts:
+          path: /home/circleci/project/minion-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: minion-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
       # - persist_to_workspace:
       #     root: ~/project
       #     paths:

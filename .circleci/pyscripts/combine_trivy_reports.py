@@ -72,9 +72,14 @@ if __name__ == "__main__":
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
         # For this example, we assume that the filtered files are already generated
         import subprocess
-        subprocess.run([
+        output=subprocess.run([
             "python3", "/home/circleci/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
-        ])
+        ], capture_output=True, text=True)
+        print("Subprocess output:")
+        print(output.stdout)
+        if output.stderr:
+            print("Subprocess errors (if any):")
+            print(output.stderr)
         print(f"Completed analysis for {json_file}")
 
     print(f"CWD: {os.getcwd()}")
