@@ -3,12 +3,12 @@ Maintainer: Benjamin Reed <ranger@opennms.org>
 Section: contrib/net
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), dpkg-dev, oracle-java17-installer | jdk-17 | adoptopenjdk-17-openj9xl | adoptopenjdk-17-openj9 | adoptopenjdk-17-hotspot | openjdk-17-jdk-headless | openjdk-17-jdk | java17-jdk | temurin-17-jdk, rsync
+Build-Depends: debhelper (>= 9), dpkg-dev, oracle-java21-installer | jdk-21 | adoptopenjdk-21-openj9xl | adoptopenjdk-21-openj9 | adoptopenjdk-21-hotspot | openjdk-21-jdk-headless | openjdk-21-jdk | java21-jdk | temurin-21-jdk, rsync
 
 Package: opennms-minion
 Architecture: all
 Depends: adduser, openssh-client, uuid-runtime, sudo
-Recommends: openjdk-17-jre-headless | openjdk-17-jre | adoptopenjdk-17-openj9xl-jre | adoptopenjdk-17-openj9-jre | adoptopenjdk-17-hotspot-jre | temurin-17-jdk | jdk-17, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Recommends: openjdk-21-jre-headless | openjdk-21-jre | adoptopenjdk-21-openj9xl-jre | adoptopenjdk-21-openj9-jre | adoptopenjdk-21-hotspot-jre | temurin-21-jdk | jdk-21, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Conflicts: opennms-minion-container (<< 25.0.0), opennms-minion-features-core (<<25.0.0), opennms-minion-features-default (<<25.0.0)
 Provides: opennms-plugin-api (= 1.6.1)
 Description: distributed OpenNMS monitoring client
