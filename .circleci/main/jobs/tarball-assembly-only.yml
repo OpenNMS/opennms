@@ -1,10 +1,10 @@
 jobs:
   tarball-assembly-only:
     executor: build-executor
-    resource_class: medium
+    resource_class: medium+
     parameters:
       number-vcpu:
-        default: 2
+        default: 3
         type: integer
       vaadin-javamaxmem:
         default: 1g
