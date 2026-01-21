@@ -35,7 +35,8 @@ commands:
 
 
             echo "Find the filtered_vulnerabilities.txt file:"
-            find . -name "filtered_vulnerabilities.txt" -exec ls -la {} \;
+            cd /home/circleci/
+            find . -name "filtered_vulnerabilities.txt"
       
       - store_artifacts:
           path: /home/circleci/project/artifacts/filtered_vulnerabilities.txt
