@@ -37,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -143,6 +145,67 @@ public class SnmpCollectionSourceDaoIT {
         List<SnmpCollectionSource> enabledList = snmpDao.findAllEnabled();
         assertTrue(enabledList.stream().allMatch(SnmpCollectionSource::getEnabled));
         assertFalse(enabledList.stream().anyMatch(s -> "Disabled Source".equals(s.getName())));
+    }
+
+    @Test
+    public void testFilterDataCollectionSource_ReturnsValidRecords() {
+        SnmpCollectionSource source1 = new SnmpCollectionSource();
+        source1.setName("opennms.test.snmp");
+        source1.setVendor("opennms");
+        source1.setDescription("Open Network Monitoring System SNMP");
+        source1.setEnabled(true);
+
+        SnmpCollectionSource source2 = new SnmpCollectionSource();
+        source2.setName("cisco.test.snmp");
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco SNMP Data Source");
+        source2.setEnabled(false);
+
+        snmpDao.saveOrUpdate(source1);
+        snmpDao.saveOrUpdate(source2);
+        snmpDao.flush();
+
+        // Inline helper for reusing assertions
+        BiConsumer<Map<String, Object>, String> assertSourceName =
+                (result, expectedName) -> {
+                    assertNotNull(result);
+                    List<?> list = (List<?>) result.get("dataCollectionSourceList");
+                    assertEquals(result.get("totalRecords"), list.size());
+                    assertEquals(expectedName, ((SnmpCollectionSource) list.get(0)).getName());
+                };
+
+        // 1. Exact filter, ascending by name
+        Map<String, Object> result = snmpDao.filterDataCollectionSource("opennms.test.snmp", "name", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.snmp");
+
+        // 2. Partial filter, ascending by name
+        result = snmpDao.filterDataCollectionSource("test.snmp", "name", "asc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.snmp"); // asc = cisco first
+
+        // 3. Partial filter, descending by name
+        result = snmpDao.filterDataCollectionSource("test.snmp", "name", "desc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.snmp"); // desc = opennms first
+
+        // 4. Filter by vendor (case-insensitive)
+        result = snmpDao.filterDataCollectionSource("CISCO", "name", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.snmp");
+
+        // 5. Pagination (only second record returned)
+        result = snmpDao.filterDataCollectionSource("test.snmp", "name", "asc", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> list = (List<?>) result.get("dataCollectionSourceList");
+        assertEquals(1, list.size());
+        assertEquals("opennms.test.snmp", ((SnmpCollectionSource) list.get(0)).getName());
+
+        // 6. Filter by vendor substring
+        result = snmpDao.filterDataCollectionSource("open", "vendor", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.snmp");
+
     }
 
     @Test

@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -169,6 +170,375 @@ public class DataCollectionConfPersistenceServiceIT {
         group.setGroups(Arrays.asList(group1, group2));
         group.setSystemDefs(List.of(systemDef));
         return group;
+    }
+
+    @Test
+    @Transactional
+    public void testFilterSnmpCollectionSources() {
+        final var now = new Date();
+        SnmpCollectionSource source1 = new SnmpCollectionSource();
+        source1.setName("opennms.test.snmp");
+        source1.setVendor("opennms");
+        source1.setDescription("Open Network Monitoring System SNMP");
+        source1.setCreatedTime(now);
+        source1.setEnabled(true);
+
+        SnmpCollectionSource source2 = new SnmpCollectionSource();
+        source2.setName("cisco.test.snmp");
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco SNMP Data Source");
+        source2.setCreatedTime(now);
+        source2.setEnabled(false);
+
+        snmpCollectionSourceDao.saveOrUpdate(source1);
+        snmpCollectionSourceDao.saveOrUpdate(source2);
+        snmpCollectionSourceDao.flush();
+
+
+        // 1. Exact filter, ascending by name
+        Map<String, Object> result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("opennms.test.snmp", "name", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+
+        // 2. Partial filter, ascending by name
+        result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("test.snmp", "name", "asc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 3. Partial filter, descending by name
+        result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("test.snmp", "name", "desc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 4. Filter by vendor (case-insensitive)
+        result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("CISCO", "name", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 5. Pagination (only second record returned)
+        result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("test.snmp", "name", "asc", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> list = (List<?>) result.get("dataCollectionSourceList");
+        assertEquals(1, list.size());
+        assertEquals("opennms.test.snmp", ((SnmpCollectionSource) list.get(0)).getName());
+
+        // 6. Filter by vendor substring
+        result = dataCollectionConfPersistenceService.filterSnmpCollectionSources("open", "vendor", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+    }
+
+    @Test
+    @Transactional
+    public void shouldRetrieveSnmpCollectionSourceById() {
+        final var now = new Date();
+        SnmpCollectionSource source1 = new SnmpCollectionSource();
+        source1.setName("opennms.test.snmp");
+        source1.setVendor("opennms");
+        source1.setDescription("Open Network Monitoring System SNMP");
+        source1.setCreatedTime(now);
+        source1.setEnabled(true);
+
+        SnmpCollectionSource source2 = new SnmpCollectionSource();
+        source2.setName("cisco.test.snmp");
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco SNMP Data Source");
+        source2.setCreatedTime(now);
+        source2.setEnabled(false);
+
+        snmpCollectionSourceDao.saveOrUpdate(source1);
+        snmpCollectionSourceDao.saveOrUpdate(source2);
+        snmpCollectionSourceDao.flush();
+
+        // Act & Assert: source2
+        SnmpCollectionSource ciscoCollectionSource =
+                dataCollectionConfPersistenceService.getSnmpCollectionSourceById(source2.getId());
+
+        assertNotNull(ciscoCollectionSource, "Should retrieve Cisco collection source by id");
+        assertEquals("Names should match","cisco.test.snmp", ciscoCollectionSource.getName());
+        assertEquals("Vendors should match","cisco", ciscoCollectionSource.getVendor());
+        assertEquals("Descriptions should match","Cisco SNMP Data Source", ciscoCollectionSource.getDescription());
+
+        // Act & Assert: source1
+        SnmpCollectionSource opennmsCollectionSource =
+                dataCollectionConfPersistenceService.getSnmpCollectionSourceById(source1.getId());
+
+        assertNotNull(opennmsCollectionSource, "Should retrieve OpenNMS collection source by id");
+        assertEquals("Names should match","opennms.test.snmp", opennmsCollectionSource.getName());
+        assertEquals( "Vendors should match","opennms", opennmsCollectionSource.getVendor());
+        assertEquals("Descriptions should match","Open Network Monitoring System SNMP", opennmsCollectionSource.getDescription());
+    }
+
+
+    @Test
+    @Transactional
+    public void shouldReturnCorrectSnmpCollectionSourceIdsAndNames() {
+        // Arrange
+        final var now = new Date();
+        SnmpCollectionSource source1 = new SnmpCollectionSource();
+        source1.setName("opennms.test.snmp");
+        source1.setVendor("opennms");
+        source1.setDescription("Open Network Monitoring System SNMP");
+        source1.setCreatedTime(now);
+        source1.setEnabled(true);
+
+        SnmpCollectionSource source2 = new SnmpCollectionSource();
+        source2.setName("cisco.test.snmp");
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco SNMP Data Source");
+        source2.setCreatedTime(now);
+        source2.setEnabled(false);
+
+        snmpCollectionSourceDao.saveOrUpdate(source1);
+        snmpCollectionSourceDao.saveOrUpdate(source2);
+
+        snmpCollectionSourceDao.flush();
+
+        // Act
+        Map<Integer, String> idsAndNamesMap =
+                dataCollectionConfPersistenceService.getSnmpCollectionSourceNamesAndIds();
+
+        // Assert the IDs are present and mapped to the correct names
+        assertTrue("Map should contain source1 ID", idsAndNamesMap.containsKey(source1.getId()));
+        assertTrue("Map should contain source2 ID", idsAndNamesMap.containsKey(source2.getId()));
+        assertEquals("opennms.test.snmp", idsAndNamesMap.get(source1.getId()));
+        assertEquals("cisco.test.snmp", idsAndNamesMap.get(source2.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testFilterMibGroupByDataCollectionGroupId() {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for MIB groups");
+        src.setCreatedTime(new Date());
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        // Mib Group 1: Matches "interfaces"
+        SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(src);
+        group1.setName("if-mib-interfaces");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+        snmpCollectionMibGroupDao.flush();
+        // Mib Group 2: Matches "ip"
+        SnmpCollectionMibGroup group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(src);
+        group2.setName("ip-mib");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+        // 1. Exact filter by name ASC
+        Map<String, Object> result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 2. Partial filter ("mib"), ascending by name
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        // asc: if-mib-interfaces comes first
+
+        // 3. Partial filter, descending by name
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 4. Filter by ifType substring, ascending
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 5. Filter by ifType substring, descending
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 6. Case-insensitive filter (should match "ip-MIB")
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 7. Pagination - only second result returned
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> pagedList = (List<?>) result.get("mibGroupList");
+        assertEquals(1, pagedList.size());
+        assertEquals("ip-mib", ((SnmpCollectionMibGroup) pagedList.get(0)).getName());
+
+        // 8. Filter with no match
+        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
+        assertEquals(0, result.get("totalRecords"));
+        List<?> emptyList = (List<?>) result.get("mibGroupList");
+        assertTrue(emptyList.isEmpty());
+
+    }
+
+    @Test
+    @Transactional
+    public void testFilterResourceTypeByDataCollectionGroupId() {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.source.name");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Group Source for SNMP");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        // Resource type 1, matches filter "cpu"
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        // 1. Exact filter by name, ascending by name
+        Map<String, Object> result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 2. Partial filter ("resource"), ascending by name
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 3. Partial filter, descending by name
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+
+        // 4. Filter by label substring, ascending
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+        // 5. Filter by label substring (case-insensitive), descending
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+
+        // 6. Pagination: only second returned
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> pagedList = (List<?>) result.get("resourceTypeList");
+        assertEquals(1, pagedList.size());
+        assertEquals("disk-resource", ((SnmpCollectionResourceType) pagedList.get(0)).getName());
+
+        // 7. Filter with no match
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
+        assertEquals(0, result.get("totalRecords"));
+        List<?> emptyList = (List<?>) result.get("resourceTypeList");
+        assertTrue(emptyList.isEmpty());
+
+        // 8. Null filter (should return all for group), ascending by label
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), null, "label", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> allList = (List<?>) result.get("resourceTypeList");
+        assertEquals(2, allList.size());
+        assertEquals("cpu-resource", ((SnmpCollectionResourceType) allList.get(0)).getName());
+        assertEquals("disk-resource", ((SnmpCollectionResourceType) allList.get(1)).getName());
+
+        // 9. Invalid sortBy field defaults to name ascending
+        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> defaultSorted = (List<?>) result.get("resourceTypeList");
+        assertEquals("cpu-resource", ((SnmpCollectionResourceType) defaultSorted.get(0)).getName());
+        assertEquals("disk-resource", ((SnmpCollectionResourceType) defaultSorted.get(1)).getName());
+    }
+
+    @Test
+    @Transactional
+    public void testFilterSystemDefByDataCollectionGroupId() {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("core-snmp");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Core data source for SNMP collection");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        SnmpCollectionSystemDef def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(src);
+        def1.setName("LinuxSystem"); // <--- Name matches test expectation
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        SnmpCollectionSystemDef def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(src);
+        def2.setName("WindowsSystem"); // <--- Name matches test expectation
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def2);
+
+        snmpCollectionSystemDefDao.flush();
+
+
+        // 1. Exact filter by name ASC
+        Map<String, Object> result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+
+        // 2. Partial filter ("System"), ascending by name
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 3. Partial filter, descending by name
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "DESC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+
+        // 4. Case-insensitive filter
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+
+
+        // 5. Pagination - only second returned
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> pagedList = (List<?>) result.get("systemDefsList");
+        assertEquals(1, pagedList.size());
+        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) pagedList.get(0)).getName());
+
+        // 6. Filter with no match
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
+        assertEquals(0, result.get("totalRecords"));
+        List<?> emptyList = (List<?>) result.get("systemDefsList");
+        assertTrue(emptyList.isEmpty());
+
+        // 7. Null filter - should return all for group, ascending
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), null, "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> allList = (List<?>) result.get("systemDefsList");
+        assertEquals("LinuxSystem", ((SnmpCollectionSystemDef) allList.get(0)).getName());
+        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) allList.get(1)).getName());
+
+        // 8. Invalid sortBy field defaults to name ascending
+        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> defaultSorted = (List<?>) result.get("systemDefsList");
+        assertEquals("LinuxSystem", ((SnmpCollectionSystemDef) defaultSorted.get(0)).getName());
+        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) defaultSorted.get(1)).getName());
     }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {
