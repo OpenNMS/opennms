@@ -61,7 +61,7 @@ export const filterSnmpCollectionSources = async (
   }
 }
 
-export const getAllSnmpCollectionSourcesNamesAndIds = async (): Promise<SnmpDataCollectionSourceNamesAndIds> => {
+export const getAllSnmpCollectionSourcesNamesAndIds = async (): Promise<SnmpDataCollectionSourceNamesAndIds[]> => {
   const endpoint = '/datacollectionconf/collectsources/names-and-ids'
 
   try {

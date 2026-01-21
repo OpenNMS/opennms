@@ -41,7 +41,7 @@ export const mapSnmpDataCollectionSourceResponseFromServer = (response: any): Sn
 
 export const mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer = (
   response: any
-): SnmpDataCollectionSourceNamesAndIds => {
+): SnmpDataCollectionSourceNamesAndIds[] => {
   return response.map((source: any) => ({
     id: source.id,
     name: source.name

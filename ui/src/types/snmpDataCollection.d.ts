@@ -5,7 +5,7 @@ export interface SnmpDataCollectionStoreState {
   sourcesSearchTerm: string
   sourcesSorting: Sorting
   isLoading: boolean
-  uploadedSourceNames: SnmpDataCollectionSourceNamesAndIdsResponse
+  uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
 }
 
 export interface SnmpCollectionSource {

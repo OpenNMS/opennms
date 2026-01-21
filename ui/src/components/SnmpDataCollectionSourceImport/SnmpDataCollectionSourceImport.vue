@@ -31,6 +31,7 @@
                       v-bind="attrs"
                       v-on="on"
                       class="warning-icon"
+                      @click="openFileRenameDialog(index)"
                     />
                   </FeatherTooltip>
                   <FeatherTooltip
@@ -127,7 +128,7 @@
       <h3>Instructions:</h3>
       <ul>
         <li>Event configuration files must be in XML format with a .xml extension.</li>
-        <li>When uploading using "Choose files to upload", you can select multiple files at once.</li> 
+        <li>When uploading using "Choose files to upload", you can select multiple files at once.</li>
         <li>When uploading using "Choose folder to upload", all files in the folder will be uploaded.</li>
         <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
         <li>
@@ -161,12 +162,23 @@
       @close="closeUploadReportDialog"
       @view="gotoViewTab"
     />
+    <UploadedFileRenameDialog
+      :visible="displayRenameDialog"
+      :fileBucket="sourceFiles"
+      :index="sourceFiles.findIndex(f => f.isDuplicate)"
+      :alreadyExistsNames="store.uploadedSourceNames"
+      @close="closeRenameDialog"
+      @rename="renameFile"
+      @overwrite="overwriteFile"
+    />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
+import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -180,10 +192,11 @@ import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
 import Draggable from 'vuedraggable'
 import TableCard from '../Common/TableCard.vue'
-import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
-import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
+import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
+import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 
+const store = useSnmpDataCollectionStore()
 const sourceFolderInput = ref<HTMLInputElement | null>(null)
 const sourceFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as SnmpDataCollectionSourceUploadResponse)
@@ -191,6 +204,8 @@ const sourceFiles = ref<UploadSnmpDataCollectionFileType[]>([])
 const isLoading = ref(false)
 const snackbar = useSnackbar()
 const router = useRouter()
+const displayRenameDialog = ref(false)
+const selectedIndex = ref<number | null>(null)
 const uploadedDataCollectionFilesReportDialogState = ref(false)
 const shouldUploadDisabled = computed(() => {
   return (
@@ -227,7 +242,7 @@ const handleSourceFileUpload = async (event: Event) => {
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: isDuplicateFile(file.name, sourceFiles.value)
+          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -260,12 +275,23 @@ const handleSourceFolderUpload = async (event: Event) => {
         if (isDuplicateFile(file.name, sourceFiles.value)) {
           continue
         }
+        const isAlreadyUploaded = store.uploadedSourceNames
+          .map(source => source.name.replace('.xml', '').toLowerCase())
+          .includes(file.name.replace('.xml', '').toLowerCase())
+
+        if (isAlreadyUploaded) {
+          snackbar.showSnackBar({
+            msg: `File ${file.name} has already been uploaded. Skipping.`,
+            error: true
+          })
+          continue
+        }
         const { isValid, errors } = await validateSnmpDataCollectionSourceFile(file)
         sourceFiles.value.push({
           file,
           isValid: isValid,
           errors: errors,
-          isDuplicate: isDuplicateFile(file.name, sourceFiles.value)
+          isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
         })
         if (!isValid) {
           snackbar.showSnackBar({
@@ -329,6 +355,56 @@ const gotoViewTab = () => {
   uploadedDataCollectionFilesReportDialogState.value = false
   router.push({ name: 'SNMP Data Collection' })
 }
+
+const openFileRenameDialog = (index: number) => {
+  displayRenameDialog.value = true
+  selectedIndex.value = index
+}
+
+const closeRenameDialog = () => {
+  displayRenameDialog.value = false
+  selectedIndex.value = null
+}
+
+const renameFile = async (newFileName: string) => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < sourceFiles.value.length) {
+    const fileToRename = sourceFiles.value[selectedIndex.value]
+    const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
+    const validationResult = await validateSnmpDataCollectionSourceFile(newFile)
+    sourceFiles.value[selectedIndex.value] = {
+      file: newFile,
+      isValid: validationResult.isValid,
+      errors: validationResult.errors,
+      isDuplicate: store.uploadedSourceNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
+    }
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for renaming file')
+  }
+}
+
+const overwriteFile = () => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < sourceFiles.value.length) {
+    sourceFiles.value[selectedIndex.value].isDuplicate = false
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for overwriting file')
+  }
+}
+
+watch(
+  () => store.uploadedSourceNames,
+  (newNames) => {
+    sourceFiles.value = sourceFiles.value.map(file => ({
+      ...file,
+      isDuplicate: newNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
+    }))
+  }, { immediate: true, deep: true }
+)
+
+onMounted(async () => {
+  await store.fetchAllSourcesNames()
+})
 </script>
 
 <style scoped lang="scss">
