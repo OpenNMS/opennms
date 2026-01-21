@@ -379,15 +379,12 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:kafka-push-topology-edges
 |Pushes all of the related topology edges to the configured topic
 |opennms-kafka-producer
-|opennms:kafka-sink-topics
-|List Sink Topics used by current system
+|opennms:kafka-ipc-topics
+|Show status of all Kafka IPC topics (RPC, Sink, Twin)
 |opennms-core-ipc-kafka
 |opennms:kafka-list-alarms
 |Enumerates the alarms that are currently in the Kafka data store
 |opennms-kafka-producer
-|opennms:kafka-rpc-topics
-|List RPC topics used by current system
-|opennms-core-ipc-kafka
 |opennms:kafka-sync-alarms
 |Triggers a syncrhonization of the alarms topic against the database
 |opennms-kafka-producer

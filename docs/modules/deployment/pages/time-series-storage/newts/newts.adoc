@@ -53,8 +53,11 @@ datastax-java-driver {
   basic.load-balancing-policy {
     local-datacenter = datacenter1<3>
   }
+  basic.request {
+    page-size = 0<4>
+  }
   advanced.auth-provider {
-    class = PlainTextAuthProvider <4>
+    class = PlainTextAuthProvider<5>
     username = cassandra
     password = cassandra
   }
@@ -64,7 +67,8 @@ datastax-java-driver {
 <1> `Hostname:port` or `IP address:port` of one or more Cassandra cluster nodes.
 <2> Name of the keyspace which is initialized and used.
 <3> The local datacenter as defined by your Cassandra configuration
-<4> The authentication provider to use with the supplied credentials
+<4> Setting the page-size to 0 is recommended to disable query paging, avoiding unexpected gaps in graph data.
+<5> The authentication provider to use with the supplied credentials
 
 .(Optional) If your {page-component-title} data collection or polling intervals have been modified, set the query minimum and heartbeat rates:
 +

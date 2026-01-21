@@ -39,9 +39,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
 import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.common.config.SecurityConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -60,6 +58,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.AlarmEqualityChecker;
+import org.opennms.features.kafka.producer.KafkaProducerManager;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.features.kafka.producer.ProtobufMapper;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -79,8 +78,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private static final String ALARM_STORE_NAME = "alarm_store";
     public static final String KAFKA_STREAMS_PID = "org.opennms.features.kafka.producer.streams";
-
-    private final ConfigurationAdmin configAdmin;
+    private final KafkaProducerManager kafkaProducerManager;
     private final OpennmsKafkaProducer kafkaProducer;
     private final ProtobufMapper protobufMapper;
     private final AtomicBoolean closed = new AtomicBoolean(true);
@@ -98,8 +96,8 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             AlarmEqualityChecker.with(AlarmEqualityChecker.Exclusions::defaultExclusions);
     private boolean suppressIncrementalAlarms;
 
-    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, ProtobufMapper protobufMapper) {
-        this.configAdmin = Objects.requireNonNull(configAdmin);
+    public KafkaAlarmDataSync(KafkaProducerManager kafkaProducerManager, OpennmsKafkaProducer kafkaProducer, ProtobufMapper protobufMapper) {
+        this.kafkaProducerManager = Objects.requireNonNull(kafkaProducerManager);
         this.kafkaProducer = Objects.requireNonNull(kafkaProducer);
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
     }
@@ -116,7 +114,17 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             return;
         }
 
+        if (!kafkaProducerManager.hasConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM)) {
+            LOG.warn("No Kafka configuration found for alarms. Alarm synchronization will not be initialized.");
+            return;
+        }
+
         final Properties streamProperties = loadStreamsProperties();
+        if (streamProperties == null || !streamProperties.containsKey("bootstrap.servers")) {
+            LOG.warn("No bootstrap.servers configured for alarm synchronization. Skipping initialization.");
+            return;
+        }
+
         final StreamsBuilder builder = new StreamsBuilder();
         final GlobalKTable<String, byte[]> alarmBytesKtable = builder.globalTable(alarmTopic, Consumed.with(Serdes.String(), Serdes.ByteArray()),
                 Materialized.as(ALARM_STORE_NAME));
@@ -291,16 +299,21 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         streamsProperties.put(StreamsConfig.STATE_DIR_CONFIG, kafkaDir.toString());
         // Copy common properties from client configuration, which should save the user from having to configure
         // properties for the stream client 99% of time
-        final Dictionary<String, Object> clientProperties = configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
-        if (clientProperties != null) {
-            copyPropIfNonNull(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clientProperties, streamsProperties);
-            copyPropIfNonNull(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, clientProperties, streamsProperties);
-            copyPropIfNonNull(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, clientProperties, streamsProperties);
-            copyPropIfNonNull(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, clientProperties, streamsProperties);
+        Properties clientProperties = kafkaProducerManager.getConfigurationForMessageType(KafkaProducerManager.MessageType.ALARM);
+
+        if (clientProperties == null || clientProperties.isEmpty()) {
+            LOG.warn("No Kafka configuration found for alarms. Cannot load streams properties.");
+            return null;
         }
 
+
+        copyPropertyIfSet(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, clientProperties, streamsProperties);
+        copyPropertyIfSet(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, clientProperties, streamsProperties);
+
         // Now add all of the stream properties, overriding any of the properties inherited from the producer config
-        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_STREAMS_PID).getProperties();
+        final Dictionary<String, Object> properties = getConfigurationAdmin().getConfiguration(KAFKA_STREAMS_PID).getProperties();
         if (properties != null) {
             final Enumeration<String> keys = properties.keys();
             while (keys.hasMoreElements()) {
@@ -311,7 +324,16 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         // Override the deserializers unconditionally
         streamsProperties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         streamsProperties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.ByteArray().getClass());
+
+        if (!streamsProperties.containsKey("bootstrap.servers")) {
+            LOG.warn("No bootstrap.servers configured in alarm synchronization properties.");
+            return null;
+        }
         return streamsProperties;
+    }
+
+    private ConfigurationAdmin getConfigurationAdmin() {
+        return kafkaProducerManager.getConfigAdmin();
     }
 
     private static void copyPropIfNonNull(String propName, Dictionary<String, Object> sourceMap, Properties targetMap) {
@@ -320,6 +342,14 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
             targetMap.put(propName, propValue);
         }
     }
+
+    private void copyPropertyIfSet(String propertyName, Properties source, Properties target) {
+        String value = source.getProperty(propertyName);
+        if (value != null && !value.trim().isEmpty()) {
+            target.put(propertyName, value);
+        }
+    }
+
 
     public void setAlarmTopic(String alarmTopic) {
         this.alarmTopic = alarmTopic;
