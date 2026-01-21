@@ -1,4 +1,5 @@
 import re
+import os
 import logging
 import glob
 
@@ -76,8 +77,11 @@ if __name__ == "__main__":
         ])
         print(f"Completed analysis for {json_file}")
 
+    print(f"CWD: {os.getcwd()}")
+    print(os.listdir('/home/circleci/'))
 
-    for file_path in glob.glob('/home/circleci/*_filtered_vulnerabilities.txt'):
+
+    for file_path in glob.glob('/home/circleci/*-trivy_filtered_vulnerabilities.txt'):
         vulnerabilities = parse_filtered_vulnerabilities(file_path)
         print("")
         print(f"Parsed {len(vulnerabilities)} vulnerabilities from {file_path}")
