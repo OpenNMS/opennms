@@ -89,7 +89,7 @@
     <fileSet>
       <directory>${session.executionRootDirectory}</directory>
       <filtered>false</filtered>
-      <outputDirectory>etc</outputDirectory>
+      <outputDirectory>.</outputDirectory>
       <includes>
         <include>COPYING</include>
       </includes>
