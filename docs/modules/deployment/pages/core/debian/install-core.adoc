@@ -1,3 +1,6 @@
+
+include::../debian/adoptium.adoc[]
+
 .Install GnuPG and add OpenNMS repository GPG key
 [source, console]
 ----
@@ -30,26 +33,4 @@ sudo apt-mark hold libopennms-java \
               libopennmsdeps-java \
               opennms-common \
               opennms-db
-----
-
-.Verify directory structure with the tree command
-[source, console]
-----
-sudo apt -y install tree
-tree /usr/share/opennms -L 1
-----
-
-.Directory structure after successful installation
-[source, output]
-----
-/usr/share/opennms
-├── bin
-├── data
-├── deploy
-├── etc -> /etc/opennms
-├── jetty-webapps
-├── lib -> ../java/opennms
-├── logs -> /var/log/opennms
-├── share -> /var/lib/opennms
-└── system
 ----
