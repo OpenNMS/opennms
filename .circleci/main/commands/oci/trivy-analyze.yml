@@ -37,7 +37,7 @@ commands:
           name: Create Jira Issues
           context: Jira-secrets
           command: |
-            if [[ ! -f filtered_vulnerabilities.txt ]]; then
+            if [[ ! -f /home/circleci/project/artifacts/filtered_vulnerabilities.txt ]]; then
               echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
               exit 0
             fi
