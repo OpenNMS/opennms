@@ -182,7 +182,6 @@
             Cancel
           </FeatherButton>
           <FeatherButton
-            v-if="store.selectedSource !== null || selectedSource?._value"
             primary
             @click="handleSaveEvent"
             data-test="save-event-button"
@@ -190,52 +189,8 @@
           >
             {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create Event' : 'Save Changes' }}
           </FeatherButton>
-          <FeatherButton
-            v-if="store.selectedSource === null && !selectedSource?._value"
-            primary
-            @click="openCreateSourceDialog()"
-            data-test="create-source-button"
-            :disabled="!isValid"
-          >
-            Create Source and Save
-          </FeatherButton>
         </div>
       </div>
-    </div>
-    <div>
-      <FeatherDialog
-        v-model="createSourceDialog"
-        :labels="labels"
-        hide-close
-        @hidden="closeSourceCreationDialog()"
-      >
-        <div class="modal-body-form">
-          <div>
-            <FeatherInput
-              label="Event Configuration Source Name"
-              v-model="configName"
-              :error="sourceFormErrors?.name"
-            />
-          </div>
-          <div>
-            <FeatherInput
-              label="Vendor"
-              v-model="vendor"
-              :error="sourceFormErrors?.vendor"
-            />
-          </div>
-        </div>
-        <template v-slot:footer>
-          <FeatherButton @click="closeSourceCreationDialog()"> Cancel </FeatherButton>
-          <FeatherButton
-            primary
-            @click="createNewSource"
-            :disabled="Object.keys(sourceFormErrors || {}).length > 0"
-          >
-            Create Source
-          </FeatherButton>
-        </template>
-      </FeatherDialog>
     </div>
   </div>
 </template>
@@ -250,7 +205,6 @@ import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
@@ -263,27 +217,13 @@ import { validateEvent } from './eventValidator'
 import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
 import VarbindsDecode from './VarbindsDecode.vue'
+import { mapEventConfigSourceFromServer } from '@/mappers/eventConfig.mapper'
 
 const loading = ref(false)
 const timeout = ref<number>(-1)
 const results = ref<Array<IAutocompleteItemType>>([])
 const selectedSource = ref<IAutocompleteItemType>()
-const configName = ref('')
-const vendor = ref('')
 const createSourceDialog = ref(false)
-const labels = {
-  title: 'Create New Event Source'
-}
-const sourceFormErrors = computed(() => {
-  let error: any = {}
-  if (configName.value.trim() === '') {
-    error.name = 'Configuration name is required.'
-  }
-  if (vendor.value.trim() === '') {
-    error.vendor = 'Vendor is required.'
-  }
-  return Object.keys(error).length > 0 ? error : null
-})
 const router = useRouter()
 const store = useEventModificationStore()
 const eventConfigStore = useEventConfigStore()
@@ -365,8 +305,6 @@ const resetValues = () => {
   varbinds.value = []
   varbindsDecode.value = []
   selectedSource.value = { _text: '', _value: '' }
-  configName.value = ''
-  vendor.value = ''
   createSourceDialog.value = false
 }
 
@@ -375,7 +313,7 @@ const loadInitialValues = (val: EventConfigEvent | null) => {
     const source = eventConfigStore.uploadedSources?.find((s) => s.id === store.selectedSource?.id)
     selectedSource.value = { _text: source?.name, _value: source?.id }
   } else {
-    selectedSource.value = { _text: '', _value: '' }
+    selectedSource.value = { _text: '', _value: -1 }
   }
   if (val) {
     const parser = new DOMParser()
@@ -602,8 +540,25 @@ const handleSaveEvent = async () => {
     return
   }
 
+  if (selectedSource.value?._value === -1) {
+    snackbar.showSnackBar({ msg: 'Source is required', error: true })
+    return
+  }
+
   try {
-    const sourceId = store.selectedSource?.id || selectedSource.value?._value as number
+    if (selectedSource.value?._value === 0) {
+      const response = await addEventConfigSource(
+        selectedSource.value?._text as string,
+        selectedSource.value?._text as string,
+        ''
+      )
+      await store.fetchSourceById(String(mapEventConfigSourceFromServer(response).id))
+      selectedSource.value = {
+        _text: store.selectedSource?.name || '',
+        _value: store.selectedSource?.id || -1
+      }
+    }
+    const sourceId = selectedSource.value?._value as number
 
     if (!sourceId) {
       snackbar.showSnackBar({ msg: 'Source is required', error: true })
@@ -676,58 +631,7 @@ const setSelectedSource = (item: any) => {
   if (item) {
     selectedSource.value = item
   } else {
-    selectedSource.value = { _text: '', _value: '' }
-  }
-}
-
-const createNewSource = async () => {
-  if (sourceFormErrors.value || !isValid.value) {
-    snackbar.showSnackBar({ msg: 'Please fill out all fields', error: true })
-    return
-  }
-  try {
-    const response = await addEventConfigSource(
-      configName.value,
-      vendor.value,
-      ''
-    )
-
-    if (response && typeof response === 'object' && response.status === 201) {
-      let eventResponse = null
-      if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-        eventResponse = await createEventConfigEvent(xmlContent.value, response.id)
-      }
-
-      if (eventResponse) {
-        snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
-        await eventConfigStore.fetchAllSourcesNames()
-        resetValues()
-        store.resetEventModificationState()
-        router.push({ name: 'Event Configuration Detail', params: { id: response.id } })
-      } else {
-        snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
-      }
-    } else if (response === 409) {
-      // Conflict: duplicate name
-      snackbar.showSnackBar({
-        msg: 'An event configuration source with this name already exists.',
-        error: true
-      })
-    } else if (response === 400) {
-      // Bad request: validation error
-      snackbar.showSnackBar({
-        msg: 'Invalid request. Please check your input and try again.',
-        error: true
-      })
-    } else {
-      // 500 or any other error
-      snackbar.showSnackBar({
-        msg: 'Failed to create event configuration source. Please try again.',
-        error: true
-      })
-    }
-  } catch (error) {
-    console.error('Error creating event configuration source:', error)
+    selectedSource.value = { _text: '', _value: -1 }
   }
 }
 
@@ -735,21 +639,19 @@ const search = (query: string) => {
   loading.value = true
   clearTimeout(timeout.value)
   timeout.value = window.setTimeout(() => {
-    results.value = eventConfigStore.uploadedSources?.filter((s) => s.name.toLowerCase().indexOf(query.toLowerCase()) > -1)
-      .map((x) => ({
-        _text: x.name,
-        _value: x.id
-      }))
+    const list = eventConfigStore.uploadedSources || []
+    const filtered = list
+      .filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
+      .map((x) => ({ _text: x.name, _value: x.id }))
+
+    if (filtered.length === 0 && query.trim().length > 0) {
+      // When no results match, present the user's typed option instead
+      results.value = [{ _text: query.trim(), _value: 0 }]
+    } else {
+      results.value = filtered
+    }
     loading.value = false
   }, 500)
-}
-
-const openCreateSourceDialog = () => {
-  createSourceDialog.value = true
-}
-
-const closeSourceCreationDialog = () => {
-  createSourceDialog.value = false
 }
 
 onMounted(async () => {
