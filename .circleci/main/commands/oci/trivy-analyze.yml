@@ -33,10 +33,18 @@ commands:
             echo "Using script path: $PY_SCRIPT_PATH"
             python3 "$PY_SCRIPT_PATH"
 
+      - run:
+          name: Create Jira Issues
+          context: Jira-secrets
+          command: |
+            if [[ ! -f filtered_vulnerabilities.txt ]]; then
+              echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
+              exit 0
+            fi
+  
+            echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
+            python3 .circleci/pyscripts/create_jira_issues.py
 
-            echo "Find the filtered_vulnerabilities.txt file:"
-            cd /home/circleci/
-            find . -name "filtered_vulnerabilities.txt"
       
       - store_artifacts:
           path: /home/circleci/project/horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt

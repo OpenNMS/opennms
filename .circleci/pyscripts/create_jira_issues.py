@@ -161,14 +161,16 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
         }
     }
 
-    try:
-        response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
-                               headers={"Content-Type": "application/json"},
-                               data=json.dumps(update_payload))
-        response.raise_for_status()
-        logging.info(f"Updated issue {issue_key} with new CVEs")
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to update issue {issue_key}: {e}")
+    print(f"[DEMO] Update payload for issue {issue_key} prepared (not sent):")
+
+   #  try:
+   #      response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
+   #                             headers={"Content-Type": "application/json"},
+   #                             data=json.dumps(update_payload))
+   #      response.raise_for_status()
+   #      logging.info(f"Updated issue {issue_key} with new CVEs")
+   #  except requests.exceptions.RequestException as e:
+   #      logging.error(f"Failed to update issue {issue_key}: {e}")
 
 def format_vulnerability_details(vulnerability):
     return (
@@ -240,18 +242,20 @@ def create_issue_for_package(package_name, vulnerabilities):
         }
     }
 
-    try:
-        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
-                                 headers={"Content-Type": "application/json"},
-                                 data=json.dumps(issue_payload))
-        response.raise_for_status()
-        created_issue_key = response.json().get('key')
-        processed_issues.add(created_issue_key)
-        logging.info(f"Created issue: {created_issue_key}")
-        return created_issue_key
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to create issue: {e}")
-        return None
+    print("[DEMO] Issue payload prepared (not sent):")
+
+   #  try:
+   #      response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
+   #                               headers={"Content-Type": "application/json"},
+   #                               data=json.dumps(issue_payload))
+   #      response.raise_for_status()
+   #      created_issue_key = response.json().get('key')
+   #      processed_issues.add(created_issue_key)
+   #      logging.info(f"Created issue: {created_issue_key}")
+   #      return created_issue_key
+   #  except requests.exceptions.RequestException as e:
+   #      logging.error(f"Failed to create issue: {e}")
+   #      return None
 
 def create_issues(vulnerabilities):
     packages = {}
