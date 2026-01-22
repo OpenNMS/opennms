@@ -295,7 +295,7 @@ def create_issues(vulnerabilities):
         processed_packages.add(package_name)
 
 def main():
-    vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
+    vulnerabilities = parse_filtered_vulnerabilities('/home/circleci/project/artifacts/filtered_vulnerabilities.txt')
 
     if not vulnerabilities:
         logging.info("No vulnerabilities to process.")
