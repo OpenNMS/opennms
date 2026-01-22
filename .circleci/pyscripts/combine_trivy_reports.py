@@ -86,12 +86,12 @@ if __name__ == "__main__":
     print(os.listdir('/home/circleci/project'))
 
 
-    for file_path in glob.glob('/home/circleci/*-trivy_filtered_vulnerabilities.txt'):
+    for file_path in glob.glob('/home/circleci/project/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         vulnerabilities = parse_filtered_vulnerabilities(file_path)
         print("")
         print(f"Parsed {len(vulnerabilities)} vulnerabilities from {file_path}")
 
-        with open('/home/circleci/project/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
+        with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
             outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
             outfile.write("-" * 150 + "\n")
             for vuln in vulnerabilities:
