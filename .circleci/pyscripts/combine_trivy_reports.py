@@ -12,7 +12,7 @@ def parse_filtered_vulnerabilities(file_path):
     pattern=re.compile(r'(.*)-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities\.txt')
     print(f"Parsing filtered vulnerabilities from {file_path}")
     print("")
-    match=pattern.match(file_path)
+    match=pattern.match(file_path.split('/')[-1])
     if match:
         source=match.group(1)
         print(f"Source identified as: {source}")
