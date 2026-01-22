@@ -9,7 +9,7 @@ def parse_filtered_vulnerabilities(file_path):
     global vulnerabilities
 
     # Get * in *-filtered_vulnerabilities.txt
-    pattern=re.compile(r'(.*)_filtered_vulnerabilities\.txt')
+    pattern=re.compile(r'(.*)-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities\.txt')
     print(f"Parsing filtered vulnerabilities from {file_path}")
     print("")
     match=pattern.match(file_path)
@@ -82,18 +82,14 @@ if __name__ == "__main__":
             print(output.stderr)
         print(f"Completed analysis for {json_file}")
 
-    print(f"CWD: {os.getcwd()}")
-    print(os.listdir('/home/circleci/project'))
-
+    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
+        outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
+        outfile.write("-" * 150 + "\n")
 
     for file_path in glob.glob('/home/circleci/project/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         vulnerabilities = parse_filtered_vulnerabilities(file_path)
-        print("")
         print(f"Parsed {len(vulnerabilities)} vulnerabilities from {file_path}")
-
         with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
-            outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
-            outfile.write("-" * 150 + "\n")
             for vuln in vulnerabilities:
                 print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
                 outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
