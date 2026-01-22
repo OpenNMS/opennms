@@ -1,6 +1,6 @@
 <template>
   <div class="snmp-config-definition-details">
-    <div class="feather-row">
+    <div v-if="props.displayIps" class="feather-row">
       <div class="feather-col-6">
         <label class="label">First IP Address:</label>
       </div>
@@ -8,7 +8,10 @@
         <label class="label">Last IP Address (for IP Range):</label>
       </div>
     </div>
-    <div class="feather-row">
+    <div 
+      class="feather-row"
+      v-if="props.displayIps"
+    >
       <div class="feather-col-6">
         <FeatherInput
           label=""
@@ -32,13 +35,13 @@
     </div>
 
     <div class="feather-row">
-      <div class="feather-col-6">
+      <div class="feather-col-6" v-if="!props.suppressMonitoringLocation">
         <SnmpConfigMonitoringLocationsDropdown
           :monitoringLocation="selectedMonitoringLocationValue"
           @update:modelValue="selectedMonitoringLocation = $event"
         />
       </div>
-      <div class="feather-col-6">
+      <div :class="!props.suppressMonitoringLocation ? 'feather-col-6' : 'feather-col-12'">
         <div class="dropdown">
           <FeatherSelect
             label="Version"
@@ -68,7 +71,7 @@
           :fieldInfo="snmpV2Fields"
           :config="formConfig"
           :validationErrors="errors"
-          @onUpdate="onFieldUpdate"
+          @update="onFieldUpdate"
         />
       </template>
     </FeatherExpansionPanel>
@@ -87,7 +90,7 @@
           :fieldInfo="snmpV3Fields"
           :config="formConfig"
           :validationErrors="errors"
-          @onUpdate="onFieldUpdate"
+          @update="onFieldUpdate"
         />
 
         <div class="large-spacer"></div>
@@ -106,7 +109,7 @@
           :fieldInfo="snmpV3ContextFields"
           :config="formConfig"
           :validationErrors="errors"
-          @onUpdate="onFieldUpdate"
+          @update="onFieldUpdate"
         />
       </template>
     </FeatherExpansionPanel>
@@ -123,7 +126,7 @@
       :fieldInfo="generalParamFields"
       :config="formConfig"
       :validationErrors="errors"
-      @onUpdate="onFieldUpdate"
+      @update="onFieldUpdate"
     />
 
     <div class="large-spacer"></div>
@@ -141,7 +144,7 @@
           :fieldInfo="advancedConfigOptions"
           :config="formConfig"
           :validationErrors="errors"
-          @onUpdate="onFieldUpdate"
+          @update="onFieldUpdate"
         />
       </template>
     </FeatherExpansionPanel>
@@ -153,7 +156,7 @@
         <div class="action-container">
           <FeatherButton
             primary
-            @click="handleSaveDefinition"
+            @click="handleSave"
             data-test="save-definition-button"
           >
             {{ isCreate ? 'Create Definition' : 'Save Changes' }}
@@ -178,15 +181,18 @@ import { FeatherExpansionPanel } from '@featherds/expansion'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { isNonEmptyString } from '@/lib/utils'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpDefinitionFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import { validateDefinition } from './snmpValidator'
+import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
+import { validateDefinition } from '@/lib/snmpValidator'
 import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 
 const props = defineProps<{
   isCreate: boolean,
+  displayIps: boolean,
+  suppressMonitoringLocation?: boolean,
   firstIp: string,
   lastIp?: string,
   config?: SnmpAgentConfig
@@ -195,7 +201,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'cancel'): void
   (e: 'save', config: SnmpAgentConfig, firstIp?: string, lastIp?: string): void
-  (e: 'validation-error', formErrors: SnmpDefinitionFormErrors): void
+  (e: 'validation-error', formErrors: SnmpConfigFormErrors): void
 }>()
  
 const SnmpVersions: ISelectItemType[] = [
@@ -206,8 +212,9 @@ const SnmpVersions: ISelectItemType[] = [
 
 const store = useSnmpConfigStore()
 const snmpVersion = ref()
+const isLoading = ref(true)
 const isValid = ref(false)
-const errors = ref<SnmpDefinitionFormErrors>({})
+const errors = ref<SnmpConfigFormErrors>({})
 
 // local data for form inputs
 const firstIpAddress = ref('')
@@ -266,22 +273,9 @@ const snmpV3ContextFields: SnmpFieldInfo[] = [
   { key: 'enterpriseId', label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
 ]
 
-const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
-  Object.assign(formConfig, updatedConfig)
-}
-
 const selectedMonitoringLocationValue = computed<string>(() => {
   return String(selectedMonitoringLocation.value?._value ?? '')
 })
-
-const resetValues = () => {
-  snmpVersion.value = SnmpVersions[1]
-  firstIpAddress.value = ''
-  lastIpAddress.value = ''
-
-  // Reset formConfig to defaults
-  Object.assign(formConfig, getDefaultSnmpBaseConfiguration())
-}
 
 const loadInitialValues = () => {
   const currentConfig: SnmpAgentConfig = props.config ?? getDefaultSnmpBaseConfiguration()
@@ -296,8 +290,8 @@ const loadInitialValues = () => {
     
   // For now, just set firstIpAddress
   // We will handle ranges, etc. later
-  firstIpAddress.value = isNonEmptyString(props.firstIp) ? props.firstIp : ''
-  lastIpAddress.value = isNonEmptyString(props.lastIp) ? props.lastIp! : ''
+  firstIpAddress.value = props.displayIps && isNonEmptyString(props.firstIp) ? props.firstIp : ''
+  lastIpAddress.value =  props.displayIps && isNonEmptyString(props.lastIp) ? props.lastIp! : ''
   const matchedLoc = store.monitoringLocations.find(x => x.name === currentConfig.location)
   selectedMonitoringLocation.value = matchedLoc ? { _text: matchedLoc.name, _value: matchedLoc.name } : undefined
   
@@ -315,7 +309,7 @@ const loadInitialValues = () => {
     maxRepetitions: currentConfig.maxRepetitions ?? undefined,
     ttl: currentConfig.ttl ?? undefined,
     securityName: currentConfig.securityName ?? '',
-    securityLevel: currentConfig.securityLevel ?? undefined,
+    securityLevel: currentConfig.securityLevel || DEFAULT_SNMP_V3_SECURITY_LEVEL,
     authPassphrase: currentConfig.authPassphrase ?? '',
     authProtocol: currentConfig.authProtocol ?? '',
     engineId: currentConfig.engineId ?? '',
@@ -349,7 +343,15 @@ const onSnmpVersionUpdated = (val: ISelectItemType | undefined) => {
   })
 }
 
-const handleSaveDefinition = async () => {
+const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
+  Object.assign(formConfig, updatedConfig)
+
+  if (!isLoading.value) {
+    handleValidate()
+  }
+}
+
+const handleSave = async () => {
   handleValidate()
 
   try {
@@ -371,35 +373,39 @@ const handleSaveDefinition = async () => {
 }
 
 const handleCancel = () => {
-  resetValues()
   emit('cancel')
 }
 
 const handleValidate = () => {
   const version = String(snmpVersion.value?._value || '')
+  // if we are not displaying IPs, pass a fake valid IP to avoid validation errors
+  const fakeValidIp = '10.0.0.0'
 
   const currentErrors = validateDefinition(
     formConfig,
     version,
-    firstIpAddress.value,
+    props.displayIps ? firstIpAddress.value : fakeValidIp,
     lastIpAddress.value
   )
 
-  isValid.value = Object.keys(currentErrors).length === 0
-  errors.value = currentErrors as SnmpDefinitionFormErrors
+  errors.value = currentErrors as SnmpConfigFormErrors
+  isValid.value = Object.getOwnPropertyNames(currentErrors).length === 0
+
+  if (!isValid.value) {
+    emit('validation-error', errors.value)
+  }
 }
 
 watch([() => props.config, () => props.isCreate], () => {
+  isLoading.value = true
   loadInitialValues()
-})
-
-watchEffect(() => {
-  // TODO: Debounce validation?
-  handleValidate()
+  isLoading.value = false
 })
 
 onMounted(() => {
+  isLoading.value = true
   loadInitialValues()
+  isLoading.value = false
 })
 </script>
 

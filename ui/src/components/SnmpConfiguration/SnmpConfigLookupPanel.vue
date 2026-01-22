@@ -4,8 +4,9 @@
       <h3>Lookup by IP</h3>
     </div>
     <div>
-      <p>Find SNMP configurations that exist for a particular IP.</p>
+      <p>Find the SNMP configuration that exists for a particular IP.</p>
     </div>
+    <div class="large-spacer"></div>
 
     <div class="section">
       <div class="section-content">
@@ -60,7 +61,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
-import { is } from 'date-fns/locale'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
@@ -83,7 +84,7 @@ const lookupMonitoringLocationValue = computed<string>(() => {
 const resetValues = () => {
   lookupIpAddress.value = ''
   lookupConfig.value = undefined
-  const defaultLoc = store.monitoringLocations.find(loc => loc.name === 'Default')
+  const defaultLoc = store.monitoringLocations.find(loc => loc.name === DEFAULT_MONITORING_LOCATION)
   lookupMonitoringLocation.value = defaultLoc ? { _text: defaultLoc.name, _value: defaultLoc.name } : undefined
   ipAddress.value = ''
 }

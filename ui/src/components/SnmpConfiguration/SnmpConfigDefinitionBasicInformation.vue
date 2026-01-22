@@ -4,7 +4,7 @@
       <div>
         <FeatherBackButton
           data-test="back-button"
-          @click="handleBackButtonClick"
+          @click="onDetailsCancel"
         >
           Go Back
         </FeatherBackButton>
@@ -40,19 +40,18 @@
 
         <div class="large-spacer"></div>
 
-        <div class="section-content">
-          <SnmpConfigDefinitionDetails
-            v-if="snmpAgentConfig"
-            :isCreate="false"
-            :firstIp="firstIpAddress"
-            :lastIp="lastIpAddress"
-            :config="snmpAgentConfig"
-            :errors="errors"
-            @cancel="onDetailsCancel"
-            @validation-error="onDetailsValidationError"
-            @save="onDetailsSave"
-          />
-        </div>
+        <SnmpConfigDetailsPanel
+          v-if="snmpAgentConfig"
+          :displayIps="true"
+          :isCreate="false"
+          :firstIp="firstIpAddress"
+          :lastIp="lastIpAddress"
+          :config="snmpAgentConfig"
+          :errors="errors"
+          @cancel="onDetailsCancel"
+          @validation-error="onDetailsValidationError"
+          @save="onDetailsSave"
+        />
       </div>
     </div>
   </div>
@@ -60,21 +59,25 @@
 
 <script setup lang="ts">
 import { FeatherBackButton } from '@featherds/back-button'
-import { SnmpAgentConfig, SnmpDefinition, SnmpDefinitionFormErrors } from '@/types/snmpConfig'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
-import { getDefaultSnmpDefinition, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import useSnackbar from '@/composables/useSnackbar'
-import SnmpConfigDefinitionDetails from './SnmpConfigDefinitionDetails.vue'
+import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
+import { SnmpAgentConfig, SnmpDefinition, SnmpConfigFormErrors } from '@/types/snmpConfig'
+import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 
 const props = defineProps<{
   isCreate: boolean,
   definition: SnmpDefinition | null
 }>()
- 
-const router = useRouter()
-const store = useSnmpConfigStore()
-const snackbar = useSnackbar()
-const errors = ref<SnmpDefinitionFormErrors>({})
+
+const emit = defineEmits<{
+  (e: 'cancel'): void
+  (e: 'save', definition: SnmpDefinition, firstIp?: string, lastIp?: string): void
+  (e: 'validation-error', errors: SnmpConfigFormErrors): void
+}>()
+
+const isValid = ref(false)
+const errors = ref<SnmpConfigFormErrors>({})
 
 const currentDefinition = ref<SnmpDefinition>()
 const firstIpAddress = ref('')
@@ -83,7 +86,7 @@ const lastIpAddress = ref('')
 const snmpAgentConfig = computed(() => {
   const config = {
     version: convertSnmpVersionToString(currentDefinition.value?.version ?? 'v2c'),
-    location: currentDefinition.value?.location ?? 'Default',
+    location: currentDefinition.value?.location ?? DEFAULT_MONITORING_LOCATION,
     readCommunity: currentDefinition.value?.readCommunity ?? '',
     writeCommunity: currentDefinition.value?.writeCommunity ?? '',
     timeout: currentDefinition.value?.timeout ?? undefined,
@@ -133,32 +136,64 @@ const loadInitialValues = () => {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const onDetailsValidationError = (formErrors: SnmpDefinitionFormErrors) => {
-  snackbar.showSnackBar({ msg: 'Save failed. Please fix invalid values.', error: true })
+const onDetailsValidationError = (formErrors: SnmpConfigFormErrors) => {
+  console.log('In SnmpConfigDefinitionBasicInformation onDetailsValidationError')
+
+  isValid.value = Object.keys(formErrors).length === 0
+  errors.value = { ...formErrors}
+
+  console.log('| isVvalid:', isValid.value)
+
+  emit('validation-error', errors.value)
 }
 
 const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string) => {
-  const resp = await store.saveDefinition(config, firstIp, lastIp)
+  firstIpAddress.value = firstIp ?? ''
+  lastIpAddress.value = lastIp ?? ''
 
-  if (resp.success) {
-    snackbar.showSnackBar({ msg: 'Configuration saved successfully' })
-  } else {
-    snackbar.showSnackBar({ msg: `Save failed: ${resp.message}`, error: true })
-  }
+  const specifics = lastIpAddress.value
+    ? []
+    : firstIpAddress.value ? [firstIpAddress.value] : []
 
-  // get latest config values after save
-  await store.populateSnmpConfig()
+  const ranges = lastIpAddress.value
+    ? [{ begin: firstIpAddress.value, end: lastIpAddress.value }]
+    : []
+
+  const definitionToSave = {
+    ...currentDefinition.value,
+    ranges,
+    specifics,
+    ipMatches: currentDefinition.value?.ipMatches ?? [],
+    location: config.location,
+    port: config.port,
+    retry: config.retry,
+    timeout: config.timeout,
+    readCommunity: config.readCommunity,
+    writeCommunity: config.writeCommunity,
+    proxyHost: config.proxyHost,
+    version: config.version,
+    maxVarsPerPdu: config.maxVarsPerPdu,
+    maxRepetitions: config.maxRepetitions,
+    maxRequestSize: config.maxRequestSize,
+    securityName: config.securityName,
+    securityLevel: config.securityLevel,
+    authPassphrase: config.authPassphrase,
+    authProtocol: config.authProtocol,
+    privacyPassphrase: config.privacyPassphrase,
+    privacyProtocol: config.privacyProtocol,
+    engineId: config.engineId,
+    contextEngineId: config.contextEngineId,
+    contextName: config.contextName,
+    enterpriseId: config.enterpriseId,
+    ttl: config.ttl,
+  } as SnmpDefinition
+
+  emit('save', definitionToSave, firstIpAddress.value, lastIpAddress.value)
 }
 
 const onDetailsCancel = () => {
   resetValues()
-}
-
-const handleBackButtonClick = () => {
-  router.push({
-    name: 'SNMP Config'
-  })
+  emit('cancel')
 }
 
 watch([() => props.definition, () => props.isCreate], () => {
@@ -171,16 +206,16 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/themes/variables' as variables;
 @use '@featherds/styles/mixins/typography';
 @use "@featherds/table/scss/table";
 
 .main-content {
-  padding: 30px;
-  margin: 30px;
+  padding: 0.2em;
+  margin: 0.2em;
 
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(variables.$surface);
 
   .header {
     display: flex;
@@ -192,7 +227,7 @@ onMounted(() => {
     border-width: 1px;
     border-style: solid;
     border-color: var(variables.$border-on-surface);
-    padding: 10px;
+    padding: 1em;
     border-radius: 8px;
 
     .label {

@@ -8,14 +8,6 @@
         <div class="search-container">
         </div>
         <div class="refresh">
-          <FeatherButton
-            primary
-            icon="Refresh"
-            data-test="refresh-button"
-            @click="store.populateSnmpConfig"
-          >
-            <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
-          </FeatherButton>
         </div>
       </div>
     </div>
@@ -29,10 +21,10 @@
           <tr>
             <FeatherSortHeader
               v-for="col of columns"
-              :key="col.label"
+              :key="col.id"
               scope="col"
               :property="col.id"
-              :sort="(sort as any)[col.id]"
+              :sort="(sortStates as any)[col.id]"
               v-on:sort-changed="sortChanged"
             >
               {{ col.label }}
@@ -46,9 +38,8 @@
         >
           <tr
             v-for="profile of profiles"
-            :key="`${profile.label ?? ''}-${profile.id}`"
+            :key="`${profile.label ?? ''}-${profile.label}`"
           >
-            <td>{{ profile.id }}</td>
             <td>{{ profile.label }}</td>
             <td>{{ profile.filterExpression }}</td>
             <td>
@@ -56,14 +47,14 @@
                 <FeatherButton
                   icon="Edit"
                   data-test="edit-button"
-                  @click="onProfileEdit(profile.id)"
+                  @click="onProfileEdit(profile.label)"
                 >
                   <FeatherIcon :icon="IconEdit"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherButton
                   icon="Delete"
                   data-test="delete-button"
-                  @click="onProfileDelete(profile.id)"
+                  @click="onConfirmProfileDelete(profile.label)"
                 >
                   <FeatherIcon :icon="IconDelete"> </FeatherIcon>
                 </FeatherButton>
@@ -72,20 +63,6 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div
-        class="snmp-profiles-pagination"
-        v-if="profiles.length"
-      >
-        <!-- <FeatherPagination
-          :modelValue="store.sourcesPagination.page"
-          :pageSize="store.sourcesPagination.pageSize"
-          :total="store.sourcesPagination.total"
-          :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="store.onSourcePageChange"
-          @update:pageSize="store.onSourcePageSizeChange"
-          data-test="FeatherPagination"
-        /> -->
-      </div>
       <div v-if="!profiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -94,79 +71,126 @@
       </div>
     </div>
   </TableCard>
+
+  <FeatherDialog
+    v-model="displayDeleteDialog"
+    :labels="deleteDialogLabels"
+    hide-close
+  >
+    <div class="modal-body">
+      <p>
+        Do you want to delete the SNMP configuration profile:
+        <strong>{{ selectedProfileLabel }}</strong>
+      </p>
+    </div>
+    <template v-slot:footer>
+      <FeatherButton @click="onCancelProfileDelete"> Cancel </FeatherButton>
+      <FeatherButton
+        primary
+        @click="onProfileDelete"
+      >
+        Delete
+      </FeatherButton>
+    </template>
+  </FeatherDialog>
 </template>
 
 <script lang="ts" setup>
 import { FeatherButton } from '@featherds/button'
+import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
+import IconDelete from '@featherds/icon/action/Delete'
+import IconEdit from '@featherds/icon/action/Edit'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { sortPredicate } from '@/lib/sorting'
+import { FeatherSortObject } from '@/types'
 import { SnmpProfile } from '@/types/snmpConfig'
-import IconDelete from '@featherds/icon/action/Delete'
-import IconEdit from '@featherds/icon/action/Edit'
-import IconRefresh from '@featherds/icon/navigation/Refresh'
+
+const emit = defineEmits<{
+  (e: 'delete-profile', label: string): void
+}>()
 
 const store = useSnmpConfigStore()
-const router = useRouter()
+const displayDeleteDialog = ref(false)
+const selectedProfileLabel = ref<string | null>(null)
+
+const deleteDialogLabels = {
+  title: 'Delete SNMP Configuration Profile'
+}
 
 const emptyListContent = {
-  msg: 'No results found.'
+  msg: 'No profiles found.'
 }
 
 const columns = computed(() => [
-  { id: 'id', label: 'ID' },
   { id: 'label', label: 'Label' },
   { id: 'filterExpression', label: 'Filter Expression' }
 ])
 
-const sort = reactive({
+const currentSort = ref<FeatherSortObject>({ property: 'label', value: SORT.NONE })
+
+const sortStates: Record<string, SORT> = reactive({
   label: SORT.NONE,
   filterExpression: SORT.NONE
-}) as any
+})
 
 const createFilterExpressionLabel = (profile: SnmpProfile) => {
   return profile.filterExpression ?? '--'
 }
 
 const profiles = computed(() => {
-  if (store.config.snmpProfiles?.snmpProfiles) {
-    return store.config.snmpProfiles.snmpProfiles.map(profile => {
-      return {
-        id: profile.id ?? -1,
-        label: profile.label ?? '--',
-        filterExpression: createFilterExpressionLabel(profile)
-      }
-    })
+  if (!store.config.snmpProfiles?.snmpProfiles) {
+    return []
   }
 
-  return []
+  const items = store.config.snmpProfiles.snmpProfiles.map(profile => {
+    return {
+      label: profile.label ?? '--',
+      filterExpression: createFilterExpressionLabel(profile)
+    }
+  }).sort((a, b) => sortPredicate(a, b, currentSort.value))
+
+  return items
 })
 
-const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    // store.onSourcesSortChange(sortObj.property, sortObj.value)
-  } else {
-    // store.onSourcesSortChange('createdTime', 'desc')
+const sortChanged = (sortObj: FeatherSortObject) => {
+  for (const key in sortStates) {
+    sortStates[key] = SORT.NONE
   }
 
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
+  sortStates[sortObj.property] = sortObj.value
+  currentSort.value = sortObj
+}
+
+const onConfirmProfileDelete = (label: string) => {
+  selectedProfileLabel.value = label
+  displayDeleteDialog.value = true
+}
+
+const onCancelProfileDelete = () => {
+  displayDeleteDialog.value = false
+  selectedProfileLabel.value = null
+}
+
+const onProfileDelete = () => {
+  if (!selectedProfileLabel.value) {
+    return
   }
-  sort[sortObj.property] = sortObj.value
+
+  const label = selectedProfileLabel.value
+  displayDeleteDialog.value = false
+  selectedProfileLabel.value = null
+
+  emit('delete-profile', label)
 }
 
-const onProfileDelete = (id: number) => {
-  alert(`Deleting profile with id: ${id}`)
-}
-
-const onProfileEdit = (id: number) => {
-  router.push({
-    name: 'SNMP Config Profile',
-    params: { id: String(id) }
-  })
+const onProfileEdit = (label: string) => {
+  store.setProfileLabel(label)
+  store.setSnmpProfileEditMode(SnmpConfigEditMode.Edit)
 }
 </script>
 

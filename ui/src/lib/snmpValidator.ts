@@ -21,10 +21,11 @@
 ///
 
 import { isIP } from 'is-ip'
-import { SnmpBaseConfiguration, SnmpDefinitionFormErrors, SnmpProfileFormErrors } from '@/types/snmpConfig'
+import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpProfileFormErrors, SnmpSecurityLevel } from '@/types/snmpConfig'
+import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from './constants'
 
 const SNMP_VERSIONS = ['v1', 'v2c', 'v3']
-const VALID_SECURITY_LEVELS = [0, 1, 2]
+const VALID_SECURITY_LEVELS = [SnmpSecurityLevel.NoAuthNoPriv, SnmpSecurityLevel.AuthNoPriv, SnmpSecurityLevel.AuthPriv]
 const MIN_PORT = 1
 const MAX_PORT = 65535
 const MAX_REQUEST_SIZE_MINIMUM = 484
@@ -50,8 +51,8 @@ export const validateDefinition = (
   snmpVersion: string,
   firstIpAddress: string,
   lastIpAddress: string
-): SnmpDefinitionFormErrors => {
-  const errors: SnmpDefinitionFormErrors = {}
+): SnmpConfigFormErrors => {
+  const errors: SnmpConfigFormErrors = {}
 
   if (!snmpVersion) {
     errors.snmpVersion = 'SNMP Version is required'
@@ -85,9 +86,10 @@ export const validateDefinition = (
     }
   }
 
-  if (config.securityLevel !== undefined) {
+  // only check security level for SNMPv3
+  if (snmpVersion === 'v3' && config.securityLevel !== undefined) {
     if (isNaN(config.securityLevel) || !VALID_SECURITY_LEVELS.includes(config.securityLevel)) {
-      errors.securityLevel = 'Security Level must be one of: 0 (noAuthNoPriv), 1 (authNoPriv), 2 (authPriv)'
+      errors.securityLevel = 'Security Level must be one of: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)'
     }
   }
 
@@ -100,13 +102,14 @@ export const validateDefinition = (
   }
 
   // Validate that remaining numeric fields are integers
-  const numericFields: string[] = ['timeout', 'retry', 'maxVarsPerPdu', 'maxRepetitions']
+  const numericFields: string[] = ['timeout', 'retry', 'maxVarsPerPdu', 'maxRepetitions', 'ttl']
 
   const fieldDisplayNames: Record<string, string> = {
     timeout: 'Timeout',
     retry: 'Retries',
     maxVarsPerPdu: 'Max Vars Per PDU',
-    maxRepetitions: 'Max Repetitions'
+    maxRepetitions: 'Max Repetitions',
+    ttl: 'TTL'
   }
 
   numericFields.forEach(field => {
@@ -135,4 +138,12 @@ export const validateProfile = (
   }
 
   return errors
+}
+
+export const isValidSnmpSecurityLevel = (level: number | undefined): boolean => {
+  return level !== undefined && VALID_SECURITY_LEVELS.includes(level)
+}
+
+export const getDefaultSnmpSecurityLevel = (): number => {
+  return DEFAULT_SNMP_V3_SECURITY_LEVEL
 }

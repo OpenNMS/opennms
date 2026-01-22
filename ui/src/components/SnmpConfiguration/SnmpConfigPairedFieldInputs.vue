@@ -16,6 +16,7 @@
           v-model.trim="(props.config as any)[fieldPair.field1.key]"
           :hint="fieldPair.field1.hint"
           :error="(props.validationErrors as any)[fieldPair.field1.key]"
+          :type="fieldPair.field1.isNumeric ? 'number' : 'text'"
           @update:modelValue="val => handleFormInputUpdate(String(fieldPair.field1.key), String(val ?? ''), fieldPair.field1.isNumeric)"
         >
         </FeatherInput>
@@ -28,6 +29,7 @@
           v-model.trim="(props.config as any)[fieldPair.field2.key]"
           :hint="fieldPair.field2.hint"
           :error="(props.validationErrors as any)[fieldPair.field2.key]"
+          :type="fieldPair.field2.isNumeric ? 'number' : 'text'"
           @update:modelValue="val => handleFormInputUpdate(String(fieldPair.field2.key), String(val ?? ''), fieldPair.field2.isNumeric)"
         >
         </FeatherInput>
@@ -38,17 +40,17 @@
 
 <script setup lang="ts">
 
-import { SnmpBaseConfiguration, SnmpDefinitionFormErrors, SnmpFieldInfo } from '@/types/snmpConfig';
+import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig';
 import { FeatherInput } from '@featherds/input'
 
 const props = defineProps<{
   fieldInfo: SnmpFieldInfo[]
   config: SnmpBaseConfiguration
-  validationErrors: SnmpDefinitionFormErrors
+  validationErrors: SnmpConfigFormErrors
 }>()
 
 const emit = defineEmits<{
-  (e: 'onUpdate', config: SnmpBaseConfiguration): void
+  (e: 'update', config: SnmpBaseConfiguration): void
 }>()
 
 const createPairedFields = (fields: any[]) => {
@@ -66,28 +68,12 @@ const pairedFields = computed(() => {
 })
 
 const handleFormInputUpdate = (key: string, val: string, isNumeric?: boolean) => {
-  let updatedConfig: any = {}
-
-  if (isNumeric) {
-    const numericVal = Number(val)
-
-    // Don't allow invalid or negative numbers
-    if (isNaN(numericVal) || numericVal < 0) {
-      return
-    }
-
-    updatedConfig = {
-      ...(props.config as any),
-      [key]: numericVal
-    }
-  } else {
-    updatedConfig = {
-      ...(props.config as any),
-      [key]: val
-    }
+  const updatedConfig = {
+    ...(props.config as any),
+    [key]: isNumeric ? Number(val) : val
   }
 
-  emit('onUpdate', updatedConfig)
+  emit('update', updatedConfig)
 }
 </script>
 
