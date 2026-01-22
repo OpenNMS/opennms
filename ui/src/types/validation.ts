@@ -20,23 +20,34 @@
 /// License.
 ///
 
-import { UsageStatisticsMetadata } from '@/types/usageStatistics'
-export interface UsageStatisticsStatus {
-  enabled: boolean | null,
-  initialNoticeAcknowledged?: boolean | null
+export interface ValidationResult {
+  success: boolean
+  message: string
+  errors?: string[]
 }
 
-export interface UsageStatisticsData {
-  [key: string]: any
+export interface ValidationResultWithPayload<T> extends ValidationResult {
+  payload?: T
 }
 
-export interface UsageStatisticsMetadataItem {
-  key: string
-  name: string
-  description: string
-  datatype: string
+export const createSuccessResponse = (): ValidationResult => {
+  return {
+    success: true,
+    message: ''
+  } as ValidationResult
 }
 
-export interface UsageStatisticsMetadata {
-  metadata: UsageStatisticsMetadataItem[]
+export const createFailureResult = (message: string): ValidationResult => {
+  return {
+    success: false,
+    message
+  } as ValidationResult
+}
+
+export const createResultWithPayload = <T>(success: boolean, message: string, payload?: T): ValidationResultWithPayload<T> => {
+  return {
+    success,
+    message,
+    payload
+  } as ValidationResultWithPayload<T>
 }

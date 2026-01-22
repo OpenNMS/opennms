@@ -22,9 +22,10 @@
 
 import { defineStore } from 'pinia'
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
-import { getSnmpConfig, lookupSnmpConfig } from '@/services/snmpConfigService'
+import { deleteSnmpDefinition, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition } from '@/services/snmpConfigService'
 import { CreateEditMode, MonitoringLocation } from '@/types'
-import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpConfigInfoDto, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { ValidationResult } from '@/types/validation'
 
 export const DEFAULT_SNMP_VERSION = 'v2c'
 export const DEFAULT_SNMP_TIMEOUT = 3000
@@ -44,20 +45,10 @@ export const DEFAULT_SNMP_V3_AUTH_PROTOCOL = 'MD5'
 export const DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE = '0p3nNMSv3'
 export const DEFAULT_SNMP_V3_PRIVACY_PROTOCOL = 'DES'
 
-export const SnmpAuthProtocols = [
-  'MD5',
-  'SHA',
-  'SHA-224',
-  'SHA-256',
-  'SHA-512'
-]
-
-export const SnmpPrivacyProtocols = [
-  'DES',
-  'AES',
-  'AES192',
-  'AES256'
-]
+export enum SnmpLookupEditMode {
+  Lookup = 'lookup',
+  Edit = 'edit'
+}
 
 export const getDefaultSnmpBaseConfiguration = () => {
   return {
@@ -185,9 +176,18 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const currentDefinition = ref<SnmpDefinition>()
   const profileId = ref(0)
   const monitoringLocations = ref<MonitoringLocation[]>([])
+  const snmpLookupEditMode = ref<SnmpLookupEditMode>(SnmpLookupEditMode.Lookup)
+
+  const setActiveTab = (tabIndex: number) => {
+    activeTab.value = tabIndex
+  }
 
   const setCreateEditMode = (mode: CreateEditMode) => {
     createEditMode.value = mode
+  }
+
+  const setSnmpLookupEditMode = (mode: SnmpLookupEditMode) => {
+    snmpLookupEditMode.value = mode
   }
 
   const setCurrentDefinition = (definition: SnmpDefinition) => {
@@ -198,7 +198,9 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     const resp = await getSnmpConfig()
 
     if (resp) {
-      config.value = resp
+      config.value = {
+        ...resp
+      }
     }
   }
 
@@ -220,6 +222,45 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     return resp
   }
 
+  const saveDefinition = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string): Promise<ValidationResult> => {
+    const dto = {
+      readCommunity: config.readCommunity,
+      version: config.version,
+      port: config.port,
+      retries: config.retry,
+      timeout: config.timeout,
+      maxVarsPerPdu: config.maxVarsPerPdu,
+      maxRepetitions: config.maxRepetitions,
+      securityName: config.securityName,
+      securityLevel: config.securityLevel,
+      authPassPhrase: config.authPassphrase,
+      authProtocol: config.authProtocol,
+      privPassPhrase: config.privacyPassphrase,
+      privProtocol: config.privacyProtocol,
+      engineId: config.engineId,
+      contextEngineId: config.contextEngineId,
+      contextName: config.contextName,
+      enterpriseId: config.enterpriseId,
+      maxRequestSize: config.maxRequestSize,
+      writeCommunity: config.writeCommunity,
+      proxyHost: config.proxyHost,
+      location: config.location,
+      ttl: config.ttl,
+      firstIpAddress: firstIp ?? '',
+      lastIpAddress: lastIp
+    } as SnmpConfigInfoDto
+
+    const resp = await saveSnmpDefinition(dto)
+
+    return resp
+  }
+
+  const removeDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
+    const resp = await deleteSnmpDefinition(ipAddress, location)
+
+    return resp
+  }
+
   return {
     activeTab,
     config,
@@ -231,7 +272,12 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     fetchMonitoringLocations,
     lookupIpAddress,
     populateSnmpConfig,
+    removeDefinition,
+    saveDefinition,
     setCreateEditMode,
-    setCurrentDefinition
+    setCurrentDefinition,
+    snmpLookupEditMode,
+    setActiveTab,
+    setSnmpLookupEditMode
   }
 })
