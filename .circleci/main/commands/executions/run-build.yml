@@ -8,9 +8,13 @@ commands:
       node-memory:
         default: echo "NODE_OPTIONS Not Set"
         type: string
+      max-memory:
+        default: 5
+        type: integer
       vaadin-javamaxmem:
-        default: 2g
+        default: 1g
         type: string
+      
     steps:
       - cached-checkout
       - save-cached-checkout
@@ -31,7 +35,7 @@ commands:
             export SIGN_KEY_PASS="$(echo "${GPG_PASSPHRASE}" | base64 -d)"
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             << parameters.node-memory >>
-            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx<< parameters.max-memory >>g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             MAVEN_ARGS="install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
