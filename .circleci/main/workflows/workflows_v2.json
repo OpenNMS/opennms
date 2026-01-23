@@ -64,6 +64,24 @@
                 "sentinel-image-single-arch-linux-amd64"
             ]
         },
+          "oci-arm64-horizon": {
+            "extends": [
+                "tarball-assembly-only",
+                "horizon-image-single-arch",
+            ]
+        },
+        "oci-arm64-minion": {
+            "extends": [
+                "tarball-assembly-only",
+                "minion-image-single-arch",
+            ]
+        },
+        "oci-arm64-sentinel": {
+            "extends": [
+                "tarball-assembly-only",
+                "sentinel-image-single-arch",
+            ]
+        },
         "build-publish": {
             "extends": [
                 "build",

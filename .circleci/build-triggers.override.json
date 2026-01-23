@@ -1,5 +1,5 @@
 {
-    "build-deploy": false,
+    "build-deploy": true,
     "coverage": false,
     "docs": false,
     "ui": false,
