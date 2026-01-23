@@ -116,7 +116,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
                 Set<String> allowedSortFields = Set.of("name", "vendor", "description");
 
                 if (!allowedSortFields.contains(sortBy)) {
-                    sortField = "name";
+                    sortField = "createdTime";
                 }
 
                 orderBy = " order by " + sortField + " " + sortOrder;

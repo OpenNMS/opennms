@@ -99,6 +99,20 @@
           </tr>
         </TransitionGroup>
       </table>
+      <div
+        class="alerts-pagination"
+        v-if="store.sources.length"
+      >
+        <FeatherPagination
+          :modelValue="store.sourcesPagination.page"
+          :pageSize="store.sourcesPagination.pageSize"
+          :total="store.sourcesPagination.total"
+          :pageSizes="[10, 20, 50, 100, 200]"
+          @update:modelValue="store.onSourcePageChange"
+          @update:pageSize="store.onSourcePageSizeChange"
+          data-test="FeatherPagination"
+        />
+      </div>
       <div v-if="!store.sources.length">
         <EmptyList
           :content="emptyListContent"
@@ -120,6 +134,7 @@ import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
@@ -251,6 +266,19 @@ onMounted(async () => {
           }
         }
       }
+    }
+
+    .alerts-pagination {
+      display: flex;
+      justify-content: flex-end;
+      padding: var(variables.$spacing-xxs);
+      border-bottom: 1px solid var(--feather-border-on-surface);
+      border-left: 1px solid var(--feather-border-on-surface);
+      border-right: 1px solid var(--feather-border-on-surface);
+    }
+
+    .feather-pagination {
+      border: none !important;
     }
   }
 }

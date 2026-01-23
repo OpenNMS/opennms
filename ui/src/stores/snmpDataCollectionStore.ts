@@ -1,4 +1,7 @@
-import { data } from '@/components/SnmpDataCollection/data'
+import {
+  filterSnmpCollectionSources,
+  getAllSnmpCollectionSourcesNamesAndIds
+} from '@/services/snmpDataCollectionService'
 import { SnmpDataCollectionStoreState } from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
@@ -10,21 +13,47 @@ const defaultPagination = {
 
 export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStore', {
   state: (): SnmpDataCollectionStoreState => ({
+    isLoading: false,
     sources: [],
     selectedSource: null,
     sourcesPagination: { ...defaultPagination },
     sourcesSearchTerm: '',
+    uploadedSourceNames: [],
     sourcesSorting: {
       sortOrder: 'desc',
       sortKey: 'createdTime'
     }
   }),
   actions: {
+    async fetchAllSourcesNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllSnmpCollectionSourcesNamesAndIds()
+        this.uploadedSourceNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching all SNMP data collection source names:', error)
+        this.isLoading = false
+      }
+    },
     async fetchSnmpCollectionSources() {
-      // Placeholder for fetching SNMP collection sources from an API
-      // You would typically make an API call here and update the state accordingly
-      console.log('Fetching SNMP Collection Sources...')
-      this.sources = data
+      this.isLoading = true
+      try {
+        const response = await filterSnmpCollectionSources(
+          (this.sourcesPagination.page - 1) * this.sourcesPagination.pageSize,
+          this.sourcesPagination.pageSize,
+          this.sourcesSearchTerm,
+          this.sourcesSorting.sortKey,
+          this.sourcesSorting.sortOrder
+        )
+        await this.fetchAllSourcesNames()
+        this.sources = response.sources
+        this.sourcesPagination.total = response.totalRecords
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection sources:', error)
+        this.isLoading = false
+      }
     },
     async onChangeSourcesSearchTerm(searchTerm: string) {
       this.sourcesSearchTerm = searchTerm
