@@ -34,6 +34,7 @@
 <%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.netmgt.dao.api.TrapdConfigDao" %>
 <% Bootstrap.with(pageContext)
           .headTitle("System Configuration")
           .headTitle("Admin")
@@ -78,7 +79,8 @@
 <%
    String trapPort = "Unknown";
    try {
-       TrapdConfigFactory.init();
+       final TrapdConfigDao trapdConfigDao = BeanUtils.getBean("daoContext", "trapdConfigDao", TrapdConfigDao.class);
+       TrapdConfigFactory.init(trapdConfigDao);
        trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
    } catch (Throwable e) {
        // if factory can't be initialized, status is already 'Unknown'

@@ -56,51 +56,51 @@ public class TrapdConfiguration implements  Serializable {
      * default is .
      */
 	@XmlAttribute(name="snmp-trap-address")
-    private java.lang.String _snmpTrapAddress = "*";
+    private java.lang.String snmpTrapAddress = "*";
 
     /**
      * The port on which trapd listens for SNMP traps. The
      *  standard port is 162.
      */
 	@XmlAttribute(name="snmp-trap-port", required=true)
-    private int _snmpTrapPort;
+    private int snmpTrapPort;
 
     /**
      * keeps track of state for field: _snmpTrapPort
      */
 	@XmlTransient
-    private boolean _has_snmpTrapPort;
+    private boolean hasSnmpTrapPort;
 
     /**
      * Whether traps from devices unknown to OpenNMS should
      *  generate newSuspect events.
      */
 	@XmlAttribute(name="new-suspect-on-trap", required=true)
-    private boolean _newSuspectOnTrap;
+    private boolean newSuspectOnTrap;
 
 	@XmlAttribute(name="include-raw-message", required=false)
-    private boolean _includeRawMessage;
+    private boolean includeRawMessage;
 
     /**
      * Number of threads used for consuming/dispatching messages.
      * Defaults to 2 x the number of available processors.
      */
 	@XmlAttribute(name="threads", required=false)
-    private int _threads = 0;
+    private int threads = 0;
 
     /**
      * Maximum number of messages to keep in memory while waiting
      to be dispatched.
      */
 	@XmlAttribute(name="queue-size", required=false)
-    private int _queueSize = 10000;
+    private int queueSize = 10000;
 
     /**
      * Messages are aggregated in batches before being dispatched.
      * When the batch reaches this size, it will be dispatched.
      */
 	@XmlAttribute(name="batch-size", required=false)
-    private int _batchSize = 1000;
+    private int batchSize = 1000;
 
     /**
      * Messages are aggregated in batches before being dispatched.
@@ -108,19 +108,19 @@ public class TrapdConfiguration implements  Serializable {
      * it will be dispatched, regardless of the current size.
      */
 	@XmlAttribute(name="batch-interval", required=false)
-    private int _batchInterval = 500;
+    private int batchInterval = 500;
 
     /**
      * keeps track of state for field: _newSuspectOnTrap
      */
 	@XmlTransient
-    private boolean _has_newSuspectOnTrap;
+    private boolean hasNewSuspectOnTrap;
 
     /**
      * SNMPv3 configuration.
      */
 	@XmlElement(name="snmpv3-user")
-    private java.util.List<Snmpv3User> _snmpv3UserList;
+    private java.util.List<Snmpv3User> snmpv3User;
 
 	/**
 	 * When enabled, the source address of the trap will be pulled
@@ -134,17 +134,17 @@ public class TrapdConfiguration implements  Serializable {
     public TrapdConfiguration() {
         super();
         setSnmpTrapAddress("*");
-        this._snmpv3UserList = new java.util.ArrayList<>();
+        this.snmpv3User = new java.util.ArrayList<>();
     }
     
     /*
      * This constructor is used only for junit
      */
-    public TrapdConfiguration(int _snmpTrapPort,String snmpTrapAddress) {
+    public TrapdConfiguration(int snmpTrapPort, String snmpTrapAddress) {
         super();
         setSnmpTrapAddress(snmpTrapAddress);
-        this._snmpTrapPort = _snmpTrapPort;
-        this._snmpv3UserList = new java.util.ArrayList<>();
+        this.snmpTrapPort = snmpTrapPort;
+        this.snmpv3User = new java.util.ArrayList<>();
     }
 
     /**
@@ -157,7 +157,7 @@ public class TrapdConfiguration implements  Serializable {
     public void addSnmpv3User(
             final Snmpv3User vSnmpv3User)
     throws java.lang.IndexOutOfBoundsException {
-        this._snmpv3UserList.add(vSnmpv3User);
+        this.snmpv3User.add(vSnmpv3User);
     }
 
     /**
@@ -172,21 +172,21 @@ public class TrapdConfiguration implements  Serializable {
             final int index,
             final Snmpv3User vSnmpv3User)
     throws java.lang.IndexOutOfBoundsException {
-        this._snmpv3UserList.add(index, vSnmpv3User);
+        this.snmpv3User.add(index, vSnmpv3User);
     }
 
     /**
      */
     public void deleteNewSuspectOnTrap(
     ) {
-        this._has_newSuspectOnTrap= false;
+        this.hasNewSuspectOnTrap = false;
     }
 
     /**
      */
     public void deleteSnmpTrapPort(
     ) {
-        this._has_snmpTrapPort= false;
+        this.hasSnmpTrapPort = false;
     }
 
     /**
@@ -197,12 +197,12 @@ public class TrapdConfiguration implements  Serializable {
      */
     public java.util.Enumeration<Snmpv3User> enumerateSnmpv3User(
     ) {
-        return java.util.Collections.enumeration(this._snmpv3UserList);
+        return java.util.Collections.enumeration(this.snmpv3User);
     }
 
     public int hashCode() {
-        return Objects.hash(_snmpTrapAddress, _snmpTrapPort, _has_snmpTrapPort, _newSuspectOnTrap, _snmpv3UserList,
-                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval, _useAddessFromVarbind);
+        return Objects.hash(snmpTrapAddress, snmpTrapPort, hasSnmpTrapPort, newSuspectOnTrap, snmpv3User,
+                includeRawMessage, threads, queueSize, batchSize, batchInterval, _useAddessFromVarbind);
     }
 
     @Override()
@@ -212,16 +212,16 @@ public class TrapdConfiguration implements  Serializable {
 
         if (obj instanceof TrapdConfiguration) {
             final TrapdConfiguration other = (TrapdConfiguration)obj;
-            final boolean equals = Objects.equals(_snmpTrapAddress, other._snmpTrapAddress)
-                    && Objects.equals(_snmpTrapPort, other._snmpTrapPort)
-                    && Objects.equals(_has_snmpTrapPort, other._has_snmpTrapPort)
-                    && Objects.equals(_newSuspectOnTrap, other._newSuspectOnTrap)
-                    && Objects.equals(_snmpv3UserList, other._snmpv3UserList)
-                    && Objects.equals(_includeRawMessage, other._includeRawMessage)
-                    && Objects.equals(_threads, other._threads)
-                    && Objects.equals(_queueSize, other._queueSize)
-                    && Objects.equals(_batchSize, other._batchSize)
-                    && Objects.equals(_batchInterval, other._batchInterval)
+            final boolean equals = Objects.equals(snmpTrapAddress, other.snmpTrapAddress)
+                    && Objects.equals(snmpTrapPort, other.snmpTrapPort)
+                    && Objects.equals(hasSnmpTrapPort, other.hasSnmpTrapPort)
+                    && Objects.equals(newSuspectOnTrap, other.newSuspectOnTrap)
+                    && Objects.equals(snmpv3User, other.snmpv3User)
+                    && Objects.equals(includeRawMessage, other.includeRawMessage)
+                    && Objects.equals(threads, other.threads)
+                    && Objects.equals(queueSize, other.queueSize)
+                    && Objects.equals(batchSize, other.batchSize)
+                    && Objects.equals(batchInterval, other.batchInterval)
                     && Objects.equals(_useAddessFromVarbind, other._useAddessFromVarbind);
             return equals;
         }
@@ -238,7 +238,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public boolean getNewSuspectOnTrap(
     ) {
-        return this._newSuspectOnTrap;
+        return this.newSuspectOnTrap;
     }
 
     /**
@@ -252,7 +252,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public java.lang.String getSnmpTrapAddress(
     ) {
-        return this._snmpTrapAddress;
+        return this.snmpTrapAddress;
     }
 
     /**
@@ -265,7 +265,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public int getSnmpTrapPort(
     ) {
-    	return this._snmpTrapPort;
+    	return this.snmpTrapPort;
     }
 
     /**
@@ -281,11 +281,11 @@ public class TrapdConfiguration implements  Serializable {
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._snmpv3UserList.size()) {
-            throw new IndexOutOfBoundsException("getSnmpv3User: Index value '" + index + "' not in range [0.." + (this._snmpv3UserList.size() - 1) + "]");
+        if (index < 0 || index >= this.snmpv3User.size()) {
+            throw new IndexOutOfBoundsException("getSnmpv3User: Index value '" + index + "' not in range [0.." + (this.snmpv3User.size() - 1) + "]");
         }
         
-        return (Snmpv3User) _snmpv3UserList.get(index);
+        return (Snmpv3User) snmpv3User.get(index);
     }
 
     /**
@@ -300,7 +300,7 @@ public class TrapdConfiguration implements  Serializable {
     public Snmpv3User[] getSnmpv3User(
     ) {
         Snmpv3User[] array = new Snmpv3User[0];
-        return (Snmpv3User[]) this._snmpv3UserList.toArray(array);
+        return (Snmpv3User[]) this.snmpv3User.toArray(array);
     }
 
     /**
@@ -312,7 +312,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public java.util.List<Snmpv3User> getSnmpv3UserCollection(
     ) {
-        return this._snmpv3UserList;
+        return this.snmpv3User;
     }
 
     /**
@@ -323,7 +323,7 @@ public class TrapdConfiguration implements  Serializable {
     @XmlTransient
     public int getSnmpv3UserCount(
     ) {
-        return this._snmpv3UserList.size();
+        return this.snmpv3User.size();
     }
 
     /**
@@ -333,7 +333,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public boolean hasNewSuspectOnTrap(
     ) {
-        return this._has_newSuspectOnTrap;
+        return this.hasNewSuspectOnTrap;
     }
 
     /**
@@ -343,7 +343,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public boolean hasSnmpTrapPort(
     ) {
-        return this._has_snmpTrapPort;
+        return this.hasSnmpTrapPort;
     }
 
     /**
@@ -356,7 +356,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public boolean isNewSuspectOnTrap(
     ) {
-        return this._newSuspectOnTrap;
+        return this.newSuspectOnTrap;
     }
 
     public boolean shouldUseAddressFromVarbind() {
@@ -375,14 +375,14 @@ public class TrapdConfiguration implements  Serializable {
      */
     public java.util.Iterator<Snmpv3User> iterateSnmpv3User(
     ) {
-        return this._snmpv3UserList.iterator();
+        return this.snmpv3User.iterator();
     }
 
     /**
      */
     public void removeAllSnmpv3User(
     ) {
-        this._snmpv3UserList.clear();
+        this.snmpv3User.clear();
     }
 
     /**
@@ -393,7 +393,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public boolean removeSnmpv3User(
             final Snmpv3User vSnmpv3User) {
-        boolean removed = _snmpv3UserList.remove(vSnmpv3User);
+        boolean removed = snmpv3User.remove(vSnmpv3User);
         return removed;
     }
 
@@ -405,7 +405,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public Snmpv3User removeSnmpv3UserAt(
             final int index) {
-        java.lang.Object obj = this._snmpv3UserList.remove(index);
+        java.lang.Object obj = this.snmpv3User.remove(index);
         return (Snmpv3User) obj;
     }
 
@@ -419,8 +419,8 @@ public class TrapdConfiguration implements  Serializable {
      */
     public void setNewSuspectOnTrap(
             final boolean newSuspectOnTrap) {
-        this._newSuspectOnTrap = newSuspectOnTrap;
-        this._has_newSuspectOnTrap = true;
+        this.newSuspectOnTrap = newSuspectOnTrap;
+        this.hasNewSuspectOnTrap = true;
     }
 
     /**
@@ -434,7 +434,7 @@ public class TrapdConfiguration implements  Serializable {
      */
     public void setSnmpTrapAddress(
             final java.lang.String snmpTrapAddress) {
-        this._snmpTrapAddress = snmpTrapAddress;
+        this.snmpTrapAddress = snmpTrapAddress;
     }
 
     /**
@@ -447,8 +447,8 @@ public class TrapdConfiguration implements  Serializable {
      */
     public void setSnmpTrapPort(
             final int snmpTrapPort) {
-        this._snmpTrapPort = snmpTrapPort;
-        this._has_snmpTrapPort = true;
+        this.snmpTrapPort = snmpTrapPort;
+        this.hasSnmpTrapPort = true;
     }
 
     /**
@@ -464,11 +464,11 @@ public class TrapdConfiguration implements  Serializable {
             final Snmpv3User vSnmpv3User)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._snmpv3UserList.size()) {
-            throw new IndexOutOfBoundsException("setSnmpv3User: Index value '" + index + "' not in range [0.." + (this._snmpv3UserList.size() - 1) + "]");
+        if (index < 0 || index >= this.snmpv3User.size()) {
+            throw new IndexOutOfBoundsException("setSnmpv3User: Index value '" + index + "' not in range [0.." + (this.snmpv3User.size() - 1) + "]");
         }
         
-        this._snmpv3UserList.set(index, vSnmpv3User);
+        this.snmpv3User.set(index, vSnmpv3User);
     }
 
     /**
@@ -479,10 +479,10 @@ public class TrapdConfiguration implements  Serializable {
     public void setSnmpv3User(
             final Snmpv3User[] vSnmpv3UserArray) {
         //-- copy array
-        _snmpv3UserList.clear();
+        snmpv3User.clear();
         
         for (int i = 0; i < vSnmpv3UserArray.length; i++) {
-                this._snmpv3UserList.add(vSnmpv3UserArray[i]);
+                this.snmpv3User.add(vSnmpv3UserArray[i]);
         }
     }
 
@@ -495,9 +495,9 @@ public class TrapdConfiguration implements  Serializable {
     public void setSnmpv3User(
             final java.util.List<Snmpv3User> vSnmpv3UserList) {
         // copy vector
-        this._snmpv3UserList.clear();
+        this.snmpv3User.clear();
         
-        this._snmpv3UserList.addAll(vSnmpv3UserList);
+        this.snmpv3User.addAll(vSnmpv3UserList);
     }
 
     /**
@@ -509,46 +509,46 @@ public class TrapdConfiguration implements  Serializable {
      */
     public void setSnmpv3UserCollection(
             final java.util.List<Snmpv3User> snmpv3UserList) {
-        this._snmpv3UserList = snmpv3UserList;
+        this.snmpv3User = snmpv3UserList;
     }
 
     public boolean isIncludeRawMessage() {
-        return _includeRawMessage;
+        return includeRawMessage;
     }
 
     public void setIncludeRawMessage(boolean _includeRawMessage) {
-        this._includeRawMessage = _includeRawMessage;
+        this.includeRawMessage = _includeRawMessage;
     }
 
     public int getThreads() {
-        return _threads;
+        return threads;
     }
 
     public void setThreads(int _threads) {
-        this._threads = _threads;
+        this.threads = _threads;
     }
 
     public int getQueueSize() {
-        return _queueSize;
+        return queueSize;
     }
 
     public void setQueueSize(int _queueSize) {
-        this._queueSize = _queueSize;
+        this.queueSize = _queueSize;
     }
 
     public int getBatchSize() {
-        return _batchSize;
+        return batchSize;
     }
 
     public void setBatchSize(int _batchSize) {
-        this._batchSize = _batchSize;
+        this.batchSize = _batchSize;
     }
 
     public int getBatchInterval() {
-        return _batchInterval;
+        return batchInterval;
     }
 
     public void setBatchInterval(int _batchInterval) {
-        this._batchInterval = _batchInterval;
+        this.batchInterval = _batchInterval;
     }
 }

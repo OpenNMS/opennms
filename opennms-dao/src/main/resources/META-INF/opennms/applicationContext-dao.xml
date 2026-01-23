@@ -102,7 +102,23 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
-  <!-- Other Non-Database DAOs -->
+  <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.TrapdConfigDao" ref="trapdConfigDao" />
+
+    <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+        <property name="arguments">
+            <list>
+                <ref bean="trapdConfigDao"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+
+    <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig" />
+
+    <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory
             org.opennms.netmgt.dao.api.ResourceStorageDao
