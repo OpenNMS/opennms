@@ -4,6 +4,7 @@ opt/opennms/bin
 opt/opennms/data
 opt/opennms/deploy
 opt/opennms/etc
+opt/opennms/licenses
 opt/opennms/system
 var/lib/opennms
 var/lib/opennms/reports

@@ -81,7 +81,7 @@
     <fileSet>
       <directory>${project.build.directory}/generated-sources/license</directory>
       <filtered>false</filtered>
-      <outputDirectory>etc</outputDirectory>
+      <outputDirectory>licenses</outputDirectory>
       <includes>
         <include>THIRD-PARTY.txt</include>
       </includes>
@@ -89,7 +89,7 @@
     <fileSet>
       <directory>${session.executionRootDirectory}</directory>
       <filtered>false</filtered>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>licenses</outputDirectory>
       <includes>
         <include>COPYING</include>
       </includes>

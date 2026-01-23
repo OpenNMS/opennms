@@ -219,8 +219,6 @@ install: build
                 -e org.apache.karaf \
                 -e log4j2.xml \
                 -e startup.properties \
-                -e THIRD-PARTY.txt \
-                -e COPYING \
                 -e overrides.properties | \
                 sed 's/debian\/temp\/etc\//\/opt\/opennms\/etc\//g' > debian/opennms-common.conffiles
 	mv debian/temp/etc/* debian/opennms-common/opt/opennms/etc/
