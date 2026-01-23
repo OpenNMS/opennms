@@ -53,7 +53,7 @@ public interface DataCollectionConfRestApi {
     @Operation(
             summary = "Upload datacollectionconf files",
             description = "Upload one or more  data collection config files.",
-            operationId = "uploadEventConfFiles"
+            operationId = "uploadSnmpDataCollectionConfFiles"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Upload successful"),
@@ -208,7 +208,7 @@ public interface DataCollectionConfRestApi {
     @Operation(
             summary = "Get SnmpCollectionSource by ID",
             description = "Retrieve an SnmpCollectionSource by its unique identifier.",
-            operationId = "getEventConfSourceById"
+            operationId = "getSnmpDataCollectionSourceById"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "SnmpCollectionSource retrieved successfully"),
@@ -228,7 +228,7 @@ public interface DataCollectionConfRestApi {
     @Operation(
             summary = "Get SnmpCollection Source Names",
             description = "Retrieve the names and Ids of all SnmpCollection sources stored in the database.",
-            operationId = "getEventConfSourcesNames"
+            operationId = "getSnmpCollectionSourceNamesAndIds"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved source names"),

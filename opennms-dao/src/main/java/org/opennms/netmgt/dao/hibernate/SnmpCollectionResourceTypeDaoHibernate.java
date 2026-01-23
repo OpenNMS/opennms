@@ -98,6 +98,13 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from SnmpCollectionResourceType t where 1=1 ");
+
+
+        if (name != null && !name.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.name) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+        }
+
         if (label != null && !label.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.label) like ? escape '\\' ");
             queryParamList.add("%" + escapeLike(label.trim().toLowerCase()) + "%"); // contains match
@@ -108,9 +115,9 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
             queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
-        if (name != null && !name.trim().isEmpty()) {
+        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.collectionSource.name) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(name.trim().toLowerCase()) + "%");
+            queryParamList.add("%" + escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
         queryBuilder.append(" order by t.createdTime desc ");
