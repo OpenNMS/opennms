@@ -84,7 +84,37 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
     public long getTrapsErrored() {
         return getTrapdInstrumentation().getTrapsErrored();
     }
-    
+
+    /** {@inheritDoc} */
+    @Override
+    public long getRawTrapsReceived() {
+        return getTrapdInstrumentation().getRawTrapsReceived();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getTrapsDispatched() {
+        return getTrapdInstrumentation().getTrapsDispatched();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getMaxQueueSize() {
+        return getTrapdInstrumentation().getMaxQueueSize();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getCurrentQueueSize() {
+        return getTrapdInstrumentation().getCurrentQueueSize();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getBatchSize() {
+        return getTrapdInstrumentation().getBatchSize();
+    }
+
     private TrapdInstrumentation getTrapdInstrumentation() {
         return TrapSinkConsumer.trapdInstrumentation;
     }

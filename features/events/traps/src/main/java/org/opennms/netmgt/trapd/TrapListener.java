@@ -75,6 +75,8 @@ public class TrapListener implements TrapNotificationListener {
 
     private Closeable m_twinSubscription;
 
+    private TrapListenerMetrics m_listenerMetrics;
+
     public TrapListener(final TrapdConfig config) throws SocketException {
         Objects.requireNonNull(config, "Config cannot be null");
         m_config = config;
@@ -82,18 +84,35 @@ public class TrapListener implements TrapNotificationListener {
 
     @Override
     public void trapReceived(TrapInformation trapInformation) {
+        // Count raw trap at listener level before any processing
+        if (m_listenerMetrics != null) {
+            m_listenerMetrics.incRawTrapsReceivedCount();
+        }
+        TrapSinkConsumer.trapdInstrumentation.incRawTrapsReceivedCount();
+
         try {
             getMessageDispatcher().send(new TrapInformationWrapper(trapInformation))
                     .whenComplete((t,ex) -> {
                         if (ex != null) {
                             LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
                             // This trap will never reach the sink consumer
+                            if (m_listenerMetrics != null) {
+                                m_listenerMetrics.incErrorCount();
+                            }
                             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
+                        } else {
+                            if (m_listenerMetrics != null) {
+                                m_listenerMetrics.incTrapsDispatched();
+                            }
+                            TrapSinkConsumer.trapdInstrumentation.incTrapsDispatched(1);
                         }
                     });
         } catch (final SnmpException | IllegalArgumentException ex) {
             LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
             // This trap will never reach the sink consumer
+            if (m_listenerMetrics != null) {
+                m_listenerMetrics.incErrorCount();
+            }
             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
         }
     }
@@ -184,6 +203,11 @@ public class TrapListener implements TrapNotificationListener {
 
         try {
             if (m_dispatcher != null) {
+                // Clear the queue size supplier before closing
+                if (m_listenerMetrics != null) {
+                    m_listenerMetrics.setQueueSizeSupplier(null);
+                }
+                TrapSinkConsumer.trapdInstrumentation.setQueueSizeSupplier(null);
                 m_dispatcher.close();
                 m_dispatcher = null;
             }
@@ -228,6 +252,10 @@ public class TrapListener implements TrapNotificationListener {
         m_distPollerDao = Objects.requireNonNull(distPollerDao);
     }
 
+    public void setTrapListenerMetrics(TrapListenerMetrics listenerMetrics) {
+        m_listenerMetrics = listenerMetrics;
+    }
+
     private void restartWithNewConfig(final TrapdConfigBean newConfig) {
         // We stop, still using old config
         LOG.info("Stopping TrapListener service to reload configuration...");
@@ -260,6 +288,17 @@ public class TrapListener implements TrapNotificationListener {
         if (m_dispatcher == null) {
             Objects.requireNonNull(m_messageDispatcherFactory);
             m_dispatcher = m_messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(m_config, m_distPollerDao.whoami()));
+
+            // Register queue metrics with TrapListenerMetrics (for Minion JMX)
+            if (m_listenerMetrics != null) {
+                m_listenerMetrics.setMaxQueueSize(m_config.getQueueSize());
+                m_listenerMetrics.setBatchSize(m_config.getBatchSize());
+                m_listenerMetrics.setQueueSizeSupplier(m_dispatcher::getQueueSize);
+            }
+            // Register queue metrics with TrapdInstrumentation (for OpenNMS Core JMX)
+            TrapSinkConsumer.trapdInstrumentation.setMaxQueueSize(m_config.getQueueSize());
+            TrapSinkConsumer.trapdInstrumentation.setBatchSize(m_config.getBatchSize());
+            TrapSinkConsumer.trapdInstrumentation.setQueueSizeSupplier(m_dispatcher::getQueueSize);
         }
         return m_dispatcher;
     }

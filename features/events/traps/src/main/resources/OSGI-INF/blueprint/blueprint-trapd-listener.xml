@@ -35,6 +35,23 @@
 	</bean>
 	<service ref="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" />
 
+	<!-- MetricRegistry for Trapd listener metrics -->
+	<bean id="trapdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+	<!-- Register as MetricSet service for centralized metrics collection -->
+	<service ref="trapdMetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="Trapd Listener"/>
+			<entry key="description" value="SNMP Trap Listener Metrics"/>
+		</service-properties>
+	</service>
+
+	<!-- Trap Listener Metrics with JmxReporter -->
+	<bean id="trapListenerMetrics" class="org.opennms.netmgt.trapd.TrapListenerMetrics"
+		  init-method="startJmxReporter" destroy-method="stopJmxReporter">
+		<argument ref="trapdMetricRegistry"/>
+	</bean>
+
 	<!--
 		The TrapListener handles received traps (the ones we were listening for) and forwards
 	 	them via the MessageProducer (obtained by the MessageProducerFactory)
@@ -43,6 +60,7 @@
 		<argument ref="trapdConfig"/>
 		<property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
 		<property name="distPollerDao" ref="distPollerDao"/>
+		<property name="trapListenerMetrics" ref="trapListenerMetrics"/>
 	</bean>
 
 	<reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">

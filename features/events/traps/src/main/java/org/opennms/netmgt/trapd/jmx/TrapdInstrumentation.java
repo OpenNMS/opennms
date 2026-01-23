@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 public class TrapdInstrumentation {
 
@@ -37,6 +38,11 @@ public class TrapdInstrumentation {
     private final AtomicLong vUnknownTrapsReceived = new AtomicLong();
     private final AtomicLong trapsDiscarded = new AtomicLong();
     private final AtomicLong trapsErrored = new AtomicLong();
+    private final AtomicLong rawTrapsReceived = new AtomicLong();
+    private final AtomicLong trapsDispatched = new AtomicLong();
+    private int maxQueueSize = 0;
+    private int batchSize = 0;
+    private Supplier<Integer> queueSizeSupplier = () -> 0;
 
     public void incTrapsReceivedCount(String version) {
         trapsReceived.incrementAndGet();
@@ -86,5 +92,45 @@ public class TrapdInstrumentation {
 
     public long getTrapsReceived() {
         return trapsReceived.get();
+    }
+
+    public void incRawTrapsReceivedCount() {
+        rawTrapsReceived.incrementAndGet();
+    }
+
+    public long getRawTrapsReceived() {
+        return rawTrapsReceived.get();
+    }
+
+    public void incTrapsDispatched(int count) {
+        trapsDispatched.addAndGet(count);
+    }
+
+    public long getTrapsDispatched() {
+        return trapsDispatched.get();
+    }
+
+    public void setMaxQueueSize(int size) {
+        this.maxQueueSize = size;
+    }
+
+    public int getMaxQueueSize() {
+        return maxQueueSize;
+    }
+
+    public void setBatchSize(int size) {
+        this.batchSize = size;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setQueueSizeSupplier(Supplier<Integer> supplier) {
+        this.queueSizeSupplier = supplier != null ? supplier : () -> 0;
+    }
+
+    public int getCurrentQueueSize() {
+        return queueSizeSupplier.get();
     }
 }

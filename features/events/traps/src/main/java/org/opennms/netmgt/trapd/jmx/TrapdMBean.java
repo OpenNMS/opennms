@@ -32,22 +32,37 @@ import org.opennms.netmgt.daemon.BaseOnmsMBean;
 public interface TrapdMBean extends BaseOnmsMBean {
     /** @return The number of traps received since Trapd was last started */
     public long getTrapsReceived();
-    
+
     /** @return The number of SNMPv1 traps received since Trapd was last started */
     public long getV1TrapsReceived();
-    
+
     /** @return The number of SNMPv2c traps received since Trapd was last started */
     public long getV2cTrapsReceived();
-    
+
     /** @return The number of SNMPv3 traps received since Trapd was last started */
     public long getV3TrapsReceived();
-    
+
     /** @return The number of traps with an unknown SNMP protocol version received since Trapd was last started */
     public long getVUnknownTrapsReceived();
-    
+
     /** @return The number of traps discarded, at user request, since Trapd was last started */
     public long getTrapsDiscarded();
-    
+
     /** @return The number of traps not processed due to errors since Trapd was last started */
     public long getTrapsErrored();
+
+    /** @return The number of raw traps received at the listener level (before any processing) since Trapd was last started */
+    public long getRawTrapsReceived();
+
+    /** @return The number of individual traps dispatched to the consumer since Trapd was last started */
+    public long getTrapsDispatched();
+
+    /** @return The configured maximum queue size for trap dispatch */
+    public int getMaxQueueSize();
+
+    /** @return The current number of messages waiting in the dispatch queue */
+    public int getCurrentQueueSize();
+
+    /** @return The configured batch size for trap aggregation */
+    public int getBatchSize();
 }
