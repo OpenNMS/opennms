@@ -149,16 +149,19 @@ public class SnmpCollectionSourceDaoIT {
 
     @Test
     public void testFilterDataCollectionSource_ReturnsValidRecords() {
+        final var now = new Date();
         SnmpCollectionSource source1 = new SnmpCollectionSource();
         source1.setName("opennms.test.snmp");
         source1.setVendor("opennms");
         source1.setDescription("Open Network Monitoring System SNMP");
+        source1.setCreatedTime(now);
         source1.setEnabled(true);
 
         SnmpCollectionSource source2 = new SnmpCollectionSource();
         source2.setName("cisco.test.snmp");
         source2.setVendor("cisco");
         source2.setDescription("Cisco SNMP Data Source");
+        source2.setCreatedTime(now);
         source2.setEnabled(false);
 
         snmpDao.saveOrUpdate(source1);
