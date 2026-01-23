@@ -1,7 +1,7 @@
 jobs:
   build-rpm:
     executor: build-executor
-    resource_class: large
+    resource_class: medium
     steps:
       - prep-package-build
       - run:
@@ -9,7 +9,7 @@ jobs:
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=2
-            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx3g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
