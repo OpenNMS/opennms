@@ -7,4 +7,4 @@ jobs:
     steps:
       - run-build:
           number-vcpu: 4
-          max-memory: 8
+          max-memory: 6
