@@ -1,21 +1,31 @@
-# /usr/bin/env python3
+#!/usr/bin/env python3
 
 """
-This script helps with deciding on what we should build, by looking at the
-incoming changes and the build-triggers override file (if available)
+This script determines what components to build by analyzing incoming changes
+and the build-triggers override file (if available).
 """
 
 import os
 import re
 import json
+import sys
+from typing import List, Dict, Set, Any
+from pathlib import Path
 from library import libgit
 
-path_to_build_components = os.path.join("/tmp", "build-triggers.json")
-path_to_build_trigger_override = os.path.join(
-    ".circleci", "build-triggers.override.json"
-)
-path_to_workflow = os.path.join(".circleci", "main", "workflows", "workflows_v2.json")
+# Constants
+EMPTY_TREE_SHA = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+MAIN_BRANCH_PATTERNS = ["develop", "master"]
+RELEASE_BRANCH_PREFIXES = ["release-", "foundation-"]
+MERGE_FOUNDATION_PREFIX = "merge-foundation/"
+NON_CODE_CHANGES = {"docs", "ui", "circleci_configuration"}
 
+# File paths
+PATH_BUILD_COMPONENTS = Path("/tmp/build-triggers.json")
+PATH_BUILD_TRIGGER_OVERRIDE = Path(".circleci/build-triggers.override.json")
+PATH_WORKFLOW = Path(".circleci/main/workflows/workflows_v2.json")
+
+# Environment variables
 output_path = os.environ.get("OUTPUT_PATH")
 head = os.environ.get("CIRCLE_SHA1")
 base_revision = os.environ.get("BASE_REVISION")
@@ -42,39 +52,33 @@ if head == base:
         # first parent, i.e. the last state of this branch before the
         # merge, and use that as the base.
         base = libgit.get_commit_sha("HEAD~1")
-    except:
+    except Exception as e:
         # This can fail if this is the first commit of the repo, so that
         # HEAD~1 actually doesn't resolve. In this case we can compare
-        # against this magic SHA below, which is the empty tree. The diff
-        # to that is just the first commit as patch.
-        base = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+        # against the empty tree. The diff to that is just the first commit as patch.
+        print(f"Warning: Could not get HEAD~1, using empty tree: {e}")
+        base = EMPTY_TREE_SHA
 
 print("Base:", base)
 print()
 
 changed_files = libgit.get_changed_files_in_commits(base, head)
 
-mappings = [m.split() for m in os.environ.get("MAPPING").splitlines()]
+mappings = [m.split() for m in os.environ.get("MAPPING", "").splitlines()]
 
 
-def check_mapping(mapping):
-    """
-    Checks the validity of the mapping
-    """
-    if 3 != len(mapping):
-        raise Exception("Invalid mapping size. Current mapping:", mapping)
+def check_mapping(mapping: List[str]) -> bool:
+    """Check if mapping is valid and matches any changed file."""
+    if len(mapping) != 3:
+        raise ValueError(f"Invalid mapping size. Expected 3 parts, got {len(mapping)}: {mapping}")
+    
     path, param, value = mapping
     regex = re.compile(r"^" + path + r"$")
-    for change in changed_files:
-        if regex.match(change):
-            return True
-    return False
+    return any(regex.match(change) for change in changed_files)
 
 
-def convert_mapping(mapping_entry) -> list:
-    """
-    Converts mapping to a list
-    """
+def convert_mapping(mapping_entry: List[str]) -> List[Any]:
+    """Convert mapping entry to [param, parsed_value] format."""
     return [mapping_entry[1], json.loads(mapping_entry[2])]
 
 
@@ -87,15 +91,12 @@ for item in mappings:
     print(" ", "*", item, "[", mappings[item], "]")
 print()
 
-What_to_build = []
+what_to_build: Set[str] = set()
 
 
-def add_to_build_list(item):
-    """
-    Adds the item to What_to_build list
-    """
-    if item not in What_to_build:
-        What_to_build.append(item)
+def add_to_build_list(item: str) -> None:
+    """Add component to the build list."""
+    what_to_build.add(item)
 
 
 # Step 1, Detect all changes and Git keywords (if any)
@@ -129,22 +130,21 @@ if changed_files:
             print(" ", "*", item)
     print()
 
-
-combine_build_element = ""
-
-if What_to_build:
+if what_to_build:
     print("What we want to build:")
-    for item in What_to_build:
-        combine_build_element += item + ','
+    for item in what_to_build:
         print(" ", "*", item)
     print()
 
 git_keywords = libgit.extract_keywords_from_last_commit()
 
-with open(path_to_workflow, "r", encoding="UTF-8") as file_handler:
-    workflow_data = json.load(file_handler)
-
-workflow_keywords = workflow_data["bundles"].keys()
+try:
+    with open(PATH_WORKFLOW, "r", encoding="UTF-8") as file_handler:
+        workflow_data = json.load(file_handler)
+    workflow_keywords = workflow_data["bundles"].keys()
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error loading workflow configuration: {e}")
+    sys.exit(1)
 
 print("Supported Workflow Keywords:")
 for item in workflow_keywords:
@@ -152,27 +152,37 @@ for item in workflow_keywords:
 print()
 
 
-# Step 2: Take action on them
-
-# Check to see if build-trigger.overrride file exists and we are not
-# on the main branches
-if os.path.exists(path_to_build_trigger_override) and (
-    "develop" not in branch_name
-    and "master" not in branch_name
-    and "release-" not in branch_name
-    and "foundation-" not in branch_name
-    and "merge-foundation/" not in branch_name
-):
-    build_trigger_override_found = True
-else:
-    build_trigger_override_found = False
+def is_main_branch(branch: str) -> bool:
+    """Check if the branch is a main/protected branch."""
+    if not branch:
+        return False
+    return (branch in MAIN_BRANCH_PATTERNS or 
+            any(branch.startswith(prefix) for prefix in RELEASE_BRANCH_PREFIXES))
 
 
-if build_trigger_override_found:
-    with open(path_to_build_trigger_override, "r", encoding="UTF-8") as file_handler:
-        build_mappings = json.load(file_handler)
-else:
-    build_mappings = {
+def is_merge_foundation_branch(branch: str) -> bool:
+    """Check if the branch is a merge-foundation branch."""
+    return branch and branch.startswith(MERGE_FOUNDATION_PREFIX)
+
+
+def load_build_mappings() -> Dict[str, bool]:
+    """Load build mappings from override file or return defaults."""
+    # Check if override file exists and we're not on a main branch
+    build_trigger_override_found = (
+        PATH_BUILD_TRIGGER_OVERRIDE.exists() and 
+        not is_main_branch(branch_name) and 
+        not is_merge_foundation_branch(branch_name)
+    )
+    
+    if build_trigger_override_found:
+        try:
+            with open(PATH_BUILD_TRIGGER_OVERRIDE, "r", encoding="UTF-8") as file_handler:
+                return json.load(file_handler)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Warning: Could not load build trigger override: {e}")
+    
+    # Default mappings
+    return {
         "build-deploy": False,
         "coverage": False,
         "docs": False,
@@ -188,6 +198,11 @@ else:
         "experimental": False,
     }
 
+
+# Step 2: Take action on them
+build_mappings = load_build_mappings()
+build_trigger_override_found = PATH_BUILD_TRIGGER_OVERRIDE.exists() and not is_main_branch(branch_name)
+
 print("Build Trigger Override Found:", str(build_trigger_override_found))
 print()
 
@@ -198,92 +213,91 @@ if ".circleci/epoch" in changed_files:
     print()
 
 
-if build_mappings["experimental"] or "experimentalPath" in git_keywords:
+def is_non_code_change_only(changes: Set[str]) -> bool:
+    """Check if changes are only non-code items (docs, UI, CircleCI config)."""
+    return changes and changes.issubset(NON_CODE_CHANGES)
+
+
+def enable_experimental_mode(mappings: Dict, build_mappings: Dict) -> None:
+    """Enable experimental mode and disable all other paths."""
     print("Experimental path detected, will disable other paths")
     print()
-    # If experimental path is enabled, disable other paths
-    for item in build_mappings:
-        build_mappings[item] = False
-
-    # Clear the mappings
+    
+    for key in build_mappings:
+        build_mappings[key] = False
+    
     mappings.clear()
-
     build_mappings["experimental"] = True
 
-def should_proceed(item, What_to_build, combine_build_element):
-    # Check if the item is one of the specified values and if What_to_build has one item
-    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(What_to_build) == 1)
 
-    # Check if any two of the specified values are present in combine_build_element
-    is_two_items = (
-        (("docs" in combine_build_element and "ui" in combine_build_element) or
-         ("docs" in combine_build_element and "circleci_configuration" in combine_build_element) or
-         ("circleci_configuration" in combine_build_element and "ui" in combine_build_element)) and
-        len(What_to_build) == 2
-    )
-
-    # Check if all three specified values are present and if What_to_build has three items
-    is_three_items = (
-        "docs" in combine_build_element and
-        "ui" in combine_build_element and
-        "circleci_configuration" in combine_build_element and
-        len(What_to_build) == 3
-    )
-
-    # Return True if any of the conditions are met
-    return is_single_item or is_two_items or is_three_items
+if build_mappings["experimental"] or "experimentalPath" in git_keywords:
+    enable_experimental_mode(mappings, build_mappings)
 
 if "trigger-build" in mappings:
-    if (
-        "develop" in branch_name
-        or "master" in branch_name
-        or "release-" in branch_name
-        or "foundation-" in branch_name
-    ) and "merge-foundation/" not in branch_name:
-         for item in What_to_build:
-            if should_proceed(item, What_to_build, combine_build_element):
-              del mappings["trigger-build"]
-              What_to_build.clear()
-              del combine_build_element
-              break
-            else:
-              print("Executing workflow: build-publish")
-              build_mappings["build-publish"] = mappings["trigger-build"]
-              print()
-              break
-    elif "merge-foundation/" in branch_name and not build_trigger_override_found:
+    if is_main_branch(branch_name) and not is_merge_foundation_branch(branch_name):
+        # Skip build if only non-code changes on main branches
+        if is_non_code_change_only(what_to_build):
+            del mappings["trigger-build"]
+            what_to_build.clear()
+        else:
+            print("Executing workflow: build-publish")
+            build_mappings["build-publish"] = mappings["trigger-build"]
+            print()
+    
+    elif is_merge_foundation_branch(branch_name) and not build_trigger_override_found:
         print("Execute workflow: merge-foundation")
         print()
-        # If experimental path is enabled, disable other paths
-        for item in build_mappings:
-            build_mappings[item] = False
-
-        # Clear the mappings
+        for key in build_mappings:
+            build_mappings[key] = False
         mappings.clear()
-        What_to_build.clear()
+        what_to_build.clear()
         build_mappings["merge-foundation"] = True
-    elif branch_name in "master" and not build_trigger_override_found:
+    
+    elif branch_name == "master" and not build_trigger_override_found:
         print("Execute workflow: master-branch")
         print()
-        for item in build_mappings:
-            build_mappings[item] = False
-
-        # Clear the mappings
+        for key in build_mappings:
+            build_mappings[key] = False
         mappings.clear()
-        What_to_build.clear()
+        what_to_build.clear()
         build_mappings["master-branch"] = True
-    elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
-        for item in What_to_build:
-            if should_proceed(item, What_to_build, combine_build_element):
-              del mappings["trigger-build"]
-              What_to_build.clear()
-              del combine_build_element
-              break
-            else:        
-              print("Executing workflow: build-deploy")
-              print()
-              build_mappings["build-deploy"] = mappings["trigger-build"]
-              break
+    
+    elif not build_trigger_override_found and not is_merge_foundation_branch(branch_name):
+        # Skip build if only non-code changes
+        if is_non_code_change_only(what_to_build):
+            del mappings["trigger-build"]
+            what_to_build.clear()
+        else:
+            print("Executing workflow: build-deploy")
+            print()
+            build_mappings["build-deploy"] = mappings["trigger-build"]
+
+# Mapping of component keywords to their variations
+COMPONENT_KEYWORD_MAP = {
+    'docs': ['doc', 'docs'],
+    'ui': ['ui'],
+    'smoke': ['smoke', 'smoke_tests'],
+    'integration': ['integration', 'Integration_tests'],
+    'oci': ['oci'],
+    'rpms': ['rpms'],
+    'debs': ['debs'],
+    'trivy-scan': ['trivy-scan'],
+    'trivy-analyze': ['trivy-analyze'],
+}
+
+
+def should_build_component(component_key: str, keywords: Set[str], changes: Set[str]) -> bool:
+    """Determine if a component should be built based on keywords and changes."""
+    variations = COMPONENT_KEYWORD_MAP.get(component_key, [component_key])
+    return any(var in keywords or var in changes for var in variations)
+
+
+# Handle trigger mappings
+if "trigger-coverage" in mappings:
+    build_mappings["coverage"] = mappings["trigger-coverage"]
+    mappings.clear()
+    what_to_build.clear()
+    git_keywords.clear()
 
 if "trigger-docs" in mappings:
     build_mappings["docs"] = mappings["trigger-docs"]
@@ -291,18 +305,12 @@ if "trigger-docs" in mappings:
 if "trigger-ui" in mappings:
     build_mappings["ui"] = mappings["trigger-ui"]
 
-if "trigger-coverage" in mappings:
-    build_mappings["coverage"] = mappings["trigger-coverage"]
-    mappings.clear()
-    What_to_build.clear()
-    git_keywords.clear()
-
-if re.match(".*smoke.*", branch_name) and (
-    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
-):
-    print("Detected smoke in the branch name")
-    build_mappings["smoke"] = True
-    print()
+# Smoke test based on branch name
+if branch_name and re.match(".*smoke.*", branch_name):
+    if not build_mappings["experimental"] and "experimentalPath" not in git_keywords:
+        print("Detected smoke in the branch name")
+        build_mappings["smoke"] = True
+        print()
 
 if git_keywords:
     print("Detected GIT keywords:")
@@ -310,78 +318,40 @@ if git_keywords:
         print(" ", "*", item)
     print()
 
+# Don't trigger builds if only CircleCI config changed
 if (
-    "circleci_configuration" in What_to_build
-    and len(What_to_build) == 1
+    what_to_build == {"circleci_configuration"}
     and not build_mappings["build-deploy"]
     and not build_mappings["build-publish"]
 ):
-    # if circleci_configuration is the only entry in the list we don't want to trigger a buildss.
-    mappings["trigger-build"] = False
+    mappings.pop("trigger-build", None)
     build_mappings["build-deploy"] = False
     build_mappings["build-publish"] = False
 
+# Process workflow keywords
 for keyword in git_keywords:
     if keyword in workflow_keywords:
-        if "docs" in keyword or "docs" in What_to_build:
-            build_mappings["docs"] = True
-        if "ui" in keyword or "ui" in What_to_build:
-            build_mappings["ui"] = True
-        if "build-deploy" in keyword:
-            build_mappings["build-deploy"] = True
-        if "smoke" in keyword or "smoke_tests" in What_to_build:
-            build_mappings["smoke"] = True
-        if "rpms" in keyword:
-            build_mappings["rpms"] = True
-        if "debs" in keyword:
-            build_mappings["debs"] = True
-        if "oci" in keyword or "oci" in What_to_build:
-            build_mappings["oci"] = True
-        if "build-publish" in keyword:
-            build_mappings["build-publish"] = True
-        if "trivy-scan" in keyword:
-            build_mappings["trivy-scan"] = True
-        if "trivy-analyze" in keyword:
-            build_mappings["trivy-analyze"] = True
+        if keyword in ["build-deploy", "build-publish"]:
+            build_mappings[keyword] = True
+        elif should_build_component(keyword, git_keywords, what_to_build):
+            build_mappings[keyword] = True
 
+# Apply component keyword mappings
+for component_key in COMPONENT_KEYWORD_MAP:
+    if should_build_component(component_key, git_keywords, what_to_build):
+        build_mappings[component_key] = True
 
-
-if "smoke" in git_keywords or "smoke_tests" in What_to_build:
-    build_mappings["smoke"] = True
-if "oci" in git_keywords:
-    build_mappings["oci"] = True
-
-if "rpms" in git_keywords:
-    build_mappings["rpms"] = True
-
-if "trivy-scan" in git_keywords:
-    build_mappings["trivy-scan"] = True
-
-if "trivy-analyze" in git_keywords:
-    build_mappings["trivy-analyze"] = True
-    
-if "debs" in git_keywords:
-    build_mappings["debs"] = True
-
-if "integration" in git_keywords or "Integration_tests" in What_to_build:
-    build_mappings["integration"] = True
-
-if "build" in What_to_build and not build_mappings["experimental"]:
+# Handle general build trigger
+if "build" in what_to_build and not build_mappings["experimental"]:
     build_mappings["build-deploy"] = True
 
-if (
-    "doc" in git_keywords
-    or "docs" in git_keywords
-    or "doc" in What_to_build
-    or "docs" in What_to_build
-):
-    build_mappings["docs"] = True
-
-if "ui" in git_keywords or "ui" in What_to_build:
-    build_mappings["ui"] = True
-
-with open(output_path, "w", encoding="UTF-8") as file_handler:
-    file_handler.write(json.dumps(mappings))
-
-with open(path_to_build_components, "w", encoding="UTF-8") as file_handler:
-    file_handler.write(json.dumps(build_mappings, indent=4))
+# Write output files
+try:
+    with open(output_path, "w", encoding="UTF-8") as file_handler:
+        file_handler.write(json.dumps(mappings))
+    
+    with open(PATH_BUILD_COMPONENTS, "w", encoding="UTF-8") as file_handler:
+        file_handler.write(json.dumps(build_mappings, indent=4))
+except IOError as e:
+    print(f"Error writing output files: {e}")
+    sys.exit(1)

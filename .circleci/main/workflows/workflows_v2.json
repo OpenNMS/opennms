@@ -365,7 +365,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^release-.*/"
+                    ]
+                }
+            }
         },
         "horizon-image-single-arch": {
             "context": [
@@ -379,7 +387,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^release-.*/"
+                    ]
+                }
+            }
         },
         "sentinel-image-single-arch": {
             "context": [
@@ -393,7 +409,15 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
+            ],
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop",
+                        "/^release-.*/"
+                    ]
+                }
+            }
         },
         "create-merge-foundation-branch": {
             "context": [
