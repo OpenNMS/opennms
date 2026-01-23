@@ -379,6 +379,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:kafka-push-topology-edges
 |Pushes all of the related topology edges to the configured topic
 |opennms-kafka-producer
+|opennms:kafka-producer-topics
+|Show status of all Kafka producer topics with connectivity check
+|opennms-kafka-producer
 |opennms:kafka-ipc-topics
 |Show status of all Kafka IPC topics (RPC, Sink, Twin)
 |opennms-core-ipc-kafka

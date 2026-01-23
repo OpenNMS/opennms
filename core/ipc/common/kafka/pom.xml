@@ -70,12 +70,21 @@
             <groupId>org.lz4</groupId>
             <artifactId>lz4-java</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>at.yawk.lz4</groupId>
         <artifactId>lz4-java</artifactId>
         <version>${lz4JavaVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bitbucket.b_c</groupId>
+        <artifactId>jose4j</artifactId>
+        <version>${jose4jVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicemix.bundles</groupId>
