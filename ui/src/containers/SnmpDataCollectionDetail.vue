@@ -104,13 +104,13 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherBackButton } from '@featherds/back-button'
-import { format } from 'date-fns-tz'
+import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
+import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
-import SystemDefinitionsTable from '@/components/SnmpDataCollection/SystemDefinitionsTable.vue'
-import ResourceTypesTable from '@/components/SnmpDataCollection/ResourceTypesTable.vue'
-import MibGroupsTable from '@/components/SnmpDataCollection/MibGroupsTable.vue'
+import { format } from 'date-fns-tz'
 
 const router = useRouter()
 const route = useRoute()
