@@ -24,14 +24,7 @@ package org.opennms.web.rest.v2;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.model.SnmpCollectionSystemDef;
-import org.opennms.netmgt.model.SnmpCollectionMibGroup;
-import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
-import org.opennms.netmgt.model.SnmpCollectionSourceDto;
-import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
-import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
-import org.opennms.netmgt.model.SnmpCollectionSource;
-import org.opennms.netmgt.model.SnmpCollectionResourceType;
+import org.opennms.netmgt.model.*;
 
 import org.opennms.web.rest.v2.api.DataCollectionConfRestApi;
 import org.opennms.web.rest.v2.model.SnmpCollectionSourceNamesAndIdsResponse;
@@ -124,21 +117,21 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         // Call service to fetch results
-        Map<String, Object> result = dataCollectionConfPersistenceService.filterSnmpCollectionSources(filter, sortBy, order,
+        PageResponse<SnmpCollectionSource> result = dataCollectionConfPersistenceService.filterSnmpCollectionSources(filter, sortBy, order,
                 totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
-                || result.isEmpty()
-                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+                || result.getRecords().isEmpty()
+                || ((result.getTotalRecords()) == 0)) {
             return Response.noContent().build();  // 204 No Content
         }
 
         List<SnmpCollectionSourceDto> dtoList =
-                SnmpCollectionSourceDto.fromEntity((List<SnmpCollectionSource>) result.get("dataCollectionSourceList"));
+                SnmpCollectionSourceDto.fromEntity(result.getRecords());
 
         // Build response
-        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "snmpCollectionSourceList", dtoList))
+        return Response.ok(Map.of("totalRecords", result.getTotalRecords(), "snmpCollectionSourceList", dtoList))
                 .build();
     }
 
@@ -153,21 +146,21 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         // Call service to fetch results
-        Map<String, Object> result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(dataCollectionGroupId, mibGroupFilter,
+        PageResponse<SnmpCollectionMibGroup> result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(dataCollectionGroupId, mibGroupFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
-                || result.isEmpty()
-                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+                || result.getRecords().isEmpty()
+                || ((result.getTotalRecords()) == 0)) {
             return Response.noContent().build();  // 204 No Content
         }
 
-        List<SnmpCollectionMibGroupDto> dtoList =
-                SnmpCollectionMibGroupDto.fromEntity((List<SnmpCollectionMibGroup>) result.get("mibGroupList"));
+        final var  dtoList =
+                SnmpCollectionMibGroupDto.fromEntity(result.getRecords());
 
         // Build response
-        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "dataCollectionMibGroupList", dtoList))
+        return Response.ok(Map.of("totalRecords", result.getTotalRecords(), "dataCollectionMibGroupList", dtoList))
                 .build();
     }
 
@@ -182,21 +175,21 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         // Call service to fetch results
-        Map<String, Object> result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(dataCollectionGroupId, resourceTypeFilter,
+        PageResponse<SnmpCollectionResourceType> result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(dataCollectionGroupId, resourceTypeFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
-                || result.isEmpty()
-                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+                || result.getRecords().isEmpty()
+                || ((result.getTotalRecords()) == 0)) {
             return Response.noContent().build();  // 204 No Content
         }
 
         List<SnmpCollectionResourceTypeDto> dtoList =
-                SnmpCollectionResourceTypeDto.fromEntity((List<SnmpCollectionResourceType>) result.get("resourceTypeList"));
+                SnmpCollectionResourceTypeDto.fromEntity(result.getRecords());
 
         // Build response
-        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "dataCollectionResourceTypeList", dtoList))
+        return Response.ok(Map.of("totalRecords", result.getTotalRecords(), "dataCollectionResourceTypeList", dtoList))
                 .build();
     }
 
@@ -211,21 +204,21 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         // Call service to fetch results
-        Map<String, Object> result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(dataCollectionGroupId, systemDefFilter,
+        PageResponse<SnmpCollectionSystemDef> result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(dataCollectionGroupId, systemDefFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
-                || result.isEmpty()
-                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+                || result.getRecords().isEmpty()
+                || ((result.getTotalRecords()) == 0)) {
             return Response.noContent().build();  // 204 No Content
         }
 
         List<SnmpCollectionSystemDefDto> dtoList =
-                SnmpCollectionSystemDefDto.fromEntity((List<SnmpCollectionSystemDef>) result.get("systemDefsList"));
+                SnmpCollectionSystemDefDto.fromEntity(result.getRecords());
 
         // Build response
-        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "dataCollectionSystemDefsList", dtoList))
+        return Response.ok(Map.of("totalRecords", result.getTotalRecords(), "dataCollectionSystemDefsList", dtoList))
                 .build();
     }
 

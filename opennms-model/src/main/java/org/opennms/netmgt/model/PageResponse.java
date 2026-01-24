@@ -19,32 +19,25 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model;
 
-import org.opennms.netmgt.model.PageResponse;
-import org.opennms.netmgt.model.SnmpCollectionSource;
-
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, Integer> {
+public class PageResponse<T> {
 
-    SnmpCollectionSource get(Integer id);
+    private final int totalRecords;
+    private final List<T> records;
 
-    SnmpCollectionSource findByName(String name);
+    public PageResponse(int totalRecords, List<T> records) {
+        this.totalRecords = totalRecords;
+        this.records = records;
+    }
 
-    List<SnmpCollectionSource> findAll();
+    public int getTotalRecords() {
+        return totalRecords;
+    }
 
-    List<SnmpCollectionSource> findAllEnabled();
-
-    void delete(SnmpCollectionSource source);
-
-    void deleteAll(final Collection<SnmpCollectionSource> list);
-
-    Map<Integer, String> getIdToNameMap();
-
-    PageResponse<SnmpCollectionSource> filterDataCollectionSource(final String filter, final String sortBy, final String order, Integer totalRecords,
-                                            Integer offset, Integer limit);
-
+    public List<T> getRecords() {
+        return records;
+    }
 }

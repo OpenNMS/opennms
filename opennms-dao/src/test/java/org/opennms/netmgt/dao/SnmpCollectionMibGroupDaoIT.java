@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -39,8 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -219,60 +218,45 @@ public class SnmpCollectionMibGroupDaoIT {
 
         mibGroupDao.flush();
 
-        BiConsumer<Map<String, Object>, String> assertMibGroupName =
-                (result, expectedName) -> {
-                    assertNotNull(result);
-                    List<?> list = (List<?>) result.get("mibGroupList");
-                    assertEquals(result.get("totalRecords"), list.size());
-                    assertEquals(expectedName, ((SnmpCollectionMibGroup) list.get(0)).getName());
-                };
-
         // 1. Exact filter by name ASC
-        Map<String, Object> result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertMibGroupName.accept(result, "if-mib-interfaces");
+        PageResponse<SnmpCollectionMibGroup> result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("mib"), ascending by name
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
+        assertEquals(2, result.getTotalRecords());
         // asc: if-mib-interfaces comes first
-        assertMibGroupName.accept(result, "if-mib-interfaces");
 
         // 3. Partial filter, descending by name
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
+        assertEquals(2, result.getTotalRecords());
         // desc: ip-mib comes first
-        assertMibGroupName.accept(result, "ip-mib");
 
         // 4. Filter by ifType substring, ascending
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertMibGroupName.accept(result, "if-mib-interfaces");
+        assertEquals(1, result.getTotalRecords());
 
         // 5. Filter by ifType substring, descending
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertMibGroupName.accept(result, "ip-mib");
+        assertEquals(1, result.getTotalRecords());
 
         // 6. Case-insensitive filter (should match "ip-MIB")
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertMibGroupName.accept(result, "ip-mib");
+        assertEquals(1, result.getTotalRecords());
 
         // 7. Pagination - only second result returned
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
-        assertEquals(2, result.get("totalRecords"));
-        List<?> pagedList = (List<?>) result.get("mibGroupList");
-        assertEquals(1, pagedList.size());
-        assertEquals("ip-mib", ((SnmpCollectionMibGroup) pagedList.get(0)).getName());
+        assertEquals(2, result.getTotalRecords());
+        assertEquals(1, result.getRecords().size());
+        assertEquals("ip-mib", (result.getRecords().get(0)).getName());
 
         // 8. Filter with no match
         result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
-        assertEquals(0, result.get("totalRecords"));
-        List<?> emptyList = (List<?>) result.get("mibGroupList");
-        assertTrue(emptyList.isEmpty());
+        assertEquals(0, result.getTotalRecords());
+        assertTrue(result.getRecords().isEmpty());
 
     }
 
-    }
+}
+
 

@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.api;
 
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 
 import java.util.Collection;
@@ -30,13 +31,13 @@ import java.util.Map;
 public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGroup, Integer> {
     SnmpCollectionMibGroup get(Integer id);
 
-    SnmpCollectionMibGroup findByNameAndSource(String name, Integer sourceId);
+    SnmpCollectionMibGroup findByNameAndSource(String name, Integer snmpCollectionSourceId);
 
     List<SnmpCollectionMibGroup> findAll();
 
     List<SnmpCollectionMibGroup> findAllEnabled();
 
-    List<SnmpCollectionMibGroup> findAllBySource(Integer sourceId);
+    List<SnmpCollectionMibGroup> findAllBySource(Integer snmpCollectionSourceId);
 
     void saveOrUpdate(SnmpCollectionMibGroup mibGroup);
 
@@ -46,11 +47,11 @@ public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGrou
 
     void saveAll(Collection<SnmpCollectionMibGroup> list);
 
-    void deleteBySourceId(Integer sourceId);
+    void deleteBySourceId(Integer snmpCollectionSourceId);
 
-    List<SnmpCollectionMibGroup> filterEventConf(String name,String ifType, String vendor, String collectionSourceName, int offset, int limit);
+    List<SnmpCollectionMibGroup> filterMibGroupConf(String name,String ifType, String vendor, String collectionSourceName, int offset, int limit);
 
-    Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+    PageResponse<SnmpCollectionMibGroup> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
 
 }

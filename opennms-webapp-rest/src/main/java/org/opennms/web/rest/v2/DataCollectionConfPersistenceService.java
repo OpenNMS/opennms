@@ -31,10 +31,12 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,25 +96,25 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSourceDao.get(collectionSourceId);
     }
 
-    public Map<String, Object> filterSnmpCollectionSources(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionSource> filterSnmpCollectionSources(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         return snmpCollectionSourceDao.filterDataCollectionSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 
-    public Map<String, Object> filterMibGroupByDataCollectionGroupId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy,
-                                                          String order, Integer totalRecords, Integer offset,
-                                                          Integer limit) {
+    public PageResponse<SnmpCollectionMibGroup> filterMibGroupByDataCollectionGroupId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy,
+                                                                                      String order, Integer totalRecords, Integer offset,
+                                                                                      Integer limit) {
         return snmpCollectionMibGroupDao.findByDataCollectionGroupId(dataCollectionGroupId,mibGroupFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public Map<String, Object> filterResourceTypeByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy,
-                                                                     String order, Integer totalRecords, Integer offset,
-                                                                     Integer limit) {
+    public PageResponse<SnmpCollectionResourceType> filterResourceTypeByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy,
+                                                                                              String order, Integer totalRecords, Integer offset,
+                                                                                              Integer limit) {
         return snmpCollectionResourceTypeDao.findByDataCollectionGroupId(dataCollectionGroupId,resourceTypeFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public Map<String, Object> filterSystemDefByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefFilter, String sortBy,
-                                                                     String order, Integer totalRecords, Integer offset,
-                                                                     Integer limit) {
+    public PageResponse<SnmpCollectionSystemDef> filterSystemDefByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefFilter, String sortBy,
+                                                                                        String order, Integer totalRecords, Integer offset,
+                                                                                        Integer limit) {
         return snmpCollectionSystemDefDao.findByDataCollectionGroupId(dataCollectionGroupId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
     }
 

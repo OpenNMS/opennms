@@ -21,7 +21,9 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.netmgt.dao.DaoUtil;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +50,14 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public SnmpCollectionResourceType findByNameAndSource(String name, Integer sourceId) {
+    public SnmpCollectionResourceType findByNameAndSource(String name, Integer snmpCollectionSourceId) {
         List<SnmpCollectionResourceType> list = find(
-                "from SnmpCollectionResourceType t where t.name = ? and t.collectionSource.id = ?", name, sourceId);
+                "from SnmpCollectionResourceType t where t.name = ? and t.collectionSource.id = ?", name, snmpCollectionSourceId);
         return list.isEmpty() ? null : list.get(0);    }
 
     @Override
-    public List<SnmpCollectionResourceType> findAllBySource(Integer sourceId) {
-        return find("from SnmpCollectionResourceType t where t.collectionSource.id = ?", sourceId);
+    public List<SnmpCollectionResourceType> findAllBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionResourceType t where t.collectionSource.id = ?", snmpCollectionSourceId);
     }
 
     @Override
@@ -89,12 +91,12 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public void deleteBySourceId(Integer sourceId) {
-        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionResourceType t where t.collectionSource.id = ?", sourceId);
+    public void deleteBySourceId(Integer snmpCollectionSourceId) {
+        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionResourceType t where t.collectionSource.id = ?", snmpCollectionSourceId);
     }
 
     @Override
-    public List<SnmpCollectionResourceType> filterEventConf(String name, String label, String vendor, String collectionSourceName, int offset, int limit) {
+    public List<SnmpCollectionResourceType> filterResourceTypeConf(String name, String label, String vendor, String collectionSourceName, int offset, int limit) {
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from SnmpCollectionResourceType t where 1=1 ");
@@ -102,22 +104,22 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
 
         if (name != null && !name.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.name) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (label != null && !label.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.label) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(label.trim().toLowerCase()) + "%"); // contains match
+            queryParamList.add("%" + DaoUtil.escapeLike(label.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
+            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
             queryBuilder.append(" and lower(t.collectionSource.name) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
+            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
         queryBuilder.append(" order by t.createdTime desc ");
@@ -126,17 +128,17 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
         String whereClause = "where t.collectionSource.id = ? ";
-        queryParams.add(dataCollectionGroupId);
+        queryParams.add(snmpCollectionSourceId);
 
         // Add filter conditions dynamically
         if (resourceTypeFilter != null && !resourceTypeFilter.trim().isEmpty()) {
-            String escapedFilter = "%" + escapeLike(resourceTypeFilter.trim().toLowerCase()) + "%";
+            String escapedFilter = "%" + DaoUtil.escapeLike(resourceTypeFilter.trim().toLowerCase()) + "%";
             conditions.add("lower(t.name) like ? escape '\\'");
             queryParams.add(escapedFilter);
 
@@ -176,26 +178,7 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
             resourceTypeList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
         }
 
-        // Return map with results
-        return Map.of("totalRecords", resultCount, "resourceTypeList", resourceTypeList);
+        return new PageResponse<>(resultCount,resourceTypeList);
     }
 
-    /**
-     * Escapes special characters (% , _ , \, ., /, [, ]) in a string
-     * to make it safe for SQL LIKE queries.
-     *
-     * @param input the input string
-     * @return the escaped string
-     */
-    private String escapeLike(String input) {
-        return input
-                .replace("\\", "\\\\")
-                .replace("%", "\\%")
-                .replace("_", "\\_")
-                .replace("@", "\\@")
-                .replace("/", "\\/")
-                .replace("[", "\\[")
-                .replace("]", "\\]")
-                .replace(".", "\\.");
-    }
 }

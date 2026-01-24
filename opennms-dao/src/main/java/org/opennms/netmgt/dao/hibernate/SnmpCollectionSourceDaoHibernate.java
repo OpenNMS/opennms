@@ -21,7 +21,9 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.netmgt.dao.DaoUtil;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     }
 
     @Override
-    public Map<String, Object> filterDataCollectionSource(final String filter, final String sortBy,final  String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionSource> filterDataCollectionSource(final String filter, final String sortBy, final  String order, Integer totalRecords, Integer offset, Integer limit) {
 
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<SnmpCollectionSource> dataCollectionSourceList = Collections.emptyList();
@@ -84,7 +86,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
 
             // Add filter conditions dynamically
             if (filter != null && !filter.trim().isEmpty()) {
-                String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
+                String escapedFilter = "%" + DaoUtil.escapeLike(filter.trim().toLowerCase()) + "%";
                 conditions.add("lower(s.name) like ? escape '\\'");
                 queryParams.add(escapedFilter);
 
@@ -129,26 +131,7 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
             LOG.debug("Error filterDataCollectionSource method while fetching the records {} ", e);
         }
 
-        // Return map with results
-        return Map.of("totalRecords", resultCount, "dataCollectionSourceList", dataCollectionSourceList);
+        return new PageResponse<>(resultCount,dataCollectionSourceList);
     }
 
-    /**
-     * Escapes special characters (%, _, \, /, [, ]) in a string
-     * to make it safe for SQL LIKE queries.
-     *
-     * @param input the input string
-     * @return the escaped string
-     */
-    private String escapeLike(String input) {
-        return input
-                .replace("\\", "\\\\")
-                .replace("%", "\\%")
-                .replace("_", "\\_")
-                .replace("@", "\\@")
-                .replace("/", "\\/")
-                .replace("[", "\\[")
-                .replace("]", "\\]")
-                .replace(".", "\\.");
-    }
 }

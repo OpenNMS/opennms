@@ -21,7 +21,9 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.netmgt.dao.DaoUtil;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +49,9 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public SnmpCollectionSystemDef findByNameAndSource(String name, Integer sourceId) {
+    public SnmpCollectionSystemDef findByNameAndSource(String name, Integer snmpCollectionSourceId) {
         List<SnmpCollectionSystemDef> list = find(
-                "from SnmpCollectionSystemDef d where d.name = ? and d.collectionSource.id = ?", name, sourceId);
+                "from SnmpCollectionSystemDef d where d.name = ? and d.collectionSource.id = ?", name, snmpCollectionSourceId);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -60,8 +62,8 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public List<SnmpCollectionSystemDef> findAllBySource(Integer sourceId) {
-        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?", sourceId);
+    public List<SnmpCollectionSystemDef> findAllBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?", snmpCollectionSourceId);
     }
 
     @Override
@@ -91,8 +93,8 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public void deleteBySourceId(Integer sourceId) {
-        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionSystemDef d where d.collectionSource.id = ?", sourceId);
+    public void deleteBySourceId(Integer snmpCollectionSourceId) {
+        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionSystemDef d where d.collectionSource.id = ?", snmpCollectionSourceId);
     }
 
     @Override
@@ -102,17 +104,17 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
         queryBuilder.append("from SnmpCollectionSystemDef d where 1=1 ");
         if (name != null && !name.trim().isEmpty()) {
             queryBuilder.append(" and lower(d.name) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
             queryBuilder.append(" and lower(d.collectionSource.vendor) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
+            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
             queryBuilder.append(" and lower(d.collectionSource.name) like ? escape '\\' ");
-            queryParamList.add("%" + escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
+            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
         queryBuilder.append(" order by d.createdTime desc ");
@@ -121,17 +123,17 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     }
 
     @Override
-    public Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefsFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionSystemDef> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String systemDefsFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
         String whereClause = "where d.collectionSource.id = ? ";
-        queryParams.add(dataCollectionGroupId);
+        queryParams.add(snmpCollectionSourceId);
 
         // Add filter conditions dynamically
         if (systemDefsFilter != null && !systemDefsFilter.trim().isEmpty()) {
-            String escapedFilter = "%" + escapeLike(systemDefsFilter.trim().toLowerCase()) + "%";
+            String escapedFilter = "%" + DaoUtil.escapeLike(systemDefsFilter.trim().toLowerCase()) + "%";
             conditions.add("lower(d.name) like ? escape '\\'");
             queryParams.add(escapedFilter);
 
@@ -169,26 +171,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
             systemDefsList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
         }
 
-        // Return map with results
-        return Map.of("totalRecords", resultCount, "systemDefsList", systemDefsList);
+        return new PageResponse<>(resultCount,systemDefsList);
     }
 
-    /**
-     * Escapes special characters (% , _ , \, ., /, [, ]) in a string
-     * to make it safe for SQL LIKE queries.
-     *
-     * @param input the input string
-     * @return the escaped string
-     */
-    private String escapeLike(String input) {
-        return input
-                .replace("\\", "\\\\")
-                .replace("%", "\\%")
-                .replace("_", "\\_")
-                .replace("@", "\\@")
-                .replace("/", "\\/")
-                .replace("[", "\\[")
-                .replace("]", "\\]")
-                .replace(".", "\\.");
-    }
 }

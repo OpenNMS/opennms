@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.api;
 
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 
 import java.util.Collection;
@@ -30,11 +31,11 @@ import java.util.Map;
 public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionResourceType, Integer> {
     SnmpCollectionResourceType get(Integer id);
 
-    SnmpCollectionResourceType findByNameAndSource(String name, Integer sourceId);
+    SnmpCollectionResourceType findByNameAndSource(String name, Integer snmpCollectionSourceId);
 
     List<SnmpCollectionResourceType> findAll();
 
-    List<SnmpCollectionResourceType> findAllBySource(Integer sourceId);
+    List<SnmpCollectionResourceType> findAllBySource(Integer snmpCollectionSourceId);
 
     List<SnmpCollectionResourceType> findAllEnabled();
 
@@ -46,11 +47,11 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
 
     void saveAll(Collection<SnmpCollectionResourceType> list);
 
-    void deleteBySourceId(Integer sourceId);
+    void deleteBySourceId(Integer snmpCollectionSourceId);
 
-    List<SnmpCollectionResourceType> filterEventConf(String name,String label, String vendor, String collectionSourceName, int offset, int limit);
+    List<SnmpCollectionResourceType> filterResourceTypeConf(String name,String label, String vendor, String collectionSourceName, int offset, int limit);
 
-    Map<String, Object> findByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+    PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
 
 }

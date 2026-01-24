@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -39,8 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -214,60 +213,44 @@ public class SnmpCollectionSystemDefDaoIT {
 
         systemDefDao.flush();
 
-        BiConsumer<Map<String, Object>, String> assertSystemDefName =
-                (result, expectedName) -> {
-                    assertNotNull(result);
-                    List<?> list = (List<?>) result.get("systemDefsList");
-                    assertEquals(result.get("totalRecords"), list.size());
-                    assertEquals(expectedName, ((SnmpCollectionSystemDef) list.get(0)).getName());
-                };
-
         // 1. Exact filter by name ASC
-        Map<String, Object> result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertSystemDefName.accept(result, "LinuxSystem");
+        PageResponse<SnmpCollectionSystemDef> result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("System"), ascending by name
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
-        assertSystemDefName.accept(result, "LinuxSystem"); // asc order
+        assertEquals(2, result.getTotalRecords());
 
         // 3. Partial filter, descending by name
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "DESC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
-        assertSystemDefName.accept(result, "WindowsSystem"); // desc order
+        assertEquals(2, result.getTotalRecords());
 
         // 4. Case-insensitive filter
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
-        assertEquals(1, result.get("totalRecords"));
-        assertSystemDefName.accept(result, "LinuxSystem");
+        assertEquals(1, result.getTotalRecords());
 
         // 5. Pagination - only second returned
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 1, 1);
-        assertEquals(2, result.get("totalRecords"));
-        List<?> pagedList = (List<?>) result.get("systemDefsList");
-        assertEquals(1, pagedList.size());
-        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) pagedList.get(0)).getName());
+        assertEquals(2, result.getTotalRecords());
+        assertEquals(1, result.getRecords().size());
+        assertEquals("WindowsSystem", (result.getRecords().get(0)).getName());
 
         // 6. Filter with no match
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
-        assertEquals(0, result.get("totalRecords"));
-        List<?> emptyList = (List<?>) result.get("systemDefsList");
-        assertTrue(emptyList.isEmpty());
+        assertEquals(0, result.getTotalRecords());
+        assertTrue(result.getRecords().isEmpty());
 
         // 7. Null filter - should return all for group, ascending
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "name", "ASC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
-        List<?> allList = (List<?>) result.get("systemDefsList");
-        assertEquals("LinuxSystem", ((SnmpCollectionSystemDef) allList.get(0)).getName());
-        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) allList.get(1)).getName());
+        assertEquals(2, result.getTotalRecords());
+        assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
+        assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
 
         // 8. Invalid sortBy field defaults to name ascending
         result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
-        assertEquals(2, result.get("totalRecords"));
-        List<?> defaultSorted = (List<?>) result.get("systemDefsList");
-        assertEquals("LinuxSystem", ((SnmpCollectionSystemDef) defaultSorted.get(0)).getName());
-        assertEquals("WindowsSystem", ((SnmpCollectionSystemDef) defaultSorted.get(1)).getName());
+        assertEquals(2, result.getTotalRecords());
+        assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
+        assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
     }
 
     @Test
