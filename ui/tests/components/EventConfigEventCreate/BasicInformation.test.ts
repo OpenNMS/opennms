@@ -472,40 +472,6 @@ describe('BasicInformation Component', () => {
     expect(saveButton.text()).toBe('Create Event')
   })
 
-  it('should show "Create Source and Save" button when no source is selected', async () => {
-    store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: '', _value: '' }
-    await wrapper.vm.$nextTick()
-
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
-    expect(createSourceButton.exists()).toBe(true)
-    expect(createSourceButton.text()).toBe('Create Source and Save')
-  })
-
-  // Create source dialog tests
-  it('should open create source dialog when "Create Source and Save" button is clicked', async () => {
-    store.selectedSource = null
-    wrapper.vm.selectedSource = { _text: '', _value: '' }
-    wrapper.vm.isValid = true
-    await wrapper.vm.$nextTick()
-
-    const createSourceButton = wrapper.find('[data-test="create-source-button"]')
-    await createSourceButton.trigger('click')
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.vm.createSourceDialog).toBe(true)
-  })
-
-  it('should close create source dialog', async () => {
-    wrapper.vm.createSourceDialog = true
-    await wrapper.vm.$nextTick()
-
-    wrapper.vm.closeSourceCreationDialog()
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.vm.createSourceDialog).toBe(false)
-  })
-
   // Button disabled state tests
   it('should disable "Save Event" button when isValid is false', async () => {
     store.selectedSource = mockSource
@@ -648,6 +614,36 @@ describe('BasicInformation Component', () => {
     consoleSpy.mockRestore()
   })
 
+  // New source creation tests
+  it('should create new source when selectedSource._value is 0', async () => {
+    const { addEventConfigSource } = await import('@/services/eventConfigService')
+    vi.mocked(addEventConfigSource).mockResolvedValue({
+      id: 99,
+      name: 'Custom Source',
+      fileOrder: 1,
+      status: 201
+    })
+    
+    store.eventModificationState.isEditMode = CreateEditMode.Create
+    wrapper.vm.selectedSource = { _text: 'Custom Source', _value: 0 }
+    wrapper.vm.isValid = true
+    vi.mocked(createEventConfigEvent).mockResolvedValue(true)
+    
+    await wrapper.vm.handleSaveEvent()
+
+    expect(addEventConfigSource).toHaveBeenCalledWith('Custom Source', 'Custom Source', '')
+  })
+
+  it('should show error when source is required but missing', async () => {
+    wrapper.vm.selectedSource = { _text: '', _value: -1 }
+    wrapper.vm.isValid = true
+    
+    const showSnackBarSpy = vi.spyOn(wrapper.vm.snackbar, 'showSnackBar')
+    await wrapper.vm.handleSaveEvent()
+
+    expect(showSnackBarSpy).toHaveBeenCalledWith({ msg: 'Source is required', error: true })
+  })
+
   // Search functionality tests
   it('should filter sources based on search query', async () => {
     vi.useFakeTimers()
@@ -657,7 +653,8 @@ describe('BasicInformation Component', () => {
     vi.advanceTimersByTime(500)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.results).toHaveLength(1)
+    // 'Test Source' matches, no exact match so fallback 'Test' is added
+    expect(wrapper.vm.results.length).toBeGreaterThan(0)
     expect(wrapper.vm.results[0]._text).toBe('Test Source')
     
     vi.useRealTimers()
@@ -695,6 +692,97 @@ describe('BasicInformation Component', () => {
     vi.useRealTimers()
   })
 
+  it('should add fallback option when no exact match exists', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('NonExistent')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.results).toHaveLength(1)
+    expect(wrapper.vm.results[0]._text).toBe('NonExistent')
+    expect(wrapper.vm.results[0]._value).toBe(0)
+    
+    vi.useRealTimers()
+  })
+
+  it('should not add fallback option when exact match exists', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('Test Source')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    // Should have only the exact match, no fallback
+    expect(wrapper.vm.results).toHaveLength(1)
+    expect(wrapper.vm.results[0]._text).toBe('Test Source')
+    expect(wrapper.vm.results[0]._value).toBe(1)
+    
+    vi.useRealTimers()
+  })
+
+  it('should include both filtered results and fallback option when there are partial matches but no exact match', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('Anoth')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    // Should have 2 results: 'Another Source' + fallback 'Anoth'
+    expect(wrapper.vm.results).toHaveLength(2)
+    expect(wrapper.vm.results[0]._text).toBe('Another Source')
+    expect(wrapper.vm.results[1]._text).toBe('Anoth')
+    expect(wrapper.vm.results[1]._value).toBe(0)
+    
+    vi.useRealTimers()
+  })
+
+  it('should show all sources when query is empty string', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    // Empty string matches all sources (no fallback added)
+    expect(wrapper.vm.results.length).toBeGreaterThan(0)
+    expect(wrapper.vm.results.length).toBe(2) // Both sources match
+    
+    vi.useRealTimers()
+  })
+
+  it('should not add fallback option when query is only whitespace', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('   ')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.results).toHaveLength(0)
+    
+    vi.useRealTimers()
+  })
+
+  it('should perform case-insensitive search', async () => {
+    vi.useFakeTimers()
+    
+    wrapper.vm.search('test source')
+    
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+
+    // Should match 'Test Source' exactly (case-insensitive)
+    expect(wrapper.vm.results).toHaveLength(1)
+    expect(wrapper.vm.results[0]._value).toBe(1)
+    
+    vi.useRealTimers()
+  })
+
   // setSelectedSource tests
   it('should set selectedSource when item is provided', () => {
     const testItem = { _text: 'New Source', _value: 123 }
@@ -703,10 +791,18 @@ describe('BasicInformation Component', () => {
     expect(wrapper.vm.selectedSource).toEqual(testItem)
   })
 
-  it('should reset selectedSource when null is provided', () => {
+  it('should reset selectedSource to -1 when null is provided', () => {
     wrapper.vm.setSelectedSource(null)
     
-    expect(wrapper.vm.selectedSource).toEqual({ _text: '', _value: '' })
+    expect(wrapper.vm.selectedSource).toEqual({ _text: '', _value: -1 })
+  })
+
+  it('should handle selectedSource with _value of 0 for new source creation', () => {
+    const testItem = { _text: 'New Custom Source', _value: 0 }
+    wrapper.vm.setSelectedSource(testItem)
+    
+    expect(wrapper.vm.selectedSource).toEqual(testItem)
+    expect(wrapper.vm.selectedSource._value).toBe(0)
   })
 
   // handleCancel tests
@@ -735,51 +831,6 @@ describe('BasicInformation Component', () => {
     wrapper.vm.handleCancel()
 
     expect(pushSpy).toHaveBeenCalledWith({ name: 'Event Configuration' })
-  })
-
-  // createNewSource tests
-  it('should return early when source form has errors', async () => {
-    wrapper.vm.configName = ''
-    wrapper.vm.vendor = ''
-    wrapper.vm.isValid = true
-    
-    await wrapper.vm.createNewSource()
-
-    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
-  })
-
-  it('should return early when form is invalid', async () => {
-    wrapper.vm.configName = 'Test'
-    wrapper.vm.vendor = 'Vendor'
-    wrapper.vm.isValid = false
-    
-    await wrapper.vm.createNewSource()
-    
-    // Should not proceed with source creation
-    expect(wrapper.vm.isValid).toBe(false)
-  })
-
-  it('should validate configName is required', () => {
-    wrapper.vm.configName = ''
-    wrapper.vm.vendor = 'Test Vendor'
-    
-    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
-    expect(wrapper.vm.sourceFormErrors?.name).toBeDefined()
-  })
-
-  it('should validate vendor is required', () => {
-    wrapper.vm.configName = 'Test Config'
-    wrapper.vm.vendor = ''
-    
-    expect(wrapper.vm.sourceFormErrors).not.toBeNull()
-    expect(wrapper.vm.sourceFormErrors?.vendor).toBeDefined()
-  })
-
-  it('should have no errors when both fields are filled', () => {
-    wrapper.vm.configName = 'Test Config'
-    wrapper.vm.vendor = 'Test Vendor'
-    
-    expect(wrapper.vm.sourceFormErrors).toBeNull()
   })
 
   // setAlarmData tests
