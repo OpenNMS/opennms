@@ -643,10 +643,13 @@ const search = (query: string) => {
     const filtered = list
       .filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
       .map((x) => ({ _text: x.name, _value: x.id }))
-
-    if (filtered.length === 0 && query.trim().length > 0) {
-      // When no results match, present the user's typed option instead
-      results.value = [{ _text: query.trim(), _value: 0 }]
+    
+    // Check if there's an exact match
+    const hasExactMatch = filtered.some((item) => item._text.toLowerCase() === query.toLowerCase())
+    
+    // Add fallback option only if no exact match exists and query is not empty
+    if (!hasExactMatch && query.trim().length > 0) {
+      results.value = [...filtered, { _text: query.trim(), _value: 0 }]
     } else {
       results.value = filtered
     }
