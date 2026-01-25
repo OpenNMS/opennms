@@ -87,52 +87,27 @@ export const validateEventConfigFile = async (file: File) => {
   }
 }
 
-export const validateEventElement = (event: Element | any, eventNumber: number): string => {
-  if (!event || typeof event.querySelector !== 'function') {
-    return `Event ${eventNumber}: missing <uei>`
-  }
+// Helper function to extract inner text from XML element
+const getInnerText = (el: Element, tag: string): string => {
+  if (!el) return ''
+  const node = el.querySelector(tag) || el.getElementsByTagName(tag)[0]
+  return node?.textContent?.trim() || ''
+}
 
-  const getInnerText = (el: any, tag: string): string => {
-    if (!el) {
-      return ''
-    }
-    let node: any = null
-    try {
-      if (typeof el.querySelector === 'function') node = el.querySelector(tag)
-    } catch (e) {
-      // Re-throw Error objects as these are unexpected errors
-      if (e instanceof Error) throw e
-      node = null
-    }
-    if (!node) {
-      try {
-        if (typeof el.getElementsByTagName === 'function') node = el.getElementsByTagName(tag)[0]
-      } catch (e) {
-        // Re-throw Error objects as these are unexpected errors
-        if (e instanceof Error) throw e
-        node = null
-      }
-    }
-    const text = node?.textContent
-    return typeof text === 'string' ? text.trim() : ''
-  }
+export const validateEventElement = (event: Element, eventNumber: number): string => {
+  // Define required fields for validation
+  const requiredFields = [
+    { tag: 'uei', name: '<uei>' },
+    { tag: 'event-label', name: '<event-label>' },
+    { tag: 'severity', name: '<severity>' },
+    { tag: 'descr', name: '<descr>' }
+  ] as const
 
-  const uei = getInnerText(event, 'uei')
-  const label = getInnerText(event, 'event-label')
-  const severity = getInnerText(event, 'severity')
-  const description = getInnerText(event, 'descr')
-
-  if (!uei) {
-    return `Event ${eventNumber}: missing <uei>`
-  }
-  if (!label) {
-    return `Event ${eventNumber}: missing <event-label>`
-  }
-  if (!severity) {
-    return `Event ${eventNumber}: missing <severity>`
-  }
-  if (!description) {
-    return `Event ${eventNumber}: missing <descr>`
+  // Validate each required field
+  for (const field of requiredFields) {
+    if (!getInnerText(event, field.tag)) {
+      return `Event ${eventNumber}: missing ${field.name}`
+    }
   }
 
   return ''

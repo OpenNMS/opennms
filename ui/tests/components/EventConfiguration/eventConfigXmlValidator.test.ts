@@ -482,14 +482,72 @@ describe('eventConfigXmlValidator', () => {
       expect(errors).toBe('Event 5: missing <uei>')
     })
 
-    // New tests for edge cases in validateEventElement (though 100% covered, add for robustness)
     it('handles null textContent gracefully', () => {
       // Simulate missing querySelector return
       const mockEvent = {
-        querySelector: () => null
+        querySelector: () => null,
+        getElementsByTagName: () => []
       } as unknown as Element
       const errors = validateEventElement(mockEvent as Element, 1)
       expect(errors).toBe('Event 1: missing <uei>')
+    })
+
+    it('rejects event missing descr', () => {
+      const xml =
+        '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity></event>'
+      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
+      const errors = validateEventElement(mockElement, 6)
+      expect(errors).toBe('Event 6: missing <descr>')
+    })
+
+    it('validates event with nested elements using getElementsByTagName fallback', () => {
+      // Create an element where querySelector might fail but getElementsByTagName works
+      const xml =
+        '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity><descr>Description</descr></event>'
+      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
+
+      // Mock querySelector to return null, forcing getElementsByTagName usage
+      const originalQuerySelector = mockElement.querySelector
+      mockElement.querySelector = vi.fn().mockReturnValue(null)
+
+      const errors = validateEventElement(mockElement, 7)
+      expect(errors).toBe('')
+
+      // Restore original method
+      mockElement.querySelector = originalQuerySelector
+    })
+
+    it('handles element with null element parameter', () => {
+      const errors = validateEventElement(null as any, 8)
+      expect(errors).toBe('Event 8: missing <uei>')
+    })
+
+    it('handles element with undefined textContent', () => {
+      const mockEvent = {
+        querySelector: () => ({
+          textContent: undefined
+        }),
+        getElementsByTagName: () => []
+      } as unknown as Element
+      const errors = validateEventElement(mockEvent, 9)
+      expect(errors).toBe('Event 9: missing <uei>')
+    })
+
+    it('validates all fields are checked in sequence', () => {
+      // Missing only descr should fail on descr check
+      const xml =
+        '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity></event>'
+      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
+      const errors = validateEventElement(mockElement, 10)
+      expect(errors).toBe('Event 10: missing <descr>')
+    })
+
+    it('handles elements with only whitespace in descr', () => {
+      const xml =
+        '<event><uei>uei.opennms.org/test</uei><event-label>Test</event-label><severity>Minor</severity><descr>   \n\t   </descr></event>'
+      mockElement = parser.parseFromString(xml, 'application/xml').querySelector('event')!
+      const errors = validateEventElement(mockElement, 11)
+      expect(errors).toBe('Event 11: missing <descr>')
     })
   })
 
