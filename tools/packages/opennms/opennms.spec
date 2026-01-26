@@ -1032,6 +1032,12 @@ fi
 %post plugin-collector-vtdxml-handler
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-vtdxml-handler"
 
+# Clean up obsolete THIRD-PARTY.txt left behind from older installations
+%post
+if [ -f /opt/opennms/etc/THIRD-PARTY.txt ]; then
+    rm -f /opt/opennms/etc/THIRD-PARTY.txt
+fi
+
 %changelog
 * Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>
 - Initial RPM package: see https://github.com/OpenNMS/opennms/commits/develop/tools/packages/opennms/opennms.spec for the full commit log.
