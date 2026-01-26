@@ -46,22 +46,37 @@
         "oci-horizon": {
             "extends": [
                 "tarball-assembly-only",
-                "horizon-image-single-arch",
                 "horizon-image-single-arch-linux-amd64"
+            ]
+        },
+        "oci-horizon-arm64": {
+            "extends": [
+                "tarball-assembly-only",
+                "horizon-image-single-arch"
             ]
         },
         "oci-minion": {
             "extends": [
                 "tarball-assembly-only",
-                "minion-image-single-arch",
                 "minion-image-single-arch-linux-amd64"
+            ]
+        },
+        "oci-minion-arm64": {
+            "extends": [
+                "tarball-assembly-only",
+                "minion-image-single-arch"
             ]
         },
         "oci-sentinel": {
             "extends": [
                 "tarball-assembly-only",
-                "sentinel-image-single-arch",
                 "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "oci-sentinel-arm64": {
+            "extends": [
+                "tarball-assembly-only",
+                "sentinel-image-single-arch"
             ]
         },
         "build-publish": {
@@ -387,7 +402,6 @@
                 "build-debian",
                 "build-rpm",
                 "horizon-image-single-arch",
-                "minion-image-single-arch",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -443,7 +457,6 @@
                 "build-debian",
                 "build-rpm",
                 "horizon-image-single-arch",
-                "minion-image-single-arch",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -461,7 +474,6 @@
                 "build-debian",
                 "build-rpm",
                 "horizon-image-single-arch",
-                "minion-image-single-arch",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -487,7 +499,6 @@
                 "build-debian",
                 "build-rpm",
                 "horizon-image-single-arch",
-                "minion-image-single-arch",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
