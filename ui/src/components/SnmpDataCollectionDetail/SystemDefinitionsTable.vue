@@ -56,44 +56,75 @@
           name="data-table"
           tag="tbody"
         >
-          <tr
+          <template
             v-for="systemDefinition in store.systemDefinitions"
             :key="systemDefinition.id"
           >
-            <td>{{ systemDefinition.name }}</td>
-            <td>{{ systemDefinition.sysoid }}</td>
-            <td>{{ systemDefinition.sysoidMask }}</td>
-            <td>{{ systemDefinition.enabled ? 'Enabled' : 'Disabled' }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit"
-                  :title="`Edit ${systemDefinition.name}`"
-                  data-test="edit-button"
-                  @click="onSystemDefEditClicked(systemDefinition)"
-                >
-                  <FeatherIcon :icon="Edit" />
-                </FeatherButton>
-                <FeatherDropdown>
-                  <template v-slot:trigger="{ attrs, on }">
-                    <FeatherButton
-                      link
-                      href="#"
-                      v-bind="attrs"
-                      v-on="on"
-                      :icon="`More Options`"
-                    >
-                      <FeatherIcon :icon="MenuIcon" />
-                    </FeatherButton>
-                  </template>
-                  <FeatherDropdownItem data-test="change-status-button">
-                    {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem data-test="delete-definition-button"> Delete Definition </FeatherDropdownItem>
-                </FeatherDropdown>
-              </div>
-            </td>
-          </tr>
+            <tr>
+              <td>{{ systemDefinition.name }}</td>
+              <td>{{ systemDefinition.sysoid }}</td>
+              <td>{{ systemDefinition.sysoidMask }}</td>
+              <td>{{ systemDefinition.enabled ? 'Enabled' : 'Disabled' }}</td>
+              <td>
+                <div class="action-container">
+                  <FeatherButton
+                    icon="Edit"
+                    :title="`Edit ${systemDefinition.name}`"
+                    data-test="edit-button"
+                    @click="onSystemDefEditClicked(systemDefinition)"
+                  >
+                    <FeatherIcon :icon="Edit" />
+                  </FeatherButton>
+                  <FeatherDropdown>
+                    <template v-slot:trigger="{ attrs, on }">
+                      <FeatherButton
+                        link
+                        href="#"
+                        v-bind="attrs"
+                        v-on="on"
+                        :icon="`More Options`"
+                      >
+                        <FeatherIcon :icon="MenuIcon" />
+                      </FeatherButton>
+                    </template>
+                    <FeatherDropdownItem data-test="change-status-button">
+                      {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
+                    </FeatherDropdownItem>
+                    <FeatherDropdownItem data-test="delete-definition-button"> Delete Definition </FeatherDropdownItem>
+                  </FeatherDropdown>
+                  <FeatherButton
+                    primary
+                    :icon="`${expandedRows.includes(systemDefinition.id)
+                    ? 'Expand Less'
+                    : 'Expand More'
+                    }`"
+                    @click="toggleExpand(systemDefinition.id)"
+                  >
+                    <FeatherIcon
+                      :icon="ExpandLess"
+                      v-if="expandedRows.includes(systemDefinition.id)"
+                    />
+                    <FeatherIcon
+                      :icon="ExpandMore"
+                      v-else
+                    />
+                  </FeatherButton>
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-if="expandedRows.includes(systemDefinition.id)"
+              class="expanded-content"
+            >
+              <td :colspan="5">
+                <h6>Mib Group Names:</h6>
+                <p
+                  class="description"
+                  v-html="JSON.parse(systemDefinition.mibGroupNames).join(', ')"
+                ></p>
+              </td>
+            </tr>
+          </template>
         </TransitionGroup>
       </table>
     </div>
@@ -108,6 +139,8 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
+import ExpandLess from '@featherds/icon/navigation/ExpandLess'
+import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
@@ -116,6 +149,7 @@ import { debounce } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
 
 const store = useSnmpDataCollectionDetailStore()
+const expandedRows = ref<number[]>([])
 
 const columns = computed(() => [
   { id: 'name', label: 'Source' },
@@ -134,6 +168,15 @@ const sort = reactive({
 const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
   // Placeholder for future action when a system definition is clicked
   console.log('System Definition clicked:', defs)
+}
+
+const toggleExpand = (id: number) => {
+  const index = expandedRows.value.indexOf(id)
+  if (index === -1) {
+    expandedRows.value.push(id)
+  } else {
+    expandedRows.value.splice(index, 1)
+  }
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
@@ -234,6 +277,11 @@ onMounted(async () => {
               }
             }
           }
+        }
+
+        .description {
+          margin: 0;
+          white-space: normal;
         }
       }
     }
