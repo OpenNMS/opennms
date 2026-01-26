@@ -193,9 +193,11 @@ print()
 
 # Epoch file will force a build to run
 if ".circleci/epoch" in changed_files:
-    print("`epoch` file detected")
     if "trigger-coverage" not in mappings: 
+        print("`epoch` file detected")
         mappings["trigger-build"] = True
+    else:
+        print("`epoch` file detected, but will be ignored as we are running coverage build")
     print()
 
 
