@@ -76,62 +76,68 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     }
 
     @Override
-    public PageResponse<SnmpCollectionSource> filterDataCollectionSource(final String filter, final String sortBy, final  String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionSource> filterDataCollectionSource(
+            final String filter,
+            final String sortBy,
+            final String order,
+            Integer totalRecords,
+            Integer offset,
+            Integer limit) {
 
-        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        int resultCount = totalRecords != null ? totalRecords : 0;
         List<SnmpCollectionSource> dataCollectionSourceList = Collections.emptyList();
+
         try {
             List<Object> queryParams = new ArrayList<>();
             List<String> conditions = new ArrayList<>();
 
             // Add filter conditions dynamically
-            if (filter != null && !filter.trim().isEmpty()) {
-                String escapedFilter = "%" + DaoUtil.escapeLike(filter.trim().toLowerCase()) + "%";
+            if (filter != null && !filter.isBlank()) {
+                String escapedFilter =
+                        "%" + DaoUtil.escapeLike(filter.trim().toLowerCase()) + "%";
+
                 conditions.add("lower(s.name) like ? escape '\\'");
-                queryParams.add(escapedFilter);
-
                 conditions.add("lower(s.vendor) like ? escape '\\'");
-                queryParams.add(escapedFilter);
-
                 conditions.add("lower(s.description) like ? escape '\\'");
+
                 queryParams.add(escapedFilter);
-
-
+                queryParams.add(escapedFilter);
+                queryParams.add(escapedFilter);
             }
 
-            String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+            String whereClause = conditions.isEmpty()
+                    ? ""
+                    : " where " + String.join(" OR ", conditions);
 
             // COUNT QUERY: get total matching records if not already provided
             if (resultCount == 0) {
-                String countQuery = "select count(s.id) from SnmpCollectionSource s " + whereClause;
+                String countQuery =
+                        "select count(s.id) from SnmpCollectionSource s" + whereClause;
                 resultCount = super.queryInt(countQuery, queryParams.toArray());
             }
 
             // DATA QUERY: fetch paginated results
             if (resultCount > 0) {
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description");
 
-                String orderBy = "";
-                String sortField = sortBy;
+                String sortField =
+                        (sortBy != null && !sortBy.isBlank() && allowedSortFields.contains(sortBy)) ? sortBy : "createdTime";
 
                 String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
 
-                Set<String> allowedSortFields = Set.of("name", "vendor", "description");
+                String orderBy = " order by " + sortField + " " + sortOrder;
 
-                if (!allowedSortFields.contains(sortBy)) {
-                    sortField = "createdTime";
-                }
+                String dataQuery = "from SnmpCollectionSource s" + whereClause + orderBy;
 
-                orderBy = " order by " + sortField + " " + sortOrder;
-
-                String dataQuery = "from SnmpCollectionSource s " + whereClause + orderBy;
                 dataCollectionSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
             }
 
-        } catch (Exception e ) {
-            LOG.debug("Error filterDataCollectionSource method while fetching the records {} ", e);
+        } catch (Exception e) {
+            LOG.error("Error in filterDataCollectionSource while fetching records",e);
         }
 
-        return new PageResponse<>(resultCount,dataCollectionSourceList);
+        return new PageResponse<>(resultCount, dataCollectionSourceList);
     }
-
 }
+
+
