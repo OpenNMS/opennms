@@ -1,7 +1,7 @@
 jobs:
   build-debian:
     executor: build-executor
-    resource_class: large
+    resource_class: medium+
     steps:
       - prep-package-build
       - run:
