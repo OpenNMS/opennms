@@ -152,7 +152,7 @@ const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 
 const columns = computed(() => [
-  { id: 'name', label: 'Source' },
+  { id: 'name', label: 'Name' },
   { id: 'sysoid', label: 'SysOID' },
   { id: 'sysoidMask', label: 'SysOID Mask' },
   { id: 'enabled', label: 'Status' }
