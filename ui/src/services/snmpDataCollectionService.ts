@@ -1,11 +1,13 @@
 import {
   mapDataCollectionSourceFromServer,
+  mapSnmpCollectionSystemDefResponseFromServer,
   mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
   mapSnmpDataCollectionSourceResponseFromServer,
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
   SnmpCollectionSource,
+  SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
   SnmpDataCollectionSourceUploadResponse
@@ -91,6 +93,37 @@ export const getSnmpDataCollectionSourceById = async (id: number): Promise<SnmpC
     }
   } catch (error) {
     console.error(`Error fetching SNMP data collection source with ID ${id}:`, error)
+    throw error
+  }
+}
+
+export const getSnmpDataCollectionSystemDefinitions = async (
+  collectionSourceId: number,
+  offset: number,
+  limit: number,
+  systemDefsFilter: string,
+  sortBy: string,
+  order: string
+): Promise<SnmpCollectionSystemDefResponse> => {
+  const endpoint = `/datacollectionconf/filter/${collectionSourceId}/systemdefs`
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        systemDefsFilter,
+        sortBy,
+        order
+      }
+    })
+
+    if (response.status === 200) {
+      return mapSnmpCollectionSystemDefResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection system definitions:', error)
     throw error
   }
 }
