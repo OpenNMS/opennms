@@ -23,6 +23,7 @@ package org.opennms.features.events.sink.dispatcher;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.events.sink.module.EventSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -55,11 +56,11 @@ public class EventDispatcherImpl implements EventForwarder {
         try {
             getAsyncDispatcher().send(event).whenComplete((t, ex) -> {
                 if (ex != null) {
-                    LOG.error("Failed to sent Event with uei = {}", event.getUei(), ex);
+                    LOG.error("Failed to send Event with uei = {}, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid(), ex);
                 }
             });
         } catch (Exception e) {
-            LOG.error("Failed to sent Event with uei = {}", event.getUei(), e);
+            LOG.error("Failed to send Event with uei = {}, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
         }
     }
 

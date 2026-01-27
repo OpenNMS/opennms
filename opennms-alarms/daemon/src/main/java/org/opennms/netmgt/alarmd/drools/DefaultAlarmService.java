@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -62,10 +63,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void clearAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
+        LOG.info("Clearing alarm with id: {} with current severity: {} at: {}, instanceId={}, alarmId={}",
+            alarm.getId(), alarm.getSeverity(), now, SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping clear, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
@@ -78,10 +81,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void deleteAlarm(OnmsAlarm alarm) {
-        LOG.info("Deleting alarm with id: {} with severity: {}", alarm.getId(), alarm.getSeverity());
+        LOG.info("Deleting alarm with id: {} with severity: {}, instanceId={}, alarmId={}",
+            alarm.getId(), alarm.getSeverity(), SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping delete.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping delete, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         // If alarm was in Situation, calculate notifications for the Situation
@@ -102,10 +107,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void unclearAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), now);
+        LOG.info("Un-clearing alarm with id: {} at: {}, instanceId={}, alarmId={}",
+            alarm.getId(), now, SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping un-clear.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping un-clear, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
@@ -118,10 +125,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void escalateAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Escalating alarm with id: {} at: {}", alarm.getId(), now);
+        LOG.info("Escalating alarm with id: {} at: {}, instanceId={}, alarmId={}",
+            alarm.getId(), now, SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping escalate.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping escalate, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
@@ -134,10 +143,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void acknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
+        LOG.info("Acknowledging alarm with id: {} @ {}, instanceId={}, alarmId={}",
+            alarm.getId(), now, SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping ack, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
@@ -148,10 +159,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void unacknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        LOG.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
+        LOG.info("Un-Acknowledging alarm with id: {} @ {}, instanceId={}, alarmId={}",
+            alarm.getId(), now, SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping un-ack, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
@@ -162,10 +175,12 @@ public class DefaultAlarmService implements AlarmService {
     @Override
     @Transactional
     public void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now) {
-        LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getId());
+        LOG.info("Updating severity {} on alarm with id: {}, instanceId={}, alarmId={}",
+            severity, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. Skipping severity update.", alarm);
+            LOG.warn("Alarm disappeared: {}. Skipping severity update, instanceId={}, alarmId={}",
+                alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();

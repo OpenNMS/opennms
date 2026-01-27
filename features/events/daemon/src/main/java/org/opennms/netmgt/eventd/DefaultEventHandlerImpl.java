@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
@@ -132,7 +133,9 @@ public final class DefaultEventHandlerImpl implements InitializingBean, EventHan
                 }
 
                 if (LOG.isInfoEnabled() && getLogEventSummaries()) {
-                    LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}", event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(), getPrettyParms(event));
+                    LOG.info("Received event: UEI={}, src={}, iface={}, svc={}, time={}, parms={}, instanceId={}, eventId={}",
+                        event.getUei(), event.getSource(), event.getInterface(), event.getService(), event.getTime(),
+                        getPrettyParms(event), SystemInfoUtils.getInstanceId(), event.getDbid());
                 }
 
                 if (LOG.isDebugEnabled()) {
