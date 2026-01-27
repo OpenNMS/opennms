@@ -11,6 +11,7 @@
     "oci-arm64": false,
     "oci-all": false,
     "build-publish": false,
+    "release-build": false,
     "trivy-scan": false,
     "trivy-analyze": false,
     "experimental": false

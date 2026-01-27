@@ -159,6 +159,8 @@ for e in main_yml_content:
                     workflow_name = "build-publish"
                 elif build_components["build-deploy"]:
                     workflow_name = "build-deploy"
+                elif build_components["release-build"]:
+                    workflow_name = "release-build"
                 elif build_components["experimental"]:
                     workflow_name = "experimental"
                 else:
@@ -239,6 +241,11 @@ for e in main_yml_content:
             if build_components["build-deploy"]:
                 workflow_path = print_add(
                     workflow_path, level, filters_enabled, "build-deploy"
+                )
+
+            if build_components["release-build"]:
+                workflow_path = print_add(
+                    workflow_path, level, filters_enabled, "release-build"
                 )
 
             if build_components["docs"]:

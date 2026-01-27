@@ -99,6 +99,17 @@
                 "debs",
                 "oci",
                 "smoke",
+                "merge"
+            ]
+        },
+        "release-builds":
+        {
+            "extends": [
+                "build",
+                "rpms",
+                "debs",
+                "oci",
+                "smoke",
                 "merge",
                 "publish",
                 "publish-maven"

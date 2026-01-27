@@ -185,6 +185,7 @@ else:
         "oci-arm64": False,
         "oci-all": False,
         "build-publish": False,
+        "release-build": False,
         "trivy-scan": False,
         "trivy-analyze": False,
         "experimental": False,
@@ -239,9 +240,20 @@ def should_proceed(item, What_to_build, combine_build_element):
     return is_single_item or is_two_items or is_three_items
 
 if "trigger-build" in mappings:
-    if (
+    if "master" in branch_name and "merge-foundation/" not in branch_name:
+        for item in What_to_build:
+            if should_proceed(item, What_to_build, combine_build_element):
+              del mappings["trigger-build"]
+              What_to_build.clear()
+              del combine_build_element
+              break
+            else:
+              print("Executing workflow: release-build")
+              build_mappings["release-build"] = mappings["trigger-build"]
+              print()
+              break
+    elif (
         "develop" in branch_name
-        or "master" in branch_name
         or "release-" in branch_name
         or "foundation-" in branch_name
     ) and "merge-foundation/" not in branch_name:
