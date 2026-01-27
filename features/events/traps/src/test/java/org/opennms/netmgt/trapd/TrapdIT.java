@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -108,6 +107,11 @@ public class TrapdIT {
         }
 
         @Override
+        public Map<String, Credentials> getAllCredentials() {
+            return this.credentials;
+        }
+
+        @Override
         public void setCredentials(String alias, Credentials credentials) {
             this.credentials.put(alias, credentials);
         }
@@ -135,7 +139,6 @@ public class TrapdIT {
 
     @Before
     public void setUp() throws Exception {
-
         List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
                 new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
         // Load into DB
@@ -144,7 +147,6 @@ public class TrapdIT {
         m_mockEventIpcManager.setSynchronous(true);
         m_trapd.setSecureCredentialsVault(new MockSecureCredentialsVault());
         m_trapd.onStart();
-
     }
 
     @After
@@ -298,71 +300,65 @@ public class TrapdIT {
         await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
 
-
-@Test
+    @Test
     public void testSnmpV2cTrapWithAddressFromVarbind2() throws Exception {
         // Enable the feature (disabled by default)
-    m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
-    m_trapdConfig.getConfig().setBatchSize(2);
-    m_trapdConfig.getConfig().setBatchInterval(1000);
-    int interval = m_trapdConfig.getConfig().getBatchInterval();
-    int batchSize = m_trapdConfig.getConfig().getBatchSize();
-    System.out.printf("Batch size = %d interval = %d", batchSize, interval);
+        m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
+        m_trapdConfig.getConfig().setBatchSize(2);
+        m_trapdConfig.getConfig().setBatchInterval(1000);
+        int interval = m_trapdConfig.getConfig().getBatchInterval();
+        int batchSize = m_trapdConfig.getConfig().getBatchSize();
+        System.out.printf("Batch size = %d interval = %d", batchSize, interval);
 
+        InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
 
+        SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+        SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        // The varbind with the address
+        pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.1")));
 
-    InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
+        EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder.setInterface(remoteAddr);
+        defaultTrapBuilder.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
 
-    SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
-    SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
-    SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
-    pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-    pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
-    pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
-    // The varbind with the address
-    pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.1")));
+        EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        // The address in the newSuspect event should match the one specified in the varbind
+        newSuspectBuilder.setInterface(remoteAddr);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-    EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
-    defaultTrapBuilder.setInterface(remoteAddr);
-    defaultTrapBuilder.setSnmpVersion("v2c");
-    m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+        InetAddress secondaryRemoteAddr = InetAddress.getByName("10.255.1.2");
 
-    EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
-    // The address in the newSuspect event should match the one specified in the varbind
-    newSuspectBuilder.setInterface(remoteAddr);
-    m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+        SnmpObjId secondaryEnterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+        SnmpObjId secondaryTrapOID = SnmpObjId.get(secondaryEnterpriseId, new SnmpInstId(1));
+        SnmpTrapBuilder secondaryPdu = SnmpUtils.getV2TrapBuilder();
+        secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(secondaryTrapOID));
+        secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(secondaryEnterpriseId));
 
+        // The varbind with the address
+        secondaryPdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.2")));
 
+        EventBuilder secondaryTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        secondaryTrapBuilder.setInterface(secondaryRemoteAddr);
+        secondaryTrapBuilder.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(secondaryTrapBuilder.getEvent());
 
+        EventBuilder secondarySuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
 
-    InetAddress secondaryRemoteAddr = InetAddress.getByName("10.255.1.2");
+        // The address in the secondarySuspect event should match the one specified in the varbind
+        secondarySuspectBuilder.setInterface(secondaryRemoteAddr);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(secondarySuspectBuilder.getEvent());
+        pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+        secondaryPdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
-    SnmpObjId secondaryEnterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
-    SnmpObjId secondaryTrapOID = SnmpObjId.get(secondaryEnterpriseId, new SnmpInstId(1));
-    SnmpTrapBuilder secondaryPdu = SnmpUtils.getV2TrapBuilder();
-    secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
-    secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(secondaryTrapOID));
-    secondaryPdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(secondaryEnterpriseId));
-// The varbind with the address
-    secondaryPdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.2")));
-
-    EventBuilder secondaryTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
-    secondaryTrapBuilder.setInterface(secondaryRemoteAddr);
-    secondaryTrapBuilder.setSnmpVersion("v2c");
-    m_mockEventIpcManager.getEventAnticipator().anticipateEvent(secondaryTrapBuilder.getEvent());
-
-    EventBuilder secondarySuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
-// The address in the secondarySuspect event should match the one specified in the varbind
-    secondarySuspectBuilder.setInterface(secondaryRemoteAddr);
-    m_mockEventIpcManager.getEventAnticipator().anticipateEvent(secondarySuspectBuilder.getEvent());
-    pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
-    secondaryPdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
-
-
-    await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(4));
-
-
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(4));
     }
+
     @Test
     public void testSnmpV3TrapNoAuthNoPriv() {
         testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.noAuthNoPriv);
@@ -407,6 +403,7 @@ public class TrapdIT {
 
         SnmpTrapHelper snmpTrapHelper = new SnmpTrapHelper();
         EventForwarder snmpv3EventForwarder;
+
         if (trapOrInform == TrapOrInform.TRAP) {
             snmpv3EventForwarder = new SnmpV3TrapEventForwarder(
                     localhost,
@@ -458,5 +455,4 @@ public class TrapdIT {
         // Wait until we received the expected events
         await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
-
 }

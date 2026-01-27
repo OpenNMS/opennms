@@ -51,6 +51,7 @@ public class ScvValidateCommand implements Action {
     @Override
     public Object execute() throws Exception {
         final Credentials credentials = secureCredentialsVault.getCredentials(alias);
+
         if (credentials == null) {
             System.out.println("No credentials found for Alias '" + alias + "'.");
         } else if (credentials.getUsername() != null && credentials.getPassword() != null &&
@@ -61,6 +62,7 @@ public class ScvValidateCommand implements Action {
         } else {
             System.out.printf("No valid credentials found for Alias %s, Username: %s and Password: ****** \n", alias, username);
         }
+
         return null;
     }
 }
