@@ -159,4 +159,21 @@ public class SnmpCollectionMibGroupDto {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public static SnmpCollectionMibGroup toEntity(SnmpCollectionMibGroup entity, final SnmpCollectionMibGroupDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        entity.setId(dto.getId());
+
+        entity.setName(dto.getName());
+        entity.setIfType(dto.getIfType());
+        entity.setMibGroupNames(dto.getMibGroupNames());
+        entity.setMibObjects(dto.getMibObjects());
+        entity.setMibObjProperties(dto.getMibObjProperties());
+        entity.setEnabled(dto.getEnabled());
+
+        return entity;
+    }
 }

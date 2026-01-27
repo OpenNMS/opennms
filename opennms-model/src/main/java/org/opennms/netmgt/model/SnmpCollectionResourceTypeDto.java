@@ -183,4 +183,20 @@ public class SnmpCollectionResourceTypeDto {
                 ))
                 .collect(Collectors.toList());
     }
+    public static SnmpCollectionResourceType toEntity(SnmpCollectionResourceType entity, final SnmpCollectionResourceTypeDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        entity.setName(dto.getName());
+        entity.setLabel(dto.getLabel());
+        entity.setResourceLabel(dto.getResourceLabel());
+        entity.setPersistenceSelectorStrategy(dto.getPersistenceSelectorStrategy());
+        entity.setPersistenceSelectorParams(dto.getPersistenceSelectorParams());
+        entity.setStorageStrategyParams(dto.getStorageStrategyParams());
+        entity.setStorageStrategy(dto.getStorageStrategy());
+        entity.setEnabled(dto.getEnabled());
+
+        return entity;
+    }
 }

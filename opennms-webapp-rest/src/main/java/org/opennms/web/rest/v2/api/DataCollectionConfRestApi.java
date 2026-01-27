@@ -28,6 +28,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
+import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
+import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -236,5 +239,55 @@ public interface DataCollectionConfRestApi {
     })
     Response getSnmpCollectionSourceNamesAndIds(@Context SecurityContext securityContext) throws Exception;
 
+
+    @POST
+    @Path("/collectsources/{collectionSourceId}/mibgroups")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new Mib Group to an SnmpCollectionSources",
+            description = "Creates and adds a new Mib Group under the given SnmpCollectionSources by its ID.",
+            operationId = "addMibGroupToSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "MibGroup created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found")})
+    Response addMibGroupToSnmpCollectionSources(@PathParam("collectionSourceId") final Integer collectionSourceId,
+             final  SnmpCollectionMibGroupDto request, @Context SecurityContext securityContext) throws Exception;
+
+
+    @POST
+    @Path("/collectsources/{collectionSourceId}/resourcetypes")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new Resource Type to an SnmpCollectionSources",
+            description = "Creates and adds a new Resource Type under the given SnmpCollectionSources by its ID.",
+            operationId = "addResourceTypeToSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "ResourceType created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found")})
+    Response addResourceTypeToSnmpCollectionSources(
+            @PathParam("collectionSourceId") final Integer collectionSourceId,
+            final  SnmpCollectionResourceTypeDto request,
+            @Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("/collectsources/{collectionSourceId}/systemdefs")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new System Definition to an SnmpCollectionSources",
+            description = "Creates and adds a new System Definition under the given SnmpCollectionSources by its ID.",
+            operationId = "addSystemDefToSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "SystemDef created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources not found")})
+    Response addSystemDefToSnmpCollectionSources(
+            @PathParam("collectionSourceId") final Integer collectionSourceId,
+            final SnmpCollectionSystemDefDto request,
+            @Context SecurityContext securityContext) throws Exception;
 
 }

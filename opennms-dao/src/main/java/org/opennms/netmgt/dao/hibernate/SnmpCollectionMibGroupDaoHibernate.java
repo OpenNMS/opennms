@@ -179,4 +179,9 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
        return new PageResponse<>(resultCount, mibGroupList);
     }
 
+    @Override
+    public SnmpCollectionMibGroup findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
+        return findUnique("from SnmpCollectionMibGroup g where g.collectionSource.id = ? AND  g.id = ? ", snmpCollectionSourceId, id);
+    }
+
 }
