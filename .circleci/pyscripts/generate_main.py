@@ -322,7 +322,7 @@ os.remove(os.path.join(working_directory.name, ".circleci", "main", "@main.yml")
 os.remove(os.path.join(working_directory.name, ".circleci", "main", "executors.yml"))
 os.remove(os.path.join(working_directory.name, ".circleci", "main", "parameters.yml"))
 
-# move the .circleci with updated main.yml file into tmp directory.
+# move the .circleci with updated main.yml file into tmp directory
 shutil.move(os.path.join(working_directory.name, ".circleci"), "/tmp/")
 
 for folder in component_folders:
