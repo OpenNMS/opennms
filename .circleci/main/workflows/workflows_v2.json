@@ -43,6 +43,19 @@
                 "oci-sentinel"
             ]
         },
+        "oci-arm64": {
+            "extends": [
+                "oci-horizon-arm64",
+                "oci-minion-arm64",
+                "oci-sentinel-arm64"
+            ]
+        },
+        "oci-all": {
+            "extends": [
+                "oci",
+                "oci-arm64"
+            ]
+        },
         "oci-horizon": {
             "extends": [
                 "tarball-assembly-only",

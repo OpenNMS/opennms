@@ -8,6 +8,8 @@
     "rpms": false,
     "debs": false,
     "oci": false,
+    "oci-arm64": false,
+    "oci-all": false,
     "build-publish": false,
     "trivy-scan": false,
     "trivy-analyze": false,

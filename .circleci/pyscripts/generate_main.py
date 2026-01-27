@@ -219,6 +219,12 @@ for e in main_yml_content:
             if build_components["oci"]:
                 workflow_path = print_add(workflow_path, level, filters_enabled, "oci")
 
+            if build_components["oci-arm64"]:
+                workflow_path = print_add(workflow_path, level, filters_enabled, "oci-arm64")
+
+            if build_components["oci-all"]:
+                workflow_path = print_add(workflow_path, level, filters_enabled, "oci-all")
+                
             if build_components["trivy-scan"]:
                 workflow_path = print_add(workflow_path, level, filters_enabled, "trivy-scan")
             

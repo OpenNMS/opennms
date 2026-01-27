@@ -182,6 +182,8 @@ else:
         "rpms": False,
         "debs": False,
         "oci": False,
+        "oci-arm64": False,
+        "oci-all": False,
         "build-publish": False,
         "trivy-scan": False,
         "trivy-analyze": False,
@@ -340,6 +342,10 @@ for keyword in git_keywords:
             build_mappings["debs"] = True
         if "oci" in keyword or "oci" in What_to_build:
             build_mappings["oci"] = True
+        if "oci-arm64" in keyword or "oci-arm64" in What_to_build:
+            build_mappings["oci-arm64"] = True
+        if "oci-all" in keyword or "oci-all" in What_to_build:
+            build_mappings["oci-all"] = True
         if "build-publish" in keyword:
             build_mappings["build-publish"] = True
         if "trivy-scan" in keyword:
@@ -351,8 +357,15 @@ for keyword in git_keywords:
 
 if "smoke" in git_keywords or "smoke_tests" in What_to_build:
     build_mappings["smoke"] = True
+
 if "oci" in git_keywords:
     build_mappings["oci"] = True
+
+if "oci-arm64" in git_keywords:
+    build_mappings["oci-arm64"] = True
+
+if "oci-all" in git_keywords:
+    build_mappings["oci-all"] = True
 
 if "rpms" in git_keywords:
     build_mappings["rpms"] = True
