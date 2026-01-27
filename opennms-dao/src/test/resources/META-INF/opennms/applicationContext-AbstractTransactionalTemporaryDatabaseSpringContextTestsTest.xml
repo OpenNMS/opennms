@@ -8,5 +8,5 @@
 			<ref bean="dataSource" />
 		</property>
   </bean>
-	
+
 </beans>
