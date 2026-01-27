@@ -49,6 +49,10 @@ export interface SnmpCollectionDetailState {
   systemDefsPagination: Pagination
   systemDefsSorting: Sorting
   systemDefsSearchTerm: string
+  resourceTypes: SnmpCollectionResourceType[]
+  resourceTypesPagination: Pagination
+  resourceTypesSorting: Sorting
+  resourceTypesSearchTerm: string
 }
 
 export interface SnmpDataCollectionSourceResponse {
@@ -78,3 +82,23 @@ export interface SnmpCollectionSystemDefResponse {
   systemDefinitions: SnmpCollectionSystemDef[]
   totalRecords: number
 }
+
+export interface SnmpCollectionResourceType {
+  id: number
+  name: string
+  label: string
+  resourceLabel: string
+  persistenceSelectorStrategy: string
+  persistenceSelectorParams: string
+  storageStrategy: string
+  storageStrategyParams: string
+  enabled: boolean
+  collectionSourceId: number
+  collectionSourceName: string
+}
+
+export interface SnmpCollectionResourceTypeResponse {
+  resourceTypes: SnmpCollectionResourceType[]
+  totalRecords: number
+}
+

@@ -24,7 +24,7 @@
             primary
             icon="Refresh"
             data-test="refresh-button"
-            @click="store.fetchSystemDefinitions()"
+            @click="store.resetSystemDefinitionsFilters"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>

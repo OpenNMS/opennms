@@ -1,4 +1,5 @@
 import {
+  getSnmpDataCollectionResourceTypes,
   getSnmpDataCollectionSourceById,
   getSnmpDataCollectionSystemDefinitions
 } from '@/services/snmpDataCollectionService'
@@ -21,7 +22,14 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       sortOrder: 'desc',
       sortKey: 'createdTime'
     },
-    systemDefsSearchTerm: ''
+    systemDefsSearchTerm: '',
+    resourceTypes: [],
+    resourceTypesPagination: { ...defaultPagination },
+    resourceTypesSorting: {
+      sortOrder: 'desc',
+      sortKey: 'createdTime'
+    },
+    resourceTypesSearchTerm: ''
   }),
   actions: {
     setSelectedCollectionSource(source: SnmpCollectionSource | null) {
@@ -68,6 +76,58 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.systemDefsSorting.sortKey = sortKey
       this.systemDefsSorting.sortOrder = sortOrder
       await this.fetchSystemDefinitions()
+    },
+    async resetSystemDefinitionsFilters() {
+      this.systemDefinitions = []
+      this.systemDefsPagination = { ...defaultPagination }
+      this.systemDefsSorting = {
+        sortOrder: 'desc',
+        sortKey: 'createdTime'
+      }
+      this.systemDefsSearchTerm = ''
+      await this.fetchSystemDefinitions()
+    },
+    async fetchResourceTypes() {
+      if (this.selectedCollectionSource) {
+        this.isLoading = true
+        try {
+          const response = await getSnmpDataCollectionResourceTypes(
+            this.selectedCollectionSource.id,
+            (this.resourceTypesPagination.page - 1) * this.resourceTypesPagination.pageSize,
+            this.resourceTypesPagination.pageSize,
+            this.resourceTypesSearchTerm,
+            this.resourceTypesSorting.sortKey,
+            this.resourceTypesSorting.sortOrder
+          )
+          // Assuming the API returns resource types in a similar manner
+          this.resourceTypes = response.resourceTypes
+          this.resourceTypesPagination.total = response.totalRecords
+          this.isLoading = false
+        } catch (error) {
+          console.error('Error fetching SNMP collection resource types:', error)
+          this.isLoading = false
+        }
+      }
+    },
+    async onChangeResourceTypesSearchTerm(value: string) {
+      this.resourceTypesSearchTerm = value
+      this.resourceTypesPagination.page = 1
+      await this.fetchResourceTypes()
+    },
+    async onResourceTypesSortChange(sortKey: string, sortOrder: string) {
+      this.resourceTypesSorting.sortKey = sortKey
+      this.resourceTypesSorting.sortOrder = sortOrder
+      await this.fetchResourceTypes()
+    },
+    async resetResourceTypesFilters() {
+      this.resourceTypes = []
+      this.resourceTypesPagination = { ...defaultPagination }
+      this.resourceTypesSorting = {
+        sortOrder: 'desc',
+        sortKey: 'createdTime'
+      }
+      this.resourceTypesSearchTerm = ''
+      await this.fetchResourceTypes()
     }
   }
 })
