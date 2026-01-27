@@ -47,9 +47,7 @@ class libgit:
 
     def extract_keywords_from_last_commit(self) -> list:
         last_commit = self.get_last_commit()
-        # If we want to support subcategory with such as build:linux you can use r"!([\w-]+)(:[\w-]+)?"
-        # for now we will keep it simple
-        keywords = re.findall(r"!([\w-]+)", last_commit)
+        keywords = re.findall(r"!([\w-]+)(:[\w-]+)?", last_commit)
         keywords_dict = {}
 
         for e in keywords:
