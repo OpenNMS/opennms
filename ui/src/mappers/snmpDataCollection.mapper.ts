@@ -1,5 +1,7 @@
 import {
   SnmpCollectionSource,
+  SnmpCollectionSystemDef,
+  SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
   SnmpDataCollectionSourceUploadResponse
@@ -48,3 +50,24 @@ export const mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer = (
   }))
 }
 
+export const mapSnmpCollectionSystemDefFromServer = (defs: any): SnmpCollectionSystemDef => {
+  return {
+    id: defs.id,
+    name: defs.name,
+    sysoid: defs.sysoid,
+    sysoidMask: defs.sysoidMask,
+    ipAddresses: defs.ipAddresses,
+    ipAddressMasks: defs.ipAddressMasks,
+    mibGroupNames: defs.mibGroupNames,
+    enabled: defs.enabled,
+    collectionSourceId: defs.collectionSourceId,
+    collectionSourceName: defs.collectionSourceName
+  }
+}
+
+export const mapSnmpCollectionSystemDefResponseFromServer = (defs: any): SnmpCollectionSystemDefResponse => {
+  return {
+    systemDefinitions: defs.dataCollectionSystemDefsList.map((def: any) => mapSnmpCollectionSystemDefFromServer(def)),
+    totalRecords: defs.totalRecords
+  }
+}

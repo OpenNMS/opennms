@@ -1,3 +1,5 @@
+import { Pagination } from '.'
+
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
   selectedSource: SnmpCollectionSource | null
@@ -41,7 +43,12 @@ export interface UploadSnmpDataCollectionFileType {
 }
 
 export interface SnmpCollectionDetailState {
+  isLoading: boolean
   selectedCollectionSource: SnmpCollectionSource | null
+  systemDefinitions: SnmpCollectionSystemDef[]
+  systemDefsPagination: Pagination
+  systemDefsSorting: Sorting
+  systemDefsSearchTerm: string
 }
 
 export interface SnmpDataCollectionSourceResponse {
@@ -54,3 +61,20 @@ export interface SnmpDataCollectionSourceNamesAndIds {
   name: string
 }
 
+export interface SnmpCollectionSystemDef {
+  id: number
+  name: string
+  sysoid: string
+  sysoidMask: string
+  ipAddresses: string
+  ipAddressMasks: string
+  mibGroupNames: string
+  enabled: boolean
+  collectionSourceId: number
+  collectionSourceName: string
+}
+
+export interface SnmpCollectionSystemDefResponse {
+  systemDefinitions: SnmpCollectionSystemDef[]
+  totalRecords: number
+}
