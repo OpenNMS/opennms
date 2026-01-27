@@ -21,13 +21,18 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.netmgt.dao.DaoUtil;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<SnmpCollectionMibGroup, Integer> implements SnmpCollectionMibGroupDao {
 
@@ -43,9 +48,9 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
-    public SnmpCollectionMibGroup findByNameAndSource(String name, Integer sourceId) {
+    public SnmpCollectionMibGroup findByNameAndSource(String name, Integer snmpCollectionSourceId) {
         List<SnmpCollectionMibGroup> list = find(
-                "from SnmpCollectionMibGroup s where s.name = ? and s.collectionSource.id = ?", name, sourceId);
+                "from SnmpCollectionMibGroup s where s.name = ? and s.collectionSource.id = ?", name, snmpCollectionSourceId);
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -55,12 +60,123 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
-    public List<SnmpCollectionMibGroup> findAllBySource(Integer sourceId) {
-        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?", sourceId);
+    public List<SnmpCollectionMibGroup> findAllBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ?", snmpCollectionSourceId);
     }
 
     @Override
     public void deleteAll(final Collection<SnmpCollectionMibGroup> list) {
         super.deleteAll(list);
     }
+
+    @Override
+    public void saveAll(Collection<SnmpCollectionMibGroup> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+
+        int batchSize = 50;
+        int i = 0;
+        for (SnmpCollectionMibGroup mibGroup : list) {
+            getHibernateTemplate().saveOrUpdate(mibGroup);
+            i++;
+            if (i % batchSize == 0) {
+                getHibernateTemplate().flush();
+                getHibernateTemplate().clear();
+            }
+
+        }
+        getHibernateTemplate().flush();
+        getHibernateTemplate().clear();
+    }
+
+    @Override
+    public void deleteBySourceId(Integer snmpCollectionSourceId) {
+        getHibernateTemplate().bulkUpdate("delete from SnmpCollectionMibGroup g where g.collectionSource.id = ?", snmpCollectionSourceId);
+    }
+
+    @Override
+    public List<SnmpCollectionMibGroup> filterMibGroupConf(String name, String ifType, String vendor, String collectionSourceName, int offset, int limit) {
+        List<Object> queryParamList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from SnmpCollectionMibGroup g where 1=1 ");
+        if (name != null && !name.trim().isEmpty()) {
+            queryBuilder.append(" and lower(g.name) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (ifType != null && !ifType.trim().isEmpty()) {
+            queryBuilder.append(" and lower(g.ifType) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(ifType.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (vendor != null && !vendor.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
+        }
+
+        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
+            queryBuilder.append(" and lower(g.collectionSource.name) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
+        }
+
+        queryBuilder.append(" order by g.createdTime desc ");
+
+        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    @Override
+    public PageResponse<SnmpCollectionMibGroup> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        List<Object> queryParams = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        String whereClause = "where g.collectionSource.id = ? ";
+        queryParams.add(snmpCollectionSourceId);
+
+        // Add filter conditions dynamically
+        if (mibGroupFilter != null && !mibGroupFilter.trim().isEmpty()) {
+            String escapedFilter = "%" + DaoUtil.escapeLike(mibGroupFilter.trim().toLowerCase()) + "%";
+            conditions.add("lower(g.name) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+            conditions.add("lower(g.ifType) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+        }
+
+        whereClause = whereClause + (conditions.isEmpty() ? "" : " AND ( " + String.join(" OR ", conditions)+ ")");
+
+        // COUNT QUERY: get total matching records if not already provided
+        if (resultCount == 0) {
+            String countQuery = "select count(g.id) from SnmpCollectionMibGroup g " + whereClause;
+            resultCount = super.queryInt(countQuery, queryParams.toArray());
+        }
+
+        // DATA QUERY: fetch paginated results if resultCount > 0
+        List<SnmpCollectionMibGroup> mibGroupList = Collections.emptyList();
+        if (resultCount > 0) {
+
+            String orderBy;
+            String sortField = sortBy;
+
+            String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+            Set<String> allowedSortFields = Set.of("name", "ifType");
+
+            if (sortBy == null || !allowedSortFields.contains(sortBy)) {
+                sortField = "name";
+            }
+
+            orderBy = " order by g." + sortField + " " + sortOrder;
+
+
+
+            String dataQuery = "from SnmpCollectionMibGroup g " + whereClause + orderBy;
+            mibGroupList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+        }
+
+       return new PageResponse<>(resultCount, mibGroupList);
+    }
+
 }

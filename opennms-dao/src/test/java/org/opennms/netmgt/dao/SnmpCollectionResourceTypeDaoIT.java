@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -187,5 +188,87 @@ public class SnmpCollectionResourceTypeDaoIT {
         assertNotNull(all);
         assertFalse(all.isEmpty());
         assertTrue(all.stream().anyMatch(rt -> "TestResourceType".equals(rt.getName())));
+    }
+
+    @Test
+    @Transactional
+    public void testFindByDataCollectionGroupId_ReturnsValidRecords() {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.source.name");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Group Source for SNMP");
+        snmpSourceDao.saveOrUpdate(src);
+
+        // Resource type 1, matches filter "cpu"
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        resourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        resourceTypeDao.saveOrUpdate(rt2);
+        resourceTypeDao.flush();
+
+
+        // 1. Exact filter by name, ascending by name
+        PageResponse<SnmpCollectionResourceType> result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
+
+        // 2. Partial filter ("resource"), ascending by name
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        // asc: cpu-resource comes first
+
+        // 3. Partial filter, descending by name
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        // desc: disk-resource comes first
+
+        // 4. Filter by label substring, ascending
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
+
+        // 5. Filter by label substring (case-insensitive), descending
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
+
+        // 6. Pagination: only second returned
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals(1, result.getRecords().size());
+        assertEquals("disk-resource", (result.getRecords().get(0)).getName());
+
+        // 7. Filter with no match
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
+        assertEquals(0, result.getTotalRecords());
+        assertTrue(result.getRecords().isEmpty());
+
+        // 8. Null filter (should return all for group), ascending by label
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), null, "label", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals(2, result.getRecords().size());
+        assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
+        assertEquals("disk-resource", (result.getRecords().get(1)).getName());
+
+        // 9. Invalid sortBy field defaults to name ascending
+        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
+        assertEquals("disk-resource", (result.getRecords().get(1)).getName());
     }
 }

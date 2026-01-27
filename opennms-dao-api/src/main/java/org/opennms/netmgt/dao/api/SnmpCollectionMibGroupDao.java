@@ -21,26 +21,37 @@
  */
 package org.opennms.netmgt.dao.api;
 
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGroup, Integer> {
     SnmpCollectionMibGroup get(Integer id);
 
-    SnmpCollectionMibGroup findByNameAndSource(String name, Integer sourceId);
+    SnmpCollectionMibGroup findByNameAndSource(String name, Integer snmpCollectionSourceId);
 
     List<SnmpCollectionMibGroup> findAll();
 
     List<SnmpCollectionMibGroup> findAllEnabled();
 
-    List<SnmpCollectionMibGroup> findAllBySource(Integer sourceId);
+    List<SnmpCollectionMibGroup> findAllBySource(Integer snmpCollectionSourceId);
 
     void saveOrUpdate(SnmpCollectionMibGroup mibGroup);
 
     void delete(SnmpCollectionMibGroup mibGroup);
 
     void deleteAll(final Collection<SnmpCollectionMibGroup> list);
+
+    void saveAll(Collection<SnmpCollectionMibGroup> list);
+
+    void deleteBySourceId(Integer snmpCollectionSourceId);
+
+    List<SnmpCollectionMibGroup> filterMibGroupConf(String name,String ifType, String vendor, String collectionSourceName, int offset, int limit);
+
+    PageResponse<SnmpCollectionMibGroup> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+
 
 }

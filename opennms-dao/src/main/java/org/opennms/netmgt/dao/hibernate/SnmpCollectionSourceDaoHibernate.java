@@ -21,13 +21,20 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import org.opennms.netmgt.dao.DaoUtil;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpCollectionSource, Integer> implements SnmpCollectionSourceDao {
 
@@ -57,4 +64,80 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
     public void deleteAll(final Collection<SnmpCollectionSource> list) {
         super.deleteAll(list);
     }
+
+    @Override
+    public Map<Integer, String> getIdToNameMap() {
+        return findObjects(Object[].class,
+                "select s.id, s.name from SnmpCollectionSource s").stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> (String) row[1]
+                ));
+    }
+
+    @Override
+    public PageResponse<SnmpCollectionSource> filterDataCollectionSource(
+            final String filter,
+            final String sortBy,
+            final String order,
+            Integer totalRecords,
+            Integer offset,
+            Integer limit) {
+
+        int resultCount = totalRecords != null ? totalRecords : 0;
+        List<SnmpCollectionSource> dataCollectionSourceList = Collections.emptyList();
+
+        try {
+            List<Object> queryParams = new ArrayList<>();
+            List<String> conditions = new ArrayList<>();
+
+            // Add filter conditions dynamically
+            if (filter != null && !filter.isBlank()) {
+                String escapedFilter =
+                        "%" + DaoUtil.escapeLike(filter.trim().toLowerCase()) + "%";
+
+                conditions.add("lower(s.name) like ? escape '\\'");
+                conditions.add("lower(s.vendor) like ? escape '\\'");
+                conditions.add("lower(s.description) like ? escape '\\'");
+
+                queryParams.add(escapedFilter);
+                queryParams.add(escapedFilter);
+                queryParams.add(escapedFilter);
+            }
+
+            String whereClause = conditions.isEmpty()
+                    ? ""
+                    : " where " + String.join(" OR ", conditions);
+
+            // COUNT QUERY: get total matching records if not already provided
+            if (resultCount == 0) {
+                String countQuery =
+                        "select count(s.id) from SnmpCollectionSource s" + whereClause;
+                resultCount = super.queryInt(countQuery, queryParams.toArray());
+            }
+
+            // DATA QUERY: fetch paginated results
+            if (resultCount > 0) {
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description");
+
+                String sortField =
+                        (sortBy != null && !sortBy.isBlank() && allowedSortFields.contains(sortBy)) ? sortBy : "createdTime";
+
+                String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+                String orderBy = " order by " + sortField + " " + sortOrder;
+
+                String dataQuery = "from SnmpCollectionSource s" + whereClause + orderBy;
+
+                dataCollectionSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            }
+
+        } catch (Exception e) {
+            LOG.error("Error in filterDataCollectionSource while fetching records",e);
+        }
+
+        return new PageResponse<>(resultCount, dataCollectionSourceList);
+    }
 }
+
+

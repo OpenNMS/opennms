@@ -292,6 +292,11 @@ const router = createRouter({
       component: () => import('@/containers/SnmpDataCollection.vue')
     },
     {
+      path: '/snmp-data-collection/import',
+      name: 'SNMP Data Collection Import',
+      component: () => import('@/containers/SnmpDataCollectionSourceImport.vue')
+    },
+    {
       path: '/snmp-data-collection/:id',
       name: 'SNMP Data Collection Detail',
       component: () => import('@/containers/SnmpDataCollectionDetail.vue')

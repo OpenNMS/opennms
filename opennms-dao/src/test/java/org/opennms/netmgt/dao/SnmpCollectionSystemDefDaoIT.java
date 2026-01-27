@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
+import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -175,6 +176,81 @@ public class SnmpCollectionSystemDefDaoIT {
         List<SnmpCollectionSystemDef> enabledList = systemDefDao.findAllEnabled();
         assertTrue(enabledList.stream().allMatch(SnmpCollectionSystemDef::getEnabled));
         assertFalse(enabledList.stream().anyMatch(def -> "DisabledSystemDef".equals(def.getName())));
+    }
+
+    @Test
+    @Transactional
+    public void testFindByDataCollectionGroupId_ReturnsValidSystemDefs() {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("core-snmp");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Core data source for SNMP collection");
+        snmpSourceDao.saveOrUpdate(src);
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        SnmpCollectionSystemDef def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(src);
+        def1.setName("LinuxSystem"); // <--- Name matches test expectation
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        systemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        SnmpCollectionSystemDef def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(src);
+        def2.setName("WindowsSystem"); // <--- Name matches test expectation
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        systemDefDao.saveOrUpdate(def2);
+
+        systemDefDao.flush();
+
+        // 1. Exact filter by name ASC
+        PageResponse<SnmpCollectionSystemDef> result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
+
+        // 2. Partial filter ("System"), ascending by name
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+
+        // 3. Partial filter, descending by name
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "DESC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+
+        // 4. Case-insensitive filter
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
+        assertEquals(1, result.getTotalRecords());
+
+        // 5. Pagination - only second returned
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 1, 1);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals(1, result.getRecords().size());
+        assertEquals("WindowsSystem", (result.getRecords().get(0)).getName());
+
+        // 6. Filter with no match
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
+        assertEquals(0, result.getTotalRecords());
+        assertTrue(result.getRecords().isEmpty());
+
+        // 7. Null filter - should return all for group, ascending
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "name", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
+        assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
+
+        // 8. Invalid sortBy field defaults to name ascending
+        result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        assertEquals(2, result.getTotalRecords());
+        assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
+        assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
     }
 
     @Test
