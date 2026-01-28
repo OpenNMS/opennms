@@ -75,7 +75,6 @@ import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-nullEventForwarder.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-dao.xml",
 		"classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
