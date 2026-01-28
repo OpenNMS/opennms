@@ -37,6 +37,7 @@ public interface ScvRestService {
 
     /**
      * Get Credentials for an alias.
+     * If the alias is '_all', get the credentials for all aliases.
      *
      * @param alias alias for the credentials.
      */
@@ -51,6 +52,7 @@ public interface ScvRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     Response getAliases();
+
 
     /**
      * Add Credentials to Scv

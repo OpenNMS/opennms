@@ -30,6 +30,8 @@ import java.util.Set;
 public class Credentials implements Serializable {
     static final long serialVersionUID = -1241293670886186178L;
 
+    public static final String GET_ALL_ALIAS = "_all";
+
     private final String m_username;
     private final String m_password;
     private final Map<String, String> m_attributes;
@@ -41,6 +43,7 @@ public class Credentials implements Serializable {
     public Credentials(String username, String password, Map<String, String> attributes) {
         m_username = username;
         m_password = password;
+
         if (attributes == null) {
             m_attributes = Collections.unmodifiableMap(Collections.emptyMap());
         } else {
@@ -75,13 +78,20 @@ public class Credentials implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+
+        if (getClass() != obj.getClass()) {
             return false;
+        }
+
         Credentials other = (Credentials) obj;
+
         return Objects.equals(this.m_attributes, other.m_attributes) &&
                 Objects.equals(this.m_password, other.m_password) &&
                 Objects.equals(this.m_username, other.m_username);
