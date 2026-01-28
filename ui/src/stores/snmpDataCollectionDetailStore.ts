@@ -67,6 +67,16 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
         }
       }
     },
+    async onSystemDefsPageChange(page: number) {
+      this.systemDefsPagination.page = page
+      await this.fetchSystemDefinitions()
+    },
+    async onSystemDefsPageSizeChange(pageSize: number) {
+      this.systemDefsPagination.pageSize = pageSize
+      this.systemDefsPagination.page = 1
+      await this.fetchSystemDefinitions()
+    },
+
     async onChangeSystemDefsSearchTerm(value: string) {
       this.systemDefsSearchTerm = value
       this.systemDefsPagination.page = 1
@@ -108,6 +118,15 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
           this.isLoading = false
         }
       }
+    },
+    async onResourceTypesPageChange(page: number) {
+      this.resourceTypesPagination.page = page
+      await this.fetchResourceTypes()
+    },
+    async onResourceTypesPageSizeChange(pageSize: number) {
+      this.resourceTypesPagination.pageSize = pageSize
+      this.resourceTypesPagination.page = 1
+      await this.fetchResourceTypes()
     },
     async onChangeResourceTypesSearchTerm(value: string) {
       this.resourceTypesSearchTerm = value

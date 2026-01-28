@@ -127,6 +127,20 @@
           </template>
         </TransitionGroup>
       </table>
+      <div
+        class="alerts-pagination"
+        v-if="store.systemDefinitions.length"
+      >
+        <FeatherPagination
+          :modelValue="store.systemDefsPagination.page"
+          :pageSize="store.systemDefsPagination.pageSize"
+          :total="store.systemDefsPagination.total"
+          :pageSizes="[10, 20, 30]"
+          @update:modelValue="store.onSystemDefsPageChange"
+          @update:pageSize="store.onSystemDefsPageSizeChange"
+          data-test="FeatherPagination"
+        />
+      </div>
     </div>
   </TableCard>
 </template>
@@ -144,6 +158,7 @@ import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
@@ -253,11 +268,6 @@ onMounted(async () => {
         white-space: nowrap;
         box-shadow: none;
         border-bottom: 1px solid var(variables.$border-on-surface);
-
-        div {
-          border-radius: 5px;
-          padding: 0px 5px 0px 5px;
-        }
 
         .action-container {
           display: flex;
