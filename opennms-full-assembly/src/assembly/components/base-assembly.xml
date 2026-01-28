@@ -88,11 +88,9 @@
     </fileSet>
     <!-- Add the COPYING license file -->
     <fileSet>
-      <directory>${session.executionRootDirectory}</directory>
+      <directory>${project.parent.basedir}</directory>
       <filtered>false</filtered>
       <outputDirectory>licenses</outputDirectory>
-      <!-- Are we hitting the default excludes? -->
-      <useDefaultExcludes>false</useDefaultExcludes>
       <includes>
         <include>COPYING</include>
       </includes>
