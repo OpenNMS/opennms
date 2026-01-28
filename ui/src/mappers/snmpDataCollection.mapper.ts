@@ -1,6 +1,8 @@
 import {
   SnmpCollectionMibGroup,
   SnmpCollectionMibGroupResponse,
+  SnmpCollectionResourceType,
+  SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDef,
   SnmpCollectionSystemDefResponse,
@@ -92,6 +94,33 @@ export const mapSnmpCollectionMibGroupResponseFromServer = (groups: any): SnmpCo
   return {
     mibGroups: groups.dataCollectionMibGroupList.map((group: any) => mapSnmpCollectionMibGroupFromServer(group)),
     totalRecords: groups.totalRecords
+  }
+}
+
+export const mapSnmpCollectionResourceTypeFromServer = (resourceType: any): SnmpCollectionResourceType => {
+  return {
+    id: resourceType.id,
+    name: resourceType.name,
+    label: resourceType.label,
+    resourceLabel: resourceType.resourceLabel,
+    persistenceSelectorStrategy: resourceType.persistenceSelectorStrategy,
+    persistenceSelectorParams: resourceType.persistenceSelectorParams,
+    storageStrategy: resourceType.storageStrategy,
+    storageStrategyParams: resourceType.storageStrategyParams,
+    enabled: resourceType.enabled,
+    collectionSourceId: resourceType.collectionSourceId,
+    collectionSourceName: resourceType.collectionSourceName
+  }
+}
+
+export const mapSnmpCollectionResourceTypeResponseFromServer = (
+  resourceTypes: any
+): SnmpCollectionResourceTypeResponse => {
+  return {
+    resourceTypes: resourceTypes.dataCollectionResourceTypeList.map((resType: any) =>
+      mapSnmpCollectionResourceTypeFromServer(resType)
+    ),
+    totalRecords: resourceTypes.totalRecords
   }
 }
 
