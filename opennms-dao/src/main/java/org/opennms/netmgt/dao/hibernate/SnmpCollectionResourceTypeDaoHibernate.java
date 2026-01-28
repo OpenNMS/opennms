@@ -183,7 +183,7 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
 
     @Override
     public SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
-        return findUnique("from SnmpCollectionResourceType t where t.collectionSource.id = ? AND  t.id = ? ", snmpCollectionSourceId, id);
+        return findUnique("from SnmpCollectionResourceType t where t.collectionSource.id = ? AND t.id = ? ", snmpCollectionSourceId, id);
     }
 
 }

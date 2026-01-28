@@ -176,7 +176,7 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
 
     @Override
     public SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
-        return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ? AND  d.id = ? ", snmpCollectionSourceId, id);
+        return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ? AND d.id = ? ", snmpCollectionSourceId, id);
     }
 
 }

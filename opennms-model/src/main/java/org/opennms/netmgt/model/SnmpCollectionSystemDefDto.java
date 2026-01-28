@@ -181,7 +181,6 @@ public class SnmpCollectionSystemDefDto {
         entity.setSysoidMask(dto.getSysoidMask());
         entity.setIpAddresses(dto.getIpAddresses());
         entity.setIpAddressMasks(dto.getIpAddressMasks());
-        entity.setIpAddressMasks(dto.getIpAddressMasks());
         entity.setMibGroupNames(dto.getMibGroupNames());
         entity.setEnabled(dto.getEnabled());
 

@@ -173,7 +173,7 @@ public class DataCollectionConfPersistenceService {
         final var snmpCollectionResourceTypeEntity = snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId,id);
         final var entity = SnmpCollectionResourceTypeDto.toEntity(snmpCollectionResourceTypeEntity,request);
 
-         snmpCollectionResourceTypeDao.saveOrUpdate(entity);
+        snmpCollectionResourceTypeDao.saveOrUpdate(entity);
 
     }
 
@@ -184,7 +184,7 @@ public class DataCollectionConfPersistenceService {
         final var snmpCollectionSystemDefEntity = snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
         final var entity = SnmpCollectionSystemDefDto.toEntity(snmpCollectionSystemDefEntity,request);
 
-         snmpCollectionSystemDefDao.saveOrUpdate(entity);
+        snmpCollectionSystemDefDao.saveOrUpdate(entity);
 
     }
 

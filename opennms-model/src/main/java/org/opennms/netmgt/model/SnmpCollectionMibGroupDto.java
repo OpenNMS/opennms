@@ -164,9 +164,6 @@ public class SnmpCollectionMibGroupDto {
         if (dto == null) {
             return null;
         }
-
-        entity.setId(dto.getId());
-
         entity.setName(dto.getName());
         entity.setIfType(dto.getIfType());
         entity.setMibGroupNames(dto.getMibGroupNames());

@@ -377,7 +377,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.ok().entity("MibGroup updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("MibGroup were not found: " + ex.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("MibGroup was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
@@ -393,7 +393,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.ok().entity("ResourceType updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("ResourceType were not found: " + ex.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("ResourceType was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
@@ -409,7 +409,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.ok().entity("SystemDef updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND).entity("SystemDef were not found: " + ex.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("SystemDef was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
