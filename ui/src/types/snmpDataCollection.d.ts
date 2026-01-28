@@ -49,6 +49,10 @@ export interface SnmpCollectionDetailState {
   systemDefsPagination: Pagination
   systemDefsSorting: Sorting
   systemDefsSearchTerm: string
+  mibGroups: SnmpCollectionMibGroup[]
+  mibGroupsPagination: Pagination
+  mibGroupsSorting: Sorting
+  mibGroupsSearchTerm: string
 }
 
 export interface SnmpDataCollectionSourceResponse {
@@ -78,3 +82,21 @@ export interface SnmpCollectionSystemDefResponse {
   systemDefinitions: SnmpCollectionSystemDef[]
   totalRecords: number
 }
+
+export interface SnmpCollectionMibGroup {
+  id: number
+  name: string
+  ifType: string
+  mibGroupNames: string
+  mibObjects: string
+  mibObjProperties: string
+  enabled: boolean
+  collectionSourceId: number
+  collectionSourceName: string
+}
+
+export interface SnmpCollectionMibGroupResponse {
+  mibGroups: SnmpCollectionMibGroup[]
+  totalRecords: number
+}
+
