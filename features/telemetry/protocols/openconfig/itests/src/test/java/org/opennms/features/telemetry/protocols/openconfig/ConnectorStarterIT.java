@@ -53,6 +53,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-nullEventForwarder.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-openconfig-components.xml",
         "classpath:/META-INF/opennms/applicationContext-daoEvents.xml",

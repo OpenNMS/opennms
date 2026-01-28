@@ -21,11 +21,9 @@
  */
 package org.opennms.netmgt.trapd;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.Before;
@@ -115,8 +113,12 @@ public class TrapdReloadDaemonIT implements InitializingBean {
         m_eventMgr.getEventAnticipator().reset();
 
         // Verify reload by changing port in configuration to 1163  and new-suspect-on-trap = false;
-        File opennmsHome = Paths.get("src", "test", "resources", "trapd").toFile();
-        System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
+        final TrapdConfigBean config = new TrapdConfigBean(m_trapdConfig);
+        config.setQueueSize(10);
+        config.setSnmpTrapPort(SNMP_PORT_AFTER_RELOAD);
+        config.setNewSuspectOnTrap(true);
+        m_trapdConfig.update(config);
+
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "trapd-reload-daemon-test");
         eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, m_trapd.getName());
         // Anticipate reload successful event
