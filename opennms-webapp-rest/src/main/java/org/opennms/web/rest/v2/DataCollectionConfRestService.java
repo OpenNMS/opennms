@@ -367,6 +367,54 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
     }
 
+    @Override
+    public Response updateMibGroupInSnmpCollectionSources(Integer collectionSourceId, Integer mibGroupId, SnmpCollectionMibGroupDto request, SecurityContext securityContext) throws Exception {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        try {
+            dataCollectionConfPersistenceService.updateMibGroup(mibGroupId,collectionSourceId,request);
+            return Response.ok().entity("MibGroup updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("MibGroup were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateResourceTypeInSnmpCollectionSources(Integer collectionSourceId, Integer resourceTypeId, SnmpCollectionResourceTypeDto request, SecurityContext securityContext) throws Exception {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        try {
+            dataCollectionConfPersistenceService.updateResourceType(resourceTypeId,collectionSourceId,request);
+            return Response.ok().entity("ResourceType updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("ResourceType were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response updateSystemDefInSnmpCollectionSources(Integer collectionSourceId, Integer systemDefId, SnmpCollectionSystemDefDto request, SecurityContext securityContext) throws Exception {
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        try {
+            dataCollectionConfPersistenceService.updateSystemDef(systemDefId,collectionSourceId,request);
+            return Response.ok().entity("SystemDef updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("SystemDef were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
     }

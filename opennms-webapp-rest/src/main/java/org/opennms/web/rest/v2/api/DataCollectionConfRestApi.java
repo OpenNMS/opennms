@@ -35,11 +35,12 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -289,5 +290,65 @@ public interface DataCollectionConfRestApi {
             @PathParam("collectionSourceId") final Integer collectionSourceId,
             final SnmpCollectionSystemDefDto request,
             @Context SecurityContext securityContext) throws Exception;
+
+    @PUT
+    @Path("/collectsources/{collectionSourceId}/mibgroups/{mibGroupId}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Update a Mib Group in an SnmpCollectionSources",
+            description = "Updates an existing Mib Group under the given SnmpCollectionSources by its ID.",
+            operationId = "updateMibGroupInSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "MibGroup updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or MibGroup not found")
+    })
+    Response updateMibGroupInSnmpCollectionSources(
+            @PathParam("collectionSourceId") Integer collectionSourceId,
+            @PathParam("mibGroupId") Integer mibGroupId,
+            SnmpCollectionMibGroupDto request,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @PUT
+    @Path("/collectsources/{collectionSourceId}/resourcetypes/{resourceTypeId}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Update a Resource Type in an SnmpCollectionSources",
+            description = "Updates an existing Resource Type under the given SnmpCollectionSources by its ID.",
+            operationId = "updateResourceTypeInSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "ResourceType updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or ResourceType not found")
+    })
+    Response updateResourceTypeInSnmpCollectionSources(
+            @PathParam("collectionSourceId") Integer collectionSourceId,
+            @PathParam("resourceTypeId") Integer resourceTypeId,
+            SnmpCollectionResourceTypeDto request,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @PUT
+    @Path("/collectsources/{collectionSourceId}/systemdefs/{systemDefId}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Update a System Definition in an SnmpCollectionSources",
+            description = "Updates an existing System Definition under the given SnmpCollectionSources by its ID.",
+            operationId = "updateSystemDefInSnmpCollectionSources")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SystemDef updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "SnmpCollectionSources or SystemDef not found")
+    })
+    Response updateSystemDefInSnmpCollectionSources(
+            @PathParam("collectionSourceId") Integer collectionSourceId,
+            @PathParam("systemDefId") Integer systemDefId,
+            SnmpCollectionSystemDefDto request,
+            @Context SecurityContext securityContext
+    ) throws Exception;
 
 }

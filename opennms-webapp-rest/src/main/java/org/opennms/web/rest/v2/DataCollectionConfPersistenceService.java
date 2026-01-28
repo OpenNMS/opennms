@@ -129,6 +129,7 @@ public class DataCollectionConfPersistenceService {
     public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
 
         final var entity = SnmpCollectionMibGroupDto.toEntity(new SnmpCollectionMibGroup(), request);
+        entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionMibGroupDao.save(entity);
     }
     @Transactional
@@ -160,7 +161,7 @@ public class DataCollectionConfPersistenceService {
             final Integer id, final Integer snmpCollectionSourceId,
             final SnmpCollectionMibGroupDto request) {
 
-        final var snmpCollectionMibGroupEntity = snmpCollectionMibGroupDao.findBySnmpSourceCollectionIdAndId(id,snmpCollectionSourceId);
+        final var snmpCollectionMibGroupEntity = snmpCollectionMibGroupDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
         final var entity = SnmpCollectionMibGroupDto.toEntity(snmpCollectionMibGroupEntity, request);
         snmpCollectionMibGroupDao.saveOrUpdate(entity);
     }
@@ -169,10 +170,10 @@ public class DataCollectionConfPersistenceService {
             final Integer id, final Integer snmpCollectionSourceId,
             final SnmpCollectionResourceTypeDto request) {
 
-        final var snmpCollectionResourceTypeEntity = snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(id,snmpCollectionSourceId);
+        final var snmpCollectionResourceTypeEntity = snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId,id);
         final var entity = SnmpCollectionResourceTypeDto.toEntity(snmpCollectionResourceTypeEntity,request);
 
-         snmpCollectionResourceTypeDao.save(entity);
+         snmpCollectionResourceTypeDao.saveOrUpdate(entity);
 
     }
 
@@ -180,10 +181,10 @@ public class DataCollectionConfPersistenceService {
     public void updateSystemDef(
             final Integer id, final Integer snmpCollectionSourceId,
             final SnmpCollectionSystemDefDto request) {
-        final var snmpCollectionSystemDefEntity = snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(id,snmpCollectionSourceId);
+        final var snmpCollectionSystemDefEntity = snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
         final var entity = SnmpCollectionSystemDefDto.toEntity(snmpCollectionSystemDefEntity,request);
 
-         snmpCollectionSystemDefDao.save(entity);
+         snmpCollectionSystemDefDao.saveOrUpdate(entity);
 
     }
 
