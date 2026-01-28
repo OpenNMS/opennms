@@ -123,13 +123,6 @@
                 <p class="description">{{ resourceType.storageStrategy }}</p>
                 <h6>Persistence Selector Strategy:</h6>
                 <p class="description">{{ resourceType.persistenceSelectorStrategy }}</p>
-                <h6 v-if="resourceType.storageStrategyParams && resourceType.storageStrategyParams !== '[]'"></h6>
-                <p
-                  class="description"
-                  v-if="resourceType.storageStrategyParams && resourceType.storageStrategyParams !== '[]'"
-                >
-                  {{ JSON.parse(resourceType.storageStrategyParams).join(', ') }}
-                </p>
               </td>
             </tr>
           </template>
