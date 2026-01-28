@@ -12,6 +12,14 @@
       <div class="action">
         <FeatherButton
           primary
+          icon="Refresh"
+          data-test="refresh-button"
+          @click="store.populateSnmpConfig"
+        >
+          <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
+        </FeatherButton>
+        <FeatherButton
+          primary
           @click="onCreateDefinition"
         >
           Create New Definition
@@ -32,16 +40,16 @@
 
 <script lang="ts" setup>
 import { FeatherButton } from '@featherds/button'
+import IconRefresh from '@featherds/icon/navigation/Refresh'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpConfigTabContainer from '@/components/SnmpConfiguration/SnmpConfigTabContainer.vue'
 import { useMenuStore } from '@/stores/menuStore'
-import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { useSnmpConfigStore, ActiveTabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { BreadCrumb } from '@/types'
 
 const store = useSnmpConfigStore()
 const menuStore = useMenuStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
-const router = useRouter()
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -51,17 +59,13 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const onCreateDefinition = () => {
-  router.push({
-    name: 'SNMP Config Definition',
-    params: { id: 'create' }
-  })
+  store.setDefinitionCreateEditMode(SnmpConfigEditMode.Create)
+  store.setActiveTab(ActiveTabs.Definitions)
 }
 
 const onCreateProfile = () => {
-  router.push({
-    name: 'SNMP Config Profile',
-    params: { id: 'create' }
-  })
+  store.setSnmpProfileEditMode(SnmpConfigEditMode.Create)
+  store.setActiveTab(ActiveTabs.Profiles)
 }
 
 onMounted(async () => {

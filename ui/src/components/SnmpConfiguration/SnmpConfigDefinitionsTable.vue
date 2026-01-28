@@ -5,30 +5,6 @@
         <!-- <span class="title"> SNMP Interfaces </span> -->
       </div>
       <div class="action-container">
-        <div class="search-container">
-          <!-- <FeatherInput
-            label="Search"
-            type="search"
-            data-test="search-input"
-            v-model.trim="store.sourcesSearchTerm"
-            :hint="'Search by Source, Vendor, UEI or Label'"
-            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
-          >
-            <template #pre>
-              <FeatherIcon :icon="Search" />
-            </template>
-          </FeatherInput> -->
-        </div>
-        <div class="refresh">
-          <FeatherButton
-            primary
-            icon="Refresh"
-            data-test="refresh-button"
-            @click="store.populateSnmpConfig"
-          >
-            <FeatherIcon :icon="IconRefresh"> </FeatherIcon>
-          </FeatherButton>
-        </div>
       </div>
     </div>
     <div class="container">
@@ -60,7 +36,7 @@
             v-for="(definition, index) of definitions"
             :key="`${definition.label ?? ''}-${definition.id}`"
           >
-            <td>{{ definition.location ?? 'Default' }}</td>
+            <td>{{ definition.location ?? DEFAULT_MONITORING_LOCATION }}</td>
             <td>{{ definition.rangeType }}</td>
             <td v-if="definition.ipAddresses.length > 1">
               <div v-for="ipAddr of definition.ipAddresses" :key="ipAddr">
@@ -91,21 +67,6 @@
           </tr>
         </TransitionGroup>
       </table>
-
-      <div
-        class="snmp-config-definitions-pagination"
-        v-if="definitions.length"
-      >
-        <!-- <FeatherPagination
-          :modelValue="store.sourcesPagination.page"
-          :pageSize="store.sourcesPagination.pageSize"
-          :total="store.sourcesPagination.total"
-          :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="store.onSourcePageChange"
-          @update:pageSize="store.onSourcePageSizeChange"
-          data-test="FeatherPagination"
-        /> -->
-      </div>
       <div v-if="!definitions.length">
         <EmptyList
           :content="emptyListContent"
@@ -123,15 +84,13 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpDefinition } from '@/types/snmpConfig'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
-import IconRefresh from '@featherds/icon/navigation/Refresh'
-import { CreateEditMode } from '@/types'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const store = useSnmpConfigStore()
-const router = useRouter()
 
 const emptyListContent = {
   msg: 'No results found.'
@@ -176,7 +135,6 @@ const getRangeType = (d: SnmpDefinition) => {
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
   const items: string[] = []
-
 
   // IP Range
   if (d.ranges?.length) {
@@ -235,13 +193,8 @@ const onDefinitionDelete = (definition?: SnmpDefinition) => {
 
 const onDefinitionEdit = (definition?: SnmpDefinition) => {
   if (definition) {
-    store.setCreateEditMode(CreateEditMode.Edit)
     store.setCurrentDefinition(definition)
-
-    router.push({
-      name: 'SNMP Config Definition'
-      // params: { id: String(index) }
-    })
+    store.setDefinitionCreateEditMode(SnmpConfigEditMode.Edit)
   }
 }
 </script>

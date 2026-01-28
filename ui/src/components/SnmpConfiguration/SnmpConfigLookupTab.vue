@@ -17,7 +17,8 @@
         <h3>SNMP Configuration Found</h3>
         <div class="large-spacer"></div>
         <div class="section-content">
-          <SnmpConfigDefinitionDetails
+          <SnmpConfigDetailsPanel
+            :displayIps="true"
             :isCreate="false"
             :firstIp="ipAddress"
             :config="lookupConfig"
@@ -37,7 +38,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import SnmpConfigLookupPanel from './SnmpConfigLookupPanel.vue'
-import SnmpConfigDefinitionDetails from './SnmpConfigDefinitionDetails.vue'
+import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()

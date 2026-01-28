@@ -21,33 +21,29 @@
 ///
 
 import { defineStore } from 'pinia'
+import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_MAX_REPETITIONS, DEFAULT_SNMP_MAX_REQUEST_SIZE, DEFAULT_SNMP_MAX_VARS_PER_PDU, DEFAULT_SNMP_PORT, DEFAULT_SNMP_RETRIES, DEFAULT_SNMP_TIMEOUT, DEFAULT_SNMP_TTL, DEFAULT_SNMP_V3_AUTH_PASSPHRASE, DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_LEVEL, DEFAULT_SNMP_V3_SECURITY_NAME, DEFAULT_SNMP_VERSION } from '@/lib/constants'
+import { getDefaultSnmpSecurityLevel, isValidSnmpSecurityLevel } from '@/lib/snmpValidator'
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
-import { deleteSnmpDefinition, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition } from '@/services/snmpConfigService'
-import { CreateEditMode, MonitoringLocation } from '@/types'
-import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpConfigInfoDto, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition, saveSnmpProfile } from '@/services/snmpConfigService'
+import { MonitoringLocation } from '@/types'
+import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpConfigInfoDto, SnmpDefinition, SnmpProfile, SnmpSaveProfileDto } from '@/types/snmpConfig'
 import { ValidationResult } from '@/types/validation'
-
-export const DEFAULT_SNMP_VERSION = 'v2c'
-export const DEFAULT_SNMP_TIMEOUT = 3000
-export const DEFAULT_SNMP_RETRIES = 1
-export const DEFAULT_SNMP_PORT = 161
-export const DEFAULT_SNMP_TTL = 1
-export const DEFAULT_SNMP_MAX_REQUEST_SIZE = 65535
-export const DEFAULT_SNMP_MAX_VARS_PER_PDU = 10
-export const DEFAULT_SNMP_MAX_REPETITIONS = 2
-export const DEFAULT_SNMP_READ_COMMUNITY_STRING = 'public'
-export const DEFAULT_SNMP_WRITE_COMMUNITY_STRING = 'private'
-export const DEFAULT_SNMP_V3_SECURITY_NAME = 'opennmsUser'
-export const DEFAULT_SNMP_V3_SECURITY_LEVEL = 1
-export const DEFAULT_SNMP_V3_SECURITY_LEVEL_STRING = 'noAuthNoPriv|authNoPriv|authPriv'
-export const DEFAULT_SNMP_V3_AUTH_PASSPHRASE = '0p3nNMSv3'
-export const DEFAULT_SNMP_V3_AUTH_PROTOCOL = 'MD5'
-export const DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE = '0p3nNMSv3'
-export const DEFAULT_SNMP_V3_PRIVACY_PROTOCOL = 'DES'
 
 export enum SnmpLookupEditMode {
   Lookup = 'lookup',
   Edit = 'edit'
+}
+
+export enum SnmpConfigEditMode {
+  Table = 'table',
+  Edit = 'edit',
+  Create = 'create'
+}
+
+export enum ActiveTabs {
+  Lookup = 0,
+  Definitions = 1,
+  Profiles = 2
 }
 
 export const getDefaultSnmpBaseConfiguration = () => {
@@ -57,7 +53,7 @@ export const getDefaultSnmpBaseConfiguration = () => {
     maxVarsPerPdu: DEFAULT_SNMP_MAX_VARS_PER_PDU,
     maxRepetitions: DEFAULT_SNMP_MAX_REPETITIONS,
     maxRequestSize: DEFAULT_SNMP_MAX_REQUEST_SIZE,
-    version: 'v2c',
+    version: DEFAULT_SNMP_VERSION,
     writeCommunity: '',
     readCommunity: '',
     timeout: DEFAULT_SNMP_TIMEOUT,
@@ -86,7 +82,7 @@ export const getDefaultSnmpDefinition = () => {
     ranges: [],
     specifics: [],
     ipMatches: [],
-    location: 'Default',
+    location: DEFAULT_MONITORING_LOCATION,
     profileLabel: ''
   } as SnmpDefinition
 }
@@ -140,7 +136,7 @@ export const getMockSnmpConfiguration = () => {
         specifics: [],
         /** Match Octets (as in IPLIKE) */
         ipMatches: [],
-        location: 'Default',
+        location: DEFAULT_MONITORING_LOCATION,
         profileLabel: ''
       }
     ],
@@ -171,10 +167,15 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   })
   const isLoading = ref(false)
   const activeTab = ref(0)
-  const createEditMode = ref(CreateEditMode.None)
+
   // current definition being editing or deleted
   const currentDefinition = ref<SnmpDefinition>()
-  const profileId = ref(0)
+  const definitionCreateEditMode = ref(SnmpConfigEditMode.Table)
+
+  // label of current profile being edited or deleted
+  const profileLabel = ref('')
+  const snmpProfileEditMode = ref<SnmpConfigEditMode>(SnmpConfigEditMode.Table)
+
   const monitoringLocations = ref<MonitoringLocation[]>([])
   const snmpLookupEditMode = ref<SnmpLookupEditMode>(SnmpLookupEditMode.Lookup)
 
@@ -182,16 +183,24 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     activeTab.value = tabIndex
   }
 
-  const setCreateEditMode = (mode: CreateEditMode) => {
-    createEditMode.value = mode
+  const setDefinitionCreateEditMode = (mode: SnmpConfigEditMode) => {
+    definitionCreateEditMode.value = mode
   }
 
   const setSnmpLookupEditMode = (mode: SnmpLookupEditMode) => {
     snmpLookupEditMode.value = mode
   }
 
+  const setSnmpProfileEditMode = (mode: SnmpConfigEditMode) => {
+    snmpProfileEditMode.value = mode
+  }
+
   const setCurrentDefinition = (definition: SnmpDefinition) => {
     currentDefinition.value = definition
+  }
+
+  const setProfileLabel = (label: string) => {
+    profileLabel.value = label
   }
 
   const populateSnmpConfig = async () => {
@@ -225,7 +234,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const saveDefinition = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string): Promise<ValidationResult> => {
     const dto = {
       readCommunity: config.readCommunity,
-      version: config.version,
+      version: config.version || DEFAULT_SNMP_VERSION,
       port: config.port,
       retries: config.retry,
       timeout: config.timeout,
@@ -261,23 +270,68 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     return resp
   }
 
+  const saveProfile = async (profile: SnmpProfile): Promise<ValidationResult> => {
+    const securityLevel = isValidSnmpSecurityLevel(profile.securityLevel) ? profile.securityLevel : getDefaultSnmpSecurityLevel()
+
+    const dto = {
+      label: profile.label,
+      filterExpression: profile.filterExpression,
+      readCommunity: profile.readCommunity ?? undefined,
+      writeCommunity: profile.writeCommunity ?? undefined,
+      version: profile.version || DEFAULT_SNMP_VERSION,
+      port: profile.port ?? undefined,
+      retries: profile.retry ?? undefined,
+      timeout: profile.timeout ?? undefined,
+      maxVarsPerPdu: profile.maxVarsPerPdu ?? undefined,
+      maxRepetitions: profile.maxRepetitions ?? undefined,
+      securityName: profile.securityName ?? undefined,
+      securityLevel,
+      authPassPhrase: profile.authPassphrase ?? undefined,
+      authProtocol: profile.authProtocol ?? undefined,
+      privPassPhrase: profile.privacyPassphrase ?? undefined,
+      privProtocol: profile.privacyProtocol ?? undefined,
+      engineId: profile.engineId ?? undefined,
+      contextEngineId: profile.contextEngineId ?? undefined,
+      contextName: profile.contextName ?? undefined,
+      enterpriseId: profile.enterpriseId ?? undefined,
+      maxRequestSize: profile.maxRequestSize ?? undefined,
+      proxyHost: profile.proxyHost ?? undefined,
+      ttl: profile.ttl ?? undefined
+    } as SnmpSaveProfileDto
+
+    const resp = await saveSnmpProfile(dto)
+
+    return resp
+  }
+
+  const deleteProfile = async (label: string): Promise<ValidationResult> => {
+    const resp = await deleteSnmpProfile(label)
+
+    return resp
+  }
+
   return {
     activeTab,
     config,
-    isLoading,
-    createEditMode,
     currentDefinition,
-    monitoringLocations,
-    profileId,
+    definitionCreateEditMode,
+    deleteProfile,
     fetchMonitoringLocations,
+    isLoading,
     lookupIpAddress,
+    monitoringLocations,
     populateSnmpConfig,
+    profileLabel,
     removeDefinition,
     saveDefinition,
-    setCreateEditMode,
-    setCurrentDefinition,
-    snmpLookupEditMode,
+    saveProfile,
     setActiveTab,
-    setSnmpLookupEditMode
+    setCurrentDefinition,
+    setDefinitionCreateEditMode,
+    setProfileLabel,
+    setSnmpLookupEditMode,
+    setSnmpProfileEditMode,
+    snmpLookupEditMode,
+    snmpProfileEditMode
   }
 })

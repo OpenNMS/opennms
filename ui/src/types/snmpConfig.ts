@@ -20,6 +20,13 @@
 /// License.
 ///
 
+export enum SnmpSecurityLevel {
+  None = 0,
+  NoAuthNoPriv = 1,
+  AuthNoPriv = 2,
+  AuthPriv = 3
+}
+
 export interface SnmpBaseConfiguration {
   // for UI use. For now it is the 0-based index into the array of definitions or profiles
   id?: number
@@ -146,6 +153,11 @@ export interface SnmpConfigInfoDto extends SnmpInfo {
   lastIpAddress?: string
 }
 
+export interface SnmpSaveProfileDto extends SnmpInfo {
+  label: string
+  filterExpression: string
+}
+
 export interface SnmpAgentConfig extends SnmpBaseConfiguration {
   /** The IP address that this config applies to. */
   address?: string
@@ -158,7 +170,7 @@ export interface SnmpAgentConfig extends SnmpBaseConfiguration {
   profileLabel?: string
 }
 
-export type SnmpDefinitionFormErrors = {
+export interface SnmpConfigFormErrors {
   snmpVersion?: string
   firstIpAddress?: string
   lastIpAddress?: string
@@ -173,7 +185,7 @@ export type SnmpDefinitionFormErrors = {
   maxRepetitions?: string
 }
 
-export type SnmpProfileFormErrors = {
+export interface SnmpProfileFormErrors extends SnmpConfigFormErrors {
   label?: string
   filterExpression?: string
 }

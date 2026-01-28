@@ -1,12 +1,10 @@
 <template>
-  <div
-    class="main-content"
-  >
+  <div class="main-content">
     <div class="header">
       <div>
         <FeatherBackButton
           data-test="back-button"
-          @click="handleCancel"
+          @click="onDetailsCancel"
         >
           Go Back
         </FeatherBackButton>
@@ -20,51 +18,57 @@
     <div class="spacer"></div>
     <div class="basic-info">
       <div class="section-content">
-        <label class="label">ID:</label>
-        <div class="spacer"></div>
-        <span class="label">{{ profileId }}</span>
-        <div class="spacer"></div>
- 
-        <label class="label">Label:</label>
-        <div class="spacer"></div>
-        <FeatherInput
-          label=""
-          data-test="snmp-profile-label"
-          :error="errors.label"
-          v-model.trim="label"
-          hint="Label"
-        >
-        </FeatherInput>
-        <div class="spacer"></div>
-        <label class="label">Filter Expression:</label>
-        <div class="spacer"></div>
-        <FeatherInput
-          label=""
-          data-test="snmp-profile-filter-expression"
-          :error="errors.filterExpression"
-          v-model.trim="filterExpression"
-          hint="Filter expression"
-        >
-        </FeatherInput>
-  
-        <div class="spacer"></div>
-        <div class="action-container">
-          <FeatherButton
-            secondary
-            @click="handleCancel"
-            data-test="cancel-snmp-profile-button"
-          >
-            Cancel
-          </FeatherButton>
-          <FeatherButton
-            primary
-            @click="handleSaveProfile"
-            data-test="save-profile-button"
-            :disabled="!isValid"
-          >
-            {{ isCreate ? 'Create Profile' : 'Save Changes' }}
-          </FeatherButton>
+        <div class="feather-row">
+          <div class="feather-col-12">
+            <span class="label">Label:</span>
+          </div>
         </div>
+        <div class="feather-row">
+          <div class="feather-col-12">
+            <FeatherInput
+              label=""
+              data-test="snmp-profile-label"
+              :error="errors.label"
+              v-model.trim="label"
+              hint="Label"
+            >
+            </FeatherInput>
+          </div>
+        </div>
+
+        <div class="feather-row">
+          <div class="feather-col-12">
+            <span class="label">Filter Expression:</span>
+          </div>
+        </div>
+        <div class="feather-row">
+          <div class="feather-col-12">
+            <FeatherInput
+              label=""
+              data-test="snmp-profile-filter-expression"
+              :error="errors.filterExpression"
+              v-model.trim="filterExpression"
+              hint="Filter expression"
+            >
+            </FeatherInput>
+          </div>
+        </div>
+
+        <div class="large-spacer"></div>
+
+        <SnmpConfigDetailsPanel
+          v-if="snmpAgentConfig"
+          :displayIps="false"
+          :suppressMonitoringLocation="true"
+          :isCreate="false"
+          :firstIp="firstIpAddress"
+          :lastIp="lastIpAddress"
+          :config="snmpAgentConfig"
+          :errors="errors"
+          @cancel="onDetailsCancel"
+          @validation-error="onDetailsValidationError"
+          @save="onDetailsSave"
+        />
       </div>
     </div>
   </div>
@@ -72,27 +76,37 @@
 
 <script setup lang="ts">
 import { FeatherBackButton } from '@featherds/back-button'
-import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
-import { SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
-import { validateProfile } from './snmpValidator'
-import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
 import useSnackbar from '@/composables/useSnackbar'
+import { useSnmpConfigStore, getDefaultSnmpProfile } from '@/stores/snmpConfigStore'
+import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpProfile, SnmpProfileFormErrors } from '@/types/snmpConfig'
+import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
+import { DEFAULT_SNMP_VERSION } from '@/lib/constants'
+import { validateProfile } from '@/lib/snmpValidator'
 
 const props = defineProps<{
   isCreate: boolean,
-  profileId: number
+  profileLabel: string
 }>()
- 
-const router = useRouter()
+
+const emit = defineEmits<{
+  (e: 'cancel'): void
+  (e: 'save', profile: SnmpProfile): void
+  (e: 'validation-error', formErrors: SnmpProfileFormErrors): void
+}>()
+  
 const store = useSnmpConfigStore()
 const snackbar = useSnackbar()
 const isValid = ref(false)
 const errors = ref<SnmpProfileFormErrors>({})
 
 const currentProfile = ref<SnmpProfile>()
+const snmpAgentConfig = ref<SnmpAgentConfig>()
 const label = ref('')
 const filterExpression = ref('')
+// fake ip addresses for the details panel
+const firstIpAddress = ref('')
+const lastIpAddress = ref('')
 
 const resetValues = () => {
   label.value = ''
@@ -100,57 +114,94 @@ const resetValues = () => {
 }
 
 const loadInitialValues = () => {
-  if (props.profileId < 0) {
+  if (props.isCreate || !props.profileLabel) {
     currentProfile.value = getDefaultSnmpProfile()
   } else {
-    // TODO: ensure profileId is in range
-    currentProfile.value = store.config.snmpProfiles?.snmpProfiles?.find(p => p.id === props.profileId) ?? getDefaultSnmpProfile()
+    currentProfile.value = store.config.snmpProfiles?.snmpProfiles?.find(p => p.label === props.profileLabel) ?? getDefaultSnmpProfile()
+  }
+
+  snmpAgentConfig.value = {
+    port: currentProfile.value.port,
+    retry: currentProfile.value.retry,
+    timeout: currentProfile.value.timeout,
+    readCommunity: currentProfile.value.readCommunity,
+    writeCommunity: currentProfile.value.writeCommunity,
+    proxyHost: currentProfile.value.proxyHost,
+    version: currentProfile.value.version || DEFAULT_SNMP_VERSION,
+    maxVarsPerPdu: currentProfile.value.maxVarsPerPdu,
+    maxRepetitions: currentProfile.value.maxRepetitions,
+    maxRequestSize: currentProfile.value.maxRequestSize,
+    securityName: currentProfile.value.securityName,
+    securityLevel: currentProfile.value.securityLevel,
+    authPassphrase: currentProfile.value.authPassphrase,
+    authProtocol: currentProfile.value.authProtocol,
+    privacyPassphrase: currentProfile.value.privacyPassphrase,
+    privacyProtocol: currentProfile.value.privacyProtocol,
+    engineId: currentProfile.value.engineId,
+    contextEngineId: currentProfile.value.contextEngineId,
+    contextName: currentProfile.value.contextName,
+    enterpriseId: currentProfile.value.enterpriseId,
+    ttl: currentProfile.value.ttl
   }
 
   label.value = currentProfile.value.label ?? ''
   filterExpression.value = currentProfile.value.filterExpression ?? ''
 }
 
-const handleSaveProfile = async () => {
-  handleValidate()
+const onDetailsSave = (config: SnmpAgentConfig) => {
+  // just need to validate profile fields here, other validation done in SnmpConfigDetailsPanel
+  const profileErrors = validateProfile(
+    label.value,
+    filterExpression.value
+  )
+
+  isValid.value = Object.keys(profileErrors).length === 0
+
+  if (!isValid.value) {
+    snackbar.showSnackBar({ msg: 'Invalid values', error: true })
+    
+    emit('validation-error', profileErrors)
+    return
+  }
 
   try {
-    if (!isValid.value) {
-      snackbar.showSnackBar({ msg: 'Invalid values', error: true })
-      return
+    const profileToSave: SnmpProfile = {
+      ...config,
+      label: label.value,
+      filterExpression: filterExpression.value
     }
 
-    // TODO: save values to store and then to Rest API
-    snackbar.showSnackBar({ msg: props.isCreate ? 'Profile created successfully' : 'Profile updated successfully', error: false })
+    emit('save', profileToSave)
   } catch (error) {
     console.error(error)
   }
 }
 
-const handleCancel = () => {
+const onDetailsCancel = () => {
   resetValues()
-
-  router.push({
-    name: 'SNMP Config'
-  })
+  emit('cancel')
 }
 
-const handleValidate = () => {
-  const currentErrors = validateProfile(
+const onDetailsValidationError = (formErrors: SnmpConfigFormErrors) => {
+  const profileErrors = validateProfile(
     label.value,
     filterExpression.value
   )
 
-  isValid.value = Object.keys(currentErrors).length === 0
-  errors.value = currentErrors as SnmpProfileFormErrors
+  const allErrors = {
+    ...formErrors,
+    label: profileErrors.label,
+    filterExpression: profileErrors.filterExpression
+  }
+
+  isValid.value = Object.keys(allErrors).length === 0
+  errors.value = allErrors as SnmpProfileFormErrors
+
+  emit('validation-error', errors.value)
 }
 
-watch([() => props.profileId, () => props.isCreate], () => {
+watch([() => props.profileLabel, () => props.isCreate], () => {
   loadInitialValues()
-})
-
-watchEffect(() => {
-  handleValidate()
 })
 
 onMounted(() => {
@@ -159,15 +210,15 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/themes/variables' as variables;
 @use '@featherds/styles/mixins/typography';
 
 .main-content {
-  padding: 30px;
-  margin: 30px;
+  padding: 0.2em;
+  margin: 0.2em;
 
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(variables.$surface);
 
   .header {
     display: flex;
@@ -179,7 +230,7 @@ onMounted(() => {
     border-width: 1px;
     border-style: solid;
     border-color: var(variables.$border-on-surface);
-    padding: 10px;
+    padding: 1em;
     border-radius: 8px;
 
     .label {
@@ -195,8 +246,8 @@ onMounted(() => {
     }
   }
 
-  .spacer {
-    min-height: 0.5em;
+  .large-spacer {
+    min-height: 1em;
   }
 
   .action-container {

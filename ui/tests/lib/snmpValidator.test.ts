@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateDefinition, validateProfile } from '@/components/SnmpConfiguration/snmpValidator'
+import { validateDefinition, validateProfile } from '@/lib/snmpValidator'
 import { SnmpBaseConfiguration } from '@/types/snmpConfig'
 
 describe('snmpValidator', () => {
@@ -122,17 +122,23 @@ describe('snmpValidator', () => {
     })
 
     describe('Security Level validation', () => {
-      it('should return error when security level is invalid', () => {
-        const config: SnmpBaseConfiguration = { ...validConfig, securityLevel: 3 }
+      it('should ignore security level when SNMP version is not v3', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, securityLevel: 5 }
         const errors = validateDefinition(config, 'v2c', '192.168.1.1', '')
-        expect(errors.securityLevel).toBe('Security Level must be one of: 0 (noAuthNoPriv), 1 (authNoPriv), 2 (authPriv)')
+        expect(errors.securityLevel).toBeUndefined()
+      })
+
+      it('should return error when security level is invalid', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, securityLevel: 5 }
+        const errors = validateDefinition(config, 'v3', '192.168.1.1', '')
+        expect(errors.securityLevel).toBe('Security Level must be one of: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)')
       })
 
       it('should pass validation with valid security levels', () => {
-        const validLevels = [0, 1, 2]
+        const validLevels = [1, 2, 3]
         validLevels.forEach(level => {
           const config: SnmpBaseConfiguration = { ...validConfig, securityLevel: level }
-          const errors = validateDefinition(config, 'v2c', '192.168.1.1', '')
+          const errors = validateDefinition(config, 'v3', '192.168.1.1', '')
           expect(errors.securityLevel).toBeUndefined()
         })
       })

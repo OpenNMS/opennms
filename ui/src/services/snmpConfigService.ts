@@ -27,10 +27,12 @@ import {
   SnmpConfig,
   SnmpConfigInfoDto,
   SnmpDefinition,
-  SnmpProfile
+  SnmpProfile,
+  SnmpSaveProfileDto
 } from '@/types/snmpConfig'
 import { isNumber, isString } from '@/lib/utils'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const endpoint = '/snmp-config'
 
@@ -95,7 +97,7 @@ const getSnmpConfig = async (): Promise<SnmpConfig | false> => {
 }
 
 const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<SnmpAgentConfig | false> => {
-  const fullEndpoint = `${endpoint}/lookup?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location ?? 'Default')}`
+  const fullEndpoint = `${endpoint}/lookup?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location ?? DEFAULT_MONITORING_LOCATION)}`
 
   try {
     const resp = await v2.get(fullEndpoint)
@@ -107,7 +109,7 @@ const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<Sn
     // The Lookup API returns the SNMP version as a number, but the UI expects a string, so we need to convert it here.
     const data = {
       ...resp.data,
-      location: location ?? 'Default',
+      location: location ?? DEFAULT_MONITORING_LOCATION,
       version: convertSnmpVersionToString(resp.data.version)
     } as SnmpAgentConfig
 
@@ -137,7 +139,7 @@ const saveSnmpDefinition = async (config: SnmpConfigInfoDto): Promise<Validation
 }
 
 const deleteSnmpDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
-  const fullEndpoint = `${endpoint}/definition?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location || 'Default')}`
+  const fullEndpoint = `${endpoint}/definition?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location || DEFAULT_MONITORING_LOCATION)}`
 
   try {
     const resp = await v2.delete(fullEndpoint)
@@ -155,11 +157,53 @@ const deleteSnmpDefinition = async (ipAddress: string, location: string): Promis
   }
 }
 
+const saveSnmpProfile = async (dto: SnmpSaveProfileDto): Promise<ValidationResult> => {
+  const fullEndpoint = `${endpoint}/profile`
+
+  try {
+    const resp = await v2.post(fullEndpoint, dto)
+
+    if (resp.status === 204) {
+      return createSuccessResponse()
+    } else if (resp.status === 400) {
+      return createFailureResult('Invalid SNMP profile data')
+    } else {
+      return createFailureResult('Failed to save SNMP profile')
+    }
+  } catch (err) {
+    console.error('Error saving SNMP profile:', err)
+    return createFailureResult('Failed to save SNMP profile')
+  }
+}
+
+const deleteSnmpProfile = async (label: string): Promise<ValidationResult> => {
+  const fullEndpoint = `${endpoint}/profile?label=${encodeURIComponent(label)}`
+
+  try {
+    const resp = await v2.delete(fullEndpoint)
+
+    if (resp.status === 204) {
+      return createSuccessResponse()
+    } else if (resp.status === 400) {
+      return createFailureResult('Invalid SNMP profile data')
+    } else if (resp.status === 404) {
+      return createFailureResult('SNMP profile not found')
+    } else {
+      return createFailureResult('Failed to delete SNMP profile')
+    }
+  } catch (err) {
+    console.error('Error deleting SNMP profile:', err)
+    return createFailureResult('Failed to delete SNMP profile')
+  }
+}
+
 export {
   convertSnmpVersionToNumber,
   convertSnmpVersionToString,
   deleteSnmpDefinition,
+  deleteSnmpProfile,
   getSnmpConfig,
   lookupSnmpConfig,
-  saveSnmpDefinition
+  saveSnmpDefinition,
+  saveSnmpProfile
 }

@@ -13,10 +13,10 @@
         <SnmpConfigLookupTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <SnmpConfigDefinitionsTable />
+        <SnmpConfigDefinitionsTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <SnmpConfigProfilesTable />
+        <SnmpConfigProfilesTab />
       </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
@@ -26,8 +26,8 @@
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
-import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
-import SnmpConfigProfilesTable from './SnmpConfigProfilesTable.vue'
+import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
+import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
 
 const store = useSnmpConfigStore()
 
