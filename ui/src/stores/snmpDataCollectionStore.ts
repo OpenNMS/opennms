@@ -46,7 +46,6 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
           this.sourcesSorting.sortKey,
           this.sourcesSorting.sortOrder
         )
-        await this.fetchAllSourcesNames()
         this.sources = response.sources
         this.sourcesPagination.total = response.totalRecords
         this.isLoading = false

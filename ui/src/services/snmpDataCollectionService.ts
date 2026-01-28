@@ -1,11 +1,13 @@
 import {
   mapDataCollectionSourceFromServer,
+  mapSnmpCollectionResourceTypeResponseFromServer,
   mapSnmpCollectionSystemDefResponseFromServer,
   mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
   mapSnmpDataCollectionSourceResponseFromServer,
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
+  SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
@@ -127,3 +129,35 @@ export const getSnmpDataCollectionSystemDefinitions = async (
     throw error
   }
 }
+
+export const getSnmpDataCollectionResourceTypes = async (
+  dataCollectionGroupId: number,
+  offset: number,
+  limit: number,
+  resourceTypeFilter: string,
+  sortBy: string,
+  order: string
+): Promise<SnmpCollectionResourceTypeResponse> => {
+  const endpoint = `/datacollectionconf/filter/${dataCollectionGroupId}/resourcetypes`
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        resourceTypeFilter,
+        sortBy,
+        order
+      }
+    })
+
+    if (response.status === 200) {
+      return mapSnmpCollectionResourceTypeResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection resource types:', error)
+    throw error
+  }
+}
+
