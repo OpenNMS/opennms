@@ -86,6 +86,7 @@
         <include>THIRD-PARTY.txt</include>
       </includes>
     </fileSet>
+    <!-- Add the COPYING license file -->
     <fileSet>
       <directory>${session.executionRootDirectory}</directory>
       <filtered>false</filtered>
