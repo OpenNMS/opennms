@@ -1,4 +1,6 @@
 import {
+  SnmpCollectionMibGroup,
+  SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceType,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
@@ -71,6 +73,27 @@ export const mapSnmpCollectionSystemDefResponseFromServer = (defs: any): SnmpCol
   return {
     systemDefinitions: defs.dataCollectionSystemDefsList.map((def: any) => mapSnmpCollectionSystemDefFromServer(def)),
     totalRecords: defs.totalRecords
+  }
+}
+
+export const mapSnmpCollectionMibGroupFromServer = (group: any): SnmpCollectionMibGroup => {
+  return {
+    id: group.id,
+    name: group.name,
+    ifType: group.ifType,
+    mibGroupNames: group.mibGroupNames,
+    mibObjects: group.mibObjects,
+    mibObjProperties: group.mibObjProperties,
+    enabled: group.enabled,
+    collectionSourceId: group.collectionSourceId,
+    collectionSourceName: group.collectionSourceName
+  }
+}
+
+export const mapSnmpCollectionMibGroupResponseFromServer = (groups: any): SnmpCollectionMibGroupResponse => {
+  return {
+    mibGroups: groups.dataCollectionMibGroupList.map((group: any) => mapSnmpCollectionMibGroupFromServer(group)),
+    totalRecords: groups.totalRecords
   }
 }
 
