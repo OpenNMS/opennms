@@ -948,6 +948,11 @@ fi
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /opt/opennms/bin/ensure-user-ping.sh manually."
 
+# Clean up obsolete THIRD-PARTY.txt left behind from older installations
+if [ -f "${ROOT_INST}/etc/THIRD-PARTY.txt" ]; then
+    rm -f "${ROOT_INST}/etc/THIRD-PARTY.txt"
+fi
+
 echo ""
 echo " *** Thanks for using OpenNMS!”
 echo " ***”
@@ -1031,12 +1036,6 @@ fi
 
 %post plugin-collector-vtdxml-handler
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-vtdxml-handler"
-
-# Clean up obsolete THIRD-PARTY.txt left behind from older installations
-%post -n %{name}-core
-if [ -f "${RPM_INSTALL_PREFIX0}/etc/THIRD-PARTY.txt" ]; then
-    rm -f "${RPM_INSTALL_PREFIX0}/etc/THIRD-PARTY.txt"
-fi
 
 %changelog
 * Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>
