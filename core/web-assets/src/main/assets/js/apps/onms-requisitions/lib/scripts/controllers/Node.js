@@ -20,6 +20,7 @@
  * License.
  */
 const bootbox = require('bootbox');
+const escape = require('lodash.escape');
 
 require('../services/Requisitions');
 
@@ -351,7 +352,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
               $scope.goBack();
               // If node was just created, it has no label yet
               if (node.nodeLabel) {
-                growl.success('The node ' + _.escape(node.nodeLabel) + ' has been deleted.');
+                growl.success('The node ' + escape(node.nodeLabel) + ' has been deleted.');
               } else {
                 growl.success('The node has been deleted.');
               }
@@ -522,7 +523,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
       RequisitionsService.startTiming();
       RequisitionsService.saveNode($scope.node).then(
         function() { // success
-          growl.success('The node ' + _.escape($scope.node.nodeLabel) + ' has been saved.');
+          growl.success('The node ' + escape($scope.node.nodeLabel) + ' has been saved.');
           $scope.foreignId = $scope.node.foreignId;
           form.$dirty = false;
         },
@@ -538,7 +539,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @methodOf NodeController
     */
     $scope.refresh = function() {
-      growl.success('Retrieving node ' + _.escape($scope.foreignId) + ' from requisition ' + _.escape($scope.foreignSource) + '...');
+      growl.success('Retrieving node ' + escape($scope.foreignId) + ' from requisition ' + escape($scope.foreignSource) + '...');
       RequisitionsService.getNode($scope.foreignSource, $scope.foreignId).then(
         function(node) { // success
           $scope.node = node;

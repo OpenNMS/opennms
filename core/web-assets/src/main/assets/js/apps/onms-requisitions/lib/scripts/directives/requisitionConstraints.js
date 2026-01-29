@@ -20,7 +20,6 @@
  * License.
  */
 const { isValidIPAddress } = require('vendor/ipaddress-js');
-const _ = require('lodash');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -190,7 +189,7 @@ const _ = require('lodash');
             // The key has changed, we need to validate it's uniqueness
             scope.$parent.resolveScopeReferences(scope.entry);
             const existingKeys = scope.$parent.node.metaData.getKeysInScopeOf(scope.entry);
-            isUnique = _.indexOf(existingKeys, keyName) < 0;
+            isUnique = existingKeys ? existingKeys.indexOf(keyName) < 0 : true;
           }
 
           if (!isUnique) {
@@ -204,7 +203,4 @@ const _ = require('lodash');
       }
     };
   });
-
-
-
 }());

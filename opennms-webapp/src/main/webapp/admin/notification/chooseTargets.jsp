@@ -250,7 +250,7 @@ action="admin/notification/destinationWizard" >
   </table>
   <div class="card-footer">
       <input type="reset" class="btn btn-secondary"/>
-      <a class="btn btn-secondary" href="javascript:next()">Next Step <i class="fa fa-arrow-right"></i></a>
+      <a class="btn btn-secondary" href="javascript:next()">Next Step <i class="fas fa-arrow-right"></i></a>
   </div>
 </div> <!-- panel -->
 

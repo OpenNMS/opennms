@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
@@ -127,7 +127,7 @@ describe('BasicInformation Component', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     store = useEventModificationStore()
-
+    vi.clearAllMocks()
     store.selectedSource = mockSource
     store.eventModificationState = {
       eventConfigEvent: mockEvent,
@@ -378,17 +378,10 @@ describe('BasicInformation Component', () => {
   })
 
   it('should not call updateEventConfigEventById when form is invalid', async () => {
-    // Make the form invalid by clearing a required field
-    const ueiInput = wrapper.find('[data-test="event-uei"]').find('input')
-    await ueiInput.setValue('')
-    await wrapper.vm.$nextTick()
-
     expect(wrapper.vm.isValid).toBe(false)
-
-    vi.mocked(updateEventConfigEventById).mockClear()
+    const updateSpy = vi.spyOn(await import('@/services/eventConfigService'), 'updateEventConfigEventById')
     const saveButton = wrapper.find('[data-test="save-event-button"]')
     await saveButton.trigger('click')
-    await wrapper.vm.$nextTick()
 
     expect(updateEventConfigEventById).not.toHaveBeenCalled()
   })

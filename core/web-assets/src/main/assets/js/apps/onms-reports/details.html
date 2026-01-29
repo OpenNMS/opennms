@@ -22,13 +22,13 @@
     </div>
     <div class="form-group mx-4">
         <button class="btn btn-danger" name="cancel" id="cancel" ui-sref="report.templates">
-            <i class="fa fa-times"></i> Cancel
+            <i class="fas fa-xmark"></i> Cancel
         </button>
 
         <button class="btn btn-primary" name="run" id="execute" ng-click="execute()" ng-disabled="reportForm.$invalid || !report.scheduleOptions.isValid() || (report.isGrafanaReport() && !report.isGrafanaEndpointSelected())">
-            <span ng-if="meta.online && !options.deliverReport && !options.scheduleReport"><i class="fa fa-play"></i> Create</span>
-            <span ng-if="options.deliverReport && !options.scheduleReport"><i class="fa fa-share"></i> Deliver</span>
-            <span ng-if="options.deliverReport && options.scheduleReport"><i class="fa fa-clock-o"></i> Schedule</span>
+            <span ng-if="meta.online && !options.deliverReport && !options.scheduleReport"><i class="fas fa-play"></i> Create</span>
+            <span ng-if="options.deliverReport && !options.scheduleReport"><i class="fas fa-share"></i> Deliver</span>
+            <span ng-if="options.deliverReport && options.scheduleReport"><i class="far fa-clock"></i> Schedule</span>
 
             Report
         </button>

@@ -22,13 +22,13 @@
   <div class="col-md-6">
     <div class="pull-right">
       <button type="button" id="reset-default" class="btn btn-secondary" ng-click="reset()">
-        <span class="fa fa-retweet"></span> Reset to Default
+        <span class="fas fa-retweet"></span> Reset to Default
       </button>
       <button type="button" id="save-foreign-source" class="btn btn-primary" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid || timingStatus.isRunning">
-        <span class="fa fa-save"></span> Save
+        <span class="fas fa-floppy-disk"></span> Save
       </button>
       <button type="button" id="go-back" class="btn btn-secondary" ng-click="goBack()">
-        <i class="fa fa-reply" aria-hidden="true"></i> Return
+        <i class="fas fa-reply" aria-hidden="true"></i> Return
       </button>
     </div>
   </div>
@@ -65,12 +65,12 @@
           <div class="btn-toolbar my-4 pull-right" role="toolbar" aria-label="Toolbar for detectors">
               <div class="input-group input-group-sm mr-2">
                 <div class="input-group-prepend">
-                  <div class="input-group-text"><span class="fa fa-search"></span></div>
+                  <div class="input-group-text"><span class="fas fa-magnifying-glass"></span></div>
                 </div>
                 <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector">
               </div>
               <button type="button" id="add-detector" class="btn btn-secondary btn-sm" ng-click="addDetector()">
-                <span class="fa fa-plus"></span> Add Detector
+                <span class="fas fa-plus"></span> Add Detector
               </button>
           </div>
           <div class="table-responsive">
@@ -96,13 +96,13 @@
                   <td>
                     <div class="pull-right">
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
-                        <span class="fa fa-pencil"></span>
+                        <span class="fas fa-pencil"></span>
                       </button>
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Move the detector" ng-click="moveDetector(detector)">
-                        <span class="fa fa-arrows"></span>
+                        <span class="fas fa-up-down-left-right"></span>
                       </button>
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
-                        <span class="fa fa-trash"></span>
+                        <span class="fas fa-trash-can"></span>
                       </button>
                     </div>
                   </td>
@@ -118,13 +118,13 @@
           <div class="btn-toolbar my-4 pull-right" role="toolbar" aria-label="Toolbar for policies">
             <div class="input-group input-group-sm mr-2">
               <div class="input-group-prepend">
-                <div class="input-group-text"><span class="fa fa-search"></span></div>
+                <div class="input-group-text"><span class="fas fa-magnifying-glass"></span></div>
               </div>
               <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy">
             </div>
             <div class="btn-group">
               <button type="button" id="add-policy" class="btn btn-secondary btn-sm" ng-click="addPolicy()">
-                <span class="fa fa-plus"></span> Add Policy
+                <span class="fas fa-plus"></span> Add Policy
               </button>
             </div>
           </div>
@@ -151,13 +151,13 @@
                   <td>
                     <div class="pull-right">
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
-                        <span class="fa fa-pencil"></span>
+                        <span class="fas fa-pencil"></span>
                       </button>
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Move the policy" ng-click="movePolicy(policy)">
-                        <span class="fa fa-arrows"></span>
+                        <span class="fas fa-up-down-left-right"></span>
                       </button>
                       <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
-                        <span class="fa fa-trash"></span>
+                        <span class="fas fa-trash-can"></span>
                       </button>
                       </div>
                   </td>

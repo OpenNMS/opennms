@@ -146,7 +146,7 @@
            </div>
       </div> <!-- card-body -->
       <div class="card-footer">
-          <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fa fa-arrow-right"></i></a>
+          <a class="btn btn-secondary" href="javascript:next()">Validate rule results <i class="fas fa-arrow-right"></i></a>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->

@@ -8,11 +8,11 @@
       typeahead-min-length="1"
       typeahead-on-select="goToChooseResources($item)">
     <div class="input-group-append">
-      <span class="input-group-text"><i class="fa fa-search"></i></span>
+      <span class="input-group-text"><i class="fas fa-magnifying-glass"></i></span>
     </div>
   </div>
-  <i ng-show="nodeLoadingNodes" class="fa fa-refresh"></i>
+  <i ng-show="nodeLoadingNodes" class="fas fa-arrows-rotate"></i>
   <p class="form-text text-muted" ng-show="nodeNoResults">
-    <i class="fa fa-remove"></i> No Results Found
+    <i class="fas fa-xmark"></i> No Results Found
   </p>
 </div>

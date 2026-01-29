@@ -251,7 +251,7 @@
             minLength: 0,
           });
         $(
-          '<div class="input-group-append"><button type="button" class="btn btn-secondary"><i class="fa fa-caret-down"></i></button></div>'
+          '<div class="input-group-append"><button type="button" class="btn btn-secondary"><i class="fas fa-caret-down"></i></button></div>'
         )
           .attr("tabIndex", -1)
           .attr("title", "Show All Items")
@@ -290,7 +290,7 @@
       $(row).append(
         $("<td></td>").append(
           $(
-            '<button type="button" role="button" class="btn btn-link"><i class="fa fa-trash"></i></button>'
+            '<button type="button" role="button" class="btn btn-link"><i class="fas fa-trash-can"></i></button>'
           )
             .attr("id", nextParm + ".delete")
             .attr("name", nextParm + ".delete")
@@ -434,7 +434,7 @@
                     id="showAllVendors"
                     title="Show All Vendors"
                   >
-                    <i class="fa fa-caret-down"></i>
+                    <i class="fas fa-caret-down"></i>
                   </button>
                 </div>
               </div>
@@ -470,7 +470,7 @@
                     id="showAllUei"
                     title="Show All Events"
                   >
-                    <i class="fa fa-caret-down"></i>
+                    <i class="fas fa-caret-down"></i>
                   </button>
                 </div>
               </div>

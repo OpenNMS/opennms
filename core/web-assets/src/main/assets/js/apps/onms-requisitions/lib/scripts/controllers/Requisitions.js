@@ -20,6 +20,7 @@
  * License.
  */
 const bootbox = require('bootbox');
+const escape = require('lodash.escape');
 
 require('../services/Requisitions');
 require('../services/Synchronize');
@@ -204,14 +205,14 @@ require('../services/Synchronize');
         }
       });
       modalInstance.result.then(function(targetForeignSource) {
-        bootbox.confirm('This action will override the existing foreign source definition for the requisition named ' + _.escape(targetForeignSource) + ', using ' + _.escape(foreignSource) + ' as a template. Are you sure you want to continue ? This cannot be undone.', function(ok) {
+        bootbox.confirm('This action will override the existing foreign source definition for the requisition named ' + escape(targetForeignSource) + ', using ' + escape(foreignSource) + ' as a template. Are you sure you want to continue ? This cannot be undone.', function(ok) {
           if (!ok) {
             return;
           }
           RequisitionsService.startTiming();
           RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
             function() { // success
-              growl.success('The foreign source definition for ' + _.escape(foreignSource) + ' has been cloned to ' + _.escape(targetForeignSource));
+              growl.success('The foreign source definition for ' + escape(foreignSource) + ' has been cloned to ' + escape(targetForeignSource));
             },
             $scope.errorHandler
           );
@@ -233,7 +234,7 @@ require('../services/Synchronize');
         if (foreignSource) {
           // Validate Requisition
           if (foreignSource.match(/[/\\?:&*'"]/)) {
-            bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
+            bootbox.alert('Cannot add the requisition ' + escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
             return;
           }
 
@@ -244,13 +245,13 @@ require('../services/Synchronize');
 
           const r = $scope.requisitionsData.getRequisition(foreignSource);
           if (r) {
-            bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because there is already a requisition with that name');
+            bootbox.alert('Cannot add the requisition ' + escape(foreignSource) + ' because there is already a requisition with that name');
             return;
           }
           // Create Requisition
           RequisitionsService.addRequisition(foreignSource).then(
             function(r) { // success
-              growl.success('The requisition ' + _.escape(r.foreignSource) + ' has been created.');
+              growl.success('The requisition ' + escape(r.foreignSource) + ' has been created.');
             },
             $scope.errorHandler
           );
@@ -309,7 +310,7 @@ require('../services/Synchronize');
       RequisitionsService.startTiming();
       RequisitionsService.updateDeployedStatsForRequisition(requisition).then(
         function() { // success
-          growl.success('The deployed statistics for ' + _.escape(requisition.foreignSource) + ' have been updated.');
+          growl.success('The deployed statistics for ' + escape(requisition.foreignSource) + ' have been updated.');
         },
         $scope.errorHandler
       );
@@ -324,12 +325,12 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.removeAllNodes = function(foreignSource) {
-      bootbox.confirm('Are you sure you want to remove all the nodes from ' + _.escape(foreignSource) + '?', function(ok) {
+      bootbox.confirm('Are you sure you want to remove all the nodes from ' + escape(foreignSource) + '?', function(ok) {
         if (ok) {
           RequisitionsService.startTiming();
           RequisitionsService.removeAllNodesFromRequisition(foreignSource).then(
             function() { // success
-              growl.success('All the nodes from ' + _.escape(foreignSource) + ' have been removed, and the requisition has been synchronized.');
+              growl.success('All the nodes from ' + escape(foreignSource) + ' have been removed, and the requisition has been synchronized.');
               const req = $scope.requisitionsData.getRequisition(foreignSource);
               req.reset();
             },
@@ -348,12 +349,12 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.delete = function(foreignSource) {
-      bootbox.confirm('Are you sure you want to remove the requisition ' + _.escape(foreignSource) + '?', function(ok) {
+      bootbox.confirm('Are you sure you want to remove the requisition ' + escape(foreignSource) + '?', function(ok) {
         if (ok) {
           RequisitionsService.startTiming();
           RequisitionsService.deleteRequisition(foreignSource).then(
             function() { // success
-              growl.success('The requisition ' + _.escape(foreignSource) + ' has been deleted.');
+              growl.success('The requisition ' + escape(foreignSource) + ' has been deleted.');
             },
             $scope.errorHandler
           );

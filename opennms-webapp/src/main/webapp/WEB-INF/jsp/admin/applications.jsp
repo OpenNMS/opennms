@@ -45,8 +45,8 @@
         </tr>
         <c:forEach items="${applications}" var="app">
         <tr>
-          <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><i class="fa fa-trash-o fa-2x"></i></a></td>
-          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=services"><i class="fa fa-edit fa-2x"></i></a></td>
+          <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><i class="fas fa-trash-can fa-2x"></i></a></td>
+          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=services"><i class="fas fa-pen-to-square fa-2x"></i></a></td>
           <td><a href="admin/applications.htm?applicationid=${app.id}">${fn:escapeXml(app.name)}</a></td>
         </tr>
         </c:forEach>
@@ -56,7 +56,7 @@
               <div class="form-group">
                 <input type="textfield" class="form-control" placeholder="Application name" name="newApplicationName" size="40"/>
               </div>
-              <button type="submit" name="newApplicationSubmit" class="btn btn-secondary ml-2"><i class="fa fa-plus"></i> Add New Application</button>
+              <button type="submit" name="newApplicationSubmit" class="btn btn-secondary ml-2"><i class="fas fa-plus"></i> Add New Application</button>
             </form>
           </td>
         </tr>

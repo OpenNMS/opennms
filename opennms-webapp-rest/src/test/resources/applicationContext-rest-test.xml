@@ -11,6 +11,8 @@
 
 	<bean id="eventConfPersistenceService" class="org.opennms.web.rest.v2.EventConfPersistenceService"/>
 	<bean id="eventConfRestApi" class="org.opennms.web.rest.v2.EventConfRestService"/>
+    <bean id="dataCollectionConfPersistenceService" class="org.opennms.web.rest.v2.DataCollectionConfPersistenceService"/>
+    <bean id="dataCollectionConfRestApi" class="org.opennms.web.rest.v2.DataCollectionConfRestService"/>
 
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />

@@ -20,6 +20,7 @@ describe('DeleteEventConfigSourceDialog', () => {
   let store: ReturnType<typeof useEventConfigStore>
 
   beforeEach(async () => {
+    vi.clearAllMocks()
     const pinia = createTestingPinia({
       createSpy: vi.fn,
       stubActions: false
@@ -153,3 +154,4 @@ describe('DeleteEventConfigSourceDialog', () => {
     expect(wrapper.findComponent(FeatherDialog).props('modelValue')).toBe(false)
   })
 })
+
