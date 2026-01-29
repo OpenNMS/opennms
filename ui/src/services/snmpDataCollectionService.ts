@@ -1,5 +1,6 @@
 import {
   mapDataCollectionSourceFromServer,
+  mapSnmpCollectionMibGroupResponseFromServer,
   mapSnmpCollectionResourceTypeResponseFromServer,
   mapSnmpCollectionSystemDefResponseFromServer,
   mapSnmpDataCollectionSourceNamesAndIdsResponseFromServer,
@@ -7,6 +8,7 @@ import {
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
+  SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDefResponse,
@@ -129,6 +131,38 @@ export const getSnmpDataCollectionSystemDefinitions = async (
     throw error
   }
 }
+
+export const getSnmpDataCollectionMibGroups = async (
+  collectionSourceId: number,
+  offset: number,
+  limit: number,
+  mibGroupsFilter: string,
+  sortBy: string,
+  order: string
+): Promise<SnmpCollectionMibGroupResponse> => {
+  const endpoint = `/datacollectionconf/filter/${collectionSourceId}/mibgroups`
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        mibGroupsFilter,
+        sortBy,
+        order
+      }
+    })
+
+    if (response.status === 200) {
+      return mapSnmpCollectionMibGroupResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection MIB groups:', error)
+    throw error
+  }
+}
+
 
 export const getSnmpDataCollectionResourceTypes = async (
   dataCollectionGroupId: number,
