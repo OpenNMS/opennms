@@ -52,7 +52,7 @@ import { getGeolocationConfig } from './geolocationService'
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
-import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
+import { getAliases, getAllCredentials, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
@@ -126,6 +126,7 @@ export default {
   getOsImageOptions,
   getHistoryByIpInterface,
   getAliases,
+  getAllCredentials,
   getCredentialsByAlias,
   addCredentials,
   updateCredentials,

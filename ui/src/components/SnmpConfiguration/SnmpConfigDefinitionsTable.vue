@@ -220,8 +220,6 @@ const onDefinitionEdit = (definition?: SnmpDefinition) => {
       width: 100%;
       @include table.table;
       @include table.table-condensed;
-      @include table.row-select();
-      @include table.row-hover();
 
       thead {
         background: var(variables.$background);

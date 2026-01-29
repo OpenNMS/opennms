@@ -194,5 +194,6 @@ export interface SnmpFieldInfo {
   label: string
   hint?: string
   dataTest: string
+  scvEnabled?: boolean
   isNumeric?: boolean
 }

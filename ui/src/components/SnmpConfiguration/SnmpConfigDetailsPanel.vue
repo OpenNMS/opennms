@@ -72,6 +72,7 @@
           :config="formConfig"
           :validationErrors="errors"
           @update="onFieldUpdate"
+          @scvSearch="onScvButtonClick"
         />
       </template>
     </FeatherExpansionPanel>
@@ -91,6 +92,7 @@
           :config="formConfig"
           :validationErrors="errors"
           @update="onFieldUpdate"
+          @scvSearch="onScvButtonClick"
         />
 
         <div class="large-spacer"></div>
@@ -110,6 +112,7 @@
           :config="formConfig"
           :validationErrors="errors"
           @update="onFieldUpdate"
+          @scvSearch="onScvButtonClick"
         />
       </template>
     </FeatherExpansionPanel>
@@ -127,6 +130,7 @@
       :config="formConfig"
       :validationErrors="errors"
       @update="onFieldUpdate"
+      @scvSearch="onScvButtonClick"
     />
 
     <div class="large-spacer"></div>
@@ -145,6 +149,7 @@
           :config="formConfig"
           :validationErrors="errors"
           @update="onFieldUpdate"
+          @scvSearch="onScvButtonClick"
         />
       </template>
     </FeatherExpansionPanel>
@@ -171,6 +176,12 @@
         </div>
       </div>
     </div>
+
+    <ScvSearchDrawer
+      :isOpen="scvSearchDrawerOpen"
+      @hidden="scvSearchDrawerOpen = false"
+      @itemSelected="scvItemSelected"
+    />
   </div>
 </template>
 
@@ -188,6 +199,8 @@ import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpField
 import { validateDefinition } from '@/lib/snmpValidator'
 import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
+import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
+import { ScvSearchItem } from '@/types/scv'
 
 const props = defineProps<{
   isCreate: boolean,
@@ -221,6 +234,8 @@ const firstIpAddress = ref('')
 const lastIpAddress = ref('')
 const selectedMonitoringLocation = ref<ISelectItemType>()
 const formConfig = reactive<SnmpBaseConfiguration>(getDefaultSnmpBaseConfiguration())
+const scvSearchDrawerOpen = ref(false)
+const scvSelectedProperty = ref('')
 
 const snmpV2Expanded = ref(false)
 const snmpV3Expanded = ref(false)
@@ -253,16 +268,16 @@ const advancedConfigOptions: SnmpFieldInfo[] = [
 ]
 
 const snmpV2Fields: SnmpFieldInfo[] = [
-  { key: 'readCommunity', label: 'Read Community String', hint: 'Read community string', dataTest: 'snmp-lookup-read-community' },
-  { key: 'writeCommunity', label: 'Write Community String', hint: 'Write community string', dataTest: 'snmp-lookup-write-community' }
+  { key: 'readCommunity', label: 'Read Community String', hint: 'Read community string', dataTest: 'snmp-lookup-read-community', scvEnabled: true },
+  { key: 'writeCommunity', label: 'Write Community String', hint: 'Write community string', dataTest: 'snmp-lookup-write-community', scvEnabled: true }
 ]
 
 const snmpV3Fields: SnmpFieldInfo[] = [
-  { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name' },
+  { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name', scvEnabled: true },
   { key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true },
-  { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase' },
+  { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase', scvEnabled: true },
   { key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol' },
-  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase' },
+  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true },
   { key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol' }
 ]
 
@@ -351,6 +366,21 @@ const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
   }
 }
 
+const onScvButtonClick = (key: string) => {
+  scvSelectedProperty.value = key
+  scvSearchDrawerOpen.value = true
+}
+
+const scvItemSelected = (item: ScvSearchItem) => {
+  const scvValue = '${scv:' + item.alias + ':' + item.key + '}'
+
+  Object.assign(formConfig, {
+    [scvSelectedProperty.value]: scvValue
+  })
+
+  scvSearchDrawerOpen.value = false
+}
+
 const handleSave = async () => {
   handleValidate()
 
@@ -410,9 +440,9 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
+@use "@featherds/table/scss/table";
 
 .snmp-config-definition-details {
   .label {
