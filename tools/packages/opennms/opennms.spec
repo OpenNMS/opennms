@@ -1033,9 +1033,9 @@ fi
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-collector-vtdxml-handler"
 
 # Clean up obsolete THIRD-PARTY.txt left behind from older installations
-%post
-if [ -f /opt/opennms/etc/THIRD-PARTY.txt ]; then
-    rm -f /opt/opennms/etc/THIRD-PARTY.txt
+%post -n %{name}-core
+if [ -f "${RPM_INSTALL_PREFIX0}/etc/THIRD-PARTY.txt" ]; then
+    rm -f "${RPM_INSTALL_PREFIX0}/etc/THIRD-PARTY.txt"
 fi
 
 %changelog
