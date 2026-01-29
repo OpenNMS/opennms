@@ -104,9 +104,6 @@ describe('ResourceTypesTable.vue', () => {
     vi.useRealTimers()
   })
 
-  // ==========================================
-  // INITIAL RENDERING TESTS
-  // ==========================================
   describe('Initial Rendering', () => {
     it('should render the component', () => {
       expect(wrapper.exists()).toBe(true)
@@ -153,9 +150,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EMPTY STATE TESTS
-  // ==========================================
   describe('Empty State', () => {
     it('should not render the table when resourceTypes is empty', async () => {
       store.resourceTypes = []
@@ -182,9 +176,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // TABLE RENDERING WITH DATA TESTS
-  // ==========================================
   describe('Table Rendering with Data', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -275,9 +266,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EXPAND/COLLAPSE FUNCTIONALITY TESTS
-  // ==========================================
   describe('Expand/Collapse Functionality', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -382,9 +370,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // SEARCH FUNCTIONALITY TESTS
-  // ==========================================
   describe('Search Functionality', () => {
     it('should have search input bound to store.resourceTypesSearchTerm', async () => {
       store.resourceTypesSearchTerm = 'interface'
@@ -451,9 +436,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // SORTING FUNCTIONALITY TESTS
-  // ==========================================
   describe('Sorting Functionality', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType]
@@ -525,9 +507,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // PAGINATION TESTS
-  // ==========================================
   describe('Pagination', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -600,9 +579,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // REFRESH FUNCTIONALITY TESTS
-  // ==========================================
   describe('Refresh Functionality', () => {
     it('should call resetResourceTypesFilters when refresh button is clicked', async () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
@@ -618,9 +594,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EDIT BUTTON TESTS
-  // ==========================================
   describe('Edit Button', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -656,9 +629,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // DROPDOWN MENU TESTS
-  // ==========================================
   describe('Dropdown Menu', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, disabledResourceType]
@@ -684,9 +654,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // STATUS DISPLAY TESTS
-  // ==========================================
   describe('Status Display', () => {
     describe('Enabled/Disabled Status', () => {
       const statusCases = [
@@ -727,9 +694,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // RESOURCE TYPE DATA DISPLAY TESTS
-  // ==========================================
   describe('Resource Type Data Display', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType]
@@ -769,9 +733,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // MULTIPLE RESOURCE TYPES TESTS
-  // ==========================================
   describe('Multiple Resource Types', () => {
     const resourceTypeCounts = [1, 2, 5, 10]
 
@@ -793,9 +754,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EDGE CASES TESTS
-  // ==========================================
   describe('Edge Cases', () => {
     it('should handle resource type with empty strings', async () => {
       const emptyResourceType: SnmpCollectionResourceType = {
@@ -891,9 +849,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // ACCESSIBILITY TESTS
-  // ==========================================
   describe('Accessibility', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType]
@@ -929,9 +884,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // COMPONENT STRUCTURE TESTS
-  // ==========================================
   describe('Component Structure', () => {
     it('should have header section', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
@@ -958,9 +910,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // LOADING STATES TESTS
-  // ==========================================
   describe('Loading States', () => {
     it('should handle store loading state changes', async () => {
       store.isLoading = true
@@ -975,9 +924,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // TRANSITION GROUP TESTS
-  // ==========================================
   describe('TransitionGroup', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -1017,9 +963,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // REACTIVITY TESTS
-  // ==========================================
   describe('Reactivity', () => {
     it('should update table when store.resourceTypes changes', async () => {
       expect(wrapper.find('.data-table').exists()).toBe(false)
@@ -1051,9 +994,6 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // INTEGRATION TESTS
-  // ==========================================
   describe('Integration', () => {
     it('should handle complete user flow: search, sort, paginate', async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]

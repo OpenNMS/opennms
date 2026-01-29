@@ -101,9 +101,6 @@ describe('SystemDefinitionsTable.vue', () => {
     vi.useRealTimers()
   })
 
-  // ==========================================
-  // INITIAL RENDERING TESTS
-  // ==========================================
   describe('Initial Rendering', () => {
     it('should render the component', () => {
       expect(wrapper.exists()).toBe(true)
@@ -150,9 +147,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EMPTY STATE TESTS
-  // ==========================================
   describe('Empty State', () => {
     it('should not render the table when systemDefinitions is empty', async () => {
       store.systemDefinitions = []
@@ -179,9 +173,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // TABLE RENDERING WITH DATA TESTS
-  // ==========================================
   describe('Table Rendering with Data', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -272,9 +263,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EXPAND/COLLAPSE FUNCTIONALITY TESTS
-  // ==========================================
   describe('Expand/Collapse Functionality', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -369,9 +357,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // SEARCH FUNCTIONALITY TESTS
-  // ==========================================
   describe('Search Functionality', () => {
     it('should have search input bound to store.systemDefsSearchTerm', async () => {
       store.systemDefsSearchTerm = 'Net-SNMP'
@@ -438,9 +423,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // SORTING FUNCTIONALITY TESTS
-  // ==========================================
   describe('Sorting Functionality', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef]
@@ -515,9 +497,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // PAGINATION TESTS
-  // ==========================================
   describe('Pagination', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -590,9 +569,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // REFRESH FUNCTIONALITY TESTS
-  // ==========================================
   describe('Refresh Functionality', () => {
     it('should call resetSystemDefinitionsFilters when refresh button is clicked', async () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
@@ -608,9 +584,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EDIT BUTTON TESTS
-  // ==========================================
   describe('Edit Button', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -655,9 +628,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // DROPDOWN MENU TESTS
-  // ==========================================
   describe('Dropdown Menu', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, disabledSystemDef]
@@ -683,9 +653,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // STATUS DISPLAY TESTS
-  // ==========================================
   describe('Status Display', () => {
     describe('Enabled/Disabled Status', () => {
       const statusCases = [
@@ -728,9 +695,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // SYSTEM DEFINITION DATA DISPLAY TESTS
-  // ==========================================
   describe('System Definition Data Display', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef]
@@ -772,9 +736,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // MULTIPLE SYSTEM DEFINITIONS TESTS
-  // ==========================================
   describe('Multiple System Definitions', () => {
     const systemDefCounts = [1, 2, 5, 10]
 
@@ -795,9 +756,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // EDGE CASES TESTS
-  // ==========================================
   describe('Edge Cases', () => {
     it('should handle system definition with empty strings', async () => {
       const emptySystemDef: SnmpCollectionSystemDef = {
@@ -906,9 +864,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // ACCESSIBILITY TESTS
-  // ==========================================
   describe('Accessibility', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef]
@@ -944,9 +899,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // COMPONENT STRUCTURE TESTS
-  // ==========================================
   describe('Component Structure', () => {
     it('should have header section', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
@@ -973,9 +925,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // LOADING STATES TESTS
-  // ==========================================
   describe('Loading States', () => {
     it('should handle store loading state changes', async () => {
       store.isLoading = true
@@ -990,9 +939,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // TRANSITION GROUP TESTS
-  // ==========================================
   describe('TransitionGroup', () => {
     beforeEach(async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -1032,9 +978,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // REACTIVITY TESTS
-  // ==========================================
   describe('Reactivity', () => {
     it('should update table when store.systemDefinitions changes', async () => {
       expect(wrapper.find('.data-table').exists()).toBe(false)
@@ -1066,9 +1009,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // INTEGRATION TESTS
-  // ==========================================
   describe('Integration', () => {
     it('should handle complete user flow: search, sort, paginate', async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]
@@ -1135,9 +1075,6 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
-  // ==========================================
-  // MIB GROUP NAMES PARSING TESTS
-  // ==========================================
   describe('Mib Group Names Parsing', () => {
     it('should parse and display single mib group name', async () => {
       const singleGroupDef: SnmpCollectionSystemDef = {
