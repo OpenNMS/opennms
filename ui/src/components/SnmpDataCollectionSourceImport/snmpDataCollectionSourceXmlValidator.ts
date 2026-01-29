@@ -217,7 +217,7 @@ export const validateParameterElement = (param: Element | any, context: string):
   return ''
 }
 
-export const validateGroupElement = (group: Element | any, groupNumber: number): string => {
+export const validateGroupElement = (group: Element, groupNumber: number): string => {
   if (!group || typeof group.querySelector !== 'function') {
     return `Group ${groupNumber}: invalid element`
   }
@@ -243,7 +243,7 @@ export const validateGroupElement = (group: Element | any, groupNumber: number):
     return `Group "${name}": missing <mibObj> elements`
   }
 
-  const mibObjList = Array.from(mibObjs as any[]) as Element[]
+  const mibObjList = Array.from(mibObjs) as Element[]
   for (const [idx, mibObj] of mibObjList.entries()) {
     const mibObjError = validateMibObjElement(mibObj as any, name, idx + 1)
     if (mibObjError) return mibObjError
@@ -253,7 +253,7 @@ export const validateGroupElement = (group: Element | any, groupNumber: number):
 }
 
 export const validateMibObjElement = (
-  mibObj: Element | any,
+  mibObj: Element,
   groupName: string,
   mibObjNumber: number
 ): string => {
@@ -294,32 +294,33 @@ export const validateMibObjElement = (
 }
 
 export const validateSystemDefElement = (
-  systemDef: Element | any,
+  systemDef: Element,
   systemDefNumber: number
 ): string => {
   if (!systemDef || typeof systemDef.querySelector !== 'function') {
     return `SystemDef ${systemDefNumber}: invalid element`
   }
 
-  const getInnerText = (el: any, tag: string): string => {
-    if (!el) return ''
+  const getInnerText = (el: Element, tag: string): string => {
+    if (!el) {
+      return ''
+    }
     let node: any = null
     try {
-      if (typeof el.querySelector === 'function') node = el.querySelector(tag)
+      node = el.querySelector(tag) 
     } catch (e) {
       if (e instanceof Error) throw e
       node = null
     }
     if (!node) {
       try {
-        if (typeof el.getElementsByTagName === 'function') node = el.getElementsByTagName(tag)[0]
+        node = el.getElementsByTagName(tag)[0]
       } catch (e) {
         if (e instanceof Error) throw e
         node = null
       }
     }
-    const text = node?.textContent
-    return typeof text === 'string' ? text.trim() : ''
+    return node?.textContent?.trim() || ''
   }
 
   const name = systemDef.getAttribute('name')
@@ -347,12 +348,9 @@ export const validateSystemDefElement = (
     return `SystemDef "${name}": missing <collect>`
   }
 
+  // Empty <collect/> is valid - means no data collection groups for this device
   const includeGroups = collect.querySelectorAll('includeGroup')
-  if (includeGroups.length === 0) {
-    return `SystemDef "${name}": <collect> missing <includeGroup> elements`
-  }
-
-  const includeGroupList = Array.from(includeGroups as any[]) as Element[]
+  const includeGroupList = Array.from(includeGroups) as Element[]
   for (const [idx, includeGroup] of includeGroupList.entries()) {
     const includeGroupValue = includeGroup.textContent?.trim()
     if (!includeGroupValue) {
