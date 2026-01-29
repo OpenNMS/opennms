@@ -1,0 +1,9 @@
+.Install PostgreSQL client and server
+[source, console]
+----
+sudo apt install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt -y install postgresql-{postgresql-version}
+----
+
+include::../general/initialize-postgresql.adoc[]

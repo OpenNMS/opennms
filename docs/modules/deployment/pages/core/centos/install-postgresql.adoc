@@ -1,0 +1,23 @@
+.Install language packs and set language
+[source,console]
+----
+sudo dnf install langpacks-en glibc-all-langpacks -y
+sudo localectl set-locale LANG=en_US.UTF-8
+sudo localectl
+sudo dnf makecache
+sudo dnf update -y
+----
+
+.Install PostgreSQL
+[source, console]
+[subs="verbatim,attributes"]
+----
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-10-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo dnf -qy module disable postgresql
+sudo dnf install -y postgresql{postgresql-version}-server
+sudo /usr/pgsql-{postgresql-version}/bin/postgresql-{postgresql-version}-setup initdb
+sudo systemctl enable postgresql-{postgresql-version}
+sudo systemctl start postgresql-{postgresql-version}
+----
+
+include::../general/initialize-postgresql.adoc[]

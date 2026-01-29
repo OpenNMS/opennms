@@ -1,4 +1,4 @@
-[[restore-centos-rhel8]]
+[[restore-centos]]
 .Restore user/group definition
 
 [source, console]
@@ -37,10 +37,6 @@ See xref:deployment:core/centos/initialize-core.adoc#initialize-core-cap[Assign 
 ----
 sudo dnf -y install postgresql-server postgresql
 ----
-
-.Change the access policy for PostgreSQL
-
-See xref:deployment:core/centos-rhel8/postgresql.adoc#core-centos-rhel8-pg_hba[change the access policy for PostgreSQL].
 
 .Restore OpenNMS database
 [source, console]

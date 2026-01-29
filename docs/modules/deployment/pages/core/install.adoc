@@ -1,7 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
+:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9/10, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
@@ -82,17 +82,17 @@ Use it at your own discretion.
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9/10::
 +
 --
-include::centos9/postgresql.adoc[]
+include::centos/install-postgresql.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/postgresql.adoc[]
+include::debian-ubuntu/install-postgresql.adoc[]
 --
 
 Docker::
@@ -111,23 +111,17 @@ Do not expose the web console or sign-in pages directly to the Internet without 
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9/10::
 +
 --
-include::centos9/install-core.adoc[]
+include::centos/install-core.adoc[]
 --
 ifeval::["{page-component-title}" == "Horizon"]
 
-Ubuntu::
+Debian/Ubuntu::
 +
 --
-include::ubuntu/install-core.adoc[]
---
-
-Debian::
-+
---
-include::debian/install-core.adoc[]
+include::debian-ubuntu/install-core.adoc[]
 --
 
 Docker::
@@ -143,7 +137,7 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS 9::
+CentOS/RHEL 9/10::
 +
 --
 include::centos/initialize-core.adoc[]
