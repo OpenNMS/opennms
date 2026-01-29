@@ -603,7 +603,7 @@ describe('MibGroupsTable.vue', () => {
       const columns = wrapper.vm.columns
       expect(columns).toEqual([
         { id: 'name', label: 'Name' },
-        { id: 'ifType', label: 'If Type' },
+        { id: 'ifType', label: 'Interface Type' },
         { id: 'enabled', label: 'Status' }
       ])
     })
@@ -618,7 +618,7 @@ describe('MibGroupsTable.vue', () => {
 
     it.each([
       { id: 'name', label: 'Name' },
-      { id: 'ifType', label: 'If Type' },
+      { id: 'ifType', label: 'Interface Type' },
       { id: 'enabled', label: 'Status' }
     ])('has column with id "$id" and label "$label"', ({ id, label }) => {
       const columns = wrapper.vm.columns
@@ -833,13 +833,13 @@ describe('MibGroupsTable.vue', () => {
     })
   })
 
-  describe('Parametrized Tests - ifType Values', () => {
+  describe('Parametrized Tests - Interface Type Values', () => {
     it.each([
       { ifType: 'all' },
       { ifType: 'ignore' },
       { ifType: 'specific' },
       { ifType: '' }
-    ])('renders mib group with ifType "$ifType"', async ({ ifType }) => {
+    ])('renders mib group with Interface Type "$ifType"', async ({ ifType }) => {
       const mibGroup = { ...mockMibGroup, ifType }
       store.mibGroups = [mibGroup]
       await wrapper.vm.$nextTick()

@@ -11,7 +11,7 @@
             type="search"
             data-test="search-input"
             v-model.trim="store.mibGroupsSearchTerm"
-            :hint="'Search by Name or if Type'"
+            :hint="'Search by Name or Interface Type'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -179,7 +179,7 @@ const expandedRows = ref<number[]>([])
 
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
-  { id: 'ifType', label: 'If Type' },
+  { id: 'ifType', label: 'Interface Type' },
   { id: 'enabled', label: 'Status' }
 ])
 
