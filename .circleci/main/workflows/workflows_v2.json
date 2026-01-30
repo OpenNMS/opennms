@@ -1,4 +1,5 @@
 {
+    "_comment": "Workflow bundles define reusable groups of CI/CD jobs. Bundle names can be used as git keywords in commit messages to trigger specific workflows.",
     "bundles": {
         "build-deploy": {
             "extends": [
@@ -102,7 +103,7 @@
                 "merge"
             ]
         },
-        "release-builds":
+        "release-build":
         {
             "extends": [
                 "build",
@@ -113,6 +114,32 @@
                 "merge",
                 "publish",
                 "publish-maven"
+            ]
+        },
+        "integration": {
+            "extends": [
+                "build",
+                "integration-test"
+            ]
+        },
+        "coverage": {
+            "extends": [
+                "weekly-coverage"
+            ]
+        },
+        "docs": {
+            "extends": [
+                "docs"
+            ]
+        },
+        "ui": {
+            "extends": [
+                "ui"
+            ]
+        },
+        "merge-foundation": {
+            "extends": [
+                "merge-foundation-branch"
             ]
         },
         "merge": {
