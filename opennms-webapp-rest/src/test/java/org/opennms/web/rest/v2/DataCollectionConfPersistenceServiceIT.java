@@ -39,6 +39,9 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDef;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionSource;
+import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
+import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
+import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -529,6 +532,286 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals(2, result.getTotalRecords());
         assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
+    }
+
+    @Test
+    @Transactional
+    public void shouldAddMibGroupToSnmpCollectionSource() {
+        final var src = new SnmpCollectionSource();
+        src.setName("test-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Test SNMP source");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final int before = snmpCollectionMibGroupDao.findAll().size();
+
+        final var dto = new SnmpCollectionMibGroupDto();
+        dto.setName("if-mib-interfaces");
+        dto.setIfType("Ethernet");
+        dto.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        dto.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        dto.setMibObjProperties("{\"property\":\"value\"}");
+        dto.setEnabled(true);
+
+        final Integer id = dataCollectionConfPersistenceService.addMibGroupToSnmpCollectionSources(src, dto);
+
+        assertNotNull(id);
+        assertEquals(before + 1, snmpCollectionMibGroupDao.findAll().size());
+
+        final SnmpCollectionMibGroup persisted = snmpCollectionMibGroupDao.get(id);
+        assertNotNull(persisted);
+
+        assertNotNull(persisted.getCollectionSource());
+        assertEquals(src.getId(), persisted.getCollectionSource().getId());
+
+        assertEquals("if-mib-interfaces", persisted.getName());
+        assertEquals("Ethernet", persisted.getIfType());
+        assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", persisted.getMibGroupNames());
+        assertEquals("ifIndex,ifDescr,ifOperStatus", persisted.getMibObjects());
+        assertEquals("{\"property\":\"value\"}", persisted.getMibObjProperties());
+    }
+
+    @Test
+    @Transactional
+    public void shouldAddResourceTypeToSnmpCollectionSource() {
+        // Arrange: create a source
+        final var src = new SnmpCollectionSource();
+        src.setName("resource-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Test source for resource types");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final int before = snmpCollectionResourceTypeDao.findAll().size();
+
+        // Arrange: build request DTO
+        final var dto = new SnmpCollectionResourceTypeDto();
+        dto.setName("cpu-resource");
+        dto.setLabel("CPU Utilization");
+        dto.setResourceLabel("CPU Resource Label");
+        dto.setPersistenceSelectorStrategy("default");
+        dto.setStorageStrategy("db");
+        dto.setEnabled(true);
+
+        // Act
+        final Integer id = dataCollectionConfPersistenceService.addResourceTypeToSnmpCollectionSources(src, dto);
+
+        // Assert
+        assertNotNull(id);
+        assertEquals(before + 1, snmpCollectionResourceTypeDao.findAll().size());
+
+        final SnmpCollectionResourceType persisted = snmpCollectionResourceTypeDao.get(id);
+        assertNotNull(persisted);
+
+        // linked source
+        assertNotNull(persisted.getCollectionSource());
+        assertEquals(src.getId(), persisted.getCollectionSource().getId());
+
+        // mapped fields
+        assertEquals("cpu-resource", persisted.getName());
+        assertEquals("CPU Utilization", persisted.getLabel());
+        assertEquals("CPU Resource Label", persisted.getResourceLabel());
+        assertEquals("default", persisted.getPersistenceSelectorStrategy());
+        assertEquals("db", persisted.getStorageStrategy());
+        assertTrue(persisted.getEnabled());
+    }
+    @Test
+    @Transactional
+    public void shouldAddSystemDefToSnmpCollectionSource() {
+        final var src = new SnmpCollectionSource();
+        src.setName("systemdef-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Test source for system defs");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final int before = snmpCollectionSystemDefDao.findAll().size();
+
+        final var dto = new SnmpCollectionSystemDefDto();
+        dto.setName("LinuxSystem");
+        dto.setSysoid(".1.3.6.1.2.1.1");
+        dto.setSysoidMask("255.255.255.0");
+        dto.setIpAddresses("192.168.1.0,10.0.0.1");
+        dto.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        dto.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        dto.setEnabled(true);
+
+        final Integer id = dataCollectionConfPersistenceService.addSystemDefToSnmpCollectionSources(src, dto);
+
+        assertNotNull(id);
+        assertEquals(before + 1, snmpCollectionSystemDefDao.findAll().size());
+
+        final SnmpCollectionSystemDef persisted = snmpCollectionSystemDefDao.get(id);
+        assertNotNull(persisted);
+
+        assertNotNull(persisted.getCollectionSource());
+        assertEquals(src.getId(), persisted.getCollectionSource().getId());
+
+        assertEquals("LinuxSystem", persisted.getName());
+        assertEquals(".1.3.6.1.2.1.1", persisted.getSysoid());
+        assertEquals("255.255.255.0", persisted.getSysoidMask());
+        assertEquals("192.168.1.0,10.0.0.1", persisted.getIpAddresses());
+        assertEquals("255.255.255.0,255.0.0.0", persisted.getIpAddressMasks());
+        assertEquals("MIB-GROUP-1,MIB-GROUP-2", persisted.getMibGroupNames());
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateMibGroupForGivenSourceAndId() {
+        final var src = new SnmpCollectionSource();
+        src.setName("update-mibgroup-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Source for updateMibGroup test");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final var existing = new SnmpCollectionMibGroup();
+        existing.setCollectionSource(src);
+        existing.setName("old-mib-group");
+        existing.setIfType("OldIfType");
+        existing.setMibGroupNames("OLD-MIB::oldEntry");
+        existing.setMibObjects("oldIndex,oldDescr");
+        existing.setMibObjProperties("{\"old\":\"value\"}");
+        existing.setEnabled(true);
+        snmpCollectionMibGroupDao.saveOrUpdate(existing);
+        snmpCollectionMibGroupDao.flush();
+
+        final int before = snmpCollectionMibGroupDao.findAll().size();
+
+        final var dto = new SnmpCollectionMibGroupDto();
+        dto.setName("new-mib-group");
+        dto.setIfType("NewIfType");
+        dto.setMibGroupNames("NEW-MIB::newEntry");
+        dto.setMibObjects("newIndex,newDescr");
+        dto.setMibObjProperties("{\"new\":\"value\"}");
+        dto.setEnabled(true);
+
+        dataCollectionConfPersistenceService.updateMibGroup(existing.getId(), src.getId(), dto);
+
+        assertEquals(before, snmpCollectionMibGroupDao.findAll().size());
+
+        final SnmpCollectionMibGroup updated = snmpCollectionMibGroupDao.get(existing.getId());
+        assertNotNull(updated);
+        assertNotNull(updated.getCollectionSource());
+        assertEquals(src.getId(), updated.getCollectionSource().getId());
+
+        assertEquals("new-mib-group", updated.getName());
+        assertEquals("NewIfType", updated.getIfType());
+        assertEquals("NEW-MIB::newEntry", updated.getMibGroupNames());
+        assertEquals("newIndex,newDescr", updated.getMibObjects());
+        assertEquals("{\"new\":\"value\"}", updated.getMibObjProperties());
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateResourceTypeForGivenSourceAndId() {
+        final var src = new SnmpCollectionSource();
+        src.setName("update-resourcetype-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Source for updateResourceType test");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final var existing = new SnmpCollectionResourceType();
+        existing.setCollectionSource(src);
+        existing.setName("old-resource");
+        existing.setLabel("Old Label");
+        existing.setResourceLabel("Old Resource Label");
+        existing.setPersistenceSelectorStrategy("oldSelector");
+        existing.setStorageStrategy("oldStorage");
+        existing.setEnabled(false);
+        snmpCollectionResourceTypeDao.saveOrUpdate(existing);
+        snmpCollectionResourceTypeDao.flush();
+
+        final int before = snmpCollectionResourceTypeDao.findAll().size();
+        final var dto = new SnmpCollectionResourceTypeDto();
+        dto.setName("new-resource");
+        dto.setLabel("New Label");
+        dto.setResourceLabel("New Resource Label");
+        dto.setPersistenceSelectorStrategy("newSelector");
+        dto.setStorageStrategy("newStorage");
+        dto.setEnabled(true);
+
+        dataCollectionConfPersistenceService.updateResourceType(existing.getId(), src.getId(), dto);
+
+        assertEquals(before, snmpCollectionResourceTypeDao.findAll().size());
+
+        final SnmpCollectionResourceType updated = snmpCollectionResourceTypeDao.get(existing.getId());
+        assertNotNull(updated);
+        assertNotNull(updated.getCollectionSource());
+        assertEquals(src.getId(), updated.getCollectionSource().getId());
+
+        assertEquals("new-resource", updated.getName());
+        assertEquals("New Label", updated.getLabel());
+        assertEquals("New Resource Label", updated.getResourceLabel());
+        assertEquals("newSelector", updated.getPersistenceSelectorStrategy());
+        assertEquals("newStorage", updated.getStorageStrategy());
+        assertTrue(updated.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateSystemDefForGivenSourceAndId() {
+        final var src = new SnmpCollectionSource();
+        src.setName("update-systemdef-source.snmp");
+        src.setVendor("test-vendor");
+        src.setDescription("Source for updateSystemDef test");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        final var existing = new SnmpCollectionSystemDef();
+        existing.setCollectionSource(src);
+        existing.setName("OldSystem");
+        existing.setSysoid(".1.3.6.1.2.1.1");
+        existing.setSysoidMask("255.255.0.0");
+        existing.setIpAddresses("10.0.0.1");
+        existing.setIpAddressMasks("255.0.0.0");
+        existing.setMibGroupNames("OLD-GROUP");
+        existing.setEnabled(true);
+        snmpCollectionSystemDefDao.saveOrUpdate(existing);
+        snmpCollectionSystemDefDao.flush();
+
+        final int before = snmpCollectionSystemDefDao.findAll().size();
+
+        final var dto = new SnmpCollectionSystemDefDto();
+        dto.setName("NewSystem");
+        dto.setSysoid(".1.3.6.1.2.1.2");
+        dto.setSysoidMask("255.255.255.0");
+        dto.setIpAddresses("192.168.1.0,10.0.0.2");
+        dto.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        dto.setMibGroupNames("NEW-GROUP-1,NEW-GROUP-2");
+        dto.setEnabled(true);
+
+        dataCollectionConfPersistenceService.updateSystemDef(existing.getId(), src.getId(), dto);
+        assertEquals(before, snmpCollectionSystemDefDao.findAll().size());
+
+        final SnmpCollectionSystemDef updated = snmpCollectionSystemDefDao.get(existing.getId());
+        assertNotNull(updated);
+        assertNotNull(updated.getCollectionSource());
+        assertEquals(src.getId(), updated.getCollectionSource().getId());
+
+        assertEquals("NewSystem", updated.getName());
+        assertEquals(".1.3.6.1.2.1.2", updated.getSysoid());
+        assertEquals("255.255.255.0", updated.getSysoidMask());
+        assertEquals("192.168.1.0,10.0.0.2", updated.getIpAddresses());
+        assertEquals("255.255.255.0,255.0.0.0", updated.getIpAddressMasks());
+        assertEquals("NEW-GROUP-1,NEW-GROUP-2", updated.getMibGroupNames());
     }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {
