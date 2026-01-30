@@ -130,7 +130,7 @@ export const useScvStore = defineStore('scvStore', () => {
         aliasMatched = true
       }
 
-      const keys = [...Object.keys(cred.attributes), 'username', 'password']
+      const keys = ['username', 'password', ...Object.keys(cred.attributes)]
 
       keys.forEach((key) => {
         if (aliasMatched || key.toLowerCase().includes(query.toLowerCase())) {

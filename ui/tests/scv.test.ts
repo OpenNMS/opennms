@@ -35,7 +35,7 @@ const mockCredentials: SCVCredentials = {
   attributes: {}
 }
 
-describe('scvStore test', () => {
+describe('scv test', () => {
   let wrapper: any
 
   beforeEach(() => {
