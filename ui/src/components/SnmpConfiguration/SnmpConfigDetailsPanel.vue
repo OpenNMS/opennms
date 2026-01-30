@@ -193,7 +193,6 @@ import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
-import { isNonEmptyString } from '@/lib/utils'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
 import { validateDefinition } from '@/lib/snmpValidator'
@@ -303,10 +302,8 @@ const loadInitialValues = () => {
     snmpVersion.value = SnmpVersions[2]
   }
     
-  // For now, just set firstIpAddress
-  // We will handle ranges, etc. later
-  firstIpAddress.value = props.displayIps && isNonEmptyString(props.firstIp) ? props.firstIp : ''
-  lastIpAddress.value =  props.displayIps && isNonEmptyString(props.lastIp) ? props.lastIp! : ''
+  firstIpAddress.value = props.firstIp || ''
+  lastIpAddress.value =  props.lastIp || ''
   const matchedLoc = store.monitoringLocations.find(x => x.name === currentConfig.location)
   selectedMonitoringLocation.value = matchedLoc ? { _text: matchedLoc.name, _value: matchedLoc.name } : undefined
   
@@ -402,6 +399,11 @@ const handleSave = async () => {
   }
 }
 
+const updateIpAddresses = (begin: string, end?: string) => {
+  firstIpAddress.value = begin || ''
+  lastIpAddress.value = end || ''
+}
+
 const handleCancel = () => {
   emit('cancel')
 }
@@ -426,10 +428,23 @@ const handleValidate = () => {
   }
 }
 
+defineExpose({
+  updateIpAddresses
+})
+
 watch([() => props.config, () => props.isCreate], () => {
   isLoading.value = true
   loadInitialValues()
   isLoading.value = false
+})
+
+watch([() => props.firstIp, () => props.lastIp], () => {
+  console.log('Props firstIp/lastIp changed, firstIp', props.firstIp, 'lastIp', props.lastIp)
+
+  if (props.displayIps) {
+    firstIpAddress.value = props.firstIp || ''
+    lastIpAddress.value = props.lastIp || ''
+  }
 })
 
 onMounted(() => {
