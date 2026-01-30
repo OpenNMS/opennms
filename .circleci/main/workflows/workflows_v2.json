@@ -103,7 +103,7 @@
                 "merge"
             ]
         },
-        "release-build":
+        "release-builds":
         {
             "extends": [
                 "build",
@@ -114,32 +114,6 @@
                 "merge",
                 "publish",
                 "publish-maven"
-            ]
-        },
-        "integration": {
-            "extends": [
-                "build",
-                "integration-test"
-            ]
-        },
-        "coverage": {
-            "extends": [
-                "weekly-coverage"
-            ]
-        },
-        "docs": {
-            "extends": [
-                "docs"
-            ]
-        },
-        "ui": {
-            "extends": [
-                "ui"
-            ]
-        },
-        "merge-foundation": {
-            "extends": [
-                "merge-foundation-branch"
             ]
         },
         "merge": {
