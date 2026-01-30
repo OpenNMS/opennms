@@ -2,7 +2,7 @@
 
 """
 This script helps with deciding on what we should build, by looking at the
-incoming changes and the build-triggers override file (if available)
+incoming changes and the build-triggers override file (if available).
 """
 
 import os
