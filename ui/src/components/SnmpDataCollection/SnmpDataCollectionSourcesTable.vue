@@ -11,7 +11,7 @@
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
-            :hint="'Search by Source, Vendor, UEI or Label'"
+            :hint="'Search by Source, Vendor or Description'"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
