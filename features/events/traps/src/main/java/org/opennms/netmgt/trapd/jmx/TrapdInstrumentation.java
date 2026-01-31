@@ -21,15 +21,20 @@
  */
 package org.opennms.netmgt.trapd.jmx;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.net.InetAddress;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TrapdInstrumentation {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrapdInstrumentation.class);
+    private static final String DEVICE_METRICS_FLAG = "org.opennms.netmgt.trapd.enableDeviceMetrics";
+
+    private final DeviceTrapMetricsRegistry<DeviceConsumerTrapMetrics> deviceRegistry;
 
     private final AtomicLong trapsReceived = new AtomicLong();
     private final AtomicLong v1TrapsReceived = new AtomicLong();
@@ -39,10 +44,14 @@ public class TrapdInstrumentation {
     private final AtomicLong trapsDiscarded = new AtomicLong();
     private final AtomicLong trapsErrored = new AtomicLong();
     private final AtomicLong rawTrapsReceived = new AtomicLong();
-    private final AtomicLong trapsDispatched = new AtomicLong();
     private int maxQueueSize = 0;
     private int batchSize = 0;
     private Supplier<Integer> queueSizeSupplier = () -> 0;
+
+    public TrapdInstrumentation() {
+        boolean enabled = Boolean.getBoolean(DEVICE_METRICS_FLAG);
+        this.deviceRegistry = new DeviceTrapMetricsRegistry<>(enabled, DeviceConsumerTrapMetrics::new, "consumer");
+    }
 
     public void incTrapsReceivedCount(String version) {
         trapsReceived.incrementAndGet();
@@ -58,12 +67,36 @@ public class TrapdInstrumentation {
         }
     }
 
+    public void incTrapsReceivedCount(String version, String location, InetAddress trapAddress) {
+        incTrapsReceivedCount(version);
+        DeviceConsumerTrapMetrics device = getDeviceMetrics(location, trapAddress);
+        if (device != null) {
+            device.incTrapsReceived();
+        }
+    }
+
     public void incDiscardCount() {
         trapsDiscarded.incrementAndGet();
     }
 
+    public void incDiscardCount(String location, InetAddress trapAddress) {
+        incDiscardCount();
+        DeviceConsumerTrapMetrics device = getDeviceMetrics(location, trapAddress);
+        if (device != null) {
+            device.incTrapsDiscarded();
+        }
+    }
+
     public void incErrorCount() {
         trapsErrored.incrementAndGet();
+    }
+
+    public void incErrorCount(String location, InetAddress trapAddress) {
+        incErrorCount();
+        DeviceConsumerTrapMetrics device = getDeviceMetrics(location, trapAddress);
+        if (device != null) {
+            device.incTrapsErrored();
+        }
     }
 
     public long getV1TrapsReceived() {
@@ -102,14 +135,6 @@ public class TrapdInstrumentation {
         return rawTrapsReceived.get();
     }
 
-    public void incTrapsDispatched(int count) {
-        trapsDispatched.addAndGet(count);
-    }
-
-    public long getTrapsDispatched() {
-        return trapsDispatched.get();
-    }
-
     public void setMaxQueueSize(int size) {
         this.maxQueueSize = size;
     }
@@ -132,5 +157,16 @@ public class TrapdInstrumentation {
 
     public int getCurrentQueueSize() {
         return queueSizeSupplier.get();
+    }
+
+    public void shutdown() {
+        deviceRegistry.shutdown();
+    }
+
+    private DeviceConsumerTrapMetrics getDeviceMetrics(String location, InetAddress trapAddress) {
+        if (location == null || trapAddress == null) {
+            return null;
+        }
+        return deviceRegistry.getOrCreate(location, InetAddressUtils.str(trapAddress));
     }
 }

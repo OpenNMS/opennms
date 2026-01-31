@@ -54,9 +54,6 @@ public interface TrapdMBean extends BaseOnmsMBean {
     /** @return The number of raw traps received at the listener level (before any processing) since Trapd was last started */
     public long getRawTrapsReceived();
 
-    /** @return The number of individual traps dispatched to the consumer since Trapd was last started */
-    public long getTrapsDispatched();
-
     /** @return The configured maximum queue size for trap dispatch */
     public int getMaxQueueSize();
 

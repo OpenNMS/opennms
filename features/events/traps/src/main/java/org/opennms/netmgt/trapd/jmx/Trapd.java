@@ -93,12 +93,6 @@ public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.net
 
     /** {@inheritDoc} */
     @Override
-    public long getTrapsDispatched() {
-        return getTrapdInstrumentation().getTrapsDispatched();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public int getMaxQueueSize() {
         return getTrapdInstrumentation().getMaxQueueSize();
     }

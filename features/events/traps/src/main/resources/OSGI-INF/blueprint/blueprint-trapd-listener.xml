@@ -16,11 +16,13 @@
 			<cm:property name="trapd.batch.size" value="1000" />
 			<cm:property name="trapd.batch.interval" value="500" />
 			<cm:property name="trapd.useAddressFromVarbind" value="false" />
+			<cm:property name="trapd.enableDeviceMetrics" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
 	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+	<reference id="identity" interface="org.opennms.distributed.core.api.Identity" availability="optional"/>
 
 	<!-- Config Bean -->
 	<bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
@@ -50,6 +52,8 @@
 	<bean id="trapListenerMetrics" class="org.opennms.netmgt.trapd.TrapListenerMetrics"
 		  init-method="startJmxReporter" destroy-method="stopJmxReporter">
 		<argument ref="trapdMetricRegistry"/>
+		<argument ref="identity"/>
+		<argument value="${trapd.enableDeviceMetrics}"/>
 	</bean>
 
 	<!--

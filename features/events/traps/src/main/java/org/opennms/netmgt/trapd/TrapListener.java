@@ -84,9 +84,11 @@ public class TrapListener implements TrapNotificationListener {
 
     @Override
     public void trapReceived(TrapInformation trapInformation) {
+        final InetAddress trapAddress = trapInformation.getTrapAddress();
+
         // Count raw trap at listener level before any processing
         if (m_listenerMetrics != null) {
-            m_listenerMetrics.incRawTrapsReceivedCount();
+            m_listenerMetrics.incRawTrapsReceivedCount(trapAddress);
         }
         TrapSinkConsumer.trapdInstrumentation.incRawTrapsReceivedCount();
 
@@ -97,21 +99,16 @@ public class TrapListener implements TrapNotificationListener {
                             LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
                             // This trap will never reach the sink consumer
                             if (m_listenerMetrics != null) {
-                                m_listenerMetrics.incErrorCount();
+                                m_listenerMetrics.incErrorCount(trapAddress);
                             }
                             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
-                        } else {
-                            if (m_listenerMetrics != null) {
-                                m_listenerMetrics.incTrapsDispatched();
-                            }
-                            TrapSinkConsumer.trapdInstrumentation.incTrapsDispatched(1);
                         }
                     });
         } catch (final SnmpException | IllegalArgumentException ex) {
             LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
             // This trap will never reach the sink consumer
             if (m_listenerMetrics != null) {
-                m_listenerMetrics.incErrorCount();
+                m_listenerMetrics.incErrorCount(trapAddress);
             }
             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
         }
