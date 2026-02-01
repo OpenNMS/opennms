@@ -313,9 +313,6 @@ const sourceCreationErrors = computed(() => {
   if (configName.value.trim() === '') {
     error.name = 'Configuration name is required.'
   }
-  if (vendor.value.trim() === '') {
-    error.vendor = 'Vendor is required.'
-  }
   if (vendor.value && vendor.value.length > 128) {
     error.vendor = 'Vendor must be less than 128 characters.'
   }
@@ -673,9 +670,10 @@ const showSourceCreationDialog = () => {
 
 const handleSourceCreationSave = async () => {
   try {
+    const newVendor = vendor.value ? vendor.value : configName.value.split(' ')[1]
     const response = await addEventConfigSource(
       configName.value,
-      vendor.value,
+      newVendor,
       ''
     )
     if (response && typeof response === 'object' && response.status === 201) {
