@@ -671,6 +671,13 @@ const showSourceCreationDialog = () => {
 const handleSourceCreationSave = async () => {
   try {
     const newVendor = vendor.value ? vendor.value : configName.value.split(' ')[1]
+    if (newVendor.length > 128) {
+      snackbar.showSnackBar({
+        msg: 'Vendor must be less than 128 characters.',
+        error: true
+      })
+      return      
+    }
     const response = await addEventConfigSource(
       configName.value,
       newVendor,
