@@ -6,9 +6,6 @@ import subprocess
 
 vulnerabilities = []
 
-SAVE_PATH = '/home/circleci/project/artifacts/filtered_vulnerabilities.txt'
-INPUT_PATH = '/home/circleci/project/artifacts/'
-
 def parse_filtered_vulnerabilities(file_path):
     global vulnerabilities
 
@@ -72,13 +69,13 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 if __name__ == "__main__":
-    for json_file in glob.glob(f'{INPUT_PATH}*_filtered_vulnerabilities.json'):
+    for json_file in glob.glob('/home/circleci/project/artifacts/*_filtered_vulnerabilities.json'):
         
         print(f"Processing JSON file: {json_file}")
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
         # For this example, we assume that the filtered files are already generated
         output=subprocess.run([
-            "python3", f"{INPUT_PATH}.circleci/pyscripts/analyze_trivy_report.py", json_file
+            "python3", "/home/circleci/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
         ], capture_output=True, text=True)
         print("Subprocess output:")
         print(output.stdout)
@@ -87,16 +84,16 @@ if __name__ == "__main__":
             print(output.stderr)
         print(f"Completed analysis for {json_file}")
 
-    with open(f'{SAVE_PATH}', 'a') as outfile:
+    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
         outfile.write("-" * 150 + "\n")
 
-    for file_path in glob.glob(f'{INPUT_PATH}*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
+    for file_path in glob.glob('/home/circleci/project/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         parse_filtered_vulnerabilities(file_path)
         print(f"Parsed {len(vulnerabilities)} total vulnerabilities so far")
 
     # Write all deduplicated vulnerabilities once at the end
-    with open(f'{SAVE_PATH}', 'a') as outfile:
+    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         for vuln in vulnerabilities:
             print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
             outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
