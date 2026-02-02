@@ -2,6 +2,7 @@ import re
 import os
 import logging
 import glob
+import subprocess
 
 vulnerabilities = []
 
@@ -69,7 +70,6 @@ if __name__ == "__main__":
         print(f"Processing JSON file: {json_file}")
         # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
         # For this example, we assume that the filtered files are already generated
-        import subprocess
         output=subprocess.run([
             "python3", "/home/circleci/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
         ], capture_output=True, text=True)
@@ -85,9 +85,11 @@ if __name__ == "__main__":
         outfile.write("-" * 150 + "\n")
 
     for file_path in glob.glob('/home/circleci/project/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
-        vulnerabilities = parse_filtered_vulnerabilities(file_path)
-        print(f"Parsed {len(vulnerabilities)} vulnerabilities from {file_path}")
-        with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
-            for vuln in vulnerabilities:
-                print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
-                outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
+        parse_filtered_vulnerabilities(file_path)
+        print(f"Parsed {len(vulnerabilities)} total vulnerabilities so far")
+
+    # Write all deduplicated vulnerabilities once at the end
+    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
+        for vuln in vulnerabilities:
+            print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
+            outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
