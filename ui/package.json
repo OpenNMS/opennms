@@ -112,7 +112,7 @@
     "@vue-leaflet/vue-leaflet": "^0.7.0",
     "@vue/test-utils": "^2.4.5",
     "diff": "^5.1.0",
-    "eslint": "^8.46.0",
+    "eslint": "^9.26.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-vue": "^9.22.0",
     "happy-dom": "^9.20.3",
