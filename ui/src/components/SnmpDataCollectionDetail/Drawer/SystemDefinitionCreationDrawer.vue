@@ -110,7 +110,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '../utils'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '../constants'
 
 const store = useSnmpDataCollectionDetailStore()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
