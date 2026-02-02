@@ -7,7 +7,7 @@ The {page-component-title} services run as an unprivileged user and cannot bind 
 For this reason, the default port for the SNMP trap/inform listener is set to `10162/udp` instead of the IANA registered port number `162/udp`.
 The following example shows how to configure the local firewall daemon to forward port `162/udp` to `10162/udp`.
 
-NOTE: If you need the SNMP trap listener on port `162/udp` directly, see xref:deployment:core/getting-started.adoc#set-up-core-instance[Binding to privileged ports].
+NOTE: If you need the SNMP trap listener on port `162/udp` directly, see xref:deployment:core/install.adoc#set-up-core-instance[Binding to privileged ports].
 
 [{tabs}]
 ====

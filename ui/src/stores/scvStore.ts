@@ -24,6 +24,8 @@ import { defineStore } from 'pinia'
 import API from '@/services'
 import { SCVCredentials } from '@/types/scv'
 
+export const GET_ALL_ALIAS = '_all'
+
 export const useScvStore = defineStore('scvStore', () => {
   const aliases = ref([] as string[])
   const credentials = ref({
@@ -53,6 +55,14 @@ export const useScvStore = defineStore('scvStore', () => {
   }
 
   const addCredentials = async () => {
+    if (!credentials.value.alias) {
+      throw new Error('Alias is required to add new credentials.')
+    }
+
+    if (credentials.value.alias.toLowerCase() === GET_ALL_ALIAS) {
+      throw new Error(`The alias "${GET_ALL_ALIAS}" is reserved and cannot be used.`)
+    }
+
     const success = await API.addCredentials(credentials.value)
 
     if (success) {
@@ -62,6 +72,14 @@ export const useScvStore = defineStore('scvStore', () => {
   }
 
   const updateCredentials = async () => {
+    if (!credentials.value.alias) {
+      throw new Error('Alias is required to add new credentials.')
+    }
+
+    if (credentials.value.alias.toLowerCase() === GET_ALL_ALIAS) {
+      throw new Error(`The alias "${GET_ALL_ALIAS}" is reserved and cannot be used.`)
+    }
+
     const success = await API.updateCredentials(credentials.value)
 
     if (success) {

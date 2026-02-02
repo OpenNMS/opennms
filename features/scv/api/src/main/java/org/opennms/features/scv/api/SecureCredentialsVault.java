@@ -21,11 +21,11 @@
  */
 package org.opennms.features.scv.api;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface SecureCredentialsVault {
-
-    public enum KeyStoreType {
+    enum KeyStoreType {
         JCEKS,
         PKCS12
     }
@@ -34,8 +34,10 @@ public interface SecureCredentialsVault {
 
     Credentials getCredentials(String alias);
 
+    /** Map of alias to Credentials. */
+    Map<String, Credentials> getAllCredentials();
+
     void setCredentials(String alias, Credentials credentials);
 
     void deleteCredentials(String alias);
-
 }

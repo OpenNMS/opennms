@@ -4,7 +4,7 @@
 By default, the Usage Statistics module collects anonymous usage statistics.
 It publishes them to an aggregated list of statistics from all participating users (https://stats.opennms.com/[OpenNMS Usage Report]) when {page-component-title} starts, and every 24 hours after.
 
-(For information on usage statistics collection and user consent, see xref:deployment:core/getting-started.adoc#usage-statistics[usage statistics].)
+(For information on usage statistics collection and user consent, see xref:deployment:core/install.adoc#usage-statistics[usage statistics].)
 
 {page-component-title} collects and publishes a number of data points, including the following:
 

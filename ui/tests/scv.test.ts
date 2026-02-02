@@ -23,7 +23,7 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { beforeEach, describe, expect, test } from 'vitest'
-import { useScvStore } from '@/stores/scvStore'
+import { GET_ALL_ALIAS, useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
 
@@ -71,6 +71,24 @@ describe('scvStore test', () => {
     scvStore.aliases = ['alias1']
     // start to create new with alias1
     await aliasInput.setValue('alias1')
+    // expect add btn to remain disabled
+    expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
+    // replace with alias2
+    await aliasInput.setValue('alias2')
+    // expect add btn to be enabled
+    expect(addCredsBtn.attributes('aria-disabled')).toBeUndefined()
+  })
+
+  test('the user may not add a reserved alias', async () => {
+    const scvStore = useScvStore()
+
+    const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
+    const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
+
+    // add alias1 to the list of current aliases
+    scvStore.aliases = ['alias1']
+    // start to create new with GET_ALL_ALIAS
+    await aliasInput.setValue(GET_ALL_ALIAS)
     // expect add btn to remain disabled
     expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
     // replace with alias2

@@ -30,9 +30,11 @@ public class ListCommand implements Function<ScvCli, Integer> {
     @Override
     public Integer apply(ScvCli scvCli) {
         Set<String> aliases = scvCli.getSecureCredentialsVault().getAliases();
-        for(String alias : aliases) {
+
+        for (String alias : aliases) {
             System.out.println(alias);
         }
+
         return 0;
     }
 }

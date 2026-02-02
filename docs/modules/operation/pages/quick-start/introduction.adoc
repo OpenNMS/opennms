@@ -2,7 +2,7 @@
 = Quick Start
 :description: Overview of {page-component-title} quick start documentation.
 
-This Quick Start guide assumes that you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/getting-started.adoc[installed a {page-component-title} instance], and that you are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
+This Quick Start guide assumes that you have already completed the xref:deployment:core/introduction.adoc[deployment steps], have xref:deployment:core/install.adoc[installed a {page-component-title} instance], and that you are able to connect to the web UI at `\http://<ip-or-fqdn-of-your-server>:8980/opennms`.
 
 The guide includes steps to set up basic monitoring with {page-component-title}, and involves minimal configuration.
 For more in-depth information on any topic, see the xref:deep-dive/introduction.adoc[Deep Dive] section.
