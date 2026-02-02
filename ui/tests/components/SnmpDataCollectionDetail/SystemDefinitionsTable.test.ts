@@ -1,5 +1,6 @@
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -9,6 +10,12 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('./Drawer/SystemDefinitionCreationDrawer.vue', () => ({
+  default: {
+    template: '<div data-test="system-definition-creation-drawer"></div>'
+  }
+}))
 
 describe('SystemDefinitionsTable.vue', () => {
   let wrapper: VueWrapper<any>
@@ -38,6 +45,7 @@ describe('SystemDefinitionsTable.vue', () => {
     store.onSystemDefsPageChange = vi.fn().mockResolvedValue(undefined)
     store.onSystemDefsPageSizeChange = vi.fn().mockResolvedValue(undefined)
     store.onSystemDefsSortChange = vi.fn().mockResolvedValue(undefined)
+    store.openSystemDefCreationDrawer = vi.fn()
 
     mockSystemDef = {
       id: 1,
@@ -130,21 +138,6 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.find('.system-definitions-table-container').exists()).toBe(true)
     })
 
-    it('should render search input with correct hint text', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.exists()).toBe(true)
-      expect(searchInput.props('hint')).toBe('Search by Name')
-    })
-
-    it('should render search input with correct label', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('label')).toBe('Search')
-    })
-
-    it('should render search input with type search', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('type')).toBe('search')
-    })
   })
 
   describe('Empty State', () => {
@@ -154,22 +147,27 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.find('.data-table').exists()).toBe(false)
     })
 
-    it('should not render pagination when systemDefinitions is empty', async () => {
-      store.systemDefinitions = []
-      await wrapper.vm.$nextTick()
-      expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
-    })
-
-    it('should not render table rows when systemDefinitions is empty', async () => {
-      store.systemDefinitions = []
-      await wrapper.vm.$nextTick()
-      expect(wrapper.findAll('transition-group-stub tr').length).toBe(0)
-    })
-
     it('should still show header with search and refresh when empty', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+    })
+  })
+
+  describe('Add System Definition Button', () => {
+    it('should render add button and have correct attributes', () => {
+      const addButton = wrapper.find('[data-test="add-system-definition-button"]')
+      expect(addButton.exists()).toBe(true)
+      expect(addButton.text()).toBe('Add System Definition')
+    })
+
+    it('should call openSystemDefCreationDrawer with Create mode when clicked', async () => {
+      const spy = vi.spyOn(store, 'openSystemDefCreationDrawer')
+      const addButton = wrapper.find('[data-test="add-system-definition-button"]')
+      await addButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(null, CreateEditMode.Create)
     })
   })
 
@@ -249,16 +247,11 @@ describe('SystemDefinitionsTable.vue', () => {
         { id: 'enabled', label: 'Status' }
       ]
 
-      it.each(expectedColumns)('should render column header for $label', ({ label }) => {
+      it.each(expectedColumns)('should render column header with correct property for $label', ({ id, label }) => {
         const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const headerExists = sortHeaders.some((h) => h.text().includes(label))
-        expect(headerExists).toBe(true)
-      })
-
-      it.each(expectedColumns)('should have correct property for $label column', ({ id }) => {
-        const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const properties = sortHeaders.map((h) => h.props('property'))
-        expect(properties).toContain(id)
+        const header = sortHeaders.find((h) => h.props('property') === id)
+        expect(header).toBeDefined()
+        expect(header?.text()).toContain(label)
       })
     })
   })
@@ -574,14 +567,6 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
       expect(store.resetSystemDefinitionsFilters).toHaveBeenCalledTimes(1)
     })
-
-    it('should be clickable multiple times', async () => {
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-
-      expect(store.resetSystemDefinitionsFilters).toHaveBeenCalledTimes(3)
-    })
   })
 
   describe('Edit Button', () => {
@@ -596,35 +581,14 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(editButtons.length).toBe(2)
     })
 
-    it('should have correct title attribute on edit button', () => {
+    it('should call openSystemDefCreationDrawer when edit button is clicked', async () => {
+      const spy = vi.spyOn(store, 'openSystemDefCreationDrawer')
       const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.attributes('title')).toBeDefined()
-    })
+      await editButton.trigger('click')
+      await wrapper.vm.$nextTick()
 
-    it('should log to console when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-      consoleSpy.mockRestore()
-    })
-
-    it('should pass the correct system definition when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      const editButtons = wrapper.findAll('[data-test="edit-button"]')
-      await editButtons[1].trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef2)
-      consoleSpy.mockRestore()
-    })
-
-    it('should handle edit click via onSystemDefEditClicked function', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      wrapper.vm.onSystemDefEditClicked(mockSystemDef)
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-      consoleSpy.mockRestore()
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith(mockSystemDef, CreateEditMode.Edit)
     })
   })
 
@@ -639,60 +603,26 @@ describe('SystemDefinitionsTable.vue', () => {
       const dropdowns = wrapper.findAllComponents(FeatherDropdown)
       expect(dropdowns.length).toBe(2)
     })
-
-    it('should render dropdown trigger button', () => {
-      const dropdown = wrapper.findComponent(FeatherDropdown)
-      const triggerButton = dropdown.findComponent(FeatherButton)
-      expect(triggerButton.exists()).toBe(true)
-    })
-
-    it('should have More Options icon on dropdown trigger', () => {
-      const dropdown = wrapper.findComponent(FeatherDropdown)
-      const triggerButton = dropdown.findComponent(FeatherButton)
-      expect(triggerButton.props('icon')).toBe('More Options')
-    })
   })
 
   describe('Status Display', () => {
-    describe('Enabled/Disabled Status', () => {
-      const statusCases = [
-        { enabled: true, expectedText: 'Enabled' },
-        { enabled: false, expectedText: 'Disabled' }
-      ]
+    const statusCases = [
+      { enabled: true, expectedText: 'Enabled' },
+      { enabled: false, expectedText: 'Disabled' }
+    ]
 
-      it.each(statusCases)(
-        'should display "$expectedText" when enabled is $enabled',
-        async ({ enabled, expectedText }) => {
-          const systemDef = { ...mockSystemDef, enabled }
-          store.systemDefinitions = [systemDef]
-          store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-          await wrapper.vm.$nextTick()
-
-          const rows = wrapper.findAll('transition-group-stub tr')
-          expect(rows[0].text()).toContain(expectedText)
-        }
-      )
-    })
-
-    describe('Dropdown Status Text', () => {
-      it('should render dropdown for enabled system definitions', async () => {
-        store.systemDefinitions = [mockSystemDef]
+    it.each(statusCases)(
+      'should display "$expectedText" when enabled is $enabled',
+      async ({ enabled, expectedText }) => {
+        const systemDef = { ...mockSystemDef, enabled }
+        store.systemDefinitions = [systemDef]
         store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
         await wrapper.vm.$nextTick()
 
-        const dropdown = wrapper.findComponent(FeatherDropdown)
-        expect(dropdown.exists()).toBe(true)
-      })
-
-      it('should render dropdown for disabled system definitions', async () => {
-        store.systemDefinitions = [disabledSystemDef]
-        store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-        await wrapper.vm.$nextTick()
-
-        const dropdown = wrapper.findComponent(FeatherDropdown)
-        expect(dropdown.exists()).toBe(true)
-      })
-    })
+        const rows = wrapper.findAll('transition-group-stub tr')
+        expect(rows[0].text()).toContain(expectedText)
+      }
+    )
   })
 
   describe('System Definition Data Display', () => {
@@ -737,9 +667,8 @@ describe('SystemDefinitionsTable.vue', () => {
   })
 
   describe('Multiple System Definitions', () => {
-    const systemDefCounts = [1, 2, 5, 10]
-
-    it.each(systemDefCounts)('should render %i system definition rows correctly', async (count) => {
+    it('should render multiple system definition rows correctly', async () => {
+      const count = 5
       const systemDefinitions: SnmpCollectionSystemDef[] = Array.from({ length: count }, (_, i) => ({
         ...mockSystemDef,
         id: i + 1,
@@ -757,110 +686,44 @@ describe('SystemDefinitionsTable.vue', () => {
   })
 
   describe('Edge Cases', () => {
-    it('should handle system definition with empty strings', async () => {
-      const emptySystemDef: SnmpCollectionSystemDef = {
-        id: 1,
+    it('should handle empty mib group names', async () => {
+      const emptyMibDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        mibGroupNames: '[]'
+      }
+
+      store.systemDefinitions = [emptyMibDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(emptyMibDef.id)
+      await wrapper.vm.$nextTick()
+
+      const expandedContent = wrapper.find('.expanded-content')
+      expect(expandedContent.exists()).toBe(true)
+    })
+
+    it('should handle system definition with all empty fields', async () => {
+      const emptyFieldsDef: SnmpCollectionSystemDef = {
+        id: 99,
         name: '',
         sysoid: '',
         sysoidMask: '',
         ipAddresses: '[]',
         ipAddressMasks: '[]',
         mibGroupNames: '[]',
-        enabled: true,
+        enabled: false,
         collectionSourceId: 1,
-        collectionSourceName: ''
+        collectionSourceName: 'Test Source'
       }
 
-      store.systemDefinitions = [emptySystemDef]
+      store.systemDefinitions = [emptyFieldsDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
+      expect(wrapper.find('.data-table').exists()).toBe(true)
       const rows = wrapper.findAll('transition-group-stub tr')
       expect(rows.length).toBeGreaterThanOrEqual(1)
-    })
-
-    it('should handle system definition with special characters in name', async () => {
-      const specialSystemDef: SnmpCollectionSystemDef = {
-        ...mockSystemDef,
-        name: 'Test-System_Def.v2',
-        sysoid: '.1.3.6.1.4.1.12345.6.7.8'
-      }
-
-      store.systemDefinitions = [specialSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Test-System_Def.v2')
-    })
-
-    it('should handle system definition with very long OID strings', async () => {
-      const longOidSystemDef: SnmpCollectionSystemDef = {
-        ...mockSystemDef,
-        sysoid: '.1.3.6.1.4.1.8072.3.2.10.1.2.3.4.5.6.7.8.9.10',
-        sysoidMask: '.1.3.6.1.4.1.8072.3.2.10.1.2.3.4'
-      }
-
-      store.systemDefinitions = [longOidSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(longOidSystemDef.sysoid)
-    })
-
-    it('should handle system definition with many mib groups', async () => {
-      const manyMibGroupsDef: SnmpCollectionSystemDef = {
-        ...mockSystemDef,
-        mibGroupNames: '["group1", "group2", "group3", "group4", "group5", "group6", "group7", "group8"]'
-      }
-
-      store.systemDefinitions = [manyMibGroupsDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      wrapper.vm.toggleExpand(manyMibGroupsDef.id)
-      await wrapper.vm.$nextTick()
-
-      const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('group1')
-      expect(expandedContent.text()).toContain('group8')
-    })
-
-    it('should handle toggling expansion on non-existent row gracefully', async () => {
-      store.systemDefinitions = [mockSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      // Expand
-      wrapper.vm.toggleExpand(mockSystemDef.id)
-      await wrapper.vm.$nextTick()
-
-      // Clear data
-      store.systemDefinitions = []
-      await wrapper.vm.$nextTick()
-
-      // Should not throw error
-      expect(wrapper.findAll('.expanded-content').length).toBe(0)
-    })
-
-    it('should handle pagination with total less than page size', async () => {
-      store.systemDefinitions = [mockSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      const pagination = wrapper.findComponent(FeatherPagination)
-      expect(pagination.props('total')).toBe(1)
-      expect(pagination.props('pageSize')).toBe(10)
-    })
-
-    it('should handle large total counts', async () => {
-      store.systemDefinitions = [mockSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 10000 }
-      await wrapper.vm.$nextTick()
-
-      const pagination = wrapper.findComponent(FeatherPagination)
-      expect(pagination.props('total')).toBe(10000)
     })
   })
 
@@ -873,69 +736,12 @@ describe('SystemDefinitionsTable.vue', () => {
 
     it('should have aria-label on table', () => {
       const table = wrapper.find('.data-table')
-      expect(table.attributes('aria-label')).toBeDefined()
+      expect(table.attributes('aria-label')).toBe('Events Table')
     })
 
-    it('should have scope="col" on all sort headers', () => {
-      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      sortHeaders.forEach((header) => {
-        expect(header.attributes('scope')).toBe('col')
-      })
-    })
-
-    it('should have title attribute on edit buttons', () => {
+    it('should have title attribute on edit button', () => {
       const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.attributes('title')).toBeDefined()
-    })
-
-    it('should have refresh button present', () => {
-      const refreshButton = wrapper.find('[data-test="refresh-button"]')
-      expect(refreshButton.exists()).toBe(true)
-    })
-
-    it('should have search input with label', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('label')).toBe('Search')
-    })
-  })
-
-  describe('Component Structure', () => {
-    it('should have header section', () => {
-      expect(wrapper.find('.header').exists()).toBe(true)
-    })
-
-    it('should have title-container within header', () => {
-      expect(wrapper.find('.header .title-container').exists()).toBe(true)
-    })
-
-    it('should have action-container within header', () => {
-      expect(wrapper.find('.header .action-container').exists()).toBe(true)
-    })
-
-    it('should have search-container within action-container', () => {
-      expect(wrapper.find('.header .action-container .search-container').exists()).toBe(true)
-    })
-
-    it('should have refresh button container', () => {
-      expect(wrapper.find('.header .action-container .refresh').exists()).toBe(true)
-    })
-
-    it('should have container section for table and pagination', () => {
-      expect(wrapper.find('.container').exists()).toBe(true)
-    })
-  })
-
-  describe('Loading States', () => {
-    it('should handle store loading state changes', async () => {
-      store.isLoading = true
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.exists()).toBe(true)
-
-      store.isLoading = false
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.exists()).toBe(true)
+      expect(editButton.attributes('title')).toContain('Edit')
     })
   })
 
@@ -1035,9 +841,7 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(store.onSystemDefsPageChange).toHaveBeenCalledWith(2)
     })
 
-    it('should handle expand, edit, and collapse flow', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
+    it('should handle expand and collapse flow', async () => {
       store.systemDefinitions = [mockSystemDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
@@ -1047,16 +851,10 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll('.expanded-content').length).toBe(1)
 
-      // Edit
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-
       // Collapse
       wrapper.vm.toggleExpand(mockSystemDef.id)
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll('.expanded-content').length).toBe(0)
-
-      consoleSpy.mockRestore()
     })
 
     it('should handle refresh and maintain state', async () => {

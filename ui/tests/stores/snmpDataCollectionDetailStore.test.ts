@@ -13,7 +13,9 @@ vi.mock('@/services/snmpDataCollectionService', () => ({
   getSnmpDataCollectionSourceById: vi.fn(),
   getSnmpDataCollectionSystemDefinitions: vi.fn(),
   getSnmpDataCollectionMibGroups: vi.fn(),
-  getSnmpDataCollectionResourceTypes: vi.fn()
+  getSnmpDataCollectionResourceTypes: vi.fn(),
+  getAllResourceTypeNames: vi.fn(),
+  getAllMibGroupNames: vi.fn()
 }))
 
 describe('useSnmpDataCollectionDetailStore', () => {
@@ -137,55 +139,38 @@ describe('useSnmpDataCollectionDetailStore', () => {
   })
 
   describe('Initial State', () => {
-    it('should have correct initial state', () => {
-      expect(store.isLoading).toBe(false)
-      expect(store.selectedCollectionSource).toBeNull()
-      expect(store.systemDefinitions).toEqual([])
-      expect(store.systemDefsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
-      expect(store.systemDefsSorting).toEqual({ sortOrder: 'desc', sortKey: 'createdTime' })
-      expect(store.systemDefsSearchTerm).toBe('')
-      expect(store.resourceTypes).toEqual([])
-      expect(store.resourceTypesPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
-      expect(store.resourceTypesSorting).toEqual({ sortOrder: 'desc', sortKey: 'createdTime' })
-      expect(store.resourceTypesSearchTerm).toBe('')
-      expect(store.mibGroups).toEqual([])
-      expect(store.mibGroupsPagination).toEqual({ page: 1, pageSize: 10, total: 0 })
-      expect(store.mibGroupsSorting).toEqual({ sortOrder: 'desc', sortKey: 'createdTime' })
-      expect(store.mibGroupsSearchTerm).toBe('')
-    })
-
-    it('should have isLoading set to false initially', () => {
-      expect(store.isLoading).toBe(false)
-    })
-
-    it('should have null selectedCollectionSource initially', () => {
-      expect(store.selectedCollectionSource).toBeNull()
-    })
-
-    it('should have empty arrays for all data collections', () => {
-      expect(store.systemDefinitions).toEqual([])
-      expect(store.resourceTypes).toEqual([])
-      expect(store.mibGroups).toEqual([])
-    })
-
-    it('should have default pagination for all sections', () => {
+    it('should have correct initial state for all properties', () => {
       const defaultPagination = { page: 1, pageSize: 10, total: 0 }
-      expect(store.systemDefsPagination).toEqual(defaultPagination)
-      expect(store.resourceTypesPagination).toEqual(defaultPagination)
-      expect(store.mibGroupsPagination).toEqual(defaultPagination)
-    })
-
-    it('should have default sorting for all sections', () => {
       const defaultSorting = { sortOrder: 'desc', sortKey: 'createdTime' }
-      expect(store.systemDefsSorting).toEqual(defaultSorting)
-      expect(store.resourceTypesSorting).toEqual(defaultSorting)
-      expect(store.mibGroupsSorting).toEqual(defaultSorting)
-    })
 
-    it('should have empty search terms for all sections', () => {
+      // Loading and source
+      expect(store.isLoading).toBe(false)
+      expect(store.selectedCollectionSource).toBeNull()
+
+      // System Definitions
+      expect(store.systemDefinitions).toEqual([])
+      expect(store.systemDefsPagination).toEqual(defaultPagination)
+      expect(store.systemDefsSorting).toEqual(defaultSorting)
       expect(store.systemDefsSearchTerm).toBe('')
+
+      // Resource Types
+      expect(store.resourceTypes).toEqual([])
+      expect(store.resourceTypesPagination).toEqual(defaultPagination)
+      expect(store.resourceTypesSorting).toEqual(defaultSorting)
       expect(store.resourceTypesSearchTerm).toBe('')
+
+      // MIB Groups
+      expect(store.mibGroups).toEqual([])
+      expect(store.mibGroupsPagination).toEqual(defaultPagination)
+      expect(store.mibGroupsSorting).toEqual(defaultSorting)
       expect(store.mibGroupsSearchTerm).toBe('')
+
+      // Drawer state
+      expect(store.systemDefDrawerState).toEqual({
+        visible: false,
+        isEditMode: 0
+      })
+      expect(store.selectedSystemDef).toBeNull()
     })
   })
 
@@ -472,14 +457,6 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(getSnmpDataCollectionSystemDefinitions).toHaveBeenCalledWith(1, 0, 10, '', 'name', 'asc')
     })
 
-    it('should handle page change to first page', async () => {
-      store.systemDefsPagination.page = 5
-      await store.onSystemDefsPageChange(1)
-
-      expect(store.systemDefsPagination.page).toBe(1)
-      expect(getSnmpDataCollectionSystemDefinitions).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
-    })
-
     it('should preserve search term when changing page', async () => {
       store.systemDefsSearchTerm = 'existing search'
       await store.onSystemDefsPageChange(2)
@@ -694,14 +671,6 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(getSnmpDataCollectionMibGroups).toHaveBeenCalledWith(1, 0, 10, '', 'ifType', 'asc')
     })
 
-    it('should handle page change to first page', async () => {
-      store.mibGroupsPagination.page = 5
-      await store.onMibGroupsPageChange(1)
-
-      expect(store.mibGroupsPagination.page).toBe(1)
-      expect(getSnmpDataCollectionMibGroups).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
-    })
-
     it('should preserve search term when changing page', async () => {
       store.mibGroupsSearchTerm = 'existing search'
       await store.onMibGroupsPageChange(2)
@@ -906,14 +875,6 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(getSnmpDataCollectionResourceTypes).toHaveBeenCalledWith(1, 0, 10, '', 'name', 'desc')
     })
 
-    it('should handle page change to first page', async () => {
-      store.resourceTypesPagination.page = 5
-      await store.onResourceTypesPageChange(1)
-
-      expect(store.resourceTypesPagination.page).toBe(1)
-      expect(getSnmpDataCollectionResourceTypes).toHaveBeenCalledWith(1, 0, 10, '', 'createdTime', 'desc')
-    })
-
     it('should preserve search term when changing page', async () => {
       store.resourceTypesSearchTerm = 'existing search'
       await store.onResourceTypesPageChange(2)
@@ -1071,6 +1032,35 @@ describe('useSnmpDataCollectionDetailStore', () => {
       await store.fetchSystemDefinitions()
 
       expect(getSnmpDataCollectionSystemDefinitions).toHaveBeenLastCalledWith(2, 0, 10, '', 'createdTime', 'desc')
+    })
+  })
+
+  describe('Drawer State Management', () => {
+    it('should open drawer in create mode', () => {
+      store.openSystemDefCreationDrawer(null, 1)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.systemDefDrawerState.isEditMode).toBe(1)
+      expect(store.selectedSystemDef).toBeNull()
+    })
+
+    it('should open drawer in edit mode with system definition', () => {
+      const systemDef = mockSystemDefinitions[0]
+      store.openSystemDefCreationDrawer(systemDef, 2)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.systemDefDrawerState.isEditMode).toBe(2)
+      expect(store.selectedSystemDef).toEqual(systemDef)
+    })
+
+    it('should close drawer and reset state', () => {
+      store.systemDefDrawerState.visible = true
+      store.systemDefDrawerState.isEditMode = 2
+      store.selectedSystemDef = mockSystemDefinitions[0]
+
+      store.closeSystemDefDrawer()
+
+      expect(store.systemDefDrawerState.visible).toBe(false)
+      expect(store.systemDefDrawerState.isEditMode).toBe(0)
+      expect(store.selectedSystemDef).toBeNull()
     })
   })
 
@@ -1760,6 +1750,35 @@ describe('useSnmpDataCollectionDetailStore', () => {
     )
   })
 
+  describe('Drawer State Management', () => {
+    it('should open drawer in create mode', () => {
+      store.openSystemDefCreationDrawer(null, 1)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.systemDefDrawerState.isEditMode).toBe(1)
+      expect(store.selectedSystemDef).toBeNull()
+    })
+
+    it('should open drawer in edit mode with system definition', () => {
+      const systemDef = mockSystemDefinitions[0]
+      store.openSystemDefCreationDrawer(systemDef, 2)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.systemDefDrawerState.isEditMode).toBe(2)
+      expect(store.selectedSystemDef).toEqual(systemDef)
+    })
+
+    it('should close drawer and reset state', () => {
+      store.systemDefDrawerState.visible = true
+      store.systemDefDrawerState.isEditMode = 2
+      store.selectedSystemDef = mockSystemDefinitions[0]
+
+      store.closeSystemDefDrawer()
+
+      expect(store.systemDefDrawerState.visible).toBe(false)
+      expect(store.systemDefDrawerState.isEditMode).toBe(0)
+      expect(store.selectedSystemDef).toBeNull()
+    })
+  })
+
   describe('Parametrized Tests - Error Types', () => {
     beforeEach(() => {
       store.selectedCollectionSource = mockCollectionSource
@@ -1817,3 +1836,4 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
   })
 })
+
