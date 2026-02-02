@@ -114,17 +114,19 @@ export const useScvStore = defineStore('scvStore', () => {
    * Returns a sorted list of ScvSearchItems grouped by alias which matches the query.
    * Match by alias returns the alias items, as well as all keys for the aliases.
    * Match by key returns the parent alias, then only the matching keys.
+   * If query is empty, returns all aliases and keys.
    */
   const queryCredentials = (query: string) => {
     const items = [] as ScvSearchItem[]
 
-    const sortedByAlias = allCredentials.value.sort((a, b) => a.alias.localeCompare(b.alias))
+    const sortedByAlias = [...allCredentials.value].sort((a, b) => a.alias.localeCompare(b.alias))
+    const displayAll = !query
 
     sortedByAlias.forEach((cred) => {
       let aliasPushed = false
       let aliasMatched = false
 
-      if (cred.alias.toLowerCase().includes(query.toLowerCase())) {
+      if (displayAll || cred.alias.toLowerCase().includes(query.toLowerCase())) {
         items.push(createScvSearchItem(cred, cred.alias, 'alias'))
         aliasPushed = true
         aliasMatched = true
@@ -133,7 +135,7 @@ export const useScvStore = defineStore('scvStore', () => {
       const keys = ['username', 'password', ...Object.keys(cred.attributes)]
 
       keys.forEach((key) => {
-        if (aliasMatched || key.toLowerCase().includes(query.toLowerCase())) {
+        if (displayAll || aliasMatched || key.toLowerCase().includes(query.toLowerCase())) {
           if (!aliasPushed) {
             items.push(createScvSearchItem(cred, cred.alias, 'alias'))
             aliasPushed = true
@@ -153,7 +155,6 @@ export const useScvStore = defineStore('scvStore', () => {
 
   const clearCredentials = async () => {
     const creds = {
-      id: undefined,
       alias: '',
       username: '',
       password: '',

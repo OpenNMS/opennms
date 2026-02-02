@@ -439,8 +439,6 @@ watch([() => props.config, () => props.isCreate], () => {
 })
 
 watch([() => props.firstIp, () => props.lastIp], () => {
-  console.log('Props firstIp/lastIp changed, firstIp', props.firstIp, 'lastIp', props.lastIp)
-
   if (props.displayIps) {
     firstIpAddress.value = props.firstIp || ''
     lastIpAddress.value = props.lastIp || ''

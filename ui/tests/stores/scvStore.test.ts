@@ -357,6 +357,61 @@ describe('useScvStore', () => {
       expect(results[12].type).toBe('key')
     })
 
+    it('should return all aliases and keys when the query is empty', () => {
+      const results = store.queryCredentials('')
+
+      expect(results.length).toBe(13) // 3 alias items + 10 keys total
+      expect(results[0].alias).toBe('alias1')
+      expect(results[0].type).toBe('alias')
+
+      expect(results[1].alias).toBe('alias1')
+      expect(results[1].key).toBe('username')
+      expect(results[1].type).toBe('key')
+
+      expect(results[2].alias).toBe('alias1')
+      expect(results[2].key).toBe('password')
+      expect(results[2].type).toBe('key')
+
+      expect(results[3].alias).toBe('alias1')
+      expect(results[3].key).toBe('attr1')
+
+      expect(results[3].type).toBe('key')
+
+      expect(results[4].alias).toBe('alias1')
+      expect(results[4].key).toBe('attr2')
+      expect(results[4].type).toBe('key')
+
+      expect(results[5].alias).toBe('alias2')
+      expect(results[5].type).toBe('alias')
+
+      expect(results[6].alias).toBe('alias2')
+      expect(results[6].key).toBe('username')
+      expect(results[6].type).toBe('key')
+
+      expect(results[7].alias).toBe('alias2')
+      expect(results[7].key).toBe('password')
+      expect(results[7].type).toBe('key')
+
+      expect(results[8].alias).toBe('alias2')
+      expect(results[8].key).toBe('attr3')
+      expect(results[8].type).toBe('key')
+
+      expect(results[9].alias).toBe('zAlias')
+      expect(results[9].type).toBe('alias')
+
+      expect(results[10].alias).toBe('zAlias')
+      expect(results[10].key).toBe('username')
+      expect(results[10].type).toBe('key')
+
+      expect(results[11].alias).toBe('zAlias')
+      expect(results[11].key).toBe('password')
+      expect(results[11].type).toBe('key')
+
+      expect(results[12].alias).toBe('zAlias')
+      expect(results[12].key).toBe('searchKey')
+      expect(results[12].type).toBe('key')
+    })
+
     it('should return correct keys for a partial query match on password', () => {
       const results = store.queryCredentials('pass')
     

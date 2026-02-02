@@ -33,7 +33,7 @@
             <th>Alias</th>
             <th>Key</th>
           </thead>
-          <tbody>
+          <tbody v-if="filteredResults.length > 0">
             <tr
               v-for="(item, index) of filteredResults"
               :key="`${item.alias}-${item.key}-${index}`"
@@ -49,12 +49,21 @@
               </td>
             </tr>
           </tbody>
+          <tbody v-else>
+            <tr>
+              <td colspan="2" style="text-align: center; font-style: italic;">
+                No results found.
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <div class="large-spacer"></div>
       <div class="scv-drawer-button-container">
         <FeatherButton
           secondary
+          :disabled="credentialsLoading"
+          data-test="scv-drawer-cancel-button"
           @click="drawerOpen = false"
         >Cancel</FeatherButton>
       </div>
@@ -68,6 +77,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherInput } from '@featherds/input'
 import SearchIcon from '@featherds/icon/action/Search'
+import { debounce } from 'lodash'
 import { useScvStore } from '@/stores/scvStore'
 import { ScvSearchItem } from '@/types/scv'
 
@@ -80,17 +90,19 @@ const emit = defineEmits<{
   (e: 'item-selected', item: ScvSearchItem): void
 }>()
 
+const DEBOUNCE_DELAY = 300
 const scvStore = useScvStore()
 const drawerOpen = ref(props.isOpen)
 const credentialsLoading = ref(false)
 const filteredResults = ref<ScvSearchItem[]>([])
 const searchValue = ref<string>('')
 
-const onSearch = (query: string) => {
+const onSearch = debounce((query: string) => {
   credentialsLoading.value = true
+  searchValue.value = query
   filteredResults.value = scvStore.queryCredentials(query)
   credentialsLoading.value = false
-}
+}, DEBOUNCE_DELAY)
 
 const onItemSelected = (item: ScvSearchItem) => {
   emit('item-selected', item)
