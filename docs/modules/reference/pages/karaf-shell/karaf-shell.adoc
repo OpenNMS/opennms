@@ -460,6 +460,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:scv-get
 |Retrieves the username and attributes for the given alias
 |Enabled By Default
+|opennms:scv-get-all
+|Retrieves the credentials for all aliases
+|Enabled By Default
 |opennms:scv-list
 |List the available aliases
 |Enabled By Default

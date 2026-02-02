@@ -21,19 +21,34 @@
  */
 package org.opennms.features.scv.cli.commands;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Function;
 
+import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.cli.ScvCli;
 
-public class ListCommand implements Function<ScvCli, Integer> {
+public class GetAllCommand implements Function<ScvCli, Integer> {
     @Override
     public Integer apply(ScvCli scvCli) {
-        Set<String> aliases = scvCli.getSecureCredentialsVault().getAliases();
+        Map<String, Credentials> credentialsMap = scvCli.getSecureCredentialsVault().getAllCredentials();
 
-        for (String alias : aliases) {
-            System.out.println(alias);
-        }
+        credentialsMap.keySet().forEach(alias -> {
+            Credentials credentials = credentialsMap.get(alias);
+
+            if (credentials == null) {
+                System.err.println("No credentials found for alias '" + alias + "'.");
+            } else {
+                System.out.printf("Credentials for %s:\n", alias);
+                System.out.printf("\tUsername: %s\n", credentials.getUsername());
+                System.out.printf("\tPassword: *********\n");
+
+                for (String attributeKey : credentials.getAttributeKeys()) {
+                    System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
+                }
+            }
+
+            System.out.println();
+        });
 
         return 0;
     }

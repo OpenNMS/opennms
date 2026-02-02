@@ -25,6 +25,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY;
 
 import java.io.File;
@@ -69,7 +70,7 @@ public class JCEKSSecureCredentialsVaultTest {
         SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
         // Aliases should be empty
         assertEquals(0, scv.getAliases().size());
-        // Retrieving from an non-existent alias should return null
+        // Retrieving from a non-existent alias should return null
         assertNull(scv.getCredentials("http"));
         // Store some creds
         Credentials creds = new Credentials("adm1n", "p@ssw0rd");
@@ -78,20 +79,58 @@ public class JCEKSSecureCredentialsVaultTest {
         assertEquals(Sets.newHashSet("http"), scv.getAliases());
         // Retrieve it back
         assertEquals(creds, scv.getCredentials("http"));
+
+        // get all credentials
+        Map<String, Credentials> allCredentials = scv.getAllCredentials();
+        assertEquals(1, allCredentials.size());
+        assertEquals("adm1n", allCredentials.get("http").getUsername());
+        assertEquals("p@ssw0rd", allCredentials.get("http").getPassword());
+
+
+        // Store some more creds
+        Credentials secondCreds = new Credentials("adm1n2", "p@ssw0rd2");
+        scv.setCredentials("http2", secondCreds);
+        // Aliases should contain "http2"
+        assertEquals(Sets.newHashSet("http", "http2"), scv.getAliases());
+        // Retrieve it back
+        assertEquals(creds, scv.getCredentials("http"));
+        assertEquals(secondCreds, scv.getCredentials("http2"));
+
+
         // Recreate the store
         scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
         // And retrieve it again
-        assertEquals(Sets.newHashSet("http"), scv.getAliases());
+        assertEquals(Sets.newHashSet("http", "http2"), scv.getAliases());
         assertEquals(creds, scv.getCredentials("http"));
+        assertEquals(secondCreds, scv.getCredentials("http2"));
 
         // Now store credentials for another alias
         Credentials sshCreds = new Credentials("n0t-adm1n", "an0th3r-p@ssw0rd");
         scv.setCredentials("ssh", sshCreds);
         // Verify
+        assertEquals(Sets.newHashSet("http", "http2", "ssh"), scv.getAliases());
         assertEquals(creds, scv.getCredentials("http"));
+        assertEquals(secondCreds, scv.getCredentials("http2"));
         assertEquals(sshCreds, scv.getCredentials("ssh"));
     }
 
+    @Test
+    public void setCredentialsWithGetAllAliasShouldFail() {
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+
+        // Create a new vault
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        // Aliases should be empty
+        assertEquals(0, scv.getAliases().size());
+        // Retrieving from a non-existent alias should return null
+        assertNull(scv.getCredentials("http"));
+
+        // Attempt to store creds with invalid alias
+        Credentials creds = new Credentials("adm1n", "p@ssw0rd");
+
+        assertThrows(IllegalArgumentException.class, () -> scv.setCredentials(Credentials.GET_ALL_ALIAS, creds));
+        assertThrows(IllegalArgumentException.class, () -> scv.setCredentials(Credentials.GET_ALL_ALIAS.toUpperCase(), creds));
+    }
 
     @Test
     public void cachingCredentials() {
@@ -111,7 +150,6 @@ public class JCEKSSecureCredentialsVaultTest {
         assertEquals(Sets.newHashSet("http", "ssh"), scv.getAliases());
         assertEquals(credentials1, scv.getCredentials("http"));
         assertEquals(credentials2, scv.getCredentials("ssh"));
-
     }
 
     @Test
@@ -159,7 +197,7 @@ public class JCEKSSecureCredentialsVaultTest {
         final Credentials credentials1 = new Credentials("adm1n", "p@ssw0rd", attributes);
         scv.setCredentials("http", credentials1);
 
-        //Add a new vault by directly loading keystore file ( as Opennms UI does), this is using watcher.
+        // Add a new vault by directly loading keystore file ( as Opennms UI does), this is using watcher.
         final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", true);
         assertEquals(credentials1, scv2.getCredentials("http"));
 

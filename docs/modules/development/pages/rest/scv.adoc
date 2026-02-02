@@ -3,6 +3,8 @@
 
 The `/scv` endpoint requires `application/json` for all operations.
 
+NOTE: The alias `_all` is reserved, you cannot create credentials using that alias. It is used in `GET /scv/_all` to get all credentials.
+
 == GETs (reading data)
 
 [caption=]
@@ -13,6 +15,7 @@ The `/scv` endpoint requires `application/json` for all operations.
 
 | `/scv`                | Fetches the list of Secure Credentials Vault aliases
 | `/scv/\{alias}`       | Fetches the credential with the given `alias`.
+| `/scv/_all`           | Fetches the credentials for all aliases (returns a list of credentials).
 
 |===
 
@@ -74,6 +77,21 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/scv/foo"
 [source,json]
 ----
 {"alias":"foo","username":"barr","password":"******","attributes":{}}
+----
+
+.Fetch all credentials
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/scv/_all"
+----
+
+.Response
+[source,json]
+----
+[
+  {"alias":"foo","username":"barr","password":"******","attributes":{}},
+  {"alias":"foo2","username":"barr2","password":"******","attributes":{}}
+]
 ----
 
 .Create an entry in the vault

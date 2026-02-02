@@ -2,7 +2,7 @@
 = Restore OpenNMS {page-component-title}
 :description: How to restore OpenNMS Horizon or Meridian components, including installing a PostgreSQL database and OpenJDK.
 
-This section describes a basic restore process for a default OpenNMS {page-component-title} xref:deployment:core/getting-started.adoc#getting-started-core[installation].
+This section describes a basic restore process for a default OpenNMS {page-component-title} xref:deployment:core/install.adoc#getting-started-core[installation].
 OpenNMS {page-component-title} binaries, logs, RRD archives, configurations and the database will be restored.
 
 NOTE: The backup storage path in this example is `/tmp` for demonstration purposes.
