@@ -128,7 +128,7 @@ systemd[1]: opennms.service: Failed with result 'exit-code'.
 systemd[1]: Failed to start OpenNMS server.
 ----
 
-See xref:deployment:core/getting-started.adoc#setup-postgresql[Set up PostgreSQL] for information on installing and setting up PostgreSQL.
+See xref:deployment:core/install.adoc#setup-postgresql[Set up PostgreSQL] for information on installing and setting up PostgreSQL.
 
 [[upgrade-errors]]
 == rpm, yum, dnf upgrade errors

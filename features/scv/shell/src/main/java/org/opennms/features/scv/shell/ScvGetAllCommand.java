@@ -22,40 +22,43 @@
 package org.opennms.features.scv.shell;
 
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
-@Command(scope = "opennms", name = "scv-get", description="Retrieves the username and attributes for the given alias.")
+import java.util.Map;
+
+@Command(scope = "opennms", name = "scv-get-all", description="Retrieves credentials for all aliases.")
 @Service
-public class ScvGetCommand implements Action {
+public class ScvGetAllCommand implements Action {
 
     @Reference
     public SecureCredentialsVault secureCredentialsVault;
 
-    @Argument(index = 0, name = "alias", description = "Alias used to retrieve the credentials.", required = true, multiValued = false)
-    @Completion(AliasCompleter.class)
-    public String alias = null;
-
     @Override
     public Object execute() throws Exception {
-        final Credentials credentials = secureCredentialsVault.getCredentials(alias);
+        Map<String, Credentials> credentialsMap = secureCredentialsVault.getAllCredentials();
 
-        if (credentials == null) {
-            System.out.println("No credentials found for alias '" + alias + "'.");
-        } else {
-            System.out.printf("Credentials for %s:\n", alias);
-            System.out.printf("\tUsername: %s\n", credentials.getUsername());
-            System.out.printf("\tPassword: *********\n");
+        credentialsMap.keySet().forEach(alias -> {
+            final Credentials credentials = credentialsMap.get(alias);
 
-            for (String attributeKey : credentials.getAttributeKeys()) {
-                System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
+            if (credentials == null) {
+                System.out.println("No credentials found for alias '" + alias + "'.");
+            } else {
+                System.out.printf("Credentials for %s:\n", alias);
+                System.out.printf("\tUsername: %s\n", credentials.getUsername());
+                System.out.printf("\tPassword: *********\n");
+
+                for (String attributeKey : credentials.getAttributeKeys()) {
+                    System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
+                }
             }
-        }
+
+            System.out.println();
+        });
+
         return null;
     }
 }

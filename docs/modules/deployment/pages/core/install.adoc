@@ -1,7 +1,7 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS 9, Debian/Ubuntu, and Docker.
+:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
 
 This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
@@ -16,26 +16,25 @@ NOTE: The default configuration is not optimized to run in a production environm
 == DNS considerations
 
 If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
-DNS lookups may be preformed by different processes, including while provisioning new nodes and when receiving syslog messages.
+DNS lookups may be performed by different processes, including while provisioning new nodes and when receiving syslog messages.
 It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
-One way to mitigate DNS performance is to setup your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
+One way to mitigate DNS performance is to set up your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
 
 ifeval::["{page-component-title}" == "Horizon"]
 == Quick installation
 
-If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
+If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick installation scripts].
 This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
 Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
 
 === Scope
 
 * Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
-* Installation follows the best-practices from our official docs.
-* Script is only for new installs and does not deal with existing installations or upgrades.
+* Installation follows the best practices from our official docs.
+* Script is only for new installations and does not deal with existing installations or upgrades.
 * Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
 
 endif::[]
-
 
 [[requirements]]
 == Requirements
@@ -108,7 +107,7 @@ endif::[]
 == Install the core instance
 
 IMPORTANT: For security reasons, {page-component-title} is designed to run within an organization's protected intranet.
-Do not expose the web console or sign in pages directly to the Internet without appropriate isolation controls (for example, a VPN with multi-factor authentication).
+Do not expose the web console or sign-in pages directly to the Internet without appropriate isolation controls, (for example, a VPN with multi-factor authentication).
 
 [{tabs}]
 ====
@@ -175,7 +174,7 @@ The default user credentials are as follows:
 * *Password:* `admin`
 
 When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
-Although you also have the option to skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
+Although you can also skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
 . Type your current password.
 . Type your new password and confirm it.
@@ -187,12 +186,12 @@ To change your account's password after the first time you sign in, follow these
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.
-. Confirm your new password, and click *Submit*.
+. Confirm your new password and click *Submit*.
 
 The password is updated.
 
 We encourage you to use {page-component-title} with individual user accounts instead of using only the `admin` account.
-If all users have individual accounts, you can see who is completing tasks (for example, clearing or acknowledging alarms).
+If all users have individual accounts, you can see who is completing tasks, (for example, clearing or acknowledging alarms).
 For information on how to create personalized user accounts, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
 
 [[usage-statistics]]
@@ -222,7 +221,7 @@ Nodes with this service have JMX-based data collection performed on Java JVM sta
 * xref:operation:deep-dive/admin/configuration/startup.adoc[]
 * xref:reference:configuration/selinux.adoc[]
 * xref:reference:configuration/receive-snmp-traps.adoc[]
-* xref:reference:configuration/install-jdbc-driver.adoc[]
+* xref:core/installing-jdbc-driver.adoc[]
 
 == Next steps
 

@@ -28,12 +28,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,52 +56,116 @@ public class ScvRestServiceIT {
         File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
         SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "OpenNMS@22");
         scvRestService = new DefaultScvRestService(scv);
-        // Create alias
-        String alias = "juniper-vsrx";
-        var credentialDTO = new CredentialsDTO(alias, "horizon", "OpenNMS");
-        Map<String, String> attributes = new HashMap<>();
-        attributes.put("user1", "minion1");
-        attributes.put("user2", "minion2");
-        attributes.put("user3", "minion3");
-        attributes.put("pass1", "2021");
-        attributes.put("pass2", "2022");
-        attributes.put("pass3", "2023");
+
+        // Create first alias
+        final String firstAlias = "juniper-vsrx";
+        final var firstCredentialDTO = new CredentialsDTO(firstAlias, "horizon", "OpenNMS");
+        Map<String, String> firstAttributes = new HashMap<>();
+        firstAttributes.put("user1", "minion1");
+        firstAttributes.put("user2", "minion2");
+        firstAttributes.put("user3", "minion3");
+        firstAttributes.put("pass1", "2021");
+        firstAttributes.put("pass2", "2022");
+        firstAttributes.put("pass3", "2023");
 
         // Test POST
-        credentialDTO.setAttributes(attributes);
-        Response posted = scvRestService.addCredentials(credentialDTO);
+        firstCredentialDTO.setAttributes(firstAttributes);
+        Response posted = scvRestService.addCredentials(firstCredentialDTO);
         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), posted.getStatus());
 
-        // Test Get for credentials
-        var response = scvRestService.getCredentials(alias);
+        // Create second alias
+        final String secondAlias = "cisco";
+        final var secondCredentialDTO = new CredentialsDTO(secondAlias, "horizonTwo", "OpenNMSTwo");
+        Map<String, String> secondAttributes = new HashMap<>();
+        secondAttributes.put("user21", "minion21");
+        secondAttributes.put("user22", "minion22");
+        secondAttributes.put("user23", "minion23");
+        secondAttributes.put("pass21", "2021A");
+        secondAttributes.put("pass22", "2022A");
+        secondAttributes.put("pass23", "2023A");
+
+        // Test POST
+        secondCredentialDTO.setAttributes(secondAttributes);
+        posted = scvRestService.addCredentials(secondCredentialDTO);
+        Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), posted.getStatus());
+
+
+        // Test Get for first credentials
+        var response = scvRestService.getCredentials(firstAlias);
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        var entity = response.getEntity();
+        Object entity = response.getEntity();
         if (!(entity instanceof CredentialsDTO)) {
             Assert.fail();
         }
-        var result = ((CredentialsDTO) entity);
-        Assert.assertEquals(credentialDTO.getUsername(), result.getUsername());
-        Assert.assertEquals(credentialDTO.getAlias(), result.getAlias());
-        Assert.assertEquals(result.getAttributes().size(), attributes.size());
+        CredentialsDTO result = ((CredentialsDTO) entity);
+        Assert.assertEquals(firstCredentialDTO.getUsername(), result.getUsername());
+        Assert.assertEquals(firstCredentialDTO.getAlias(), result.getAlias());
+        Assert.assertEquals(result.getAttributes().size(), firstAttributes.size());
 
-        // Test Get for alias
-        var aliasesResult = scvRestService.getAliases();
+        // Test Get for second credentials
+        response = scvRestService.getCredentials(secondAlias);
+        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        entity = response.getEntity();
+        if (!(entity instanceof CredentialsDTO)) {
+            Assert.fail();
+        }
+        result = ((CredentialsDTO) entity);
+        Assert.assertEquals(secondCredentialDTO.getUsername(), result.getUsername());
+        Assert.assertEquals(secondCredentialDTO.getAlias(), result.getAlias());
+        Assert.assertEquals(result.getAttributes().size(), secondAttributes.size());
+
+
+        // Test Get for all credentials
+        response = scvRestService.getCredentials("_all");
+        Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+        entity = response.getEntity();
+        if (!(entity instanceof List)) {
+            Assert.fail();
+        }
+
+        List<CredentialsDTO> listResult = (List<CredentialsDTO>) entity;
+
+        Assert.assertNotNull(listResult);
+        Assert.assertEquals(2, listResult.size());
+
+        CredentialsDTO firstResult = listResult.stream()
+                .filter(d -> d.getAlias().equals(firstAlias)).findFirst().orElse(null);
+        CredentialsDTO secondResult = listResult.stream()
+                .filter(d -> d.getAlias().equals(secondAlias)).findFirst().orElse(null);
+
+        Assert.assertNotNull(firstResult);
+        Assert.assertNotNull(secondResult);
+
+        Assert.assertEquals(firstCredentialDTO.getUsername(), firstResult.getUsername());
+        Assert.assertEquals(firstCredentialDTO.getAlias(), firstResult.getAlias());
+        Assert.assertEquals(firstCredentialDTO.getAttributes().size(), firstResult.getAttributes().size());
+
+        Assert.assertEquals(secondCredentialDTO.getUsername(), secondResult.getUsername());
+        Assert.assertEquals(secondCredentialDTO.getAlias(), secondResult.getAlias());
+        Assert.assertEquals(secondCredentialDTO.getAttributes().size(), secondResult.getAttributes().size());
+
+
+        // Test Get for aliases
+        Response aliasesResult = scvRestService.getAliases();
         Assert.assertEquals(aliasesResult.getStatus(), Response.Status.OK.getStatusCode());
         Set<String> aliases = ((Set<String>) aliasesResult.getEntity());
-        Assert.assertThat(aliases, Matchers.contains(alias));
+
+        Assert.assertEquals(2, aliases.size());
+        Assert.assertThat(aliases, Matchers.containsInAnyOrder(firstAlias, secondAlias));
+
 
         // Test edit ( PUT)
         CredentialsDTO updatedCredentials = new CredentialsDTO();
-        updatedCredentials.setAlias(alias);
+        updatedCredentials.setAlias(firstAlias);
         updatedCredentials.setUsername("meridian");
         updatedCredentials.setPassword("OpenNMS@22");
         updatedCredentials.getAttributes().put("user3", "minion@3");
         updatedCredentials.getAttributes().put("pass4", "2024");
-        var putResponse = scvRestService.editCredentials(alias, updatedCredentials);
+        var putResponse = scvRestService.editCredentials(firstAlias, updatedCredentials);
         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), putResponse.getStatus());
 
         // Test Get ( to test updated credentials)
-        var updatedResponse = scvRestService.getCredentials(alias);
+        var updatedResponse = scvRestService.getCredentials(firstAlias);
         var updatedCredsResponse = ((CredentialsDTO) updatedResponse.getEntity());
         Assert.assertEquals(updatedCredentials.getUsername(), updatedCredsResponse.getUsername());
         Assert.assertEquals(updatedCredentials.getAlias(), updatedCredsResponse.getAlias());
@@ -108,15 +174,15 @@ public class ScvRestServiceIT {
 
         // Test edit ( PUT) with masked password.
         CredentialsDTO updatedCredentialsWithMaskPassword = new CredentialsDTO();
-        updatedCredentialsWithMaskPassword.setAlias(alias);
+        updatedCredentialsWithMaskPassword.setAlias(firstAlias);
         updatedCredentialsWithMaskPassword.setUsername("meridian1");
         updatedCredentialsWithMaskPassword.setPassword(updatedCredsResponse.getPassword());
         updatedCredentialsWithMaskPassword.getAttributes().put("user4", "minion4");
-        putResponse = scvRestService.editCredentials(alias, updatedCredentialsWithMaskPassword);
+        putResponse = scvRestService.editCredentials(firstAlias, updatedCredentialsWithMaskPassword);
         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), putResponse.getStatus());
 
         // Test Get ( to test updated credentials)
-        updatedResponse = scvRestService.getCredentials(alias);
+        updatedResponse = scvRestService.getCredentials(firstAlias);
         updatedCredsResponse = ((CredentialsDTO) updatedResponse.getEntity());
 
         // When using masked password, username/password doesn't get updated.
@@ -126,7 +192,7 @@ public class ScvRestServiceIT {
 
         // Add another alias and test.
         String alias1 = "another-device";
-        credentialDTO = new CredentialsDTO(alias1, "horizon", "OpenNMS");
+        var credentialDTO = new CredentialsDTO(alias1, "horizon", "OpenNMS");
         scvRestService.addCredentials(credentialDTO);
         Assert.assertEquals(Response.Status.ACCEPTED.getStatusCode(), posted.getStatus());
 
@@ -134,7 +200,39 @@ public class ScvRestServiceIT {
         Assert.assertEquals(Response.Status.OK.getStatusCode(), aliasesResult.getStatus());
 
         aliases = ((Set<String>) aliasesResult.getEntity());
-        Assert.assertThat(aliases, Matchers.contains(alias1, alias));
+        Assert.assertEquals(3, aliases.size());
+        Assert.assertThat(aliases, Matchers.containsInAnyOrder(alias1, firstAlias, secondAlias));
     }
 
+    @Test
+    public void testScvRestUpdateUsingInvalidAliasFails() {
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "OpenNMS@22");
+        scvRestService = new DefaultScvRestService(scv);
+
+        // Attempt to add credentials using the reserved alias
+        final var credentialDTO = new CredentialsDTO(Credentials.GET_ALL_ALIAS, "horizon", "OpenNMS");
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("user1", "minion1");
+        attributes.put("pass1", "2021");
+        credentialDTO.setAttributes(attributes);
+
+        // Test POST
+        Response posted = scvRestService.addCredentials(credentialDTO);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), posted.getStatus());
+
+        final String expectedErrorMessage =
+            "Invalid Credentials, cannot use '" + Credentials.GET_ALL_ALIAS + "' as an alias.";
+
+        String message = (String) posted.getEntity();
+        Assert.assertEquals(expectedErrorMessage, message);
+
+        // Ensure it also fails regardless of case
+        credentialDTO.setAlias(Credentials.GET_ALL_ALIAS.toUpperCase());
+        posted = scvRestService.addCredentials(credentialDTO);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), posted.getStatus());
+
+        message = (String) posted.getEntity();
+        Assert.assertEquals(expectedErrorMessage, message);
+    }
 }
