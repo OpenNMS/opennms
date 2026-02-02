@@ -44,11 +44,13 @@ import IconRefresh from '@featherds/icon/navigation/Refresh'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import SnmpConfigTabContainer from '@/components/SnmpConfiguration/SnmpConfigTabContainer.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import { useScvStore } from '@/stores/scvStore'
 import { useSnmpConfigStore, ActiveTabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { BreadCrumb } from '@/types'
 
 const store = useSnmpConfigStore()
 const menuStore = useMenuStore()
+const scvStore = useScvStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
@@ -71,6 +73,8 @@ const onCreateProfile = () => {
 onMounted(async () => {
   store.fetchMonitoringLocations()
   store.populateSnmpConfig()
+  scvStore.getAliases()
+  scvStore.populate()
 })
 </script>
 

@@ -22,6 +22,8 @@
 
 export const DEFAULT_MONITORING_LOCATION = 'Default'
 
+export const SCV_GET_ALL_ALIAS = '_all'
+
 // SNMP Defaults
 export const DEFAULT_SNMP_VERSION = 'v2c'
 export const DEFAULT_SNMP_TIMEOUT = 3000

@@ -37,13 +37,16 @@
             :key="`${definition.label ?? ''}-${definition.id}`"
           >
             <td>{{ definition.location ?? DEFAULT_MONITORING_LOCATION }}</td>
-            <td>{{ definition.rangeType }}</td>
-            <td v-if="definition.ipAddresses.length > 1">
-              <div v-for="ipAddr of definition.ipAddresses" :key="ipAddr">
-                {{ ipAddr }}
+            <td v-if="definition.ipAddresses.length > 0">
+              <div class="ip-address-badge-wrapper">
+                <FeatherTextBadge
+                  v-for="ipAddr of definition.ipAddresses" :key="ipAddr"
+                  :type="BadgeTypes.info">
+                  {{ ipAddr }}
+                </FeatherTextBadge>
               </div>
             </td>
-            <td v-else>{{ definition.ipAddresses?.[0] ?? '--' }}</td>
+            <td v-else>--</td>
             <td>{{ definition.profileLabel }}</td>
             <td>
               <div class="action-container">
@@ -78,6 +81,7 @@
 </template>
 
 <script lang="ts" setup>
+import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -98,40 +102,16 @@ const emptyListContent = {
 
 const columns = computed(() => [
   { id: 'location', label: 'Location' },
-  { id: 'rangeType', label: 'Range Type' },
   { id: 'ipAddresses', label: 'IP Addresses' },
   { id: 'profileLabel', label: 'Profile Label' }
 ])
 
 const sort = reactive({
   label: SORT.NONE,
-  rangeType: SORT.NONE,
   ipAddresses: SORT.NONE,
   location: SORT.NONE,
   profileLabel: SORT.NONE
 }) as any
-
-const getRangeType = (d: SnmpDefinition) => {
-  const rangeTypes: string[] = []
-
-  if (d.ranges?.length > 0) {
-    rangeTypes.push('Range')
-  }
-
-  if (d.specifics?.length > 0) {
-    rangeTypes.push('Specific')
-  }
-
-  if (d.ipMatches?.length > 0) {
-    rangeTypes.push('IP Match')
-  }
-
-  if (rangeTypes.length > 0) {
-    return rangeTypes.join(', ')
-  }
-
-  return '--'
-}
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
   const items: string[] = []
@@ -161,7 +141,6 @@ const definitions = computed(() => {
       return {
         id: d.id ?? index,
         label: d.id === 0 ? 'Global' : '--',
-        rangeType: getRangeType(d),
         ipAddresses: createIpAddressLabel(d),
         location: d.location,
         profileLabel: d.profileLabel ?? '--'
@@ -202,7 +181,7 @@ const onDefinitionEdit = (definition?: SnmpDefinition) => {
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
+@use '@featherds/table/scss/table' as table;
 @use '@/styles/_transitionDataTable';
 
 .snmp-config-definitions-table {
@@ -240,6 +219,7 @@ const onDefinitionEdit = (definition?: SnmpDefinition) => {
     table {
       width: 100%;
       @include table.table;
+      @include table.table-condensed;
 
       thead {
         background: var(variables.$background);
@@ -254,6 +234,11 @@ const onDefinitionEdit = (definition?: SnmpDefinition) => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .ip-address-badge-wrapper {
+          text-wrap: auto;
+          padding: 2px;
         }
 
         .action-container {

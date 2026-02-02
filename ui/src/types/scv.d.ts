@@ -26,3 +26,9 @@ export interface SCVCredentials {
   password: string
   attributes: Record<string, string>
 }
+
+export interface ScvSearchItem {
+  alias: string
+  key: string
+  type: 'alias' | 'key'
+}

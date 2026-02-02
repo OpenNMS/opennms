@@ -29,6 +29,9 @@ importers:
       '@featherds/back-button':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
+      '@featherds/badge':
+        specifier: 0.12.43
+        version: 0.12.43(typescript@5.4.5)
       '@featherds/button':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
@@ -534,6 +537,9 @@ packages:
 
   '@featherds/back-button@0.12.43':
     resolution: {integrity: sha512-8dtB4ZFqv5YZyOXVhXLUV/jo3cQL1Qx2F9ELhh9Wxi1icHd/GuQLbCNZVU7apW7qwBdzQEp18pBglyG8xE60Ow==}
+
+  '@featherds/badge@0.12.43':
+    resolution: {integrity: sha512-m4qMKjmqus5nLy9CMCq3Sv1yEra01V/z37qlAQTuIM6MrE3qZktmogDDjyaJwNAir/hk7DBphYasR0U8jU9WXg==}
 
   '@featherds/button@0.12.43':
     resolution: {integrity: sha512-oubyIHFgRcHwQmBSugD/7gtJoEO2GNgthqEzaN3ZsDUfalNuN+3dfnWsTLGmC9Hx12JE0j0qrKrQMf3pdSNCQg==}
@@ -3156,6 +3162,13 @@ snapshots:
       '@featherds/ripple': 0.12.43(typescript@5.4.5)
       '@featherds/styles': 0.12.43
       '@featherds/utils': 0.12.43
+      vue: 3.5.25(typescript@5.4.5)
+    transitivePeerDependencies:
+      - typescript
+
+  '@featherds/badge@0.12.43(typescript@5.4.5)':
+    dependencies:
+      '@featherds/styles': 0.12.43
       vue: 3.5.25(typescript@5.4.5)
     transitivePeerDependencies:
       - typescript

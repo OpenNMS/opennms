@@ -30,7 +30,10 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-onMounted(() => scvStore.getAliases())
+onMounted(async () => {
+  await scvStore.getAliases()
+  await scvStore.populate()
+})
 </script>
 
 <style lang="scss" scoped>

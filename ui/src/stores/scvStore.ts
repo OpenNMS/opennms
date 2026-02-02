@@ -22,9 +22,8 @@
 
 import { defineStore } from 'pinia'
 import API from '@/services'
-import { SCVCredentials } from '@/types/scv'
-
-export const GET_ALL_ALIAS = '_all'
+import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
+import { SCVCredentials, ScvSearchItem } from '@/types/scv'
 
 export const useScvStore = defineStore('scvStore', () => {
   const aliases = ref([] as string[])
@@ -34,6 +33,8 @@ export const useScvStore = defineStore('scvStore', () => {
     password: '',
     attributes: {}
   } as SCVCredentials)
+
+  const allCredentials = ref([] as SCVCredentials[])
 
   // used to track changes
   const dbCredentials = ref({} as SCVCredentials)
@@ -54,13 +55,27 @@ export const useScvStore = defineStore('scvStore', () => {
     }
   }
 
+  const getAllCredentials = () => {
+    return {
+      ...allCredentials.value
+    }
+  }
+
+  const populate = async () => {
+    const resp = await API.getAllCredentials()
+
+    if (resp) {
+      allCredentials.value = resp
+    }
+  }
+
   const addCredentials = async () => {
     if (!credentials.value.alias) {
       throw new Error('Alias is required to add new credentials.')
     }
 
-    if (credentials.value.alias.toLowerCase() === GET_ALL_ALIAS) {
-      throw new Error(`The alias "${GET_ALL_ALIAS}" is reserved and cannot be used.`)
+    if (credentials.value.alias.toLowerCase() === SCV_GET_ALL_ALIAS) {
+      throw new Error(`The alias "${SCV_GET_ALL_ALIAS}" is reserved and cannot be used.`)
     }
 
     const success = await API.addCredentials(credentials.value)
@@ -76,8 +91,8 @@ export const useScvStore = defineStore('scvStore', () => {
       throw new Error('Alias is required to add new credentials.')
     }
 
-    if (credentials.value.alias.toLowerCase() === GET_ALL_ALIAS) {
-      throw new Error(`The alias "${GET_ALL_ALIAS}" is reserved and cannot be used.`)
+    if (credentials.value.alias.toLowerCase() === SCV_GET_ALL_ALIAS) {
+      throw new Error(`The alias "${SCV_GET_ALL_ALIAS}" is reserved and cannot be used.`)
     }
 
     const success = await API.updateCredentials(credentials.value)
@@ -87,13 +102,59 @@ export const useScvStore = defineStore('scvStore', () => {
     }
   }
 
+  const createScvSearchItem = (cred: SCVCredentials, key: string, type: 'alias' | 'key'): ScvSearchItem => {
+    return {
+      alias: cred.alias,
+      key: key,
+      type: type
+    }
+  }
+
+  /**
+   * Returns a sorted list of ScvSearchItems grouped by alias which matches the query.
+   * Match by alias returns the alias items, as well as all keys for the aliases.
+   * Match by key returns the parent alias, then only the matching keys.
+   * If query is empty, returns all aliases and keys.
+   */
+  const queryCredentials = (query: string) => {
+    const items = [] as ScvSearchItem[]
+
+    const sortedByAlias = [...allCredentials.value].sort((a, b) => a.alias.localeCompare(b.alias))
+    const displayAll = !query
+
+    sortedByAlias.forEach((cred) => {
+      let aliasPushed = false
+      let aliasMatched = false
+
+      if (displayAll || cred.alias.toLowerCase().includes(query.toLowerCase())) {
+        items.push(createScvSearchItem(cred, cred.alias, 'alias'))
+        aliasPushed = true
+        aliasMatched = true
+      }
+
+      const keys = ['username', 'password', ...Object.keys(cred.attributes)]
+
+      keys.forEach((key) => {
+        if (displayAll || aliasMatched || key.toLowerCase().includes(query.toLowerCase())) {
+          if (!aliasPushed) {
+            items.push(createScvSearchItem(cred, cred.alias, 'alias'))
+            aliasPushed = true
+          }
+
+          items.push(createScvSearchItem(cred, key, 'key'))
+        }
+      })
+    })
+
+    return items
+  }
+
   const setValue = (keyVal: Record<string, string>) => {
     credentials.value = { ...credentials.value, ...keyVal }
   }
 
   const clearCredentials = async () => {
     const creds = {
-      id: undefined,
       alias: '',
       username: '',
       password: '',
@@ -110,7 +171,6 @@ export const useScvStore = defineStore('scvStore', () => {
   }
 
   const updateAttribute = (attribute: { key: string; keyVal: { key: string; value: string } }) => {
-    // TODO: Do we need to replace entire credential.values object, or can we just modify credentials.value.attributes?
     const attributes = { ...credentials.value.attributes }
 
     // updating the value
@@ -133,18 +193,21 @@ export const useScvStore = defineStore('scvStore', () => {
   }
 
   return {
+    addAttribute,
+    addCredentials,
     aliases,
+    clearCredentials,
     credentials,
     dbCredentials,
-    isEditing,
     getAliases,
+    getAllCredentials,
     getCredentialsByAlias,
-    addCredentials,
-    updateCredentials,
+    isEditing,
+    populate,
+    queryCredentials,
+    removeAttribute,
     setValue,
-    clearCredentials,
-    addAttribute,
     updateAttribute,
-    removeAttribute
+    updateCredentials
   }
 })

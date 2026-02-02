@@ -9,39 +9,31 @@
       </div>
     </div>
     <div class="feather-row">
-      <div class="feather-col-6">
+      <div class="feather-col-6" v-for="field in [fieldPair.field1, fieldPair.field2]" :key="field.key">
         <FeatherInput
+          v-if="field"
           label=""
-          :data-test="fieldPair.field1.dataTest"
-          v-model.trim="(props.config as any)[fieldPair.field1.key]"
-          :hint="fieldPair.field1.hint"
-          :error="(props.validationErrors as any)[fieldPair.field1.key]"
-          :type="fieldPair.field1.isNumeric ? 'number' : 'text'"
-          @update:modelValue="val => handleFormInputUpdate(String(fieldPair.field1.key), String(val ?? ''), fieldPair.field1.isNumeric)"
+          :class="field.scvEnabled ? 'scv-enabled-input' : ''"
+          :data-test="field.dataTest"
+          v-model.trim="(props.config as any)[field.key]"
+          :hint="field.hint"
+          :error="(props.validationErrors as any)[field.key]"
+          :type="field.isNumeric ? 'number' : 'text'"
+          @update:modelValue="val => handleFormInputUpdate(String(field.key), String(val ?? ''), field.isNumeric)"
         >
+          <template v-if="field.scvEnabled" v-slot:post>
+            <ScvInputIcon @click="() => scvButtonClick(String(field.key))"></ScvInputIcon>
+          </template>
         </FeatherInput>
-      </div>
-      <div class="feather-col-6">
-        <FeatherInput
-          v-if="fieldPair.field2"
-          label=""
-          :data-test="fieldPair.field2.dataTest"
-          v-model.trim="(props.config as any)[fieldPair.field2.key]"
-          :hint="fieldPair.field2.hint"
-          :error="(props.validationErrors as any)[fieldPair.field2.key]"
-          :type="fieldPair.field2.isNumeric ? 'number' : 'text'"
-          @update:modelValue="val => handleFormInputUpdate(String(fieldPair.field2.key), String(val ?? ''), fieldPair.field2.isNumeric)"
-        >
-        </FeatherInput>
-      </div>
+     </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
-import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig';
+import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
 import { FeatherInput } from '@featherds/input'
+import ScvInputIcon from '@/components/SCV/ScvInputIcon.vue'
 
 const props = defineProps<{
   fieldInfo: SnmpFieldInfo[]
@@ -51,6 +43,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update', config: SnmpBaseConfiguration): void
+  (e: 'scv-search', value: string): void
 }>()
 
 const createPairedFields = (fields: any[]) => {
@@ -66,6 +59,10 @@ const createPairedFields = (fields: any[]) => {
 const pairedFields = computed(() => {
   return createPairedFields(props.fieldInfo)
 })
+
+const scvButtonClick = (key: string) => {
+  emit('scv-search', key)
+}
 
 const handleFormInputUpdate = (key: string, val: string, isNumeric?: boolean) => {
   const updatedConfig = {

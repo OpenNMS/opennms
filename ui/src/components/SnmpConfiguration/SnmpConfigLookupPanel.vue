@@ -78,7 +78,7 @@ const emit = defineEmits<{
 }>()
  
 const lookupMonitoringLocationValue = computed<string>(() => {
-  return String(lookupMonitoringLocation.value?._value ?? '')
+  return String(lookupMonitoringLocation.value?._value ?? DEFAULT_MONITORING_LOCATION)
 })
 
 const resetValues = () => {

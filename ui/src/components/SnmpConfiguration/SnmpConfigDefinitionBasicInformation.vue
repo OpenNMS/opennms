@@ -19,22 +19,48 @@
     <div class="basic-info">
       <div class="section-content">
         <h4>IP Ranges:</h4>
-
         <div class="feather-row" v-if="(currentDefinition?.ranges?.length ?? 0) > 0">
           <div class="feather-col-12">
-            <span>{{ currentDefinition?.ranges?.map(r => `${r.begin}-${r.end}`).join(', ') }}</span>
+            <div class="ip-address-badge-wrapper">
+              <FeatherTextBadge
+                v-for="range of currentDefinition?.ranges" :key="range.begin"
+                :type="BadgeTypes.info"
+                class="ip-address-badge"
+                @click="() => onBadgeClicked(range.begin, range.end)"
+              >
+                {{ `${range.begin} - ${range.end}` }}
+              </FeatherTextBadge>
+            </div>
           </div>
         </div>
 
         <div class="feather-row" v-if="(currentDefinition?.specifics?.length ?? 0) > 0">
           <div class="feather-col-12">
-            <span>{{ currentDefinition?.specifics.join(', ') }}</span>
+            <div class="ip-address-badge-wrapper">
+              <FeatherTextBadge
+                v-for="ipAddr of currentDefinition?.specifics" :key="ipAddr"
+                :type="BadgeTypes.info"
+                class="ip-address-badge"
+                @click="() => onBadgeClicked(ipAddr)"
+              >
+                {{ ipAddr }}
+              </FeatherTextBadge>
+            </div>
           </div>
         </div>
 
         <div class="feather-row" v-if="(currentDefinition?.ipMatches?.length ?? 0) > 0">
           <div class="feather-col-12">
-            <span>{{ currentDefinition?.ipMatches.join(', ') }}</span>
+            <div class="ip-address-badge-wrapper">
+              <FeatherTextBadge
+                v-for="ipAddr of currentDefinition?.ipMatches" :key="ipAddr"
+                :type="BadgeTypes.info"
+                class="ip-address-badge"
+                @click="() => onBadgeClicked(ipAddr)"
+              >
+                {{ ipAddr }}
+              </FeatherTextBadge>
+            </div>
           </div>
         </div>
 
@@ -42,6 +68,7 @@
 
         <SnmpConfigDetailsPanel
           v-if="snmpAgentConfig"
+          ref="detailsPanel"
           :displayIps="true"
           :isCreate="false"
           :firstIp="firstIpAddress"
@@ -59,6 +86,7 @@
 
 <script setup lang="ts">
 import { FeatherBackButton } from '@featherds/back-button'
+import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
@@ -78,10 +106,10 @@ const emit = defineEmits<{
 
 const isValid = ref(false)
 const errors = ref<SnmpConfigFormErrors>({})
-
 const currentDefinition = ref<SnmpDefinition>()
 const firstIpAddress = ref('')
 const lastIpAddress = ref('')
+const detailsPanel = ref()
 
 const snmpAgentConfig = computed(() => {
   const config = {
@@ -127,7 +155,7 @@ const loadInitialValues = () => {
   if (currentDefinition.value.ranges && currentDefinition.value.ranges.length > 0) {
     firstIpAddress.value = currentDefinition.value.ranges[0].begin
     lastIpAddress.value = currentDefinition.value.ranges[0].end
-  } else if (currentDefinition.value.specifics && currentDefinition.value.specifics.length === 1) {
+  } else if (currentDefinition.value.specifics && currentDefinition.value.specifics.length > 0) {
     firstIpAddress.value = currentDefinition.value.specifics[0]
     lastIpAddress.value = ''
   } else {
@@ -137,14 +165,21 @@ const loadInitialValues = () => {
 }
 
 const onDetailsValidationError = (formErrors: SnmpConfigFormErrors) => {
-  console.log('In SnmpConfigDefinitionBasicInformation onDetailsValidationError')
-
   isValid.value = Object.keys(formErrors).length === 0
   errors.value = { ...formErrors}
 
-  console.log('| isVvalid:', isValid.value)
-
   emit('validation-error', errors.value)
+}
+
+const onBadgeClicked = (begin: string, end?: string) => {
+  firstIpAddress.value = begin
+  lastIpAddress.value = end ?? ''
+
+  // if user changes IP address inside the details panel, and user clicks a badge
+  // that has same IP address as the original prop, we have to force update the details panel
+  if (detailsPanel.value) {
+    detailsPanel.value.updateIpAddresses(begin, end)
+  }
 }
 
 const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string) => {
@@ -185,7 +220,7 @@ const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?:
     contextEngineId: config.contextEngineId,
     contextName: config.contextName,
     enterpriseId: config.enterpriseId,
-    ttl: config.ttl,
+    ttl: config.ttl
   } as SnmpDefinition
 
   emit('save', definitionToSave, firstIpAddress.value, lastIpAddress.value)
@@ -236,6 +271,10 @@ onMounted(() => {
 
     .section-content {
       width: 80%;
+    }
+
+    .ip-address-badge {
+      cursor: pointer;
     }
 
     .dropdown {
