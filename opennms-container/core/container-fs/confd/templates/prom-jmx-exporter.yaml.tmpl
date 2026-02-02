@@ -56,3 +56,10 @@ rules:
       destination: $1
       type: $2
       metric: $3
+  - pattern: 'org\.opennms\.netmgt\.trapd\.device<location=(.+),ip=(.+),type=(.+)><>(\w+)'
+    name: trapd_device_$4
+    type: COUNTER
+    labels:
+      location: "$1"
+      ip: "$2"
+      type: "$3"
