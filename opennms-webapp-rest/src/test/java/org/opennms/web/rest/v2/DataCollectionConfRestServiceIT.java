@@ -582,27 +582,31 @@ public class DataCollectionConfRestServiceIT {
     @Test
     @Transactional
     public void testGetSnmpDataCollectionMibGroupNames() throws Exception {
-        // Setup source entity
+
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("mib-group-source");
         src.setVendor("opennms");
         src.setCreatedTime(new Date());
         src.setDescription("Source for MIB Group Names");
         snmpCollectionSourceDao.saveOrUpdate(src);
-        // MIB Group 1
+
         SnmpCollectionMibGroup mg1 = new SnmpCollectionMibGroup();
         mg1.setCollectionSource(src);
         mg1.setName("mib-group-one");
+        mg1.setMibObjects("ifIndex,ifDescr");
+        mg1.setMibGroupNames("IF-MIB::ifEntry");
         snmpCollectionMibGroupDao.saveOrUpdate(mg1);
-        // MIB Group 2
+
         SnmpCollectionMibGroup mg2 = new SnmpCollectionMibGroup();
         mg2.setCollectionSource(src);
         mg2.setName("mib-group-two");
+        mg2.setMibObjects("sysUpTime,sysDescr");
+        mg2.setMibGroupNames("SNMPv2-MIB::system");
         snmpCollectionMibGroupDao.saveOrUpdate(mg2);
         snmpCollectionMibGroupDao.flush();
-        // Act
+
         Response response = dataCollectionConfRestApi.getDataCollectionMibGroupNames(securityContext);
-        // Assert
+
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         @SuppressWarnings("unchecked")
         List<String> mibGroupNames = (List<String>) response.getEntity();

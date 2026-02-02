@@ -1,4 +1,5 @@
 import {
+  getAllMibGroupNames,
   getAllResourceTypeNames,
   getSnmpDataCollectionMibGroups,
   getSnmpDataCollectionResourceTypes,
@@ -41,6 +42,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
     },
     mibGroupsSearchTerm: '',
     resourceTypeNames: [],
+    mibGroupNames: [],
     selectedSystemDef: null,
     systemDefDrawerState: {
       visible: false,
@@ -52,16 +54,25 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.selectedCollectionSource = source
     },
     async fetchResourceTypeNames() {
-      if (this.selectedCollectionSource) {
-        this.isLoading = true
-        try {
-          const response = await getAllResourceTypeNames()
-          this.resourceTypeNames = response
-          this.isLoading = false
-        } catch (error) {
-          console.error('Error fetching SNMP collection resource type names:', error)
-          this.isLoading = false
-        }
+      this.isLoading = true
+      try {
+        const response = await getAllResourceTypeNames()
+        this.resourceTypeNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection resource type names:', error)
+        this.isLoading = false
+      }
+    },
+    async fetchMibGroupNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllMibGroupNames()
+        this.mibGroupNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection MIB group names:', error)
+        this.isLoading = false
       }
     },
     async fetchCollectionSourceById(id: string) {
@@ -88,6 +99,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
             this.systemDefsSorting.sortOrder
           )
           await this.fetchResourceTypeNames()
+          await this.fetchMibGroupNames()
           this.systemDefinitions = response.systemDefinitions
           this.systemDefsPagination.total = response.totalRecords
           this.isLoading = false

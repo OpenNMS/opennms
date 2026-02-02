@@ -58,6 +58,7 @@ export interface SnmpCollectionDetailState {
   resourceTypesSorting: Sorting
   resourceTypesSearchTerm: string
   resourceTypeNames: string[]
+  mibGroupNames: string[]
   selectedSystemDef: SnmpCollectionSystemDef | null
   systemDefDrawerState: {
     visible: boolean

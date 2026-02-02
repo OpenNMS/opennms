@@ -1,3 +1,4 @@
+import { CreateEditMode } from '@/types'
 import {
   SnmpCollectionMibGroup,
   SnmpCollectionMibGroupResponse,
@@ -122,5 +123,33 @@ export const mapSnmpCollectionResourceTypeResponseFromServer = (
     ),
     totalRecords: resourceTypes.totalRecords
   }
+}
+
+export const mapSnmpDataCollectionSystemDefPayloadToServer = (
+  name: string,
+  sysoid: string,
+  sysoidMask: string,
+  ipAddresses: string,
+  ipAddressMasks: string,
+  mibGroupNames: string,
+  enabled: boolean,
+  selectedSystemDefId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionSystemDef => {
+  const payload = {
+    name: name,
+    sysoid: sysoid,
+    sysoidMask: sysoidMask,
+    ipAddresses: ipAddresses,
+    ipAddressMasks: ipAddressMasks,
+    mibGroupNames: mibGroupNames,
+    enabled: enabled
+  } as SnmpCollectionSystemDef
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedSystemDefId
+  }
+
+  return payload
 }
 
