@@ -50,17 +50,15 @@ def parse_filtered_vulnerabilities(file_path):
                 print(f"Parsed vulnerability: {payload['VulnerabilityID']} from source: {source}")
                 # Check for duplicates before adding, Products could have different values,
                 # we should add the source to Products if the vulnerability already exists
-                if not vulnerabilities:
-                    vulnerabilities.append(payload)
+                existing_vuln = next(
+                    (v for v in vulnerabilities if v['VulnerabilityID'] == payload['VulnerabilityID']),
+                    None
+                )
+                if existing_vuln:
+                    if source not in existing_vuln['Products'].split(', '):
+                        existing_vuln['Products'] += f", {source}"
                 else:
-                    for vuln in vulnerabilities:
-                        if vuln['VulnerabilityID'] == payload['VulnerabilityID']:
-                            if source not in vuln['Products'].split(', '):
-                                vuln['Products'] += f", {source}"
-                            break
-                        else:
-                            vulnerabilities.append(payload)
-                            break
+                    vulnerabilities.append(payload)
 
     return vulnerabilities
 
