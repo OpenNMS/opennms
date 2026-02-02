@@ -241,7 +241,7 @@ export const createSystemDefinition = async (
   payload: SnmpCollectionSystemDef,
   sourceId: number
 ): Promise<boolean> => {
-  const endpoint = `/collectsources/${sourceId}/systemdefs`
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs`
 
   try {
     const response = await v2.post(endpoint, payload)
@@ -261,7 +261,7 @@ export const updateSystemDefinition = async (
   payload: SnmpCollectionSystemDef,
   sourceId: number
 ): Promise<boolean> => {
-  const endpoint = `/collectsources/${sourceId}/systemdefs/${payload.id}`
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs/${payload.id}`
 
   try {
     const response = await v2.put(endpoint, payload)

@@ -130,3 +130,13 @@ export interface SnmpCollectionResourceTypeResponse {
   totalRecords: number
 }
 
+export interface SystemDefErrors {
+  name?: string
+  oidType?: string
+  oidValue?: string
+  enabled?: string
+  ipAddresses?: string
+  ipAddressMasks?: string
+  mibGroupNames?: string
+}
+

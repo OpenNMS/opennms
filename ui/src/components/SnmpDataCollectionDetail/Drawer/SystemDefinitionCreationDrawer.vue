@@ -1,6 +1,13 @@
 <template>
-  <FeatherDrawer id="drawer" data-test="system-definition-drawer" v-model="store.systemDefDrawerState.visible"
-    :labels="{ close: 'close', title: drawerTitle }" hide-close width="40rem" class="system-definition-drawer">
+  <FeatherDrawer
+    id="drawer"
+    data-test="system-definition-drawer"
+    v-model="store.systemDefDrawerState.visible"
+    :labels="{ close: 'close', title: drawerTitle }"
+    hide-close
+    width="40rem"
+    class="system-definition-drawer"
+  >
     <div class="container">
       <div class="drawer-header">
         <h2>{{ drawerTitle }}</h2>
@@ -9,36 +16,82 @@
       <div class="drawer-content">
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherInput label="Name" v-model.trim="name" data-test="system-def-name-input" />
+        <FeatherInput
+          label="Name"
+          v-model.trim="name"
+          data-test="system-def-name-input"
+          :error="error.name"
+        />
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherRadioGroup :label="'OID Type'" v-model.trim="oidType">
-          <FeatherRadio v-for="item in OID_TYPE_OPTIONS" :value="item.value" :key="item.name">
+        <FeatherRadioGroup
+          :label="'OID Type'"
+          v-model.trim="oidType"
+          data-test="system-def-oid-type-input"
+          :error="error.oidType"
+        >
+          <FeatherRadio
+            v-for="item in OID_TYPE_OPTIONS"
+            :value="item.value"
+            :key="item.name"
+          >
             {{ item.name }}
           </FeatherRadio>
         </FeatherRadioGroup>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherInput label="OID Value" v-model.trim="oidValue" data-test="system-def-oid-value-input" />
+        <FeatherInput
+          label="OID Value"
+          v-model.trim="oidValue"
+          data-test="system-def-oid-value-input"
+          :error="error.oidValue"
+        />
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherAutocomplete class="my-autocomplete" label="Mib Groups" type="multi" v-model="value" :loading="loading"
-          :results="results" @search="search"></FeatherAutocomplete>
+        <FeatherAutocomplete
+          class="my-autocomplete"
+          label="Mib Groups"
+          type="multi"
+          v-model="mibGroupNames"
+          :loading="loading"
+          :results="results"
+          @search="search"
+          data-test="system-def-mib-groups-input"
+          :error="error.mibGroupNames"
+        ></FeatherAutocomplete>
         <div class="spacer"></div>
         <div class="spacer"></div>
-        <FeatherRadioGroup :label="'Status'" v-model="status">
-          <FeatherRadio v-for="item in STATUS_OPTIONS" :value="item.value" :key="item.name">
+        <FeatherRadioGroup
+          :label="'Status'"
+          v-model="status"
+          data-test="system-def-status-input"
+          :error="error.enabled"
+        >
+          <FeatherRadio
+            v-for="item in STATUS_OPTIONS"
+            :value="item.value"
+            :key="item.name"
+          >
             {{ item.name }}
           </FeatherRadio>
         </FeatherRadioGroup>
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
-        <FeatherButton secondary data-test="cancel-button" @click="store.closeSystemDefDrawer">
+        <FeatherButton
+          secondary
+          data-test="cancel-button"
+          @click="store.closeSystemDefDrawer"
+        >
           Cancel
         </FeatherButton>
-        <FeatherButton primary data-test="save-button" @click="saveSystemDef">
-          Save
+        <FeatherButton
+          primary
+          data-test="save-button"
+          :disabled="isSaveDisabled"
+          @click="saveSystemDef"
+        >
+          Save Definition
         </FeatherButton>
       </div>
     </div>
@@ -51,6 +104,7 @@ import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDat
 import { createSystemDefinition, updateSystemDefinition } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
+import { SystemDefErrors } from '@/types/snmpDataCollection'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
@@ -66,9 +120,10 @@ const name = ref<string>('')
 const timeout = ref<any>(null)
 const loading = ref<boolean>(false)
 const results = ref<Array<IAutocompleteItemType>>([])
-const value = ref<Array<IAutocompleteItemType>>([])
+const mibGroupNames = ref<Array<IAutocompleteItemType>>([])
 const snackbar = useSnackbar()
-
+const error = ref<SystemDefErrors>({})
+const isSaveDisabled = ref<boolean>(true)
 const drawerTitle = computed(() =>
   store.systemDefDrawerState.isEditMode === CreateEditMode.Create
     ? 'Create System Definition'
@@ -83,15 +138,32 @@ const loadInitialData = () => {
       oidType.value = def.sysoidMask ? 'mask' : def.sysoid ? 'single' : ''
       oidValue.value = def.sysoid || def.sysoidMask || ''
       status.value = def.enabled
-      value.value = JSON.parse(def.mibGroupNames).map((x: string) => ({ _text: x, _value: x }))
+      mibGroupNames.value = JSON.parse(def.mibGroupNames).map((x: string) => ({ _text: x, _value: x }))
     } else {
       name.value = ''
       oidType.value = DEFAULT_OID_TYPE
       oidValue.value = ''
       status.value = DEFAULT_STATUS
-      value.value = []
+      mibGroupNames.value = []
     }
   }
+}
+
+const validateDefinition = (): SystemDefErrors => {
+  const validationErrors: SystemDefErrors = {}
+  if (!name.value.trim()) {
+    validationErrors['name'] = 'Name is required.'
+  }
+  if (!oidType.value) {
+    validationErrors['oidType'] = 'OID Type is required.'
+  }
+  if (!oidValue.value.trim()) {
+    validationErrors['oidValue'] = 'OID Value is required.'
+  }
+  if (mibGroupNames.value.length === 0) {
+    validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
+  }
+  return validationErrors
 }
 
 const search = (q: string) => {
@@ -111,6 +183,11 @@ const search = (q: string) => {
 }
 
 const saveSystemDef = async () => {
+  error.value = validateDefinition()
+  if (Object.keys(error.value).length > 0) {
+    return
+  }
+
   if (!store.selectedCollectionSource?.id) {
     snackbar.showSnackBar({ msg: 'Please select a Collection Source first.', error: true })
     return
@@ -123,7 +200,7 @@ const saveSystemDef = async () => {
       oidType.value === 'mask' ? oidValue.value : '',
       '',
       '',
-      JSON.stringify(value.value.map((x) => x._value)),
+      JSON.stringify(mibGroupNames.value.map((x) => x._value)),
       status.value,
       store.selectedSystemDef?.id || 0,
       store.systemDefDrawerState.isEditMode
@@ -149,6 +226,12 @@ const saveSystemDef = async () => {
     snackbar.showSnackBar({ msg: 'An error occurred while saving the System Definition.', error: true })
   }
 }
+
+watchEffect(() => {
+  const validationErrors = validateDefinition()
+  error.value = validationErrors
+  isSaveDisabled.value = Object.keys(validationErrors).length > 0
+})
 
 watch(
   () => store.systemDefDrawerState.visible,
@@ -184,3 +267,4 @@ watch(
   }
 }
 </style>
+

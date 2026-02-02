@@ -14,3 +14,6 @@ export const STATUS_OPTIONS = [
 ]
 
 export const DEFAULT_STATUS = true
+
+export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
+
