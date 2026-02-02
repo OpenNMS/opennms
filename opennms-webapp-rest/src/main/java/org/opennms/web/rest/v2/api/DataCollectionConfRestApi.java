@@ -236,5 +236,31 @@ public interface DataCollectionConfRestApi {
     })
     Response getSnmpCollectionSourceNamesAndIds(@Context SecurityContext securityContext) throws Exception;
 
+    @GET
+    @Path("/resourcetypes/names")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get DataCollection Resource Type Names",
+            description = "Retrieve the names of all DataCollection Resource Types stored in the database.",
+            operationId = "getDataCollectionResourceTypeNames"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved resource type names"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getDataCollectionResourceTypeNames(@Context SecurityContext securityContext) throws Exception;
 
+    @GET
+    @Path("/mibgroups/names")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get DataCollection MIB Group Names",
+            description = "Retrieve the names of all DataCollection MIB Groups stored in the database.",
+            operationId = "getDataCollectionMibGroupNames"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved MIB group names"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getDataCollectionMibGroupNames(@Context SecurityContext securityContext) throws Exception;
 }

@@ -1,10 +1,12 @@
 import {
+  getAllResourceTypeNames,
   getSnmpDataCollectionMibGroups,
   getSnmpDataCollectionResourceTypes,
   getSnmpDataCollectionSourceById,
   getSnmpDataCollectionSystemDefinitions
 } from '@/services/snmpDataCollectionService'
-import { SnmpCollectionDetailState, SnmpCollectionSource } from '@/types/snmpDataCollection'
+import { CreateEditMode } from '@/types'
+import { SnmpCollectionDetailState, SnmpCollectionSource, SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -37,11 +39,30 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       sortOrder: 'desc',
       sortKey: 'createdTime'
     },
-    mibGroupsSearchTerm: ''
+    mibGroupsSearchTerm: '',
+    resourceTypeNames: [],
+    selectedSystemDef: null,
+    systemDefDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    }
   }),
   actions: {
     setSelectedCollectionSource(source: SnmpCollectionSource | null) {
       this.selectedCollectionSource = source
+    },
+    async fetchResourceTypeNames() {
+      if (this.selectedCollectionSource) {
+        this.isLoading = true
+        try {
+          const response = await getAllResourceTypeNames()
+          this.resourceTypeNames = response
+          this.isLoading = false
+        } catch (error) {
+          console.error('Error fetching SNMP collection resource type names:', error)
+          this.isLoading = false
+        }
+      }
     },
     async fetchCollectionSourceById(id: string) {
       this.isLoading = true
@@ -66,6 +87,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
             this.systemDefsSorting.sortKey,
             this.systemDefsSorting.sortOrder
           )
+          await this.fetchResourceTypeNames()
           this.systemDefinitions = response.systemDefinitions
           this.systemDefsPagination.total = response.totalRecords
           this.isLoading = false
@@ -201,6 +223,16 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       }
       this.resourceTypesSearchTerm = ''
       await this.fetchResourceTypes()
+    },
+    openSystemDefCreationDrawer(systemDef: SnmpCollectionSystemDef | null = null, isEditMode: CreateEditMode) {
+      this.selectedSystemDef = systemDef
+      this.systemDefDrawerState.visible = true
+      this.systemDefDrawerState.isEditMode = isEditMode
+    },
+    closeSystemDefDrawer() {
+      this.selectedSystemDef = null
+      this.systemDefDrawerState.visible = false
+      this.systemDefDrawerState.isEditMode = CreateEditMode.None
     }
   }
 })

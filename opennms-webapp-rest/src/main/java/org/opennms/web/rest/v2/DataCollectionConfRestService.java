@@ -261,6 +261,28 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
     }
 
+    @Override
+    public Response getDataCollectionResourceTypeNames(SecurityContext securityContext) throws Exception {
+        try {
+            List<String> list = dataCollectionConfPersistenceService.getAllResourceTypeNames();
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch Resource Type names: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response getDataCollectionMibGroupNames(SecurityContext securityContext) throws Exception {
+        try {
+            List<String> list = dataCollectionConfPersistenceService.getAllMibGroupNames();
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch MIB Group names: " + e.getMessage()).build();
+        }
+    }
+
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
     }

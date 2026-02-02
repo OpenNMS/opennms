@@ -181,4 +181,13 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
         return new PageResponse<>(resultCount,resourceTypeList);
     }
 
+    @Override
+    public List<String> findAllResourceTypeNames() {
+        List<String> names = new ArrayList<>();
+        names.add("0"); // Special case for instance field
+        names.add("ifIndex"); // Special case for instance field
+        names.addAll(findObjects(String.class,
+                "select distinct r.name from SnmpCollectionResourceType r"));
+        return names;
+    }
 }

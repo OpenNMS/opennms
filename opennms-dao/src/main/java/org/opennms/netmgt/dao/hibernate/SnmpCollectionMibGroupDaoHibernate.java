@@ -179,4 +179,10 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
        return new PageResponse<>(resultCount, mibGroupList);
     }
 
+    @Override
+    public List<String> findAllMibGroupNames() {
+        return findObjects(String.class,
+                "select distinct g.name from SnmpCollectionMibGroup g");
+    }
+
 }

@@ -531,6 +531,80 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
     }
 
+    @Test
+    @Transactional
+    public void testGetAllResourceTypeNames() {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("resource-type-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for Resource Types");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("memory-resource");
+        rt1.setLabel("Memory Utilization");
+        rt1.setResourceLabel("Memory Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("storage-resource");
+        rt2.setLabel("Storage Usage");
+        rt2.setResourceLabel("Storage Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        List<String> resourceTypeNames = dataCollectionConfPersistenceService.getAllResourceTypeNames();
+
+        assertEquals("0", resourceTypeNames.get(0));
+        assertEquals("ifIndex", resourceTypeNames.get(1));
+        assertTrue(resourceTypeNames.contains("memory-resource"));
+        assertTrue(resourceTypeNames.contains("storage-resource"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetAllMibGroupNames() {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("mib-group-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for MIB Groups");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(src);
+        group1.setName("system-mib-group");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("SYSTEM-MIB::sysEntry");
+        group1.setMibObjects("sysDescr,sysUpTime");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+
+        SnmpCollectionMibGroup group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(src);
+        group2.setName("interface-mib-group");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry");
+        group2.setMibObjects("ifIndex,ifDescr");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+        List<String> mibGroupNames = dataCollectionConfPersistenceService.getAllMibGroupNames();
+
+        assertTrue(mibGroupNames.contains("system-mib-group"));
+        assertTrue(mibGroupNames.contains("interface-mib-group"));
+    }
+
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {
         MibObj m = new MibObj();
         m.setOid(oid);

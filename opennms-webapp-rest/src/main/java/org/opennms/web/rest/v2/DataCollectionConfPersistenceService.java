@@ -122,6 +122,13 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSourceDao.getIdToNameMap();
     }
 
+    public List<String> getAllResourceTypeNames() {
+        return snmpCollectionResourceTypeDao.findAllResourceTypeNames();
+    }
+
+    public List<String> getAllMibGroupNames() {
+        return snmpCollectionMibGroupDao.findAllMibGroupNames();
+    }
 
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,

@@ -541,6 +541,75 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals("Descriptions should match", "Open Network Monitoring System SNMP", opennmsCollectionSource.getDescription());
     }
 
+    @Test
+    @Transactional
+    public void testGetSnmpDataCollectionResourceTypeNames() throws Exception {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("resource-type-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for Resource Type Names");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        // Resource type 1
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("resource-type-one");
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("resource-type-two");
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        // Act
+        Response response = dataCollectionConfRestApi.getDataCollectionResourceTypeNames(securityContext);
+
+        // Assert
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        @SuppressWarnings("unchecked")
+        List<String> resourceTypeNames = (List<String>) response.getEntity();
+        Assert.assertEquals(4, resourceTypeNames.size());
+        Assert.assertEquals("0", resourceTypeNames.get(0));
+        Assert.assertEquals("ifIndex", resourceTypeNames.get(1));
+        Assert.assertTrue(resourceTypeNames.contains("resource-type-one"));
+        Assert.assertTrue(resourceTypeNames.contains("resource-type-two"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetSnmpDataCollectionMibGroupNames() throws Exception {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("mib-group-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for MIB Group Names");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        // MIB Group 1
+        SnmpCollectionMibGroup mg1 = new SnmpCollectionMibGroup();
+        mg1.setCollectionSource(src);
+        mg1.setName("mib-group-one");
+        snmpCollectionMibGroupDao.saveOrUpdate(mg1);
+        // MIB Group 2
+        SnmpCollectionMibGroup mg2 = new SnmpCollectionMibGroup();
+        mg2.setCollectionSource(src);
+        mg2.setName("mib-group-two");
+        snmpCollectionMibGroupDao.saveOrUpdate(mg2);
+        snmpCollectionMibGroupDao.flush();
+        // Act
+        Response response = dataCollectionConfRestApi.getDataCollectionMibGroupNames(securityContext);
+        // Assert
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        @SuppressWarnings("unchecked")
+        List<String> mibGroupNames = (List<String>) response.getEntity();
+        Assert.assertTrue(mibGroupNames.contains("mib-group-one"));
+        Assert.assertTrue(mibGroupNames.contains("mib-group-two"));
+    }
+
     /** Helper to create a mocked Attachment for a given file */
     private Attachment createMockedAttachment(String name) {
         InputStream is = getClass().getResourceAsStream(RESOURCE_PATH + name);

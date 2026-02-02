@@ -1,4 +1,4 @@
-import { Pagination } from '.'
+import { CreateEditMode, Pagination } from '.'
 
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
@@ -57,6 +57,12 @@ export interface SnmpCollectionDetailState {
   resourceTypesPagination: Pagination
   resourceTypesSorting: Sorting
   resourceTypesSearchTerm: string
+  resourceTypeNames: string[]
+  selectedSystemDef: SnmpCollectionSystemDef | null
+  systemDefDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
 }
 
 export interface SnmpDataCollectionSourceResponse {

@@ -5,6 +5,15 @@
         <h2 class="title">System Definitions</h2>
       </div>
       <div class="action-container">
+        <div class="add">
+          <FeatherButton
+            primary
+            data-test="add-system-definition-button"
+            @click="store.openSystemDefCreationDrawer(null, CreateEditMode.Create)"
+          >
+            Add System Definition
+          </FeatherButton>
+        </div>
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -142,11 +151,13 @@
         />
       </div>
     </div>
+    <SystemDefinitionCreationDrawer />
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -162,6 +173,7 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
+import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
@@ -181,8 +193,7 @@ const sort = reactive({
 }) as any
 
 const onSystemDefEditClicked = (defs: SnmpCollectionSystemDef) => {
-  // Placeholder for future action when a system definition is clicked
-  console.log('System Definition clicked:', defs)
+  store.openSystemDefCreationDrawer(defs, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
