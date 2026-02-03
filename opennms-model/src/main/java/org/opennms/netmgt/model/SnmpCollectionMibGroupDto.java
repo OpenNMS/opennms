@@ -160,7 +160,7 @@ public class SnmpCollectionMibGroupDto {
                 .collect(Collectors.toList());
     }
 
-    public static SnmpCollectionMibGroup toEntity(SnmpCollectionMibGroup entity, final SnmpCollectionMibGroupDto dto) {
+    public static SnmpCollectionMibGroup updateEntity(SnmpCollectionMibGroup entity, final SnmpCollectionMibGroupDto dto) {
         if (dto == null) {
             return null;
         }

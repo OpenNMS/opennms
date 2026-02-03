@@ -183,7 +183,7 @@ public class SnmpCollectionResourceTypeDto {
                 ))
                 .collect(Collectors.toList());
     }
-    public static SnmpCollectionResourceType toEntity(SnmpCollectionResourceType entity, final SnmpCollectionResourceTypeDto dto) {
+    public static SnmpCollectionResourceType updateEntity(SnmpCollectionResourceType entity, final SnmpCollectionResourceTypeDto dto) {
         if (dto == null) {
             return null;
         }

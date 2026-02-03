@@ -276,95 +276,144 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     }
 
     @Override
-    public Response addMibGroupToSnmpCollectionSources(final Integer collectionSourceId, final  SnmpCollectionMibGroupDto request, SecurityContext securityContext) throws Exception {
+    public Response addMibGroupToSnmpCollectionSources(
+            final Integer collectionSourceId,
+            final SnmpCollectionMibGroupDto request,
+            final SecurityContext securityContext) throws Exception {
+
         if (collectionSourceId == null || collectionSourceId <= 0) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid snmpCollectionSourceId: " + collectionSourceId + ". It must be a positive integer.")
+                    .build();
+        }
+
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request body (SnmpCollectionMibGroupDto) must not be null.")
                     .build();
         }
 
         try {
             final var snmpCollectionSource = snmpCollectionSourceDao.get(collectionSourceId);
-            final var id = dataCollectionConfPersistenceService.addMibGroupToSnmpCollectionSources(snmpCollectionSource, request);
+            if (snmpCollectionSource == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+                        .build();
+            }
 
-            return Response
-                    .status(Response.Status.CREATED)
+            final var id = dataCollectionConfPersistenceService
+                    .addMibGroupToSnmpCollectionSources(snmpCollectionSource, request);
+
+            return Response.status(Response.Status.CREATED)
                     .entity(id)
                     .build();
+
         } catch (EntityNotFoundException ex) {
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex.getMessage() != null ? ex.getMessage()
+                            : ("SnmpCollectionSource with ID " + collectionSourceId + " not found"))
                     .build();
         } catch (IllegalArgumentException ex) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid Mib object payload: " + ex.getMessage())
                     .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
     }
 
     @Override
-    public Response addResourceTypeToSnmpCollectionSources(final Integer collectionSourceId, final SnmpCollectionResourceTypeDto request, SecurityContext securityContext) throws Exception {
+    public Response addResourceTypeToSnmpCollectionSources(
+            final Integer collectionSourceId,
+            final SnmpCollectionResourceTypeDto request,
+            final SecurityContext securityContext) throws Exception {
 
         if (collectionSourceId == null || collectionSourceId <= 0) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid snmpCollectionSourceId: " + collectionSourceId + ". It must be a positive integer.")
+                    .build();
+        }
+
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request body (SnmpCollectionResourceTypeDto) must not be null.")
                     .build();
         }
 
         try {
             final SnmpCollectionSource source = snmpCollectionSourceDao.get(collectionSourceId);
-            final var id = dataCollectionConfPersistenceService.addResourceTypeToSnmpCollectionSources(source, request);
+            if (source == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+                        .build();
+            }
 
-            return Response
-                    .status(Response.Status.CREATED)
+            final var id = dataCollectionConfPersistenceService
+                    .addResourceTypeToSnmpCollectionSources(source, request);
+
+            return Response.status(Response.Status.CREATED)
                     .entity(id)
                     .build();
+
         } catch (EntityNotFoundException ex) {
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex.getMessage() != null ? ex.getMessage()
+                            : ("SnmpCollectionSource with ID " + collectionSourceId + " not found"))
                     .build();
         } catch (IllegalArgumentException ex) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid ResourceType payload: " + ex.getMessage())
                     .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
     }
 
     @Override
-    public Response addSystemDefToSnmpCollectionSources(final Integer collectionSourceId, final SnmpCollectionSystemDefDto request, SecurityContext securityContext) throws Exception {
+    public Response addSystemDefToSnmpCollectionSources(
+            final Integer collectionSourceId,
+            final SnmpCollectionSystemDefDto request,
+            final SecurityContext securityContext) throws Exception {
 
         if (collectionSourceId == null || collectionSourceId <= 0) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid snmpCollectionSourceId: " + collectionSourceId + ". It must be a positive integer.")
+                    .build();
+        }
+
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request body (SnmpCollectionSystemDefDto) must not be null.")
                     .build();
         }
 
         try {
             final SnmpCollectionSource source = snmpCollectionSourceDao.get(collectionSourceId);
-            final var id = dataCollectionConfPersistenceService.addSystemDefToSnmpCollectionSources(source, request);
+            if (source == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+                        .build();
+            }
 
-            return Response
-                    .status(Response.Status.CREATED)
+            final var id = dataCollectionConfPersistenceService
+                    .addSystemDefToSnmpCollectionSources(source, request);
+
+            return Response.status(Response.Status.CREATED)
                     .entity(id)
                     .build();
+
         } catch (EntityNotFoundException ex) {
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .entity("SnmpCollectionSource with ID " + collectionSourceId + " not found")
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex.getMessage() != null ? ex.getMessage()
+                            : ("SnmpCollectionSource with ID " + collectionSourceId + " not found"))
                     .build();
         } catch (IllegalArgumentException ex) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
+            return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid SystemDef payload: " + ex.getMessage())
                     .build();
-        }
+        } catch (Exception ex) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+       }
     }
 
     @Override
