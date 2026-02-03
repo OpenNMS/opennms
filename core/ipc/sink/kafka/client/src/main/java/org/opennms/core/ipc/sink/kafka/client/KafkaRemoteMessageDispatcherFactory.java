@@ -37,6 +37,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
@@ -167,12 +168,18 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
                 Thread.currentThread().interrupt();
                 break;
             } catch (ExecutionException e) {
+                Throwable cause = e.getCause();
                 // Timeout typically happens when Kafka is Offline or it didn't initialize yet.
                 // For this case keep sending the message until it delivers, will cause sink messages to buffer.
-                if (e.getCause() != null && e.getCause() instanceof TimeoutException) {
-                    LOG.warn("Timeout occured while sending message to topic {}, it will be attempted again.", topic);
+                if (cause instanceof TimeoutException) {
+                    LOG.warn("Timeout occurred while sending message to topic '{}', it will be attempted again.", topic);
+                } else if (cause instanceof UnknownTopicOrPartitionException) {
+                    // Topic might not exist yet if auto.create.topics.enable is true but delayed,
+                    // or topic is being created. Keep retrying as this can be transient.
+                    LOG.warn("Topic '{}' does not exist yet, it will be attempted again. " +
+                            "If auto.create.topics.enable=false, ensure this topic is created manually.", topic);
                 } else {
-                    LOG.error("Exception occured while sending message to topic {} ", e);
+                    LOG.error("Exception occurred while sending message to topic '{}': {}", topic, e.getMessage(), e);
                     break;
                 }
             }

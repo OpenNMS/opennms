@@ -34,6 +34,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
@@ -101,7 +102,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+            LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}, instanceId={}, eventId={}",
+                event.getUei(), event.getNodeid(), event.getInterface(), event.getService(),
+                SystemInfoUtils.getInstanceId(), event.getDbid());
         }
 
         // Lock both the reduction and clear keys (if set) using a fair striped lock
@@ -114,7 +117,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Process the alarm inside a transaction
             alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
         } catch (Exception e) {
-            LOG.warn("Exception while reducing event {} to alarm", event, e);
+            LOG.warn("Exception while reducing event to alarm, instanceId={}, eventId={}",
+                SystemInfoUtils.getInstanceId(), event.getDbid(), e);
             return null;
         } finally {
             locks.forEach(Lock::unlock);
@@ -171,7 +175,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 final OnmsAlarm alarmCreated = alarm;
                 extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, persistedEvent));
             } catch (Exception ex) {
-                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+                LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
+                    SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
             }
 
             m_alarmDao.save(alarm);
@@ -179,7 +184,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
+                reductionKey, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
             reduceEvent(persistedEvent, alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
@@ -187,7 +193,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 final OnmsAlarm alarmUpdated = alarm;
                 extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, persistedEvent));
             } catch (Exception ex) {
-                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+                LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
+                    SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
             }
 
             m_alarmDao.update(alarm);
@@ -288,7 +295,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         }
                     }
                 } else {
-                    LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
+                    LOG.warn("reduceEvent: The specified field: {}, is not supported, instanceId={}, alarmId={}",
+                        fieldName, SystemInfoUtils.getInstanceId(), alarm.getId());
                 }
             }
         }
@@ -402,14 +410,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static boolean checkEventSanityAndDoWeProcess(final Event event) {
         if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
+                LOG.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event, instanceId={}, eventId={}", event.getUei(), LogDestType.DONOTPERSIST, SystemInfoUtils.getInstanceId(), event.getDbid());
             }
             return false;
         }
 
         if (event.getAlarmData() == null) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
+                LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
             }
             return false;
         }
