@@ -31,6 +31,9 @@ commands:
             echo "Listing all filtered vulnerabilities reports:"
             find . -name "*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt" -exec ls -l {} \;
 
+            echo "is there a tmp report?"
+            ls -l /tmp/report.json || echo "No /tmp/report.json found"
+
       - run:
           name: Combine Trivy Reports
           command: |
