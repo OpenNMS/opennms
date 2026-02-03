@@ -1,24 +1,24 @@
 import re
-import os
 import logging
 import glob
-import subprocess
 
 vulnerabilities = []
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def parse_filtered_vulnerabilities(file_path):
     global vulnerabilities
 
     # Get * in *-filtered_vulnerabilities.txt
     pattern=re.compile(r'(.*)-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities\.txt')
-    print(f"Parsing filtered vulnerabilities from {file_path}")
-    print("")
+    logging.info(f"Parsing filtered vulnerabilities from {file_path}")
+    logging.info("")
     match=pattern.match(file_path.split('/')[-1])
     if match:
         source=match.group(1)
-        print(f"Source identified as: {source}")
+        logging.info(f"Source identified as: {source}")
     else:
-        print("Could not identify source from filename.")
+        logging.error("Could not identify source from filename.")
         return []
         
     try:
@@ -48,7 +48,7 @@ def parse_filtered_vulnerabilities(file_path):
                     'Title': fields[9].strip(),
                     'Products': source
                 }
-                print(f"Parsed vulnerability: {payload['VulnerabilityID']} from source: {source}")
+                # logging.info(f"Parsed vulnerability: {payload['VulnerabilityID']} from source: {source}")
                 # Check for duplicates before adding, Products could have different values,
                 # we should add the source to Products if the vulnerability already exists
                 # NOTE: Deduplication must consider VulnerabilityID + PkgName + PkgPath because
@@ -69,31 +69,30 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 if __name__ == "__main__":
-    for json_file in glob.glob('/home/circleci/project/artifacts/*_filtered_vulnerabilities.json'):
-        
-        print(f"Processing JSON file: {json_file}")
-        # Here you would call analyze_trivy_report.py logic to generate filtered_vulnerabilities.txt
-        # For this example, we assume that the filtered files are already generated
-        output=subprocess.run([
-            "python3", "/home/circleci/project/.circleci/pyscripts/analyze_trivy_report.py", json_file
-        ], capture_output=True, text=True)
-        print("Subprocess output:")
-        print(output.stdout)
-        if output.stderr:
-            print("Subprocess errors (if any):")
-            print(output.stderr)
-        print(f"Completed analysis for {json_file}")
 
-    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
+    # Determine paths based on environment (CircleCI vs local)
+    circleci_base = '/home/circleci/project'
+    
+    base_path = circleci_base
+    json_path = f'{base_path}/artifacts/vulnerabilities_by_package.json'
+    txt_path = f'{base_path}/artifacts/filtered_vulnerabilities.txt'
+    blocklist_path = f'{base_path}/.circleci/trivy-config/blocked_list.json'
+
+    # Check if *-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt files exist
+    if not glob.glob(f'{base_path}/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
+        logging.error("No *-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt files found. Exiting.")
+        exit(1)
+
+    with open(f'{base_path}/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
         outfile.write("-" * 150 + "\n")
 
-    for file_path in glob.glob('/home/circleci/project/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
+    for file_path in glob.glob(f'{base_path}/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         parse_filtered_vulnerabilities(file_path)
-        print(f"Parsed {len(vulnerabilities)} total vulnerabilities so far")
+        logging.info(f"Parsed {len(vulnerabilities)} total vulnerabilities so far")
 
     # Write all deduplicated vulnerabilities once at the end
-    with open('/home/circleci/project/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
+    with open(f'{base_path}/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         for vuln in vulnerabilities:
-            print(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
+            # logging.info(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
             outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
