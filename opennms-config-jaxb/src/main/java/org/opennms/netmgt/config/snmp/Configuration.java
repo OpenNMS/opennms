@@ -402,12 +402,15 @@ public class Configuration implements Serializable {
 
     /**
      * Returns the value of field 'securityLevel'. The field 'securityLevel' has
-     * the following description: SNMPv3
-     * 
+     * the following description: SNMPv3.
+     * Note, this will return null if field is null.
+     * Valid values are 1-3, so we do not want to return 0 if the field is null.
+     * Calling code should check 'hasSecurityLevel()' and substitute a default integer value if desired.
+     *
      * @return the value of field 'SecurityLevel'.
      */
     public final Integer getSecurityLevel() {
-        return securityLevel == null? 0 : securityLevel;
+        return securityLevel;
     }
 
     /**
@@ -699,12 +702,17 @@ public class Configuration implements Serializable {
     /**
      * Sets the value of field 'securityLevel'. The field 'securityLevel' has
      * the following description: SNMPv3
+     * This can be set to null or else a valid value from 1-3.
      * 
      * @param securityLevel
      *            the value of field 'securityLevel'.
      */
     public final void setSecurityLevel(final Integer securityLevel) {
-        this.securityLevel = securityLevel;
+        if (securityLevel == null) {
+            this.securityLevel = null;
+        } else {
+            this.securityLevel = (securityLevel >= 1 && securityLevel <= 3) ? securityLevel : 1;
+        }
     }
 
     /**
@@ -968,4 +976,13 @@ public class Configuration implements Serializable {
                 + ", retry=" + retry + ", port=" + port + ", ttl=" + ttl + ", encrypted=" + encrypted + "]";
     }
 
+    /**
+     * Security level needs to be between 1-3. See org.opennms.netmgt.snmp.SnmpConfiguration for valid values.
+     * This sets it to null if it is an invalid valid such as 0.
+     */
+    public void fixSecurityLevel() {
+        if (securityLevel != null && securityLevel < 1) {
+            securityLevel = null;
+        }
+    }
 }

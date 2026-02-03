@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
 import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 
@@ -28,6 +31,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("snmp-config")
 @Tag(name = "SnmpConfig", description = "SNMP Configuration API")
@@ -129,4 +133,52 @@ public interface SnmpConfigRestApi {
                     content = @Content)
     })
     Response removeProfile(@QueryParam("label") final String label);
+
+    @GET
+    @Path("/download")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Download SNMP configuration",
+            description = "Download SNMP configuration in Json or XML format, suitable for upload.",
+            operationId = "downloadConfig"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SNMP configuration in download format retrieved successfully",
+                    content = { @Content(mediaType = "application/json"), @Content(mediaType = "application/xml") }),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content)
+    })
+    Response downloadConfig(@QueryParam("format") String format);
+
+    @POST
+    @Path("/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Operation(
+            summary = "Upload SNMP configuration in Json format.",
+            description = "Upload SNMP configuration in Json format and apply the changes.",
+            operationId = "uploadConfig"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SNMP configuration uploaded and applied successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                    content = @Content)
+    })
+    Response uploadConfig(@Multipart("upload") Attachment attachment);
+
+    @POST
+    @Path("/upload/xml")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Operation(
+            summary = "Upload SNMP configuration in XML format",
+            description = "Upload SNMP configuration in XML format and apply the changes.",
+            operationId = "uploadConfigXml"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "SNMP configuration uploaded and applied successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                    content = @Content)
+    })
+    Response uploadConfigXml(@Multipart("upload") Attachment attachment);
 }

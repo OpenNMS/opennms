@@ -21,8 +21,10 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,14 +32,18 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
@@ -222,9 +228,91 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         }
     }
 
+    @Override
+    public Response downloadConfig(final String format) {
+        final boolean isXml = format != null && format.equalsIgnoreCase("xml");
+        final String fileName = isXml ? "snmp-config.xml" : "snmp-config.json";
+        byte[] byteArray = null;
+
+        try {
+            final SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+            if (isXml) {
+                String xml = JaxbUtils.marshal(snmpConfig);
+                byteArray = xml.getBytes(StandardCharsets.UTF_8);
+            } else {
+                String json = objectMapper.writeValueAsString(snmpConfig);
+                byteArray = json.getBytes(StandardCharsets.UTF_8);
+            }
+        } catch (JsonProcessingException e) {
+            LOG.error("Error serializing SnmpConfig JSON: {}", e.getMessage(), e);
+            throw createServerException("Error retrieving SNMP config.");
+        }
+
+        final String contentType = isXml ? "application/xml" : "application/json";
+
+        return Response.ok().type(contentType + ";charset=" + StandardCharsets.UTF_8)
+                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .header("Pragma", "public")
+                .header("Cache-Control", "cache")
+                .header("Cache-Control", "must-revalidate")
+                .entity(byteArray).build();
+    }
+
+    @Override
+    public Response uploadConfig(final Attachment attachment) {
+        return uploadConfigInternal(attachment, false);
+    }
+
+    @Override
+    public Response uploadConfigXml(final Attachment attachment) {
+        return uploadConfigInternal(attachment, true);
+    }
+
+    private Response uploadConfigInternal(final Attachment attachment, final boolean isXml) {
+        if (attachment == null) {
+            return createBadRequestResponse("Missing configuration file.");
+        }
+
+        SnmpConfig config = null;
+        String contents = "";
+
+        try (InputStream stream = attachment.getObject(InputStream.class)) {
+            contents = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return createBadRequestResponse("Could not read configuration file.");
+        }
+
+        try {
+            if (isXml) {
+                config = JaxbUtils.unmarshal(SnmpConfig.class, contents);
+            } else {
+                config = objectMapper.readValue(contents, SnmpConfig.class);
+            }
+        } catch (Exception e) {
+            return createBadRequestResponse("Invalid configuration file.");
+        }
+
+        try {
+            SnmpPeerFactory.getInstance().setAndSaveConfig(config);
+        } catch (Exception e) {
+            throw createServerException("Could not save updated config");
+        }
+
+        // Send event to reload SnmpPoller config
+        EventBuilder builder = new EventBuilder(EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI, MODULE_NAME);
+        builder.setService("SNMP");
+        Event event = builder.getEvent();
+        sendEvent(event);
+
+        return Response.ok().build();
+    }
+
     /**
      * Sends the given event via the EventProxy to the system. If null no event is sent.
-     * @param eventToSend The Event to send. If null, no event is sent. * @return <code>true</code> if the event was sent successfully and no exception occurred, <code>false</code> if eventToSend is null.
+     * @param eventToSend The Event to send. If null, no event is sent.
+     * @return <code>true</code> if the event was sent successfully and no exception occurred,
+     *     <code>false</code> if eventToSend is null.
      * @throws WebApplicationException on error.
      */
     private void sendEvent(Event eventToSend) throws WebApplicationException {

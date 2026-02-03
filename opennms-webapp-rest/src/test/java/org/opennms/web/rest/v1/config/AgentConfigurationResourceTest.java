@@ -165,6 +165,11 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
+        public void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException {
+            // Ignore
+        }
+
+        @Override
         public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
             return new SnmpAgentConfig(address, getDefaults());
         }

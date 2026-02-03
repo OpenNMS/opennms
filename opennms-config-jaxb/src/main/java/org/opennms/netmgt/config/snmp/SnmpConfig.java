@@ -38,7 +38,6 @@ import org.opennms.core.xml.ValidateUsing;
 /**
  * Top-level element for the snmp-config.xml configuration file.
  */
-
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
@@ -150,6 +149,13 @@ public class SnmpConfig extends Configuration implements Serializable {
         return "SnmpConfig [definitions=" + definition + "]";
     }
 
+    @Override
+    public void fixSecurityLevel() {
+        super.fixSecurityLevel();
+        definition.forEach(Configuration::fixSecurityLevel);
+        profiles.getSnmpProfiles().forEach(Configuration::fixSecurityLevel);
+    }
+
     public void visit(SnmpConfigVisitor visitor) {
         visitor.visitSnmpConfig(this);
         for (final Definition definition : definition) {
@@ -163,5 +169,4 @@ public class SnmpConfig extends Configuration implements Serializable {
         visit(visitor);
         return visitor.getDefinition();
     }
-
 }

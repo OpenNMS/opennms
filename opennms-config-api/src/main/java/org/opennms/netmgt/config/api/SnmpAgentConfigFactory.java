@@ -39,6 +39,13 @@ public interface SnmpAgentConfigFactory {
     void saveCurrent() throws IOException;
 
     /**
+     * <p>setAndSaveCurrent</p>
+     * Sets and then saves the given configuration to file system.
+     * Use caution, this will overwrite the configuration.
+     */
+    void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException;
+
+    /**
      * <p>getAgentConfig</p>
      *
      * @param address a {@link java.net.InetAddress} object.
