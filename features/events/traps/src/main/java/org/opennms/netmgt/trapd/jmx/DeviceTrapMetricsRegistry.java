@@ -22,6 +22,7 @@
 package org.opennms.netmgt.trapd.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.management.MBeanServer;
@@ -48,7 +49,30 @@ public class DeviceTrapMetricsRegistry<T> {
     private final String mbeanType;
     private final DeviceMetricsFactory<T> factory;
     private final MBeanServer mbeanServer;
-    private final ConcurrentHashMap<String, T> deviceMetrics = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<DeviceKey, T> deviceMetrics = new ConcurrentHashMap<>();
+
+    private static final class DeviceKey {
+        final String location;
+        final String ipAddress;
+
+        DeviceKey(String location, String ipAddress) {
+            this.location = location;
+            this.ipAddress = ipAddress;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof DeviceKey)) return false;
+            DeviceKey that = (DeviceKey) o;
+            return Objects.equals(location, that.location) && Objects.equals(ipAddress, that.ipAddress);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(location, ipAddress);
+        }
+    }
 
     @FunctionalInterface
     public interface DeviceMetricsFactory<T> {
@@ -80,7 +104,7 @@ public class DeviceTrapMetricsRegistry<T> {
         if (!enabled) {
             return null;
         }
-        String key = location + ":" + ipAddress;
+        DeviceKey key = new DeviceKey(location, ipAddress);
         return deviceMetrics.computeIfAbsent(key, k -> {
             T metrics = factory.create(location, ipAddress);
             registerMBean(metrics, location, ipAddress);
@@ -105,11 +129,8 @@ public class DeviceTrapMetricsRegistry<T> {
      * Unregisters all per-device MBeans and clears the registry.
      */
     public void shutdown() {
-        for (var entry : deviceMetrics.entrySet()) {
-            String[] parts = entry.getKey().split(":", 2);
-            if (parts.length == 2) {
-                unregisterMBean(parts[0], parts[1]);
-            }
+        for (DeviceKey key : deviceMetrics.keySet()) {
+            unregisterMBean(key.location, key.ipAddress);
         }
         deviceMetrics.clear();
         LOG.info("Per-device trap metrics registry shut down");

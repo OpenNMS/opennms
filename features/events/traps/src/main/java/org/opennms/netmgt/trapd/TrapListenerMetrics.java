@@ -29,6 +29,9 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.trapd.jmx.DeviceTrapMetrics;
 import org.opennms.netmgt.trapd.jmx.DeviceTrapMetricsRegistry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
@@ -44,6 +47,7 @@ import com.codahale.metrics.jmx.JmxReporter;
  * - Queue size metrics (current, max, batch size)
  */
 public class TrapListenerMetrics {
+    private static final Logger LOG = LoggerFactory.getLogger(TrapListenerMetrics.class);
     private static final String JMX_DOMAIN = "org.opennms.netmgt.trapd";
 
     private final MetricRegistry metrics;
@@ -69,6 +73,9 @@ public class TrapListenerMetrics {
     public TrapListenerMetrics(MetricRegistry metrics, Identity identity, boolean enableDeviceMetrics) {
         this.metrics = metrics;
         this.identity = identity;
+        if (enableDeviceMetrics && identity == null) {
+            LOG.warn("Per-device trap metrics enabled but Identity is null; device metrics will not be recorded");
+        }
         this.deviceRegistry = new DeviceTrapMetricsRegistry<>(enableDeviceMetrics, DeviceTrapMetrics::new, "listener");
 
         // Register listener-level counters only
