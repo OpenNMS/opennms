@@ -26,6 +26,11 @@ commands:
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/horizon-image-single-arch-linux-amd64-trivy_report.json
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/sentinel-image-single-arch-linux-amd64-trivy_report.json
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/minion-image-single-arch-linux-amd64-trivy_report.json
+            
+            # find and list full path to *-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+            echo "Listing all filtered vulnerabilities reports:"
+            find . -name "*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt" -exec ls -l {} \;
+
       - run:
           name: Combine Trivy Reports
           command: |
