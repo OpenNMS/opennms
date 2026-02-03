@@ -171,16 +171,19 @@ This feature is disabled by default and must be explicitly enabled.
 
 ==== Enabling device metrics
 
-Set the following system property to `true`:
+For Core, add the following system property to `$\{OPENNMS_HOME}/etc/opennms.properties.d/trapd.properties`:
 
 [source, properties]
 ----
 org.opennms.netmgt.trapd.enableDeviceMetrics=true
 ----
 
-For Core, add this to `$\{OPENNMS_HOME}/etc/opennms.properties.d/trapd.properties`.
+For Minion, add the following to `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`:
 
-For Minion, add this to `$\{MINION_HOME}/etc/custom.system.properties`.
+[source, properties]
+----
+trapd.enableDeviceMetrics=true
+----
 
 ==== Listener-side metrics (Minion)
 
