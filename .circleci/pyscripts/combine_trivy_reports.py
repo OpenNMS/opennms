@@ -79,7 +79,7 @@ if __name__ == "__main__":
     blocklist_path = f'{base_path}/.circleci/trivy-config/blocked_list.json'
 
     # Check if *-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt files exist
-    if not glob.glob(f'{base_path}/artifacts/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
+    if not glob.glob(f'{base_path}/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         logging.error("No *-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt files found. Exiting.")
         exit(1)
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         outfile.write("VulnerabilityID | Severity | Status | InstalledVersion | FixedVersion | Class | Target | PkgName | PkgPath | Title | Products\n")
         outfile.write("-" * 150 + "\n")
 
-    for file_path in glob.glob(f'{base_path}/artifacts/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
+    for file_path in glob.glob(f'{base_path}/*-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt'):
         parse_filtered_vulnerabilities(file_path)
         logging.info(f"Parsed {len(vulnerabilities)} total vulnerabilities so far")
 
