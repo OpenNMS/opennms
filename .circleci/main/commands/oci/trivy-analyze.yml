@@ -26,6 +26,8 @@ commands:
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/horizon-image-single-arch-linux-amd64-trivy_report.json
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/sentinel-image-single-arch-linux-amd64-trivy_report.json
             python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/minion-image-single-arch-linux-amd64-trivy_report.json
+
+            ls 
       - run:
           name: Combine Trivy Reports
           command: |
