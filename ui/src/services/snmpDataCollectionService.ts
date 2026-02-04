@@ -11,7 +11,7 @@ import {
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
-  SnmpCollectionSystemDef,
+  SnmpCollectionSystemDefPayload,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
@@ -238,7 +238,7 @@ export const getAllMibGroupNames = async (): Promise<string[]> => {
 }
 
 export const createSystemDefinition = async (
-  payload: SnmpCollectionSystemDef,
+  payload: SnmpCollectionSystemDefPayload,
   sourceId: number
 ): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs`
@@ -258,7 +258,7 @@ export const createSystemDefinition = async (
 }
 
 export const updateSystemDefinition = async (
-  payload: SnmpCollectionSystemDef,
+  payload: SnmpCollectionSystemDefPayload,
   sourceId: number
 ): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs/${payload.id}`

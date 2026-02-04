@@ -110,7 +110,7 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '../constants'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '../constants'
 
 const store = useSnmpDataCollectionDetailStore()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
@@ -138,7 +138,7 @@ const loadInitialData = () => {
       oidType.value = def.sysoidMask ? 'mask' : def.sysoid ? 'single' : ''
       oidValue.value = def.sysoid || def.sysoidMask || ''
       status.value = def.enabled
-      mibGroupNames.value = JSON.parse(def.mibGroupNames).map((x: string) => ({ _text: x, _value: x }))
+      mibGroupNames.value = def.mibGroupNames.map((x: string) => ({ _text: x, _value: x }))
     } else {
       name.value = ''
       oidType.value = DEFAULT_OID_TYPE
@@ -159,6 +159,9 @@ const validateDefinition = (): SystemDefErrors => {
   }
   if (!oidValue.value.trim()) {
     validationErrors['oidValue'] = 'OID Value is required.'
+  }
+  if (oidValue.value && !OID_PATTERN.test(oidValue.value)) {
+    validationErrors['oidValue'] = 'OID Value format is invalid.'
   }
   if (mibGroupNames.value.length === 0) {
     validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
@@ -200,7 +203,7 @@ const saveSystemDef = async () => {
       oidType.value === 'mask' ? oidValue.value : '',
       '',
       '',
-      JSON.stringify(mibGroupNames.value.map((x) => x._value)),
+      mibGroupNames.value.map((x) => x._value as string),
       status.value,
       store.selectedSystemDef?.id || 0,
       store.systemDefDrawerState.isEditMode

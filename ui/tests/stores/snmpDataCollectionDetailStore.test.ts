@@ -40,7 +40,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
       sysoidMask: '',
       ipAddresses: '',
       ipAddressMasks: '',
-      mibGroupNames: '',
+      mibGroupNames: [],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -52,7 +52,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
       sysoidMask: '',
       ipAddresses: '',
       ipAddressMasks: '',
-      mibGroupNames: '',
+      mibGroupNames: [],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -1833,6 +1833,104 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.isLoading).toBe(false)
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching SNMP collection resource types:', error)
       consoleErrorSpy.mockRestore()
+    })
+  })
+
+  describe('fetchResourceTypeNames', () => {
+    it('should fetch resource type names successfully', async () => {
+      const mockResourceTypeNames = ['nodeSnmp', 'hrStorageIndex', 'dskIndex']
+      const { getAllResourceTypeNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue(mockResourceTypeNames)
+
+      await store.fetchResourceTypeNames()
+
+      expect(getAllResourceTypeNames).toHaveBeenCalled()
+      expect(store.resourceTypeNames).toEqual(mockResourceTypeNames)
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('should handle errors when fetching resource type names', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const error = new Error('Network error')
+      const { getAllResourceTypeNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllResourceTypeNames).mockRejectedValue(error)
+
+      await store.fetchResourceTypeNames()
+
+      expect(store.isLoading).toBe(false)
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching SNMP collection resource type names:', error)
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('should set loading state during fetch', async () => {
+      const { getAllResourceTypeNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllResourceTypeNames).mockImplementation(async () => {
+        expect(store.isLoading).toBe(true)
+        return ['nodeSnmp']
+      })
+
+      await store.fetchResourceTypeNames()
+
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('should handle empty response', async () => {
+      const { getAllResourceTypeNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue([])
+
+      await store.fetchResourceTypeNames()
+
+      expect(store.resourceTypeNames).toEqual([])
+      expect(store.isLoading).toBe(false)
+    })
+  })
+
+  describe('fetchMibGroupNames', () => {
+    it('should fetch mib group names successfully', async () => {
+      const mockMibGroupNames = ['mib2-interfaces', 'mib2-host-resources', 'cisco-memory-pool']
+      const { getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllMibGroupNames).mockResolvedValue(mockMibGroupNames)
+
+      await store.fetchMibGroupNames()
+
+      expect(getAllMibGroupNames).toHaveBeenCalled()
+      expect(store.mibGroupNames).toEqual(mockMibGroupNames)
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('should handle errors when fetching mib group names', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const error = new Error('Network error')
+      const { getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllMibGroupNames).mockRejectedValue(error)
+
+      await store.fetchMibGroupNames()
+
+      expect(store.isLoading).toBe(false)
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching SNMP collection MIB group names:', error)
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('should set loading state during fetch', async () => {
+      const { getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllMibGroupNames).mockImplementation(async () => {
+        expect(store.isLoading).toBe(true)
+        return ['mib2-interfaces']
+      })
+
+      await store.fetchMibGroupNames()
+
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('should handle empty response', async () => {
+      const { getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getAllMibGroupNames).mockResolvedValue([])
+
+      await store.fetchMibGroupNames()
+
+      expect(store.mibGroupNames).toEqual([])
+      expect(store.isLoading).toBe(false)
     })
   })
 })

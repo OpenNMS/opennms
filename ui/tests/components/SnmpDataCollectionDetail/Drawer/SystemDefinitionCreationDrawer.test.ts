@@ -35,7 +35,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     sysoidMask: '',
     ipAddresses: '[]',
     ipAddressMasks: '[]',
-    mibGroupNames: '["mib-group-1", "mib-group-2"]',
+    mibGroupNames: ['mib-group-1', 'mib-group-2'],
     enabled: true,
     collectionSourceId: 1,
     collectionSourceName: 'Test Source'
@@ -423,11 +423,11 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should map sysoidMask correctly when oidType is mask', async () => {
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
       wrapper.vm.oidType = 'mask'
-      wrapper.vm.oidValue = '.1.3.6.1.*'
+      wrapper.vm.oidValue = '.1.3.6.1.4.1'
       await wrapper.vm.saveSystemDef()
       const call = vi.mocked(createSystemDefinition).mock.calls[0]
       expect(call[0].sysoid).toBe('')
-      expect(call[0].sysoidMask).toBe('.1.3.6.1.*')
+      expect(call[0].sysoidMask).toBe('.1.3.6.1.4.1')
     })
   })
 
@@ -514,9 +514,9 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
   })
 
   describe('Edge Cases', () => {
-    it('should handle empty mibGroupNames string in edit mode', async () => {
+    it('should handle empty mibGroupNames array in edit mode', async () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
-      store.selectedSystemDef = { ...mockSystemDef, mibGroupNames: '[]' }
+      store.selectedSystemDef = { ...mockSystemDef, mibGroupNames: [] }
       store.systemDefDrawerState.visible = false
       await nextTick()
       store.systemDefDrawerState.visible = true
@@ -535,7 +535,8 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       wrapper.vm.oidValue = '   '
       await nextTick()
       const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value is required.')
+      // Whitespace fails the OID pattern validation after trim
+      expect(errors.oidValue).toBe('OID Value format is invalid.')
     })
 
     it('should handle multiple MIB groups selection', async () => {
@@ -677,6 +678,273 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.visible = false
       await nextTick()
       expect(wrapper.vm.name).toBe('Custom Name')
+    })
+  })
+
+  describe('OID Pattern Validation', () => {
+    it('should accept valid OID starting with dot', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1.4.1.8072'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBeUndefined()
+    })
+
+    it('should accept valid OID without leading dot', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '1.3.6.1.4.1.8072'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBeUndefined()
+    })
+
+    it('should reject OID with invalid characters', async () => {
+      wrapper.vm.oidValue = '.1.3.6.1.4.abc'
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBe('OID Value format is invalid.')
+    })
+
+    it('should reject OID with special characters', async () => {
+      wrapper.vm.oidValue = '.1.3.6.1.4.*'
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBe('OID Value format is invalid.')
+    })
+
+    it('should reject OID with double dots', async () => {
+      wrapper.vm.oidValue = '.1.3..6.1'
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBe('OID Value format is invalid.')
+    })
+
+    it('should reject OID with trailing dot', async () => {
+      wrapper.vm.oidValue = '.1.3.6.1.'
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBe('OID Value format is invalid.')
+    })
+
+    it('should accept single number OID', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBeUndefined()
+    })
+
+    it('should accept OID with leading dot and single number', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      const errors = wrapper.vm.validateDefinition()
+      expect(errors.oidValue).toBeUndefined()
+    })
+  })
+
+  describe('isSaveDisabled State', () => {
+    it('should disable save when name is empty', async () => {
+      wrapper.vm.name = ''
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should disable save when oidType is empty', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = ''
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should disable save when oidValue is empty', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = ''
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should disable save when mibGroupNames is empty', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = []
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should disable save when OID format is invalid', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = 'invalid'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should enable save when all fields are valid', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(false)
+    })
+  })
+
+  describe('Drawer Title', () => {
+    it('should return "Create System Definition" for create mode', () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
+      expect(wrapper.vm.drawerTitle).toBe('Create System Definition')
+    })
+
+    it('should return "Edit System Definition" for edit mode', () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
+      expect(wrapper.vm.drawerTitle).toBe('Edit System Definition')
+    })
+  })
+
+  describe('Edit Mode - Status Field', () => {
+    it('should populate status as false when system def is disabled', async () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
+      store.selectedSystemDef = { ...mockSystemDef, enabled: false }
+      store.systemDefDrawerState.visible = false
+      await nextTick()
+      store.systemDefDrawerState.visible = true
+      await nextTick()
+      expect(wrapper.vm.status).toBe(false)
+    })
+
+    it('should correctly toggle status from false to true', async () => {
+      wrapper.vm.status = false
+      await nextTick()
+      wrapper.vm.status = true
+      await nextTick()
+      expect(wrapper.vm.status).toBe(true)
+    })
+  })
+
+  describe('Save System Definition - Payload Construction', () => {
+    beforeEach(async () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
+      wrapper.vm.name = 'Payload Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1.4.1.12345'
+      wrapper.vm.mibGroupNames = [
+        { _text: 'mib-group-1', _value: 'mib-group-1' },
+        { _text: 'mib-group-2', _value: 'mib-group-2' }
+      ]
+      wrapper.vm.status = true
+      await nextTick()
+    })
+
+    it('should include all mib groups in payload as JSON string', async () => {
+      vi.mocked(createSystemDefinition).mockResolvedValue(true)
+      await wrapper.vm.saveSystemDef()
+      const call = vi.mocked(createSystemDefinition).mock.calls[0]
+      // mibGroupNames is stringified by the mapper
+      expect(call[0].mibGroupNames).toBe(JSON.stringify(['mib-group-1', 'mib-group-2']))
+    })
+
+    it('should set enabled to true when status is true', async () => {
+      vi.mocked(createSystemDefinition).mockResolvedValue(true)
+      wrapper.vm.status = true
+      await wrapper.vm.saveSystemDef()
+      const call = vi.mocked(createSystemDefinition).mock.calls[0]
+      expect(call[0].enabled).toBe(true)
+    })
+
+    it('should set enabled to false when status is false', async () => {
+      vi.mocked(createSystemDefinition).mockResolvedValue(true)
+      wrapper.vm.status = false
+      await wrapper.vm.saveSystemDef()
+      const call = vi.mocked(createSystemDefinition).mock.calls[0]
+      expect(call[0].enabled).toBe(false)
+    })
+
+    it('should pass collection source id to create API', async () => {
+      vi.mocked(createSystemDefinition).mockResolvedValue(true)
+      await wrapper.vm.saveSystemDef()
+      const call = vi.mocked(createSystemDefinition).mock.calls[0]
+      expect(call[1]).toBe(1) // collection source id
+    })
+
+    it('should pass collection source id to update API', async () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
+      store.selectedSystemDef = mockSystemDef
+      vi.mocked(updateSystemDefinition).mockResolvedValue(true)
+      await wrapper.vm.saveSystemDef()
+      const call = vi.mocked(updateSystemDefinition).mock.calls[0]
+      expect(call[1]).toBe(1) // collection source id
+    })
+  })
+
+  describe('Error State Management', () => {
+    it('should clear errors when form becomes valid', async () => {
+      // Start with invalid state
+      wrapper.vm.name = ''
+      await nextTick()
+      expect(wrapper.vm.error.name).toBe('Name is required.')
+      
+      // Make it valid
+      wrapper.vm.name = 'Valid Name'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.error.name).toBeUndefined()
+    })
+
+    it('should update errors reactively when oidType changes', async () => {
+      wrapper.vm.oidType = ''
+      await nextTick()
+      expect(wrapper.vm.error.oidType).toBe('OID Type is required.')
+      
+      wrapper.vm.oidType = 'single'
+      await nextTick()
+      expect(wrapper.vm.error.oidType).toBeUndefined()
+    })
+
+    it('should update errors reactively when mibGroupNames changes', async () => {
+      wrapper.vm.name = 'Test'
+      wrapper.vm.oidType = 'single'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      wrapper.vm.mibGroupNames = []
+      await nextTick()
+      expect(wrapper.vm.error.mibGroupNames).toBe('At least one MIB Group must be selected.')
+      
+      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
+      await nextTick()
+      expect(wrapper.vm.error.mibGroupNames).toBeUndefined()
+    })
+  })
+
+  describe('loadInitialData in Create Mode', () => {
+    it('should not reset values in Create mode when drawer opens', async () => {
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
+      wrapper.vm.name = 'Pre-existing Name'
+      wrapper.vm.oidValue = '.1.3.6.1'
+      store.systemDefDrawerState.visible = false
+      await nextTick()
+      store.systemDefDrawerState.visible = true
+      await nextTick()
+      // In Create mode, loadInitialData doesn't run the edit branch
+      expect(wrapper.vm.name).toBe('Pre-existing Name')
     })
   })
 })

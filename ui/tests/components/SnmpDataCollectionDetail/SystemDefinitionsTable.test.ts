@@ -54,7 +54,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.8072',
       ipAddresses: '[]',
       ipAddressMasks: '[]',
-      mibGroupNames: '["mib2-interfaces", "mib2-host-resources-storage"]',
+      mibGroupNames: ['mib2-interfaces', 'mib2-host-resources-storage'],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -67,7 +67,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.9',
       ipAddresses: '["192.168.1.1"]',
       ipAddressMasks: '["255.255.255.0"]',
-      mibGroupNames: '["cisco-memory-pool", "cisco-cpu"]',
+      mibGroupNames: ['cisco-memory-pool', 'cisco-cpu'],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -80,7 +80,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.12345',
       ipAddresses: '[]',
       ipAddressMasks: '[]',
-      mibGroupNames: '["disabled-mib"]',
+      mibGroupNames: ['disabled-mib'],
       enabled: false,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -689,7 +689,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should handle empty mib group names', async () => {
       const emptyMibDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '[]'
+        mibGroupNames: []
       }
 
       store.systemDefinitions = [emptyMibDef]
@@ -711,7 +711,7 @@ describe('SystemDefinitionsTable.vue', () => {
         sysoidMask: '',
         ipAddresses: '[]',
         ipAddressMasks: '[]',
-        mibGroupNames: '[]',
+        mibGroupNames: [],
         enabled: false,
         collectionSourceId: 1,
         collectionSourceName: 'Test Source'
@@ -877,7 +877,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should parse and display single mib group name', async () => {
       const singleGroupDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '["single-group"]'
+        mibGroupNames: ['single-group']
       }
 
       store.systemDefinitions = [singleGroupDef]
@@ -900,7 +900,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const expandedContent = wrapper.find('.expanded-content')
-      // mibGroupNames: '["mib2-interfaces", "mib2-host-resources-storage"]'
+      // mibGroupNames: ['mib2-interfaces', 'mib2-host-resources-storage']
       expect(expandedContent.text()).toContain('mib2-interfaces')
       expect(expandedContent.text()).toContain('mib2-host-resources-storage')
     })
@@ -908,7 +908,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should handle empty mib group names array', async () => {
       const emptyMibGroupsDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '[]'
+        mibGroupNames: []
       }
 
       store.systemDefinitions = [emptyMibGroupsDef]

@@ -129,7 +129,7 @@
                 <h6>Mib Group Names:</h6>
                 <p
                   class="description"
-                  v-html="JSON.parse(systemDefinition.mibGroupNames).join(', ')"
+                  v-html="systemDefinition.mibGroupNames.join(', ')"
                 ></p>
               </td>
             </tr>
