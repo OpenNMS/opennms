@@ -11,6 +11,7 @@ import {
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
+  SnmpCollectionSystemDefPayload,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
@@ -58,6 +59,8 @@ export const filterSnmpCollectionSources = async (
 
     if (response.status === 200) {
       return mapSnmpDataCollectionSourceResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      return { sources: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -123,6 +126,8 @@ export const getSnmpDataCollectionSystemDefinitions = async (
 
     if (response.status === 200) {
       return mapSnmpCollectionSystemDefResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      return { systemDefinitions: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -154,6 +159,8 @@ export const getSnmpDataCollectionMibGroups = async (
 
     if (response.status === 200) {
       return mapSnmpCollectionMibGroupResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      return { mibGroups: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
@@ -162,7 +169,6 @@ export const getSnmpDataCollectionMibGroups = async (
     throw error
   }
 }
-
 
 export const getSnmpDataCollectionResourceTypes = async (
   dataCollectionGroupId: number,
@@ -186,11 +192,87 @@ export const getSnmpDataCollectionResourceTypes = async (
 
     if (response.status === 200) {
       return mapSnmpCollectionResourceTypeResponseFromServer(response.data)
+    } else if (response.status === 204) {
+      return { resourceTypes: [], totalRecords: 0 }
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }
   } catch (error) {
     console.error('Error fetching SNMP data collection resource types:', error)
+    throw error
+  }
+}
+
+export const getAllResourceTypeNames = async (): Promise<string[]> => {
+  const endpoint = '/datacollectionconf/resourcetypes/names'
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return response.data as string[]
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection resource type names:', error)
+    throw error
+  }
+}
+
+export const getAllMibGroupNames = async (): Promise<string[]> => {
+  const endpoint = '/datacollectionconf/mibgroups/names'
+
+  try {
+    const response = await v2.get(endpoint)
+
+    if (response.status === 200) {
+      return response.data as string[]
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching SNMP data collection MIB group names:', error)
+    throw error
+  }
+}
+
+export const createSystemDefinition = async (
+  payload: SnmpCollectionSystemDefPayload,
+  sourceId: number
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs`
+
+  try {
+    const response = await v2.post(endpoint, payload)
+
+    if (response.status === 201) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error creating SNMP data collection system definition:', error)
+    throw error
+  }
+}
+
+export const updateSystemDefinition = async (
+  payload: SnmpCollectionSystemDefPayload,
+  sourceId: number
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/systemdefs/${payload.id}`
+
+  try {
+    const response = await v2.put(endpoint, payload)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error updating SNMP data collection system definition:', error)
     throw error
   }
 }

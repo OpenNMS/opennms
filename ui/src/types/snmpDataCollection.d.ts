@@ -1,4 +1,4 @@
-import { Pagination } from '.'
+import { CreateEditMode, Pagination } from '.'
 
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
@@ -57,6 +57,13 @@ export interface SnmpCollectionDetailState {
   resourceTypesPagination: Pagination
   resourceTypesSorting: Sorting
   resourceTypesSearchTerm: string
+  resourceTypeNames: string[]
+  mibGroupNames: string[]
+  selectedSystemDef: SnmpCollectionSystemDef | null
+  systemDefDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
 }
 
 export interface SnmpDataCollectionSourceResponse {
@@ -70,6 +77,19 @@ export interface SnmpDataCollectionSourceNamesAndIds {
 }
 
 export interface SnmpCollectionSystemDef {
+  id: number
+  name: string
+  sysoid: string
+  sysoidMask: string
+  ipAddresses: string
+  ipAddressMasks: string
+  mibGroupNames: string[]
+  enabled: boolean
+  collectionSourceId: number
+  collectionSourceName: string
+}
+
+export interface SnmpCollectionSystemDefPayload {
   id: number
   name: string
   sysoid: string
@@ -121,5 +141,15 @@ export interface SnmpCollectionResourceType {
 export interface SnmpCollectionResourceTypeResponse {
   resourceTypes: SnmpCollectionResourceType[]
   totalRecords: number
+}
+
+export interface SystemDefErrors {
+  name?: string
+  oidType?: string
+  oidValue?: string
+  enabled?: string
+  ipAddresses?: string
+  ipAddressMasks?: string
+  mibGroupNames?: string
 }
 

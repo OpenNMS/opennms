@@ -543,6 +543,79 @@ public class DataCollectionConfRestServiceIT {
 
     @Test
     @Transactional
+    public void testGetSnmpDataCollectionResourceTypeNames() throws Exception {
+        // Setup source entity
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("resource-type-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for Resource Type Names");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        // Resource type 1
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("resource-type-one");
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("resource-type-two");
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        // Act
+        Response response = dataCollectionConfRestApi.getDataCollectionResourceTypeNames(securityContext);
+
+        // Assert
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        @SuppressWarnings("unchecked")
+        List<String> resourceTypeNames = (List<String>) response.getEntity();
+        Assert.assertEquals(4, resourceTypeNames.size());
+        Assert.assertEquals("0", resourceTypeNames.get(0));
+        Assert.assertEquals("ifIndex", resourceTypeNames.get(1));
+        Assert.assertTrue(resourceTypeNames.contains("resource-type-one"));
+        Assert.assertTrue(resourceTypeNames.contains("resource-type-two"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetSnmpDataCollectionMibGroupNames() throws Exception {
+
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("mib-group-source");
+        src.setVendor("opennms");
+        src.setCreatedTime(new Date());
+        src.setDescription("Source for MIB Group Names");
+        snmpCollectionSourceDao.saveOrUpdate(src);
+
+        SnmpCollectionMibGroup mg1 = new SnmpCollectionMibGroup();
+        mg1.setCollectionSource(src);
+        mg1.setName("mib-group-one");
+        mg1.setMibObjects("ifIndex,ifDescr");
+        mg1.setMibGroupNames("IF-MIB::ifEntry");
+        snmpCollectionMibGroupDao.saveOrUpdate(mg1);
+
+        SnmpCollectionMibGroup mg2 = new SnmpCollectionMibGroup();
+        mg2.setCollectionSource(src);
+        mg2.setName("mib-group-two");
+        mg2.setMibObjects("sysUpTime,sysDescr");
+        mg2.setMibGroupNames("SNMPv2-MIB::system");
+        snmpCollectionMibGroupDao.saveOrUpdate(mg2);
+        snmpCollectionMibGroupDao.flush();
+
+        Response response = dataCollectionConfRestApi.getDataCollectionMibGroupNames(securityContext);
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        @SuppressWarnings("unchecked")
+        List<String> mibGroupNames = (List<String>) response.getEntity();
+        Assert.assertTrue(mibGroupNames.contains("mib-group-one"));
+        Assert.assertTrue(mibGroupNames.contains("mib-group-two"));
+    }
+
+    @Test
+    @Transactional
     public void testAddMibGroupToSnmpCollectionSources() throws Exception {
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.snmp.source.add");

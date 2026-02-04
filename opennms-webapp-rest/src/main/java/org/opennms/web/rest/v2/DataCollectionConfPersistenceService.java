@@ -126,6 +126,14 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSourceDao.getIdToNameMap();
     }
 
+    public List<String> getAllResourceTypeNames() {
+        return snmpCollectionResourceTypeDao.findAllResourceTypeNames();
+    }
+
+    public List<String> getAllMibGroupNames() {
+        return snmpCollectionMibGroupDao.findAllMibGroupNames();
+    }
+
     @Transactional
     public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
 
@@ -133,6 +141,7 @@ public class DataCollectionConfPersistenceService {
         entity.setCollectionSource(snmpCollectionSource);
         return snmpCollectionMibGroupDao.save(entity);
     }
+
     @Transactional
     public Integer addResourceTypeToSnmpCollectionSources(
             final SnmpCollectionSource snmpCollectionSource,
@@ -172,6 +181,7 @@ public class DataCollectionConfPersistenceService {
         final var entity = SnmpCollectionMibGroupDto.updateEntity(snmpCollectionMibGroupEntity, request);
         snmpCollectionMibGroupDao.saveOrUpdate(entity);
     }
+
     @Transactional
     public void updateResourceType(
             final Integer id,

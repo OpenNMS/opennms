@@ -56,4 +56,5 @@ public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGrou
     SnmpCollectionMibGroup findBySnmpSourceCollectionIdAndId(Integer sourceId, Integer  id);
 
 
+    List<String> findAllMibGroupNames();
 }

@@ -180,6 +180,12 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
+    public List<String> findAllMibGroupNames() {
+        return findObjects(String.class,
+                "select distinct g.name from SnmpCollectionMibGroup g");
+    }
+
+    @Override
     public SnmpCollectionMibGroup findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
         return findUnique("from SnmpCollectionMibGroup g where g.collectionSource.id = ? AND g.id = ? ", snmpCollectionSourceId, id);
     }
