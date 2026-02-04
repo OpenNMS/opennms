@@ -541,6 +541,387 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals("Descriptions should match", "Open Network Monitoring System SNMP", opennmsCollectionSource.getDescription());
     }
 
+    @Test
+    @Transactional
+    public void testAddMibGroupToSnmpCollectionSources() throws Exception {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.add");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for addMibGroup tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionMibGroupDto reqBad1 = new SnmpCollectionMibGroupDto();
+        reqBad1.setName("if-mib-interfaces");
+        Response respBad1 = dataCollectionConfRestApi.addMibGroupToSnmpCollectionSources(
+                null, reqBad1, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad1.getStatus());
+        Assert.assertEquals(
+                "Invalid snmpCollectionSourceId: null. It must be a positive integer.",
+                respBad1.getEntity()
+        );
+        SnmpCollectionMibGroupDto addReq = new SnmpCollectionMibGroupDto();
+        addReq.setName("if-mib-interfaces");
+        addReq.setIfType("Ethernet");
+        addReq.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        addReq.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        addReq.setMibObjProperties("{\"property\":\"value\"}");
+        addReq.setEnabled(true);
+
+        Response addResp = dataCollectionConfRestApi.addMibGroupToSnmpCollectionSources(
+                src.getId(), addReq, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), addResp.getStatus());
+        Assert.assertNotNull(addResp.getEntity());
+
+        Integer createdId;
+        if (addResp.getEntity() instanceof Integer) {
+            createdId = (Integer) addResp.getEntity();
+        } else if (addResp.getEntity() instanceof Long) {
+            createdId = ((Long) addResp.getEntity()).intValue();
+        } else if (addResp.getEntity() instanceof String) {
+            createdId = Integer.valueOf((String) addResp.getEntity());
+        } else {
+            throw new AssertionError("Unexpected ID type: " + addResp.getEntity().getClass());
+        }
+        Assert.assertTrue(createdId > 0);
+        snmpCollectionMibGroupDao.flush();
+
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionMibGroupByCollectionSourceId(
+                src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> resultList = (List<?>) filterMap.get("dataCollectionMibGroupList");
+        Assert.assertEquals(1, resultList.size());
+
+        SnmpCollectionMibGroupDto created = (SnmpCollectionMibGroupDto) resultList.get(0);
+        Assert.assertEquals("if-mib-interfaces", created.getName());
+        Assert.assertEquals("Ethernet", created.getIfType());
+        Assert.assertEquals("IF-MIB::ifEntry,IF-MIB::ifXEntry", created.getMibGroupNames());
+        Assert.assertEquals("ifIndex,ifDescr,ifOperStatus", created.getMibObjects());
+        Assert.assertEquals("{\"property\":\"value\"}", created.getMibObjProperties());
+
+    }
+
+    @Test
+    @Transactional
+    public void testAddResourceTypeToSnmpCollectionSources() throws Exception {
+
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.add.resourceType");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for addResourceType tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionResourceTypeDto reqBad1 = new SnmpCollectionResourceTypeDto();
+        reqBad1.setName("interface");
+
+        Response respBad1 = dataCollectionConfRestApi.addResourceTypeToSnmpCollectionSources(
+                null, reqBad1, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad1.getStatus());
+        Assert.assertEquals(
+                "Invalid snmpCollectionSourceId: null. It must be a positive integer.",
+                respBad1.getEntity()
+        );
+
+        SnmpCollectionResourceTypeDto reqBad2 = new SnmpCollectionResourceTypeDto();
+        reqBad2.setName("interface");
+
+        Response respBad2 = dataCollectionConfRestApi.addResourceTypeToSnmpCollectionSources(
+                0, reqBad2, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad2.getStatus());
+        Assert.assertEquals(
+                "Invalid snmpCollectionSourceId: 0. It must be a positive integer.",
+                respBad2.getEntity()
+        );
+
+        SnmpCollectionResourceTypeDto addReq = new SnmpCollectionResourceTypeDto();
+        addReq.setName("interface");
+        addReq.setLabel("Interface");
+        addReq.setResourceLabel("Interface ${ifDescr}");
+        addReq.setPersistenceSelectorStrategy("default");
+        addReq.setEnabled(true);
+
+        Response addResp = dataCollectionConfRestApi.addResourceTypeToSnmpCollectionSources(
+                src.getId(), addReq, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), addResp.getStatus());
+        Assert.assertNotNull(addResp.getEntity());
+
+        Integer createdId;
+        if (addResp.getEntity() instanceof Integer) {
+            createdId = (Integer) addResp.getEntity();
+        } else if (addResp.getEntity() instanceof Long) {
+            createdId = ((Long) addResp.getEntity()).intValue();
+        } else if (addResp.getEntity() instanceof String) {
+            createdId = Integer.valueOf((String) addResp.getEntity());
+        } else {
+            throw new AssertionError("Unexpected ID type: " + addResp.getEntity().getClass());
+        }
+        Assert.assertTrue(createdId > 0);
+
+        snmpCollectionResourceTypeDao.flush();
+
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionResourceTypeByCollectionSourceId(
+                src.getId(), "interface", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> resultList = (List<?>) filterMap.get("dataCollectionResourceTypeList");
+        Assert.assertEquals(1, resultList.size());
+
+        SnmpCollectionResourceTypeDto created = (SnmpCollectionResourceTypeDto) resultList.get(0);
+        Assert.assertEquals("interface", created.getName());
+        Assert.assertEquals("Interface", created.getLabel());
+        Assert.assertEquals("Interface ${ifDescr}", created.getResourceLabel());
+    }
+
+    @Test
+    @Transactional
+    public void testAddSystemDefToSnmpCollectionSources() throws Exception {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.add.systemDef");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for addSystemDef tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionSystemDefDto reqBad1 = new SnmpCollectionSystemDefDto();
+        reqBad1.setName("systemdef-1");
+
+        Response respBad1 = dataCollectionConfRestApi.addSystemDefToSnmpCollectionSources(
+                null, reqBad1, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad1.getStatus());
+        Assert.assertEquals(
+                "Invalid snmpCollectionSourceId: null. It must be a positive integer.",
+                respBad1.getEntity()
+        );
+
+        SnmpCollectionSystemDefDto addReq = new SnmpCollectionSystemDefDto();
+        addReq.setName("systemdef-1");
+        addReq.setSysoidMask(".1.3.6.1.4.1");
+        addReq.setSysoid(".1.3.6.1.4.1.8072.3.2.10");
+        addReq.setEnabled(true);
+        addReq.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+
+        Response addResp = dataCollectionConfRestApi.addSystemDefToSnmpCollectionSources(
+                src.getId(), addReq, securityContext);
+
+        Assert.assertEquals(Response.Status.CREATED.getStatusCode(), addResp.getStatus());
+        Assert.assertNotNull(addResp.getEntity());
+
+        Integer createdId;
+        if (addResp.getEntity() instanceof Integer) {
+            createdId = (Integer) addResp.getEntity();
+        } else if (addResp.getEntity() instanceof Long) {
+            createdId = ((Long) addResp.getEntity()).intValue();
+        } else if (addResp.getEntity() instanceof String) {
+            createdId = Integer.valueOf((String) addResp.getEntity());
+        } else {
+            throw new AssertionError("Unexpected ID type: " + addResp.getEntity().getClass());
+        }
+        Assert.assertTrue(createdId > 0);
+
+        snmpCollectionSystemDefDao.flush();
+
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionSystemDefByCollectionSourceId(
+                src.getId(), "systemdef-1", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> resultList = (List<?>) filterMap.get("dataCollectionSystemDefsList");
+        Assert.assertEquals(1, resultList.size());
+
+        SnmpCollectionSystemDefDto created = (SnmpCollectionSystemDefDto) resultList.get(0);
+        Assert.assertEquals("systemdef-1", created.getName());
+        Assert.assertEquals(".1.3.6.1.4.1", created.getSysoidMask());
+        Assert.assertEquals(".1.3.6.1.4.1.8072.3.2.10", created.getSysoid());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateMibGroupInSnmpCollectionSources() throws Exception {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.update.mibgroup");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for update mib group tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionMibGroup group = new SnmpCollectionMibGroup();
+        group.setCollectionSource(src);
+        group.setName("if-mib-interfaces");
+        group.setIfType("Ethernet");
+        group.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group.setMibObjProperties("{\"property\":\"value\"}");
+        group.setEnabled(true);
+        snmpCollectionMibGroupDao.saveOrUpdate(group);
+        snmpCollectionMibGroupDao.flush();
+
+        Response respBad = dataCollectionConfRestApi.updateMibGroupInSnmpCollectionSources(
+                src.getId(), group.getId(), null, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad.getStatus());
+        Assert.assertEquals("Request body cannot be null", respBad.getEntity());
+
+        SnmpCollectionMibGroupDto updateReq = new SnmpCollectionMibGroupDto();
+        updateReq.setName("if-mib-interfaces-updated");
+        updateReq.setIfType("EthernetUpdated");
+        updateReq.setMibGroupNames("IF-MIB::ifEntry");
+        updateReq.setMibObjects("ifIndex,ifDescr");
+        updateReq.setEnabled(true);
+        updateReq.setMibObjProperties("{\"updated\":\"true\"}");
+
+        Response respOk = dataCollectionConfRestApi.updateMibGroupInSnmpCollectionSources(
+                src.getId(), group.getId(), updateReq, securityContext);
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), respOk.getStatus());
+        Assert.assertEquals("MibGroup updated successfully.", respOk.getEntity());
+        snmpCollectionMibGroupDao.flush();
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionMibGroupByCollectionSourceId(
+                src.getId(), "if-mib-interfaces-updated", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> list = (List<?>) filterMap.get("dataCollectionMibGroupList");
+        Assert.assertEquals(1, list.size());
+
+        SnmpCollectionMibGroupDto updated = (SnmpCollectionMibGroupDto) list.get(0);
+        Assert.assertEquals("if-mib-interfaces-updated", updated.getName());
+        Assert.assertEquals("EthernetUpdated", updated.getIfType());
+        Assert.assertEquals("IF-MIB::ifEntry", updated.getMibGroupNames());
+        Assert.assertEquals("ifIndex,ifDescr", updated.getMibObjects());
+        Assert.assertEquals("{\"updated\":\"true\"}", updated.getMibObjProperties());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateResourceTypeInSnmpCollectionSources() throws Exception {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.update.resourcetype");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for update resource type tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionResourceType rt = new SnmpCollectionResourceType();
+        rt.setCollectionSource(src);
+        rt.setName("interface");
+        rt.setLabel("Interface");
+        rt.setResourceLabel("Interface ${ifDescr}");
+        rt.setPersistenceSelectorStrategy("default");
+        rt.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt);
+        snmpCollectionResourceTypeDao.flush();
+
+        Response respBad = dataCollectionConfRestApi.updateResourceTypeInSnmpCollectionSources(
+                src.getId(), rt.getId(), null, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad.getStatus());
+        Assert.assertEquals("Request body cannot be null", respBad.getEntity());
+        SnmpCollectionResourceTypeDto updateReq = new SnmpCollectionResourceTypeDto();
+        updateReq.setName("interface-updated");
+        updateReq.setLabel("Interface Updated");
+        updateReq.setResourceLabel("Interface Updated ${ifDescr}");
+        updateReq.setPersistenceSelectorStrategy("default");
+        updateReq.setEnabled(true);
+
+        Response respOk = dataCollectionConfRestApi.updateResourceTypeInSnmpCollectionSources(
+                src.getId(), rt.getId(), updateReq, securityContext);
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), respOk.getStatus());
+        Assert.assertEquals("ResourceType updated successfully.", respOk.getEntity());
+
+        snmpCollectionResourceTypeDao.flush();
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionResourceTypeByCollectionSourceId(
+                src.getId(), "interface-updated", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> list = (List<?>) filterMap.get("dataCollectionResourceTypeList");
+        Assert.assertEquals(1, list.size());
+
+        SnmpCollectionResourceTypeDto updated = (SnmpCollectionResourceTypeDto) list.get(0);
+        Assert.assertEquals("interface-updated", updated.getName());
+        Assert.assertEquals("Interface Updated", updated.getLabel());
+        Assert.assertEquals("Interface Updated ${ifDescr}", updated.getResourceLabel());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateSystemDefInSnmpCollectionSources() throws Exception {
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("group.snmp.source.update.systemdef");
+        src.setVendor("opennms");
+        src.setDescription("SNMP Source for update systemDef tests");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionSystemDef sys = new SnmpCollectionSystemDef();
+        sys.setCollectionSource(src);
+        sys.setName("systemdef-1");
+        sys.setSysoidMask(".1.3.6.1.4.1");
+        sys.setSysoid(".1.3.6.1.4.1.8072.3.2.10");
+        sys.setEnabled(true);
+        sys.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(sys);
+        snmpCollectionSystemDefDao.flush();
+
+        Response respBad = dataCollectionConfRestApi.updateSystemDefInSnmpCollectionSources(
+                src.getId(), sys.getId(), null, securityContext);
+
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respBad.getStatus());
+        Assert.assertEquals("Request body cannot be null", respBad.getEntity());
+
+        SnmpCollectionSystemDefDto updateReq = new SnmpCollectionSystemDefDto();
+        updateReq.setName("systemdef-1-updated");
+        updateReq.setSysoidMask(".1.3.6.1.4.1.9999");
+        updateReq.setSysoid(".1.3.6.1.4.1.9999.1");
+        updateReq.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        updateReq.setEnabled(true);
+
+        Response respOk = dataCollectionConfRestApi.updateSystemDefInSnmpCollectionSources(
+                src.getId(), sys.getId(), updateReq, securityContext);
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), respOk.getStatus());
+        Assert.assertEquals("SystemDef updated successfully.", respOk.getEntity());
+
+        snmpCollectionSystemDefDao.flush();
+
+        Response filterResp = dataCollectionConfRestApi.filterDataCollectionSystemDefByCollectionSourceId(
+                src.getId(), "systemdef-1-updated", "name", "ASC", 0, 0, 10, securityContext);
+
+        Map<String, Object> filterMap = (Map<String, Object>) filterResp.getEntity();
+        Assert.assertEquals(1, filterMap.get("totalRecords"));
+        List<?> list = (List<?>) filterMap.get("dataCollectionSystemDefsList");
+        Assert.assertEquals(1, list.size());
+
+        SnmpCollectionSystemDefDto updated = (SnmpCollectionSystemDefDto) list.get(0);
+        Assert.assertEquals("systemdef-1-updated", updated.getName());
+        Assert.assertEquals(".1.3.6.1.4.1.9999", updated.getSysoidMask());
+        Assert.assertEquals(".1.3.6.1.4.1.9999.1", updated.getSysoid());
+
+    }
+
     /** Helper to create a mocked Attachment for a given file */
     private Attachment createMockedAttachment(String name) {
         InputStream is = getClass().getResourceAsStream(RESOURCE_PATH + name);

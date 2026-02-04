@@ -171,4 +171,19 @@ public class SnmpCollectionSystemDefDto {
                 ))
                 .collect(Collectors.toList());
     }
+    public static SnmpCollectionSystemDef updateEntity(SnmpCollectionSystemDef entity, final SnmpCollectionSystemDefDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        entity.setName(dto.getName());
+        entity.setSysoid(dto.getSysoid());
+        entity.setSysoidMask(dto.getSysoidMask());
+        entity.setIpAddresses(dto.getIpAddresses());
+        entity.setIpAddressMasks(dto.getIpAddressMasks());
+        entity.setMibGroupNames(dto.getMibGroupNames());
+        entity.setEnabled(dto.getEnabled());
+
+        return entity;
+    }
 }
