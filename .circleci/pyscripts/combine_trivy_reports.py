@@ -69,7 +69,7 @@ def parse_filtered_vulnerabilities(file_path):
                         elif isinstance(existing_vuln['Products'], str):
                             existing_vuln['Products'] = [existing_vuln['Products']]
 
-                        # Now append the new sourc                        
+                        # Now append the new source
                         existing_vuln['Products'].append(source)
                 else:
                     vulnerabilities.append(payload)
