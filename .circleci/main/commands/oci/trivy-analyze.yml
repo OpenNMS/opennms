@@ -82,9 +82,3 @@ commands:
           path: /home/circleci/project/artifacts/filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
 
-          
-      # - persist_to_workspace:
-      #     root: ~/project
-      #     paths:
-      #       artifacts/filtered_vulnerabilities.txt
-        

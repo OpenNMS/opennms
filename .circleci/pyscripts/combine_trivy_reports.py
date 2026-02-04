@@ -60,8 +60,17 @@ def parse_filtered_vulnerabilities(file_path):
                     None
                 )
                 if existing_vuln:
-                    if source not in existing_vuln['Products'].split(', '):
-                        existing_vuln['Products'] += f", {source}"
+                    # existing_vuln['Products'] could be a string or a list, we need to handle both cases
+                    # convert it to list if it's not already a list, then append the new source if it's not already in the list
+                    if source not in existing_vuln['Products']:
+                        # if it's a string with commas, split it first
+                        if ", " in existing_vuln['Products'] or "," in existing_vuln['Products']:
+                            existing_vuln['Products'] = existing_vuln['Products'].split(", ")
+                        elif isinstance(existing_vuln['Products'], str):
+                            existing_vuln['Products'] = [existing_vuln['Products']]
+
+                        # Now append the new sourc                        
+                        existing_vuln['Products'].append(source)
                 else:
                     vulnerabilities.append(payload)
 
@@ -95,4 +104,4 @@ if __name__ == "__main__":
     with open(f'{base_path}/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         for vuln in vulnerabilities:
             # logging.info(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
-            outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {vuln['Products']}\n")
+            outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {",".join(vuln['Products'])}\n")
