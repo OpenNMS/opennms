@@ -70,8 +70,7 @@ commands:
             fi
   
             echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
-            echo "Don't forget to enable the create_jira_issues.py script when ready."
-            # python3 .circleci/pyscripts/create_jira_issues.py
+            python3 .circleci/pyscripts/create_jira_issues.py
 
       
       - store_artifacts:
