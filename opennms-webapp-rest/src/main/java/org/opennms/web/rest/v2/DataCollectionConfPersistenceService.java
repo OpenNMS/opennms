@@ -36,6 +36,9 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
 import org.opennms.netmgt.model.SnmpCollectionSource;
 import org.opennms.netmgt.model.SnmpCollectionSystemDef;
+import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
+import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
+import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +133,93 @@ public class DataCollectionConfPersistenceService {
     public List<String> getAllMibGroupNames() {
         return snmpCollectionMibGroupDao.findAllMibGroupNames();
     }
+
+    @Transactional
+    public Integer addMibGroupToSnmpCollectionSources(final SnmpCollectionSource snmpCollectionSource, final SnmpCollectionMibGroupDto request) {
+
+        final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
+        entity.setCollectionSource(snmpCollectionSource);
+        return snmpCollectionMibGroupDao.save(entity);
+    }
+
+    @Transactional
+    public Integer addResourceTypeToSnmpCollectionSources(
+            final SnmpCollectionSource snmpCollectionSource,
+            final SnmpCollectionResourceTypeDto request) {
+
+        final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
+        entity.setCollectionSource(snmpCollectionSource);
+
+        return snmpCollectionResourceTypeDao.save(entity);
+
+    }
+
+    @Transactional
+    public Integer addSystemDefToSnmpCollectionSources(
+            final SnmpCollectionSource snmpCollectionSource,
+            final SnmpCollectionSystemDefDto request) {
+
+        final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
+        entity.setCollectionSource(snmpCollectionSource);
+
+        return snmpCollectionSystemDefDao.save(entity);
+
+    }
+
+    @Transactional
+    public void updateMibGroup(
+            final Integer id, final Integer snmpCollectionSourceId,
+            final SnmpCollectionMibGroupDto request) {
+
+        final var snmpCollectionMibGroupEntity = snmpCollectionMibGroupDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
+
+        if (snmpCollectionMibGroupEntity == null) {
+            throw new EntityNotFoundException(
+                    "No MibGroup found for collectionSourceId=" + snmpCollectionSourceId + ", mibGroupId=" + id
+            );
+        }
+        final var entity = SnmpCollectionMibGroupDto.updateEntity(snmpCollectionMibGroupEntity, request);
+        snmpCollectionMibGroupDao.saveOrUpdate(entity);
+    }
+
+    @Transactional
+    public void updateResourceType(
+            final Integer id,
+            final Integer snmpCollectionSourceId,
+            final SnmpCollectionResourceTypeDto request) {
+
+        final var snmpCollectionResourceTypeEntity =
+                snmpCollectionResourceTypeDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
+
+        if (snmpCollectionResourceTypeEntity == null) {
+            throw new EntityNotFoundException(
+                    "No ResourceType found for collectionSourceId=" + snmpCollectionSourceId + ", resourceTypeId=" + id
+            );
+        }
+
+        final var entity = SnmpCollectionResourceTypeDto.updateEntity(snmpCollectionResourceTypeEntity, request);
+        snmpCollectionResourceTypeDao.saveOrUpdate(entity);
+    }
+
+    @Transactional
+    public void updateSystemDef(
+            final Integer id,
+            final Integer snmpCollectionSourceId,
+            final SnmpCollectionSystemDefDto request) {
+
+        final var snmpCollectionSystemDefEntity =
+                snmpCollectionSystemDefDao.findBySnmpSourceCollectionIdAndId(snmpCollectionSourceId, id);
+
+        if (snmpCollectionSystemDefEntity == null) {
+            throw new EntityNotFoundException(
+                    "No SystemDef found for collectionSourceId=" + snmpCollectionSourceId + ", systemDefId=" + id
+            );
+        }
+
+        final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
+        snmpCollectionSystemDefDao.saveOrUpdate(entity);
+    }
+
 
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,
