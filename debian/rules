@@ -219,7 +219,6 @@ install: build
                 -e org.apache.karaf \
                 -e log4j2.xml \
                 -e startup.properties \
-                -e THIRD-PARTY.txt \
                 -e overrides.properties | \
                 sed 's/debian\/temp\/etc\//\/opt\/opennms\/etc\//g' > debian/opennms-common.conffiles
 	mv debian/temp/etc/* debian/opennms-common/opt/opennms/etc/
@@ -230,6 +229,7 @@ install: build
 	find debian/opennms-common/opt/opennms/etc -type f -execdir chmod 644 {} \;
 	chmod 640 debian/opennms-common/opt/opennms/etc/users.xml
 	install -c -m 644 debian/opennms-common/opt/opennms/etc/opennms.service debian/opennms-common.opennms.service
+	mv debian/temp/licenses debian/opennms-common/opt/opennms/licenses
 	
 	# move karaf stuff to common
 	mv debian/temp/{data,deploy,system} debian/opennms-common/opt/opennms/
