@@ -39,7 +39,7 @@ public interface SnmpAgentConfigFactory {
     void saveCurrent() throws IOException;
 
     /**
-     * <p>setAndSaveCurrent</p>
+     * <p>setAndSaveConfig</p>
      * Sets and then saves the given configuration to file system.
      * Use caution, this will overwrite the configuration.
      */

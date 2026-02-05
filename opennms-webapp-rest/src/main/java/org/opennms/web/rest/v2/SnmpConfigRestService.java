@@ -254,8 +254,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         return Response.ok().type(contentType + ";charset=" + StandardCharsets.UTF_8)
                 .header("Content-Disposition", "attachment; filename=" + fileName)
                 .header("Pragma", "public")
-                .header("Cache-Control", "cache")
-                .header("Cache-Control", "must-revalidate")
+                .header("Cache-Control", "no-cache, must-revalidate")
                 .entity(byteArray).build();
     }
 
@@ -280,6 +279,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         try (InputStream stream = attachment.getObject(InputStream.class)) {
             contents = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
+            LOG.error("Error reading uploaded file: {}", e.getMessage(), e);
             return createBadRequestResponse("Could not read configuration file.");
         }
 
@@ -288,10 +288,18 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 config = JaxbUtils.unmarshal(SnmpConfig.class, contents);
             } else {
                 config = objectMapper.readValue(contents, SnmpConfig.class);
+
+                // Validate the config
+                // JaxbUtils.unmarshal validates via 'snmp-config.xsd', so for Json files we perform this extra step
+                String configXml = JaxbUtils.marshal(config);
+                SnmpConfig validatedConfig = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
             }
         } catch (Exception e) {
+            LOG.error("Error parsing uploaded file: {}", e.getMessage(), e);
             return createBadRequestResponse("Invalid configuration file.");
         }
+
+        config.fixSecurityLevel();
 
         try {
             SnmpPeerFactory.getInstance().setAndSaveConfig(config);

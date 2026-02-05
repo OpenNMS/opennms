@@ -17,7 +17,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
 import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 
@@ -31,7 +30,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path("snmp-config")
 @Tag(name = "SnmpConfig", description = "SNMP Configuration API")
