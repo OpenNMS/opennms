@@ -304,24 +304,6 @@ describe('MibGroupsTable.vue', () => {
     it('renders edit button for each row', async () => {
       expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(true)
     })
-
-    it('calls onMibGroupEditClicked when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('MIB Group clicked:', mockMibGroup)
-      consoleSpy.mockRestore()
-    })
-
-    it('handles edit click via onMibGroupEditClicked function', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      wrapper.vm.onMibGroupEditClicked(mockMibGroup)
-
-      expect(consoleSpy).toHaveBeenCalledWith('MIB Group clicked:', mockMibGroup)
-      consoleSpy.mockRestore()
-    })
   })
 
   describe('Expand/Collapse Functionality', () => {

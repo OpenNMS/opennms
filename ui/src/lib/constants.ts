@@ -17,3 +17,11 @@ export const DEFAULT_STATUS = true
 
 export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
 
+const IF_TYPE_ALL = 'all'
+const IF_TYPE_IGNORE = 'ignore'
+
+export const IF_TYPE_FILTERS_OPTIONS = [
+  { name: 'Ignore', value: IF_TYPE_IGNORE },
+  { name: 'All', value: IF_TYPE_ALL }
+]
+

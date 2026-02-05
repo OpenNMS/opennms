@@ -7,7 +7,12 @@ import {
   getSnmpDataCollectionSystemDefinitions
 } from '@/services/snmpDataCollectionService'
 import { CreateEditMode } from '@/types'
-import { SnmpCollectionDetailState, SnmpCollectionSource, SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
+import {
+  SnmpCollectionDetailStoreState,
+  SnmpCollectionMibGroup,
+  SnmpCollectionSource,
+  SnmpCollectionSystemDef
+} from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -17,7 +22,7 @@ const defaultPagination = {
 }
 
 export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollectionDetailStore', {
-  state: (): SnmpCollectionDetailState => ({
+  state: (): SnmpCollectionDetailStoreState => ({
     isLoading: false,
     selectedCollectionSource: null,
     systemDefinitions: [],
@@ -44,7 +49,17 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
     resourceTypeNames: [],
     mibGroupNames: [],
     selectedSystemDef: null,
+    selectedMibGroup: null,
+    selectedResourceType: null,
     systemDefDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    },
+    resourceTypeDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    },
+    mibGroupDrawerState: {
       visible: false,
       isEditMode: CreateEditMode.None
     }
@@ -245,6 +260,15 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.selectedSystemDef = null
       this.systemDefDrawerState.visible = false
       this.systemDefDrawerState.isEditMode = CreateEditMode.None
+    },
+    openMibGroupCreationDrawer(mibGroup: SnmpCollectionMibGroup | null = null, isEditMode: CreateEditMode) {
+      this.selectedMibGroup = mibGroup
+      this.mibGroupDrawerState.visible = true
+      this.mibGroupDrawerState.isEditMode = isEditMode
+    },
+    closeMibGroupDrawer() {
+      this.mibGroupDrawerState.visible = false
+      this.mibGroupDrawerState.isEditMode = CreateEditMode.None
     }
   }
 })

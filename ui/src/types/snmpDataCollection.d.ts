@@ -42,7 +42,7 @@ export interface UploadSnmpDataCollectionFileType {
   isDuplicate: boolean
 }
 
-export interface SnmpCollectionDetailState {
+export interface SnmpCollectionDetailStoreState {
   isLoading: boolean
   selectedCollectionSource: SnmpCollectionSource | null
   systemDefinitions: SnmpCollectionSystemDef[]
@@ -60,7 +60,17 @@ export interface SnmpCollectionDetailState {
   resourceTypeNames: string[]
   mibGroupNames: string[]
   selectedSystemDef: SnmpCollectionSystemDef | null
+  selectedMibGroup: SnmpCollectionMibGroup | null
+  selectedResourceType: SnmpCollectionResourceType | null
   systemDefDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
+  resourceTypeDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
+  mibGroupDrawerState: {
     visible: boolean
     isEditMode: CreateEditMode
   }
