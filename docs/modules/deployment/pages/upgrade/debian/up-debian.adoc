@@ -58,7 +58,7 @@ sudo apt-mark hold libopennms-java \
 +
 [source, console]
 ----
-apt install openjdk-17-jdk-headless openjdk-17-jre-headless
+apt install openjdk-21-jdk-headless openjdk-21-jre-headless
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:
