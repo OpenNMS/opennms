@@ -120,6 +120,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byteBuddyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.mate</groupId>
             <artifactId>org.opennms.core.mate.api</artifactId>
         </dependency>

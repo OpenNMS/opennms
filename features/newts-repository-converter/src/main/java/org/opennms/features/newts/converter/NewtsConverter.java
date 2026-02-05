@@ -104,6 +104,7 @@ public class NewtsConverter implements AutoCloseable {
 
     private final static Timestamp EPOCH = Timestamp.fromEpochMillis(0);
     private final static ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
+    private final static List<Runnable> EXIT_HOOKS = new ArrayList<>();
 
     private enum StorageStrategy {
         STORE_BY_METRIC,
@@ -168,7 +169,7 @@ public class NewtsConverter implements AutoCloseable {
 
         } catch (final NewtsConverterError e) {
             LOG.error(e.getMessage(), e);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
@@ -183,7 +184,23 @@ public class NewtsConverter implements AutoCloseable {
 
         LOG.info("Conversion Finished: metrics: {}, samples: {}, time: {}", processedMetrics, processedSamples, formatter.print(period));
 
-        System.exit(0);
+        runExitHooks(0);
+    }
+
+    private static void runExitHooks(final int exitCode) {
+        if (!EXIT_HOOKS.isEmpty()) {
+            for(Runnable hook : EXIT_HOOKS) {
+                hook.run();
+            }
+        } else {
+            if (exitCode != 0) {
+                System.exit(exitCode);
+            }
+        }
+    }
+
+    public static void addExitHook(final Runnable hook) {
+        EXIT_HOOKS.add(hook);
     }
 
     private NewtsConverter(final String... args) {
@@ -219,14 +236,14 @@ public class NewtsConverter implements AutoCloseable {
 
         } catch (ParseException e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: %s%n", e.getMessage()), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
         // Processing Options
         if (cmd.hasOption('h')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, null, options, null);
-            System.exit(0);
+            runExitHooks(0);
         }
 
         this.onmsHome = cmd.hasOption('o')
@@ -234,7 +251,7 @@ public class NewtsConverter implements AutoCloseable {
                         : Paths.get("/opt/opennms");
         if (!Files.exists(this.onmsHome) || !Files.isDirectory(this.onmsHome)) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.onmsHome.toAbsolutePath()), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
         System.setProperty("opennms.home", onmsHome.toAbsolutePath().toString());
@@ -244,13 +261,13 @@ public class NewtsConverter implements AutoCloseable {
                       : this.onmsHome.resolve("share").resolve("rrd");
         if (!Files.exists(this.rrdDir) || !Files.isDirectory(this.rrdDir)) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.rrdDir.toAbsolutePath()), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
         if (!cmd.hasOption('s')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Option for storage-strategy must be spcified%n"), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
@@ -269,13 +286,13 @@ public class NewtsConverter implements AutoCloseable {
 
             default:
                 new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for storage-strategy%n"), options, null);
-                System.exit(1);
+                runExitHooks(1);
                 throw null;
         }
 
         if (!cmd.hasOption('t')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Option rrd-tool must be specified%n"), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
@@ -294,7 +311,7 @@ public class NewtsConverter implements AutoCloseable {
 
             default:
                 new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for rrd-tool%n"), options, null);
-                System.exit(1);
+                runExitHooks(1);
                 throw null;
         }
 
@@ -307,7 +324,7 @@ public class NewtsConverter implements AutoCloseable {
                                           String.format("ERROR: RRDtool command %s doesn't exist%n", this.rrdBinary.toAbsolutePath()),
                                           options,
                                           null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
         System.setProperty("rrd.binary", this.rrdBinary.toString());
@@ -324,7 +341,7 @@ public class NewtsConverter implements AutoCloseable {
 
         } catch (Exception e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid number of threads: %s%n", e.getMessage()), options, null);
-            System.exit(1);
+            runExitHooks(1);
             throw null;
         }
 
@@ -597,7 +614,24 @@ public class NewtsConverter implements AutoCloseable {
                 }
 
                 if (batch.size() >= this.batchSize) {
-                    this.repository.insert(batch, true);
+                    final List<Sample> finalBatch = batch;
+                    new Thread(new Runnable() {
+                        public void run() {
+                            Thread t = new Thread() {
+                                public void run() {
+                                    NewtsConverter.this.repository.insert(finalBatch, true);
+                                }
+                            };
+                            t.start();
+                            while( t.isAlive() ) {
+                                try {
+                                    t.join();
+                                } catch( InterruptedException e ) {
+                                }
+                            }
+                        }
+                    }).start();
+
                     this.processedSamples.getAndAdd(batch.size());
 
                     batch = new ArrayList<>(this.batchSize);
