@@ -30,7 +30,8 @@ rules:
     labels:
       quantile: "0.$3"
 
-  - pattern: 'org\.opennms\.netmgt\.trapd\.device<location=(.+),ip=(.+),type=(.+)><>(\w+)'
+  # Per-device trapd metrics
+  - pattern: 'org\.opennms\.netmgt\.trapd\.device<location="([^"]+)", ip="([^"]+)", type=([^>]+)><>(\w+)'
     name: trapd_device_$4
     type: COUNTER
     labels:
