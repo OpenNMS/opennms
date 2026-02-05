@@ -89,7 +89,7 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
-sudo apt update && sudo apt -y install openjdk-17-jdk-headless
+sudo apt update && sudo apt -y install openjdk-21-jdk-headless
 
 # When retries are enabled, use --fail-at-end so all tests run before retrying
 FAILURE_MODE="--fail-fast"

@@ -61,9 +61,9 @@ Download and install OpenJDK packages (OpenJDK 17 here but please refer to syste
 
 [source,console]
 ----
-dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-17-openjdk-devel
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-21-openjdk-devel
 mv ./tmp/opennms_rpms ./airgap_rpm_files/01-openjdk
-dnf install -y java-17-openjdk-devel
+dnf install -y java-21-openjdk-devel
 ----
 
 === Step 4: Download PostgreSQL

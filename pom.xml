@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[17,18)</version>
+                 <version>[21,22)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1374,8 +1374,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <source>21</source>
+          <target>21</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1402,6 +1402,7 @@
           <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <!-- Turn off queuing in the RRD output -->
+              <java.security.manager>allow</java.security.manager>
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
@@ -1745,6 +1746,7 @@
     <bouncyCastleVersion>1.83</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
+    <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.21.5</camelVersion>
     <!-- Match (or beat) Newts version -->
