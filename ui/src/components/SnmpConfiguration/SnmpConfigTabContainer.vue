@@ -8,6 +8,7 @@
         <FeatherTab>Lookup by IP</FeatherTab>
         <FeatherTab>Definitions</FeatherTab>
         <FeatherTab>Profiles</FeatherTab>
+        <FeatherTab>Upload/Download</FeatherTab>
       </template>
       <FeatherTabPanel>
         <SnmpConfigLookupTab />
@@ -17,6 +18,9 @@
       </FeatherTabPanel>
       <FeatherTabPanel>
         <SnmpConfigProfilesTab />
+      </FeatherTabPanel>
+      <FeatherTabPanel>
+        <SnmpConfigUploadDownloadTab />
       </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
@@ -28,6 +32,7 @@ import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tab
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
 import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
 import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
+import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
 
 const store = useSnmpConfigStore()
 

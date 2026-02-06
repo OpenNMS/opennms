@@ -24,6 +24,8 @@ package org.opennms.netmgt.dao.api;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 
 public interface SnmpConfigDao {
+    /** Get the current configuration. */
     SnmpConfig getConfig();
+    /** Update and save the configuration to the backing store. This should also refresh the cache. */
     void updateConfig(SnmpConfig config);
 }
