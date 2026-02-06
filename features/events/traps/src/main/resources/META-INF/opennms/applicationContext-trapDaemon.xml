@@ -24,7 +24,15 @@
 
   <bean id="trapSinkConsumer" class="org.opennms.netmgt.trapd.TrapSinkConsumer" />
 
+  <bean id="trapListenerMetricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="trapListenerMetrics" class="org.opennms.netmgt.trapd.TrapListenerMetrics"
+        init-method="startJmxReporter" destroy-method="stopJmxReporter">
+    <constructor-arg ref="trapListenerMetricRegistry" />
+  </bean>
+
   <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">
     <constructor-arg ref="trapdConfig" />
+    <property name="trapListenerMetrics" ref="trapListenerMetrics" />
   </bean>
 </beans>

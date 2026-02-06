@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.util.function.Supplier;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.trapd.jmx.DeviceTrapMetrics;
 import org.opennms.netmgt.trapd.jmx.DeviceTrapMetricsRegistry;
@@ -75,9 +76,6 @@ public class TrapListenerMetrics {
         this.metrics = metrics;
         this.identity = identity;
         boolean deviceMetricsEnabled = enableDeviceMetrics || Boolean.getBoolean(DEVICE_METRICS_PROPERTY);
-        if (deviceMetricsEnabled && identity == null) {
-            LOG.warn("Per-device trap metrics enabled but Identity is null; device metrics will not be recorded");
-        }
         this.deviceRegistry = new DeviceTrapMetricsRegistry<>(deviceMetricsEnabled, DeviceTrapMetrics::new, "listener");
 
         // Register listener-level counters only
@@ -148,9 +146,10 @@ public class TrapListenerMetrics {
     }
 
     private DeviceTrapMetrics getDeviceMetrics(InetAddress trapAddress) {
-        if (trapAddress == null || identity == null) {
+        if (trapAddress == null) {
             return null;
         }
-        return deviceRegistry.getOrCreate(identity.getLocation(), InetAddressUtils.str(trapAddress));
+        String location = identity != null ? identity.getLocation() : LocationUtils.DEFAULT_LOCATION_NAME;
+        return deviceRegistry.getOrCreate(location, InetAddressUtils.str(trapAddress));
     }
 }
