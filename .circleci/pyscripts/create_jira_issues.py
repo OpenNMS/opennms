@@ -497,7 +497,6 @@ def create_issues_from_json(packages_dict):
             continue
 
         # Check blocklist for vulnerability IDs
-        vuln_ids = [v['VulnerabilityID'] for v in package['Vulnerabilities']]
         blocked_vulns = [vid for vid in vuln_ids if vid in BLOCKLIST]
         if blocked_vulns:
             # Filter out blocked vulnerabilities instead of skipping entirely
@@ -508,6 +507,10 @@ def create_issues_from_json(packages_dict):
                 logging.info(f"All vulnerabilities for {pkg_name} are blocklisted. Skipping.")
                 continue
             logging.info(f"Filtered {len(blocked_vulns)} blocklisted CVEs from {pkg_name}")
+
+
+        # Extract vulnerability IDs for issue existence check
+        vuln_ids = [v['VulnerabilityID'] for v in package['Vulnerabilities']]
 
         # Check for existing issue
         existing_issue = issue_exists_for_package_and_cves(pkg_name, vuln_ids)
