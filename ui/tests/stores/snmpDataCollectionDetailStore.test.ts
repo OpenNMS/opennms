@@ -327,6 +327,20 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.isLoading).toBe(false)
     })
 
+    it('should also fetch resource type names and mib group names', async () => {
+      const { getAllResourceTypeNames, getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
+      vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue(['nodeSnmp'])
+      vi.mocked(getAllMibGroupNames).mockResolvedValue(['mib2-interfaces'])
+
+      await store.fetchSystemDefinitions()
+
+      expect(getAllResourceTypeNames).toHaveBeenCalled()
+      expect(getAllMibGroupNames).toHaveBeenCalled()
+      expect(store.resourceTypeNames).toEqual(['nodeSnmp'])
+      expect(store.mibGroupNames).toEqual(['mib2-interfaces'])
+    })
+
     it('should not fetch if selectedCollectionSource is null', async () => {
       store.selectedCollectionSource = null
       vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
@@ -1103,6 +1117,87 @@ describe('useSnmpDataCollectionDetailStore', () => {
 
       expect(store.mibGroupDrawerState.visible).toBe(false)
       expect(store.mibGroupDrawerState.isEditMode).toBe(0)
+      expect(store.selectedMibGroup).toBeNull()
+    })
+
+    it('should handle opening system def drawer multiple times', () => {
+      store.openSystemDefCreationDrawer(null, 1)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+
+      const systemDef = mockSystemDefinitions[0]
+      store.openSystemDefCreationDrawer(systemDef, 2)
+      expect(store.selectedSystemDef).toEqual(systemDef)
+      expect(store.systemDefDrawerState.isEditMode).toBe(2)
+    })
+
+    it('should handle opening mib group drawer multiple times', () => {
+      store.openMibGroupCreationDrawer(null, 1)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+
+      const mibGroup = mockMibGroups[0]
+      store.openMibGroupCreationDrawer(mibGroup, 2)
+      expect(store.selectedMibGroup).toEqual(mibGroup)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(2)
+    })
+
+    it('should close system def drawer when already closed', () => {
+      store.systemDefDrawerState.visible = false
+      store.closeSystemDefDrawer()
+      expect(store.systemDefDrawerState.visible).toBe(false)
+      expect(store.selectedSystemDef).toBeNull()
+    })
+
+    it('should close mib group drawer when already closed', () => {
+      store.mibGroupDrawerState.visible = false
+      store.closeMibGroupDrawer()
+      expect(store.mibGroupDrawerState.visible).toBe(false)
+      expect(store.selectedMibGroup).toBeNull()
+    })
+
+    it('should not affect system def drawer when opening/closing mib group drawer', () => {
+      // Open system def drawer first
+      store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 2)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+
+      // Open and close mib group drawer
+      store.openMibGroupCreationDrawer(mockMibGroups[0], 1)
+      store.closeMibGroupDrawer()
+
+      // System def drawer should be unchanged
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.selectedSystemDef).toEqual(mockSystemDefinitions[0])
+    })
+
+    it('should not affect mib group drawer when opening/closing system def drawer', () => {
+      // Open mib group drawer first
+      store.openMibGroupCreationDrawer(mockMibGroups[0], 2)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+
+      // Open and close system def drawer
+      store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 1)
+      store.closeSystemDefDrawer()
+
+      // Mib group drawer should be unchanged
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.selectedMibGroup).toEqual(mockMibGroups[0])
+    })
+
+    it.each([
+      { mode: 0, description: 'None' },
+      { mode: 1, description: 'Create' },
+      { mode: 2, description: 'Edit' }
+    ])('should open system def drawer with mode $mode ($description)', ({ mode }) => {
+      store.openSystemDefCreationDrawer(null, mode)
+      expect(store.systemDefDrawerState.isEditMode).toBe(mode)
+    })
+
+    it.each([
+      { mode: 0, description: 'None' },
+      { mode: 1, description: 'Create' },
+      { mode: 2, description: 'Edit' }
+    ])('should open mib group drawer with mode $mode ($description)', ({ mode }) => {
+      store.openMibGroupCreationDrawer(null, mode)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(mode)
     })
   })
 
@@ -1790,61 +1885,6 @@ describe('useSnmpDataCollectionDetailStore', () => {
         )
       }
     )
-  })
-
-  describe('Drawer State Management', () => {
-    it('should open drawer in create mode', () => {
-      store.openSystemDefCreationDrawer(null, 1)
-      expect(store.systemDefDrawerState.visible).toBe(true)
-      expect(store.systemDefDrawerState.isEditMode).toBe(1)
-      expect(store.selectedSystemDef).toBeNull()
-    })
-
-    it('should open drawer in edit mode with system definition', () => {
-      const systemDef = mockSystemDefinitions[0]
-      store.openSystemDefCreationDrawer(systemDef, 2)
-      expect(store.systemDefDrawerState.visible).toBe(true)
-      expect(store.systemDefDrawerState.isEditMode).toBe(2)
-      expect(store.selectedSystemDef).toEqual(systemDef)
-    })
-
-    it('should close drawer and reset state', () => {
-      store.systemDefDrawerState.visible = true
-      store.systemDefDrawerState.isEditMode = 2
-      store.selectedSystemDef = mockSystemDefinitions[0]
-
-      store.closeSystemDefDrawer()
-
-      expect(store.systemDefDrawerState.visible).toBe(false)
-      expect(store.systemDefDrawerState.isEditMode).toBe(0)
-      expect(store.selectedSystemDef).toBeNull()
-    })
-
-    it('should open MIB group drawer in create mode', () => {
-      store.openMibGroupCreationDrawer(null, 1)
-      expect(store.mibGroupDrawerState.visible).toBe(true)
-      expect(store.mibGroupDrawerState.isEditMode).toBe(1)
-      expect(store.selectedMibGroup).toBeNull()
-    })
-
-    it('should open MIB group drawer in edit mode with mib group', () => {
-      const mibGroup = mockMibGroups[0]
-      store.openMibGroupCreationDrawer(mibGroup, 2)
-      expect(store.mibGroupDrawerState.visible).toBe(true)
-      expect(store.mibGroupDrawerState.isEditMode).toBe(2)
-      expect(store.selectedMibGroup).toEqual(mibGroup)
-    })
-
-    it('should close MIB group drawer and reset state', () => {
-      store.mibGroupDrawerState.visible = true
-      store.mibGroupDrawerState.isEditMode = 2
-      store.selectedMibGroup = mockMibGroups[0]
-
-      store.closeMibGroupDrawer()
-
-      expect(store.mibGroupDrawerState.visible).toBe(false)
-      expect(store.mibGroupDrawerState.isEditMode).toBe(0)
-    })
   })
 
   describe('Parametrized Tests - Error Types', () => {

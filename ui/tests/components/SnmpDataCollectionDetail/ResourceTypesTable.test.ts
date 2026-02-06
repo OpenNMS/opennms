@@ -169,6 +169,14 @@ describe('ResourceTypesTable.vue', () => {
       expect(wrapper.findAll('transition-group-stub tr').length).toBe(0)
     })
 
+    it('should display EmptyList component with correct message when no data', async () => {
+      store.resourceTypes = []
+      await wrapper.vm.$nextTick()
+
+      const emptyMessage = wrapper.text()
+      expect(emptyMessage).toContain('No Resource Types found.')
+    })
+
     it('should still show header with search and refresh when empty', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
@@ -240,7 +248,7 @@ describe('ResourceTypesTable.vue', () => {
 
     it('should render Actions header column', () => {
       const headers = wrapper.findAll('th')
-      const actionsHeader = headers.find(h => h.text() === 'Actions')
+      const actionsHeader = headers.find((h) => h.text() === 'Actions')
       expect(actionsHeader).toBeDefined()
     })
 
@@ -254,13 +262,13 @@ describe('ResourceTypesTable.vue', () => {
 
       it.each(expectedColumns)('should render column header for $label', ({ label }) => {
         const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const headerExists = sortHeaders.some(h => h.text().includes(label))
+        const headerExists = sortHeaders.some((h) => h.text().includes(label))
         expect(headerExists).toBe(true)
       })
 
       it.each(expectedColumns)('should have correct property for $label column', ({ id }) => {
         const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const properties = sortHeaders.map(h => h.props('property'))
+        const properties = sortHeaders.map((h) => h.props('property'))
         expect(properties).toContain(id)
       })
     })
@@ -449,13 +457,16 @@ describe('ResourceTypesTable.vue', () => {
         { value: 'desc', expected: { property: 'name', order: 'desc' } }
       ]
 
-      it.each(sortDirections)('should call onResourceTypesSortChange with $value direction', async ({ value, expected }) => {
-        const sortHeader = wrapper.findComponent(FeatherSortHeader)
-        await sortHeader.vm.$emit('sort-changed', { property: 'name', value })
-        await wrapper.vm.$nextTick()
+      it.each(sortDirections)(
+        'should call onResourceTypesSortChange with $value direction',
+        async ({ value, expected }) => {
+          const sortHeader = wrapper.findComponent(FeatherSortHeader)
+          await sortHeader.vm.$emit('sort-changed', { property: 'name', value })
+          await wrapper.vm.$nextTick()
 
-        expect(store.onResourceTypesSortChange).toHaveBeenCalledWith(expected.property, expected.order)
-      })
+          expect(store.onResourceTypesSortChange).toHaveBeenCalledWith(expected.property, expected.order)
+        }
+      )
     })
 
     describe('Sort Column Changes', () => {
@@ -468,7 +479,7 @@ describe('ResourceTypesTable.vue', () => {
 
       it.each(sortColumns)('should sort by $property column', async ({ property }) => {
         const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const targetHeader = sortHeaders.find(h => h.props('property') === property)
+        const targetHeader = sortHeaders.find((h) => h.props('property') === property)
 
         await targetHeader?.vm.$emit('sort-changed', { property, value: 'asc' })
         await wrapper.vm.$nextTick()
@@ -501,7 +512,7 @@ describe('ResourceTypesTable.vue', () => {
 
     it('should have scope="col" on sort headers', () => {
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      sortHeaders.forEach(header => {
+      sortHeaders.forEach((header) => {
         expect(header.attributes('scope')).toBe('col')
       })
     })
@@ -661,15 +672,18 @@ describe('ResourceTypesTable.vue', () => {
         { enabled: false, expectedText: 'Disabled' }
       ]
 
-      it.each(statusCases)('should display "$expectedText" when enabled is $enabled', async ({ enabled, expectedText }) => {
-        const resourceType = { ...mockResourceType, enabled }
-        store.resourceTypes = [resourceType]
-        store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
-        await wrapper.vm.$nextTick()
+      it.each(statusCases)(
+        'should display "$expectedText" when enabled is $enabled',
+        async ({ enabled, expectedText }) => {
+          const resourceType = { ...mockResourceType, enabled }
+          store.resourceTypes = [resourceType]
+          store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+          await wrapper.vm.$nextTick()
 
-        const rows = wrapper.findAll('transition-group-stub tr')
-        expect(rows[0].text()).toContain(expectedText)
-      })
+          const rows = wrapper.findAll('transition-group-stub tr')
+          expect(rows[0].text()).toContain(expectedText)
+        }
+      )
     })
 
     describe('Dropdown Status Text', () => {
@@ -796,8 +810,10 @@ describe('ResourceTypesTable.vue', () => {
     it('should handle resource type with very long strategy strings', async () => {
       const longStrategyResourceType: SnmpCollectionResourceType = {
         ...mockResourceType,
-        storageStrategy: 'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy.VeryLongClassName.WithMultiple.Packages',
-        persistenceSelectorStrategy: 'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy.AnotherVeryLongClassName'
+        storageStrategy:
+          'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy.VeryLongClassName.WithMultiple.Packages',
+        persistenceSelectorStrategy:
+          'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy.AnotherVeryLongClassName'
       }
 
       store.resourceTypes = [longStrategyResourceType]
@@ -847,6 +863,148 @@ describe('ResourceTypesTable.vue', () => {
       const pagination = wrapper.findComponent(FeatherPagination)
       expect(pagination.props('total')).toBe(10000)
     })
+
+    it('should handle unicode characters in resource type fields', async () => {
+      const unicodeResourceType: SnmpCollectionResourceType = {
+        ...mockResourceType,
+        name: '資源類型-テスト',
+        label: 'Étiquette accentuée 日本語',
+        resourceLabel: '${リソース_äöü}'
+      }
+
+      store.resourceTypes = [unicodeResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('資源類型-テスト')
+      expect(rows[0].text()).toContain('Étiquette accentuée 日本語')
+    })
+
+    it('should handle zero id value', async () => {
+      const zeroIdResourceType: SnmpCollectionResourceType = {
+        ...mockResourceType,
+        id: 0,
+        name: 'zeroIdResource'
+      }
+
+      store.resourceTypes = [zeroIdResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+      expect(rows[0].text()).toContain('zeroIdResource')
+    })
+
+    it('should handle negative id value', async () => {
+      const negativeIdResourceType: SnmpCollectionResourceType = {
+        ...mockResourceType,
+        id: -1,
+        name: 'negativeIdResource'
+      }
+
+      store.resourceTypes = [negativeIdResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+      expect(rows[0].text()).toContain('negativeIdResource')
+    })
+
+    it('should handle rapid expand/collapse toggles', async () => {
+      store.resourceTypes = [mockResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      // Rapidly toggle multiple times
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      await wrapper.vm.$nextTick()
+
+      // After odd number of toggles, should be expanded
+      expect(wrapper.vm.expandedRows).toContain(mockResourceType.id)
+    })
+
+    it('should preserve expanded state when data updates', async () => {
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand first row
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.expandedRows).toContain(mockResourceType.id)
+
+      // Update store with same data plus new item
+      const newResourceType: SnmpCollectionResourceType = {
+        ...mockResourceType,
+        id: 3,
+        name: 'newItem'
+      }
+      store.resourceTypes = [mockResourceType, mockResourceType2, newResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 3 }
+      await wrapper.vm.$nextTick()
+
+      // Expanded state should be preserved
+      expect(wrapper.vm.expandedRows).toContain(mockResourceType.id)
+    })
+
+    it('should handle very long resourceLabel', async () => {
+      const longResourceLabelType: SnmpCollectionResourceType = {
+        ...mockResourceType,
+        resourceLabel: '${' + 'A'.repeat(500) + '}'
+      }
+
+      store.resourceTypes = [longResourceLabelType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('should handle expand toggle on non-existent id without crashing', async () => {
+      store.resourceTypes = [mockResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      // Toggle non-existent id
+      wrapper.vm.toggleExpand(999)
+      await wrapper.vm.$nextTick()
+
+      // Should add to expandedRows even if row doesn't exist
+      expect(wrapper.vm.expandedRows).toContain(999)
+      // But no expanded content should render
+      const expandedContent = wrapper.findAll('.expanded-content')
+      expect(expandedContent.length).toBe(0)
+    })
+
+    it('should handle multiple expanded rows with some removed from data', async () => {
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand both rows
+      wrapper.vm.toggleExpand(mockResourceType.id)
+      wrapper.vm.toggleExpand(mockResourceType2.id)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.expandedRows.length).toBe(2)
+
+      // Remove second item from data
+      store.resourceTypes = [mockResourceType]
+      store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      // Only one expanded content should show (the one still in data)
+      const expandedContent = wrapper.findAll('.expanded-content')
+      expect(expandedContent.length).toBe(1)
+    })
   })
 
   describe('Accessibility', () => {
@@ -863,7 +1021,7 @@ describe('ResourceTypesTable.vue', () => {
 
     it('should have scope="col" on all sort headers', () => {
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      sortHeaders.forEach(header => {
+      sortHeaders.forEach((header) => {
         expect(header.attributes('scope')).toBe('col')
       })
     })
@@ -1060,3 +1218,4 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 })
+
