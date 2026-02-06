@@ -41,9 +41,7 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
@@ -306,12 +304,6 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         } catch (Exception e) {
             throw createServerException("Could not save updated config");
         }
-
-        // Send event to reload SnmpPoller config
-        EventBuilder builder = new EventBuilder(EventConstants.SNMPPOLLERCONFIG_CHANGED_EVENT_UEI, MODULE_NAME);
-        builder.setService("SNMP");
-        Event event = builder.getEvent();
-        sendEvent(event);
 
         return Response.ok().build();
     }

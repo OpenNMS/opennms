@@ -981,7 +981,7 @@ public class Configuration implements Serializable {
      * This sets it to null if it is an invalid value such as 0.
      */
     public void fixSecurityLevel() {
-        if (securityLevel != null && securityLevel < 1) {
+        if (securityLevel != null && (securityLevel < 1 || securityLevel > 3)) {
             securityLevel = null;
         }
     }
