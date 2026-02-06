@@ -43,7 +43,6 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
 import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
@@ -144,16 +143,6 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
 
             SnmpPeerFactory.getInstance().define(eventInfo);
             SnmpPeerFactory.getInstance().saveCurrent();
-
-            Event eventToSend = eventInfo.createEvent(MODULE_NAME);
-
-            if (eventToSend == null) {
-                final String errorMessage = "Error creating event for definition.";
-                LOG.error(errorMessage);
-                throw createServerException(errorMessage);
-            }
-
-            sendEvent(eventToSend);
         } catch (WebApplicationException webEx) {
             LOG.error("Error sending event while adding a definition: {}", webEx.getMessage(), webEx);
             throw webEx;
@@ -306,22 +295,6 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         }
 
         return Response.ok().build();
-    }
-
-    /**
-     * Sends the given event via the EventProxy to the system. If null no event is sent.
-     * @param eventToSend The Event to send. If null, no event is sent.
-     * @return <code>true</code> if the event was sent successfully and no exception occurred,
-     *     <code>false</code> if eventToSend is null.
-     * @throws WebApplicationException on error.
-     */
-    private void sendEvent(Event eventToSend) throws WebApplicationException {
-        try {
-            eventProxy.send(eventToSend);
-        } catch (Exception e) {
-            LOG.error("Error sending event: {}", e.getMessage(), e);
-            throw createServerException("Could not send event " + eventToSend.getUei());
-        }
     }
 
     /**
