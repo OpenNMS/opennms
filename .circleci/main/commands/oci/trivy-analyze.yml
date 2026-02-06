@@ -23,15 +23,13 @@ commands:
             echo "Executing analyze_trivy_report.py script..."
             echo "Using script path: $PY_SCRIPT_PATH"
             cd /home/circleci/project
-            
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/horizon-image-single-arch-linux-amd64-trivy_report.json
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.json
 
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/sentinel-image-single-arch-linux-amd64-trivy_report.json
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/sentinel-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.json
-            
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/minion-image-single-arch-linux-amd64-trivy_report.json
-            python3 "$PY_SCRIPT_PATH" /home/circleci/project/artifacts/minion-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.json
+            images=("horizon" "sentinel" "minion")
+            for image in "${images[@]}"; do
+              base_path="/home/circleci/project/artifacts/${image}-image-single-arch-linux-amd64"
+              python3 "$PY_SCRIPT_PATH" "${base_path}-trivy_report.json"
+              python3 "$PY_SCRIPT_PATH" "${base_path}-trivy_filtered_vulnerabilities.json"
+            done
             
       - run:
           name: Combine Trivy Reports
