@@ -292,7 +292,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 // Validate the config
                 // JaxbUtils.unmarshal validates via 'snmp-config.xsd', so for Json files we perform this extra step
                 String configXml = JaxbUtils.marshal(config);
-                SnmpConfig validatedConfig = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
+                config = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
             }
         } catch (Exception e) {
             LOG.error("Error parsing uploaded file: {}", e.getMessage(), e);

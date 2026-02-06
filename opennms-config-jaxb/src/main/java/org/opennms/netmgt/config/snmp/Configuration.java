@@ -978,7 +978,7 @@ public class Configuration implements Serializable {
 
     /**
      * Security level needs to be between 1-3. See org.opennms.netmgt.snmp.SnmpConfiguration for valid values.
-     * This sets it to null if it is an invalid valid such as 0.
+     * This sets it to null if it is an invalid value such as 0.
      */
     public void fixSecurityLevel() {
         if (securityLevel != null && securityLevel < 1) {

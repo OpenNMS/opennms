@@ -51,7 +51,6 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
 
     }
 
-
     @Override
     public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
         final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
