@@ -126,7 +126,7 @@
             >
               <td :colspan="5">
                 <h5>Mib Group Names</h5>
-                <p class="description">{{ JSON.parse(mibGroup.mibGroupNames).join(', ') }}</p>
+                <p class="description">{{ mibGroup.mibGroupNames.join(', ') }}</p>
                 <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
                   <h5>Mib Objects:</h5>
                   <div
@@ -162,7 +162,11 @@
         />
       </div>
     </div>
-    <MibGroupCreationDrawer />
+    <div v-if="!store.mibGroups.length">
+      <EmptyList
+        :content="{ msg: 'No MIB Groups found.' }"
+      />
+    </div>
   </TableCard>
 </template>
 
@@ -183,8 +187,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])

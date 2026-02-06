@@ -108,8 +108,6 @@ export interface SnmpCollectionSystemDefPayload {
   ipAddressMasks: string
   mibGroupNames: string
   enabled: boolean
-  collectionSourceId: number
-  collectionSourceName: string
 }
 
 export interface SnmpCollectionSystemDefResponse {
@@ -121,7 +119,7 @@ export interface SnmpCollectionMibGroup {
   id: number
   name: string
   ifType: string
-  mibGroupNames: string
+  mibGroupNames: string[]
   mibObjects: string
   mibObjProperties: string
   enabled: boolean
@@ -157,9 +155,46 @@ export interface SystemDefErrors {
   name?: string
   oidType?: string
   oidValue?: string
-  enabled?: string
+  status?: string
   ipAddresses?: string
   ipAddressMasks?: string
   mibGroupNames?: string
+}
+
+export interface SnmpCollectionMibGroupPayload {
+  id: number
+  name: string
+  ifType: string
+  mibGroupNames: string
+  mibObjects: string
+  mibObjProperties: string
+  enabled: boolean
+}
+
+export interface MibGroupObjectForm {
+  oid: string
+  alias: string
+  instance: string
+  maxval: string | null
+  minval: string | null
+  type: string
+}
+
+export interface MibGroupObjectFormErrors {
+  oid?: string
+  alias?: string
+  instance?: string
+  maxval?: string
+  minval?: string
+  type?: string
+}
+
+export interface MibGroupErrors {
+  name?: string
+  ifType?: string
+  status?: string
+  mibGroupNames?: string
+  mibObjects?: string
+  mibObjProperties?: string
 }
 

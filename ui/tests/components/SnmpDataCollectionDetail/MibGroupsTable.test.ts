@@ -43,7 +43,7 @@ describe('MibGroupsTable.vue', () => {
       id: 1,
       name: 'mib2-interfaces',
       ifType: 'all',
-      mibGroupNames: '["ifTable", "ifXTable"]',
+      mibGroupNames: ['ifTable', 'ifXTable'],
       mibObjects: '[{"alias":"ifIndex","oid":"1.3.6.1.2.1.2.2.1.1","instance":"ifIndex","type":"gauge"}]',
       mibObjProperties: '[]',
       enabled: true,
@@ -55,7 +55,7 @@ describe('MibGroupsTable.vue', () => {
       id: 2,
       name: 'mib2-host-resources',
       ifType: 'ignore',
-      mibGroupNames: '["hrStorageTable"]',
+      mibGroupNames: ['hrStorageTable'],
       mibObjects: '[{"alias":"hrStorageIndex","oid":"1.3.6.1.2.1.25.2.3.1.1","instance":"hrStorageIndex","type":"gauge"}]',
       mibObjProperties: '[]',
       enabled: true,
@@ -67,7 +67,7 @@ describe('MibGroupsTable.vue', () => {
       id: 3,
       name: 'disabled-mib-group',
       ifType: 'all',
-      mibGroupNames: '["disabledTable"]',
+      mibGroupNames: ['disabledTable'],
       mibObjects: '[]',
       mibObjProperties: '[]',
       enabled: false,
@@ -669,7 +669,7 @@ describe('MibGroupsTable.vue', () => {
 
   describe('Edge Cases', () => {
     it('handles mib group with empty mibGroupNames', async () => {
-      const mibGroupWithEmptyNames = { ...mockMibGroup, mibGroupNames: '[]' }
+      const mibGroupWithEmptyNames = { ...mockMibGroup, mibGroupNames: [] }
       store.mibGroups = [mibGroupWithEmptyNames]
       await wrapper.vm.$nextTick()
 
@@ -837,7 +837,7 @@ describe('MibGroupsTable.vue', () => {
     it.each([
       { field: 'name', value: 'Very Long MIB Group Name That Might Overflow' },
       { field: 'ifType', value: 'custom-if-type' },
-      { field: 'mibGroupNames', value: '["table1", "table2", "table3", "table4"]' }
+      { field: 'mibGroupNames', value: ['table1', 'table2', 'table3', 'table4'] }
     ])('renders mib group with $field as "$value"', async ({ field, value }) => {
       const mibGroup = { ...mockMibGroup, [field]: value }
       store.mibGroups = [mibGroup]

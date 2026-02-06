@@ -143,6 +143,11 @@
         />
       </div>
     </div>
+    <div v-if="!store.resourceTypes.length">
+      <EmptyList
+        :content="{ msg: 'No Resource Types found.' }"
+      />
+    </div>
   </TableCard>
 </template>
 
@@ -162,6 +167,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
 const store = useSnmpDataCollectionDetailStore()

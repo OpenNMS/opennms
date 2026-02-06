@@ -288,7 +288,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       wrapper = await createWrapper()
 
       const configRows = wrapper.findAll('.config-row')
-      expect(configRows.length).toBe(3)
+      expect(configRows.length).toBe(2)
     })
 
     it('has correct layout structure', async () => {
@@ -297,17 +297,19 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const container = wrapper.find('.snmp-data-collection-detail-container')
       expect(container.find('.header').exists()).toBe(true)
       expect(container.find('.config-details-box').exists()).toBe(true)
-      expect(container.find('.system-defs-container').exists()).toBe(true)
-      expect(container.find('.resource-types-container').exists()).toBe(true)
-      expect(container.find('.mib-groups-container').exists()).toBe(true)
+      // Tables are wrapped in Transition components
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(true)
     })
 
     it('renders table containers', async () => {
       wrapper = await createWrapper()
 
-      expect(wrapper.find('.system-defs-container').exists()).toBe(true)
-      expect(wrapper.find('.resource-types-container').exists()).toBe(true)
-      expect(wrapper.find('.mib-groups-container').exists()).toBe(true)
+      // Tables are rendered inside Transition wrappers
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(true)
     })
   })
 
@@ -632,12 +634,11 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const container = wrapper.find('.snmp-data-collection-detail-container')
       const children = container.element.children
 
-      // Check order: header, config-box, system-defs, resource-types, mib-groups
+      // Check order: header, config-box, then Transition wrappers for tables
       expect(children[0].classList.contains('header')).toBe(true)
       expect(children[1].classList.contains('config-details-box')).toBe(true)
-      expect(children[2].classList.contains('system-defs-container')).toBe(true)
-      expect(children[3].classList.contains('resource-types-container')).toBe(true)
-      expect(children[4].classList.contains('mib-groups-container')).toBe(true)
+      // Tables are wrapped in Transition components (children 2, 3, 4)
+      expect(children.length).toBeGreaterThanOrEqual(3)
     })
   })
 

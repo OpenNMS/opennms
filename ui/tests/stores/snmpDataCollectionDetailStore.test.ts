@@ -93,7 +93,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
       id: 1,
       name: 'MibGroup 1',
       ifType: 'all',
-      mibGroupNames: '',
+      mibGroupNames: [],
       mibObjects: '',
       mibObjProperties: '',
       enabled: true,
@@ -104,7 +104,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
       id: 2,
       name: 'MibGroup 2',
       ifType: 'ignore',
-      mibGroupNames: '',
+      mibGroupNames: [],
       mibObjects: '',
       mibObjProperties: '',
       enabled: true,
@@ -165,12 +165,28 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.mibGroupsSorting).toEqual(defaultSorting)
       expect(store.mibGroupsSearchTerm).toBe('')
 
-      // Drawer state
+      // Names lists
+      expect(store.resourceTypeNames).toEqual([])
+      expect(store.mibGroupNames).toEqual([])
+
+      // Selected items
+      expect(store.selectedSystemDef).toBeNull()
+      expect(store.selectedMibGroup).toBeNull()
+      expect(store.selectedResourceType).toBeNull()
+
+      // Drawer states
       expect(store.systemDefDrawerState).toEqual({
         visible: false,
         isEditMode: 0
       })
-      expect(store.selectedSystemDef).toBeNull()
+      expect(store.mibGroupDrawerState).toEqual({
+        visible: false,
+        isEditMode: 0
+      })
+      expect(store.resourceTypeDrawerState).toEqual({
+        visible: false,
+        isEditMode: 0
+      })
     })
   })
 
@@ -1062,6 +1078,32 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.systemDefDrawerState.isEditMode).toBe(0)
       expect(store.selectedSystemDef).toBeNull()
     })
+
+    it('should open MIB group drawer in create mode', () => {
+      store.openMibGroupCreationDrawer(null, 1)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(1)
+      expect(store.selectedMibGroup).toBeNull()
+    })
+
+    it('should open MIB group drawer in edit mode with mib group', () => {
+      const mibGroup = mockMibGroups[0]
+      store.openMibGroupCreationDrawer(mibGroup, 2)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(2)
+      expect(store.selectedMibGroup).toEqual(mibGroup)
+    })
+
+    it('should close MIB group drawer and reset state', () => {
+      store.mibGroupDrawerState.visible = true
+      store.mibGroupDrawerState.isEditMode = 2
+      store.selectedMibGroup = mockMibGroups[0]
+
+      store.closeMibGroupDrawer()
+
+      expect(store.mibGroupDrawerState.visible).toBe(false)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(0)
+    })
   })
 
   describe('Error Handling', () => {
@@ -1776,6 +1818,32 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.systemDefDrawerState.visible).toBe(false)
       expect(store.systemDefDrawerState.isEditMode).toBe(0)
       expect(store.selectedSystemDef).toBeNull()
+    })
+
+    it('should open MIB group drawer in create mode', () => {
+      store.openMibGroupCreationDrawer(null, 1)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(1)
+      expect(store.selectedMibGroup).toBeNull()
+    })
+
+    it('should open MIB group drawer in edit mode with mib group', () => {
+      const mibGroup = mockMibGroups[0]
+      store.openMibGroupCreationDrawer(mibGroup, 2)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(2)
+      expect(store.selectedMibGroup).toEqual(mibGroup)
+    })
+
+    it('should close MIB group drawer and reset state', () => {
+      store.mibGroupDrawerState.visible = true
+      store.mibGroupDrawerState.isEditMode = 2
+      store.selectedMibGroup = mockMibGroups[0]
+
+      store.closeMibGroupDrawer()
+
+      expect(store.mibGroupDrawerState.visible).toBe(false)
+      expect(store.mibGroupDrawerState.isEditMode).toBe(0)
     })
   })
 

@@ -267,6 +267,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.mibGroupDrawerState.isEditMode = isEditMode
     },
     closeMibGroupDrawer() {
+      this.selectedMibGroup = null
       this.mibGroupDrawerState.visible = false
       this.mibGroupDrawerState.isEditMode = CreateEditMode.None
     }

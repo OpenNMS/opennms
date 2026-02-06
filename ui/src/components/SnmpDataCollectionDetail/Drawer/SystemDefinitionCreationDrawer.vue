@@ -20,7 +20,7 @@
           label="Name"
           v-model.trim="name"
           data-test="system-def-name-input"
-          :error="error.name"
+          :error="errors.name"
         />
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -28,7 +28,7 @@
           :label="'OID Type'"
           v-model.trim="oidType"
           data-test="system-def-oid-type-input"
-          :error="error.oidType"
+          :error="errors.oidType"
         >
           <FeatherRadio
             v-for="item in OID_TYPE_OPTIONS"
@@ -44,7 +44,7 @@
           label="OID Value"
           v-model.trim="oidValue"
           data-test="system-def-oid-value-input"
-          :error="error.oidValue"
+          :error="errors.oidValue"
         />
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -57,7 +57,7 @@
           :results="results"
           @search="search"
           data-test="system-def-mib-groups-input"
-          :error="error.mibGroupNames"
+          :error="errors.mibGroupNames"
         ></FeatherAutocomplete>
         <div class="spacer"></div>
         <div class="spacer"></div>
@@ -65,7 +65,7 @@
           :label="'Status'"
           v-model="status"
           data-test="system-def-status-input"
-          :error="error.enabled"
+          :error="errors.status"
         >
           <FeatherRadio
             v-for="item in STATUS_OPTIONS"
@@ -122,7 +122,7 @@ const loading = ref<boolean>(false)
 const results = ref<Array<IAutocompleteItemType>>([])
 const mibGroupNames = ref<Array<IAutocompleteItemType>>([])
 const snackbar = useSnackbar()
-const error = ref<SystemDefErrors>({})
+const errors = ref<SystemDefErrors>({})
 const isSaveDisabled = ref<boolean>(true)
 const drawerTitle = computed(() =>
   store.systemDefDrawerState.isEditMode === CreateEditMode.Create
@@ -131,6 +131,13 @@ const drawerTitle = computed(() =>
 )
 
 const loadInitialData = () => {
+  if (store.systemDefDrawerState.isEditMode === CreateEditMode.Create) {
+    name.value = ''
+    oidType.value = DEFAULT_OID_TYPE
+    oidValue.value = ''
+    status.value = DEFAULT_STATUS
+    mibGroupNames.value = []
+  }
   if (store.systemDefDrawerState.isEditMode === CreateEditMode.Edit) {
     const def = store.selectedSystemDef
     if (def) {
@@ -139,12 +146,6 @@ const loadInitialData = () => {
       oidValue.value = def.sysoid || def.sysoidMask || ''
       status.value = def.enabled
       mibGroupNames.value = def.mibGroupNames.map((x: string) => ({ _text: x, _value: x }))
-    } else {
-      name.value = ''
-      oidType.value = DEFAULT_OID_TYPE
-      oidValue.value = ''
-      status.value = DEFAULT_STATUS
-      mibGroupNames.value = []
     }
   }
 }
@@ -186,8 +187,8 @@ const search = (q: string) => {
 }
 
 const saveSystemDef = async () => {
-  error.value = validateDefinition()
-  if (Object.keys(error.value).length > 0) {
+  errors.value = validateDefinition()
+  if (Object.keys(errors.value).length > 0) {
     return
   }
 
@@ -231,9 +232,8 @@ const saveSystemDef = async () => {
 }
 
 watchEffect(() => {
-  const validationErrors = validateDefinition()
-  error.value = validationErrors
-  isSaveDisabled.value = Object.keys(validationErrors).length > 0
+  errors.value = validateDefinition()
+  isSaveDisabled.value = Object.keys(errors.value).length > 0
 })
 
 watch(
@@ -241,8 +241,17 @@ watch(
   (visible) => {
     if (visible) {
       loadInitialData()
+    } else {
+      name.value = ''
+      oidType.value = DEFAULT_OID_TYPE
+      oidValue.value = ''
+      status.value = DEFAULT_STATUS
+      mibGroupNames.value = []
+      errors.value = {}
+      isSaveDisabled.value = true
     }
-  }
+  },
+  { immediate: true }
 )
 </script>
 

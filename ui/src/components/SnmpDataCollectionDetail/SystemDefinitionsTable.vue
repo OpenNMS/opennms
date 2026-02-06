@@ -151,6 +151,11 @@
         />
       </div>
     </div>
+    <div v-if="!store.systemDefinitions.length">
+      <EmptyList
+        :content="{ msg: 'No System Definitions found.' }"
+      />
+    </div>
     <SystemDefinitionCreationDrawer />
   </TableCard>
 </template>
@@ -172,6 +177,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
 
