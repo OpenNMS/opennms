@@ -138,6 +138,16 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
 
         return new PageResponse<>(resultCount, dataCollectionSourceList);
     }
+
+    @Override
+    public void deleteByIds(List<Integer> snmpDataCollectionIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from SnmpCollectionSource s where s.id in (:ids)")
+                        .setParameterList("ids", snmpDataCollectionIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} SnmpCollectionSource(s) with IDs: {}", deletedCount, snmpDataCollectionIds);
+    }
 }
 
 

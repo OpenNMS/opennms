@@ -179,4 +179,15 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
         return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ? AND d.id = ? ", snmpCollectionSourceId, id);
     }
 
+    @Override
+    public void deleteBySystemDefIds(Integer snmpDataCollectionSourceId, List<Integer> snmpCollectionSystemDefIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from SnmpCollectionSystemDef d where d.collectionSource.id  = :snmpCollectionSourceId and  d.id in (:Ids)")
+                        .setParameter("snmpCollectionSourceId", snmpDataCollectionSourceId)
+                        .setParameterList("Ids", snmpCollectionSystemDefIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} SnmpCollectionSystemDef(d) with IDs: {} for snmpCollectionSourceId: {}", deletedCount, snmpCollectionSystemDefIds, snmpDataCollectionSourceId);
+    }
+
 }

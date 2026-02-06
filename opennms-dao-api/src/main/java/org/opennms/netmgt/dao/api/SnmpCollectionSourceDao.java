@@ -47,4 +47,6 @@ public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, I
     PageResponse<SnmpCollectionSource> filterDataCollectionSource(final String filter, final String sortBy, final String order, Integer totalRecords,
                                             Integer offset, Integer limit);
 
+    void deleteByIds(List<Integer> snmpDataCollectionIds);
+
 }

@@ -55,4 +55,5 @@ public interface SnmpCollectionSystemDefDao extends OnmsDao<SnmpCollectionSystem
 
     SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);
 
+    void deleteBySystemDefIds(Integer snmpDataCollectionSourceId,List<Integer> snmpCollectionSystemDefIds);
 }

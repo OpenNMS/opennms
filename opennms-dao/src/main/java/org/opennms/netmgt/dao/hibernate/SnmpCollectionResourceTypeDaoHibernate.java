@@ -186,4 +186,15 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
         return findUnique("from SnmpCollectionResourceType t where t.collectionSource.id = ? AND t.id = ? ", snmpCollectionSourceId, id);
     }
 
+    @Override
+    public void deleteByResourceTypeIds(Integer snmpDataCollectionSourceId, List<Integer> snmpCollectionResourceTypeIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from SnmpCollectionResourceType t where t.collectionSource.id  = :snmpCollectionSourceId and  t.id in (:Ids)")
+                        .setParameter("snmpCollectionSourceId", snmpDataCollectionSourceId)
+                        .setParameterList("Ids", snmpCollectionResourceTypeIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} SnmpCollectionResourceType(t) with IDs: {} for snmpCollectionSourceId: {}", deletedCount, snmpCollectionResourceTypeIds, snmpDataCollectionSourceId);
+    }
+
 }

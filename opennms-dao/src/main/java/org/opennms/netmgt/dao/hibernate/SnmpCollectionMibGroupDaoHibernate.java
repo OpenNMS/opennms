@@ -184,4 +184,15 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
         return findUnique("from SnmpCollectionMibGroup g where g.collectionSource.id = ? AND g.id = ? ", snmpCollectionSourceId, id);
     }
 
+    @Override
+    public void deleteByMibGroupIds(Integer snmpDataCollectionSourceId, List<Integer> snmpCollectionMibGroupIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from SnmpCollectionMibGroup g where g.collectionSource.id  = :snmpCollectionSourceId and  g.id in (:Ids)")
+                        .setParameter("snmpCollectionSourceId", snmpDataCollectionSourceId)
+                        .setParameterList("Ids", snmpCollectionMibGroupIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} SnmpCollectionMibGroup(g) with IDs: {} for snmpCollectionSourceId: {}", deletedCount, snmpCollectionMibGroupIds, snmpDataCollectionSourceId);
+    }
+
 }

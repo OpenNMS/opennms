@@ -40,6 +40,10 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
+import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +55,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,6 +213,92 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionSources(final SnmpDataCollectionSourceDeletePayload request) throws Exception {
+        snmpCollectionSourceDao.deleteByIds(request.getSnmpCollectionSourceIds());
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionMibGroups(final Integer snmpDataCollectionSourceId, final SnmpDataCollectionMibGroupDeletePayload payload) throws Exception {
+        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
+        }
+
+        final var mibGroupsIds = snmpCollectionMibGroupDao.findAllBySource(snmpDataCollectionSourceId);
+
+        final Set<Integer> databaseMibGroupIds = mibGroupsIds
+                .stream()
+                .map(SnmpCollectionMibGroup::getId)
+                .collect(Collectors.toSet());
+
+        final var requestMibGroupIds = payload.getMibGroupsIds();
+        final var existingMibGroupIds = requestMibGroupIds.stream()
+                .filter(databaseMibGroupIds::contains)
+                .toList();
+
+        if (existingMibGroupIds.isEmpty()) {
+            throw new EntityNotFoundException("No matching MIB groups found in database for deletion. Request IDs: " + requestMibGroupIds);
+        }
+
+        snmpCollectionMibGroupDao.deleteByMibGroupIds(snmpDataCollectionSourceId, existingMibGroupIds);
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionResourceTypes(final Integer snmpDataCollectionSourceId,
+                                                      final SnmpDataCollectionResourceTypeDeletePayload payload) throws Exception {
+
+        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
+        }
+
+        final var resourceTypeIds = snmpCollectionResourceTypeDao.findAllBySource(snmpDataCollectionSourceId);
+
+        final Set<Integer> databaseResourceTypeIds = resourceTypeIds
+                .stream()
+                .map(SnmpCollectionResourceType::getId)
+                .collect(Collectors.toSet());
+
+        final var requestResourceTypeIds = payload.getResourceTypesIds();
+        final var existingResourceTypeIds = requestResourceTypeIds.stream()
+                .filter(databaseResourceTypeIds::contains)
+                .toList();
+
+        if (existingResourceTypeIds.isEmpty()) {
+            throw new EntityNotFoundException("No matching resource types found in database for deletion. Request IDs: " + requestResourceTypeIds);
+        }
+
+        snmpCollectionResourceTypeDao.deleteByResourceTypeIds(snmpDataCollectionSourceId, existingResourceTypeIds);
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionSystemDefs(final Integer snmpDataCollectionSourceId,
+                                                   final SnmpDataCollectionSystemDefDeletePayload payload) throws Exception {
+        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
+        }
+
+        final var systemDefIds = snmpCollectionSystemDefDao.findAllBySource(snmpDataCollectionSourceId);
+
+        final Set<Integer> databaseSystemDefIds = systemDefIds
+                .stream()
+                .map(SnmpCollectionSystemDef::getId)
+                .collect(Collectors.toSet());
+
+        final var requestSystemDefIds = payload.getSystemDefIds();
+        final var existingSystemDefIds = requestSystemDefIds.stream()
+                .filter(databaseSystemDefIds::contains)
+                .toList();
+
+        if (existingSystemDefIds.isEmpty()) {
+            throw new EntityNotFoundException("No matching system definitions found in database for deletion. Request IDs: " + requestSystemDefIds);
+        }
+
+        snmpCollectionSystemDefDao.deleteBySystemDefIds(snmpDataCollectionSourceId, existingSystemDefIds);
     }
 
 

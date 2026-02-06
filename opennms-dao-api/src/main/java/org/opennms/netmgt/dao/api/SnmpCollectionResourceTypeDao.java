@@ -53,5 +53,6 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
 
     PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
+    void deleteByResourceTypeIds(Integer snmpDataCollectionSourceId,List<Integer> snmpCollectionResourceTypeIds);
     SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);
 }

@@ -38,6 +38,10 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
 import org.opennms.web.rest.v2.api.DataCollectionConfRestApi;
 import org.opennms.web.rest.v2.model.SnmpCollectionSourceNamesAndIdsResponse;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -461,6 +465,88 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.status(Response.Status.NOT_FOUND).entity("SystemDef was not found: " + ex.getMessage()).build();
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
+    @Override
+    public Response deleteSnmpDataCollectionSources(
+            SnmpDataCollectionSourceDeletePayload snmpDataCollectionSourceDeletePayload,
+            SecurityContext securityContext
+    ){
+
+        if (snmpDataCollectionSourceDeletePayload == null
+                || snmpDataCollectionSourceDeletePayload.getSnmpCollectionSourceIds() == null
+                || snmpDataCollectionSourceDeletePayload.getSnmpCollectionSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Snmp Data Collection IDs to delete must not be empty")
+                    .build();
+        }
+
+        try {
+            snmpCollectionSourceDao.deleteByIds(snmpDataCollectionSourceDeletePayload.getSnmpCollectionSourceIds());
+            return Response.ok()
+                    .entity("Snmp Data Collection deleted successfully")
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response deleteMibGroupsForSource(Integer snmpDataCollectionSourceId, SnmpDataCollectionMibGroupDeletePayload snmpDataCollectionMibGroupDeletePayload, SecurityContext securityContext) {
+        if (snmpDataCollectionMibGroupDeletePayload.getMibGroupsIds() == null || snmpDataCollectionMibGroupDeletePayload.getMibGroupsIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("MIB Group IDs to delete must not be empty").build();
+        }
+
+        try {
+             dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId,snmpDataCollectionMibGroupDeletePayload);
+            return Response.ok()
+                    .entity("Snmp Data Collection Mib Groups deleted successfully")
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response deleteResourceTypesForSource(Integer snmpDataCollectionSourceId, SnmpDataCollectionResourceTypeDeletePayload snmpDataCollectionResourceTypeDeletePayload, SecurityContext securityContext)  {
+        if (snmpDataCollectionResourceTypeDeletePayload.getResourceTypesIds() == null || snmpDataCollectionResourceTypeDeletePayload.getResourceTypesIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Resource Types IDs to delete must not be empty").build();
+        }
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(snmpDataCollectionSourceId,snmpDataCollectionResourceTypeDeletePayload);
+            return Response.ok()
+                    .entity("Snmp Data Collection Resource Types deleted successfully")
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response deleteSystemDefsForSource(Integer snmpDataCollectionSourceId, SnmpDataCollectionSystemDefDeletePayload snmpDataCollectionSystemDefDeletePayload, SecurityContext securityContext)  {
+        if (snmpDataCollectionSystemDefDeletePayload.getSystemDefIds() == null || snmpDataCollectionSystemDefDeletePayload.getSystemDefIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("System Def IDs to delete must not be empty").build();
+        }
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(snmpDataCollectionSourceId,snmpDataCollectionSystemDefDeletePayload);
+            return Response.ok()
+                    .entity("Snmp Data Collection System Def deleted successfully")
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
         }
     }
 
