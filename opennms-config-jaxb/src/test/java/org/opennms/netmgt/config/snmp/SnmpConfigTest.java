@@ -21,6 +21,11 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
@@ -295,7 +300,6 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
     /**  Try to validate missing "required" fields and misspellings in "optional" fields **/
     @Test
     public void validateSnmpConfiguration() {
-        
         String validConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
                 + "  <definition "
                 + "    read-community=\"public\" "
@@ -312,7 +316,7 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
         } catch (Exception e) {
             fail();
         }
-        
+
         String missingFieldConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
                 + "  <definition "
                 + "    read-community=\"public\" "
@@ -345,7 +349,82 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
             fail();
         } catch (Exception e) {
         }
-        
     }
 
+    @Test
+    public void validateSnmpConfigurationWithSecurityLevel() {
+        SnmpConfig config = null;
+
+        // securityLevel can be null
+        String validConfigWithNull =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    read-community=\"public\" "
+                + "    write-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      begin=\"192.168.0.1\" "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        try {
+            config = JaxbUtils.unmarshal(SnmpConfig.class, validConfigWithNull);
+        } catch (Exception e) {
+            fail();
+        }
+
+        assertFalse(config.hasSecurityLevel());
+        assertNull(config.getSecurityLevel());
+
+        // try setting securityLevel to 0, it should result in 1
+        config.setSecurityLevel(0);
+        assertTrue(config.hasSecurityLevel());
+        assertNotNull(config.getSecurityLevel());
+        assertEquals(1, config.getSecurityLevel().intValue());
+
+        config = null;
+
+        // securityLevel cannot be 0
+        String invalidConfig =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    security-level=\"0\" "
+                + "    read-community=\"public\" "
+                + "    write-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      begin=\"192.168.0.1\" "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        try {
+            JaxbUtils.unmarshal(SnmpConfig.class, invalidConfig);
+            fail();
+        } catch (Exception e) {
+        }
+
+        // securityLevel can be between 1-3
+        String validConfigWithSecurityLevel =  "<snmp-config " + "  port=\"1\" " + "  retry=\"2\" >"
+                + "  <definition "
+                + "    security-level=\"1\" "
+                + "    read-community=\"public\" "
+                + "    write-community=\"private\" "
+                + "    version=\"v3\">" + "    <range "
+                + "      begin=\"192.168.0.1\" "
+                + "      end=\"192.168.0.255\"/>"
+                + "    <specific>192.168.1.1</specific>"
+                + "    <ip-match>10.0.0.*</ip-match>"
+                + "  </definition>" + "</snmp-config>\n";
+        try {
+            config = JaxbUtils.unmarshal(SnmpConfig.class, validConfigWithSecurityLevel);
+        } catch (Exception e) {
+            fail();
+        }
+
+        final var def0 = config.getDefinitions().get(0);
+        assertNotNull(def0);
+        assertTrue(def0.hasSecurityLevel());
+
+        Integer intObject = def0.getSecurityLevel();
+        assertNotNull(intObject);
+        assertEquals(1, intObject.intValue());
+    }
 }

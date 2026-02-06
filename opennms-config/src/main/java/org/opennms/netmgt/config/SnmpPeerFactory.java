@@ -215,6 +215,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
+    @Override
+    public void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException {
+        getWriteLock().lock();
+
+        try {
+            encryptSnmpConfig(snmpConfig);
+            getSnmpConfigDao().updateConfig(snmpConfig);
+            this.m_config = getSnmpConfigDao().getConfig();
+        } finally {
+            getWriteLock().unlock();
+        }
+    }
+
     private static synchronized Scope getSecureCredentialsScope() {
         if (secureCredentialsVaultScope == null) {
             try {
@@ -354,7 +367,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         int version = getVersionCode(def, getSnmpConfig(), requestedSnmpVersion);
 
         setCommonAttributes(agentConfig, def, version);
-        agentConfig.setSecurityLevel(def.getSecurityLevel());
+        agentConfig.setSecurityLevel(def.hasSecurityLevel() ? def.getSecurityLevel() : DEFAULT_SECURITY_LEVEL);
         agentConfig.setSecurityName(def.getSecurityName());
         agentConfig.setAuthProtocol(def.getAuthProtocol());
         agentConfig.setAuthPassPhrase(def.getAuthPassphrase());

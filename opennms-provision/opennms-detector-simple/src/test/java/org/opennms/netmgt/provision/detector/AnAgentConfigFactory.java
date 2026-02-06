@@ -47,6 +47,11 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
     }
 
     @Override
+    public void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException {
+
+    }
+
+    @Override
     public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
         final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
         agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);

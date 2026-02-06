@@ -21,8 +21,10 @@
  */
 package org.opennms.web.rest.v2;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,7 +32,9 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -39,7 +43,6 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
 import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
 import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
@@ -140,16 +143,6 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
 
             SnmpPeerFactory.getInstance().define(eventInfo);
             SnmpPeerFactory.getInstance().saveCurrent();
-
-            Event eventToSend = eventInfo.createEvent(MODULE_NAME);
-
-            if (eventToSend == null) {
-                final String errorMessage = "Error creating event for definition.";
-                LOG.error(errorMessage);
-                throw createServerException(errorMessage);
-            }
-
-            sendEvent(eventToSend);
         } catch (WebApplicationException webEx) {
             LOG.error("Error sending event while adding a definition: {}", webEx.getMessage(), webEx);
             throw webEx;
@@ -222,18 +215,86 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         }
     }
 
-    /**
-     * Sends the given event via the EventProxy to the system. If null no event is sent.
-     * @param eventToSend The Event to send. If null, no event is sent. * @return <code>true</code> if the event was sent successfully and no exception occurred, <code>false</code> if eventToSend is null.
-     * @throws WebApplicationException on error.
-     */
-    private void sendEvent(Event eventToSend) throws WebApplicationException {
+    @Override
+    public Response downloadConfig(final String format) {
+        final boolean isXml = format != null && format.equalsIgnoreCase("xml");
+        final String fileName = isXml ? "snmp-config.xml" : "snmp-config.json";
+        byte[] byteArray = null;
+
         try {
-            eventProxy.send(eventToSend);
-        } catch (Exception e) {
-            LOG.error("Error sending event: {}", e.getMessage(), e);
-            throw createServerException("Could not send event " + eventToSend.getUei());
+            final SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+            if (isXml) {
+                String xml = JaxbUtils.marshal(snmpConfig);
+                byteArray = xml.getBytes(StandardCharsets.UTF_8);
+            } else {
+                String json = objectMapper.writeValueAsString(snmpConfig);
+                byteArray = json.getBytes(StandardCharsets.UTF_8);
+            }
+        } catch (JsonProcessingException e) {
+            LOG.error("Error serializing SnmpConfig JSON: {}", e.getMessage(), e);
+            throw createServerException("Error retrieving SNMP config.");
         }
+
+        final String contentType = isXml ? "application/xml" : "application/json";
+
+        return Response.ok().type(contentType + ";charset=" + StandardCharsets.UTF_8)
+                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .header("Pragma", "public")
+                .header("Cache-Control", "no-cache, must-revalidate")
+                .entity(byteArray).build();
+    }
+
+    @Override
+    public Response uploadConfig(final Attachment attachment) {
+        return uploadConfigInternal(attachment, false);
+    }
+
+    @Override
+    public Response uploadConfigXml(final Attachment attachment) {
+        return uploadConfigInternal(attachment, true);
+    }
+
+    private Response uploadConfigInternal(final Attachment attachment, final boolean isXml) {
+        if (attachment == null) {
+            return createBadRequestResponse("Missing configuration file.");
+        }
+
+        SnmpConfig config = null;
+        String contents = "";
+
+        try (InputStream stream = attachment.getObject(InputStream.class)) {
+            contents = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            LOG.error("Error reading uploaded file: {}", e.getMessage(), e);
+            return createBadRequestResponse("Could not read configuration file.");
+        }
+
+        try {
+            if (isXml) {
+                config = JaxbUtils.unmarshal(SnmpConfig.class, contents);
+            } else {
+                config = objectMapper.readValue(contents, SnmpConfig.class);
+
+                // Validate the config
+                // JaxbUtils.unmarshal validates via 'snmp-config.xsd', so for Json files we perform this extra step
+                String configXml = JaxbUtils.marshal(config);
+                config = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
+            }
+        } catch (Exception e) {
+            LOG.error("Error parsing uploaded file: {}", e.getMessage(), e);
+            return createBadRequestResponse("Invalid configuration file.");
+        }
+
+        config.fixSecurityLevel();
+
+        try {
+            SnmpPeerFactory.getInstance().setAndSaveConfig(config);
+        } catch (Exception e) {
+            throw createServerException("Could not save updated config");
+        }
+
+        return Response.ok().build();
     }
 
     /**

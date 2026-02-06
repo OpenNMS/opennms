@@ -22,15 +22,18 @@
 package org.opennms.web.rest.v2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
@@ -45,13 +48,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -74,6 +82,8 @@ import static org.junit.Assert.assertFalse;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     public SnmpConfigRestServiceIT () {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -116,8 +126,11 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String responseJson = (String) response.getEntity();
         assertNotNull(responseJson);
 
-        ObjectMapper mapper = new ObjectMapper();
         SnmpConfig config = mapper.readValue(responseJson, SnmpConfig.class);
+        assertConfigValid(config);
+    }
+
+    private void assertConfigValid(SnmpConfig config) {
         assertNotNull(config);
 
         assertFalse(config.getDefinitions().isEmpty());
@@ -402,7 +415,6 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String responseJson = (String) response.getEntity();
         assertNotNull(responseJson);
 
-        ObjectMapper mapper = new ObjectMapper();
         SnmpConfig config = mapper.readValue(responseJson, SnmpConfig.class);
         assertNotNull(config);
 
@@ -431,7 +443,6 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String json = (String) configResponse.getEntity();
         assertNotNull(json);
 
-        ObjectMapper mapper = new ObjectMapper();
         SnmpConfig config = mapper.readValue(json, SnmpConfig.class);
         assertNotNull(config);
 
@@ -481,5 +492,171 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(400, response.getStatus());
         message = (String) response.getEntity();
         assertEquals("Missing or invalid 'label'.", message);
+    }
+
+    @Test
+    public void testDownloadJson() {
+        final Response response = snmpConfigRestApi.downloadConfig(null);
+        assertEquals(200, response.getStatus());
+
+        SnmpConfig config = null;
+
+        try {
+            byte[] bytes = (byte[]) response.getEntity();
+            assertNotNull(bytes);
+
+            String json = new String(bytes, StandardCharsets.UTF_8);
+            config = mapper.readValue(json, SnmpConfig.class);
+        } catch (Exception e) {
+            Assert.fail("Error retrieving or parsing downloaded Json file.");
+        }
+
+        assertConfigValid(config);
+    }
+
+    @Test
+    public void testDownloadXml() {
+        final Response response = snmpConfigRestApi.downloadConfig("xml");
+        assertEquals(200, response.getStatus());
+
+        SnmpConfig config = null;
+
+        try {
+            byte[] bytes = (byte[]) response.getEntity();
+            assertNotNull(bytes);
+
+            String xml = new String(bytes, StandardCharsets.UTF_8);
+            config = JaxbUtils.unmarshal(SnmpConfig.class, xml);
+        } catch (Exception e) {
+            Assert.fail("Error retrieving or parsing downloaded XML file.");
+        }
+
+        assertConfigValid(config);
+    }
+
+    @Test
+    public void testUploadJsonValid() {
+        String filename = "snmp-config.valid.json";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfig(attachment);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    public void testUploadJsonNull() {
+        Response resp = snmpConfigRestApi.uploadConfig(null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Missing configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testUploadJsonInvalid() {
+        String filename = "snmp-config.invalid.json";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfig(attachment);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Invalid configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testUploadJsonBadFormat() {
+        String filename = "snmp-config.bad-format.json";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfig(attachment);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Invalid configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testUploadXmlValid() {
+        String filename = "snmp-config.valid.xml";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfigXml(attachment);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    public void testUploadXmlNull() {
+        Response resp = snmpConfigRestApi.uploadConfigXml(null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Missing configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testUploadXmlInvalid() {
+        String filename = "snmp-config.invalid.xml";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfigXml(attachment);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Invalid configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testUploadXmlBadFormat() {
+        String filename = "snmp-config.bad-format.xml";
+        InputStream is = getClass().getResourceAsStream("/SNMP-CONF/" + filename);
+        assertNotNull(is);
+
+        Attachment attachment = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(attachment.getContentDisposition()).thenReturn(cd);
+        when(attachment.getObject(InputStream.class)).thenReturn(is);
+
+        Response resp = snmpConfigRestApi.uploadConfigXml(attachment);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        String errorMessage = (String) resp.getEntity();
+        assertEquals("Invalid configuration file.", errorMessage);
     }
 }
