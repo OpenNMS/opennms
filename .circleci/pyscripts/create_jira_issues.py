@@ -229,14 +229,15 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
         issue_data = response.json()
         current_description = issue_data["fields"].get("description")
         current_labels = issue_data["fields"].get("labels", [])
-        issue_status = issue_data["fields"]["status"]["name"]
+        status_category = issue_data["fields"]["status"].get("statusCategory", {}).get("key", "")
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching issue details for {issue_key}: {e}")
         return False
 
-    # Only update if issue is in Open state
-    if issue_status.lower() != "open":
-        logging.info(f"Issue {issue_key} is in '{issue_status}' state, not Open. Skipping update.")
+    # Only update if issue is not in "Done" category (allows To Do, In Progress, etc.)
+    # Status categories: "new" (To Do), "indeterminate" (In Progress), "done" (Done)
+    if status_category == "done":
+        logging.info(f"Issue {issue_key} is in 'Done' status category. Skipping update.")
         return False
 
     # Handle None description
