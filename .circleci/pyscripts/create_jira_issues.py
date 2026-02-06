@@ -187,7 +187,10 @@ def parse_filtered_vulnerabilities(file_path):
     return vulnerabilities
 
 def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
-
+    """Check if a Jira issue exists for the given package and CVEs."""
+    if not vulnerability_ids:
+        return None
+    
     normalized_pkg = normalize_package_name(package_name)
 
     cve_conditions = []
@@ -196,6 +199,7 @@ def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
     
     jql = (
         f'project = {PROJECT_KEY} AND '
+        f'labels = trivy AND '
         f'(summary ~ "{normalized_pkg}" OR description ~ "{normalized_pkg}") AND '
         f'({" OR ".join(cve_conditions)}) AND '
         f'resolution IS EMPTY'
@@ -496,20 +500,30 @@ def create_issues_from_json(packages_dict):
             logging.info(f"Package {pkg_name} is in the blocklist. Skipping.")
             continue
 
-        # Check blocklist for vulnerability IDs
-        blocked_vulns = [vid for vid in vuln_ids if vid in BLOCKLIST]
-        if blocked_vulns:
-            # Filter out blocked vulnerabilities instead of skipping entirely
-            package['Vulnerabilities'] = [v for v in package['Vulnerabilities'] 
-                                          if v['VulnerabilityID'] not in BLOCKLIST]
-            package['VulnerabilityCount'] = len(package['Vulnerabilities'])
-            if package['VulnerabilityCount'] == 0:
-                logging.info(f"All vulnerabilities for {pkg_name} are blocklisted. Skipping.")
-                continue
-            logging.info(f"Filtered {len(blocked_vulns)} blocklisted CVEs from {pkg_name}")
+        # Filter out blocked vulnerabilities before any processing
+        original_count = len(package['Vulnerabilities'])
+        package['Vulnerabilities'] = [v for v in package['Vulnerabilities'] 
+                                      if v['VulnerabilityID'] not in BLOCKLIST]
+        package['VulnerabilityCount'] = len(package['Vulnerabilities'])
+        
+        if package['VulnerabilityCount'] == 0:
+            logging.info(f"All {original_count} vulnerabilities for {pkg_name} are blocklisted. Skipping.")
+            continue
+        
+        if package['VulnerabilityCount'] < original_count:
+            filtered_count = original_count - package['VulnerabilityCount']
+            logging.info(f"Filtered {filtered_count} blocklisted CVEs from {pkg_name}")
+            
+            # Recalculate severity counts after filtering
+            package['CriticalCount'] = sum(1 for v in package['Vulnerabilities'] if v['Severity'] == 'CRITICAL')
+            package['HighCount'] = sum(1 for v in package['Vulnerabilities'] if v['Severity'] == 'HIGH')
+            
+            # Recalculate highest severity
+            severity_order = {'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1}
+            severities = [v['Severity'] for v in package['Vulnerabilities']]
+            package['HighestSeverity'] = max(severities, key=lambda s: severity_order.get(s, 0)) if severities else 'LOW'
 
-
-        # Extract vulnerability IDs for issue existence check
+        # Build vulnerability IDs from filtered list
         vuln_ids = [v['VulnerabilityID'] for v in package['Vulnerabilities']]
 
         # Check for existing issue
