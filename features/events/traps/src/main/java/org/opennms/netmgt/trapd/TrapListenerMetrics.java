@@ -49,6 +49,7 @@ import com.codahale.metrics.jmx.JmxReporter;
 public class TrapListenerMetrics {
     private static final Logger LOG = LoggerFactory.getLogger(TrapListenerMetrics.class);
     private static final String JMX_DOMAIN = "org.opennms.netmgt.trapd";
+    private static final String DEVICE_METRICS_PROPERTY = "org.opennms.netmgt.trapd.enableDeviceMetrics";
 
     private final MetricRegistry metrics;
     private JmxReporter jmxReporter;
@@ -73,10 +74,11 @@ public class TrapListenerMetrics {
     public TrapListenerMetrics(MetricRegistry metrics, Identity identity, boolean enableDeviceMetrics) {
         this.metrics = metrics;
         this.identity = identity;
-        if (enableDeviceMetrics && identity == null) {
+        boolean deviceMetricsEnabled = enableDeviceMetrics || Boolean.getBoolean(DEVICE_METRICS_PROPERTY);
+        if (deviceMetricsEnabled && identity == null) {
             LOG.warn("Per-device trap metrics enabled but Identity is null; device metrics will not be recorded");
         }
-        this.deviceRegistry = new DeviceTrapMetricsRegistry<>(enableDeviceMetrics, DeviceTrapMetrics::new, "listener");
+        this.deviceRegistry = new DeviceTrapMetricsRegistry<>(deviceMetricsEnabled, DeviceTrapMetrics::new, "listener");
 
         // Register listener-level counters only
         this.rawTrapsReceived = metrics.counter(name("rawTrapsReceived"));
