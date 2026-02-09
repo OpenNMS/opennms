@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS } from '@/lib/constants'
+import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS, OID_PATTERN } from '@/lib/constants'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
@@ -118,7 +118,7 @@ const validateMibObject = () => {
   if (!oid.value) {
     validationErrors.oid = 'OID is required'
   }
-  if (!/^(\d+\.)+\d+$/.test(oid.value)) {
+  if (!OID_PATTERN.test(oid.value)) {
     validationErrors.oid = 'OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)'
   }
   if (!instance.value._value) {

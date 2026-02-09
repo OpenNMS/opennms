@@ -257,18 +257,20 @@ describe('MibObjectCreationDrawer.vue', () => {
         expect(wrapper.vm.errors.oid).toBe('OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)')
       })
 
-      it('should show error for invalid OID format - no dots', async () => {
+      it('should accept OID with no dots (just digits)', async () => {
         await createWrapper()
         wrapper.vm.oid = '123456'
+        wrapper.vm.alias = 'test'
         await nextTick()
-        expect(wrapper.vm.errors.oid).toBe('OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)')
+        expect(wrapper.vm.errors.oid).toBeUndefined()
       })
 
-      it('should show error for invalid OID format - starts with dot', async () => {
+      it('should accept OID that starts with dot', async () => {
         await createWrapper()
         wrapper.vm.oid = '.1.3.6.1'
+        wrapper.vm.alias = 'test'
         await nextTick()
-        expect(wrapper.vm.errors.oid).toBe('OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)')
+        expect(wrapper.vm.errors.oid).toBeUndefined()
       })
 
       it('should show error for invalid OID format - ends with dot', async () => {
@@ -292,11 +294,12 @@ describe('MibObjectCreationDrawer.vue', () => {
         expect(wrapper.vm.errors.oid).toBe('OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)')
       })
 
-      it('should show error for invalid OID format - single number', async () => {
+      it('should accept single number OID', async () => {
         await createWrapper()
         wrapper.vm.oid = '1'
+        wrapper.vm.alias = 'test'
         await nextTick()
-        expect(wrapper.vm.errors.oid).toBe('OID must be in the format of numbers separated by dots (e.g. 1.2.3.4)')
+        expect(wrapper.vm.errors.oid).toBeUndefined()
       })
 
       it('should clear OID error when valid OID is provided', async () => {
