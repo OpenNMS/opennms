@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { ISelectItemType } from '@featherds/select'
+
 export enum SnmpSecurityLevel {
   None = 0,
   NoAuthNoPriv = 1,
@@ -189,11 +191,26 @@ export interface SnmpProfileFormErrors extends SnmpConfigFormErrors {
   label?: string
   filterExpression?: string
 }
+
+// Used for defining the fields for the SnmpConfigPairedFieldInputs component
 export interface SnmpFieldInfo {
+  // The key for the field, used to bind to the config object
   key: string
+
   label: string
   hint?: string
   dataTest: string
+
+  // if true, the field will display an SCV input icon
   scvEnabled?: boolean
+
+  // true if the underlying value is numeric
   isNumeric?: boolean
+
+  // true if the field is a select dropdown
+  isSelect?: boolean
+
+  // options for the select dropdown. _text is display label, _value is the underlying value.
+  // _value should be a string even if isNumeric is true
+  selectOptions?: ISelectItemType[]
 }

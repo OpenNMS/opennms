@@ -30,7 +30,13 @@ const MIN_PORT = 1
 const MAX_PORT = 65535
 const MAX_REQUEST_SIZE_MINIMUM = 484
 
-const SnmpAuthProtocols = [
+export const SecurityLevelSelectionOptions = [
+  { _text: 'No Auth (1)', _value: String(SnmpSecurityLevel.NoAuthNoPriv) },
+  { _text: 'Auth Only (2)', _value: String(SnmpSecurityLevel.AuthNoPriv) },
+  { _text: 'Auth and Privacy (3)', _value: String(SnmpSecurityLevel.AuthPriv) }
+]
+
+export const SnmpAuthProtocols = [
   'MD5',
   'SHA',
   'SHA-224',
@@ -38,7 +44,7 @@ const SnmpAuthProtocols = [
   'SHA-512'
 ]
 
-const SnmpPrivacyProtocols = [
+export const SnmpPrivacyProtocols = [
   'DES',
   'AES',
   'AES192',

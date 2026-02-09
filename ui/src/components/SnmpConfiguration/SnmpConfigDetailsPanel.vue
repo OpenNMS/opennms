@@ -51,7 +51,6 @@
             :modelValue="snmpVersion"
             @update:modelValue="onSnmpVersionUpdated"
           >
-            <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
       </div>
@@ -189,13 +188,12 @@
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherExpansionPanel } from '@featherds/expansion'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import { validateDefinition } from '@/lib/snmpValidator'
+import { validateDefinition, SecurityLevelSelectionOptions, SnmpAuthProtocols, SnmpPrivacyProtocols } from '@/lib/snmpValidator'
 import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
@@ -251,7 +249,7 @@ const displaySnmp3Params = computed(() => {
   return version === 'v3'
 })
 
-// Field metadata for v-for rendering
+// Field metadata for v-for rendering using SnmpConfigPairedFieldInputs
 const generalParamFields: SnmpFieldInfo[] = [
   { key: 'timeout', label: 'Timeout', hint: 'Timeout in milliseconds', dataTest: 'snmp-definition-timeout', isNumeric: true },
   { key: 'retry', label: 'Retries', hint: 'Number of retries', dataTest: 'snmp-definition-retry', isNumeric: true }
@@ -273,11 +271,20 @@ const snmpV2Fields: SnmpFieldInfo[] = [
 
 const snmpV3Fields: SnmpFieldInfo[] = [
   { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name', scvEnabled: true },
-  { key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true },
+  {
+    key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true,
+    isSelect: true, selectOptions: SecurityLevelSelectionOptions
+  },
   { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase', scvEnabled: true },
-  { key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol' },
+  {
+    key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol',
+    isSelect: true, selectOptions: SnmpAuthProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
+  },
   { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true },
-  { key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol' }
+  {
+    key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol',
+    isSelect: true, selectOptions: SnmpPrivacyProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
+  }
 ]
 
 const snmpV3ContextFields: SnmpFieldInfo[] = [

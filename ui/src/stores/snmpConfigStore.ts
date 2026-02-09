@@ -199,6 +199,10 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     currentDefinition.value = definition
   }
 
+  const resetCurrentDefinition = () => {
+    currentDefinition.value = getDefaultSnmpDefinition()
+  }
+
   const setProfileLabel = (label: string) => {
     profileLabel.value = label
   }
@@ -326,6 +330,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     saveDefinition,
     saveProfile,
     setActiveTab,
+    resetCurrentDefinition,
     setCurrentDefinition,
     setDefinitionCreateEditMode,
     setProfileLabel,

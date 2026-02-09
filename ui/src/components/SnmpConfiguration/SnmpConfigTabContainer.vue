@@ -6,8 +6,8 @@
     >
       <template v-slot:tabs>
         <FeatherTab>Lookup by IP</FeatherTab>
-        <FeatherTab>Definitions</FeatherTab>
-        <FeatherTab>Profiles</FeatherTab>
+        <FeatherTab>Browse Definitions</FeatherTab>
+        <FeatherTab>Browse Profiles</FeatherTab>
         <FeatherTab>Upload/Download</FeatherTab>
       </template>
       <FeatherTabPanel>

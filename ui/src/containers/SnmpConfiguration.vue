@@ -62,6 +62,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 
 const onCreateDefinition = () => {
   store.setDefinitionCreateEditMode(SnmpConfigEditMode.Create)
+  store.resetCurrentDefinition()
   store.setActiveTab(ActiveTabs.Definitions)
 }
 
