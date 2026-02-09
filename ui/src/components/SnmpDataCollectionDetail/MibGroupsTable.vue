@@ -5,6 +5,15 @@
         <h2 class="title">MIB Groups</h2>
       </div>
       <div class="action-container">
+        <div class="add">
+          <FeatherButton
+            primary
+            data-test="add-mib-group-button"
+            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
+          >
+            Add MIB Group
+          </FeatherButton>
+        </div>
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -117,7 +126,7 @@
             >
               <td :colspan="5">
                 <h5>Mib Group Names</h5>
-                <p class="description">{{ JSON.parse(mibGroup.mibGroupNames).join(', ') }}</p>
+                <p class="description">{{ mibGroup.mibGroupNames.join(', ') }}</p>
                 <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
                   <h5>Mib Objects:</h5>
                   <div
@@ -153,11 +162,17 @@
         />
       </div>
     </div>
+    <div v-if="!store.mibGroups.length">
+      <EmptyList
+        :content="{ msg: 'No MIB Groups found.' }"
+      />
+    </div>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -169,10 +184,11 @@ import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import { FeatherPagination } from '@featherds/pagination'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
@@ -190,8 +206,7 @@ const sort = reactive({
 }) as any
 
 const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
-  // Placeholder for future action when a resource type is clicked
-  console.log('MIB Group clicked:', mibGroup)
+  store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {

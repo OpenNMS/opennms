@@ -137,7 +137,6 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should render within a TableCard container', () => {
       expect(wrapper.find('.system-definitions-table-container').exists()).toBe(true)
     })
-
   })
 
   describe('Empty State', () => {
@@ -151,6 +150,22 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+    })
+
+    it('should display EmptyList component with correct message when no data', async () => {
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+
+      // EmptyList is rendered when there's no data
+      const emptyMessage = wrapper.text()
+      expect(emptyMessage).toContain('No System Definitions found.')
+    })
+
+    it('should not show pagination when systemDefinitions is empty', async () => {
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
   })
 
@@ -724,6 +739,135 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.find('.data-table').exists()).toBe(true)
       const rows = wrapper.findAll('transition-group-stub tr')
       expect(rows.length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('should handle special characters in system definition name', async () => {
+      const specialCharsDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 100,
+        name: 'Test <Device> & "Special" Characters'
+      }
+
+      store.systemDefinitions = [specialCharsDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('Test <Device> & "Special" Characters')
+    })
+
+    it('should handle unicode characters in system definition fields', async () => {
+      const unicodeDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 101,
+        name: '测试设备 日本語 العربية',
+        mibGroupNames: ['国际化-mib', 'юникод-группа']
+      }
+
+      store.systemDefinitions = [unicodeDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('测试设备 日本語 العربية')
+    })
+
+    it('should handle very large number of mib group names', async () => {
+      const manyMibsDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 102,
+        mibGroupNames: Array.from({ length: 50 }, (_, i) => `mib-group-${i + 1}`)
+      }
+
+      store.systemDefinitions = [manyMibsDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(manyMibsDef.id)
+      await wrapper.vm.$nextTick()
+
+      const expandedContent = wrapper.find('.expanded-content')
+      expect(expandedContent.text()).toContain('mib-group-1')
+      expect(expandedContent.text()).toContain('mib-group-50')
+    })
+
+    it('should handle very long OID strings', async () => {
+      const longOidDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 103,
+        sysoid: '.1.3.6.1.4.1.9.9.166.1.1.1.1.4.1.2.3.4.5.6.7.8.9.10',
+        sysoidMask: '.1.3.6.1.4.1.9.9.166.1.1.1.1.4'
+      }
+
+      store.systemDefinitions = [longOidDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('.1.3.6.1.4.1.9.9.166.1.1.1.1.4.1.2.3.4.5.6.7.8.9.10')
+    })
+
+    it('should handle rapid expand/collapse toggles', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      // Rapidly toggle expand multiple times
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.toggleExpand(mockSystemDef.id)
+      }
+      await wrapper.vm.$nextTick()
+
+      // After odd number of toggles, should be expanded
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
+    })
+
+    it('should preserve expanded state when data updates', async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand first row
+      wrapper.vm.toggleExpand(mockSystemDef.id)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
+
+      // Update store data (e.g., from API refresh)
+      store.systemDefinitions = [{ ...mockSystemDef, name: 'Updated Name' }, mockSystemDef2]
+      await wrapper.vm.$nextTick()
+
+      // Expanded state should be preserved
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
+    })
+
+    it('should handle zero id value', async () => {
+      const zeroIdDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 0,
+        name: 'Zero ID Device'
+      }
+
+      store.systemDefinitions = [zeroIdDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('Zero ID Device')
+    })
+
+    it('should handle negative id value', async () => {
+      const negativeIdDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: -1,
+        name: 'Negative ID Device'
+      }
+
+      store.systemDefinitions = [negativeIdDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.data-table').exists()).toBe(true)
     })
   })
 

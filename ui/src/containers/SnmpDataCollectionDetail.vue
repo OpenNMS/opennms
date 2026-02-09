@@ -18,12 +18,6 @@
         </div>
       </div>
       <div class="action-container">
-        <!-- <FeatherButton
-          primary
-          data-test="add-event-config"
-        >
-          Add Event Config
-        </FeatherButton> -->
         <FeatherButton
           primary
           data-test="enable-disable-source"
@@ -72,22 +66,27 @@
             format(store.selectedCollectionSource.lastModified, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
-      <div class="config-row">
-        <!-- <div class="config-field">
-          <span class="field-label">Event Count:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.eventCount }}</span>
-        </div> -->
+    </div>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible">
+        <SystemDefinitionsTable />
       </div>
-    </div>
-    <div class="system-defs-container">
-      <SystemDefinitionsTable />
-    </div>
-    <div class="resource-types-container">
-      <ResourceTypesTable />
-    </div>
-    <div class="mib-groups-container">
-      <MibGroupsTable />
-    </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible">
+        <MibGroupsTable />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible">
+        <ResourceTypesTable />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="store.mibGroupDrawerState.visible">
+        <MibGroupForm />
+      </div>
+    </Transition>
   </div>
   <div
     v-else
@@ -104,6 +103,7 @@
 </template>
 
 <script setup lang="ts">
+import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'

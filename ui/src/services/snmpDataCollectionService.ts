@@ -8,6 +8,7 @@ import {
   mapUploadedDataCollectionFilesResponseFromServer
 } from '@/mappers/snmpDataCollection.mapper'
 import {
+  SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
@@ -273,6 +274,40 @@ export const updateSystemDefinition = async (
     }
   } catch (error) {
     console.error('Error updating SNMP data collection system definition:', error)
+    throw error
+  }
+}
+
+export const createMibGroup = async (payload: SnmpCollectionMibGroupPayload, sourceId: number): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/mibgroups`
+
+  try {
+    const response = await v2.post(endpoint, payload)
+
+    if (response.status === 201) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error creating SNMP data collection MIB group:', error)
+    throw error
+  }
+}
+
+export const updateMibGroup = async (payload: SnmpCollectionMibGroupPayload, sourceId: number): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/mibgroups/${payload.id}`
+
+  try {
+    const response = await v2.put(endpoint, payload)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error updating SNMP data collection MIB group:', error)
     throw error
   }
 }

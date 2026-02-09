@@ -1,5 +1,6 @@
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -38,12 +39,13 @@ describe('MibGroupsTable.vue', () => {
     store.onMibGroupsPageChange = vi.fn().mockResolvedValue(undefined)
     store.onMibGroupsPageSizeChange = vi.fn().mockResolvedValue(undefined)
     store.onMibGroupsSortChange = vi.fn().mockResolvedValue(undefined)
+    store.openMibGroupCreationDrawer = vi.fn()
 
     mockMibGroup = {
       id: 1,
       name: 'mib2-interfaces',
       ifType: 'all',
-      mibGroupNames: '["ifTable", "ifXTable"]',
+      mibGroupNames: ['ifTable', 'ifXTable'],
       mibObjects: '[{"alias":"ifIndex","oid":"1.3.6.1.2.1.2.2.1.1","instance":"ifIndex","type":"gauge"}]',
       mibObjProperties: '[]',
       enabled: true,
@@ -55,8 +57,9 @@ describe('MibGroupsTable.vue', () => {
       id: 2,
       name: 'mib2-host-resources',
       ifType: 'ignore',
-      mibGroupNames: '["hrStorageTable"]',
-      mibObjects: '[{"alias":"hrStorageIndex","oid":"1.3.6.1.2.1.25.2.3.1.1","instance":"hrStorageIndex","type":"gauge"}]',
+      mibGroupNames: ['hrStorageTable'],
+      mibObjects:
+        '[{"alias":"hrStorageIndex","oid":"1.3.6.1.2.1.25.2.3.1.1","instance":"hrStorageIndex","type":"gauge"}]',
       mibObjProperties: '[]',
       enabled: true,
       collectionSourceId: 1,
@@ -67,7 +70,7 @@ describe('MibGroupsTable.vue', () => {
       id: 3,
       name: 'disabled-mib-group',
       ifType: 'all',
-      mibGroupNames: '["disabledTable"]',
+      mibGroupNames: ['disabledTable'],
       mibObjects: '[]',
       mibObjProperties: '[]',
       enabled: false,
@@ -120,6 +123,35 @@ describe('MibGroupsTable.vue', () => {
       const refreshButton = wrapper.find('[data-test="refresh-button"]')
       expect(refreshButton.exists()).toBe(true)
     })
+
+    it('renders add mib group button', () => {
+      const addButton = wrapper.find('[data-test="add-mib-group-button"]')
+      expect(addButton.exists()).toBe(true)
+    })
+
+    it('add mib group button has correct text', () => {
+      const addButton = wrapper.find('[data-test="add-mib-group-button"]')
+      expect(addButton.text()).toBe('Add MIB Group')
+    })
+  })
+
+  describe('Add MIB Group Button', () => {
+    it('should call openMibGroupCreationDrawer with Create mode when clicked', async () => {
+      const addButton = wrapper.find('[data-test="add-mib-group-button"]')
+      await addButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(store.openMibGroupCreationDrawer).toHaveBeenCalledWith(null, CreateEditMode.Create)
+    })
+
+    it('should be clickable multiple times', async () => {
+      const addButton = wrapper.find('[data-test="add-mib-group-button"]')
+      await addButton.trigger('click')
+      await addButton.trigger('click')
+      await addButton.trigger('click')
+
+      expect(store.openMibGroupCreationDrawer).toHaveBeenCalledTimes(3)
+    })
   })
 
   describe('Empty State', () => {
@@ -135,6 +167,21 @@ describe('MibGroupsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
+    })
+
+    it('displays EmptyList component with correct message when no data', async () => {
+      store.mibGroups = []
+      await wrapper.vm.$nextTick()
+
+      const emptyMessage = wrapper.text()
+      expect(emptyMessage).toContain('No MIB Groups found.')
+    })
+
+    it('should still show header with add button, search and refresh when empty', () => {
+      expect(wrapper.find('.header').exists()).toBe(true)
+      expect(wrapper.find('[data-test="add-mib-group-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
     })
   })
 
@@ -216,8 +263,19 @@ describe('MibGroupsTable.vue', () => {
     })
 
     it('renders search input with correct placeholder hint', () => {
-      const searchInput = wrapper.find('[data-test="search-input"]')
+      const searchInput = wrapper.findComponent(FeatherInput)
       expect(searchInput.exists()).toBe(true)
+      expect(searchInput.props('hint')).toBe('Search by Name or Interface Type')
+    })
+
+    it('renders search input with correct label', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('label')).toBe('Search')
+    })
+
+    it('renders search input with type search', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('type')).toBe('search')
     })
 
     it('handles search input changes with debouncing', async () => {
@@ -305,22 +363,25 @@ describe('MibGroupsTable.vue', () => {
       expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(true)
     })
 
-    it('calls onMibGroupEditClicked when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    it('should call openMibGroupCreationDrawer with Edit mode when clicked', async () => {
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      await editButton.trigger('click')
+      await wrapper.vm.$nextTick()
 
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('MIB Group clicked:', mockMibGroup)
-      consoleSpy.mockRestore()
+      expect(store.openMibGroupCreationDrawer).toHaveBeenCalledWith(mockMibGroup, CreateEditMode.Edit)
     })
 
-    it('handles edit click via onMibGroupEditClicked function', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    it('should render multiple edit buttons for multiple rows', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
 
-      wrapper.vm.onMibGroupEditClicked(mockMibGroup)
+      const editButtons = wrapper.findAll('[data-test="edit-button"]')
+      expect(editButtons.length).toBe(2)
+    })
 
-      expect(consoleSpy).toHaveBeenCalledWith('MIB Group clicked:', mockMibGroup)
-      consoleSpy.mockRestore()
+    it('should have correct title attribute', async () => {
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      expect(editButton.attributes('title')).toContain('Edit')
     })
   })
 
@@ -546,26 +607,23 @@ describe('MibGroupsTable.vue', () => {
       expect(store.onMibGroupsPageSizeChange).toHaveBeenCalledWith(20)
     })
 
-    it.each([
-      { page: 1 },
-      { page: 2 },
-      { page: 5 },
-      { page: 10 }
-    ])('handles page change to page $page', async ({ page }) => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:modelValue', page)
-      expect(store.onMibGroupsPageChange).toHaveBeenCalledWith(page)
-    })
+    it.each([{ page: 1 }, { page: 2 }, { page: 5 }, { page: 10 }])(
+      'handles page change to page $page',
+      async ({ page }) => {
+        const pagination = wrapper.getComponent(FeatherPagination)
+        await pagination.vm.$emit('update:modelValue', page)
+        expect(store.onMibGroupsPageChange).toHaveBeenCalledWith(page)
+      }
+    )
 
-    it.each([
-      { pageSize: 10 },
-      { pageSize: 20 },
-      { pageSize: 30 }
-    ])('handles page size change to $pageSize', async ({ pageSize }) => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:pageSize', pageSize)
-      expect(store.onMibGroupsPageSizeChange).toHaveBeenCalledWith(pageSize)
-    })
+    it.each([{ pageSize: 10 }, { pageSize: 20 }, { pageSize: 30 }])(
+      'handles page size change to $pageSize',
+      async ({ pageSize }) => {
+        const pagination = wrapper.getComponent(FeatherPagination)
+        await pagination.vm.$emit('update:pageSize', pageSize)
+        expect(store.onMibGroupsPageSizeChange).toHaveBeenCalledWith(pageSize)
+      }
+    )
 
     it('pagination has correct page sizes options', async () => {
       const pagination = wrapper.getComponent(FeatherPagination)
@@ -687,7 +745,7 @@ describe('MibGroupsTable.vue', () => {
 
   describe('Edge Cases', () => {
     it('handles mib group with empty mibGroupNames', async () => {
-      const mibGroupWithEmptyNames = { ...mockMibGroup, mibGroupNames: '[]' }
+      const mibGroupWithEmptyNames = { ...mockMibGroup, mibGroupNames: [] }
       store.mibGroups = [mibGroupWithEmptyNames]
       await wrapper.vm.$nextTick()
 
@@ -737,7 +795,8 @@ describe('MibGroupsTable.vue', () => {
     it('handles multiple mib objects in a group', async () => {
       const mibGroupWithMultipleObjects = {
         ...mockMibGroup,
-        mibObjects: '[{"alias":"obj1","oid":"1.1.1","instance":"obj1","type":"gauge"},{"alias":"obj2","oid":"1.1.2","instance":"obj2","type":"counter"}]'
+        mibObjects:
+          '[{"alias":"obj1","oid":"1.1.1","instance":"obj1","type":"gauge"},{"alias":"obj2","oid":"1.1.2","instance":"obj2","type":"counter"}]'
       }
       store.mibGroups = [mibGroupWithMultipleObjects]
       await wrapper.vm.$nextTick()
@@ -750,6 +809,158 @@ describe('MibGroupsTable.vue', () => {
       expect(expandedContent.text()).toContain('obj2')
       expect(expandedContent.text()).toContain('Object 1')
       expect(expandedContent.text()).toContain('Object 2')
+    })
+
+    it('handles unicode characters in mib group fields', async () => {
+      const unicodeMibGroup: SnmpCollectionMibGroup = {
+        ...mockMibGroup,
+        name: 'MIB-グループ-テスト',
+        ifType: 'Étiquette_日本語'
+      }
+
+      store.mibGroups = [unicodeMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('MIB-グループ-テスト')
+      expect(rows[0].text()).toContain('Étiquette_日本語')
+    })
+
+    it('handles zero id value', async () => {
+      const zeroIdMibGroup: SnmpCollectionMibGroup = {
+        ...mockMibGroup,
+        id: 0,
+        name: 'zeroIdMibGroup'
+      }
+
+      store.mibGroups = [zeroIdMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+      expect(rows[0].text()).toContain('zeroIdMibGroup')
+    })
+
+    it('handles negative id value', async () => {
+      const negativeIdMibGroup: SnmpCollectionMibGroup = {
+        ...mockMibGroup,
+        id: -1,
+        name: 'negativeIdMibGroup'
+      }
+
+      store.mibGroups = [negativeIdMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+      expect(rows[0].text()).toContain('negativeIdMibGroup')
+    })
+
+    it('handles large pagination total counts', async () => {
+      store.mibGroups = [mockMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 100000 }
+      await wrapper.vm.$nextTick()
+
+      const pagination = wrapper.findComponent(FeatherPagination)
+      expect(pagination.props('total')).toBe(100000)
+    })
+
+    it('handles preserved expanded state when data updates', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand first row
+      wrapper.vm.toggleExpand(mockMibGroup.id)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.expandedRows).toContain(mockMibGroup.id)
+
+      // Add a new mib group
+      const newMibGroup: SnmpCollectionMibGroup = {
+        ...mockMibGroup,
+        id: 4,
+        name: 'newMibGroup'
+      }
+      store.mibGroups = [mockMibGroup, mockMibGroup2, newMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 3 }
+      await wrapper.vm.$nextTick()
+
+      // Expanded state should be preserved
+      expect(wrapper.vm.expandedRows).toContain(mockMibGroup.id)
+    })
+
+    it('handles multiple expanded rows with some removed from data', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand both rows
+      wrapper.vm.toggleExpand(mockMibGroup.id)
+      wrapper.vm.toggleExpand(mockMibGroup2.id)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.expandedRows.length).toBe(2)
+
+      // Remove second item from data
+      store.mibGroups = [mockMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      // Only one expanded content should show
+      const expandedContent = wrapper.findAll('.expanded-content')
+      expect(expandedContent.length).toBe(1)
+    })
+
+    it('handles mib group with malformed mibObjects JSON gracefully', async () => {
+      // This tests if the component handles JSON.parse properly
+      const mibGroupEmptyObjects = {
+        ...mockMibGroup,
+        mibObjects: '[]'
+      }
+      store.mibGroups = [mibGroupEmptyObjects]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(mibGroupEmptyObjects.id)
+      await wrapper.vm.$nextTick()
+
+      // Should still render expanded content
+      expect(wrapper.find('.expanded-content').exists()).toBe(true)
+    })
+
+    it('handles mib group with special characters in mibGroupNames', async () => {
+      const specialNamesMibGroup = {
+        ...mockMibGroup,
+        mibGroupNames: ['table-name_v2.0', 'table@special#chars', 'table[with]brackets']
+      }
+      store.mibGroups = [specialNamesMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(specialNamesMibGroup.id)
+      await wrapper.vm.$nextTick()
+
+      const expandedContent = wrapper.find('.expanded-content')
+      expect(expandedContent.text()).toContain('table-name_v2.0')
+      expect(expandedContent.text()).toContain('table@special#chars')
+      expect(expandedContent.text()).toContain('table[with]brackets')
+    })
+
+    it('handles very long mibGroupNames list', async () => {
+      const manyNamesMibGroup = {
+        ...mockMibGroup,
+        mibGroupNames: Array.from({ length: 50 }, (_, i) => `table${i + 1}`)
+      }
+      store.mibGroups = [manyNamesMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(manyNamesMibGroup.id)
+      await wrapper.vm.$nextTick()
+
+      const expandedContent = wrapper.find('.expanded-content')
+      expect(expandedContent.text()).toContain('table1')
+      expect(expandedContent.text()).toContain('table50')
     })
   })
 
@@ -834,28 +1045,26 @@ describe('MibGroupsTable.vue', () => {
   })
 
   describe('Parametrized Tests - Interface Type Values', () => {
-    it.each([
-      { ifType: 'all' },
-      { ifType: 'ignore' },
-      { ifType: 'specific' },
-      { ifType: '' }
-    ])('renders mib group with Interface Type "$ifType"', async ({ ifType }) => {
-      const mibGroup = { ...mockMibGroup, ifType }
-      store.mibGroups = [mibGroup]
-      await wrapper.vm.$nextTick()
+    it.each([{ ifType: 'all' }, { ifType: 'ignore' }, { ifType: 'specific' }, { ifType: '' }])(
+      'renders mib group with Interface Type "$ifType"',
+      async ({ ifType }) => {
+        const mibGroup = { ...mockMibGroup, ifType }
+        store.mibGroups = [mibGroup]
+        await wrapper.vm.$nextTick()
 
-      expect(wrapper.find('.data-table').exists()).toBe(true)
-      if (ifType) {
-        expect(wrapper.text()).toContain(ifType)
+        expect(wrapper.find('.data-table').exists()).toBe(true)
+        if (ifType) {
+          expect(wrapper.text()).toContain(ifType)
+        }
       }
-    })
+    )
   })
 
   describe('Parametrized Tests - MIB Group Data Variations', () => {
     it.each([
       { field: 'name', value: 'Very Long MIB Group Name That Might Overflow' },
       { field: 'ifType', value: 'custom-if-type' },
-      { field: 'mibGroupNames', value: '["table1", "table2", "table3", "table4"]' }
+      { field: 'mibGroupNames', value: ['table1', 'table2', 'table3', 'table4'] }
     ])('renders mib group with $field as "$value"', async ({ field, value }) => {
       const mibGroup = { ...mockMibGroup, [field]: value }
       store.mibGroups = [mibGroup]
@@ -895,31 +1104,30 @@ describe('MibGroupsTable.vue', () => {
   })
 
   describe('Expanded Content with Multiple Objects', () => {
-    it.each([
-      { objectCount: 1 },
-      { objectCount: 2 },
-      { objectCount: 5 }
-    ])('displays $objectCount mib objects correctly', async ({ objectCount }) => {
-      const objects = Array.from({ length: objectCount }, (_, i) => ({
-        alias: `obj${i + 1}`,
-        oid: `1.3.6.1.${i + 1}`,
-        instance: `obj${i + 1}`,
-        type: 'gauge'
-      }))
+    it.each([{ objectCount: 1 }, { objectCount: 2 }, { objectCount: 5 }])(
+      'displays $objectCount mib objects correctly',
+      async ({ objectCount }) => {
+        const objects = Array.from({ length: objectCount }, (_, i) => ({
+          alias: `obj${i + 1}`,
+          oid: `1.3.6.1.${i + 1}`,
+          instance: `obj${i + 1}`,
+          type: 'gauge'
+        }))
 
-      const mibGroup = { ...mockMibGroup, mibObjects: JSON.stringify(objects) }
-      store.mibGroups = [mibGroup]
-      await wrapper.vm.$nextTick()
+        const mibGroup = { ...mockMibGroup, mibObjects: JSON.stringify(objects) }
+        store.mibGroups = [mibGroup]
+        await wrapper.vm.$nextTick()
 
-      wrapper.vm.toggleExpand(mibGroup.id)
-      await wrapper.vm.$nextTick()
+        wrapper.vm.toggleExpand(mibGroup.id)
+        await wrapper.vm.$nextTick()
 
-      const expandedContent = wrapper.find('.expanded-content')
-      for (let i = 0; i < objectCount; i++) {
-        expect(expandedContent.text()).toContain(`obj${i + 1}`)
-        expect(expandedContent.text()).toContain(`Object ${i + 1}`)
+        const expandedContent = wrapper.find('.expanded-content')
+        for (let i = 0; i < objectCount; i++) {
+          expect(expandedContent.text()).toContain(`obj${i + 1}`)
+          expect(expandedContent.text()).toContain(`Object ${i + 1}`)
+        }
       }
-    })
+    )
   })
 
   describe('Toggle Expand Edge Cases', () => {
@@ -947,3 +1155,4 @@ describe('MibGroupsTable.vue', () => {
     })
   })
 })
+

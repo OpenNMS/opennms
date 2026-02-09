@@ -1,6 +1,7 @@
 import { CreateEditMode } from '@/types'
 import {
   SnmpCollectionMibGroup,
+  SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceType,
   SnmpCollectionResourceTypeResponse,
@@ -147,6 +148,32 @@ export const mapSnmpDataCollectionSystemDefPayloadToServer = (
 
   if (isEditMode === CreateEditMode.Edit) {
     payload.id = selectedSystemDefId
+  }
+
+  return payload
+}
+
+export const mapSnmpDataCollectionMibGroupPayloadToServer = (
+  name: string,
+  ifType: string,
+  mibGroupNames: string[],
+  mibObjects: any[],
+  enabled: boolean,
+  selectedMibGroupId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionMibGroupPayload => {
+  const names = isEditMode === CreateEditMode.Edit ? JSON.stringify(mibGroupNames) : JSON.stringify([name])
+  const payload = {
+    name: name,
+    ifType: ifType,
+    mibGroupNames: names,
+    mibObjects: JSON.stringify(mibObjects),
+    enabled: enabled,
+    mibObjProperties: ''
+  } as SnmpCollectionMibGroupPayload
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedMibGroupId
   }
 
   return payload
