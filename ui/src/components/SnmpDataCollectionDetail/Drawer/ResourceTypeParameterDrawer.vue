@@ -87,7 +87,7 @@ const drawerTitle = computed(() => {
   if (props.state.type === 'persistenceSelectorStrategy') {
     return props.state.isEditMode === CreateEditMode.Create ? 'Create Persistence Selector Strategy Parameter' : 'Edit Persistence Selector Strategy Parameter'
   }
-  return ''
+  return 'Parameter'
 })
 
 const validateResourceTypeParameter = () => {
