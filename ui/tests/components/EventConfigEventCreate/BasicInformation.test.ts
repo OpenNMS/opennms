@@ -1293,7 +1293,7 @@ describe('BasicInformation Component', () => {
         expect(addEventConfigSource).toHaveBeenCalled()
       })
 
-      it('should use second word of configName as vendor when vendor is empty', async () => {
+      it('should pass empty vendor when vendor field is empty', async () => {
         const { addEventConfigSource } = await import('@/services/eventConfigService')
         vi.mocked(addEventConfigSource).mockClear()
         vi.mocked(addEventConfigSource).mockResolvedValue({
@@ -1309,23 +1309,28 @@ describe('BasicInformation Component', () => {
 
         await wrapper.vm.handleSourceCreationSave()
 
-        expect(addEventConfigSource).toHaveBeenLastCalledWith('OpenNMS Events', 'Events', '')
+        expect(addEventConfigSource).toHaveBeenLastCalledWith('OpenNMS Events', '', '')
       })
 
-      it('should show error when configName has only one word and vendor is empty (newVendor undefined)', async () => {
+      it('should successfully create source even when vendor is empty', async () => {
+        const { addEventConfigSource } = await import('@/services/eventConfigService')
+        vi.mocked(addEventConfigSource).mockClear()
+        vi.mocked(addEventConfigSource).mockResolvedValue({
+          id: 101,
+          name: 'SingleWord',
+          fileOrder: 1,
+          status: 201
+        })
+
         wrapper.vm.configName = 'SingleWord'
         wrapper.vm.vendor = ''
         await wrapper.vm.$nextTick()
 
-        const showSnackBarSpy = vi.spyOn(wrapper.vm.snackbar, 'showSnackBar')
         await wrapper.vm.handleSourceCreationSave()
 
-        // When configName.split(' ')[1] is undefined, accessing .length throws an error
-        // This is caught in the try-catch and shows an error message
-        expect(showSnackBarSpy).toHaveBeenCalledWith({
-          msg: 'Failed to create event configuration source. Please try again.',
-          error: true
-        })
+        expect(addEventConfigSource).toHaveBeenLastCalledWith('SingleWord', '', '')
+        expect(wrapper.vm.selectedSource._value).toBe(101)
+        expect(wrapper.vm.sourceCreationDialogState).toBe(false)
       })
     })
   })

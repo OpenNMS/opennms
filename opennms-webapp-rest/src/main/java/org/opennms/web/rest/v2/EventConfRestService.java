@@ -490,6 +490,18 @@ public class EventConfRestService implements EventConfRestApi {
 
             final String username = getUsername(securityContext);
 
+            String vendor = request.getVendor();
+            if (vendor == null || vendor.isBlank()) {
+                vendor = StringUtils.substringBefore(request.getName(), ".");
+            } else {
+                vendor = request.getVendor();
+            }
+            if (vendor.length() > VENDOR_MAX_LENGTH) {
+                throw new IllegalArgumentException(
+                        "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
+                );
+            }
+
             int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
             int newOrder = maxFileOrder + 1;
 
@@ -499,7 +511,7 @@ public class EventConfRestService implements EventConfRestApi {
             EventConfSource eventConfSource = new EventConfSource();
             eventConfSource.setName(request.getName());
             eventConfSource.setDescription(request.getDescription());
-            eventConfSource.setVendor(request.getVendor());
+            eventConfSource.setVendor(vendor);
             eventConfSource.setEnabled(true);
             eventConfSource.setEventCount(0);
             eventConfSource.setCreatedTime(now);
@@ -554,17 +566,17 @@ public class EventConfRestService implements EventConfRestApi {
             throw new IllegalArgumentException("Source name must not be null or blank.");
         }
 
-        if (request.getVendor() == null || request.getVendor().isBlank()) {
-            throw new IllegalArgumentException("Vendor must not be null or blank.");
-        }
+//        if (request.getVendor() == null || request.getVendor().isBlank()) {
+//            throw new IllegalArgumentException("Vendor must not be null or blank.");
+//        }
 
-        final String vendor = request.getVendor();
-
-        if (vendor.length() > VENDOR_MAX_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
-            );
-        }
+//        final String vendor = request.getVendor();
+//
+//        if (vendor.length() > VENDOR_MAX_LENGTH) {
+//            throw new IllegalArgumentException(
+//                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
+//            );
+//        }
     }
 
     private Response buildXmlError(Response.Status status, String message) {
