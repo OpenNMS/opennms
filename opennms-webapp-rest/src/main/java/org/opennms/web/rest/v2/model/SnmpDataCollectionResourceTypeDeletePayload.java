@@ -25,16 +25,18 @@ import java.util.List;
 
 public class SnmpDataCollectionResourceTypeDeletePayload {
 
-    private List<Integer> resourceTypesIds;
+    private List<Integer> resourceTypeIds;
+
+    public List<Integer> getResourceTypeIds() {
+        return resourceTypeIds;
+    }
+
+    public void setResourceTypeIds(List<Integer> resourceTypeIds) {
+        this.resourceTypeIds = resourceTypeIds;
+    }
+
 
     public SnmpDataCollectionResourceTypeDeletePayload() {
     }
 
-    public List<Integer> getResourceTypesIds() {
-        return resourceTypesIds;
-    }
-
-    public void setResourceTypesIds(List<Integer> resourceTypesIds) {
-        this.resourceTypesIds = resourceTypesIds;
-    }
 }

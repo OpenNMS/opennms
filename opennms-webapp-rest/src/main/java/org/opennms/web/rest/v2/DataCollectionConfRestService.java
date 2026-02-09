@@ -487,7 +487,11 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.ok()
                     .entity("Snmp Data Collection deleted successfully")
                     .build();
-        } catch (Exception ex) {
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                   .entity("Snmp Data Collection was not found: " + ex.getMessage())
+                   .build();
+        }  catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Unexpected error occurred: " + ex.getMessage())
                     .build();
@@ -502,11 +506,17 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         try {
-             dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId,snmpDataCollectionMibGroupDeletePayload);
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId, snmpDataCollectionMibGroupDeletePayload);
             return Response.ok()
                     .entity("Snmp Data Collection Mib Groups deleted successfully")
                     .build();
-        } catch (Exception ex) {
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Mib Groups was not found: " + ex.getMessage())
+                    .build();
+
+    } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Unexpected error occurred: " + ex.getMessage())
                     .build();
@@ -515,7 +525,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response deleteResourceTypesForSource(Integer snmpDataCollectionSourceId, SnmpDataCollectionResourceTypeDeletePayload snmpDataCollectionResourceTypeDeletePayload, SecurityContext securityContext)  {
-        if (snmpDataCollectionResourceTypeDeletePayload.getResourceTypesIds() == null || snmpDataCollectionResourceTypeDeletePayload.getResourceTypesIds().isEmpty()) {
+        if (snmpDataCollectionResourceTypeDeletePayload == null || snmpDataCollectionResourceTypeDeletePayload.getResourceTypeIds() == null || snmpDataCollectionResourceTypeDeletePayload.getResourceTypeIds().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Resource Types IDs to delete must not be empty").build();
         }
@@ -533,7 +543,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
     @Override
     public Response deleteSystemDefsForSource(Integer snmpDataCollectionSourceId, SnmpDataCollectionSystemDefDeletePayload snmpDataCollectionSystemDefDeletePayload, SecurityContext securityContext)  {
-        if (snmpDataCollectionSystemDefDeletePayload.getSystemDefIds() == null || snmpDataCollectionSystemDefDeletePayload.getSystemDefIds().isEmpty()) {
+        if (snmpDataCollectionSystemDefDeletePayload == null || snmpDataCollectionSystemDefDeletePayload.getSystemDefIds() == null || snmpDataCollectionSystemDefDeletePayload.getSystemDefIds().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("System Def IDs to delete must not be empty").build();
         }
@@ -543,7 +553,11 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             return Response.ok()
                     .entity("Snmp Data Collection System Def deleted successfully")
                     .build();
-        } catch (Exception ex) {
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("System def was not found: " + ex.getMessage())
+                    .build();
+        }  catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Unexpected error occurred: " + ex.getMessage())
                     .build();

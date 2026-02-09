@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -194,6 +195,57 @@ public class SnmpCollectionSourceDaoIT {
         result = snmpDao.filterDataCollectionSource("open", "vendor", "asc", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteByIds_DeletesMatchingRecords() {
+        Date now = new Date();
+
+        SnmpCollectionSource source1 = new SnmpCollectionSource();
+        source1.setName("opennms.test.snmp");
+        source1.setVendor("opennms");
+        source1.setDescription("OpenNMS SNMP");
+        source1.setCreatedTime(now);
+        source1.setEnabled(true);
+
+        SnmpCollectionSource source2 = new SnmpCollectionSource();
+        source2.setName("cisco.test.snmp");
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco SNMP");
+        source2.setCreatedTime(now);
+        source2.setEnabled(true);
+
+        SnmpCollectionSource source3 = new SnmpCollectionSource();
+        source3.setName("juniper.test.snmp");
+        source3.setVendor("juniper");
+        source3.setDescription("Juniper SNMP");
+        source3.setCreatedTime(now);
+        source3.setEnabled(true);
+
+        snmpDao.saveOrUpdate(source1);
+        snmpDao.saveOrUpdate(source2);
+        snmpDao.saveOrUpdate(source3);
+        snmpDao.flush();
+        snmpDao.clear();
+
+        Integer id1 = source1.getId();
+        Integer id2 = source2.getId();
+        Integer id3 = source3.getId();
+
+        assertNotNull(id1);
+        assertNotNull(id2);
+        assertNotNull(id3);
+
+        // When
+        snmpDao.deleteByIds(Arrays.asList(id1, id3));
+        snmpDao.flush();
+        snmpDao.clear();
+
+        // Then
+        assertNull(snmpDao.get(id1));
+        assertNotNull(snmpDao.get(id2));
+        assertNull(snmpDao.get(id3));
     }
 
     @Test

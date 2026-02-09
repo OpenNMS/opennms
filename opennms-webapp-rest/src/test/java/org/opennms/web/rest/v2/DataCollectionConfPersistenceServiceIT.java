@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,19 +44,23 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
+import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -813,6 +818,279 @@ public class DataCollectionConfPersistenceServiceIT {
         assertEquals("255.255.255.0,255.0.0.0", updated.getIpAddressMasks());
         assertEquals("NEW-GROUP-1,NEW-GROUP-2", updated.getMibGroupNames());
     }
+    @Test
+    @Transactional
+    public void testDeleteSnmpDataCollectionSources_BadRequest_AndSuccess() throws Exception {
+        // --- Setup: 2 sources
+        final var now = new Date();
+
+        SnmpCollectionSource s1 = new SnmpCollectionSource();
+        s1.setName("delete.source.combo.1");
+        s1.setVendor("opennms");
+        s1.setDescription("source 1");
+        s1.setCreatedTime(now);
+        s1.setEnabled(true);
+
+        SnmpCollectionSource s2 = new SnmpCollectionSource();
+        s2.setName("delete.source.combo.2");
+        s2.setVendor("opennms");
+        s2.setDescription("source 2");
+        s2.setCreatedTime(now);
+        s2.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(s1);
+        snmpCollectionSourceDao.saveOrUpdate(s2);
+        snmpCollectionSourceDao.flush();
+
+        // --- BAD_REQUEST: null ids (expecting your REST layer to validate)
+        SnmpDataCollectionSourceDeletePayload badPayload1 = new SnmpDataCollectionSourceDeletePayload();
+        badPayload1.setSnmpCollectionSourceIds(null);
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(badPayload1);
+            org.junit.Assert.fail("Expected exception for null source ids");
+        } catch (Exception e) {
+            // keep generic since actual exception type depends on validation layer
+            assertNotNull(e.getMessage());
+        }
+
+        // --- BAD_REQUEST: empty ids
+        SnmpDataCollectionSourceDeletePayload badPayload2 = new SnmpDataCollectionSourceDeletePayload();
+        badPayload2.setSnmpCollectionSourceIds(java.util.Collections.emptyList());
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(badPayload2);
+            org.junit.Assert.fail("Expected exception for empty source ids");
+        } catch (Exception e) {
+            assertNotNull(e.getMessage());
+        }
+
+        // --- SUCCESS: delete both
+        SnmpDataCollectionSourceDeletePayload okPayload = new SnmpDataCollectionSourceDeletePayload();
+        okPayload.setSnmpCollectionSourceIds(List.of(s1.getId(), s2.getId()));
+
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(okPayload);
+
+        snmpCollectionSourceDao.flush();
+        snmpCollectionSourceDao.clear();
+
+        assertNull(snmpCollectionSourceDao.get(s1.getId()));
+        assertNull(snmpCollectionSourceDao.get(s2.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteSnmpDataCollectionMibGroupsForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup: source + 2 mib groups
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.mibgroup.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for mib group delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionMibGroup g1 = new SnmpCollectionMibGroup();
+        g1.setCollectionSource(src);
+        g1.setName("delete-me-mibgroup-1");
+        g1.setIfType("Ethernet");
+        g1.setMibGroupNames("IF-MIB::ifEntry");
+        g1.setMibObjects("ifIndex");
+        g1.setMibObjProperties("{\"k\":\"v\"}");
+        g1.setEnabled(true);
+
+        SnmpCollectionMibGroup g2 = new SnmpCollectionMibGroup();
+        g2.setCollectionSource(src);
+        g2.setName("delete-me-mibgroup-2");
+        g2.setIfType("Ethernet");
+        g2.setMibGroupNames("IP-MIB::ipAddrTable");
+        g2.setMibObjects("ipAdEntAddr");
+        g2.setMibObjProperties("{\"k\":\"v\"}");
+        g2.setEnabled(true);
+
+        snmpCollectionMibGroupDao.saveOrUpdate(g1);
+        snmpCollectionMibGroupDao.saveOrUpdate(g2);
+        snmpCollectionMibGroupDao.flush();
+
+        // --- BAD_REQUEST/NOT_FOUND: missing source id
+        SnmpDataCollectionMibGroupDeletePayload notFoundSourcePayload = new SnmpDataCollectionMibGroupDeletePayload();
+        notFoundSourcePayload.setMibGroupsIds(List.of(g1.getId()));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(999999, notFoundSourcePayload);
+            Assert.fail("Expected EntityNotFoundException for missing source");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
+        }
+
+        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
+        SnmpDataCollectionMibGroupDeletePayload noMatchPayload = new SnmpDataCollectionMibGroupDeletePayload();
+        noMatchPayload.setMibGroupsIds(List.of(777777, 888888));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(src.getId(), noMatchPayload);
+            Assert.fail("Expected EntityNotFoundException for no matching mib group ids");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("No matching MIB groups found in database for deletion"));
+        }
+
+        // --- SUCCESS: delete both
+        SnmpDataCollectionMibGroupDeletePayload okPayload = new SnmpDataCollectionMibGroupDeletePayload();
+        okPayload.setMibGroupsIds(List.of(g1.getId(), g2.getId()));
+
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(src.getId(), okPayload);
+
+        snmpCollectionMibGroupDao.flush();
+        snmpCollectionMibGroupDao.clear();
+
+        assertEquals(null, snmpCollectionMibGroupDao.get(g1.getId()));
+        assertEquals(null, snmpCollectionMibGroupDao.get(g2.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteSnmpDataCollectionResourceTypesForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup: source + 2 resource types
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.resourcetype.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for resource type delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionResourceType r1 = new SnmpCollectionResourceType();
+        r1.setCollectionSource(src);
+        r1.setName("delete-me-rt-1");
+        r1.setLabel("Label1");
+        r1.setResourceLabel("RL1");
+        r1.setPersistenceSelectorStrategy("default");
+        r1.setStorageStrategy("db");
+        r1.setEnabled(true);
+
+        SnmpCollectionResourceType r2 = new SnmpCollectionResourceType();
+        r2.setCollectionSource(src);
+        r2.setName("delete-me-rt-2");
+        r2.setLabel("Label2");
+        r2.setResourceLabel("RL2");
+        r2.setPersistenceSelectorStrategy("default");
+        r2.setStorageStrategy("db");
+        r2.setEnabled(true);
+
+        snmpCollectionResourceTypeDao.saveOrUpdate(r1);
+        snmpCollectionResourceTypeDao.saveOrUpdate(r2);
+        snmpCollectionResourceTypeDao.flush();
+
+        // --- BAD_REQUEST/NOT_FOUND: missing source id
+        SnmpDataCollectionResourceTypeDeletePayload notFoundSourcePayload = new SnmpDataCollectionResourceTypeDeletePayload();
+        notFoundSourcePayload.setResourceTypeIds(List.of(r1.getId()));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(999999, notFoundSourcePayload);
+            Assert.fail("Expected EntityNotFoundException for missing source");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
+        }
+
+        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
+        SnmpDataCollectionResourceTypeDeletePayload noMatchPayload = new SnmpDataCollectionResourceTypeDeletePayload();
+        noMatchPayload.setResourceTypeIds(List.of(111111, 222222));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(src.getId(), noMatchPayload);
+            Assert.fail("Expected EntityNotFoundException for no matching resource type ids");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("No matching resource types found in database for deletion"));
+        }
+
+        // --- SUCCESS: delete both
+        SnmpDataCollectionResourceTypeDeletePayload okPayload = new SnmpDataCollectionResourceTypeDeletePayload();
+        okPayload.setResourceTypeIds(List.of(r1.getId(), r2.getId()));
+
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(src.getId(), okPayload);
+
+        snmpCollectionResourceTypeDao.flush();
+        snmpCollectionResourceTypeDao.clear();
+
+        assertNull(snmpCollectionResourceTypeDao.get(r1.getId()));
+        assertNull(snmpCollectionResourceTypeDao.get(r2.getId()));
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteSnmpDataCollectionSystemDefsForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup: source + 2 system defs
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.systemdef.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for system def delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionSystemDef d1 = new SnmpCollectionSystemDef();
+        d1.setCollectionSource(src);
+        d1.setName("delete-me-systemdef-1");
+        d1.setSysoid(".1.3.6.1.2.1.1");
+        d1.setSysoidMask("255.255.255.0");
+        d1.setIpAddresses("192.168.1.0");
+        d1.setIpAddressMasks("255.255.255.0");
+        d1.setMibGroupNames("MIB-GROUP-1");
+        d1.setEnabled(true);
+
+        SnmpCollectionSystemDef d2 = new SnmpCollectionSystemDef();
+        d2.setCollectionSource(src);
+        d2.setName("delete-me-systemdef-2");
+        d2.setSysoid(".1.3.6.1.2.1.2");
+        d2.setSysoidMask("255.255.255.0");
+        d2.setIpAddresses("10.0.0.0");
+        d2.setIpAddressMasks("255.0.0.0");
+        d2.setMibGroupNames("MIB-GROUP-2");
+        d2.setEnabled(true);
+
+        snmpCollectionSystemDefDao.saveOrUpdate(d1);
+        snmpCollectionSystemDefDao.saveOrUpdate(d2);
+        snmpCollectionSystemDefDao.flush();
+
+        // --- BAD_REQUEST/NOT_FOUND: missing source id
+        SnmpDataCollectionSystemDefDeletePayload notFoundSourcePayload = new SnmpDataCollectionSystemDefDeletePayload();
+        notFoundSourcePayload.setSystemDefIds(List.of(d1.getId()));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(999999, notFoundSourcePayload);
+            Assert.fail("Expected EntityNotFoundException for missing source");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
+        }
+
+        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
+        SnmpDataCollectionSystemDefDeletePayload noMatchPayload = new SnmpDataCollectionSystemDefDeletePayload();
+        noMatchPayload.setSystemDefIds(List.of(333333, 444444));
+
+        try {
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(src.getId(), noMatchPayload);
+            Assert.fail("Expected EntityNotFoundException for no matching system def ids");
+        } catch (EntityNotFoundException e) {
+            assertTrue(e.getMessage().contains("No matching system definitions found in database for deletion"));
+        }
+
+        // --- SUCCESS: delete both
+        SnmpDataCollectionSystemDefDeletePayload okPayload = new SnmpDataCollectionSystemDefDeletePayload();
+        okPayload.setSystemDefIds(List.of(d1.getId(), d2.getId()));
+
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(src.getId(), okPayload);
+
+        snmpCollectionSystemDefDao.flush();
+        snmpCollectionSystemDefDao.clear();
+
+        assertNull(snmpCollectionSystemDefDao.get(d1.getId()));
+        assertNull(snmpCollectionSystemDefDao.get(d2.getId()));
+    }
+
+
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {
         MibObj m = new MibObj();

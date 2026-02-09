@@ -262,7 +262,7 @@ public class DataCollectionConfPersistenceService {
                 .map(SnmpCollectionResourceType::getId)
                 .collect(Collectors.toSet());
 
-        final var requestResourceTypeIds = payload.getResourceTypesIds();
+        final var requestResourceTypeIds = payload.getResourceTypeIds();
         final var existingResourceTypeIds = requestResourceTypeIds.stream()
                 .filter(databaseResourceTypeIds::contains)
                 .toList();
