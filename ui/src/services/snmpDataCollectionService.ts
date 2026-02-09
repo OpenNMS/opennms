@@ -10,6 +10,7 @@ import {
 import {
   SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
+  SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDefPayload,
@@ -308,6 +309,46 @@ export const updateMibGroup = async (payload: SnmpCollectionMibGroupPayload, sou
     }
   } catch (error) {
     console.error('Error updating SNMP data collection MIB group:', error)
+    throw error
+  }
+}
+
+export const createResourceType = async (
+  payload: SnmpCollectionResourceTypePayload,
+  sourceId: number
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/resourcetypes`
+
+  try {
+    const response = await v2.post(endpoint, payload)
+
+    if (response.status === 201) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error creating SNMP data collection resource type:', error)
+    throw error
+  }
+}
+
+export const updateResourceType = async (
+  payload: SnmpCollectionResourceTypePayload,
+  sourceId: number
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${sourceId}/resourcetypes/${payload.id}`
+
+  try {
+    const response = await v2.put(endpoint, payload)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error updating SNMP data collection resource type:', error)
     throw error
   }
 }

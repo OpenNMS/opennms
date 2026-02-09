@@ -17,6 +17,8 @@ export const STATUS_OPTIONS = [
 
 export const DEFAULT_STATUS = true
 
+export const KEY_PATTERN = /^[\w-]+$/
+
 export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
 
 const IF_TYPE_ALL = 'all'
@@ -48,5 +50,27 @@ export const DEFAULT_MIB_OBJ_TYPE: ISelectItemType = { _text: 'gauge', _value: '
 
 export const MIB_OBJECT_DATA_TYPE_OPTIONS: ISelectItemType[] = [
   ...VALID_MIB_OBJ_TYPES.map((type) => ({ _text: type, _value: type }))
+]
+
+export const PERSISTENCE_SELECTOR_STRATEGY_OPTIONS: ISelectItemType[] = [
+  {
+    _text: 'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy',
+    _value: 'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy'
+  },
+  {
+    _text: 'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy',
+    _value: 'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy'
+  }
+]
+
+export const STORAGE_STRATEGY_OPTIONS: ISelectItemType[] = [
+  {
+    _text: 'org.opennms.netmgt.collection.support.IndexStorageStrategy',
+    _value: 'org.opennms.netmgt.collection.support.IndexStorageStrategy'
+  },
+  {
+    _text: 'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy',
+    _value: 'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy'
+  }
 ]
 

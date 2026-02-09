@@ -1,9 +1,11 @@
 import { CreateEditMode } from '@/types'
 import {
+  PersistSelectorStrategyForm,
   SnmpCollectionMibGroup,
   SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceType,
+  SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDef,
@@ -11,7 +13,8 @@ import {
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
-  SnmpDataCollectionSourceUploadResponse
+  SnmpDataCollectionSourceUploadResponse,
+  StorageStrategyForm
 } from '@/types/snmpDataCollection'
 
 export const mapUploadedDataCollectionFilesResponseFromServer = (
@@ -179,3 +182,32 @@ export const mapSnmpDataCollectionMibGroupPayloadToServer = (
   return payload
 }
 
+export const mapSnmpDataCollectionResourceTypePayloadToServer = (
+  name: string,
+  label: string,
+  resourceLabel: string,
+  persistenceSelectorStrategy: string,
+  persistenceSelectorParams: PersistSelectorStrategyForm[],
+  storageStrategy: string,
+  storageStrategyParams: StorageStrategyForm[],
+  enabled: boolean,
+  selectedResourceTypeId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionResourceTypePayload => {
+  const payload = {
+    name: name,
+    label: label,
+    resourceLabel: resourceLabel,
+    persistenceSelectorStrategy: persistenceSelectorStrategy,
+    persistenceSelectorParams: JSON.stringify(persistenceSelectorParams),
+    storageStrategy: storageStrategy,
+    storageStrategyParams: JSON.stringify(storageStrategyParams),
+    enabled: enabled
+  } as SnmpCollectionResourceTypePayload
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedResourceTypeId
+  }
+
+  return payload
+}

@@ -180,6 +180,16 @@ export interface MibGroupObjectForm {
   type: string
 }
 
+export interface PersistSelectorStrategyForm {
+  key: string
+  value: string
+}
+
+export interface StorageStrategyForm {
+  key: string
+  value: string
+}
+
 export interface MibGroupObjectFormErrors {
   oid?: string
   alias?: string
@@ -198,3 +208,23 @@ export interface MibGroupErrors {
   mibObjProperties?: string
 }
 
+export interface ResourceTypeErrors {
+  name?: string
+  label?: string
+  status?: string
+  resourceLabel?: string
+  persistenceSelectorStrategy?: string
+  storageStrategy?: string
+}
+
+export interface SnmpCollectionResourceTypePayload {
+  id: number
+  name: string
+  label: string
+  resourceLabel: string
+  persistenceSelectorStrategy: string
+  persistenceSelectorParams: string
+  storageStrategy: string
+  storageStrategyParams: string
+  enabled: boolean
+}

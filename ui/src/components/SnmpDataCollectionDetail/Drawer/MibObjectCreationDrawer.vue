@@ -55,7 +55,7 @@
       <div class="drawer-footer">
         <FeatherButton
           data-test="cancel-mib-object-button"
-          @click="emit('cancel')"
+          @click="cancel"
         >
           Cancel
         </FeatherButton>
@@ -167,6 +167,16 @@ const saveMibObject = () => {
     }
     emit('save', mibObject)
   }
+}
+
+const cancel = () => {
+  errors.value = {}
+  oid.value = ''
+  dataType.value = DEFAULT_MIB_OBJ_TYPE
+  instance.value = { _text: '0', _value: '0' }
+  alias.value = ''
+  isSaveDisabled.value = true
+  emit('cancel')
 }
 
 watchEffect(() => {
