@@ -497,9 +497,11 @@ public class EventConfRestService implements EventConfRestApi {
                 vendor = request.getVendor();
             }
             if (vendor.length() > VENDOR_MAX_LENGTH) {
-                throw new IllegalArgumentException(
-                        "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
-                );
+                LOG.warn("Vendor validation failed for EventConfSource name='{}'. reason={}",
+                        request.getName(), "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters.");
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid vendor: " + "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters.")
+                        .build();
             }
 
             int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
