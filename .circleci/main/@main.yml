@@ -14,6 +14,7 @@ commands:
   #commands:executions/executions.index#
   #commands:oci/oci#
   #commands:oci/scan-image-trivy#
+  #commands:oci/trivy-analyze#
   #commands:generic/generic#
 
 #workflows#
