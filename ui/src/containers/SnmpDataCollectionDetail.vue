@@ -68,23 +68,28 @@
       </div>
     </div>
     <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
         <SystemDefinitionsTable />
       </div>
     </Transition>
     <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
         <MibGroupsTable />
       </div>
     </Transition>
     <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
         <ResourceTypesTable />
       </div>
     </Transition>
     <Transition name="fade">
       <div v-if="store.mibGroupDrawerState.visible">
         <MibGroupForm />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="store.resourceTypeDrawerState.visible">
+        <ResourceTypeForm />
       </div>
     </Transition>
   </div>
@@ -105,6 +110,7 @@
 <script setup lang="ts">
 import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import ResourceTypeForm from '@/components/SnmpDataCollectionDetail/ResourceTypeForm.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'

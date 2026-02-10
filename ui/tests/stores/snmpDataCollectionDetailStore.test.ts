@@ -1199,6 +1199,115 @@ describe('useSnmpDataCollectionDetailStore', () => {
       store.openMibGroupCreationDrawer(null, mode)
       expect(store.mibGroupDrawerState.isEditMode).toBe(mode)
     })
+
+    it('should open resource type drawer in create mode', () => {
+      store.openResourceTypeCreationDrawer(null, 1)
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+      expect(store.resourceTypeDrawerState.isEditMode).toBe(1)
+      expect(store.selectedResourceType).toBeNull()
+    })
+
+    it('should open resource type drawer in edit mode with resource type', () => {
+      const resourceType = mockResourceTypes[0]
+      store.openResourceTypeCreationDrawer(resourceType, 2)
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+      expect(store.resourceTypeDrawerState.isEditMode).toBe(2)
+      expect(store.selectedResourceType).toEqual(resourceType)
+    })
+
+    it('should close resource type drawer and reset state', () => {
+      store.resourceTypeDrawerState.visible = true
+      store.resourceTypeDrawerState.isEditMode = 2
+      store.selectedResourceType = mockResourceTypes[0]
+
+      store.closeResourceTypeDrawer()
+
+      expect(store.resourceTypeDrawerState.visible).toBe(false)
+      expect(store.resourceTypeDrawerState.isEditMode).toBe(0)
+      expect(store.selectedResourceType).toBeNull()
+    })
+
+    it('should handle opening resource type drawer multiple times', () => {
+      store.openResourceTypeCreationDrawer(null, 1)
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+
+      const resourceType = mockResourceTypes[0]
+      store.openResourceTypeCreationDrawer(resourceType, 2)
+      expect(store.selectedResourceType).toEqual(resourceType)
+      expect(store.resourceTypeDrawerState.isEditMode).toBe(2)
+    })
+
+    it('should close resource type drawer when already closed', () => {
+      store.resourceTypeDrawerState.visible = false
+      store.closeResourceTypeDrawer()
+      expect(store.resourceTypeDrawerState.visible).toBe(false)
+      expect(store.selectedResourceType).toBeNull()
+    })
+
+    it('should not affect resource type drawer when opening/closing system def drawer', () => {
+      // Open resource type drawer first
+      store.openResourceTypeCreationDrawer(mockResourceTypes[0], 2)
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+
+      // Open and close system def drawer
+      store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 1)
+      store.closeSystemDefDrawer()
+
+      // Resource type drawer should be unchanged
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+      expect(store.selectedResourceType).toEqual(mockResourceTypes[0])
+    })
+
+    it('should not affect resource type drawer when opening/closing mib group drawer', () => {
+      // Open resource type drawer first
+      store.openResourceTypeCreationDrawer(mockResourceTypes[0], 2)
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+
+      // Open and close mib group drawer
+      store.openMibGroupCreationDrawer(mockMibGroups[0], 1)
+      store.closeMibGroupDrawer()
+
+      // Resource type drawer should be unchanged
+      expect(store.resourceTypeDrawerState.visible).toBe(true)
+      expect(store.selectedResourceType).toEqual(mockResourceTypes[0])
+    })
+
+    it('should not affect system def drawer when opening/closing resource type drawer', () => {
+      // Open system def drawer first
+      store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 2)
+      expect(store.systemDefDrawerState.visible).toBe(true)
+
+      // Open and close resource type drawer
+      store.openResourceTypeCreationDrawer(mockResourceTypes[0], 1)
+      store.closeResourceTypeDrawer()
+
+      // System def drawer should be unchanged
+      expect(store.systemDefDrawerState.visible).toBe(true)
+      expect(store.selectedSystemDef).toEqual(mockSystemDefinitions[0])
+    })
+
+    it('should not affect mib group drawer when opening/closing resource type drawer', () => {
+      // Open mib group drawer first
+      store.openMibGroupCreationDrawer(mockMibGroups[0], 2)
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+
+      // Open and close resource type drawer
+      store.openResourceTypeCreationDrawer(mockResourceTypes[0], 1)
+      store.closeResourceTypeDrawer()
+
+      // Mib group drawer should be unchanged
+      expect(store.mibGroupDrawerState.visible).toBe(true)
+      expect(store.selectedMibGroup).toEqual(mockMibGroups[0])
+    })
+
+    it.each([
+      { mode: 0, description: 'None' },
+      { mode: 1, description: 'Create' },
+      { mode: 2, description: 'Edit' }
+    ])('should open resource type drawer with mode $mode ($description)', ({ mode }) => {
+      store.openResourceTypeCreationDrawer(null, mode)
+      expect(store.resourceTypeDrawerState.isEditMode).toBe(mode)
+    })
   })
 
   describe('Error Handling', () => {

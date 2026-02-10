@@ -10,6 +10,7 @@ import { CreateEditMode } from '@/types'
 import {
   SnmpCollectionDetailStoreState,
   SnmpCollectionMibGroup,
+  SnmpCollectionResourceType,
   SnmpCollectionSource,
   SnmpCollectionSystemDef
 } from '@/types/snmpDataCollection'
@@ -270,6 +271,16 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.selectedMibGroup = null
       this.mibGroupDrawerState.visible = false
       this.mibGroupDrawerState.isEditMode = CreateEditMode.None
+    },
+    openResourceTypeCreationDrawer(resourceType: SnmpCollectionResourceType | null = null, isEditMode: CreateEditMode) {
+      this.selectedResourceType = resourceType
+      this.resourceTypeDrawerState.visible = true
+      this.resourceTypeDrawerState.isEditMode = isEditMode
+    },
+    closeResourceTypeDrawer() {
+      this.selectedResourceType = null
+      this.resourceTypeDrawerState.visible = false
+      this.resourceTypeDrawerState.isEditMode = CreateEditMode.None
     }
   }
 })

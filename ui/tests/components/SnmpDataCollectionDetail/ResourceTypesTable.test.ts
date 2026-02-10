@@ -1,5 +1,6 @@
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -38,6 +39,7 @@ describe('ResourceTypesTable.vue', () => {
     store.onResourceTypesPageChange = vi.fn().mockResolvedValue(undefined)
     store.onResourceTypesPageSizeChange = vi.fn().mockResolvedValue(undefined)
     store.onResourceTypesSortChange = vi.fn().mockResolvedValue(undefined)
+    store.openResourceTypeCreationDrawer = vi.fn()
 
     mockResourceType = {
       id: 1,
@@ -147,6 +149,19 @@ describe('ResourceTypesTable.vue', () => {
     it('should render search input with type search', () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       expect(searchInput.props('type')).toBe('search')
+    })
+
+    it('should render the Add Resource Type button', () => {
+      const addButton = wrapper.find('[data-test="add-resource-type-button"]')
+      expect(addButton.exists()).toBe(true)
+      expect(addButton.text()).toBe('Add Resource Type')
+    })
+
+    it('should render Add Resource Type button with primary style', () => {
+      const featherButtons = wrapper.findAllComponents(FeatherButton)
+      const addButton = featherButtons.find((btn) => btn.text().includes('Add Resource Type'))
+      expect(addButton).toBeDefined()
+      expect(addButton?.props('primary')).toBe(true)
     })
   })
 
@@ -605,6 +620,28 @@ describe('ResourceTypesTable.vue', () => {
     })
   })
 
+  describe('Add Resource Type Button', () => {
+    it('should call openResourceTypeCreationDrawer when Add Resource Type button is clicked', async () => {
+      await wrapper.get('[data-test="add-resource-type-button"]').trigger('click')
+
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledWith(null, CreateEditMode.Create)
+    })
+
+    it('should call openResourceTypeCreationDrawer with Create mode', async () => {
+      await wrapper.get('[data-test="add-resource-type-button"]').trigger('click')
+
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledWith(null, CreateEditMode.Create)
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledTimes(1)
+    })
+
+    it('should be clickable multiple times', async () => {
+      await wrapper.get('[data-test="add-resource-type-button"]').trigger('click')
+      await wrapper.get('[data-test="add-resource-type-button"]').trigger('click')
+
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledTimes(2)
+    })
+  })
+
   describe('Edit Button', () => {
     beforeEach(async () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
@@ -622,21 +659,17 @@ describe('ResourceTypesTable.vue', () => {
       expect(editButton.attributes('title')).toBeDefined()
     })
 
-    it('should log to console when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    it('should call openResourceTypeCreationDrawer with Edit mode when edit button is clicked', async () => {
       await wrapper.get('[data-test="edit-button"]').trigger('click')
 
-      expect(consoleSpy).toHaveBeenCalledWith('Resource Type clicked:', mockResourceType)
-      consoleSpy.mockRestore()
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledWith(mockResourceType, CreateEditMode.Edit)
     })
 
     it('should pass the correct resource type when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const editButtons = wrapper.findAll('[data-test="edit-button"]')
       await editButtons[1].trigger('click')
 
-      expect(consoleSpy).toHaveBeenCalledWith('Resource Type clicked:', mockResourceType2)
-      consoleSpy.mockRestore()
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledWith(mockResourceType2, CreateEditMode.Edit)
     })
   })
 
@@ -662,6 +695,13 @@ describe('ResourceTypesTable.vue', () => {
       const dropdown = wrapper.findComponent(FeatherDropdown)
       const triggerButton = dropdown.findComponent(FeatherButton)
       expect(triggerButton.props('icon')).toBe('More Options')
+    })
+
+    it('should render dropdown for each resource type row', () => {
+      // Each row should have one dropdown
+      const rows = wrapper.findAll('transition-group-stub tr')
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(rows.length)
     })
   })
 
@@ -1055,6 +1095,10 @@ describe('ResourceTypesTable.vue', () => {
       expect(wrapper.find('.header .action-container').exists()).toBe(true)
     })
 
+    it('should have add button container within action-container', () => {
+      expect(wrapper.find('.header .action-container .add').exists()).toBe(true)
+    })
+
     it('should have search-container within action-container', () => {
       expect(wrapper.find('.header .action-container .search-container').exists()).toBe(true)
     })
@@ -1179,8 +1223,6 @@ describe('ResourceTypesTable.vue', () => {
     })
 
     it('should handle expand, edit, and collapse flow', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
       store.resourceTypes = [mockResourceType]
       store.resourceTypesPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
@@ -1192,14 +1234,12 @@ describe('ResourceTypesTable.vue', () => {
 
       // Edit
       await wrapper.get('[data-test="edit-button"]').trigger('click')
-      expect(consoleSpy).toHaveBeenCalledWith('Resource Type clicked:', mockResourceType)
+      expect(store.openResourceTypeCreationDrawer).toHaveBeenCalledWith(mockResourceType, CreateEditMode.Edit)
 
       // Collapse
       wrapper.vm.toggleExpand(mockResourceType.id)
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll('.expanded-content').length).toBe(0)
-
-      consoleSpy.mockRestore()
     })
 
     it('should handle refresh and maintain state', async () => {

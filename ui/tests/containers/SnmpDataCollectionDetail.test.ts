@@ -1,5 +1,6 @@
 import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import ResourceTypeForm from '@/components/SnmpDataCollectionDetail/ResourceTypeForm.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import SnmpDataCollectionDetail from '@/containers/SnmpDataCollectionDetail.vue'
@@ -45,7 +46,8 @@ describe('SnmpDataCollectionDetail.vue', () => {
     SystemDefinitionsTable: true,
     ResourceTypesTable: true,
     MibGroupsTable: true,
-    MibGroupForm: true
+    MibGroupForm: true,
+    ResourceTypeForm: true
   }
 
   beforeEach(() => {
@@ -87,23 +89,53 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('renders all table components when mibGroupDrawerState is not visible', async () => {
       wrapper = await createWrapper()
       store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
       await wrapper.vm.$nextTick()
 
       expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
       expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(true)
       expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(true)
       expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
     })
 
     it('renders MibGroupForm and hides tables when mibGroupDrawerState is visible', async () => {
       wrapper = await createWrapper()
       store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
       await wrapper.vm.$nextTick()
 
       expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
       expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
       expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
       expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+    })
+
+    it('renders ResourceTypeForm and hides tables when resourceTypeDrawerState is visible', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+    })
+
+    it('hides tables when both mibGroupDrawerState and resourceTypeDrawerState are visible', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
     })
 
     it('renders back button', async () => {
@@ -244,6 +276,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
       expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
       expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
     })
   })
 
@@ -620,6 +653,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('toggles MibGroupForm visibility when mibGroupDrawerState.visible changes', async () => {
       wrapper = await createWrapper()
       store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
       await wrapper.vm.$nextTick()
 
       // Initial state: tables visible, form hidden
@@ -641,6 +675,31 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
     })
 
+    it('toggles ResourceTypeForm visibility when resourceTypeDrawerState.visible changes', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      // Initial state: tables visible, form hidden
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+
+      // Toggle to visible
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+
+      // Toggle back to hidden
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+    })
+
     it('maintains MibGroupForm state during mode changes', async () => {
       wrapper = await createWrapper()
 
@@ -651,6 +710,18 @@ describe('SnmpDataCollectionDetail.vue', () => {
       store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Edit }
       await wrapper.vm.$nextTick()
       expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+    })
+
+    it('maintains ResourceTypeForm state during mode changes', async () => {
+      wrapper = await createWrapper()
+
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Edit }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
     })
   })
 

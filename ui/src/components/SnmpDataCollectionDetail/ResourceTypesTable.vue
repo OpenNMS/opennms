@@ -5,6 +5,15 @@
         <h2 class="title">Resource Types</h2>
       </div>
       <div class="action-container">
+        <div class="add">
+          <FeatherButton
+            primary
+            data-test="add-resource-type-button"
+            @click="store.openResourceTypeCreationDrawer(null, CreateEditMode.Create)"
+          >
+            Add Resource Type
+          </FeatherButton>
+        </div>
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -144,15 +153,14 @@
       </div>
     </div>
     <div v-if="!store.resourceTypes.length">
-      <EmptyList
-        :content="{ msg: 'No Resource Types found.' }"
-      />
+      <EmptyList :content="{ msg: 'No Resource Types found.' }" />
     </div>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -188,8 +196,7 @@ const sort = reactive({
 }) as any
 
 const onResourceTypeEditClicked = (resourceType: SnmpCollectionResourceType) => {
-  // Placeholder for future action when a resource type is clicked
-  console.log('Resource Type clicked:', resourceType)
+  store.openResourceTypeCreationDrawer(resourceType, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
