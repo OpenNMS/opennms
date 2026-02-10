@@ -23,7 +23,7 @@ Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, 
     </systemUsage>
 </systemUsage>
 ----
-<1> The amount of JVM heap memory assigned to the broker to track of destinations, cache messages, etcr; `memoryUsage` limit can be increased to `512MB` or more.
+<1> The amount of JVM heap memory assigned to the broker to track of destinations, cache messages, etc; `memoryUsage` limit can be increased to `512MB` or more.
 <2> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store persistent messages; `storeUsage` limit can be increased to `5GB` or more.
 <3> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store non-persistent messages; `tempUsage` limit can be increased to `1GB` or more.
 
