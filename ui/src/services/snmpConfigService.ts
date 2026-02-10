@@ -197,13 +197,46 @@ const deleteSnmpProfile = async (label: string): Promise<ValidationResult> => {
   }
 }
 
+const downloadSnmpConfig = async (isXml: boolean) => {
+  const fullEndpoint = `${endpoint}/download?format=${isXml ? 'xml' : 'json'}`
+
+  try {
+    return await v2.get(fullEndpoint, { responseType: 'blob' })
+  } catch (err) {
+    console.error('Error downloading SNMP config file:', err)
+    return false
+  }
+}
+
+const uploadSnmpConfig = async (file: File, isXml: boolean) => {
+  const fullEndpoint = isXml ? `${endpoint}/upload/xml` : `${endpoint}/upload`
+
+  try {
+    const formData = new FormData()
+    formData.append('upload', file)
+
+    const response = await v2.post(fullEndpoint, formData)
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to upload file: ${response.statusText}`)
+    }
+
+    return true
+  } catch (err) {
+    console.error('Error uploading SNMP config file:', err)
+    return false
+  }
+}
+
 export {
   convertSnmpVersionToNumber,
   convertSnmpVersionToString,
   deleteSnmpDefinition,
   deleteSnmpProfile,
+  downloadSnmpConfig,
   getSnmpConfig,
   lookupSnmpConfig,
   saveSnmpDefinition,
-  saveSnmpProfile
+  saveSnmpProfile,
+  uploadSnmpConfig
 }
