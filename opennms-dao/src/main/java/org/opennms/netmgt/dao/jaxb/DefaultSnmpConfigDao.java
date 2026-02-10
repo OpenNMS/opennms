@@ -54,7 +54,7 @@ public class DefaultSnmpConfigDao extends AbstractCmJaxbConfigDao<SnmpConfig> im
 
     @Override
     public Consumer<ConfigUpdateInfo> getUpdateCallback(){
-        return new ConfigurationReloadEventCallback(eventForwarder);
+        return new ConfigurationReloadEventCallback(eventForwarder, this);
     }
 
     @Override
