@@ -4,7 +4,7 @@
       v-model="isVisible"
       :labels="label"
       hide-close
-      @hidden="emit('close')"
+      @hidden="close"
     >
       <div
         class="modal-body"
