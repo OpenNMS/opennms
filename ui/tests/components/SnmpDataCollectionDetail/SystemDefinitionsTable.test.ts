@@ -1329,7 +1329,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete System Definition. Please try again.',
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
         error: true
       })
     })
@@ -1344,7 +1344,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete System Definition. Please try again.',
+        msg: 'Failed to delete System Definition \'wrong-name\'.',
         error: true
       })
     })
@@ -1373,7 +1373,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete System Definition. Please try again.',
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
         error: true
       })
     })
@@ -1389,7 +1389,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete System Definition. Please try again.',
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
         error: true
       })
     })

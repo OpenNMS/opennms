@@ -1516,7 +1516,7 @@ describe('ResourceTypesTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete Resource Type. Please try again.',
+        msg: `Failed to delete Resource Type '${mockResourceType.name}'.`,
         error: true
       })
     })
@@ -1531,7 +1531,7 @@ describe('ResourceTypesTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete Resource Type. Please try again.',
+        msg: 'Failed to delete Resource Type \'wrong-name\'.',
         error: true
       })
     })
@@ -1560,7 +1560,7 @@ describe('ResourceTypesTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete Resource Type. Please try again.',
+        msg: `Failed to delete Resource Type '${mockResourceType.name}'.`,
         error: true
       })
     })
@@ -1576,7 +1576,7 @@ describe('ResourceTypesTable.vue', () => {
       await flushPromises()
 
       expect(showSnackBarSpy).toHaveBeenCalledWith({
-        msg: 'Failed to delete Resource Type. Please try again.',
+        msg: `Failed to delete Resource Type '${mockResourceType.name}'.`,
         error: true
       })
     })

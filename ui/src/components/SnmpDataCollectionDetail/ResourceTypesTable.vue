@@ -268,13 +268,13 @@ const deleteResourceType = async (selected: { id: number; name: string } | null,
       selectedResourceType.value = null
     } else {
       snackbar.showSnackBar({
-        msg: 'Failed to delete Resource Type. Please try again.',
+        msg: `Failed to delete Resource Type '${selected.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: 'Failed to delete Resource Type. Please try again.',
+      msg: `Failed to delete Resource Type '${selected?.name}'.`,
       error: true
     })
   }

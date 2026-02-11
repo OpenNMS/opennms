@@ -25,6 +25,24 @@ vi.mock('vue-router', () => ({
   }))
 }))
 
+const mockDeleteSnmpCollectionSources = vi.fn()
+vi.mock('@/services/snmpDataCollectionService', () => ({
+  deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args)
+}))
+
+const mockShowSnackBar = vi.fn()
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({
+    showSnackBar: mockShowSnackBar,
+    hideSnackbar: vi.fn(),
+    isDisplayed: { value: false },
+    isCentered: { value: false },
+    hasError: { value: false },
+    message: { value: '' },
+    setTimeout: vi.fn()
+  })
+}))
+
 describe('SnmpDataCollectionDetail.vue', () => {
   let wrapper: VueWrapper
   let store: ReturnType<typeof useSnmpDataCollectionDetailStore>
@@ -47,7 +65,8 @@ describe('SnmpDataCollectionDetail.vue', () => {
     ResourceTypesTable: true,
     MibGroupsTable: true,
     MibGroupForm: true,
-    ResourceTypeForm: true
+    ResourceTypeForm: true,
+    DeleteConfirmationDialog: true
   }
 
   beforeEach(() => {
@@ -877,6 +896,518 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
       const backButton = wrapper.findComponent(FeatherBackButton)
       expect(backButton.text()).toBe('Go Back')
+    })
+  })
+
+  describe('Delete Collection Source - Dialog State', () => {
+    it('renders DeleteConfirmationDialog component', async () => {
+      wrapper = await createWrapper()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('dialog is initially hidden', async () => {
+      wrapper = await createWrapper()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+
+    it('opens delete dialog when Delete Source button is clicked', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('visible')).toBe('true')
+    })
+
+    it('passes correct type to dialog', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('type')).toBe('source')
+    })
+
+    it('passes selected collection source to dialog', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('selected')).toBeDefined()
+    })
+
+    it('closes dialog when close event is emitted', async () => {
+      wrapper = await createWrapper()
+
+      // Open dialog first
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Close dialog
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+
+    it('resets selectedCollectionSource when dialog is closed', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      // Dialog should no longer have selectedItem with value
+      const selectedItem = dialog.attributes('selecteditem')
+      expect(selectedItem === '' || selectedItem === undefined).toBe(true)
+    })
+
+    it('can open and close dialog multiple times', async () => {
+      wrapper = await createWrapper()
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+
+      // First open/close cycle
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('false')
+
+      // Second open/close cycle
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+  })
+
+  describe('Delete Collection Source - Successful Deletion', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('calls deleteSnmpCollectionSources service when deletion is confirmed', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      // Open dialog
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Confirm deletion
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('shows success snackbar on successful deletion', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Collection\' deleted successfully.'
+      })
+    })
+
+    it('navigates to SNMP Data Collection list after successful deletion', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
+    })
+
+    it('completes full deletion workflow successfully', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Collection\' deleted successfully.'
+      })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
+    })
+  })
+
+  describe('Delete Collection Source - Failed Deletion', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('does not navigate when deletion fails', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Validation Failures', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('shows error when type is not "source"', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'wrong-type')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected id does not match', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 999, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected name does not match', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Different Name' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Different Name\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected is null', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', null, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'undefined\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected has no id', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate when validation fails', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 999, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Edge Cases', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('handles collection source with special characters in name', async () => {
+      const specialName = 'Test <Source> & "Quotes"'
+      const specialSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: specialName
+      }
+      store.selectedCollectionSource = specialSource
+      await wrapper?.vm?.$nextTick?.()
+
+      wrapper = await createWrapper(specialSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: specialName }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${specialName}' deleted successfully.`
+      })
+    })
+
+    it('handles collection source with empty name', async () => {
+      const emptyNameSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: ''
+      }
+      wrapper = await createWrapper(emptyNameSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: '' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('handles collection source with very long name', async () => {
+      const longName = 'A'.repeat(500)
+      const longNameSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: longName
+      }
+      wrapper = await createWrapper(longNameSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: longName }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('handles rapid deletion attempts', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+
+      // Multiple rapid clicks
+      await deleteButton.trigger('click')
+      await deleteButton.trigger('click')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      // Should still only call once
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledTimes(1)
+    })
+
+    it('handles deletion when store source differs from clicked source', async () => {
+      // Start with one source in store
+      wrapper = await createWrapper()
+
+      // Change store source after clicking delete (simulates race condition)
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Update store to different source
+      store.selectedCollectionSource = {
+        ...mockCollectionSource,
+        id: 999,
+        name: 'Different Source'
+      }
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      // Should fail validation since store source changed
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Integration with Store', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('validates against current store selectedCollectionSource', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Verify store source matches
+      expect(store.selectedCollectionSource?.id).toBe(1)
+      expect(store.selectedCollectionSource?.name).toBe('Test Collection')
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('does not delete when store source is null', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Set store source to null after dialog opens
+      store.selectedCollectionSource = null
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it('uses store source id for delete service call', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      const customSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        id: 42
+      }
+      wrapper = await createWrapper(customSource)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 42, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([42])
     })
   })
 })

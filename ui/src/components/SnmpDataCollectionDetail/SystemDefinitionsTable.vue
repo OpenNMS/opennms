@@ -271,13 +271,13 @@ const deleteSystemDef = async (selected: { id: number; name: string } | null, ty
       isDeleteDialogVisible.value = false
     } else {
       snackbar.showSnackBar({
-        msg: 'Failed to delete System Definition. Please try again.',
+        msg: `Failed to delete System Definition '${selected.name}'.`,
         error: true
       })
     }
   } else {
     snackbar.showSnackBar({
-      msg: 'Failed to delete System Definition. Please try again.',
+      msg: `Failed to delete System Definition '${selected?.name}'.`,
       error: true
     })
   }
