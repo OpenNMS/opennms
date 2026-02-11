@@ -2,24 +2,47 @@
   <div class="delete-event-config-source-modal">
     <FeatherDialog
       v-model="isVisible"
-      :labels="labels"
+      :labels="label"
       hide-close
       @hidden="emit('close')"
     >
-      <div class="modal-body">
-        <p>
-          This will delete the event configuration source:
-          <strong>{{ props.eventConfigSource?.name }}</strong>
-        </p>
-        <p>
-          <strong>Note:</strong> This event configuration source has
-          <strong>{{ props.eventConfigSource?.eventCount }}</strong> events
-          associated with it and will be deleted.
-        </p>
+      <div
+        class="modal-body"
+        v-if="props.selected?.id && props.selected?.name"
+      >
+        <div v-if="props.type === 'source'">
+          <p>
+            This will delete the SNMP Data Collection Source:
+            <strong>{{ props.selected.name }}</strong>
+          </p>
+          <p>
+            <strong>Note:</strong> Deleting an SNMP Data Collection Source will also remove all associated MIB Groups,
+            System Definitions, and Resource Types.
+          </p>
+        </div>
+        <div v-if="props.type === 'mib-group'">
+          <p>
+            This will delete the MIB Group:
+            <strong>{{ props.selected.name }}</strong>
+          </p>
+        </div>
+        <div v-if="props.type === 'system-def'">
+          <p>
+            This will delete the System Definition:
+            <strong>{{ props.selected.name }}</strong>
+          </p>
+        </div>
+        <div v-if="props.type === 'resource-type'">
+          <p>
+            This will delete the Resource Type:
+            <strong>{{ props.selected.name }}</strong>
+          </p>
+        </div>
+        <p>This action can not be undone.</p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
       <template v-slot:footer>
-        <FeatherButton @click="emit('close')"> Cancel </FeatherButton>
+        <FeatherButton @click="close"> Cancel </FeatherButton>
         <FeatherButton
           primary
           @click="confirmDelete"
@@ -32,34 +55,55 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const props = defineProps<{
-    visible: boolean
-
+  visible: boolean
+  selected: { id: number; name: string } | null
+  type: 'source' | 'mib-group' | 'system-def' | 'resource-type'
 }>()
 
 const emit = defineEmits<{
-    (e: 'close'): void
+  (e: 'close'): void
+  (e: 'confirm', selected: { id: number; name: string } | null, type: string): void
 }>()
 
-const isVisible = ref(props.visible)
-
-watch(() => props.visible, (newVal) => {
-    isVisible.value = newVal
+const isVisible = ref(false)
+const label = computed(() => {
+  let title = 'Delete'
+  switch (props.type) {
+    case 'source':
+      title = 'Delete SNMP Data Collection Source'
+      break
+    case 'mib-group':
+      title = 'Delete MIB Group'
+      break
+    case 'system-def':
+      title = 'Delete System Definition'
+      break
+    case 'resource-type':
+      title = 'Delete Resource Type'
+      break
+  }
+  return { title }
 })
 
-watch(isVisible, (newVal) => {
-    if (!newVal) {
-        emit('close')
-    }
-})
+const close = () => {
+  isVisible.value = false
+  emit('close')
+}
 
 const confirmDelete = () => {
-    emit('close')
+  isVisible.value = false
+  emit('confirm', props.selected, props.type)
 }
+
+watch(() => props.visible, (visible) => {
+  if (visible) {
+    isVisible.value = props.visible
+  }
+}, { immediate: true })
 </script>
 
 <style lang="scss" scoped></style>
