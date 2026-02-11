@@ -10,6 +10,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 
 describe('ResourceTypesTable.vue', () => {
   let wrapper: VueWrapper<any>
@@ -1255,6 +1256,581 @@ describe('ResourceTypesTable.vue', () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
 
       expect(store.resetResourceTypesFilters).toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Resource Type Dialog', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('initializes with delete dialog hidden', () => {
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('has openResourceTypeDeleteDialog method available', async () => {
+      expect(typeof wrapper.vm.openResourceTypeDeleteDialog).toBe('function')
+    })
+
+    it('opens delete dialog via openResourceTypeDeleteDialog method', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType.name)
+    })
+
+    it('sets selectedResourceType correctly when opening dialog', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType.name)
+    })
+
+    it('sets selectedResourceType correctly for different resource types', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType2.id, mockResourceType2.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType2.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType2.name)
+    })
+
+    it('closes delete dialog and clears selection', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('renders DeleteConfirmationDialog component', async () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to DeleteConfirmationDialog', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('selected')?.id).toBe(mockResourceType.id)
+      expect(dialog.props('selected')?.name).toBe(mockResourceType.name)
+      expect(dialog.props('type')).toBe('resource-type')
+    })
+
+    it('has closeDeleteResourceTypeDialog method available', async () => {
+      expect(typeof wrapper.vm.closeDeleteResourceTypeDialog).toBe('function')
+    })
+  })
+
+  describe('Delete Resource Type Action', () => {
+    let deleteResourceTypesSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls deleteResourceTypes service on successful delete', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).toHaveBeenCalledWith(1, [mockResourceType.id])
+    })
+
+    it('closes dialog after successful deletion', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('fetches resource types after successful deletion', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      const fetchSpy = vi.spyOn(store, 'fetchResourceTypes')
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(fetchSpy).toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when type does not match', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when selected id does not match', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: 999, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when selected name does not match', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: 'wrong-name' }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when selectedCollectionSource is missing', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when selected is null', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType(null, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteResourceTypes when selected id is missing', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ name: mockResourceType.name } as any, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Resource Type Error Handling', () => {
+    let deleteResourceTypesSpy: any
+    let showSnackBarSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+
+      const useSnackbar = await import('@/composables/useSnackbar')
+      showSnackBarSpy = vi.fn()
+      vi.spyOn(useSnackbar, 'default').mockReturnValue({
+        showSnackBar: showSnackBarSpy,
+        hideSnackbar: vi.fn(),
+        isDisplayed: ref(false),
+        isCentered: ref(false),
+        hasError: ref(false),
+        message: ref(''),
+        setTimeout: ref(5000)
+      })
+
+      // Remount wrapper to pick up mocked snackbar
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+      store = useSnmpDataCollectionDetailStore(pinia)
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      store.fetchResourceTypes = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = mount(ResourceTypesTable, {
+        global: {
+          plugins: [pinia],
+          components: {
+            FeatherButton,
+            FeatherDropdown,
+            FeatherDropdownItem,
+            FeatherSortHeader,
+            FeatherPagination,
+            FeatherInput
+          }
+        }
+      })
+
+      await flushPromises()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(false)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete Resource Type. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows error snackbar when validation fails', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: 999, name: 'wrong-name' }, 'resource-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete Resource Type. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows success snackbar when deletion succeeds', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `Resource Type '${mockResourceType.name}' deleted successfully.`
+      })
+    })
+
+    it('shows error when type mismatch occurs', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete Resource Type. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows error when selected collection source is missing', async () => {
+      deleteResourceTypesSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete Resource Type. Please try again.',
+        error: true
+      })
+    })
+  })
+
+  describe('Delete Button in Dropdown', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders dropdown with delete option for each row', async () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+    })
+
+    it('calls openResourceTypeDeleteDialog for first resource type', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType.name)
+    })
+
+    it('calls openResourceTypeDeleteDialog for second resource type', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType2.id, mockResourceType2.name)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType2.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType2.name)
+    })
+
+    it('renders delete button in dropdown', async () => {
+      // FeatherDropdown components containing delete option should be rendered for each row
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Delete Confirmation Dialog Events', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles close event from DeleteConfirmationDialog', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('handles confirm event from DeleteConfirmationDialog', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('confirm', { id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).toHaveBeenCalledWith(1, [mockResourceType.id])
+    })
+  })
+
+  describe('Delete with Edge Cases', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles opening dialog with zero id', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(0, 'zero-resource')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.id).toBe(0)
+    })
+
+    it('handles opening dialog with negative id', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(-1, 'negative-resource')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.id).toBe(-1)
+    })
+
+    it('handles opening dialog with empty string name', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(1, '')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.name).toBe('')
+    })
+
+    it('handles opening dialog with special characters in name', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(1, 'test-resource_type.v2<>&"')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.name).toBe('test-resource_type.v2<>&"')
+    })
+
+    it('handles opening dialog with unicode name', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(1, '資源類型テスト')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.name).toBe('資源類型テスト')
+    })
+
+    it('handles multiple open and close cycles', async () => {
+      // First cycle
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+
+      // Second cycle
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+    })
+
+    it('handles rapid open/close without error', async () => {
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('handles delete with selectedCollectionSource.id as 0', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      store.selectedCollectionSource = { id: 0, name: 'Test Source' } as any
+
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      // id 0 is falsy, should not call service
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('handles switching selected resource type before delete', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      // Open dialog for first resource
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      // Switch to second resource
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType2.id, mockResourceType2.name)
+      await wrapper.vm.$nextTick()
+
+      // Try deleting with first resource's params (should fail validation)
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(deleteResourceTypesSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Integration Flow', () => {
+    it('handles complete delete flow: open dialog, confirm, close', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+      deleteResourceTypesSpy.mockResolvedValue(true)
+
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Confirm delete
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      // After successful delete, dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+      expect(deleteResourceTypesSpy).toHaveBeenCalledWith(1, [mockResourceType.id])
+    })
+
+    it('handles delete flow when service fails', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'deleteResourceTypes')
+      deleteResourceTypesSpy.mockResolvedValue(false)
+
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+
+      // Try to delete (will fail)
+      await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      // Dialog should still be visible (not closed on failure)
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+    })
+
+    it('handles cancel flow: open dialog, cancel', async () => {
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Cancel (close) dialog
+      wrapper.vm.closeDeleteResourceTypeDialog()
+      await wrapper.vm.$nextTick()
+
+      // Dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
     })
   })
 })

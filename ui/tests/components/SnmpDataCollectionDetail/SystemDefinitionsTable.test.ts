@@ -10,6 +10,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 
 vi.mock('./Drawer/SystemDefinitionCreationDrawer.vue', () => ({
   default: {
@@ -1064,6 +1065,588 @@ describe('SystemDefinitionsTable.vue', () => {
 
       const expandedContent = wrapper.find('.expanded-content')
       expect(expandedContent.exists()).toBe(true)
+    })
+  })
+
+  describe('Delete System Definition Dialog', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('initializes with delete dialog hidden', () => {
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('has openDeleteSystemDefDialog method available', async () => {
+      expect(typeof wrapper.vm.openDeleteSystemDefDialog).toBe('function')
+    })
+
+    it('opens delete dialog via openDeleteSystemDefDialog method', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('sets selectedSystemDef correctly when opening dialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('sets selectedSystemDef correctly for different system definitions', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
+    })
+
+    it('closes delete dialog and clears selection', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('renders DeleteConfirmationDialog component', async () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('selected')?.id).toBe(mockSystemDef.id)
+      expect(dialog.props('selected')?.name).toBe(mockSystemDef.name)
+      expect(dialog.props('type')).toBe('system-def')
+    })
+
+    it('handles opening dialog with null', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(null)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+  })
+
+  describe('Delete System Definition Action', () => {
+    let deleteSystemDefinitionsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls deleteSystemDefinitions service on successful delete', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+
+    it('closes dialog after successful deletion', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('fetches system definitions after successful deletion', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const fetchSpy = vi.spyOn(store, 'fetchSystemDefinitions')
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(fetchSpy).toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when type does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected id does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: 999, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected name does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: 'wrong-name' }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selectedCollectionSource is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected is null', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef(null, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected id is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ name: mockSystemDef.name } as any, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete System Definition Error Handling', () => {
+    let deleteSystemDefinitionsSpy: any
+    let showSnackBarSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+
+      const useSnackbar = await import('@/composables/useSnackbar')
+      showSnackBarSpy = vi.fn()
+      vi.spyOn(useSnackbar, 'default').mockReturnValue({
+        showSnackBar: showSnackBarSpy,
+        hideSnackbar: vi.fn(),
+        isDisplayed: ref(false),
+        isCentered: ref(false),
+        hasError: ref(false),
+        message: ref(''),
+        setTimeout: ref(5000)
+      })
+
+      // Remount wrapper to pick up mocked snackbar
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+      store = useSnmpDataCollectionDetailStore(pinia)
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      store.fetchSystemDefinitions = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = mount(SystemDefinitionsTable, {
+        global: {
+          plugins: [pinia],
+          components: {
+            FeatherButton,
+            FeatherDropdown,
+            FeatherDropdownItem,
+            FeatherSortHeader,
+            FeatherPagination,
+            FeatherInput
+          }
+        }
+      })
+
+      await flushPromises()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete System Definition. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows error snackbar when validation fails', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: 999, name: 'wrong-name' }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete System Definition. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows success snackbar when deletion succeeds', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `System Definition '${mockSystemDef.name}' deleted successfully.`
+      })
+    })
+
+    it('shows error when type mismatch occurs', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete System Definition. Please try again.',
+        error: true
+      })
+    })
+
+    it('shows error when selected collection source is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete System Definition. Please try again.',
+        error: true
+      })
+    })
+  })
+
+  describe('Delete Button in Dropdown', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders dropdown with delete option for each row', async () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+    })
+
+    it('has closeDeleteSystemDefDialog method available', async () => {
+      expect(typeof wrapper.vm.closeDeleteSystemDefDialog).toBe('function')
+    })
+
+    it('calls openDeleteSystemDefDialog for first system definition', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('calls openDeleteSystemDefDialog for second system definition', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
+    })
+
+    it('renders delete button in dropdown', async () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Delete Confirmation Dialog Events', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles close event from DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('handles confirm event from DeleteConfirmationDialog', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('confirm', { id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+  })
+
+  describe('Delete with Edge Cases', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles opening dialog with object having zero id', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 0, name: 'zero-def' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(0)
+    })
+
+    it('handles opening dialog with object having negative id', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: -1, name: 'negative-def' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(-1)
+    })
+
+    it('handles opening dialog with empty string name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: '' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('')
+    })
+
+    it('handles opening dialog with special characters in name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: 'test-def_v2<>&"' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('test-def_v2<>&"')
+    })
+
+    it('handles opening dialog with unicode name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: 'システム定義テスト' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('システム定義テスト')
+    })
+
+    it('handles multiple open and close cycles', async () => {
+      // First cycle
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+
+      // Second cycle
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+    })
+
+    it('handles rapid open/close without error', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      wrapper.vm.closeDeleteSystemDefDialog()
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('handles delete with selectedCollectionSource.id as 0', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      store.selectedCollectionSource = { id: 0, name: 'Test Source' } as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // id 0 is falsy, should not call service
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('handles switching selected system definition before delete', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      // Open dialog for first system definition
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      // Switch to second system definition
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      // Try deleting with first system definition's params (should fail validation)
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Integration Flow', () => {
+    it('handles complete delete flow: open dialog, confirm, close', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Confirm delete
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // After successful delete, dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+
+    it('handles delete flow when service fails', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(false)
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      // Try to delete (will fail)
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // Dialog should still be visible (not closed on failure)
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+    })
+
+    it('handles cancel flow: open dialog, cancel', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Cancel (close) dialog
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      // Dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
     })
   })
 })
