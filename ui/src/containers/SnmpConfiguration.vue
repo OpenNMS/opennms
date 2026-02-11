@@ -72,6 +72,7 @@ const onCreateProfile = () => {
 }
 
 onMounted(async () => {
+  store.resetState()
   store.fetchMonitoringLocations()
   store.populateSnmpConfig()
   scvStore.getAliases()
