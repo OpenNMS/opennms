@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.v2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.junit.After;
 import org.junit.Assert;
@@ -35,29 +34,30 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
-import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
-import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +82,7 @@ import static org.mockito.Mockito.when;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
 
     public SnmpConfigRestServiceIT () {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -123,10 +123,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(response);
         assertEquals(200, response.getStatus());
 
-        String responseJson = (String) response.getEntity();
-        assertNotNull(responseJson);
-
-        SnmpConfig config = mapper.readValue(responseJson, SnmpConfig.class);
+        SnmpConfig config = (SnmpConfig) response.getEntity();
         assertConfigValid(config);
     }
 
@@ -258,13 +255,12 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testAddAndRemoveSnmpDefinitions() throws Exception {
         // Add a new definition
-        SnmpConfigInfoDto dto = new SnmpConfigInfoDto();
-        dto.setFirstIpAddress("10.99.0.1");
-        dto.setLastIpAddress("10.99.0.2");
-        dto.setLocation("Default");
-        dto.setReadCommunity("testing99");
+        Definition definition = new Definition();
+        definition.addRange(new Range("10.99.0.1", "10.99.0.2"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
 
-        Response response = snmpConfigRestApi.addDefinition(dto);
+        Response response = snmpConfigRestApi.addDefinition(definition);
         assertNotNull(response);
         assertEquals(201, response.getStatus());
 
@@ -342,53 +338,40 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("Missing or invalid request parameters.", message);
 
         // missing firstIpAddress
-        SnmpConfigInfoDto dto = new SnmpConfigInfoDto();
-        // dto.setFirstIpAddress("10.99.0.1");
-        dto.setFirstIpAddress("");
-        dto.setLastIpAddress("10.99.0.2");
-        dto.setLocation("Default");
-        dto.setReadCommunity("testing99");
+        Definition definition = new Definition();
+        definition.addRange(new Range("", "10.99.0.2"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
 
-        response = snmpConfigRestApi.addDefinition(dto);
+        response = snmpConfigRestApi.addDefinition(definition);
         assertNotNull(response);
         assertEquals(400, response.getStatus());
         message = (String) response.getEntity();
-        assertEquals("Missing or invalid 'firstIpAddress'.", message);
+        assertEquals(SnmpConfigRestService.DEFINITION_INVALID_RANGE_MESSAGE, message);
 
-        // invalid firstIpAddress
-        dto = new SnmpConfigInfoDto();
-        dto.setFirstIpAddress("10.");
-        dto.setLastIpAddress("10.99.0.2");
-        dto.setLocation("Default");
-        dto.setReadCommunity("testing99");
-
-        response = snmpConfigRestApi.addDefinition(dto);
-        assertNotNull(response);
-        assertEquals(400, response.getStatus());
-        message = (String) response.getEntity();
-        assertEquals("Missing or invalid 'firstIpAddress'.", message);
+        // invalid firstIpAddress, this is actually validating in SnmpConfigManager
+        final Definition invalidFirstIpDefinition = new Definition();
+        invalidFirstIpDefinition.addRange(new Range("10.", "10.99.0.2"));
+        invalidFirstIpDefinition.setLocation("Default");
+        invalidFirstIpDefinition.setReadCommunity("testing99");
+        assertThrows(WebApplicationException.class, () -> snmpConfigRestApi.addDefinition(invalidFirstIpDefinition))
+            .getMessage().contains("Error adding SNMP definition.");
 
         // invalid lastIpAddress
-        dto = new SnmpConfigInfoDto();
-        dto.setFirstIpAddress("10.0.0.1");
-        dto.setLastIpAddress("10.");
-        dto.setLocation("Default");
-        dto.setReadCommunity("testing99");
-
-        response = snmpConfigRestApi.addDefinition(dto);
-        assertNotNull(response);
-        assertEquals(400, response.getStatus());
-        message = (String) response.getEntity();
-        assertEquals("Invalid 'lastIpAddress'.", message);
+        final Definition invalidLastIpDefinition = new Definition();
+        invalidLastIpDefinition.addRange(new Range("10.0.0.1", "10."));
+        invalidLastIpDefinition.setLocation("Default");
+        invalidLastIpDefinition.setReadCommunity("testing99");
+        assertThrows(WebApplicationException.class, () -> snmpConfigRestApi.addDefinition(invalidLastIpDefinition))
+                .getMessage().contains("Error adding SNMP definition.");
 
         // invalid location
-        dto = new SnmpConfigInfoDto();
-        dto.setFirstIpAddress("10.0.0.1");
-        dto.setLastIpAddress("10.0.0.9");
-        dto.setLocation("LocationNONE");
-        dto.setReadCommunity("testing99");
+        definition = new Definition();
+        definition.addRange(new Range("10.0.0.1", "10.0.0.9"));
+        definition.setLocation("LocationNONE");
+        definition.setReadCommunity("testing99");
 
-        response = snmpConfigRestApi.addDefinition(dto);
+        response = snmpConfigRestApi.addDefinition(definition);
         assertNotNull(response);
         assertEquals(400, response.getStatus());
         message = (String) response.getEntity();
@@ -397,14 +380,14 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testSaveProfile() throws Exception {
-        SnmpConfigProfileDto dto = new SnmpConfigProfileDto();
-        dto.setLabel("profile4");
-        dto.setFilterExpression("IPADDR IPLIKE 160.1.2.*");
-        dto.setVersion("v2c");
-        dto.setReadCommunity("public160");
-        dto.setWriteCommunity("private160");
+        SnmpProfile profile = new SnmpProfile();
+        profile.setLabel("profile4");
+        profile.setFilterExpression("IPADDR IPLIKE 160.1.2.*");
+        profile.setVersion("v2c");
+        profile.setReadCommunity("public160");
+        profile.setWriteCommunity("private160");
 
-        final Response saveResponse = snmpConfigRestApi.saveProfile(dto);
+        final Response saveResponse = snmpConfigRestApi.saveProfile(profile);
         assertNotNull(saveResponse);
         assertEquals(204, saveResponse.getStatus());
 
@@ -412,10 +395,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(response);
         assertEquals(200, response.getStatus());
 
-        String responseJson = (String) response.getEntity();
-        assertNotNull(responseJson);
-
-        SnmpConfig config = mapper.readValue(responseJson, SnmpConfig.class);
+        SnmpConfig config = (SnmpConfig) response.getEntity();
         assertNotNull(config);
 
         assertEquals(4, config.getSnmpProfiles().getSnmpProfiles().size());
@@ -440,10 +420,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(configResponse);
         assertEquals(200, configResponse.getStatus());
 
-        String json = (String) configResponse.getEntity();
-        assertNotNull(json);
-
-        SnmpConfig config = mapper.readValue(json, SnmpConfig.class);
+        SnmpConfig config = (SnmpConfig) configResponse.getEntity();
         assertNotNull(config);
 
         assertEquals(2, config.getSnmpProfiles().getSnmpProfiles().size());
@@ -463,14 +440,14 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Test
     public void testSaveProfileBadRequest() {
-        SnmpConfigProfileDto dto = new SnmpConfigProfileDto();
-        dto.setLabel("");
-        dto.setFilterExpression("IPADDR IPLIKE 160.1.2.*");
-        dto.setVersion("v2c");
-        dto.setReadCommunity("public160");
-        dto.setWriteCommunity("private160");
+        SnmpProfile profile = new SnmpProfile();
+        profile.setLabel("");
+        profile.setFilterExpression("IPADDR IPLIKE 160.1.2.*");
+        profile.setVersion("v2c");
+        profile.setReadCommunity("public160");
+        profile.setWriteCommunity("private160");
 
-        final Response response = snmpConfigRestApi.saveProfile(dto);
+        final Response response = snmpConfigRestApi.saveProfile(profile);
         assertNotNull(response);
         assertEquals(400, response.getStatus());
         String message = (String) response.getEntity();

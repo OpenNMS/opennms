@@ -21,6 +21,9 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -48,9 +51,11 @@ public class SnmpConfig extends Configuration implements Serializable {
     /**
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
+    @JsonProperty("definition")
     @XmlElement(name="definition")
     private List<Definition> definition = new ArrayList<>();
 
+    @JsonProperty("profiles")
     @XmlElement(name="profiles")
     private SnmpProfiles profiles;
 
@@ -86,6 +91,7 @@ public class SnmpConfig extends Configuration implements Serializable {
         setDefinitions(definitions);
     }
 
+    @JsonIgnore
     public List<Definition> getDefinitions() {
         if (definition == null) {
             return Collections.emptyList();
@@ -106,6 +112,7 @@ public class SnmpConfig extends Configuration implements Serializable {
         return this.definition.remove(definitions);
     }
 
+    @JsonIgnore
     public SnmpProfiles getSnmpProfiles() {
         return profiles;
     }

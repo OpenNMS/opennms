@@ -72,6 +72,11 @@ const onDetailsValidationError = () => {
 }
 
 const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string) => {
+  if (!firstIp) {
+    snackbar.showSnackBar({ msg: 'First IP address is required.', error: true })
+    return
+  }
+
   const resp = await store.saveDefinition(config, firstIp, lastIp)
 
   if (resp.success) {

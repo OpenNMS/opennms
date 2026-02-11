@@ -47,13 +47,12 @@
               </div>
             </td>
             <td v-else>--</td>
-            <td>{{ definition.profileLabel }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton
                   icon="Edit"
                   data-test="edit-button"
-                  @click="onDefinitionEdit(store.config.definitions?.[index])"
+                  @click="onDefinitionEdit(store.config.definition?.[index])"
                 >
                   <FeatherIcon :icon="IconEdit"> </FeatherIcon>
                 </FeatherButton>
@@ -61,7 +60,7 @@
                   v-if="definition.label !== 'Global'"
                   icon="Delete"
                   data-test="delete-button"
-                  @click="onDefinitionDelete(store.config.definitions?.[index])"
+                  @click="onDefinitionDelete(store.config.definition?.[index])"
                 >
                   <FeatherIcon :icon="IconDelete"> </FeatherIcon>
                 </FeatherButton>
@@ -102,48 +101,45 @@ const emptyListContent = {
 
 const columns = computed(() => [
   { id: 'location', label: 'Location' },
-  { id: 'ipAddresses', label: 'IP Addresses' },
-  { id: 'profileLabel', label: 'Profile Label' }
+  { id: 'ipAddresses', label: 'IP Addresses' }
 ])
 
 const sort = reactive({
   label: SORT.NONE,
   ipAddresses: SORT.NONE,
-  location: SORT.NONE,
-  profileLabel: SORT.NONE
+  location: SORT.NONE
 }) as any
 
 const createIpAddressLabel = (d: SnmpDefinition) => {
   const items: string[] = []
 
   // IP Range
-  if (d.ranges?.length) {
-    const ranges = d.ranges.map(r => `${r.begin} - ${r.end}`)
+  if (d.range?.length) {
+    const ranges = d.range.map(r => `${r.begin} - ${r.end}`)
     items.push(...ranges)
   }
 
   // Specific IPs
-  if (d.specifics?.length) {
-    items.push(...d.specifics)
+  if (d.specific?.length) {
+    items.push(...d.specific)
   }
 
   // IP Match
-  if (d.ipMatches?.length) {
-    items.push(...d.ipMatches)
+  if (d.ipMatch?.length) {
+    items.push(...d.ipMatch)
   }
 
   return items
 }
 
 const definitions = computed(() => {
-  if (store.config.definitions) {
-    return store.config.definitions?.map((d, index) => {
+  if (store.config.definition) {
+    return store.config.definition?.map((d, index) => {
       return {
         id: d.id ?? index,
         label: d.id === 0 ? 'Global' : '--',
         ipAddresses: createIpAddressLabel(d),
-        location: d.location,
-        profileLabel: d.profileLabel ?? '--'
+        location: d.location
       }
     })
   }

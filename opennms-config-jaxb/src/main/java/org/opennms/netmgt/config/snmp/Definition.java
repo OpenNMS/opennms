@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.io.Serializable;
@@ -50,6 +51,7 @@ public class Definition extends Configuration implements Serializable {
      * IP address range to which this definition
      *  applies.
      */
+    @JsonProperty("range")
     @XmlElement(name="range")
     private List<Range> range = new ArrayList<>();
 
@@ -57,18 +59,22 @@ public class Definition extends Configuration implements Serializable {
      * Specific IP address to which this definition
      *  applies.
      */
+    @JsonProperty("specific")
     @XmlElement(name="specific")
     private List<String> specific = new ArrayList<>();
 
     /**
      * Match Octets (as in IPLIKE)
      */
+    @JsonProperty("ipMatch")
     @XmlElement(name="ip-match")
     private List<String> ipMatch = new ArrayList<>();
 
+    @JsonProperty("location")
     @XmlAttribute(name="location")
     private String location;
 
+    @JsonProperty("profileLabel")
     @XmlAttribute(name="profile-label")
     private String profileLabel;
 
@@ -76,6 +82,7 @@ public class Definition extends Configuration implements Serializable {
         super();
     }
 
+    @JsonIgnore
     public List<Range> getRanges() {
         if (range == null) {
             return Collections.emptyList();
@@ -96,6 +103,7 @@ public class Definition extends Configuration implements Serializable {
         return this.range.remove(range);
     }
 
+    @JsonIgnore
     public List<String> getSpecifics() {
         if (specific == null) {
             return Collections.emptyList();
@@ -116,6 +124,7 @@ public class Definition extends Configuration implements Serializable {
         return this.specific.remove(specific);
     }
 
+    @JsonIgnore
     public List<String> getIpMatches() {
         if (ipMatch == null) {
             return Collections.emptyList();

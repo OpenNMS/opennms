@@ -21,8 +21,8 @@
   "port": 1610000,
   "ttl": null,
   "encrypted": false,
-  "snmpProfiles": {
-    "snmpProfiles": [
+  "profiles": {
+    "profile": [
       {
         "proxyHost": null,
         "maxVarsPerPdu": 10,
@@ -51,10 +51,10 @@
       }
     ]
   },
-  "definitions": [
+  "definition": [
     {
       "proxyHost": null,
-      "ranges": [
+      "range": [
         {
           "begin": "10.0.",
           "end": "10.0.2.8"

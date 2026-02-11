@@ -26,7 +26,7 @@ import { getDefaultSnmpSecurityLevel, isValidSnmpSecurityLevel } from '@/lib/snm
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
 import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition, saveSnmpProfile } from '@/services/snmpConfigService'
 import { MonitoringLocation } from '@/types'
-import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpConfigInfoDto, SnmpDefinition, SnmpProfile, SnmpSaveProfileDto } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { ValidationResult } from '@/types/validation'
 
 export enum SnmpLookupEditMode {
@@ -43,7 +43,8 @@ export enum SnmpConfigEditMode {
 export enum ActiveTabs {
   Lookup = 0,
   Definitions = 1,
-  Profiles = 2
+  Profiles = 2,
+  UploadDownload = 3
 }
 
 export const getDefaultSnmpBaseConfiguration = () => {
@@ -79,9 +80,9 @@ export const getDefaultSnmpDefinition = () => {
     readCommunity: 'public',
     writeCommunity: 'private',
     encrypted: false,
-    ranges: [],
-    specifics: [],
-    ipMatches: [],
+    range: [],
+    specific: [],
+    ipMatch: [],
     location: DEFAULT_MONITORING_LOCATION,
     profileLabel: ''
   } as SnmpDefinition
@@ -90,7 +91,7 @@ export const getDefaultSnmpDefinition = () => {
 export const getDefaultSnmpProfile = () => {
   return {
     label: '',
-    filterExpression: '',
+    filter: '',
     readCommunity: '',
     writeCommunity: '',
     encrypted: false
@@ -99,25 +100,25 @@ export const getDefaultSnmpProfile = () => {
 
 export const getEmptySnmpConfig = () => {
   return {
-    definitions: [],
-    snmpProfiles: {
-      snmpProfiles: []
+    definition: [],
+    profiles: {
+      profile: []
     }
   } as SnmpConfig
 }
 
 export const getDefaultSnmpConfig = () => {
   return {
-    definitions: [{ ...getDefaultSnmpDefinition(), id: 0 }],
-    snmpProfiles: {
-      snmpProfiles: []
+    definition: [{ ...getDefaultSnmpDefinition(), id: 0 }],
+    profiles: {
+      profile: []
     }
   } as SnmpConfig
 }
 
 export const getMockSnmpConfiguration = () => {
   return {
-    definitions: [
+    definition: [
       {
         ...getDefaultSnmpDefinition(),
         id: 0
@@ -127,28 +128,28 @@ export const getMockSnmpConfiguration = () => {
         readCommunity: 'public',
         writeCommunity: 'private',
         encrypted: false,
-        ranges: [
+        range: [
           {
             begin: '10.0.0.0',
             end: '10.0.0.99'
           }
         ],
-        specifics: [],
+        specific: [],
         /** Match Octets (as in IPLIKE) */
-        ipMatches: [],
+        ipMatch: [],
         location: DEFAULT_MONITORING_LOCATION,
         profileLabel: ''
       }
     ],
-    snmpProfiles: {
-      snmpProfiles: [
+    profiles: {
+      profile: [
         {
           id: 0,
           readCommunity: 'public',
           writeCommunity: 'private',
           encrypted: false,
           label: 'My Profile',
-          filterExpression: 'ip like 10.0.0.*'
+          filter: 'ip like 10.0.0.*'
         }
       ]
     }
@@ -160,9 +161,9 @@ export const getMockSnmpConfiguration = () => {
  */
 export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const config = ref<SnmpConfig>({
-    definitions: [],
-    snmpProfiles: {
-      snmpProfiles: []
+    definition: [],
+    profiles: {
+      profile: []
     }
   })
   const isLoading = ref(false)
@@ -245,35 +246,41 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     return resp
   }
 
-  const saveDefinition = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string): Promise<ValidationResult> => {
-    const dto = {
-      readCommunity: config.readCommunity,
-      version: config.version || DEFAULT_SNMP_VERSION,
-      port: config.port,
-      retries: config.retry,
-      timeout: config.timeout,
+  const saveDefinition = async (config: SnmpAgentConfig, firstIp: string, lastIp?: string): Promise<ValidationResult> => {
+    const specific = firstIp && lastIp ? [] : [firstIp]
+    const range = firstIp && lastIp ? [{ begin: firstIp, end: lastIp }] : []
+
+    const definition = {
+      proxyHost: config.proxyHost,
       maxVarsPerPdu: config.maxVarsPerPdu,
       maxRepetitions: config.maxRepetitions,
+      maxRequestSize: config.maxRequestSize,
+      version: config.version || DEFAULT_SNMP_VERSION,
+      writeCommunity: config.writeCommunity,
+      readCommunity: config.readCommunity,
+      timeout: config.timeout,
+      retry: config.retry,
+      port: config.port,
+      ttl: config.ttl,
+      encrypted: config.encrypted,
       securityName: config.securityName,
       securityLevel: config.securityLevel,
-      authPassPhrase: config.authPassphrase,
+      authPassphrase: config.authPassphrase,
       authProtocol: config.authProtocol,
-      privPassPhrase: config.privacyPassphrase,
-      privProtocol: config.privacyProtocol,
       engineId: config.engineId,
       contextEngineId: config.contextEngineId,
       contextName: config.contextName,
+      privacyPassphrase: config.privacyPassphrase,
+      privacyProtocol: config.privacyProtocol,
       enterpriseId: config.enterpriseId,
-      maxRequestSize: config.maxRequestSize,
-      writeCommunity: config.writeCommunity,
-      proxyHost: config.proxyHost,
+      range,
+      specific,
+      ipMatch: [],
       location: config.location,
-      ttl: config.ttl,
-      firstIpAddress: firstIp ?? '',
-      lastIpAddress: lastIp
-    } as SnmpConfigInfoDto
+      profileLabel: config.profileLabel
+    } as SnmpDefinition
 
-    const resp = await saveSnmpDefinition(dto)
+    const resp = await saveSnmpDefinition(definition)
     return resp
   }
 
@@ -286,30 +293,10 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     const securityLevel = isValidSnmpSecurityLevel(profile.securityLevel) ? profile.securityLevel : getDefaultSnmpSecurityLevel()
 
     const dto = {
-      label: profile.label,
-      filterExpression: profile.filterExpression,
-      readCommunity: profile.readCommunity ?? undefined,
-      writeCommunity: profile.writeCommunity ?? undefined,
-      version: profile.version || DEFAULT_SNMP_VERSION,
-      port: profile.port ?? undefined,
-      retries: profile.retry ?? undefined,
-      timeout: profile.timeout ?? undefined,
-      maxVarsPerPdu: profile.maxVarsPerPdu ?? undefined,
-      maxRepetitions: profile.maxRepetitions ?? undefined,
-      securityName: profile.securityName ?? undefined,
+      ...profile,
       securityLevel,
-      authPassPhrase: profile.authPassphrase ?? undefined,
-      authProtocol: profile.authProtocol ?? undefined,
-      privPassPhrase: profile.privacyPassphrase ?? undefined,
-      privProtocol: profile.privacyProtocol ?? undefined,
-      engineId: profile.engineId ?? undefined,
-      contextEngineId: profile.contextEngineId ?? undefined,
-      contextName: profile.contextName ?? undefined,
-      enterpriseId: profile.enterpriseId ?? undefined,
-      maxRequestSize: profile.maxRequestSize ?? undefined,
-      proxyHost: profile.proxyHost ?? undefined,
-      ttl: profile.ttl ?? undefined
-    } as SnmpSaveProfileDto
+      location: undefined // remove this as it does not exist in server-side SnmpProfile
+    } as SnmpProfile
 
     const resp = await saveSnmpProfile(dto)
     return resp

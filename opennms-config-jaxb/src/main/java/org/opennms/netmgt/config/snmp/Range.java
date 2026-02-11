@@ -28,11 +28,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * IP Address Range
  */
-
 @XmlRootElement(name="range")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"begin", "end"})
@@ -42,12 +42,14 @@ public class Range implements Serializable {
     /**
      * Starting IP address of the range.
      */
+    @JsonProperty("begin")
     @XmlAttribute(name="begin", required=true)
     private String begin;
 
     /**
      * Ending IP address of the range.
      */
+    @JsonProperty("end")
     @XmlAttribute(name="end", required=true)
     private String end;
 

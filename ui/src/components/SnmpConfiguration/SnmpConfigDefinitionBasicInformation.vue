@@ -19,11 +19,11 @@
     <div class="basic-info">
       <div class="section-content">
         <h4>IP Ranges:</h4>
-        <div class="feather-row" v-if="(currentDefinition?.ranges?.length ?? 0) > 0">
+        <div class="feather-row" v-if="(currentDefinition?.range?.length ?? 0) > 0">
           <div class="feather-col-12">
             <div class="ip-address-badge-wrapper">
               <FeatherTextBadge
-                v-for="range of currentDefinition?.ranges" :key="range.begin"
+                v-for="range of currentDefinition?.range" :key="range.begin"
                 :type="BadgeTypes.info"
                 class="ip-address-badge"
                 @click="() => onBadgeClicked(range.begin, range.end)"
@@ -34,11 +34,11 @@
           </div>
         </div>
 
-        <div class="feather-row" v-if="(currentDefinition?.specifics?.length ?? 0) > 0">
+        <div class="feather-row" v-if="(currentDefinition?.specific?.length ?? 0) > 0">
           <div class="feather-col-12">
             <div class="ip-address-badge-wrapper">
               <FeatherTextBadge
-                v-for="ipAddr of currentDefinition?.specifics" :key="ipAddr"
+                v-for="ipAddr of currentDefinition?.specific" :key="ipAddr"
                 :type="BadgeTypes.info"
                 class="ip-address-badge"
                 @click="() => onBadgeClicked(ipAddr)"
@@ -49,11 +49,11 @@
           </div>
         </div>
 
-        <div class="feather-row" v-if="(currentDefinition?.ipMatches?.length ?? 0) > 0">
+        <div class="feather-row" v-if="(currentDefinition?.ipMatch?.length ?? 0) > 0">
           <div class="feather-col-12">
             <div class="ip-address-badge-wrapper">
               <FeatherTextBadge
-                v-for="ipAddr of currentDefinition?.ipMatches" :key="ipAddr"
+                v-for="ipAddr of currentDefinition?.ipMatch" :key="ipAddr"
                 :type="BadgeTypes.info"
                 class="ip-address-badge"
                 @click="() => onBadgeClicked(ipAddr)"
@@ -62,6 +62,12 @@
               </FeatherTextBadge>
             </div>
           </div>
+        </div>
+
+        <div v-if="currentDefinition?.profileLabel">
+          <div class="large-spacer"></div>
+          <label class="label">Profile Label: </label>
+          {{ currentDefinition?.profileLabel }}
         </div>
 
         <div class="large-spacer"></div>
@@ -152,11 +158,11 @@ const loadInitialValues = () => {
     currentDefinition.value = props.definition
   }
 
-  if (currentDefinition.value.ranges && currentDefinition.value.ranges.length > 0) {
-    firstIpAddress.value = currentDefinition.value.ranges[0].begin
-    lastIpAddress.value = currentDefinition.value.ranges[0].end
-  } else if (currentDefinition.value.specifics && currentDefinition.value.specifics.length > 0) {
-    firstIpAddress.value = currentDefinition.value.specifics[0]
+  if (currentDefinition.value.range && currentDefinition.value.range.length > 0) {
+    firstIpAddress.value = currentDefinition.value.range[0].begin
+    lastIpAddress.value = currentDefinition.value.range[0].end
+  } else if (currentDefinition.value.specific && currentDefinition.value.specific.length > 0) {
+    firstIpAddress.value = currentDefinition.value.specific[0]
     lastIpAddress.value = ''
   } else {
     firstIpAddress.value = ''
@@ -196,9 +202,9 @@ const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?:
 
   const definitionToSave = {
     ...currentDefinition.value,
-    ranges,
-    specifics,
-    ipMatches: currentDefinition.value?.ipMatches ?? [],
+    range: ranges,
+    specific: specifics,
+    ipMatch: currentDefinition.value?.ipMatch ?? [],
     location: config.location,
     port: config.port,
     retry: config.retry,

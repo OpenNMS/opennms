@@ -100,64 +100,28 @@ export interface IpAddressRange {
  */
 export interface SnmpDefinition extends SnmpBaseConfiguration {
   /** IP address range to which this definition applies. */
-  ranges: IpAddressRange[]
+  range: IpAddressRange[]
 
   /** Specific IP address to which this definition applies. */
-  specifics: string[]
+  specific: string[]
 
   /** Match Octets (as in IPLIKE) */
-  ipMatches: string[]
+  ipMatch: string[]
 
-  location: string
-  profileLabel: string
+  location?: string
+  profileLabel?: string
 }
 
 export interface SnmpProfile extends SnmpBaseConfiguration {
   label: string
-  filterExpression: string
+  filter: string
 }
 
 export interface SnmpConfig extends SnmpBaseConfiguration {
-  definitions: SnmpDefinition[]
-  snmpProfiles: {
-    snmpProfiles: SnmpProfile[]
+  definition: SnmpDefinition[]
+  profiles: {
+    profile: SnmpProfile[]
   }
-}
-
-export interface SnmpInfo {
-  readCommunity?: string
-  version?: string
-  port?: number
-  retries?: number
-  timeout?: number
-  maxVarsPerPdu?: number
-  maxRepetitions?: number
-  securityName?: string
-  securityLevel?: number
-  authPassPhrase?: string
-  authProtocol?: string
-  privPassPhrase?: string
-  privProtocol?: string
-  engineId?: string
-  contextEngineId?: string
-  contextName?: string
-  enterpriseId?: string
-  maxRequestSize?: number
-  writeCommunity?: string
-  proxyHost?: string
-  location?: string
-  ttl?: number
-}
-
-/** Rest API payload for adding/saving a definition. */
-export interface SnmpConfigInfoDto extends SnmpInfo {
-  firstIpAddress: string
-  lastIpAddress?: string
-}
-
-export interface SnmpSaveProfileDto extends SnmpInfo {
-  label: string
-  filterExpression: string
 }
 
 export interface SnmpAgentConfig extends SnmpBaseConfiguration {
