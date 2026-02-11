@@ -29,11 +29,16 @@
             <label class="label">Location:</label>
           </div>
           <div class="feather-col-8">
-            <SnmpConfigMonitoringLocationsDropdown
-              :monitoringLocation="lookupMonitoringLocationValue"
-              @update:modelValue="lookupMonitoringLocation = $event"
-            />
-            </div>
+            <FeatherSelect
+              label="Location"
+              data-test="snmp-monitoring-location-select"
+              hint="Select a monitoring location"
+              :options="monitoringLocations"
+              :modelValue="lookupMonitoringLocation"
+              @update:modelValue="(val: any) => lookupMonitoringLocation = val"
+            >
+            </FeatherSelect>
+          </div>
         </div>
 
         <div class="feather-row">
@@ -56,18 +61,17 @@
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
-import { ISelectItemType } from '@featherds/select'
+import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
-import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
 const lookupIpAddress = ref('')
 const lookupConfig = ref<SnmpAgentConfig>()
-const lookupMonitoringLocation = ref<ISelectItemType>()
+const lookupMonitoringLocation = ref<ISelectItemType>({ _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION })
 const isLoading = ref(false)
 
 // lookup config response individual parameters to edit
@@ -77,15 +81,19 @@ const emit = defineEmits<{
   (e: 'lookup-complete', config: SnmpAgentConfig, ipAddress: string): void
 }>()
  
-const lookupMonitoringLocationValue = computed<string>(() => {
-  return String(lookupMonitoringLocation.value?._value ?? DEFAULT_MONITORING_LOCATION)
+const monitoringLocations = computed<ISelectItemType[]>(() => {
+  return store.monitoringLocations.map(loc => {
+    return {
+      _text: loc.name,
+      _value: loc.name
+    }
+  })
 })
 
 const resetValues = () => {
   lookupIpAddress.value = ''
   lookupConfig.value = undefined
-  const defaultLoc = store.monitoringLocations.find(loc => loc.name === DEFAULT_MONITORING_LOCATION)
-  lookupMonitoringLocation.value = defaultLoc ? { _text: defaultLoc.name, _value: defaultLoc.name } : undefined
+  lookupMonitoringLocation.value = { _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION }
   ipAddress.value = ''
 }
 
