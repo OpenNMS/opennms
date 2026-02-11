@@ -31,6 +31,9 @@
 package org.opennms.netmgt.enlinkd.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
+
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.enlinkd.EnhancedLinkd> implements EnhancedLinkdMBean {
 
@@ -46,4 +49,112 @@ public class EnhancedLinkd extends AbstractSpringContextJmxServiceDaemon<org.ope
         return "enhancedLinkdContext";
     }
 
+   /** {@inheritDoc} */
+    @Override
+    public long getActiveThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getActiveCount();
+        } else {
+            return 0L;
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getTasksTotal() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getTaskCount();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getTasksCompleted() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getCompletedTaskCount();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    public double getTaskCompletionRatio() {
+        if (getThreadPoolStatsStatus()) {
+            if (getExecutor().getTaskCount() > 0) {
+                return new Double(getExecutor().getCompletedTaskCount() / new Double(getExecutor().getTaskCount()));
+            } else {
+                return new Double(0);
+            }
+        } else {
+            return new Double(0);
+        }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public long getNumPoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getPoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getPeakPoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getLargestPoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCorePoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getCorePoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getMaxPoolThreads() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getMaximumPoolSize();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
+    public long getTaskQueuePendingCount() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().size();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
+    public long getTaskQueueRemainingCapacity() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().remainingCapacity();
+        } else {
+            return 0L;
+        }
+    }
+
+    private ThreadPoolExecutor getExecutor() {
+        return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
+    }
+
+    private boolean getThreadPoolStatsStatus() {
+        return (getDaemon().getScheduler() instanceof LegacyScheduler);
+    }
 }
