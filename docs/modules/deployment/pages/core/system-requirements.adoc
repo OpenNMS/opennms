@@ -35,10 +35,10 @@ OpenNMS {page-component-title} requires one of the following operating systems:
 | Operating System  | Compatible Versions (64-bit)
 
 | RHEL
-| {compatible-rhel9}
+| {compatible-rhel}
 
 | CentOS
-| {compatible-centos-stream}
+| {compatible-centos}
 
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian
@@ -47,9 +47,6 @@ ifeval::["{page-component-title}" == "Horizon"]
 | Ubuntu
 | {compatible-ubuntu}
 endif::[]
-
-| Rocky Linux
-| {compatible-rocky-linux}
 |===
 
 See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.

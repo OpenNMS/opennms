@@ -74,3 +74,176 @@ For `auth-protocol`, the available options are  `MD5`, `SHA`, `SHA-224`, `SHA-25
 
 NOTE: Metadata expressions can also be used in attributes of the `trapd-configuration.xml` configuration file.
 This lets the user to also reference credentials stored in the secure credentials.
+
+== Trap metrics
+
+Trapd exposes metrics via JMX for monitoring trap processing performance.
+Metrics are available at two levels: global metrics that are always enabled, and per-device metrics that can be optionally enabled.
+
+=== Global metrics
+
+Global trap metrics are always available and provide an overview of trap processing across all devices.
+
+==== Core (OpenNMS:Name=Trapd)
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| RawTrapsReceived
+| Counter
+| Total raw SNMP traps received at the listener before any processing
+
+| TrapsReceived
+| Counter
+| Total traps received at the consumer after dispatch
+
+| V1TrapsReceived
+| Counter
+| SNMPv1 traps received
+
+| V2cTrapsReceived
+| Counter
+| SNMPv2c traps received
+
+| V3TrapsReceived
+| Counter
+| SNMPv3 traps received
+
+| VUnknownTrapsReceived
+| Counter
+| Traps with unknown SNMP version received
+
+| TrapsDiscarded
+| Counter
+| Traps discarded by user configuration
+
+| TrapsErrored
+| Counter
+| Traps that encountered processing errors
+
+| CurrentQueueSize
+| Gauge
+| Current number of messages in the dispatch queue
+
+| MaxQueueSize
+| Gauge
+| Configured maximum queue size
+
+| BatchSize
+| Gauge
+| Configured batch size for trap aggregation
+|===
+
+==== Minion (org.opennms.netmgt.trapd)
+
+On Minion, global metrics are exposed as Dropwizard metrics under the `org.opennms.netmgt.trapd` JMX domain.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| rawTrapsReceived
+| Counter
+| Total raw SNMP traps received at the listener
+
+| trapsErrored
+| Counter
+| Traps that failed during dispatch
+
+| currentQueueSize
+| Gauge
+| Current number of messages in the dispatch queue
+
+| maxQueueSize
+| Gauge
+| Configured maximum queue size
+
+| batchSize
+| Gauge
+| Configured batch size for trap aggregation
+|===
+
+=== Per-device metrics
+
+Per-device metrics allow tracking trap activity for individual devices, identified by IP address and location.
+This feature is disabled by default and must be explicitly enabled.
+
+==== Enabling device metrics
+
+For Core, add the following system property to `$\{OPENNMS_HOME}/etc/opennms.properties.d/trapd.properties`:
+
+[source, properties]
+----
+org.opennms.netmgt.trapd.enableDeviceMetrics=true
+----
+
+For Minion, add the following to `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`:
+
+[source, properties]
+----
+trapd.enableDeviceMetrics=true
+----
+
+==== Listener-side metrics (Minion)
+
+Each device that sends traps gets a JMX MBean registered under `org.opennms.netmgt.trapd.device` with `type=listener`.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| RawTrapsReceived
+| Counter
+| Raw SNMP traps received from this device
+
+| TrapsErrored
+| Counter
+| Traps from this device that failed during dispatch
+|===
+
+==== Consumer-side metrics (Core)
+
+Each device that sends traps gets a JMX MBean registered under `org.opennms.netmgt.trapd.device` with `type=consumer`.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| TrapsReceived
+| Counter
+| Traps received from this device at the consumer
+
+| TrapsDiscarded
+| Counter
+| Traps from this device discarded by user configuration
+
+| TrapsErrored
+| Counter
+| Traps from this device that encountered processing errors
+|===
+
+==== Prometheus integration
+
+When using the JMX Prometheus Exporter, device metrics can be scraped with the following rule:
+
+[source, yaml]
+----
+- pattern: 'org\.opennms\.netmgt\.trapd\.device<location=(.+),ip=(.+),type=(.+)><>(\w+)'
+  name: trapd_device_$4
+  type: COUNTER
+  labels:
+    location: "$1"
+    ip: "$2"
+    type: "$3"
+----
+
+This produces Prometheus metrics such as:
+
+[source]
+----
+trapd_device_rawtrapsreceived{location="Default",ip="10.0.0.1",type="listener"} 1024
+trapd_device_trapserrored{location="Default",ip="10.0.0.1",type="consumer"} 3
+----
+
+NOTE: This rule is included by default in the container-based JMX Prometheus Exporter configuration for both Core and Minion.

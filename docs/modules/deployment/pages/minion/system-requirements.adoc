@@ -35,11 +35,10 @@ OpenNMS {page-component-title} runs on the following operating systems:
 | Operating System  | Supported Versions (64-bit)
 
 | RHEL
-| {compatible-rhel8} +
-{compatible-rhel9}
+| {compatible-rhel}
 
 | CentOS
-| {compatible-centos-stream}
+| {compatible-centos}
 
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian

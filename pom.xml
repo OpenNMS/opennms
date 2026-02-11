@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>35.0.2</version>
+  <version>35.0.3</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1269,6 +1269,7 @@
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
                    <exclude>org.springframework.security:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
                    <exclude>org.springframework.security.kerberos:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
+                   <exclude>org.lz4:lz4-java</exclude>
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1670,11 +1671,11 @@
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <product.name>horizon</product.name>
-    <docs.product.version>33</docs.product.version>
+    <docs.product.version>35</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>35.0.2</opennms.osgi.version>
+    <opennms.osgi.version>35.0.3</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1866,6 +1867,7 @@
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
+    <jose4jVersion>0.9.6</jose4jVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
@@ -1946,7 +1948,7 @@
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
-    <lz4JavaVersion>1.8.0</lz4JavaVersion>
+    <lz4JavaVersion>1.10.2</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>

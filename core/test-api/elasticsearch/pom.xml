@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>35.0.2</version>
+    <version>35.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -20,6 +20,28 @@
        <groupId>org.elasticsearch</groupId>
        <artifactId>elasticsearch</artifactId>
        <version>${elasticsearchTargetVersion}</version>
+       <exclusions>
+         <exclusion>
+           <groupId>org.elasticsearch</groupId>
+           <artifactId>elasticsearch-lz4</artifactId>
+         </exclusion>
+       </exclusions>
+     </dependency>
+     <dependency>
+       <groupId>org.elasticsearch</groupId>
+       <artifactId>elasticsearch-lz4</artifactId>
+       <version>${elasticsearchTargetVersion}</version>
+       <exclusions>
+         <exclusion>
+           <groupId>org.lz4</groupId>
+           <artifactId>lz4-java</artifactId>
+         </exclusion>
+       </exclusions>
+     </dependency>
+     <dependency>
+       <groupId>at.yawk.lz4</groupId>
+       <artifactId>lz4-java</artifactId>
+       <version>${lz4JavaVersion}</version>
      </dependency>
      <dependency>
        <groupId>org.elasticsearch.client</groupId>

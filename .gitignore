@@ -24,6 +24,7 @@ build.properties
 nb-configuration.xml
 .idea
 .jqwik-database
+built/
 dependency-reduced-pom.xml
 npm-debug.log
 yarn-error.log
@@ -40,6 +41,7 @@ ui/node_modules/
 ui/package-lock.json
 ui/devConfig.ts
 .circleci/main.yml
+built_dependencies
 
 # jansi downloads a native lib on osx sometimes
 /maven/**/*.jnilib

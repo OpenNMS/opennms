@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.MapScope;
 import org.opennms.core.mate.api.Scope;
@@ -558,7 +559,7 @@ public final class BroadcastEventProcessor implements EventListener {
         try {
             mapsToNotice = getNotificationManager().hasUei(event.getUei());
         } catch (Throwable e) {
-            LOG.error("Couldn't map uei {} to a notification entry, not scheduling notice.", event.getUei(), e);
+            LOG.error("Couldn't map uei {} to a notification entry, not scheduling notice, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
             return;
         }
 
@@ -571,7 +572,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 try {
                     notifications = getNotificationManager().getNotifForEvent(event);
                 } catch (Throwable e) {
-                    LOG.error("Couldn't get notification mapping for event {}, not scheduling notice.", event.getUei(), e);
+                    LOG.error("Couldn't get notification mapping for event {}, not scheduling notice, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
                     return;
                 }
 
