@@ -77,15 +77,6 @@
 </script>
 
 <%
-   String trapPort = "Unknown";
-   try {
-       final TrapdConfigDao trapdConfigDao = BeanUtils.getBean("daoContext", "trapdConfigDao", TrapdConfigDao.class);
-       TrapdConfigFactory.init(trapdConfigDao);
-       trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
-   } catch (Throwable e) {
-       // if factory can't be initialized, status is already 'Unknown'
-   }
-
    String syslogPort = "Unknown";
    try {
        SyslogdConfigFactory syslogdConfig = BeanUtils.getBean("commonContext", "syslogdConfigFactory", SyslogdConfigFactory.class);
@@ -137,10 +128,6 @@
         <tr>
           <th>Jetty HTTPS port:</th>
           <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
-        </tr>
-        <tr>
-          <th>SNMP trap port:</th>
-          <td><%=trapPort%></td>
         </tr>
         <tr>
           <th>Syslog port:</th>
