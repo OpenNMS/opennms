@@ -358,6 +358,10 @@ const renameFile = async (newFileName: string) => {
     closeRenameDialog()
   } else {
     console.error('Invalid index for renaming file')
+    snackbar.showSnackBar({
+      msg: 'Error renaming file',
+      error: true
+    })
   }
 }
 
@@ -367,6 +371,10 @@ const overwriteFile = () => {
     closeRenameDialog()
   } else {
     console.error('Invalid index for overwriting file')
+    snackbar.showSnackBar({
+      msg: 'Error overwriting file',
+      error: true
+    })
   }
 }
 

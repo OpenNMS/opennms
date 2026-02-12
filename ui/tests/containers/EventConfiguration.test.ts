@@ -55,7 +55,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })
@@ -70,7 +71,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })
@@ -88,7 +90,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })
@@ -209,7 +212,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })
@@ -287,7 +291,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })
@@ -305,7 +310,8 @@ describe('EventConfig.vue', () => {
       global: {
         stubs: {
           EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
         }
       }
     })

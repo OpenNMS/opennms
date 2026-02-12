@@ -206,7 +206,9 @@ const columns = computed(() => [
 
 const sort = reactive({
   uei: SORT.NONE,
-  eventLabel: SORT.NONE
+  eventLabel: SORT.NONE,
+  severity: SORT.NONE,
+  enabled: SORT.NONE
 }) as any
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {

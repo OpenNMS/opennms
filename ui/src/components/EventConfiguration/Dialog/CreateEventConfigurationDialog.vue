@@ -131,6 +131,10 @@ const handleSave = async () => {
     }
   } catch (error) {
     console.error('Error creating event configuration source:', error)
+    snackbar.showSnackBar({
+      msg: 'Failed to create event configuration source. Please try again.',
+      error: true
+    })
   }
 }
 
