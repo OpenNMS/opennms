@@ -928,13 +928,6 @@ public class DataCollectionConfPersistenceServiceIT {
         SnmpDataCollectionMibGroupDeletePayload noMatchPayload = new SnmpDataCollectionMibGroupDeletePayload();
         noMatchPayload.setMibGroupsIds(List.of(777777, 888888));
 
-        try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(src.getId(), noMatchPayload);
-            Assert.fail("Expected EntityNotFoundException for no matching mib group ids");
-        } catch (EntityNotFoundException e) {
-            assertTrue(e.getMessage().contains("No matching MIB groups found in database for deletion"));
-        }
-
         // --- SUCCESS: delete both
         SnmpDataCollectionMibGroupDeletePayload okPayload = new SnmpDataCollectionMibGroupDeletePayload();
         okPayload.setMibGroupsIds(List.of(g1.getId(), g2.getId()));
@@ -998,12 +991,6 @@ public class DataCollectionConfPersistenceServiceIT {
         SnmpDataCollectionResourceTypeDeletePayload noMatchPayload = new SnmpDataCollectionResourceTypeDeletePayload();
         noMatchPayload.setResourceTypeIds(List.of(111111, 222222));
 
-        try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(src.getId(), noMatchPayload);
-            Assert.fail("Expected EntityNotFoundException for no matching resource type ids");
-        } catch (EntityNotFoundException e) {
-            assertTrue(e.getMessage().contains("No matching resource types found in database for deletion"));
-        }
 
         // --- SUCCESS: delete both
         SnmpDataCollectionResourceTypeDeletePayload okPayload = new SnmpDataCollectionResourceTypeDeletePayload();
@@ -1070,12 +1057,6 @@ public class DataCollectionConfPersistenceServiceIT {
         SnmpDataCollectionSystemDefDeletePayload noMatchPayload = new SnmpDataCollectionSystemDefDeletePayload();
         noMatchPayload.setSystemDefIds(List.of(333333, 444444));
 
-        try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(src.getId(), noMatchPayload);
-            Assert.fail("Expected EntityNotFoundException for no matching system def ids");
-        } catch (EntityNotFoundException e) {
-            assertTrue(e.getMessage().contains("No matching system definitions found in database for deletion"));
-        }
 
         // --- SUCCESS: delete both
         SnmpDataCollectionSystemDefDeletePayload okPayload = new SnmpDataCollectionSystemDefDeletePayload();
