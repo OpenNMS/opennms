@@ -567,18 +567,6 @@ public class EventConfRestService implements EventConfRestApi {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Source name must not be null or blank.");
         }
-
-//        if (request.getVendor() == null || request.getVendor().isBlank()) {
-//            throw new IllegalArgumentException("Vendor must not be null or blank.");
-//        }
-
-//        final String vendor = request.getVendor();
-//
-//        if (vendor.length() > VENDOR_MAX_LENGTH) {
-//            throw new IllegalArgumentException(
-//                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
-//            );
-//        }
     }
 
     private Response buildXmlError(Response.Status status, String message) {
