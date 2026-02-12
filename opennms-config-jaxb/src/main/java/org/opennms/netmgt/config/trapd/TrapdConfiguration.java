@@ -129,7 +129,7 @@ public class TrapdConfiguration implements  Serializable {
      * SNMPv2 traps.
 	 */
 	@XmlAttribute(name="use-address-from-varbind", required=false)
-    private Boolean _useAddessFromVarbind;
+    private Boolean useAddessFromVarbind;
 
     public TrapdConfiguration() {
         super();
@@ -202,7 +202,7 @@ public class TrapdConfiguration implements  Serializable {
 
     public int hashCode() {
         return Objects.hash(snmpTrapAddress, snmpTrapPort, hasSnmpTrapPort, newSuspectOnTrap, snmpv3User,
-                includeRawMessage, threads, queueSize, batchSize, batchInterval, _useAddessFromVarbind);
+                includeRawMessage, threads, queueSize, batchSize, batchInterval, useAddessFromVarbind);
     }
 
     @Override()
@@ -222,7 +222,7 @@ public class TrapdConfiguration implements  Serializable {
                     && Objects.equals(queueSize, other.queueSize)
                     && Objects.equals(batchSize, other.batchSize)
                     && Objects.equals(batchInterval, other.batchInterval)
-                    && Objects.equals(_useAddessFromVarbind, other._useAddessFromVarbind);
+                    && Objects.equals(useAddessFromVarbind, other.useAddessFromVarbind);
             return equals;
         }
         return false;
@@ -360,11 +360,11 @@ public class TrapdConfiguration implements  Serializable {
     }
 
     public boolean shouldUseAddressFromVarbind() {
-        return _useAddessFromVarbind != null ? _useAddessFromVarbind : DEFAULT_USE_ADDESS_FROM_VARBIND;
+        return useAddessFromVarbind != null ? useAddessFromVarbind : DEFAULT_USE_ADDESS_FROM_VARBIND;
     }
 
     public void setUseAddressFromVarbind(Boolean useAddessFromVarbind) {
-        _useAddessFromVarbind = useAddessFromVarbind;
+        this.useAddessFromVarbind = useAddessFromVarbind;
     }
 
     /**
