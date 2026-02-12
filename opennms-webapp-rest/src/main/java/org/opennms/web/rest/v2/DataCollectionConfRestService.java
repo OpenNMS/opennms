@@ -486,6 +486,11 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
     }
 
+    @Override
+    public Response downloadSnmpDataCollectionById(Integer snmpDataCollectionId, SecurityContext securityContext) throws Exception {
+        return null;
+    }
+
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
     }
