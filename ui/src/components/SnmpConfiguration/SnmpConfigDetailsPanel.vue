@@ -36,10 +36,15 @@
 
     <div class="feather-row">
       <div class="feather-col-6" v-if="!props.suppressMonitoringLocation">
-        <SnmpConfigMonitoringLocationsDropdown
-          :monitoringLocation="selectedMonitoringLocationValue"
-          @update:modelValue="selectedMonitoringLocation = $event"
-        />
+        <FeatherSelect
+          label="Location"
+          data-test="snmp-monitoring-location-select"
+          hint="Select a monitoring location"
+          :options="monitoringLocations"
+          :modelValue="selectedMonitoringLocation"
+          @update:modelValue="(val: any) => selectedMonitoringLocation = val"
+        >
+        </FeatherSelect>
       </div>
       <div :class="!props.suppressMonitoringLocation ? 'feather-col-6' : 'feather-col-12'">
         <div class="dropdown">
@@ -51,7 +56,6 @@
             :modelValue="snmpVersion"
             @update:modelValue="onSnmpVersionUpdated"
           >
-            <FeatherIcon :icon="MoreVert" />
           </FeatherSelect>
         </div>
       </div>
@@ -189,14 +193,12 @@
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherExpansionPanel } from '@featherds/expansion'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
+import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/lib/constants'
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
-import { validateDefinition } from '@/lib/snmpValidator'
-import SnmpConfigMonitoringLocationsDropdown from './SnmpConfigMonitoringLocationsDropdown.vue'
+import { validateDefinition, SecurityLevelSelectionOptions, SnmpAuthProtocols, SnmpPrivacyProtocols } from '@/lib/snmpValidator'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
@@ -231,7 +233,7 @@ const errors = ref<SnmpConfigFormErrors>({})
 // local data for form inputs
 const firstIpAddress = ref('')
 const lastIpAddress = ref('')
-const selectedMonitoringLocation = ref<ISelectItemType>()
+const selectedMonitoringLocation = ref<ISelectItemType>({ _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION })
 const formConfig = reactive<SnmpBaseConfiguration>(getDefaultSnmpBaseConfiguration())
 const scvSearchDrawerOpen = ref(false)
 const scvSelectedProperty = ref('')
@@ -240,6 +242,15 @@ const snmpV2Expanded = ref(false)
 const snmpV3Expanded = ref(false)
 const displayAdvancedConfig = ref(false)
 const displaySnmpV3ContextFields = ref(false)
+
+const monitoringLocations = computed<ISelectItemType[]>(() => {
+  return store.monitoringLocations.map(loc => {
+    return {
+      _text: loc.name,
+      _value: loc.name
+    }
+  })
+})
 
 const displaySnmp2Params = computed(() => {
   const version = String(snmpVersion.value?._value || '')
@@ -251,7 +262,7 @@ const displaySnmp3Params = computed(() => {
   return version === 'v3'
 })
 
-// Field metadata for v-for rendering
+// Field metadata for v-for rendering using SnmpConfigPairedFieldInputs
 const generalParamFields: SnmpFieldInfo[] = [
   { key: 'timeout', label: 'Timeout', hint: 'Timeout in milliseconds', dataTest: 'snmp-definition-timeout', isNumeric: true },
   { key: 'retry', label: 'Retries', hint: 'Number of retries', dataTest: 'snmp-definition-retry', isNumeric: true }
@@ -273,11 +284,20 @@ const snmpV2Fields: SnmpFieldInfo[] = [
 
 const snmpV3Fields: SnmpFieldInfo[] = [
   { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name', scvEnabled: true },
-  { key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true },
+  {
+    key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true,
+    isSelect: true, selectOptions: SecurityLevelSelectionOptions
+  },
   { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase', scvEnabled: true },
-  { key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol' },
+  {
+    key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol',
+    isSelect: true, selectOptions: SnmpAuthProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
+  },
   { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true },
-  { key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol' }
+  {
+    key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol',
+    isSelect: true, selectOptions: SnmpPrivacyProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
+  }
 ]
 
 const snmpV3ContextFields: SnmpFieldInfo[] = [
@@ -286,10 +306,6 @@ const snmpV3ContextFields: SnmpFieldInfo[] = [
   { key: 'contextName', label: 'Context Name', hint: 'SNMP context name', dataTest: 'snmp-definition-context-name' },
   { key: 'enterpriseId', label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
 ]
-
-const selectedMonitoringLocationValue = computed<string>(() => {
-  return String(selectedMonitoringLocation.value?._value ?? '')
-})
 
 const loadInitialValues = () => {
   const currentConfig: SnmpAgentConfig = props.config ?? getDefaultSnmpBaseConfiguration()
@@ -304,8 +320,7 @@ const loadInitialValues = () => {
     
   firstIpAddress.value = props.firstIp || ''
   lastIpAddress.value =  props.lastIp || ''
-  const matchedLoc = store.monitoringLocations.find(x => x.name === currentConfig.location)
-  selectedMonitoringLocation.value = matchedLoc ? { _text: matchedLoc.name, _value: matchedLoc.name } : undefined
+  selectedMonitoringLocation.value = { _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION }
   
   // Load all config fields into formConfig
   Object.assign(formConfig, {

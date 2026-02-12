@@ -199,6 +199,20 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     currentDefinition.value = definition
   }
 
+  const resetCurrentDefinition = () => {
+    currentDefinition.value = getDefaultSnmpDefinition()
+  }
+
+  const resetState = () => {
+    isLoading.value = false
+    setActiveTab(0)
+    resetCurrentDefinition()
+    setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
+    setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
+    setProfileLabel('')
+    setSnmpProfileEditMode(SnmpConfigEditMode.Table)
+  }
+
   const setProfileLabel = (label: string) => {
     profileLabel.value = label
   }
@@ -260,13 +274,11 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     } as SnmpConfigInfoDto
 
     const resp = await saveSnmpDefinition(dto)
-
     return resp
   }
 
   const removeDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
     const resp = await deleteSnmpDefinition(ipAddress, location)
-
     return resp
   }
 
@@ -300,13 +312,11 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     } as SnmpSaveProfileDto
 
     const resp = await saveSnmpProfile(dto)
-
     return resp
   }
 
   const deleteProfile = async (label: string): Promise<ValidationResult> => {
     const resp = await deleteSnmpProfile(label)
-
     return resp
   }
 
@@ -326,6 +336,8 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     saveDefinition,
     saveProfile,
     setActiveTab,
+    resetCurrentDefinition,
+    resetState,
     setCurrentDefinition,
     setDefinitionCreateEditMode,
     setProfileLabel,
