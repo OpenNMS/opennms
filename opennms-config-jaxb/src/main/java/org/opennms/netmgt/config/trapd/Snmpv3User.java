@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * SNMPv3 User Configuration.
@@ -46,43 +47,43 @@ public class Snmpv3User implements java.io.Serializable {
      * SNMPv3 Application Engine ID
      */
 	@XmlAttribute(name="engine-id",required=false)
-    private java.lang.String engineId;
+    private java.lang.String _engineId;
 
     /**
      * SNMPv3 Security Name (User Name)
      */
 	@XmlAttribute(name="security-name",required=false)
-    private java.lang.String securityName;
+    private java.lang.String _securityName;
 
     /**
      * SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)
      */
 	@XmlAttribute(name="security-level",required=false)
-    private Integer securityLevel;
+    private Integer _securityLevel;
 
     /**
      * SNMPv3 Authentication Protocol
      */
 	@XmlAttribute(name="auth-protocol",required=false)
-    private java.lang.String authProtocol;
+    private java.lang.String _authProtocol;
 
     /**
      * SNMPv3 Authentication Password Phrase
      */
 	@XmlAttribute(name="auth-passphrase",required=false)
-    private java.lang.String authPassphrase;
+    private java.lang.String _authPassphrase;
 
     /**
      * SNMPv3 Privacy Protocol
      */
 	@XmlAttribute(name="privacy-protocol",required=false)
-    private java.lang.String privacyProtocol;
+    private java.lang.String _privacyProtocol;
 
     /**
      * SNMPv3 Privacy Password Phrase
      */
 	@XmlAttribute(name="privacy-passphrase",required=false)
-    private java.lang.String privacyPassphrase;
+    private java.lang.String _privacyPassphrase;
 
 
       //----------------/
@@ -113,49 +114,49 @@ public class Snmpv3User implements java.io.Serializable {
         if (obj instanceof Snmpv3User) {
         
             Snmpv3User temp = (Snmpv3User)obj;
-            if (this.engineId != null) {
-                if (temp.engineId == null) return false;
-                else if (!(this.engineId.equals(temp.engineId)))
+            if (this._engineId != null) {
+                if (temp._engineId == null) return false;
+                else if (!(this._engineId.equals(temp._engineId))) 
                     return false;
             }
-            else if (temp.engineId != null)
+            else if (temp._engineId != null)
                 return false;
-            if (this.securityName != null) {
-                if (temp.securityName == null) return false;
-                else if (!(this.securityName.equals(temp.securityName)))
+            if (this._securityName != null) {
+                if (temp._securityName == null) return false;
+                else if (!(this._securityName.equals(temp._securityName))) 
                     return false;
             }
-            else if (temp.securityName != null)
+            else if (temp._securityName != null)
                 return false;
-            if (this.securityLevel != temp.securityLevel)
+            if (this._securityLevel != temp._securityLevel)
                 return false;
-            if (this.authProtocol != null) {
-                if (temp.authProtocol == null) return false;
-                else if (!(this.authProtocol.equals(temp.authProtocol)))
+            if (this._authProtocol != null) {
+                if (temp._authProtocol == null) return false;
+                else if (!(this._authProtocol.equals(temp._authProtocol))) 
                     return false;
             }
-            else if (temp.authProtocol != null)
+            else if (temp._authProtocol != null)
                 return false;
-            if (this.authPassphrase != null) {
-                if (temp.authPassphrase == null) return false;
-                else if (!(this.authPassphrase.equals(temp.authPassphrase)))
+            if (this._authPassphrase != null) {
+                if (temp._authPassphrase == null) return false;
+                else if (!(this._authPassphrase.equals(temp._authPassphrase))) 
                     return false;
             }
-            else if (temp.authPassphrase != null)
+            else if (temp._authPassphrase != null)
                 return false;
-            if (this.privacyProtocol != null) {
-                if (temp.privacyProtocol == null) return false;
-                else if (!(this.privacyProtocol.equals(temp.privacyProtocol))) 
+            if (this._privacyProtocol != null) {
+                if (temp._privacyProtocol == null) return false;
+                else if (!(this._privacyProtocol.equals(temp._privacyProtocol))) 
                     return false;
             }
-            else if (temp.privacyProtocol != null)
+            else if (temp._privacyProtocol != null)
                 return false;
-            if (this.privacyPassphrase != null) {
-                if (temp.privacyPassphrase == null) return false;
-                else if (!(this.privacyPassphrase.equals(temp.privacyPassphrase)))
+            if (this._privacyPassphrase != null) {
+                if (temp._privacyPassphrase == null) return false;
+                else if (!(this._privacyPassphrase.equals(temp._privacyPassphrase))) 
                     return false;
             }
-            else if (temp.privacyPassphrase != null)
+            else if (temp._privacyPassphrase != null)
                 return false;
             return true;
         }
@@ -171,7 +172,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getAuthPassphrase(
     ) {
-        return this.authPassphrase;
+        return this._authPassphrase;
     }
 
     /**
@@ -183,7 +184,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getAuthProtocol(
     ) {
-        return this.authProtocol;
+        return this._authProtocol;
     }
 
     /**
@@ -194,7 +195,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getEngineId(
     ) {
-        return this.engineId;
+        return this._engineId;
     }
 
     /**
@@ -206,7 +207,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getPrivacyPassphrase(
     ) {
-        return this.privacyPassphrase;
+        return this._privacyPassphrase;
     }
 
     /**
@@ -218,7 +219,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getPrivacyProtocol(
     ) {
-        return this.privacyProtocol;
+        return this._privacyProtocol;
     }
 
     /**
@@ -230,7 +231,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public Integer getSecurityLevel(
     ) {
-        return this.securityLevel;
+        return this._securityLevel;
 
         //return this._securityLevel == null ? 0 : this._securityLevel;
     }
@@ -244,7 +245,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public java.lang.String getSecurityName(
     ) {
-        return this.securityName;
+        return this._securityName;
     }
 
     /**
@@ -260,24 +261,24 @@ public class Snmpv3User implements java.io.Serializable {
         int result = 17;
         
         long tmp;
-        if (engineId != null) {
-           result = 37 * result + engineId.hashCode();
+        if (_engineId != null) {
+           result = 37 * result + _engineId.hashCode();
         }
-        if (securityName != null) {
-           result = 37 * result + securityName.hashCode();
+        if (_securityName != null) {
+           result = 37 * result + _securityName.hashCode();
         }
-        result = 37 * result + (securityLevel == null ? 0 : securityLevel);
-        if (authProtocol != null) {
-           result = 37 * result + authProtocol.hashCode();
+        result = 37 * result + (_securityLevel == null ? 0 : _securityLevel);
+        if (_authProtocol != null) {
+           result = 37 * result + _authProtocol.hashCode();
         }
-        if (authPassphrase != null) {
-           result = 37 * result + authPassphrase.hashCode();
+        if (_authPassphrase != null) {
+           result = 37 * result + _authPassphrase.hashCode();
         }
-        if (privacyProtocol != null) {
-           result = 37 * result + privacyProtocol.hashCode();
+        if (_privacyProtocol != null) {
+           result = 37 * result + _privacyProtocol.hashCode();
         }
-        if (privacyPassphrase != null) {
-           result = 37 * result + privacyPassphrase.hashCode();
+        if (_privacyPassphrase != null) {
+           result = 37 * result + _privacyPassphrase.hashCode();
         }
         
         return result;
@@ -292,7 +293,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setAuthPassphrase(
             final java.lang.String authPassphrase) {
-        this.authPassphrase = authPassphrase;
+        this._authPassphrase = authPassphrase;
     }
 
     /**
@@ -304,7 +305,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setAuthProtocol(
             final java.lang.String authProtocol) {
-        this.authProtocol = authProtocol;
+        this._authProtocol = authProtocol;
     }
 
     /**
@@ -315,7 +316,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setEngineId(
             final java.lang.String engineId) {
-        this.engineId = engineId;
+        this._engineId = engineId;
     }
 
     /**
@@ -328,7 +329,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setPrivacyPassphrase(
             final java.lang.String privacyPassphrase) {
-        this.privacyPassphrase = privacyPassphrase;
+        this._privacyPassphrase = privacyPassphrase;
     }
 
     /**
@@ -340,7 +341,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setPrivacyProtocol(
             final java.lang.String privacyProtocol) {
-        this.privacyProtocol = privacyProtocol;
+        this._privacyProtocol = privacyProtocol;
     }
 
     /**
@@ -351,7 +352,7 @@ public class Snmpv3User implements java.io.Serializable {
      * @param securityLevel the value of field 'securityLevel'.
      */
     public void setSecurityLevel(final Integer securityLevel) {
-        this.securityLevel = securityLevel;
+        this._securityLevel = securityLevel;
     }
 
     /**
@@ -363,7 +364,7 @@ public class Snmpv3User implements java.io.Serializable {
      */
     public void setSecurityName(
             final java.lang.String securityName) {
-        this.securityName = securityName;
+        this._securityName = securityName;
     }
 
 }

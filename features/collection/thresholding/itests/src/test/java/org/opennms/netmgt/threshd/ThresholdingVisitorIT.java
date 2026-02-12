@@ -148,7 +148,6 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
-        "classpath:/META-INF/opennms/applicationContext-nullEventForwarder.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",

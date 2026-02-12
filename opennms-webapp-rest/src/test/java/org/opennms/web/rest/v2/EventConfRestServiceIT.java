@@ -82,8 +82,6 @@ import static org.mockito.Mockito.when;
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-nullEventForwarder.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/applicationContext-rest-test.xml"
 
