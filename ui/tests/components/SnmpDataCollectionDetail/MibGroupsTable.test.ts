@@ -1154,5 +1154,465 @@ describe('MibGroupsTable.vue', () => {
       expect(wrapper.vm.expandedRows).toContain(mockMibGroup.id)
     })
   })
+
+  describe('Delete MIB Group Dialog', () => {
+    beforeEach(async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('initializes with delete dialog hidden', () => {
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('has openDeleteMibGroupDialog method available', async () => {
+      // Verify the component has the openDeleteMibGroupDialog method
+      expect(typeof wrapper.vm.openDeleteMibGroupDialog).toBe('function')
+    })
+
+    it('opens delete dialog via openDeleteMibGroupDialog method', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
+    })
+
+    it('sets selectedMibGroup correctly when opening dialog', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
+    })
+
+    it('sets selectedMibGroup correctly for different mib groups', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup2.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup2.name)
+    })
+
+    it('closes delete dialog and clears selection', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteMibGroupDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('renders DeleteConfirmationDialog component', async () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('selected')?.id).toBe(mockMibGroup.id)
+      expect(dialog.props('selected')?.name).toBe(mockMibGroup.name)
+      expect(dialog.props('type')).toBe('mib-group')
+    })
+
+    it('handles opening dialog with null', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(null)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+  })
+
+  describe('Delete MIB Group Action', () => {
+    let deleteMibGroupsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'deleteMibGroups')
+
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls deleteMibGroups service on successful delete', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).toHaveBeenCalledWith(1, [mockMibGroup.id])
+    })
+
+    it('closes dialog after successful deletion', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('fetches mib groups after successful deletion', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const fetchSpy = vi.spyOn(store, 'fetchMibGroups')
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(fetchSpy).toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when type does not match', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when selected id does not match', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: 999, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when selected name does not match', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: 'wrong-name' }, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when selectedCollectionSource is missing', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when selected is null', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup(null, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteMibGroups when selected id is missing', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ name: mockMibGroup.name } as any, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete MIB Group Error Handling', () => {
+    let deleteMibGroupsSpy: any
+    let showSnackBarSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'deleteMibGroups')
+
+      const useSnackbar = await import('@/composables/useSnackbar')
+      showSnackBarSpy = vi.fn()
+      vi.spyOn(useSnackbar, 'default').mockReturnValue({
+        showSnackBar: showSnackBarSpy,
+        hideSnackbar: vi.fn(),
+        isDisplayed: ref(false),
+        isCentered: ref(false),
+        hasError: ref(false),
+        message: ref(''),
+        setTimeout: ref(5000)
+      })
+
+      // Remount wrapper to pick up mocked snackbar
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+      store = useSnmpDataCollectionDetailStore(pinia)
+      store.mibGroups = [mockMibGroup]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      store.fetchMibGroups = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = mount(MibGroupsTable, {
+        global: {
+          plugins: [pinia],
+          components: {
+            FeatherButton,
+            FeatherDropdown,
+            FeatherDropdownItem,
+            FeatherSortHeader,
+            FeatherPagination,
+            FeatherInput
+          }
+        }
+      })
+
+      await flushPromises()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `Failed to delete MIB Group '${mockMibGroup.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows error snackbar when validation fails', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: 999, name: 'wrong-name' }, 'mib-group')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete MIB Group \'wrong-name\'.',
+        error: true
+      })
+    })
+
+    it('shows success snackbar when deletion succeeds', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `MIB Group '${mockMibGroup.name}' deleted successfully.`
+      })
+    })
+
+    it('shows error with empty name when selected is null', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup(null, 'mib-group')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete MIB Group \'\'.',
+        error: true
+      })
+    })
+  })
+
+  describe('Delete Button in Dropdown', () => {
+    beforeEach(async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders dropdown with delete option for each row', async () => {
+      // FeatherDropdown components should be rendered for each row
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+    })
+
+    it('has closeDeleteMibGroupDialog method available', async () => {
+      // Verify the component has the closeDeleteMibGroupDialog method
+      expect(typeof wrapper.vm.closeDeleteMibGroupDialog).toBe('function')
+    })
+
+    it('calls openDeleteMibGroupDialog for first mib group', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
+    })
+
+    it('calls openDeleteMibGroupDialog for second mib group', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup2.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup2.name)
+    })
+  })
+
+  describe('Delete Confirmation Dialog Events', () => {
+    beforeEach(async () => {
+      store.mibGroups = [mockMibGroup]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles close event from DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('handles confirm event from DeleteConfirmationDialog', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'deleteMibGroups').mockResolvedValue(true)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('confirm', { id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(deleteMibGroupsSpy).toHaveBeenCalledWith(1, [mockMibGroup.id])
+    })
+  })
+
+  describe('Delete with Edge Cases', () => {
+    beforeEach(async () => {
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+    })
+
+    it('handles delete for disabled mib group', async () => {
+      store.mibGroups = [disabledMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(disabledMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(disabledMibGroup.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(disabledMibGroup.name)
+    })
+
+    it('handles delete for mib group with special characters in name', async () => {
+      const specialMibGroup = {
+        ...mockMibGroup,
+        id: 10,
+        name: 'MIB<>Group&"Special\'Chars'
+      }
+      store.mibGroups = [specialMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(specialMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.name).toBe('MIB<>Group&"Special\'Chars')
+    })
+
+    it('handles delete for mib group with very long name', async () => {
+      const longName = 'A'.repeat(200)
+      const longNameMibGroup = {
+        ...mockMibGroup,
+        id: 11,
+        name: longName
+      }
+      store.mibGroups = [longNameMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(longNameMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(longName)
+    })
+
+    it('handles rapid open/close of delete dialog', async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      wrapper.vm.closeDeleteMibGroupDialog()
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      wrapper.vm.closeDeleteMibGroupDialog()
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
+    })
+
+    it('handles switching selected mib group without closing dialog', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup2.id)
+      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup2.name)
+    })
+  })
 })
+
 

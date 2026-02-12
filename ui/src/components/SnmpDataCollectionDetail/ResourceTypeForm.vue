@@ -233,6 +233,8 @@
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STATUS_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
+import { mapSnmpDataCollectionResourceTypePayloadToServer } from '@/mappers/snmpDataCollection.mapper'
+import { createResourceType, updateResourceType } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
@@ -247,8 +249,6 @@ import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ResourceTypeParameterDrawer from './Drawer/ResourceTypeParameterDrawer.vue'
-import { mapSnmpDataCollectionResourceTypePayloadToServer } from '@/mappers/snmpDataCollection.mapper'
-import { createResourceType, updateResourceType } from '@/services/snmpDataCollectionService'
 
 const store = useSnmpDataCollectionDetailStore()
 const name = ref('')

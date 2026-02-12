@@ -92,7 +92,12 @@
                     </FeatherButton>
                   </template>
                   <FeatherDropdownItem data-test="edit-source-button"> Edit Source </FeatherDropdownItem>
-                  <FeatherDropdownItem data-test="delete-source-button"> Delete Source </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    data-test="delete-source-button"
+                    @click="openDeleteCollectionSourceDialog(source)"
+                  >
+                    Delete Source
+                  </FeatherDropdownItem>
                 </FeatherDropdown>
               </div>
             </td>
@@ -120,10 +125,19 @@
         />
       </div>
     </div>
+    <DeleteConfirmationDialog
+      :visible="isDeleteDialogVisible"
+      :selected="selectedCollectionSource"
+      type="source"
+      @close="closeDeleteCollectionSourceDialog"
+      @confirm="deleteCollectionSource"
+    />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteSnmpCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -139,9 +153,13 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import DeleteConfirmationDialog from '../SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
 
 const router = useRouter()
 const store = useSnmpDataCollectionStore()
+const isDeleteDialogVisible = ref(false)
+const selectedCollectionSource = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
 const emptyListContent = {
   msg: 'No results found.'
 }
@@ -183,6 +201,43 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeSourcesSearchTerm(value)
 }, 500)
+
+const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string } | null) => {
+  selectedCollectionSource.value = collectionSource
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteCollectionSourceDialog = () => {
+  selectedCollectionSource.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteCollectionSource = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'source' &&
+    selected?.id &&
+    selected?.id === selectedCollectionSource.value?.id &&
+    selected?.name === selectedCollectionSource.value?.name
+  ) {
+    const success = await deleteSnmpCollectionSources([selectedCollectionSource.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
+      })
+      router.push({ name: 'SNMP Data Collection' })
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete Collection Source '${selectedCollectionSource.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete Collection Source '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   await store.fetchSnmpCollectionSources()

@@ -99,7 +99,10 @@
                     <FeatherDropdownItem data-test="change-status-button">
                       {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
                     </FeatherDropdownItem>
-                    <FeatherDropdownItem data-test="delete-resource-type-button">
+                    <FeatherDropdownItem
+                      data-test="delete-resource-type-button"
+                      @click="openResourceTypeDeleteDialog(resourceType.id, resourceType.name)"
+                    >
                       Delete Resource Type
                     </FeatherDropdownItem>
                   </FeatherDropdown>
@@ -155,10 +158,19 @@
     <div v-if="!store.resourceTypes.length">
       <EmptyList :content="{ msg: 'No Resource Types found.' }" />
     </div>
+    <DeleteConfirmationDialog
+      :visible="isDeleteDialogVisible"
+      :selected="selectedResourceType"
+      type="resource-type"
+      @close="closeDeleteResourceTypeDialog"
+      @confirm="deleteResourceType"
+    />
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteResourceTypes } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
@@ -177,10 +189,13 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
-
+const isDeleteDialogVisible = ref(false)
+const selectedResourceType = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
   { id: 'label', label: 'Label' },
@@ -224,6 +239,46 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeResourceTypesSearchTerm(value)
 }, 500)
+
+const openResourceTypeDeleteDialog = (id: number, name: string) => {
+  selectedResourceType.value = { id, name }
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteResourceTypeDialog = () => {
+  selectedResourceType.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteResourceType = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'resource-type' &&
+    selected?.id &&
+    selected?.id === selectedResourceType.value?.id &&
+    selected?.name === selectedResourceType.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const success = await deleteResourceTypes(store.selectedCollectionSource.id, [selected.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Resource Type '${selected.name}' deleted successfully.`
+      })
+      await store.fetchResourceTypes()
+      isDeleteDialogVisible.value = false
+      selectedResourceType.value = null
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete Resource Type '${selected.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete Resource Type '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   await store.fetchResourceTypes()
