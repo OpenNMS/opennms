@@ -43,6 +43,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.TimeoutException;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -211,8 +212,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             try {
                 shouldForwardEvent = eventFilterExpression.getValue(event, Boolean.class);
             } catch (Exception e) {
-                LOG.error("Event filter '{}' failed to return a result for event: {}. The event will be forwarded anyways.",
-                        eventFilterExpression.getExpressionString(), event.toStringSimple(), e);
+                LOG.error("Event filter '{}' failed to return a result for event: {}. The event will be forwarded anyways, instanceId={}, eventId={}",
+                        eventFilterExpression.getExpressionString(), event.toStringSimple(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
             }
         }
         if (!shouldForwardEvent) {
@@ -231,7 +232,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Forward!
         sendRecord(KafkaProducerManager.MessageType.EVENT,() -> {
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
-            LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
+            LOG.debug("Sending event with UEI: {}, instanceId={}, eventId={}", mappedEvent.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
             return new ProducerRecord<>(eventTopic, mappedEvent.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
@@ -252,8 +253,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                     }
                     return shouldForwardAlarm;
                 } catch (Exception e) {
-                    LOG.error("Alarm filter '{}' failed to return a result for event: {}. The alarm will be forwarded anyways.",
-                            alarmFilterExpression.getExpressionString(), alarm, e);
+                    LOG.error("Alarm filter '{}' failed to return a result for alarm: {}. The alarm will be forwarded anyways, instanceId={}, alarmId={}",
+                            alarmFilterExpression.getExpressionString(), alarm, SystemInfoUtils.getInstanceId(), alarm.getId(), e);
                 }
             }
         }
@@ -308,7 +309,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Forward!
         sendRecord(KafkaProducerManager.MessageType.ALARM,() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
-            LOG.debug("Sending alarm with reduction key: {}", reductionKey);
+            LOG.debug("Sending alarm with reduction key: {}, instanceId={}, alarmId={}", reductionKey, SystemInfoUtils.getInstanceId(), alarm.getId());
             return new ProducerRecord<>(alarmTopic, reductionKey.getBytes(encoding), mappedAlarm.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm was forwarded
