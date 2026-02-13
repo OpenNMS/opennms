@@ -29,14 +29,14 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -44,11 +44,10 @@ import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.web.rest.v2.api.SnmpConfigRestApi;
-import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
-import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -58,8 +57,9 @@ import org.springframework.stereotype.Component;
 public class SnmpConfigRestService implements SnmpConfigRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigRestService.class);
     private static final String MODULE_NAME = "web rest api";
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static final String DEFINITION_INVALID_RANGE_MESSAGE = "Definition must have at least one specific IP, IP range or IP match specified.";
 
     @Autowired
     private MonitoringLocationDao monitoringLocationDao;
@@ -71,18 +71,8 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     public Response getSnmpConfig() {
         try {
             SnmpConfig config = SnmpPeerFactory.getInstance().getSnmpConfig();
-            String json = "";
 
-            try {
-                // We use ObjectMapper here so that fields are in JSON-friendly camelCase instead of the kebab-case
-                // that Response.ok(config) would produce due to XmlAttributes in SnmpConfig.
-                json = objectMapper.writeValueAsString(config);
-            } catch (JsonProcessingException e) {
-                LOG.error("Error serializing SnmpConfig JSON: {}", e.getMessage(), e);
-                throw createServerException("Error retrieving SNMP config.");
-            }
-
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            return Response.ok(config, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             LOG.error("Error retrieving SnmpConfig config: {}", e.getMessage(), e);
             throw createServerException("Error retrieving SNMP config.");
@@ -115,43 +105,33 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     }
 
     @Override
-    public Response addDefinition(SnmpConfigInfoDto dto) {
+    public Response addDefinition(Definition definition) {
         try {
-            if (dto == null) {
+            if (definition == null) {
                 return createBadRequestResponse("Missing or invalid request parameters.");
             }
 
-            if (safeGetInetAddress(dto.getFirstIpAddress()) == null) {
-                return createBadRequestResponse("Missing or invalid 'firstIpAddress'.");
+            if (!validateHasIpOrIpMatch(definition)) {
+                return createBadRequestResponse(DEFINITION_INVALID_RANGE_MESSAGE);
             }
 
-            // If lastIpAddress was supplied, make sure it is a valid IP address
-            if (!Strings.isNullOrEmpty(dto.getLastIpAddress()) &&
-                    safeGetInetAddress(dto.getLastIpAddress()) == null) {
-                return createBadRequestResponse("Invalid 'lastIpAddress'.");
-            }
-
-            final String convertedLocation = convertToValidLocation(dto.getLocation());
+            final String convertedLocation = convertToValidLocation(definition.getLocation());
 
             if (convertedLocation == null) {
                 return createBadRequestResponse("Missing or invalid 'location'.");
             } else {
-                dto.setLocation(convertedLocation);
+                definition.setLocation(convertedLocation);
             }
 
-            SnmpEventInfo eventInfo = dto.createEventInfo(dto.getFirstIpAddress(), dto.getLastIpAddress());
-
-            SnmpPeerFactory.getInstance().define(eventInfo);
+            SnmpPeerFactory.getInstance().saveDefinition(definition);
             SnmpPeerFactory.getInstance().saveCurrent();
-        } catch (WebApplicationException webEx) {
-            LOG.error("Error sending event while adding a definition: {}", webEx.getMessage(), webEx);
-            throw webEx;
         } catch (Exception e) {
             LOG.error("Error adding SNMP definition: {}", e.getMessage(), e);
             throw createServerException("Error adding SNMP definition.");
         }
 
-        URI uri = URI.create("/snmp-config/lookup/" + dto.getFirstIpAddress());
+        // URI to view the updated definitions
+        URI uri = URI.create("/snmp-config");
 
         return Response.created(uri).build();
     }
@@ -185,16 +165,12 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     }
 
     @Override
-    public Response saveProfile(SnmpConfigProfileDto dto) {
-        if (Strings.isNullOrEmpty(dto.getLabel())) {
+    public Response saveProfile(SnmpProfile profile) {
+        if (Strings.isNullOrEmpty(profile.getLabel())) {
             return createBadRequestResponse("Missing or invalid 'label'.");
         }
 
-        // incoming DTO should have any fields filled out that differ from defaults
-        final SnmpProfile updatedProfile = SnmpConfigProfileDto.toSnmpProfile(dto);
-
-        // Save to config
-        SnmpPeerFactory.getInstance().saveProfile(updatedProfile);
+        SnmpPeerFactory.getInstance().saveProfile(profile);
 
         return Response.noContent().build();
     }
@@ -228,10 +204,16 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 String xml = JaxbUtils.marshal(snmpConfig);
                 byteArray = xml.getBytes(StandardCharsets.UTF_8);
             } else {
-                String json = objectMapper.writeValueAsString(snmpConfig);
+                // Need to use old codehaus.jackson mapper so that @JsonProperty annotations are followed
+                // We have to use codehaus annotations because Rest services are configured in
+                // applicationContext-cxf-common.xml and applicationContext-cxf-rest-v2.xml to use
+                // the codehaus.jackson JsonProvider
+                // The codehaus.jackson DefaultPrettyPrinter doesn't have the best output,
+                // it adds extra whitespace, but it'll do for now
+                String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(snmpConfig);
                 byteArray = json.getBytes(StandardCharsets.UTF_8);
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             LOG.error("Error serializing SnmpConfig JSON: {}", e.getMessage(), e);
             throw createServerException("Error retrieving SNMP config.");
         }
@@ -274,6 +256,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             if (isXml) {
                 config = JaxbUtils.unmarshal(SnmpConfig.class, contents);
             } else {
+                // Use old codehaus.jackson mapper so that @JsonProperty annotations are followed
                 config = objectMapper.readValue(contents, SnmpConfig.class);
 
                 // Validate the config
@@ -281,9 +264,12 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 String configXml = JaxbUtils.marshal(config);
                 config = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
             }
-        } catch (Exception e) {
-            LOG.error("Error parsing uploaded file: {}", e.getMessage(), e);
+        } catch (DataAccessException | JsonProcessingException e) {
+            LOG.error("Error parsing or validating uploaded file: {}", e.getMessage(), e);
             return createBadRequestResponse("Invalid configuration file.");
+        } catch (Exception e) {
+            LOG.error("Error processing uploaded file: {}", e.getMessage(), e);
+            throw createServerException("Unexpected error processing uploaded file.");
         }
 
         config.fixSecurityLevel();
@@ -313,6 +299,27 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         }
 
         return location;
+    }
+
+    /**
+     * Validate that the given definition has at least one range, specific or ipMatch.
+     * Does not validate the IP addresses themselves, that is done in SnmpConfigManager.
+     */
+    private boolean validateHasIpOrIpMatch(Definition definition) {
+        if (definition.getSpecifics().stream().anyMatch(spec -> !Strings.isNullOrEmpty(spec))) {
+            return true;
+        }
+
+        if (definition.getRanges().stream()
+                .anyMatch(range -> !Strings.isNullOrEmpty(range.getBegin()) && !Strings.isNullOrEmpty(range.getEnd()))) {
+            return true;
+        }
+
+        if (definition.getIpMatches().stream().anyMatch(match -> !Strings.isNullOrEmpty(match))) {
+            return true;
+        }
+
+        return false;
     }
 
     private static Response createBadRequestResponse(String message) {

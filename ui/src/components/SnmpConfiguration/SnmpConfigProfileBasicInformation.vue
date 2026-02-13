@@ -117,7 +117,7 @@ const loadInitialValues = () => {
   if (props.isCreate || !props.profileLabel) {
     currentProfile.value = getDefaultSnmpProfile()
   } else {
-    currentProfile.value = store.config.snmpProfiles?.snmpProfiles?.find(p => p.label === props.profileLabel) ?? getDefaultSnmpProfile()
+    currentProfile.value = store.config.profiles?.profile?.find(p => p.label === props.profileLabel) ?? getDefaultSnmpProfile()
   }
 
   snmpAgentConfig.value = {
@@ -145,7 +145,7 @@ const loadInitialValues = () => {
   }
 
   label.value = currentProfile.value.label ?? ''
-  filterExpression.value = currentProfile.value.filterExpression ?? ''
+  filterExpression.value = currentProfile.value.filter ?? ''
 }
 
 const onDetailsSave = (config: SnmpAgentConfig) => {
@@ -168,7 +168,7 @@ const onDetailsSave = (config: SnmpAgentConfig) => {
     const profileToSave: SnmpProfile = {
       ...config,
       label: label.value,
-      filterExpression: filterExpression.value
+      filter: filterExpression.value
     }
 
     emit('save', profileToSave)

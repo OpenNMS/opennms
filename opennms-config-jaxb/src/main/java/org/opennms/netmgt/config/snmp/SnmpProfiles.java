@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.config.snmp;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +30,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="profiles")
@@ -38,9 +39,11 @@ import org.opennms.core.xml.ValidateUsing;
 @ValidateUsing("snmp-config.xsd")
 public class SnmpProfiles {
 
+    @JsonProperty("profile")
     @XmlElement(name="profile")
     private List<SnmpProfile> profile = new ArrayList<>();
 
+    @JsonIgnore
     public List<SnmpProfile> getSnmpProfiles() {
         return profile;
     }

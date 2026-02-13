@@ -41,7 +41,7 @@
             :key="`${profile.label ?? ''}-${profile.label}`"
           >
             <td>{{ profile.label }}</td>
-            <td>{{ profile.filterExpression }}</td>
+            <td>{{ profile.filter }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton
@@ -128,29 +128,29 @@ const emptyListContent = {
 
 const columns = computed(() => [
   { id: 'label', label: 'Label' },
-  { id: 'filterExpression', label: 'Filter Expression' }
+  { id: 'filter', label: 'Filter Expression' }
 ])
 
 const currentSort = ref<FeatherSortObject>({ property: 'label', value: SORT.NONE })
 
 const sortStates: Record<string, SORT> = reactive({
   label: SORT.NONE,
-  filterExpression: SORT.NONE
+  filter: SORT.NONE
 })
 
 const createFilterExpressionLabel = (profile: SnmpProfile) => {
-  return profile.filterExpression ?? '--'
+  return profile.filter ?? '--'
 }
 
 const profiles = computed(() => {
-  if (!store.config.snmpProfiles?.snmpProfiles) {
+  if (!store.config.profiles?.profile) {
     return []
   }
 
-  const items = store.config.snmpProfiles.snmpProfiles.map(profile => {
+  const items = store.config.profiles.profile.map(profile => {
     return {
       label: profile.label ?? '--',
-      filterExpression: createFilterExpressionLabel(profile)
+      filter: createFilterExpressionLabel(profile)
     }
   }).sort((a, b) => sortPredicate(a, b, currentSort.value))
 

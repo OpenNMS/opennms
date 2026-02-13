@@ -17,8 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.opennms.web.rest.v2.model.SnmpConfigInfoDto;
-import org.opennms.web.rest.v2.model.SnmpConfigProfileDto;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -71,16 +71,18 @@ public interface SnmpConfigRestApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Add an SNMP configuration definition",
-            description = "Add an SNMP configuration definition, given an IP address or IP address range, and a location.",
+            description = "Add an SNMP configuration definition.",
             operationId = "addDefinition"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "SNMP configuration definition added successfully",
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Server Error or Bad Request – invalid or missing input parameters",
                     content = @Content)
     })
-    Response addDefinition(SnmpConfigInfoDto dto);
+    Response addDefinition(Definition definition);
 
     @DELETE
     @Path("/definition")
@@ -113,7 +115,7 @@ public interface SnmpConfigRestApi {
             @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
                     content = @Content)
     })
-    Response saveProfile(SnmpConfigProfileDto dto);
+    Response saveProfile(SnmpProfile profile);
 
     @DELETE
     @Path("/profile")

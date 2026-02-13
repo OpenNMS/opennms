@@ -25,10 +25,8 @@ import { v2 } from './axiosInstances'
 import {
   SnmpAgentConfig,
   SnmpConfig,
-  SnmpConfigInfoDto,
   SnmpDefinition,
-  SnmpProfile,
-  SnmpSaveProfileDto
+  SnmpProfile
 } from '@/types/snmpConfig'
 import { isNumber, isString } from '@/lib/utils'
 import { createFailureResult, createSuccessResponse, ValidationResult } from '@/types/validation'
@@ -83,9 +81,9 @@ const getSnmpConfig = async (): Promise<SnmpConfig | false> => {
     // no content from server
     if (resp.status === 204) {
       return {
-        definitions: [] as SnmpDefinition[],
-        snmpProfiles: {
-          snmpProfiles: [] as SnmpProfile[]
+        definition: [] as SnmpDefinition[],
+        profiles: {
+          profile: [] as SnmpProfile[]
         }
       }
     }
@@ -119,11 +117,11 @@ const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<Sn
   }
 }
 
-const saveSnmpDefinition = async (config: SnmpConfigInfoDto): Promise<ValidationResult> => {
+const saveSnmpDefinition = async (definition: SnmpDefinition): Promise<ValidationResult> => {
   const fullEndpoint = `${endpoint}/definition`
 
   try {
-    const resp = await v2.put(fullEndpoint, config)
+    const resp = await v2.put(fullEndpoint, definition)
 
     if (resp.status === 201) {
       return createSuccessResponse()
@@ -157,11 +155,11 @@ const deleteSnmpDefinition = async (ipAddress: string, location: string): Promis
   }
 }
 
-const saveSnmpProfile = async (dto: SnmpSaveProfileDto): Promise<ValidationResult> => {
+const saveSnmpProfile = async (profile: SnmpProfile): Promise<ValidationResult> => {
   const fullEndpoint = `${endpoint}/profile`
 
   try {
-    const resp = await v2.post(fullEndpoint, dto)
+    const resp = await v2.post(fullEndpoint, profile)
 
     if (resp.status === 204) {
       return createSuccessResponse()

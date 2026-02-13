@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="profile")
@@ -72,13 +74,16 @@ public class SnmpProfile extends Configuration {
     public SnmpProfile() {
     }
 
+    @JsonProperty("label")
     @XmlElement(name="label")
     private String label;
 
+    @JsonProperty("filter")
     @XmlElement(name="filter")
     private String filter;
 
 
+    @JsonIgnore
     public String getFilterExpression() {
         return filter;
     }

@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,18 +38,21 @@ public class Configuration implements Serializable {
     /**
      * The proxy host to use when communicating with this agent
      */
+    @JsonProperty("proxyHost")
     @XmlAttribute(name="proxy-host")
     private String proxyHost;
 
     /**
      * Number of variables to send per SNMP request.
      */
+    @JsonProperty("maxVarsPerPdu")
     @XmlAttribute(name="max-vars-per-pdu")
     private Integer maxVarsPerPdu;
 
     /**
      * Number of repetitions to send per get-bulk request.
      */
+    @JsonProperty("maxRepetitions")
     @XmlAttribute(name="max-repetitions")
     private Integer maxRepetitions;
 
@@ -57,96 +62,112 @@ public class Configuration implements Serializable {
      * means to limit the size of outgoing PDU requests. Default is 65535,
      * must be at least 484.
      */
+    @JsonProperty("maxRequestSize")
     @XmlAttribute(name="max-request-size")
     private Integer maxRequestSize;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("securityName")
     @XmlAttribute(name="security-name")
     private String securityName;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("securityLevel")
     @XmlAttribute(name="security-level")
     private Integer securityLevel;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("authPassphrase")
     @XmlAttribute(name="auth-passphrase")
     private String authPassphrase;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("authProtocol")
     @XmlAttribute(name="auth-protocol")
     private String authProtocol;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("engineId")
     @XmlAttribute(name="engine-id")
     private String engineId;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("contextEngineId")
     @XmlAttribute(name="context-engine-id")
     private String contextEngineId;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("contextName")
     @XmlAttribute(name="context-name")
     private String contextName;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("privacyPassphrase")
     @XmlAttribute(name="privacy-passphrase")
     private String privacyPassphrase;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("privacyProtocol")
     @XmlAttribute(name="privacy-protocol")
     private String privacyProtocol;
 
     /**
      * SNMPv3
      */
+    @JsonProperty("enterpriseId")
     @XmlAttribute(name="enterprise-id")
     private String enterpriseId;
 
     /**
      * If set, forces SNMP data collection to the specified version.
      */
+    @JsonProperty("version")
     @XmlAttribute(name="version")
     private String version;
 
     /**
      * Default write community string
      */
+    @JsonProperty("writeCommunity")
     @XmlAttribute(name="write-community")
     private String writeCommunity;
 
     /**
      * Default read community string
      */
+    @JsonProperty("readCommunity")
     @XmlAttribute(name="read-community")
     private String readCommunity;
 
     /**
      * Default timeout (in milliseconds)
      */
+    @JsonProperty("timeout")
     @XmlAttribute(name="timeout")
     private Integer timeout;
 
     /**
      * Default number of retries
      */
+    @JsonProperty("retry")
     @XmlAttribute(name="retry")
     private Integer retry;
 
@@ -154,14 +175,17 @@ public class Configuration implements Serializable {
      * If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK
      * requests are sent.
      */
+    @JsonProperty("port")
     @XmlAttribute(name="port")
     private Integer port;
 
 
+    @JsonProperty("ttl")
     @XmlAttribute(name="ttl")
     private Long ttl;
 
 
+    @JsonProperty("encrypted")
     @XmlAttribute(name = "encrypted")
     private Boolean encrypted;
 
