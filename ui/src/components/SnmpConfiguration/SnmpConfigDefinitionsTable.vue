@@ -11,7 +11,7 @@
       <table
         class="data-table"
         aria-label="SNMP Config Definition Table"
-        v-if="definitions.length"
+        v-if="definitionsView.length"
       >
         <thead>
           <tr>
@@ -33,7 +33,7 @@
           tag="tbody"
         >
           <tr
-            v-for="(definition, index) of definitions"
+            v-for="(definition, index) of definitionsView"
             :key="`${definition.label ?? ''}-${definition.id}`"
           >
             <td>{{ definition.location ?? DEFAULT_MONITORING_LOCATION }}</td>
@@ -69,7 +69,21 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div v-if="!definitions.length">
+      <div
+        class="snmp-definitions-pagination"
+        v-if="definitionsView.length"
+      >
+        <FeatherPagination
+          :modelValue="currentPage"
+          :pageSize="pageSize"
+          :total="pageTotal"
+          :pageSizes="[5, 10, 20, 50, 100, 200]"
+          @update:modelValue="(val: any) => currentPage = Number(val)"
+          @update:pageSize="(val: any) => pageSize = Number(val)"
+          data-test="FeatherPagination"
+        />
+      </div>
+       <div v-if="!definitionsView.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -83,6 +97,7 @@
 import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
@@ -93,7 +108,16 @@ import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
+interface DefinitionViewItem {
+  id: number
+  label: string
+  ipAddresses: string[]
+  location: string
+}
+
 const store = useSnmpConfigStore()
+const currentPage = ref(1)
+const pageSize = ref(50)
 
 const emptyListContent = {
   msg: 'No results found.'
@@ -132,31 +156,58 @@ const createIpAddressLabel = (d: SnmpDefinition) => {
   return items
 }
 
-const definitions = computed(() => {
-  if (store.config.definition) {
-    return store.config.definition?.map((d, index) => {
-      return {
-        id: d.id ?? index,
-        label: d.id === 0 ? 'Global' : '--',
-        ipAddresses: createIpAddressLabel(d),
-        location: d.location
-      }
+const pageTotal = computed(() => {
+  return store.config.definition?.length
+})
+
+const definitionsView = computed<DefinitionViewItem[]>(() => {
+  if (!store.config.definition) {
+    return []
+  }
+
+  // Map to view items
+  let items: DefinitionViewItem[] = store.config.definition.map((d, index) => ({
+    id: d.id ?? index,
+    label: d.id === 0 ? 'Global' : '--',
+    ipAddresses: createIpAddressLabel(d),
+    location: d.location ?? 'Default'
+  }))
+
+  // Sort by the active sort property
+  const sortProperty = Object.keys(sort).find(key => sort[key] !== SORT.NONE)
+
+  if (sortProperty) {
+    const sortDirection = sort[sortProperty]
+
+    items.sort((a, b) => {
+      const aVal = Array.isArray(a[sortProperty as keyof DefinitionViewItem])
+        ? (a[sortProperty as keyof DefinitionViewItem] as string[]).join(', ')
+        : String(a[sortProperty as keyof DefinitionViewItem] ?? '')
+      const bVal = Array.isArray(b[sortProperty as keyof DefinitionViewItem])
+        ? (b[sortProperty as keyof DefinitionViewItem] as string[]).join(', ')
+        : String(b[sortProperty as keyof DefinitionViewItem] ?? '')
+      const cmp = aVal.localeCompare(bVal)
+
+      return sortDirection === SORT.ASCENDING ? cmp : -cmp
     })
   }
 
-  return []
+  // Paginate
+  if (pageSize.value > 0) {
+    const start = (currentPage.value - 1) * pageSize.value
+    items = items.slice(start, start + pageSize.value)
+  }
+
+  return items
 })
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
-    // store.onSourcesSortChange(sortObj.property, sortObj.value)
-  } else {
-    // store.onSourcesSortChange('createdTime', 'desc')
+  const keys = Object.keys(sort)
+
+  for (const key in keys) {
+    sort[key] = SORT.NONE
   }
 
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
   sort[sortObj.property] = sortObj.value
 }
 
