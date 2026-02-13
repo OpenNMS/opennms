@@ -33,14 +33,14 @@
           tag="tbody"
         >
           <tr
-            v-for="(definition, index) of definitionsView"
-            :key="`${definition.label ?? ''}-${definition.id}`"
+            v-for="definition of definitionsView"
+            :key="`${definition.id ?? 0}-${definition.location ?? ''}`"
           >
             <td>{{ definition.location ?? DEFAULT_MONITORING_LOCATION }}</td>
-            <td v-if="definition.ipAddresses.length > 0">
+            <td v-if="createIpAddressLabel(definition).length > 0">
               <div class="ip-address-badge-wrapper">
                 <FeatherTextBadge
-                  v-for="ipAddr of definition.ipAddresses" :key="ipAddr"
+                  v-for="ipAddr of createIpAddressLabel(definition)" :key="ipAddr"
                   :type="BadgeTypes.info">
                   {{ ipAddr }}
                 </FeatherTextBadge>
@@ -52,15 +52,15 @@
                 <FeatherButton
                   icon="Edit"
                   data-test="edit-button"
-                  @click="onDefinitionEdit(store.config.definition?.[index])"
+                  @click="onDefinitionEdit(definition)"
                 >
                   <FeatherIcon :icon="IconEdit"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherButton
-                  v-if="definition.label !== 'Global'"
+                  v-if="definition.id !== 0"
                   icon="Delete"
                   data-test="delete-button"
-                  @click="onDefinitionDelete(store.config.definition?.[index])"
+                  @click="onDefinitionDelete(definition)"
                 >
                   <FeatherIcon :icon="IconDelete"> </FeatherIcon>
                 </FeatherButton>
@@ -77,7 +77,7 @@
           :modelValue="currentPage"
           :pageSize="pageSize"
           :total="pageTotal"
-          :pageSizes="[5, 10, 20, 50, 100, 200]"
+          :pageSizes="[20, 50, 100, 200]"
           @update:modelValue="(val: any) => currentPage = Number(val)"
           @update:pageSize="(val: any) => pageSize = Number(val)"
           data-test="FeatherPagination"
@@ -91,33 +91,72 @@
       </div>
     </div>
   </TableCard>
+  <ConfirmationDialog
+    :visible="showDeleteConfirmation"
+    title="Delete SNMP Definition"
+    actionButtonText="Delete"
+    @ok="confirmDelete"
+    @cancel="cancelDelete"
+  >
+    <template #content>
+      <div class="confirmation-message">
+        <p>Are you sure you want to delete this SNMP definition?</p>
+        <div v-if="definitionToDelete" class="definition-details">
+          <p v-if="definitionToDelete.location"><strong>Location:</strong> {{ definitionToDelete.location }}</p>
+          <div v-if="definitionToDelete.range && definitionToDelete.range.length > 0">
+            <strong>IP Ranges:</strong>
+            <ul>
+              <li v-for="(r, idx) in definitionToDelete.range" :key="idx">
+                {{ r.begin }} - {{ r.end }}
+              </li>
+            </ul>
+          </div>
+          <div v-if="definitionToDelete.specific && definitionToDelete.specific.length > 0">
+            <strong>Specific IPs:</strong>
+            <ul>
+              <li v-for="(ip, idx) in definitionToDelete.specific" :key="idx">
+                {{ ip }}
+              </li>
+            </ul>
+          </div>
+          <div v-if="definitionToDelete.ipMatch && definitionToDelete.ipMatch.length > 0">
+            <strong>IP Match:</strong>
+            <ul>
+              <li v-for="(match, idx) in definitionToDelete.ipMatch" :key="idx">
+                {{ match }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
+import { cloneDeep } from 'lodash'
 import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import IconDelete from '@featherds/icon/action/Delete'
+import IconEdit from '@featherds/icon/action/Edit'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+
+import useSnackbar from '@/composables/useSnackbar'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
+import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { SnmpDefinition } from '@/types/snmpConfig'
+import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { SnmpDefinition } from '@/types/snmpConfig'
-import IconDelete from '@featherds/icon/action/Delete'
-import IconEdit from '@featherds/icon/action/Edit'
-import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-
-interface DefinitionViewItem {
-  id: number
-  label: string
-  ipAddresses: string[]
-  location: string
-}
-
 const store = useSnmpConfigStore()
+const snackbar = useSnackbar()
 const currentPage = ref(1)
 const pageSize = ref(50)
+const showDeleteConfirmation = ref(false)
+const definitionToDelete = ref<SnmpDefinition | null>(null)
 
 const emptyListContent = {
   msg: 'No results found.'
@@ -150,7 +189,8 @@ const createIpAddressLabel = (d: SnmpDefinition) => {
 
   // IP Match
   if (d.ipMatch?.length) {
-    items.push(...d.ipMatch)
+    const ipMatches = d.ipMatch.map(m => `IPLIKE: ${m}`)
+    items.push(...ipMatches)
   }
 
   return items
@@ -160,18 +200,13 @@ const pageTotal = computed(() => {
   return store.config.definition?.length
 })
 
-const definitionsView = computed<DefinitionViewItem[]>(() => {
+const definitionsView = computed<SnmpDefinition[]>(() => {
   if (!store.config.definition) {
     return []
   }
 
-  // Map to view items
-  let items: DefinitionViewItem[] = store.config.definition.map((d, index) => ({
-    id: d.id ?? index,
-    label: d.id === 0 ? 'Global' : '--',
-    ipAddresses: createIpAddressLabel(d),
-    location: d.location ?? 'Default'
-  }))
+  // Copy the definitions array
+  let items: SnmpDefinition[] = [...store.config.definition]
 
   // Sort by the active sort property
   const sortProperty = Object.keys(sort).find(key => sort[key] !== SORT.NONE)
@@ -180,14 +215,21 @@ const definitionsView = computed<DefinitionViewItem[]>(() => {
     const sortDirection = sort[sortProperty]
 
     items.sort((a, b) => {
-      const aVal = Array.isArray(a[sortProperty as keyof DefinitionViewItem])
-        ? (a[sortProperty as keyof DefinitionViewItem] as string[]).join(', ')
-        : String(a[sortProperty as keyof DefinitionViewItem] ?? '')
-      const bVal = Array.isArray(b[sortProperty as keyof DefinitionViewItem])
-        ? (b[sortProperty as keyof DefinitionViewItem] as string[]).join(', ')
-        : String(b[sortProperty as keyof DefinitionViewItem] ?? '')
-      const cmp = aVal.localeCompare(bVal)
+      let aVal: string
+      let bVal: string
 
+      if (sortProperty === 'ipAddresses') {
+        aVal = createIpAddressLabel(a).join(', ')
+        bVal = createIpAddressLabel(b).join(', ')
+      } else if (sortProperty === 'location') {
+        aVal = a.location ?? ''
+        bVal = b.location ?? ''
+      } else {
+        aVal = ''
+        bVal = ''
+      }
+
+      const cmp = aVal.localeCompare(bVal)
       return sortDirection === SORT.ASCENDING ? cmp : -cmp
     })
   }
@@ -202,26 +244,63 @@ const definitionsView = computed<DefinitionViewItem[]>(() => {
 })
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  const keys = Object.keys(sort)
-
-  for (const key in keys) {
+  for (const key of Object.keys(sort)) {
     sort[key] = SORT.NONE
   }
 
   sort[sortObj.property] = sortObj.value
 }
 
-const onDefinitionDelete = (definition?: SnmpDefinition) => {
+const onDefinitionEdit = (definition?: SnmpDefinition) => {
   if (definition) {
-    alert('Deleting definition: (not yet implemented)')
+    store.setCurrentDefinition(cloneDeep(definition))
+    store.setDefinitionCreateEditMode(SnmpConfigEditMode.Edit)
   }
 }
 
-const onDefinitionEdit = (definition?: SnmpDefinition) => {
+const onDefinitionDelete = (definition?: SnmpDefinition) => {
   if (definition) {
-    store.setCurrentDefinition(definition)
-    store.setDefinitionCreateEditMode(SnmpConfigEditMode.Edit)
+    definitionToDelete.value = cloneDeep(definition)
+    showDeleteConfirmation.value = true
   }
+}
+
+const confirmDelete = async () => {
+  let success = false
+
+  if (definitionToDelete.value) {
+    const result = await store.removeDefinition(
+      definitionToDelete.value.range ?? null,
+      definitionToDelete.value.specific ?? null,
+      definitionToDelete.value.ipMatch ?? null,
+      definitionToDelete.value.location ?? DEFAULT_MONITORING_LOCATION
+    )
+
+    success = result.success
+
+    if (!result.success) {
+      snackbar.showSnackBar({
+        msg: 'Failed to delete definition: ' + result.message,
+        error: true
+      })
+    } else {
+      snackbar.showSnackBar({
+        msg: 'Definition deleted successfully'
+      })
+    }
+  }
+
+  showDeleteConfirmation.value = false
+  definitionToDelete.value = null
+
+  if (success) {
+    store.populateSnmpConfig()
+  }
+}
+
+const cancelDelete = () => {
+  showDeleteConfirmation.value = false
+  definitionToDelete.value = null
 }
 </script>
 
@@ -321,6 +400,28 @@ const onDefinitionEdit = (definition?: SnmpDefinition) => {
 
     .feather-pagination {
       border: none !important;
+    }
+  }
+}
+
+.confirmation-message {
+  .definition-details {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(variables.$surface);
+    border-radius: 4px;
+
+    p {
+      margin: 5px 0;
+    }
+
+    ul {
+      margin: 5px 0;
+      padding-left: 20px;
+
+      li {
+        margin: 3px 0;
+      }
     }
   }
 }

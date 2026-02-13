@@ -21,7 +21,8 @@
  */
 package org.opennms.netmgt.config;
 
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,13 +30,13 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
@@ -111,8 +112,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "   </definition>\n" + 
                 "\n" + 
                 "   <definition version=\"v3\" " +
-                "       security-name=\"opennmsUser\" \n" + 
-                "       auth-passphrase=\"0p3nNMSv3\" >\n" +
+                "       security-name=\"opennmsUser20\" \n" +
+                "       auth-passphrase=\"0p3nNMSv3_20\" >\n" +
                 "       <specific>20.20.20.20</specific>\n" +
                 "   </definition>\n" + 
                 "   <definition version=\"v3\" " +
@@ -181,6 +182,14 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
                 "   </definition>\n" + 
+                "\n" +
+                "   <definition version=\"v1\" read-community=\"ipmatch-location-a\" max-vars-per-pdu=\"64\" location=\"Location-A\" >\n" +
+                "       <ip-match>88.10-20.*.1-50</ip-match>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "   <definition version=\"v1\" read-community=\"ipmatch-location-b\" max-vars-per-pdu=\"32\" location=\"Location-B\" >\n" +
+                "       <ip-match>88.10-20.*.1-50</ip-match>\n" +
+                "   </definition>\n" +
                 "\n" +
                     "<profiles>"
                         +"<profile " +  "retry=\"2\" "
@@ -279,7 +288,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.0.0.3"));
         assertEquals("10.0.0.3", InetAddressUtils.str(agentConfig.getProxyFor()));
         assertEquals("127.0.0.1", InetAddressUtils.str(agentConfig.getAddress()));
-        agentConfig.toString();
+        assertTrue(agentConfig.toString().contains(", ProxyForAddress: 10.0.0.3"));
     }
 
     public void testDefaultMaxRequestSize() throws UnknownHostException {
@@ -319,11 +328,11 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("ipmatch", agentConfig.getReadCommunity());
         assertEquals(7, agentConfig.getMaxRepetitions());
 
-        //should be default community "public" because of 4
+        // should be default community "public" because of 4
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("77.4.5.255"));
         assertEquals("public", agentConfig.getReadCommunity());
 
-        //should be default community because of 0
+        // should be default community because of 0
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("77.6.0.255"));
         assertEquals("public", agentConfig.getReadCommunity());
     }
@@ -396,7 +405,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
                 .getAgentConfig(InetAddressUtils.addr("192.168.0.50"));
         assertNotNull(agentConfig);
-        assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
         assertEquals("specificv2c", agentConfig.getReadCommunity());
     }
 
@@ -409,7 +418,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
                 .getAgentConfig(InetAddressUtils.addr("192.168.0.50"), "MINION");
         assertNotNull(agentConfig);
-        assertEquals(agentConfig.getVersion(), SnmpAgentConfig.VERSION2C);
+        assertEquals(SnmpAgentConfig.VERSION2C, agentConfig.getVersion());
         assertEquals(2500, agentConfig.getTimeout());
     }
 
@@ -499,13 +508,13 @@ public class SnmpPeerFactoryTest extends TestCase {
         for (SnmpProfile snmpProfile : profiles) {
             SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().
                     getAgentConfigFromProfile(snmpProfile, InetAddressUtils.addr("10.1.12.1"));
+
             assertEquals("profileContext", snmpAgentConfig.getContextName());
             // Even if read-community/write-community is not specified, should use defaults.
             assertEquals("public", snmpAgentConfig.getReadCommunity());
             assertEquals("private", snmpAgentConfig.getWriteCommunity());
             assertEquals("securityName-" + snmpProfile.getLabel(), snmpAgentConfig.getSecurityName());
             assertEquals("authPassphrase-" + snmpProfile.getLabel(), snmpAgentConfig.getAuthPassPhrase());
-
             assertNull(snmpAgentConfig.getPrivProtocol());
             assertThat(snmpAgentConfig.getVersionAsString(), Matchers.isOneOf("v2c", "v3"));
         }
@@ -528,7 +537,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             SnmpPeerFactory.setFile(file);
 
             final Definition defA = new Definition();
-            defA.setRanges(Arrays.asList(new Range("192.168.30.1","192.168.30.10")));
+            defA.setRanges(List.of(new Range("192.168.30.1", "192.168.30.10")));
             defA.setReadCommunity("${scv:myCommunity:password}");
             defA.setWriteCommunity("private");
             defA.setAuthPassphrase("${scv:myAuthPassphrase:password}");
@@ -537,7 +546,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             snmpPeerFactory.saveCurrent();
 
             final Definition defB = new Definition();
-            defB.setRanges(Arrays.asList(new Range("192.168.30.11","192.168.30.30")));
+            defB.setRanges(List.of(new Range("192.168.30.11", "192.168.30.30")));
             defB.setReadCommunity("${scv:myCommunity:password}");
             defB.setWriteCommunity("private");
             defB.setAuthPassphrase("${scv:myAuthPassphrase:password}");
@@ -554,7 +563,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             assertEquals("private", snmpConfig1.getDefinitions().get(0).getWriteCommunity());
 
             final Definition defC = new Definition();
-            defC.setRanges(Arrays.asList(new Range("192.168.30.31","192.168.30.35")));
+            defC.setRanges(List.of(new Range("192.168.30.31", "192.168.30.35")));
             // this should not match
             defC.setReadCommunity("${scv:anotherCommunity:password}");
             defC.setWriteCommunity("private");
@@ -567,6 +576,312 @@ public class SnmpPeerFactoryTest extends TestCase {
             assertEquals(2, snmpConfig2.getDefinitions().size());
         }
     }
+
+    public void testRemoveSpecificIpAddress() {
+        // confirm entry exists
+        InetAddress addr = InetAddressUtils.addr("20.20.20.20");
+
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().anyMatch(d -> d.getSpecifics().contains("20.20.20.20")));
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(3, config.getVersion());
+        assertEquals("opennmsUser20", config.getSecurityName());
+        assertEquals("0p3nNMSv3_20", config.getAuthPassPhrase());
+
+        // now delete it
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, List.of("20.20.20.20"), null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 1, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().noneMatch(d -> d.getSpecifics().contains("20.20.20.20")));
+
+        // config should have reverted to defaults
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("opennmsUser", config.getSecurityName());
+        assertNull(config.getAuthPassPhrase());
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("private", config.getWriteCommunity());
+    }
+
+    public void testRemoveIpAddressRange() {
+        // confirm definition with range exists
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(
+            snmpConfig.getDefinitions().stream()
+                .filter(d -> d != null && d.getRanges() != null)
+                .anyMatch(d -> d.getRanges().stream().anyMatch(r -> r.getBegin().equals("10.0.0.101") && r.getEnd().equals("10.0.0.200")))
+        );
+
+        // confirm entry exists
+        InetAddress addr = InetAddressUtils.addr("10.0.0.101");
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("rangev1", config.getReadCommunity());
+        assertEquals(55, config.getMaxVarsPerPdu());
+
+        // now delete the range
+        List<Range> rangesToDelete = List.of(new Range("10.0.0.101", "10.0.0.200"));
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition( rangesToDelete, null, null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        1, 0, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        assertFalse(
+            snmpConfig.getDefinitions().stream()
+                .filter(d -> d != null && d.getRanges() != null)
+                .anyMatch(d -> d.getRanges().stream().anyMatch(r -> r.getBegin().equals("10.0.0.101") && r.getEnd().equals("10.0.0.200")))
+        );
+
+        // config should have reverted to defaults
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("public", config.getReadCommunity());
+        // note, this is set in the config defaults
+        assertEquals(23, config.getMaxVarsPerPdu());
+    }
+
+    public void testRemoveRangeDefinitionThatDoesNotExist() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        List<Range> rangesToDelete = List.of(new Range("99.0.0.1", "99.0.0.99"));
+        assertFalse(SnmpPeerFactory.getInstance().removeRangesFromDefinition( rangesToDelete, null, null, "Default", "unit test"));
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // config should not have changed
+        assertEquals(originalConfig, configAfterDelete);
+
+        final String expectedLogMessage =
+                String.format("No matching items found to remove for location %s by module %s", "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+    }
+
+    public void testRemoveRangeDefinitionsThatPartiallyExist() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        // one range exists, the other does not
+        // the one that does not exist should be ignored and the one that exists should be deleted
+        List<Range> rangesToDelete = List.of(new Range("10.0.0.101", "10.0.0.200"), new Range("99.0.0.1", "99.0.0.99"));
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition( rangesToDelete, null, null, "Default", "unit test"));
+
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // config should have changed
+        assertNotEquals(originalConfig, configAfterDelete);
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        1, 0, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        // the range that existed should have been deleted
+        assertFalse(
+            configAfterDelete.getDefinitions().stream()
+                .anyMatch(d -> d.getRanges().stream().anyMatch(r -> r.getBegin().equals("10.0.0.101") && r.getEnd().equals("10.0.0.200")))
+        );
+    }
+
+    public void testRemoveSpecificAndRangeDefinitionsThatPartiallyExist() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        // one range exists, the other does not. specific exists
+        List<Range> rangesToDelete = List.of(new Range("10.0.0.101", "10.0.0.200"), new Range("99.0.0.1", "99.0.0.99"));
+        List<String> specificsToDelete = List.of("20.20.20.20");
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition( rangesToDelete, specificsToDelete, null, "Default", "unit test"));
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // config should have changed
+        assertNotEquals(originalConfig, configAfterDelete);
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        1, 1, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        // the range that existed should have been deleted
+        assertFalse(
+                configAfterDelete.getDefinitions().stream()
+                        .anyMatch(d -> d.getRanges().stream().anyMatch(r -> r.getBegin().equals("10.0.0.101") && r.getEnd().equals("10.0.0.200")))
+        );
+
+        // the specific that existed should have been deleted
+        assertFalse(
+                configAfterDelete.getDefinitions().stream()
+                        .anyMatch(d -> d.getSpecifics().stream().anyMatch(s -> s.equals("20.20.20.20")))
+        );
+    }
+
+    public void testRemoveIpMatchDefinition() {
+        // Confirm ipMatch definition exists in Default location
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(
+            snmpConfig.getDefinitions().stream()
+                .anyMatch(d -> d.getIpMatches() != null && d.getIpMatches().contains("77.5-12,15.1-255.255"))
+        );
+
+        // Verify configuration before removal
+        InetAddress addr = InetAddressUtils.addr("77.10.1.255");
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(2, config.getVersion()); // v2c
+        assertEquals("ipmatch", config.getReadCommunity());
+        assertEquals(128, config.getMaxVarsPerPdu());
+
+        // Now delete the ipMatch definition
+        List<String> ipMatchesToDelete = List.of("77.5-12,15.1-255.255");
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, null, ipMatchesToDelete, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 0, 1, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        // Confirm ipMatch definition has been removed
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertFalse(
+            snmpConfig.getDefinitions().stream()
+                .anyMatch(d -> d.getIpMatches() != null && d.getIpMatches().contains("77.5-12,15.1-255.255"))
+        );
+
+        // Config should have reverted to defaults
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion()); // reverts to v1 default
+        assertEquals("public", config.getReadCommunity()); // reverts to default
+        assertEquals(23, config.getMaxVarsPerPdu()); // reverts to config default
+    }
+
+    public void testRemoveIpMatchDefinitionThatDoesNotExist() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        // Try to delete an ipMatch that doesn't exist
+        List<String> ipMatchesToDelete = List.of("99.99.99.99");
+        assertFalse(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, null, ipMatchesToDelete, "Default", "unit test"));
+
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // Config should not have changed
+        assertEquals(originalConfig, configAfterDelete);
+
+        final String expectedLogMessage =
+                String.format("No matching items found to remove for location %s by module %s", "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+    }
+
+    public void testRemoveIpMatchDefinitionWithWrongLocation() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        // Confirm ipMatch exists in Location-A
+        assertTrue(
+            originalConfig.getDefinitions().stream()
+                .anyMatch(d -> "Location-A".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+
+        // Try to delete ipMatch from Location-A, but specify wrong location
+        List<String> ipMatchesToDelete = List.of("88.10-20.*.1-50");
+        assertFalse(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, null, ipMatchesToDelete, "Location-C", "unit test"));
+
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // Config should not have changed - ipMatch should still exist in Location-A
+        assertTrue(
+            configAfterDelete.getDefinitions().stream()
+                .anyMatch(d -> "Location-A".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+
+        final String expectedLogMessage =
+                String.format("No matching items found to remove for location %s by module %s", "Location-C", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+    }
+
+    public void testRemoveIpMatchFromSpecificLocationOnly() {
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        // Confirm same ipMatch exists in both Location-A and Location-B
+        assertTrue(
+            originalConfig.getDefinitions().stream()
+                .anyMatch(d -> "Location-A".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+        assertTrue(
+            originalConfig.getDefinitions().stream()
+                .anyMatch(d -> "Location-B".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+
+        // Verify config in Location-A before removal
+        InetAddress addr = InetAddressUtils.addr("88.15.100.25");
+        SnmpAgentConfig configLocationA = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Location-A");
+        assertEquals("ipmatch-location-a", configLocationA.getReadCommunity());
+        assertEquals(64, configLocationA.getMaxVarsPerPdu());
+
+        // Remove ipMatch from Location-A only
+        List<String> ipMatchesToDelete = List.of("88.10-20.*.1-50");
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, null, ipMatchesToDelete, "Location-A", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 0, 1, "Location-A", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        SnmpConfig configAfterDelete = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        // ipMatch should be removed from Location-A
+        assertFalse(
+            configAfterDelete.getDefinitions().stream()
+                .anyMatch(d -> "Location-A".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+
+        // ipMatch should STILL exist in Location-B
+        assertTrue(
+            configAfterDelete.getDefinitions().stream()
+                .anyMatch(d -> "Location-B".equals(d.getLocation())
+                    && d.getIpMatches() != null
+                    && d.getIpMatches().contains("88.10-20.*.1-50"))
+        );
+
+        // Verify config in Location-A has reverted to defaults after removal
+        SnmpAgentConfig configAfterRemoval = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Location-A");
+        assertEquals("public", configAfterRemoval.getReadCommunity()); // reverted to default
+        assertEquals(23, configAfterRemoval.getMaxVarsPerPdu()); // reverted to config default
+
+        // Verify config in Location-B is unchanged
+        SnmpAgentConfig configLocationB = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Location-B");
+        assertEquals("ipmatch-location-b", configLocationB.getReadCommunity());
+        assertEquals(32, configLocationB.getMaxVarsPerPdu());
+    }
+
     public void testSaveNewProfile() {
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();

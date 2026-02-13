@@ -44,6 +44,7 @@ import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
@@ -191,6 +192,12 @@ public class AgentConfigurationResourceTest {
 
         @Override
         public boolean removeFromDefinition(InetAddress ipAddress, String location, String module) {
+            return true;
+        }
+
+        @Override
+        public boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics, List<String> ipMatches,
+                                                  String location, String module) {
             return true;
         }
 

@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -123,10 +124,7 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((definition == null) ? 0 : definition.hashCode());
-        return result;
+        return Objects.hash(super.hashCode(), definition, profiles);
     }
 
     @Override
@@ -141,19 +139,38 @@ public class SnmpConfig extends Configuration implements Serializable {
             return false;
         }
         SnmpConfig other = (SnmpConfig) obj;
-        if (definition == null) {
-            if (other.definition != null) {
-                return false;
-            }
-        } else if (!definition.equals(other.definition)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(definition, other.definition)
+                && Objects.equals(profiles, other.profiles);
     }
 
     @Override
     public String toString() {
-        return "SnmpConfig [definitions=" + definition + "]";
+        return "SnmpConfig [" +
+                "definition=" + definition +
+                ", profiles=" + profiles +
+                ", proxyHost=" + getProxyHost() +
+                ", maxVarsPerPdu=" + getMaxVarsPerPdu() +
+                ", maxRepetitions=" + getMaxRepetitions() +
+                ", maxRequestSize=" + getMaxRequestSize() +
+                ", securityName=" + getSecurityName() +
+                ", securityLevel=" + getSecurityLevel() +
+                ", authPassphrase=" + getAuthPassphrase() +
+                ", authProtocol=" + getAuthProtocol() +
+                ", engineId=" + getEngineId() +
+                ", contextEngineId=" + getContextEngineId() +
+                ", contextName=" + getContextName() +
+                ", privacyPassphrase=" + getPrivacyPassphrase() +
+                ", privacyProtocol=" + getPrivacyProtocol() +
+                ", enterpriseId=" + getEnterpriseId() +
+                ", version=" + getVersion() +
+                ", writeCommunity=" + getWriteCommunity() +
+                ", readCommunity=" + getReadCommunity() +
+                ", timeout=" + getTimeout() +
+                ", retry=" + getRetry() +
+                ", port=" + getPort() +
+                ", ttl=" + getTTL() +
+                ", encrypted=" + getEncrypted() +
+                "]";
     }
 
     @Override

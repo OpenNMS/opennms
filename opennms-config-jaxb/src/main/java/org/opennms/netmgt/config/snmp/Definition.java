@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -163,14 +164,7 @@ public class Definition extends Configuration implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((ipMatch == null) ? 0 : ipMatch.hashCode());
-        result = prime * result + ((range == null) ? 0 : range.hashCode());
-        result = prime * result + ((specific == null) ? 0 : specific.hashCode());
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + ((profileLabel == null) ? 0 : profileLabel.hashCode());
-        return result;
+        return Objects.hash(super.hashCode(), range, specific, ipMatch, location, profileLabel);
     }
 
     @Override
@@ -185,38 +179,11 @@ public class Definition extends Configuration implements Serializable {
             return false;
         }
         final Definition other = (Definition) obj;
-        if (ipMatch == null) {
-            if (other.ipMatch != null) {
-                return false;
-            }
-        } else if (!ipMatch.equals(other.ipMatch)) {
-            return false;
-        }
-        if (range == null) {
-            if (other.range != null) {
-                return false;
-            }
-        } else if (!range.equals(other.range)) {
-            return false;
-        }
-        if (specific == null) {
-            if (other.specific != null) {
-                return false;
-            }
-        } else if (!specific.equals(other.specific)) {
-            return false;
-        }
-        if (location == null) {
-            if (other.location != null) {
-                return false;
-            }
-        } else if (!location.equals(other.location)) {
-            return false;
-        } else if (!profileLabel.equals(other.profileLabel)) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(range, other.range)
+                && Objects.equals(specific, other.specific)
+                && Objects.equals(ipMatch, other.ipMatch)
+                && Objects.equals(location, other.location)
+                && Objects.equals(profileLabel, other.profileLabel);
     }
 
     public void visit(final SnmpConfigVisitor visitor) {
@@ -234,11 +201,34 @@ public class Definition extends Configuration implements Serializable {
 
     @Override
     public String toString() {
-        return "Definition [authPassphrase=" + getAuthPassphrase() + ", authProtocol=" + getAuthProtocol() + ", contextEngineId=" + getContextEngineId() + ", contextName="
-                + getContextName() + ", engineId=" + getEngineId() + ", enterpriseId=" + getEnterpriseId() + ", maxRepetitions=" + getMaxRepetitions() + ", maxRequestSize="
-                + getMaxRequestSize() + ", maxVarsPerPdu=" + getMaxVarsPerPdu() + ", port=" + getPort() + ", privacyPassphrase=" + getPrivacyPassphrase() + ", privacyProtocol="
-                + getPrivacyProtocol() + ", proxyHost=" + getProxyHost() + ", readCommunity=" + getReadCommunity() + ", retries=" + getRetry() + ", securityLevel="
-                + getSecurityLevel() + ", securityName=" + getSecurityName() + ", timeout=" + getTimeout() + ", version=" + getVersion() + ", writeCommunity="
-                + getWriteCommunity() + ", ranges=" + range + ", specifics=" + specific + ", ipMatches=" + ipMatch + "]";
+        return "Definition [" +
+                "proxyHost=" + getProxyHost() +
+                ", maxVarsPerPdu=" + getMaxVarsPerPdu() +
+                ", maxRepetitions=" + getMaxRepetitions() +
+                ", maxRequestSize=" + getMaxRequestSize() +
+                ", securityName=" + getSecurityName() +
+                ", securityLevel=" + getSecurityLevel() +
+                ", authPassphrase=" + getAuthPassphrase() +
+                ", authProtocol=" + getAuthProtocol() +
+                ", engineId=" + getEngineId() +
+                ", contextEngineId=" + getContextEngineId() +
+                ", contextName=" + getContextName() +
+                ", privacyPassphrase=" + getPrivacyPassphrase() +
+                ", privacyProtocol=" + getPrivacyProtocol() +
+                ", enterpriseId=" + getEnterpriseId() +
+                ", version=" + getVersion() +
+                ", writeCommunity=" + getWriteCommunity() +
+                ", readCommunity=" + getReadCommunity() +
+                ", timeout=" + getTimeout() +
+                ", retry=" + getRetry() +
+                ", port=" + getPort() +
+                ", ttl=" + getTTL() +
+                ", encrypted=" + getEncrypted() +
+                ", range=" + range +
+                ", specific=" + specific +
+                ", ipMatch=" + ipMatch +
+                ", location=" + location +
+                ", profileLabel=" + profileLabel +
+                "]";
     }
 }

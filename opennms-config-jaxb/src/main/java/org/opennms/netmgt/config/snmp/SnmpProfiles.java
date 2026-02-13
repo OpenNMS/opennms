@@ -58,8 +58,12 @@ public class SnmpProfiles {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SnmpProfiles that = (SnmpProfiles) o;
         return Objects.equals(profile, that.profile);
     }
@@ -67,5 +71,12 @@ public class SnmpProfiles {
     @Override
     public int hashCode() {
         return Objects.hash(profile);
+    }
+
+    @Override
+    public String toString() {
+        return "SnmpProfiles [" +
+                "profile=" + profile +
+                "]";
     }
 }

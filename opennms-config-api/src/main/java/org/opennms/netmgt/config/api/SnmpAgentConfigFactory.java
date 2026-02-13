@@ -26,6 +26,7 @@ import java.net.InetAddress;
 import java.util.List;
 
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -80,6 +81,18 @@ public interface SnmpAgentConfigFactory {
      * @param module    module from which the definition is getting removed.
      */
     boolean removeFromDefinition(InetAddress ipAddress, String location, String module);
+
+    /**
+     * Remove the given IP address ranges and/or specific IP addresses from the definitions.
+     * Must supply at least one range or specific.
+     * @param ranges List of ranges to remove. Set to null or empty list to ignore.
+     * @param specifics List of individual IP addresses to remove. Set to null or empty list to ignore.
+     * @param ipMatches List of IP match expressions to remove. Set to null or empty list to ignore.
+     * @param location  location at which this ipaddress belongs.
+     * @param module    module from which the definition is getting removed.
+     */
+    boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics,
+                                       List<String> ipMatches, String location, String module);
 
     /**
      * Create definition and merge this definition into Current SNMP Config.

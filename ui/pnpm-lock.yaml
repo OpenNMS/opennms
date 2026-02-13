@@ -35,6 +35,9 @@ importers:
       '@featherds/button':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
+      '@featherds/card':
+        specifier: ^0.12.43
+        version: 0.12.43(typescript@5.4.5)
       '@featherds/checkbox':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
@@ -543,6 +546,9 @@ packages:
 
   '@featherds/button@0.12.43':
     resolution: {integrity: sha512-oubyIHFgRcHwQmBSugD/7gtJoEO2GNgthqEzaN3ZsDUfalNuN+3dfnWsTLGmC9Hx12JE0j0qrKrQMf3pdSNCQg==}
+
+  '@featherds/card@0.12.43':
+    resolution: {integrity: sha512-dNoVJfNTpxKJn/0Yx+Z9Ub47vakznY+JJgTL4P8bVWabbhuhuGa2F9ehHmlf8o9UMzMaitZe9UUUvgMiGnrBaA==}
 
   '@featherds/checkbox@0.12.43':
     resolution: {integrity: sha512-IdWOR9oEPWtyeYHY4VKspm6icerQZypYqEMjYKSBMLlYJS7rMdKYGdnhbE0W2CBMHZINnP32LmtvgisLjSSE2w==}
@@ -3174,6 +3180,14 @@ snapshots:
       - typescript
 
   '@featherds/button@0.12.43(typescript@5.4.5)':
+    dependencies:
+      '@featherds/ripple': 0.12.43(typescript@5.4.5)
+      '@featherds/styles': 0.12.43
+      vue: 3.5.25(typescript@5.4.5)
+    transitivePeerDependencies:
+      - typescript
+
+  '@featherds/card@0.12.43(typescript@5.4.5)':
     dependencies:
       '@featherds/ripple': 0.12.43(typescript@5.4.5)
       '@featherds/styles': 0.12.43

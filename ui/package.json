@@ -31,6 +31,7 @@
     "@featherds/back-button": "0.12.43",
     "@featherds/badge": "0.12.43",
     "@featherds/button": "0.12.43",
+    "@featherds/card": "^0.12.43",
     "@featherds/checkbox": "0.12.43",
     "@featherds/chips": "0.12.43",
     "@featherds/composables": "^0.12.43",

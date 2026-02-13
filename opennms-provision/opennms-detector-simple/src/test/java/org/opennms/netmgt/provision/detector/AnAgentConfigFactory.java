@@ -28,6 +28,7 @@ import java.util.List;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -71,6 +72,12 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
     @Override
     public boolean removeFromDefinition(InetAddress ipAddress, String location, String module) {
        return true;
+    }
+
+    @Override
+    public boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics,
+                                              List<String> ipMatches, String location, String module) {
+        return true;
     }
 
     @Override

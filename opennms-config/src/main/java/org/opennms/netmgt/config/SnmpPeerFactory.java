@@ -57,6 +57,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -496,9 +497,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public boolean removeFromDefinition(InetAddress inetAddress, String location, String module) {
         boolean succeeded = false;
         getWriteLock().lock();
+
         try {
             // Check if there is a matching definition from the config itself instead of doing getAgentConfig.
             Definition matchingDefinition = findMatchingDefinition(inetAddress, location);
+
             if (matchingDefinition != null) {
                 // Form a definition just with this IP Address.
                 Definition definition = createDefinition(matchingDefinition);
@@ -511,11 +514,124 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         } finally {
             getWriteLock().unlock();
         }
+
         if (succeeded) {
             saveCurrent();
             LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
         }
         return succeeded;
+    }
+
+    /**
+     * Removes ranges, specific IP and/or ipMatch expressions from the configuration.
+     * If a given range, specific IP or ipMatch expression is not found in the config,
+     * it will be ignored and the method will continue to try to remove the other items.
+     * The method returns true if at least one item is removed from the config, false otherwise.
+     *
+     * @param ranges List of ranges to remove. Set to null or empty list to ignore.
+     * @param specifics List of individual IP addresses to remove. Set to null or empty list to ignore.
+     * @param ipMatches List of IP match expressions to remove. Set to null or empty list to ignore.
+     * @param location  location at which this ipaddress belongs.
+     * @param module    module from which the definition is getting removed.
+     * @return true if at least one item is removed from the config, false otherwise.
+     */
+    @Override
+    public boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics, List<String> ipMatches,
+                                              String location, String module) {
+        getWriteLock().lock();
+
+        int rangesRemoved = 0;
+        int specificsRemoved = 0;
+        int ipMatchesRemoved = 0;
+
+        // clone the current in-memory config to work with so that we can compare at the end
+        // and only update if there are actual changes
+        SnmpConfig clonedConfig = SnmpPeerFactory.cloneConfig(m_config);
+        final SnmpConfigManager mgr = new SnmpConfigManager(clonedConfig);
+
+        try {
+            // Remove any specifics
+            if (specifics != null) {
+                for (String specific : specifics) {
+                    if (Strings.isNullOrEmpty(specific)) {
+                        continue;
+                    }
+
+                    final InetAddress specificInetAddr = InetAddressUtils.addr(specific);
+                    Definition matchingDefinition = findMatchingDefinition(mgr.getConfig(), specificInetAddr, location);
+
+                    if (matchingDefinition != null) {
+                        // Form a definition just with this IP Address.
+                        Definition definition = createDefinition(matchingDefinition);
+                        List<String> specificList = new ArrayList<>();
+                        specificList.add(InetAddressUtils.toIpAddrString(specificInetAddr));
+                        definition.setSpecifics(specificList);
+
+                        boolean removed = mgr.removeDefinition(definition);
+
+                        if (removed) {
+                            specificsRemoved++;
+                        }
+                    }
+                }
+            }
+
+            if (ranges != null) {
+                // Remove any ranges
+                for (Range range : ranges) {
+                    if (Strings.isNullOrEmpty(range.getBegin()) || Strings.isNullOrEmpty(range.getEnd())) {
+                        continue;
+                    }
+
+                    final InetAddress rangeStart = InetAddressUtils.addr(range.getBegin());
+                    Definition matchingDefinition = findMatchingDefinition(mgr.getConfig(), rangeStart, location);
+
+                    if (matchingDefinition != null) {
+                        // Form a definition with the range
+                        Definition definition = createDefinition(matchingDefinition);
+                        List<Range> rangeList = new ArrayList<>();
+                        Range r = new Range(range.getBegin(), range.getEnd());
+                        rangeList.add(r);
+                        definition.setRanges(rangeList);
+
+                        boolean removed = mgr.removeDefinition(definition);
+
+                        if (removed) {
+                            rangesRemoved++;
+                        }
+                    }
+                }
+            }
+
+            // Remove any definitions that are ipMatchOnly and have the exact ip match expressions
+            if (ipMatches != null && !ipMatches.isEmpty()) {
+                Definition definition = new Definition();
+                definition.setLocation(location);
+                definition.setIpMatches(ipMatches);
+
+                boolean removed = mgr.removeDefinition(definition);
+
+                if (removed) {
+                    ipMatchesRemoved++;
+                }
+            }
+
+            // only update config here and in the DAO if it is actually changed
+            if (!Objects.equals(clonedConfig, m_config)) {
+                // call these directly since we are already in a write lock
+                m_config = clonedConfig;
+                getSnmpConfigDao().updateConfig(m_config);
+
+                LOG.info("Removed {} ranges, {} specifics, {} ipMatches from definitions at location {} by module {}",
+                        rangesRemoved, specificsRemoved, ipMatchesRemoved, location, module);
+            } else {
+                LOG.info("No matching items found to remove for location {} by module {}", location, module);
+            }
+        } finally {
+            getWriteLock().unlock();
+        }
+
+        return rangesRemoved > 0 || specificsRemoved > 0 || ipMatchesRemoved > 0;
     }
 
     @Override
@@ -550,8 +666,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return succeeded;
     }
 
+    /** Find matching definitions from the SnmpConfig retrieved by the DAO. */
     private Definition findMatchingDefinition(InetAddress inetAddress, String location) {
         SnmpConfig config = getSnmpConfig();
+        List<Definition> definitions = config.getDefinitions();
+        return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
+    }
+
+    /** Find matching definitions for the given config. */
+    private Definition findMatchingDefinition(SnmpConfig config, InetAddress inetAddress, String location) {
         List<Definition> definitions = config.getDefinitions();
         return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
     }
@@ -657,6 +780,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
 
         return marshalledConfig;
+    }
+
+    public static SnmpConfig cloneConfig(SnmpConfig config) {
+        StringWriter writer = null;
+
+        try {
+            writer = new StringWriter();
+            JaxbUtils.marshal(config, writer);
+            String marshalledConfig = writer.toString();
+            return JaxbUtils.unmarshal(SnmpConfig.class, marshalledConfig);
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
     }
 
     private void encryptSnmpConfig(SnmpConfig snmpConfig) {

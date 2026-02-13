@@ -35,20 +35,24 @@ const displayTable = computed(() => {
 
 const handleBackButtonClick = () => {
   store.setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
+  store.resetCurrentDefinition()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const onValidationError = (errors: SnmpConfigFormErrors) => {
-  snackbar.showSnackBar({ msg: 'Please fix invalid values.', error: true })
-}
+  if (errors.mixingRangeWithIpMatch) {
+    snackbar.showSnackBar({
+      msg: 'You cannot mix range/specific with IP Match expressions in the same definition.',
+      error: true
+    })
 
-const onSave = async (definition: SnmpDefinition, firstIp?: string, lastIp?: string) => {
-  if (!firstIp) {
-    snackbar.showSnackBar({ msg: 'First IP address is required.', error: true })
     return
   }
 
-  const resp = await store.saveDefinition(definition, firstIp, lastIp)
+  snackbar.showSnackBar({ msg: 'Please fix invalid values.', error: true })
+}
+
+const onSave = async (definition: SnmpDefinition) => {
+  const resp = await store.saveDefinition(definition)
 
   if (resp.success) {
     snackbar.showSnackBar({ msg: 'Configuration saved successfully' })

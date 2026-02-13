@@ -22,7 +22,6 @@
 package org.opennms.netmgt.config;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +52,7 @@ public class SnmpConfigManager {
 	 * <p>
 	 * Constructor for SnmpConfigManager.
 	 * </p>
-	 * 
+	 *
 	 * @param config
 	 *            a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
 	 */
@@ -70,7 +69,7 @@ public class SnmpConfigManager {
 	 * default {@link #m_config} object and are not different from those values
 	 * (e.g. the port of the definition is set and equally to the port set in
 	 * the SnmpConfig)
-	 * 
+	 *
 	 * @param def
 	 *            The Definition where the defaults get removed
 	 */
@@ -102,7 +101,7 @@ public class SnmpConfigManager {
 	 * <p>
 	 * getConfig
 	 * </p>
-	 * 
+	 *
 	 * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
 	 */
 	public SnmpConfig getConfig() {
@@ -111,6 +110,11 @@ public class SnmpConfigManager {
 
 	private List<MergeableDefinition> getDefinitions() {
 		return m_definitions;
+	}
+
+	private void setDefinitions(List<MergeableDefinition> definitions) {
+		m_definitions.clear();
+		m_definitions.addAll(definitions);
 	}
 
 	private void addDefinition(MergeableDefinition def) {
@@ -132,16 +136,16 @@ public class SnmpConfigManager {
 	/**
 	 * This is the exposed method for moving the data from a configureSNMP event
 	 * into the SnmpConfig from SnmpPeerFactory.
-	 * 
+	 *
 	 * @param eventDef
 	 *            a {@link org.opennms.netmgt.config.snmp.Definition} object.
 	 */
 	public void mergeIntoConfig(final Definition eventDef) {
-		removeDefaults(eventDef); 
+		removeDefaults(eventDef);
 		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
 
-        removeDefinitionsThatDoNotMatchLocation(eventDef);
 		// remove pass
+        removeDefinitionsThatDoNotMatchLocation(eventDef);
 		purgeRangesFromDefinitions(eventToMerge);
 
 		if (eventToMerge.isTrivial()) {
@@ -149,11 +153,21 @@ public class SnmpConfigManager {
 		}
 
 		// add pass
+		final boolean isIpMatchOnly = hasIpMatchOnly(eventToMerge.getConfigDef());
 		MergeableDefinition matchingDef = findMatchingDefinition(eventToMerge);
 
 		if (matchingDef == null) {
+			// If we did not find a matching definition, then we can just add the new definition to the config
+			addDefinition(eventToMerge);
+		} else if (isIpMatchOnly) {
+			// if the definition has only ipMatch values, then we want to replace any existing definition
+			// that has the same ipMatch values with the new definition since the new definition could have
+			// different SNMP parameters even if the ipMatch values are the same.
+			removeIpMatchOnlyDefinition(eventToMerge.getConfigDef());
 			addDefinition(eventToMerge);
 		} else {
+			// If we found a definition with matching SNMP parameters/attributes,
+			// then we want to merge the IP specific/range values from the new definition into that existing definition
 			matchingDef.mergeMatchingAttributeDef(eventToMerge);
 		}
 	}
@@ -168,13 +182,22 @@ public class SnmpConfigManager {
 
 		removeDefinitionsThatDoNotMatchLocation(definition);
 
-		// Find a matching definition and remove range from that definition
+		// Find a matching definition.
+		// If it is a definition with only ipMatch values, then remove the whole definition if the ipMatch values match.
+		// Otherwise, only remove the matching ranges/specifics from the existing definition,
+		// then remove any definitions that are left with no ranges/specifics.
+		final boolean isIpMatchOnly = hasIpMatchOnly(removableDefinition.getConfigDef());
 		MergeableDefinition matchingDef = findMatchingDefinition(removableDefinition);
 
 		if (matchingDef != null) {
-			matchingDef.removeRanges(removableDefinition);
-			removeEmptyDefinitions();
-			return true;
+			if (isIpMatchOnly) {
+				removeIpMatchOnlyDefinition(removableDefinition.getConfigDef());
+				return true;
+			} else {
+				matchingDef.removeRanges(removableDefinition);
+				removeEmptyDefinitions();
+				return true;
+			}
 		}
 
 		return false;
@@ -297,6 +320,24 @@ public class SnmpConfigManager {
 	}
 
 	private MergeableDefinition findMatchingDefinition(MergeableDefinition def) {
+		// special case: if the definition has only ipMatch,
+		// then we try to find matching definition that also has only ipMatch and is an exact match.
+		if (hasIpMatchOnly(def.getConfigDef())) {
+			final String ipMatchToFind = getIpMatchCompareString(def.getConfigDef());
+
+			for (MergeableDefinition d : getDefinitions()) {
+				if (hasIpMatchOnly(d.getConfigDef())) {
+					final String ipMatch = getIpMatchCompareString(d.getConfigDef());
+
+					if (ipMatch.equals(ipMatchToFind)) {
+						return d;
+					}
+				}
+			}
+
+			return null;
+		}
+
 		for (MergeableDefinition d : getDefinitions()) {
 			if (d.matches(def)) {
 				return d;
@@ -306,14 +347,91 @@ public class SnmpConfigManager {
 	}
 
 	/**
-	 * Checks if the two objects are equal or not. They are equal if 
+	 * Removes an existing definition that has only ipMatch values and those values exactly match the given definition's ipMatch values.
+	 * Also matches by location if the definition has a location set.
+	 */
+	private void removeIpMatchOnlyDefinition(Definition definition) {
+		if (!hasIpMatchOnly(definition)) {
+			return;
+		}
+
+		final String ipMatchToFind = getIpMatchCompareString(definition);
+		final String locationToMatch = definition.getLocation();
+
+		// remove matching definition from config
+		final List<Definition> filteredDefs = getConfig().getDefinitions().stream()
+				.filter(d -> !isIpOnlyMatchWithLocation(d, ipMatchToFind, locationToMatch))
+				.toList();
+		getConfig().setDefinitions(filteredDefs);
+
+		// remove matching definition from (mergeable) definitions
+		final List<MergeableDefinition> filteredMergeableDefs = getDefinitions().stream()
+				.filter(d -> !isIpOnlyMatchWithLocation(d.getConfigDef(), ipMatchToFind, locationToMatch))
+				.toList();
+		setDefinitions(filteredMergeableDefs);
+	}
+
+	/**
+	 * Returns true if the given definition has only ipMatch values, those values match the given ipMatchToFind string,
+	 * and the location matches (considering "Default" and null as equivalent).
+	 * ipMatchToFind should have been generated using getIpMatchCompareString.
+	 */
+	private boolean isIpOnlyMatchWithLocation(Definition definition, String ipMatchToFind, String locationToMatch) {
+		if (!hasIpMatchOnly(definition) || !getIpMatchCompareString(definition).equals(ipMatchToFind)) {
+			return false;
+		}
+
+		// Match location, treating "Default" and null as equivalent
+		String defLocation = definition.getLocation();
+		if (DEFAULT_LOCATION.equals(defLocation)) {
+			defLocation = null;
+		}
+		String matchLocation = locationToMatch;
+		if (DEFAULT_LOCATION.equals(matchLocation)) {
+			matchLocation = null;
+		}
+
+		return Objects.equals(defLocation, matchLocation);
+	}
+
+	/**
+	 * Returns true if the given definition has only ipMatch values and those values match the given ipMatchToFind string.
+	 * ipMatchToFind should have been generated using getIpMatchCompareString.
+	 */
+	public boolean isIpOnlyMatch(Definition definition, String ipMatchToFind) {
+		return hasIpMatchOnly(definition) && getIpMatchCompareString(definition).equals(ipMatchToFind);
+	}
+
+	/**
+	 * Returns true if the given definition has only ipMatch values and no ranges or specifics.
+	 */
+	public boolean hasIpMatchOnly(Definition definition) {
+		return definition.getIpMatches() != null && !definition.getIpMatches().isEmpty()
+			&& definition.getRanges().isEmpty()
+			&& definition.getSpecifics().isEmpty();
+	}
+
+	/**
+	 * Returns a string that can be used to compare the ipMatch values of two definitions.
+	 */
+	private static String getIpMatchCompareString(Definition def) {
+		if (def.getIpMatches() == null || def.getIpMatches().isEmpty()) {
+			return "";
+		}
+
+		return String.join(",", def.getIpMatches().stream()
+			.map(String::toLowerCase).sorted().toList());
+	}
+
+	/**
+	 * Checks if the two objects are equal or not. They are equal if
 	 * <ul>
 	 * 	<li>obj1 and obj2 are null</li>
 	 *  <li>obj1 and obj2 are not null and obj1.equals(obj2)</li>
 	 * </ul>
-	 * 
+	 *
 	 * Otherwise they are not equal.
-	 * 
+	 *
 	 * @param obj1 Object 1
 	 * @param obj2 Object 2
 	 * @return true if obj1 and obj2 are equal, otherwise false.

@@ -24,6 +24,7 @@ package org.opennms.netmgt.config.snmp;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -803,30 +804,10 @@ public class Configuration implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((authPassphrase == null) ? 0 : authPassphrase.hashCode());
-        result = prime * result + ((authProtocol == null) ? 0 : authProtocol.hashCode());
-        result = prime * result + ((contextEngineId == null) ? 0 : contextEngineId.hashCode());
-        result = prime * result + ((contextName == null) ? 0 : contextName.hashCode());
-        result = prime * result + ((engineId == null) ? 0 : engineId.hashCode());
-        result = prime * result + ((enterpriseId == null) ? 0 : enterpriseId.hashCode());
-        result = prime * result + ((maxRepetitions == null) ? 0 : maxRepetitions.hashCode());
-        result = prime * result + ((maxRequestSize == null) ? 0 : maxRequestSize.hashCode());
-        result = prime * result + ((maxVarsPerPdu == null) ? 0 : maxVarsPerPdu.hashCode());
-        result = prime * result + ((port == null) ? 0 : port.hashCode());
-        result = prime * result + ((privacyPassphrase == null) ? 0 : privacyPassphrase.hashCode());
-        result = prime * result + ((privacyProtocol == null) ? 0 : privacyProtocol.hashCode());
-        result = prime * result + ((proxyHost == null) ? 0 : proxyHost.hashCode());
-        result = prime * result + ((readCommunity == null) ? 0 : readCommunity.hashCode());
-        result = prime * result + ((retry == null) ? 0 : retry.hashCode());
-        result = prime * result + ((securityLevel == null) ? 0 : securityLevel.hashCode());
-        result = prime * result + ((securityName == null) ? 0 : securityName.hashCode());
-        result = prime * result + ((timeout == null) ? 0 : timeout.hashCode());
-        result = prime * result + ((version == null) ? 0 : version.hashCode());
-        result = prime * result + ((writeCommunity == null) ? 0 : writeCommunity.hashCode());
-        result = prime * result + ((ttl == null) ? 0 : ttl.hashCode());
-        return result;
+        return Objects.hash(authPassphrase, authProtocol, contextEngineId, contextName, engineId,
+                enterpriseId, maxRepetitions, maxRequestSize, maxVarsPerPdu, port, privacyPassphrase,
+                privacyProtocol, proxyHost, readCommunity, retry, securityLevel, securityName, timeout,
+                version, writeCommunity, ttl, encrypted);
     }
 
     @Override
@@ -841,163 +822,57 @@ public class Configuration implements Serializable {
             return false;
         }
         final Configuration other = (Configuration) obj;
-        if (authPassphrase == null) {
-            if (other.authPassphrase != null) {
-                return false;
-            }
-        } else if (!authPassphrase.equals(other.authPassphrase)) {
-            return false;
-        }
-        if (authProtocol == null) {
-            if (other.authProtocol != null) {
-                return false;
-            }
-        } else if (!authProtocol.equals(other.authProtocol)) {
-            return false;
-        }
-        if (contextEngineId == null) {
-            if (other.contextEngineId != null) {
-                return false;
-            }
-        } else if (!contextEngineId.equals(other.contextEngineId)) {
-            return false;
-        }
-        if (contextName == null) {
-            if (other.contextName != null) {
-                return false;
-            }
-        } else if (!contextName.equals(other.contextName)) {
-            return false;
-        }
-        if (engineId == null) {
-            if (other.engineId != null) {
-                return false;
-            }
-        } else if (!engineId.equals(other.engineId)) {
-            return false;
-        }
-        if (enterpriseId == null) {
-            if (other.enterpriseId != null) {
-                return false;
-            }
-        } else if (!enterpriseId.equals(other.enterpriseId)) {
-            return false;
-        }
-        if (maxRepetitions == null) {
-            if (other.maxRepetitions != null) {
-                return false;
-            }
-        } else if (!maxRepetitions.equals(other.maxRepetitions)) {
-            return false;
-        }
-        if (maxRequestSize == null) {
-            if (other.maxRequestSize != null) {
-                return false;
-            }
-        } else if (!maxRequestSize.equals(other.maxRequestSize)) {
-            return false;
-        }
-        if (maxVarsPerPdu == null) {
-            if (other.maxVarsPerPdu != null) {
-                return false;
-            }
-        } else if (!maxVarsPerPdu.equals(other.maxVarsPerPdu)) {
-            return false;
-        }
-        if (port == null) {
-            if (other.port != null) {
-                return false;
-            }
-        } else if (!port.equals(other.port)) {
-            return false;
-        }
-        if (privacyPassphrase == null) {
-            if (other.privacyPassphrase != null) {
-                return false;
-            }
-        } else if (!privacyPassphrase.equals(other.privacyPassphrase)) {
-            return false;
-        }
-        if (privacyProtocol == null) {
-            if (other.privacyProtocol != null) {
-                return false;
-            }
-        } else if (!privacyProtocol.equals(other.privacyProtocol)) {
-            return false;
-        }
-        if (proxyHost == null) {
-            if (other.proxyHost != null) {
-                return false;
-            }
-        } else if (!proxyHost.equals(other.proxyHost)) {
-            return false;
-        }
-        if (readCommunity == null) {
-            if (other.readCommunity != null) {
-                return false;
-            }
-        } else if (!readCommunity.equals(other.readCommunity)) {
-            return false;
-        }
-        if (retry == null) {
-            if (other.retry != null) {
-                return false;
-            }
-        } else if (!retry.equals(other.retry)) {
-            return false;
-        }
-        if (securityLevel == null) {
-            if (other.securityLevel != null) {
-                return false;
-            }
-        } else if (!securityLevel.equals(other.securityLevel)) {
-            return false;
-        }
-        if (securityName == null) {
-            if (other.securityName != null) {
-                return false;
-            }
-        } else if (!securityName.equals(other.securityName)) {
-            return false;
-        }
-        if (timeout == null) {
-            if (other.timeout != null) {
-                return false;
-            }
-        } else if (!timeout.equals(other.timeout)) {
-            return false;
-        }
-        if (version == null) {
-            if (other.version != null) {
-                return false;
-            }
-        } else if (!version.equals(other.version)) {
-            return false;
-        }
-        if (writeCommunity == null) {
-            if (other.writeCommunity != null) {
-                return false;
-            }
-        } else if (!writeCommunity.equals(other.writeCommunity)) {
-            return false;
-        }
-        if (ttl == null) {
-            if (other.ttl != null) {
-                return false;
-            }
-        } else if (!ttl.equals(other.ttl)) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(authPassphrase, other.authPassphrase)
+                && Objects.equals(authProtocol, other.authProtocol)
+                && Objects.equals(contextEngineId, other.contextEngineId)
+                && Objects.equals(contextName, other.contextName)
+                && Objects.equals(engineId, other.engineId)
+                && Objects.equals(enterpriseId, other.enterpriseId)
+                && Objects.equals(maxRepetitions, other.maxRepetitions)
+                && Objects.equals(maxRequestSize, other.maxRequestSize)
+                && Objects.equals(maxVarsPerPdu, other.maxVarsPerPdu)
+                && Objects.equals(port, other.port)
+                && Objects.equals(privacyPassphrase, other.privacyPassphrase)
+                && Objects.equals(privacyProtocol, other.privacyProtocol)
+                && Objects.equals(proxyHost, other.proxyHost)
+                && Objects.equals(readCommunity, other.readCommunity)
+                && Objects.equals(retry, other.retry)
+                && Objects.equals(securityLevel, other.securityLevel)
+                && Objects.equals(securityName, other.securityName)
+                && Objects.equals(timeout, other.timeout)
+                && Objects.equals(version, other.version)
+                && Objects.equals(writeCommunity, other.writeCommunity)
+                && Objects.equals(ttl, other.ttl)
+                && Objects.equals(encrypted, other.encrypted);
     }
 
     @Override
     public String toString() {
-        return "Configuration [proxyHost=" + proxyHost + ", maxVarsPerPdu=" + maxVarsPerPdu + ", maxRepetitions=" + maxRepetitions + ", maxRequestSize=" + maxRequestSize + ", securityName="
-                + securityName + ", securityLevel=" + securityLevel + ", authPassphrase=" + authPassphrase + ", authProtocol=" + authProtocol + ", engineId=" + engineId
-                + ", contextEngineId=" + contextEngineId + ", contextName=" + contextName + ", privacyPassphrase=" + privacyPassphrase + ", privacyProtocol=" + privacyProtocol
-                + ", enterpriseId=" + enterpriseId + ", version=" + version + ", writeCommunity=" + writeCommunity + ", readCommunity=" + readCommunity + ", timeout=" + timeout
-                + ", retry=" + retry + ", port=" + port + ", ttl=" + ttl + ", encrypted=" + encrypted + "]";
+        return "Configuration [" +
+                "proxyHost=" + proxyHost +
+                ", maxVarsPerPdu=" + maxVarsPerPdu +
+                ", maxRepetitions=" + maxRepetitions +
+                ", maxRequestSize=" + maxRequestSize +
+                ", securityName=" + securityName +
+                ", securityLevel=" + securityLevel +
+                ", authPassphrase=" + authPassphrase +
+                ", authProtocol=" + authProtocol +
+                ", engineId=" + engineId +
+                ", contextEngineId=" + contextEngineId +
+                ", contextName=" + contextName +
+                ", privacyPassphrase=" + privacyPassphrase +
+                ", privacyProtocol=" + privacyProtocol +
+                ", enterpriseId=" + enterpriseId +
+                ", version=" + version +
+                ", writeCommunity=" + writeCommunity +
+                ", readCommunity=" + readCommunity +
+                ", timeout=" + timeout +
+                ", retry=" + retry +
+                ", port=" + port +
+                ", ttl=" + ttl +
+                ", encrypted=" + encrypted +
+                "]";
     }
 
     /**

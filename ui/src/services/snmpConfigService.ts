@@ -23,6 +23,7 @@
 import { v2 } from './axiosInstances'
 
 import {
+  IpAddressRange,
   SnmpAgentConfig,
   SnmpConfig,
   SnmpDefinition,
@@ -136,8 +137,34 @@ const saveSnmpDefinition = async (definition: SnmpDefinition): Promise<Validatio
   }
 }
 
-const deleteSnmpDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
-  const fullEndpoint = `${endpoint}/definition?ipAddress=${encodeURIComponent(ipAddress)}&location=${encodeURIComponent(location || DEFAULT_MONITORING_LOCATION)}`
+const deleteSnmpDefinition = async (ranges: IpAddressRange[] | null, specifics: string[] | null,
+  ipMatches: string[] | null, location: string): Promise<ValidationResult> => {
+  let rangeItem = ''
+  let specificItem = ''
+  let ipMatchItem = ''
+
+  if (ranges && ranges.length > 0) {
+    const rangeParam = `${ranges.map(range => `${range.begin}-${range.end}`).join(',')}`
+    rangeItem = `ranges=${encodeURIComponent(rangeParam)}`
+  }
+
+  if (specifics && specifics.length > 0) {
+    const specificParam = `${encodeURIComponent(specifics.join(','))}`
+    const hasRange = rangeItem.length > 0
+    specificItem = `${hasRange ? '&' : ''}specifics=${specificParam}`
+  }
+
+  if (ipMatches && ipMatches.length > 0) {
+    const ipMatchParam = `${encodeURIComponent(ipMatches.join(','))}`
+    const hasRangeOrSpecific = rangeItem.length > 0 || specificItem.length > 0
+    ipMatchItem = `${hasRangeOrSpecific ? '&' : ''}ipmatches=${ipMatchParam}`
+  }
+
+  if (!rangeItem && !specificItem && !ipMatchItem) {
+    return createFailureResult('At least one of IP address range, specific IP address, or IP match must be provided')
+  }
+
+  const fullEndpoint = `${endpoint}/definition?${rangeItem}${specificItem}${ipMatchItem}&location=${encodeURIComponent(location || DEFAULT_MONITORING_LOCATION)}`
 
   try {
     const resp = await v2.delete(fullEndpoint)

@@ -138,8 +138,11 @@ export interface SnmpAgentConfig extends SnmpBaseConfiguration {
 
 export interface SnmpConfigFormErrors {
   snmpVersion?: string
+  invalidRangeConfig?: string
+  mixingRangeWithIpMatch?: string
   firstIpAddress?: string
   lastIpAddress?: string
+  ipMatch?: string
   port?: string
   maxRequestSize?: string
   securityLevel?: string
