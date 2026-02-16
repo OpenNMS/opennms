@@ -56,15 +56,17 @@
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div>
-        <FeatherSelect
+        <FeatherAutocomplete
+          class="my-autocomplete"
           label="Storage Strategy"
-          data-test="resource-type-storage-strategy-input"
-          :options="STORAGE_STRATEGY_OPTIONS"
+          type="single"
+          text-prop="_text"
           v-model="storageStrategy"
+          :loading="storageStrategyLoading"
+          :results="storageStrategyResults"
+          @search="onSearchStorageStrategy"
           :error="errors.storageStrategy"
-        >
-          <FeatherIcon :icon="MoreVert" />
-        </FeatherSelect>
+        ></FeatherAutocomplete>
       </div>
       <div class="spacer"></div>
       <div class="spacer"></div>
@@ -132,15 +134,18 @@
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div>
-        <FeatherSelect
+        <FeatherAutocomplete
+          class="my-autocomplete"
           label="Persistence Selector Strategy"
-          data-test="resource-type-persistence-selector-strategy-input"
-          :options="PERSISTENCE_SELECTOR_STRATEGY_OPTIONS"
+          type="single"
+          text-prop="_text"
           v-model="persistenceSelectorStrategy"
+          :loading="persistenceSelectorStrategyLoading"
+          :results="persistenceSelectorStrategyResults"
+          @search="onSearchPersistenceSelectorStrategy"
           :error="errors.persistenceSelectorStrategy"
         >
-          <FeatherIcon :icon="MoreVert" />
-        </FeatherSelect>
+        </FeatherAutocomplete>
       </div>
       <div class="spacer"></div>
       <div class="spacer"></div>
@@ -238,26 +243,31 @@ import { createResourceType, updateResourceType } from '@/services/snmpDataColle
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
+import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
-import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ResourceTypeParameterDrawer from './Drawer/ResourceTypeParameterDrawer.vue'
 
+const storageStrategyLoading = ref(false)
+const storageStrategyTimeout = ref(-1)
+const persistenceSelectorStrategyLoading = ref(false)
+const persistenceSelectorStrategyTimeout = ref(-1)
+const persistenceSelectorStrategyResults = ref([] as IAutocompleteItemType[])
+const storageStrategyResults = ref([] as IAutocompleteItemType[])
 const store = useSnmpDataCollectionDetailStore()
 const name = ref('')
 const resourceLabel = ref('')
 const label = ref('')
 const status = ref(true)
-const storageStrategy = ref<ISelectItemType>()
+const storageStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const storageStrategyParams = ref<StorageStrategyForm[]>([])
-const persistenceSelectorStrategy = ref<ISelectItemType>()
+const persistenceSelectorStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const persistenceSelectorStrategyParams = ref<PersistSelectorStrategyForm[]>([])
 const errors = ref<ResourceTypeErrors>({})
 const snackbar = useSnackbar()
@@ -318,8 +328,8 @@ const loadResourceTypeData = () => {
   if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Create) {
     storageStrategyParams.value = []
     persistenceSelectorStrategyParams.value = []
-    storageStrategy.value = STORAGE_STRATEGY_OPTIONS[0]
-    persistenceSelectorStrategy.value = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0]
+    storageStrategy.value = undefined as unknown as IAutocompleteItemType
+    persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
     name.value = ''
     label.value = ''
     resourceLabel.value = ''
@@ -332,10 +342,12 @@ const loadResourceTypeData = () => {
       label.value = resourceType.label
       resourceLabel.value = resourceType.resourceLabel
       status.value = resourceType.enabled
-      storageStrategy.value = STORAGE_STRATEGY_OPTIONS.find(option => option._value === resourceType.storageStrategy)
-      persistenceSelectorStrategy.value = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS.find(option => option._value === resourceType.persistenceSelectorStrategy)
       storageStrategyParams.value = JSON.parse(resourceType.storageStrategyParams || '[]')
       persistenceSelectorStrategyParams.value = JSON.parse(resourceType.persistenceSelectorParams || '[]')
+      nextTick(() => {
+        storageStrategy.value = { _text: resourceType.storageStrategy, _value: resourceType.storageStrategy }
+        persistenceSelectorStrategy.value = { _text: resourceType.persistenceSelectorStrategy, _value: resourceType.persistenceSelectorStrategy }
+      })
     }
   }
 }
@@ -445,6 +457,58 @@ const saveResourceType = async () => {
   }
 }
 
+const onSearchStorageStrategy = async (q: string) => {
+  storageStrategyLoading.value = true
+  if (storageStrategyTimeout.value !== -1) {
+    clearTimeout(storageStrategyTimeout.value)
+  }
+  storageStrategyTimeout.value = window.setTimeout(() => {
+    const filteredOptions = STORAGE_STRATEGY_OPTIONS
+      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map((x) => ({
+        _text: x,
+        _value: x
+      }))
+
+    // If no matches found and query is not empty, add custom option
+    if (filteredOptions.length === 0 && q.trim()) {
+      filteredOptions.push({
+        _text: q,
+        _value: q
+      })
+    }
+
+    storageStrategyResults.value = filteredOptions
+    storageStrategyLoading.value = false
+  }, 500)
+}
+
+const onSearchPersistenceSelectorStrategy = async (q: string) => {
+  persistenceSelectorStrategyLoading.value = true
+  if (persistenceSelectorStrategyTimeout.value !== -1) {
+    clearTimeout(persistenceSelectorStrategyTimeout.value)
+  }
+  persistenceSelectorStrategyTimeout.value = window.setTimeout(() => {
+    const filteredOptions = PERSISTENCE_SELECTOR_STRATEGY_OPTIONS
+      .filter((x) => x.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map((x) => ({
+        _text: x,
+        _value: x
+      }))
+
+    // If no matches found and query is not empty, add custom option
+    if (filteredOptions.length === 0 && q.trim()) {
+      filteredOptions.push({
+        _text: q,
+        _value: q
+      })
+    }
+
+    persistenceSelectorStrategyResults.value = filteredOptions
+    persistenceSelectorStrategyLoading.value = false
+  }, 500)
+}
+
 watchEffect(() => {
   errors.value = validateResourceType()
   isSaveDisabled.value = Object.keys(errors.value).length > 0
@@ -460,8 +524,8 @@ watch(
       label.value = ''
       resourceLabel.value = ''
       status.value = true
-      storageStrategy.value = undefined
-      persistenceSelectorStrategy.value = undefined
+      storageStrategy.value = undefined as unknown as IAutocompleteItemType
+      persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
       storageStrategyParams.value = []
       persistenceSelectorStrategyParams.value = []
     }
