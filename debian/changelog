@@ -1,3 +1,12 @@
+opennms (35.0.3-1) stable; urgency=low
+
+  * Release 35.0.3 contains a couple of bug fixes, enhancements and new features.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/35.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Feb 2026 12:12:36 -0500
+
 opennms (35.0.2-1) stable; urgency=low
 
   * Release 35.0.2 contains a couple of bug fixes, enhancements and new features.
