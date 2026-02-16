@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
@@ -50,17 +52,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
+import static org.aspectj.bridge.MessageUtil.fail;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -993,6 +1002,82 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals(".1.3.6.1.4.1.9999", updated.getSysoidMask());
         Assert.assertEquals(".1.3.6.1.4.1.9999.1", updated.getSysoid());
 
+    }
+
+    @Test
+    @Transactional
+    public void testDownloadDataCollectionXmlBySourceId() throws Exception {
+        List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
+         String format = "xml";
+        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        SnmpCollectionSource dataCollectionSource =
+                snmpCollectionSourceDao.findByName("dell");
+        assertNotNull("DataCollectionSource should exist after upload", dataCollectionSource);
+
+        // 4) Download by source id
+        Response response = dataCollectionConfRestApi.downloadSnmpDataCollectionById(
+                dataCollectionSource.getId(),format, securityContext);
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
+
+        // 5) Read downloaded entity into a String (handle StreamingOutput/InputStream/String)
+        Object entity = response.getEntity();
+        assertNotNull("Response entity should not be null", entity);
+
+        String downloadedXml;
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            downloadedXml = baos.toString(StandardCharsets.UTF_8);
+        } else if (entity instanceof InputStream) {
+            downloadedXml = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        } else if (entity instanceof String) {
+            downloadedXml = (String) entity;
+        } else {
+            fail("Unexpected entity type: " + entity.getClass());
+            return;
+        }
+
+        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+
+        // 6) Load original (uploaded) XML again
+        try (InputStream is2 = getClass().getResourceAsStream(RESOURCE_PATH)) {
+            assertNotNull("Resource not found: " + RESOURCE_PATH, is2);
+            String uploadedXml = new String(is2.readAllBytes(), StandardCharsets.UTF_8);
+
+            // 7) Unmarshal both into the JAXB types for datacollection
+            final var uploaded = JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(uploadedXml));
+            final var downloaded = JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(downloadedXml));
+
+            // Validate Mib groups
+             final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
+             final var  downloadedGroups = new ArrayList<>(downloaded.getGroups());
+
+             assertEquals(uploadedGroups.size(), downloadedGroups.size());
+             for (int i = 0; i < uploadedGroups.size(); i++) {
+                 assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
+             }
+
+            // Validate Resource types
+            final var uploadedResourceTypes = new ArrayList<>(uploaded.getResourceTypes());
+            final var  downloadedResourceTypes = new ArrayList<>(downloaded.getResourceTypes());
+
+            assertEquals(uploadedResourceTypes.size(), downloadedResourceTypes.size());
+            for (int i = 0; i < uploadedGroups.size(); i++) {
+                assertEquals(uploadedResourceTypes.get(i), downloadedResourceTypes.get(i));
+            }
+            // Validate System defs
+            final var uploadedSystemDefs = new ArrayList<>(uploaded.getSystemDefs());
+            final var downloadedSystemDefs = new ArrayList<>(downloaded.getSystemDefs());
+
+            assertEquals(uploadedSystemDefs.size(), downloadedSystemDefs.size());
+            for (int i = 0; i < uploadedGroups.size(); i++) {
+                assertEquals(uploadedSystemDefs.get(i), downloadedSystemDefs.get(i));
+            }
+
+        }
     }
 
     /** Helper to create a mocked Attachment for a given file */

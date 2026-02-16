@@ -380,7 +380,7 @@ public interface DataCollectionConfRestApi {
 
     @GET
     @Path("/collectsources/{collectionSourceId}/download")
-    @Produces(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(
             summary = "Download Snmp Data Collection XML for a Source",
             description = """
@@ -395,7 +395,7 @@ public interface DataCollectionConfRestApi {
             @ApiResponse(responseCode = "404", description = "No snmpDataCollection found for the specified snmpDataCollection ID")
     })
     Response downloadSnmpDataCollectionById(
-            @PathParam("snmpDataCollectionId") Integer snmpDataCollectionId,
+            @PathParam("collectionSourceId") Integer snmpDataCollectionId,  @QueryParam("format") String format,
             @Context SecurityContext securityContext
     ) throws Exception;
 

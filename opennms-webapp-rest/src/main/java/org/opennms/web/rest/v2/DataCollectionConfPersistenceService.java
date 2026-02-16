@@ -21,11 +21,16 @@
  */
 package org.opennms.web.rest.v2;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.Group;
+import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.IpList;
+
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
@@ -47,10 +52,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -220,6 +226,88 @@ public class DataCollectionConfPersistenceService {
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
     }
 
+    public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource source) {
+        DatacollectionGroup group = new DatacollectionGroup();
+        group.setName(source.getName());
+
+        // Resource types
+        List<SnmpCollectionResourceType> rtEntities = snmpCollectionResourceTypeDao.findAllBySource(source.getId());
+        group.setResourceTypes(rtEntities.stream().map(e -> {
+            ResourceType rt = new ResourceType();
+            rt.setName(e.getName());
+            rt.setLabel(e.getLabel());
+            if(e.getResourceLabel() != null)
+               rt.setResourceLabel(e.getResourceLabel());
+
+            if (e.getStorageStrategy() != null) {
+                StorageStrategy ss = new StorageStrategy();
+                ss.setClazz(e.getStorageStrategy());
+                ss.setParameters(DatacollectionJsonHelper.fromJsonToParameters(e.getStorageStrategyParams()));
+                rt.setStorageStrategy(ss);
+            }
+
+            if (e.getPersistenceSelectorStrategy() != null) {
+                PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
+                ps.setClazz(e.getPersistenceSelectorStrategy());
+                ps.setParameters(DatacollectionJsonHelper.fromJsonToParameters(e.getPersistenceSelectorParams()));
+                rt.setPersistenceSelectorStrategy(ps);
+            }
+            return rt;
+        }).toList());
+
+        // MIB groups
+        List<SnmpCollectionMibGroup> mgEntities = snmpCollectionMibGroupDao.findAllBySource(source.getId());
+        List<Group> mibGroups = mgEntities.stream().map(e -> {
+            Group g = new Group();
+            g.setName(e.getName());
+            g.setIfType(e.getIfType());
+            g.setMibObjs(DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects()));
+            g.setProperties(DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties()));
+            return g;
+        }).toList();
+        group.setGroups(mibGroups);
+
+        // Build list of group names to include
+        List<String> allGroupNames = mibGroups.stream().map(Group::getName).toList();
+
+        // System defs
+        List<SnmpCollectionSystemDef> sdEntities = snmpCollectionSystemDefDao.findAllBySource(source.getId());
+        group.setSystemDefs(sdEntities.stream().map(e -> {
+            SystemDef sd = new SystemDef();
+            sd.setName(e.getName());
+
+            // XSD requirement: one of these MUST be present before <collect>
+            if (e.getSysoid() != null && !e.getSysoid().isBlank()) {
+                sd.setSysoid(e.getSysoid());
+            } else if (e.getSysoidMask() != null && !e.getSysoidMask().isBlank()) {
+                sd.setSysoidMask(e.getSysoidMask());
+            } else {
+                // choose your behavior: fail fast or skip collect
+                throw new IllegalStateException("SystemDef '" + e.getName()
+                        + "' has no sysoid or sysoidMask in DB; cannot generate valid XML.");
+                // OR: return sd; (but then also don't set collect)
+            }
+
+            // now it is safe to set collect
+            List<String> includeGroups = DatacollectionJsonHelper.fromJson(
+                    e.getMibGroupNames(),
+                    new com.fasterxml.jackson.core.type.TypeReference<>() {
+                    }
+            );
+
+            Collect collect = new Collect();
+            collect.setIncludeGroups(includeGroups);
+            sd.setCollect(collect);
+
+            // ipList (optional)
+            sd.setIpList(DatacollectionJsonHelper.fromJsonToIpList(e.getIpAddresses()));
+
+            return sd;
+        }).toList());
+
+        return group;
+    }
+
 
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,
@@ -266,13 +354,13 @@ public class DataCollectionConfPersistenceService {
                                     .ifPresent(s -> {
                                         entity.setStorageStrategy(s.getClazz());
                                         entity.setStorageStrategyParams(
-                                                toJson(s.getParameters()));
+                                                DatacollectionJsonHelper.toJson(s.getParameters()));
                                     });
                             Optional.ofNullable(resourceType.getPersistenceSelectorStrategy())
                                     .ifPresent(p -> {
                                         entity.setPersistenceSelectorStrategy(p.getClazz());
                                         entity.setPersistenceSelectorParams(
-                                                toJson(p.getParameters()));
+                                                DatacollectionJsonHelper.toJson(p.getParameters()));
                                     });
                             return entity;
                         })
@@ -306,9 +394,9 @@ public class DataCollectionConfPersistenceService {
                             entity.setName(mibGroup.getName());
                             entity.setEnabled(true);
                             entity.setIfType(mibGroup.getIfType());
-                            entity.setMibObjects(toJson(mibGroup.getMibObjs()));
-                            entity.setMibObjProperties(toJson(mibGroup.getProperties()));
-                            entity.setMibGroupNames(toJson(groupNames));
+                            entity.setMibObjects(DatacollectionJsonHelper.toJson(mibGroup.getMibObjs()));
+                            entity.setMibObjProperties(DatacollectionJsonHelper.toJson(mibGroup.getProperties()));
+                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(groupNames));
 
                             return entity;
                         })
@@ -327,13 +415,6 @@ public class DataCollectionConfPersistenceService {
             return;
         }
 
-        List<String> mibGroupNames =
-                Optional.ofNullable(dataCollectionGroup.getGroups())
-                        .orElse(List.of())
-                        .stream()
-                        .map(Group::getName)
-                        .collect(Collectors.toList());
-
         List<SnmpCollectionSystemDef> entities =
                 dataCollectionGroup.getSystemDefs().stream()
                         .map(systemDef -> {
@@ -345,31 +426,27 @@ public class DataCollectionConfPersistenceService {
                             entity.setSysoid(systemDef.getSysoid());
                             entity.setSysoidMask(systemDef.getSysoidMask());
                             IpList ipList = systemDef.getIpList();
-                            entity.setIpAddresses(toJson(ipList));
+                            entity.setIpAddresses(DatacollectionJsonHelper.toJson(ipList));
                             entity.setIpAddressMasks(
                                     Optional.ofNullable(ipList)
                                             .map(IpList::getIpAddressMasks)
-                                            .map(this::toJson)
+                                            .map(DatacollectionJsonHelper::toJson)
                                             .orElse(null)
                             );
-                            entity.setMibGroupNames(toJson(mibGroupNames));
+                            List<String> mibGroupNames =
+                                    Optional.ofNullable(systemDef.getCollect())
+                                            .map(Collect::getIncludeGroups)
+                                            .filter(list -> !list.isEmpty())
+                                            .orElseGet(() ->
+                                                    Optional.ofNullable(dataCollectionGroup.getGroups()).orElse(List.of())
+                                                            .stream().map(Group::getName).toList()
+                                            );
+                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(mibGroupNames));
                             return entity;
                         })
                         .collect(Collectors.toList());
 
         snmpCollectionSystemDefDao.saveAll(entities);
-    }
-
-
-    private String toJson(Object value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("JSON serialization failed", e);
-        }
     }
 
 }
