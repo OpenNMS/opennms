@@ -231,12 +231,12 @@ public class DataCollectionConfPersistenceService {
         group.setName(source.getName());
 
         // Resource types
-        List<SnmpCollectionResourceType> rtEntities = snmpCollectionResourceTypeDao.findAllBySource(source.getId());
+        List<SnmpCollectionResourceType> rtEntities = snmpCollectionResourceTypeDao.findAllEnabledBySource(source.getId());
         group.setResourceTypes(rtEntities.stream().map(e -> {
             ResourceType rt = new ResourceType();
             rt.setName(e.getName());
             rt.setLabel(e.getLabel());
-            if(e.getResourceLabel() != null)
+            if (e.getResourceLabel() != null)
                rt.setResourceLabel(e.getResourceLabel());
 
             if (e.getStorageStrategy() != null) {
@@ -256,7 +256,7 @@ public class DataCollectionConfPersistenceService {
         }).toList());
 
         // MIB groups
-        List<SnmpCollectionMibGroup> mgEntities = snmpCollectionMibGroupDao.findAllBySource(source.getId());
+        List<SnmpCollectionMibGroup> mgEntities = snmpCollectionMibGroupDao.findAllEnabledBySource(source.getId());
         List<Group> mibGroups = mgEntities.stream().map(e -> {
             Group g = new Group();
             g.setName(e.getName());
@@ -267,11 +267,9 @@ public class DataCollectionConfPersistenceService {
         }).toList();
         group.setGroups(mibGroups);
 
-        // Build list of group names to include
-        List<String> allGroupNames = mibGroups.stream().map(Group::getName).toList();
 
         // System defs
-        List<SnmpCollectionSystemDef> sdEntities = snmpCollectionSystemDefDao.findAllBySource(source.getId());
+        List<SnmpCollectionSystemDef> sdEntities = snmpCollectionSystemDefDao.findAllEnabledBySource(source.getId());
         group.setSystemDefs(sdEntities.stream().map(e -> {
             SystemDef sd = new SystemDef();
             sd.setName(e.getName());
@@ -282,10 +280,9 @@ public class DataCollectionConfPersistenceService {
             } else if (e.getSysoidMask() != null && !e.getSysoidMask().isBlank()) {
                 sd.setSysoidMask(e.getSysoidMask());
             } else {
-                // choose your behavior: fail fast or skip collect
+                // invalid configuration: fail fast
                 throw new IllegalStateException("SystemDef '" + e.getName()
                         + "' has no sysoid or sysoidMask in DB; cannot generate valid XML.");
-                // OR: return sd; (but then also don't set collect)
             }
 
             // now it is safe to set collect

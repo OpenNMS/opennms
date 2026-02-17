@@ -65,6 +65,11 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
+    public List<SnmpCollectionMibGroup> findAllEnabledBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionMibGroup s where s.collectionSource.id = ? and s.enabled = true", snmpCollectionSourceId);
+    }
+
+    @Override
     public void deleteAll(final Collection<SnmpCollectionMibGroup> list) {
         super.deleteAll(list);
     }

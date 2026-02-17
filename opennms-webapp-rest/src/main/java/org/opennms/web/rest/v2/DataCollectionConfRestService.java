@@ -502,7 +502,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         SnmpCollectionSource collectionSource = snmpCollectionSourceDao.get(snmpDataCollectionId);
         if (collectionSource == null) {
             return buildXmlError(Response.Status.NOT_FOUND,
-                    "No Snmp Collection Source found for  ID: " + snmpDataCollectionId);
+                    "No Snmp Collection Source found for ID: " + snmpDataCollectionId);
         }
 
         DatacollectionGroup dcg = dataCollectionConfPersistenceService.buildDataCollectionGroupFromDb(collectionSource);

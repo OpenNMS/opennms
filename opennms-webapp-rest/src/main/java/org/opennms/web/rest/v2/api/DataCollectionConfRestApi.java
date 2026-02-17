@@ -389,13 +389,13 @@ public interface DataCollectionConfRestApi {
             operationId = "downloadSnmpDataCollectionById"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Snmp Data Collection  XML downloaded successfully",
+            @ApiResponse(responseCode = "200", description = "Snmp Data Collection XML downloaded successfully",
                     content = @Content(mediaType = "application/xml")),
             @ApiResponse(responseCode = "400", description = "Invalid or missing source ID"),
             @ApiResponse(responseCode = "404", description = "No snmpDataCollection found for the specified snmpDataCollection ID")
     })
     Response downloadSnmpDataCollectionById(
-            @PathParam("collectionSourceId") Integer snmpDataCollectionId,  @QueryParam("format") String format,
+            @PathParam("collectionSourceId") Integer snmpDataCollectionId, @QueryParam("format") String format,
             @Context SecurityContext securityContext
     ) throws Exception;
 

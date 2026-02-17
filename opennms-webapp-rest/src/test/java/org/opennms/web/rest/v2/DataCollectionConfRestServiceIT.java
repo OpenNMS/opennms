@@ -64,7 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import static org.aspectj.bridge.MessageUtil.fail;
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -1018,7 +1018,7 @@ public class DataCollectionConfRestServiceIT {
 
         // 4) Download by source id
         Response response = dataCollectionConfRestApi.downloadSnmpDataCollectionById(
-                dataCollectionSource.getId(),format, securityContext);
+                dataCollectionSource.getId(), format, securityContext);
         assertNotNull("Response should not be null", response);
         assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
 
@@ -1052,20 +1052,20 @@ public class DataCollectionConfRestServiceIT {
             final var downloaded = JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(downloadedXml));
 
             // Validate Mib groups
-             final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
-             final var  downloadedGroups = new ArrayList<>(downloaded.getGroups());
+            final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
+            final var  downloadedGroups = new ArrayList<>(downloaded.getGroups());
 
-             assertEquals(uploadedGroups.size(), downloadedGroups.size());
-             for (int i = 0; i < uploadedGroups.size(); i++) {
-                 assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
-             }
+            assertEquals(uploadedGroups.size(), downloadedGroups.size());
+            for (int i = 0; i < uploadedGroups.size(); i++) {
+                assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
+            }
 
             // Validate Resource types
             final var uploadedResourceTypes = new ArrayList<>(uploaded.getResourceTypes());
             final var  downloadedResourceTypes = new ArrayList<>(downloaded.getResourceTypes());
 
             assertEquals(uploadedResourceTypes.size(), downloadedResourceTypes.size());
-            for (int i = 0; i < uploadedGroups.size(); i++) {
+            for (int i = 0; i < uploadedResourceTypes.size(); i++) {
                 assertEquals(uploadedResourceTypes.get(i), downloadedResourceTypes.get(i));
             }
             // Validate System defs
@@ -1073,7 +1073,7 @@ public class DataCollectionConfRestServiceIT {
             final var downloadedSystemDefs = new ArrayList<>(downloaded.getSystemDefs());
 
             assertEquals(uploadedSystemDefs.size(), downloadedSystemDefs.size());
-            for (int i = 0; i < uploadedGroups.size(); i++) {
+            for (int i = 0; i < uploadedSystemDefs.size(); i++) {
                 assertEquals(uploadedSystemDefs.get(i), downloadedSystemDefs.get(i));
             }
 
