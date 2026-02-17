@@ -122,13 +122,13 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
             queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
-        queryBuilder.append(" order by t.createdTime desc ");
+        queryBuilder.append(" order by t.name desc ");
 
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
 
     @Override
-    public PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionResourceType> findByCollectionSourceId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();

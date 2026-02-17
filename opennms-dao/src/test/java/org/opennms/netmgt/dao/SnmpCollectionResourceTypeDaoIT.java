@@ -192,7 +192,7 @@ public class SnmpCollectionResourceTypeDaoIT {
 
     @Test
     @Transactional
-    public void testFindByDataCollectionGroupId_ReturnsValidRecords() {
+    public void testFindByCollectionSourceId_ReturnsValidRecords() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.source.name");
@@ -226,47 +226,47 @@ public class SnmpCollectionResourceTypeDaoIT {
 
 
         // 1. Exact filter by name, ascending by name
-        PageResponse<SnmpCollectionResourceType> result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionResourceType> result = resourceTypeDao.findByCollectionSourceId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("resource"), ascending by name
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         // asc: cpu-resource comes first
 
         // 3. Partial filter, descending by name
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         // desc: disk-resource comes first
 
         // 4. Filter by label substring, ascending
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 5. Filter by label substring (case-insensitive), descending
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 6. Pagination: only second returned
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("disk-resource", (result.getRecords().get(0)).getName());
 
         // 7. Filter with no match
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 
         // 8. Null filter (should return all for group), ascending by label
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), null, "label", "ASC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), null, "label", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals(2, result.getRecords().size());
         assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
         assertEquals("disk-resource", (result.getRecords().get(1)).getName());
 
         // 9. Invalid sortBy field defaults to name ascending
-        result = resourceTypeDao.findByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        result = resourceTypeDao.findByCollectionSourceId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
         assertEquals("disk-resource", (result.getRecords().get(1)).getName());

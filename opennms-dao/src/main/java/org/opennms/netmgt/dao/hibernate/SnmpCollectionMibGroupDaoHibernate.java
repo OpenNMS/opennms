@@ -111,7 +111,7 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
+            queryBuilder.append(" and lower(g.collectionSource.vendor) like ? escape '\\' ");
             queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
@@ -120,13 +120,13 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
             queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
         }
 
-        queryBuilder.append(" order by g.createdTime desc ");
+        queryBuilder.append(" order by g.name desc ");
 
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
 
     @Override
-    public PageResponse<SnmpCollectionMibGroup> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public PageResponse<SnmpCollectionMibGroup> findByCollectionSourceId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();

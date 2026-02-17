@@ -93,7 +93,7 @@
             <column name="id" type="integer">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="datacollection_group_id" type="integer">
+            <column name="collection_source_id" type="integer">
                 <constraints nullable="false"
                              foreignKeyName="fk_systemdefs_source"
                              references="snmp_collection_sources(id)"
@@ -117,8 +117,16 @@
         <createSequence sequenceName="snmp_collection_systemdefs_id_seq" startValue="1" incrementBy="1"/>
 
         <addUniqueConstraint tableName="snmp_collection_systemdefs"
-                             columnNames="datacollection_group_id, name"
+                             columnNames="collection_source_id, name"
                              constraintName="uq_systemdefs_source_name"/>
+
+        <createIndex tableName="snmp_collection_systemdefs" indexName="idx_snmp_collection_systemdefs_group">
+            <column name="collection_source_id"/>
+        </createIndex>
+
+        <createIndex tableName="snmp_collection_systemdefs" indexName="idx_snmp_collection_systemdefs_sysoid">
+            <column name="sysoid"/>
+        </createIndex>
 
         <rollback>
             <dropTable tableName="snmp_collection_systemdefs"/>
@@ -137,7 +145,7 @@
             <column name="id" type="integer">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="datacollection_group_id" type="integer">
+            <column name="collection_source_id" type="integer">
                 <constraints nullable="false"
                              foreignKeyName="fk_mibgroups_source"
                              references="snmp_collection_sources(id)"
@@ -159,6 +167,10 @@
         </createTable>
 
         <createSequence sequenceName="snmp_collection_mib_groups_id_seq" startValue="1" incrementBy="1"/>
+
+        <createIndex tableName="snmp_collection_mib_groups" indexName="idx_snmp_collection_mib_groups_group">
+            <column name="collection_source_id"/>
+        </createIndex>
 
         <createIndex tableName="snmp_collection_mib_groups" indexName="idx_mibgroups_name">
             <column name="name"/>
@@ -185,7 +197,7 @@
             <column name="id" type="integer">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="datacollection_group_id" type="integer">
+            <column name="collection_source_id" type="integer">
                 <constraints nullable="false"
                              foreignKeyName="fk_resourcetypes_source"
                              references="snmp_collection_sources(id)"
@@ -195,7 +207,9 @@
                 <constraints nullable="false"/>
                 <!-- NO UNIQUE constraint - duplicates allowed across sources -->
             </column>
-            <column name="label" type="varchar(256)"/>
+            <column name="label" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
             <column name="resource_label" type="varchar(512)"/>
             <column name="persistence_selector_strategy" type="varchar(256)"/>
             <column name="persistence_selector_params" type="text"/>
@@ -207,6 +221,10 @@
         </createTable>
 
         <createSequence sequenceName="snmp_collection_resource_types_id_seq" startValue="1" incrementBy="1"/>
+
+        <createIndex tableName="snmp_collection_resource_types" indexName="idx_snmp_collection_resource_types_group">
+            <column name="collection_source_id"/>
+        </createIndex>
 
         <createIndex tableName="snmp_collection_resource_types" indexName="idx_resourcetypes_name">
             <column name="name"/>

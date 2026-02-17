@@ -556,12 +556,14 @@ public class DataCollectionConfRestServiceIT {
         SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
         rt1.setCollectionSource(src);
         rt1.setName("resource-type-one");
+        rt1.setLabel("Resource Type One");
         snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
 
         // Resource type 2
         SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
         rt2.setCollectionSource(src);
         rt2.setName("resource-type-two");
+        rt2.setLabel("Resource Type Two");
         snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
         snmpCollectionResourceTypeDao.flush();
 

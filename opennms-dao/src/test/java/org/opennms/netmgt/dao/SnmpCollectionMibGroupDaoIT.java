@@ -186,7 +186,7 @@ public class SnmpCollectionMibGroupDaoIT {
 
     @Test
     @Transactional
-    public void testFindByDataCollectionGroupId_ReturnsValidMibGroups() {
+    public void testFindByCollectionSourceId_ReturnsValidMibGroups() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.snmp.source");
@@ -219,39 +219,39 @@ public class SnmpCollectionMibGroupDaoIT {
         mibGroupDao.flush();
 
         // 1. Exact filter by name ASC
-        PageResponse<SnmpCollectionMibGroup> result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionMibGroup> result = mibGroupDao.findByCollectionSourceId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("mib"), ascending by name
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         // asc: if-mib-interfaces comes first
 
         // 3. Partial filter, descending by name
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         // desc: ip-mib comes first
 
         // 4. Filter by ifType substring, ascending
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 5. Filter by ifType substring, descending
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 6. Case-insensitive filter (should match "ip-MIB")
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 7. Pagination - only second result returned
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("ip-mib", (result.getRecords().get(0)).getName());
 
         // 8. Filter with no match
-        result = mibGroupDao.findByDataCollectionGroupId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
+        result = mibGroupDao.findByCollectionSourceId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 

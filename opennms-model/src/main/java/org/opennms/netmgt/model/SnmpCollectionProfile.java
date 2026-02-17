@@ -26,6 +26,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -69,9 +71,11 @@ public class SnmpCollectionProfile implements Serializable {
     private Boolean enabled = Boolean.TRUE;
 
     @Column(name = "created_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime;
 
     @Column(name = "last_modified")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified;
 
     public Date getCreatedTime() {

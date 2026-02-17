@@ -24,7 +24,6 @@ package org.opennms.web.rest.v2;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.IpList;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
@@ -104,22 +103,22 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSourceDao.filterDataCollectionSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 
-    public PageResponse<SnmpCollectionMibGroup> filterMibGroupByDataCollectionGroupId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy,
+    public PageResponse<SnmpCollectionMibGroup> filterMibGroupByCollectionSourceId(Integer collectionSourceId, String mibGroupFilter, String sortBy,
                                                                                       String order, Integer totalRecords, Integer offset,
                                                                                       Integer limit) {
-        return snmpCollectionMibGroupDao.findByDataCollectionGroupId(dataCollectionGroupId,mibGroupFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionMibGroupDao.findByCollectionSourceId(collectionSourceId,mibGroupFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public PageResponse<SnmpCollectionResourceType> filterResourceTypeByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy,
+    public PageResponse<SnmpCollectionResourceType> filterResourceTypeByCollectionSourceId(Integer collectionSourceId, String resourceTypeFilter, String sortBy,
                                                                                               String order, Integer totalRecords, Integer offset,
                                                                                               Integer limit) {
-        return snmpCollectionResourceTypeDao.findByDataCollectionGroupId(dataCollectionGroupId,resourceTypeFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionResourceTypeDao.findByCollectionSourceId(collectionSourceId,resourceTypeFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public PageResponse<SnmpCollectionSystemDef> filterSystemDefByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefFilter, String sortBy,
+    public PageResponse<SnmpCollectionSystemDef> filterSystemDefByCollectionSourceId(Integer collectionSourceId, String systemDefFilter, String sortBy,
                                                                                         String order, Integer totalRecords, Integer offset,
                                                                                         Integer limit) {
-        return snmpCollectionSystemDefDao.findByDataCollectionGroupId(dataCollectionGroupId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionSystemDefDao.findByCollectionSourceId(collectionSourceId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
     }
 
     public Map<Integer,String> getSnmpCollectionSourceNamesAndIds(){
@@ -291,11 +290,6 @@ public class DataCollectionConfPersistenceService {
             return;
         }
 
-        List<String> groupNames = dataCollectionGroup.getGroups()
-                .stream()
-                .map(Group::getName)
-                .collect(Collectors.toList());
-
         List<SnmpCollectionMibGroup> entities =
                 dataCollectionGroup.getGroups().stream()
                         .map(mibGroup -> {
@@ -308,7 +302,9 @@ public class DataCollectionConfPersistenceService {
                             entity.setIfType(mibGroup.getIfType());
                             entity.setMibObjects(toJson(mibGroup.getMibObjs()));
                             entity.setMibObjProperties(toJson(mibGroup.getProperties()));
-                            entity.setMibGroupNames(toJson(groupNames));
+                            // Store only this group's nested includeGroup references, not all groups
+                            List<String> nestedGroupNames = mibGroup.getIncludeGroups();
+                            entity.setMibGroupNames(toJson(nestedGroupNames));
 
                             return entity;
                         })
@@ -327,13 +323,6 @@ public class DataCollectionConfPersistenceService {
             return;
         }
 
-        List<String> mibGroupNames =
-                Optional.ofNullable(dataCollectionGroup.getGroups())
-                        .orElse(List.of())
-                        .stream()
-                        .map(Group::getName)
-                        .collect(Collectors.toList());
-
         List<SnmpCollectionSystemDef> entities =
                 dataCollectionGroup.getSystemDefs().stream()
                         .map(systemDef -> {
@@ -345,14 +334,26 @@ public class DataCollectionConfPersistenceService {
                             entity.setSysoid(systemDef.getSysoid());
                             entity.setSysoidMask(systemDef.getSysoidMask());
                             IpList ipList = systemDef.getIpList();
-                            entity.setIpAddresses(toJson(ipList));
-                            entity.setIpAddressMasks(
+                            // Store only IP addresses (not the entire IpList object)
+                            entity.setIpAddresses(
                                     Optional.ofNullable(ipList)
-                                            .map(IpList::getIpAddressMasks)
+                                            .map(IpList::getIpAddresses)
+                                            .filter(list -> !list.isEmpty())
                                             .map(this::toJson)
                                             .orElse(null)
                             );
-                            entity.setMibGroupNames(toJson(mibGroupNames));
+                            entity.setIpAddressMasks(
+                                    Optional.ofNullable(ipList)
+                                            .map(IpList::getIpAddressMasks)
+                                            .filter(list -> !list.isEmpty())
+                                            .map(this::toJson)
+                                            .orElse(null)
+                            );
+                            // Store this systemDef's own includeGroup references
+                            List<String> groupNames = Optional.ofNullable(systemDef.getCollect())
+                                    .map(collect -> collect.getIncludeGroups())
+                                    .orElse(List.of());
+                            entity.setMibGroupNames(toJson(groupNames));
                             return entity;
                         })
                         .collect(Collectors.toList());
