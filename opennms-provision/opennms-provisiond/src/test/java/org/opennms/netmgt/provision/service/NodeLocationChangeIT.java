@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.joda.time.Duration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -147,6 +148,17 @@ public class NodeLocationChangeIT {
         });
 
         m_scheduledExecutor.pause();
+    }
+
+    @After
+    public void after() {
+        m_scheduledExecutor.resume();
+        m_eventAnticipator.reset();
+        try {
+            m_provisioner.destroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test(timeout=30000)
