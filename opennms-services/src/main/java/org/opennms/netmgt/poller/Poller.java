@@ -23,7 +23,6 @@ package org.opennms.netmgt.poller;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -32,8 +31,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -306,7 +303,10 @@ public class Poller extends AbstractServiceDaemon {
 
 
         // Schedule the interfaces currently in the database asynchronously
-        // to avoid blocking daemon initialization
+        // to avoid blocking daemon initialization.
+        // m_initialized is set after scheduling completes so that
+        // findPackageForService() does not call rebuildPackageIpListMap()
+        // for every service during bulk init.
         //
         ExecutorService executor = getExecutorService();
         executor.execute(() -> {
@@ -316,6 +316,8 @@ public class Poller extends AbstractServiceDaemon {
                     scheduleExistingServices();
                 } catch (Throwable sqlE) {
                     LOG.error("start: Failed to schedule existing interfaces", sqlE);
+                } finally {
+                    m_initialized = true;
                 }
             });
         });
@@ -333,8 +335,6 @@ public class Poller extends AbstractServiceDaemon {
 
             throw new UndeclaredThrowableException(t);
         }
-
-        m_initialized = true;
 
     }
 
@@ -480,10 +480,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     private int scheduleServices() {
-        final Criteria criteria = new Criteria(OnmsMonitoredService.class);
-        criteria.addRestriction(new InRestriction("status", Arrays.asList("A", "N")));
-
-        final List<OnmsMonitoredService> services =  m_monitoredServiceDao.findMatching(criteria);
+        final List<OnmsMonitoredService> services = m_monitoredServiceDao.findAllServicesForScheduling();
         final Map<Integer, Set<OnmsOutage>> outagesByServiceId = m_outageDao.currentOutagesByServiceId();
         for (OnmsMonitoredService service : services) {
             scheduleService(service, outagesByServiceId.getOrDefault(service.getId(), Collections.emptySet()));
