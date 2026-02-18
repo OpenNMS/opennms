@@ -483,7 +483,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         try {
-            snmpCollectionSourceDao.deleteByIds(snmpDataCollectionSourceDeletePayload.getSnmpCollectionSourceIds());
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(snmpDataCollectionSourceDeletePayload);
             return Response.ok()
                     .entity("Snmp Data Collection deleted successfully")
                     .build();
