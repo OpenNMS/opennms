@@ -19,39 +19,45 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.jaxb.callback;
+package org.opennms.netmgt.dao.jaxb;
 
-import org.opennms.features.config.service.api.CmJaxbConfigDao;
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
-import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
+import org.opennms.netmgt.dao.api.TrapdConfigDao;
+import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.function.Consumer;
 
-public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
+public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfiguration> implements TrapdConfigDao {
+    public static final String CONFIG_NAME = "trapd-config";
+
+    @Autowired
     private EventForwarder eventForwarder;
-    private CmJaxbConfigDao<E> cmJaxbConfigDao;
 
-    public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
-
-    public ConfigurationReloadEventCallback(EventForwarder eventForwarder, CmJaxbConfigDao<E> cmJaxbConfigDao) {
-        this.eventForwarder = eventForwarder;
-        this.cmJaxbConfigDao = cmJaxbConfigDao;
+    public DefaultTrapdConfigDao() {
+        super(TrapdConfiguration.class, "Trapd Config");
     }
 
     @Override
-    public void accept(ConfigUpdateInfo configUpdateInfo) {
-        if (cmJaxbConfigDao != null) {
-            cmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
-        }
-        // Fire reload event
-        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
-                "config-rest");
-        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
-        eventForwarder.sendNow(eventBuilder.getEvent());
+    public String getConfigName() {
+        return CONFIG_NAME;
+    }
+
+    @Override
+    public TrapdConfiguration getConfig() {
+        return this.getConfig(this.getDefaultConfigId());
+    }
+
+    @Override
+    public Consumer<ConfigUpdateInfo> getUpdateCallback(){
+        return new ConfigurationReloadEventCallback(eventForwarder, this);
+    }
+
+    @Override
+    public Consumer getValidationCallback() {
+        return super.getValidationCallback();
     }
 }

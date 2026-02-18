@@ -34,6 +34,7 @@
 <%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.netmgt.dao.api.TrapdConfigDao" %>
 <% Bootstrap.with(pageContext)
           .headTitle("System Configuration")
           .headTitle("Admin")
@@ -76,14 +77,6 @@
 </script>
 
 <%
-   String trapPort = "Unknown";
-   try {
-       TrapdConfigFactory.init();
-       trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
-   } catch (Throwable e) {
-       // if factory can't be initialized, status is already 'Unknown'
-   }
-
    String syslogPort = "Unknown";
    try {
        SyslogdConfigFactory syslogdConfig = BeanUtils.getBean("commonContext", "syslogdConfigFactory", SyslogdConfigFactory.class);
@@ -135,10 +128,6 @@
         <tr>
           <th>Jetty HTTPS port:</th>
           <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
-        </tr>
-        <tr>
-          <th>SNMP trap port:</th>
-          <td><%=trapPort%></td>
         </tr>
         <tr>
           <th>Syslog port:</th>

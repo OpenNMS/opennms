@@ -102,7 +102,7 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
-  <!-- Other Non-Database DAOs -->
+    <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory
             org.opennms.netmgt.dao.api.ResourceStorageDao
