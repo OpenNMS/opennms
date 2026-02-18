@@ -26,7 +26,7 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
-%define _use_internal_dependency_generator 0
+%define __requires_exclude ^libstdc++-libc6.2.*$
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
@@ -72,6 +72,8 @@ Requires(pre):  jicmp >= 3.0.0
 Requires:       jicmp6 >= 3.0.0
 Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
+Provides:   user(minion)
+Provides:   group(minion)
 
 Conflicts:      %{name}-container        < %{version}-%{release}
 Conflicts:      %{name}-features-core    < %{version}-%{release}

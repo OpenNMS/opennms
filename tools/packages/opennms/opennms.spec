@@ -36,7 +36,7 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
-%define _use_internal_dependency_generator 0
+%define __requires_exclude ^libstdc++-libc6.2.*$
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
@@ -102,6 +102,8 @@ Requires(pre):	jrrd2 >= 2.0.0
 Requires:	jrrd2 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
+Provides:   user(opennms)
+Provides:   group(opennms)
 Obsoletes:	opennms < 1.3.11
 Provides:	opennms-plugin-api = %{opa_version}
 Provides:	%{name}-contrib = %{version}-%{release}
