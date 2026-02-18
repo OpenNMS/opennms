@@ -16,7 +16,7 @@ The following properties can be set in `$\{OPENNMS_HOME}/etc/opennms.properties.
 | opennms.alarmTroubleTicketEnabled
 | Explicitly enable or disable the ticketing integration.
 When not set, ticketing is automatically enabled when a ticketer plugin registers via OSGi.
-| auto
+| N/A
 
 | opennms.alarmTroubleTicketLinkTemplate
 | A template to generate a link to the issue (for example, `\http://issues.opennms.org/browse/$\{id}`).
