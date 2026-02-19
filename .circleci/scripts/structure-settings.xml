@@ -8,8 +8,7 @@
       <repositories>
         <repository>
           <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
+          <url>https://archive.opennms.com/repo-maven/maven2/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -34,8 +33,7 @@
       <pluginRepositories>
         <pluginRepository>
           <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
+          <url>https://archive.opennms.com/repo-maven/maven2/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>

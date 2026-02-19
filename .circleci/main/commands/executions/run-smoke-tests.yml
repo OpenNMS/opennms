@@ -22,6 +22,7 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
+            cp .circleci/settings.xml ${HOME}/.m2
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs

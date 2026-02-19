@@ -54,4 +54,10 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>opennms-repo</id>
+            <url>https://archive.opennms.com/repo-maven/maven2/</url>
+        </repository>
+    </repositories>
 </project>

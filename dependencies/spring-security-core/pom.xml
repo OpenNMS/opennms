@@ -52,4 +52,10 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </repository>
+  </repositories>
 </project>

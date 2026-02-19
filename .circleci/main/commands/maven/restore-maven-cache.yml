@@ -7,5 +7,5 @@ commands:
             command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
         - restore_cache:
             keys:
-              - maven-dependencies-v6-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
-              - maven-dependencies-v6-{{ checksum "pom-version-cache.key" }}-
+              - maven-dependencies-v7-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+              - maven-dependencies-v7-{{ checksum "pom-version-cache.key" }}-

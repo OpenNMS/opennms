@@ -239,4 +239,14 @@
       <version>1.70</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </repository>
+    <repository>
+      <id>shibboleth-releases</id>
+      <url>https://build.shibboleth.net/maven/releases/</url>
+    </repository>
+  </repositories>
 </project>
