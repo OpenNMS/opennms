@@ -50,6 +50,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
@@ -64,7 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -419,6 +419,7 @@ public class DataCollectionConfRestServiceIT {
 
 
     }
+
     @Test
     @Transactional
     public void testFilterDataCollectionSystemDefByCollectionSourceId() {
@@ -1003,84 +1004,114 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals(".1.3.6.1.4.1.9999.1", updated.getSysoid());
 
     }
-
     @Test
     @Transactional
     public void testDownloadDataCollectionXmlBySourceId() throws Exception {
-        List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
-         String format = "xml";
+        final String format = "xml";
+
+        final String xmlResourcePath = RESOURCE_PATH + FILENAME;
+
+        final List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
+
         Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
-        SnmpCollectionSource dataCollectionSource =
-                snmpCollectionSourceDao.findByName("dell");
+        SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("dell");
         assertNotNull("DataCollectionSource should exist after upload", dataCollectionSource);
 
-        // 4) Download by source id
         Response response = dataCollectionConfRestApi.downloadSnmpDataCollectionById(
                 dataCollectionSource.getId(), format, securityContext);
+
         assertNotNull("Response should not be null", response);
         assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
+        assertNotNull("MediaType should not be null", response.getMediaType());
+        assertTrue("Expected application/xml but was: " + response.getMediaType(),
+                response.getMediaType().isCompatible(MediaType.APPLICATION_XML_TYPE));
 
-        // 5) Read downloaded entity into a String (handle StreamingOutput/InputStream/String)
-        Object entity = response.getEntity();
+        final Object entity = response.getEntity();
         assertNotNull("Response entity should not be null", entity);
 
-        String downloadedXml;
-        if (entity instanceof StreamingOutput) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ((StreamingOutput) entity).write(baos);
-            downloadedXml = baos.toString(StandardCharsets.UTF_8);
-        } else if (entity instanceof InputStream) {
-            downloadedXml = new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
-        } else if (entity instanceof String) {
-            downloadedXml = (String) entity;
-        } else {
-            fail("Unexpected entity type: " + entity.getClass());
-            return;
+        String downloadedXml = stripUtf8Bom(readEntityAsString(entity)).trim();
+        assertLooksLikeXml("downloadedXml", downloadedXml);
+
+        final String uploadedXml;
+        try (InputStream is2 = getClass().getResourceAsStream(xmlResourcePath)) {
+            assertNotNull("Resource not found: " + xmlResourcePath, is2);
+            uploadedXml = stripUtf8Bom(new String(is2.readAllBytes(), StandardCharsets.UTF_8)).trim();
+        }
+        assertLooksLikeXml("uploadedXml", uploadedXml);
+
+        final DatacollectionGroup uploaded =
+                JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(uploadedXml));
+        final DatacollectionGroup downloaded =
+                JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(downloadedXml));
+
+        final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
+        final var downloadedGroups = new ArrayList<>(downloaded.getGroups());
+        assertEquals(uploadedGroups.size(), downloadedGroups.size());
+        for (int i = 0; i < uploadedGroups.size(); i++) {
+            assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
         }
 
-        assertFalse("Downloaded XML should not be empty", downloadedXml.isEmpty());
+        // Validate Resource types
+        final var uploadedResourceTypes = new ArrayList<>(uploaded.getResourceTypes());
+        final var downloadedResourceTypes = new ArrayList<>(downloaded.getResourceTypes());
+        assertEquals(uploadedResourceTypes.size(), downloadedResourceTypes.size());
+        for (int i = 0; i < uploadedResourceTypes.size(); i++) {
+            assertEquals(uploadedResourceTypes.get(i), downloadedResourceTypes.get(i));
+        }
 
-        // 6) Load original (uploaded) XML again
-        try (InputStream is2 = getClass().getResourceAsStream(RESOURCE_PATH)) {
-            assertNotNull("Resource not found: " + RESOURCE_PATH, is2);
-            String uploadedXml = new String(is2.readAllBytes(), StandardCharsets.UTF_8);
-
-            // 7) Unmarshal both into the JAXB types for datacollection
-            final var uploaded = JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(uploadedXml));
-            final var downloaded = JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(downloadedXml));
-
-            // Validate Mib groups
-            final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
-            final var  downloadedGroups = new ArrayList<>(downloaded.getGroups());
-
-            assertEquals(uploadedGroups.size(), downloadedGroups.size());
-            for (int i = 0; i < uploadedGroups.size(); i++) {
-                assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
-            }
-
-            // Validate Resource types
-            final var uploadedResourceTypes = new ArrayList<>(uploaded.getResourceTypes());
-            final var  downloadedResourceTypes = new ArrayList<>(downloaded.getResourceTypes());
-
-            assertEquals(uploadedResourceTypes.size(), downloadedResourceTypes.size());
-            for (int i = 0; i < uploadedResourceTypes.size(); i++) {
-                assertEquals(uploadedResourceTypes.get(i), downloadedResourceTypes.get(i));
-            }
-            // Validate System defs
-            final var uploadedSystemDefs = new ArrayList<>(uploaded.getSystemDefs());
-            final var downloadedSystemDefs = new ArrayList<>(downloaded.getSystemDefs());
-
-            assertEquals(uploadedSystemDefs.size(), downloadedSystemDefs.size());
-            for (int i = 0; i < uploadedSystemDefs.size(); i++) {
-                assertEquals(uploadedSystemDefs.get(i), downloadedSystemDefs.get(i));
-            }
-
+        // Validate System defs
+        final var uploadedSystemDefs = new ArrayList<>(uploaded.getSystemDefs());
+        final var downloadedSystemDefs = new ArrayList<>(downloaded.getSystemDefs());
+        assertEquals(uploadedSystemDefs.size(), downloadedSystemDefs.size());
+        for (int i = 0; i < uploadedSystemDefs.size(); i++) {
+            assertEquals(uploadedSystemDefs.get(i), downloadedSystemDefs.get(i));
         }
     }
 
-    /** Helper to create a mocked Attachment for a given file */
+    private static String readEntityAsString(Object entity) throws Exception {
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            return baos.toString(StandardCharsets.UTF_8);
+        }
+        if (entity instanceof InputStream) {
+            return new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        }
+        if (entity instanceof byte[]) {
+            return new String((byte[]) entity, StandardCharsets.UTF_8);
+        }
+        if (entity instanceof String) {
+            return (String) entity;
+        }
+        throw new AssertionError("Unexpected entity type: " + entity.getClass());
+    }
+
+
+    private static void assertLooksLikeXml(String label, String xml) {
+        assertNotNull(label + " should not be null", xml);
+
+        String normalized = stripUtf8Bom(xml).trim();
+
+        assertFalse(label + " should not be empty", normalized.isEmpty());
+        assertTrue(label + " should start with '<' but starts with: " +
+                        normalized.substring(0, Math.min(80, normalized.length())),
+                normalized.startsWith("<"));
+    }
+
+    private static String stripUtf8Bom(String s) {
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+        // UTF-8 BOM char (U+FEFF) sometimes appears as the first char and breaks XML parsing
+        return (s.charAt(0) == '\uFEFF') ? s.substring(1) : s;
+    }
+
+
+    /**
+     * Helper to create a mocked Attachment for a given file
+     */
     private Attachment createMockedAttachment(String name) {
         InputStream is = getClass().getResourceAsStream(RESOURCE_PATH + name);
         assertNotNull("Test resource not found: " + name, is);
