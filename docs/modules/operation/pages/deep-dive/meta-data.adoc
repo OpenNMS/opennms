@@ -293,4 +293,22 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 * xref:reference:service-assurance/monitors/WmiMonitor.adoc[WMI monitor], xref:reference:performance-data-collection/collectors/wmi.adoc[WMI collector]: wmi-config.xml
 * xref:reference:performance-data-collection/collectors/xml.adoc[XML collector]: xml-datacollection-config.xml, xml-datacollection-config/*.xml
 
+[[metadata-configuration]]
+== Configuration
 
+=== Disabling metadata interpolation
+
+For deployments that do not use metadata expressions, you can disable metadata interpolation entirely to improve performance.
+This skips database lookups for metadata scopes during polling, collection, and thresholding operations.
+
+To disable metadata interpolation, add the following to `${OPENNMS_HOME}/etc/opennms.properties`:
+
+[source,properties]
+----
+org.opennms.metadata.interpolation.enabled=false
+----
+
+CAUTION: When disabled, all metadata expressions (e.g., `${node:label}`, `${scv:alias:password}`) will remain as literal strings and not be interpolated.
+This includes Secure Credentials Vault (SCV) lookups.
+
+Default: `true` (metadata interpolation enabled).

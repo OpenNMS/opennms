@@ -13,7 +13,13 @@
 
     <context:annotation-config />
 
-    <bean name="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl" primary="true"/>
+    <!-- Internal implementation with autowired dependencies -->
+    <bean name="entityScopeProviderImpl" class="org.opennms.core.mate.model.EntityScopeProviderImpl"/>
+
+    <!-- Factory that returns either the real impl or no-op based on system property -->
+    <bean name="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderFactory" primary="true">
+        <property name="delegate" ref="entityScopeProviderImpl"/>
+    </bean>
 
     <onmsgi:service ref="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 </beans>
