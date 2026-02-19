@@ -532,6 +532,35 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
 }
 
 /**
+ * Makes a GET request to download all Resource types, MIB groups and System defs
+ * associated with the specified SNMP data collection source ID.
+ *
+ * @param {number} collectionSourceId The ID of the SNMP data collection source to download.
+ * @param {string} format The format of the download (e.g., 'xml' or 'json').
+ * @returns {Promise<any>} A promise that resolves to the full Axios response containing the downloaded file content.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const downloadSnmpDataCollectionById = async (collectionSourceId: number, format: string): Promise<any> => {
+  const endpoint = `/datacollectionconf/collectsources/${collectionSourceId}/download`
+
+  try {
+    const response = await v2.get(endpoint, {
+      params: { format },
+      responseType: 'blob'
+    })
+
+    if (response.status === 200) {
+      return response
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error(`Error downloading SNMP data collection for source ID ${collectionSourceId}:`, error)
+    throw error
+  }
+}
+
+/**
  * Makes a DELETE request to the REST endpoint to delete one or more system definitions for a specific SNMP data collection source.
  * @param {number} sourceId The ID of the SNMP data collection source containing the system definitions.
  * @param {number[]} systemDefIds The IDs of the system definitions to delete.
