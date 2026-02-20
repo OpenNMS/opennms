@@ -1,7 +1,7 @@
 <template>
   <TableCard
     class="system-def-table-card"
-    v-if="!showSystemDefForm"
+    v-if="store.systemDefDrawerState.isEditMode === CreateEditMode.None"
   >
     <div class="header">
       <div class="title-container">
@@ -30,7 +30,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="(systemDef, index) in systemDefs"
+            v-for="(systemDef, index) in store.configForm.systemDef"
             :key="systemDef.id"
           >
             <td>{{ systemDef.name }}</td>
@@ -60,17 +60,11 @@
           </tr>
         </tbody>
       </table>
-      <div v-if="!systemDefs.length">
+      <div v-if="!store.configForm.systemDef.length">
         <EmptyList :content="{ msg: 'No System Definitions found.' }" />
       </div>
     </div>
   </TableCard>
-  <SystemDefForm
-    v-if="showSystemDefForm"
-    :system-def="selectedSystemDef"
-    @cancel="handleCancel"
-    @save="handleSystemDefSave"
-  />
 </template>
 
 <script lang="ts" setup>
@@ -81,45 +75,29 @@ import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import SystemDefForm from './SystemDefForm.vue'
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
+import { CreateEditMode } from '@/types'
 
-const systemDefs = ref<SnmpCollectionSystemDefPayload[]>([])
-const showSystemDefForm = ref(false)
-const selectedSystemDef = ref<SnmpCollectionSystemDefPayload | null>(null)
+const store = useSnmpDataCollectionCreationStore()
 
 const onSystemDefEditClicked = (systemDef: SnmpCollectionSystemDefPayload) => {
-  selectedSystemDef.value = systemDef
-  showSystemDefForm.value = true
+  store.systemDefDrawerState = {
+    visible: true,
+    isEditMode: CreateEditMode.Edit,
+    systemDefIndex: store.configForm.systemDef.findIndex(def => def.id === systemDef.id)
+  }
 }
 
 const onSystemDefDeleteClicked = (systemDef: SnmpCollectionSystemDefPayload, index: number) => {
-  systemDefs.value.splice(index, 1)
+  store.configForm.systemDef.splice(index, 1)
 }
 
 const onAddSystemDefClicked = () => {
-  selectedSystemDef.value = null
-  showSystemDefForm.value = true
-}
-
-const handleCancel = () => {
-  selectedSystemDef.value = null
-  showSystemDefForm.value = false
-}
-
-const handleSystemDefSave = (systemDef: SnmpCollectionSystemDefPayload) => {
-  if (selectedSystemDef.value) {
-    // Edit existing system definition
-    const index = systemDefs.value.findIndex(def => def.id === systemDef.id)
-    if (index !== -1) {
-      systemDefs.value[index] = systemDef
-    }
-  } else {
-    // Add new system definition
-    systemDefs.value.push(systemDef)
+  store.systemDefDrawerState = {
+    visible: true,
+    isEditMode: CreateEditMode.Create,
+    systemDefIndex: -1
   }
-
-  selectedSystemDef.value = null
-  showSystemDefForm.value = false
 }
 </script>
 

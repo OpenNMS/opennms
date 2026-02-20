@@ -1,8 +1,14 @@
 <template>
-  <TableCard class="system-def-form-card">
+  <TableCard
+    class="system-def-form-card"
+    v-if="store.systemDefDrawerState.isEditMode !== CreateEditMode.None"
+  >
     <div class="header">
       <div class="title-container">
-        <h3 class="title">{{ props.systemDef ? 'Update System Definition' : 'Create System Definition' }}</h3>
+        <h3 class="title">
+          {{ store.systemDefDrawerState.isEditMode === CreateEditMode.Edit ? 'Update System Definition'
+            : 'Create System Definition' }}
+        </h3>
       </div>
     </div>
     <div class="form">
@@ -82,7 +88,7 @@
         @click="handleSave"
         :disabled="isSaveDisabled"
       >
-        {{ props.systemDef ? 'Update' : 'Create' }}
+        {{ store.systemDefDrawerState.isEditMode === CreateEditMode.Edit ? 'Update' : 'Create' }}
       </FeatherButton>
     </div>
   </TableCard>
@@ -91,7 +97,7 @@
 <script lang="ts" setup>
 import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDefPayload, SystemDefErrors } from '@/types/snmpDataCollection'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
@@ -99,15 +105,6 @@ import FeatherButton from '@featherds/button/src/components/FeatherButton.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import TableCard from '../Common/TableCard.vue'
-
-const props = defineProps<{
-  systemDef: SnmpCollectionSystemDefPayload | null
-}>()
-
-const emit = defineEmits<{
-  (e: 'save', systemDef: SnmpCollectionSystemDefPayload): void
-  (e: 'cancel'): void
-}>()
 
 const oidType = ref<string>(DEFAULT_OID_TYPE)
 const status = ref<boolean>(DEFAULT_STATUS)
@@ -119,12 +116,7 @@ const results = ref<Array<IAutocompleteItemType>>([])
 const mibGroupNames = ref<Array<IAutocompleteItemType>>([])
 const errors = ref<SystemDefErrors>({})
 const isSaveDisabled = ref<boolean>(true)
-const store = useSnmpDataCollectionDetailStore()
-
-watchEffect(() => {
-  errors.value = validateDefinition()
-  isSaveDisabled.value = Object.keys(errors.value).length > 0
-})
+const store = useSnmpDataCollectionCreationStore()
 
 const loadSystemDef = (systemDef: SnmpCollectionSystemDefPayload | null) => {
   if (systemDef === null) {
@@ -159,14 +151,25 @@ const handleSave = () => {
     '',
     mibGroupNames.value.map((x) => x._value as string),
     status.value,
-    store.selectedSystemDef?.id || 0,
+    store.systemDefDrawerState?.systemDefIndex || 0,
     CreateEditMode.Create
   )
-  emit('save', payload)
+
+  store.configForm.systemDef.push(payload)
+  handleCancel()
 }
 
 const handleCancel = () => {
-  emit('cancel')
+  name.value = ''
+  oidType.value = DEFAULT_OID_TYPE
+  oidValue.value = ''
+  status.value = DEFAULT_STATUS
+  mibGroupNames.value = []
+  store.systemDefDrawerState = {
+    visible: false,
+    isEditMode: CreateEditMode.None,
+    systemDefIndex: -1
+  }
 }
 
 const validateDefinition = (): SystemDefErrors => {
@@ -206,10 +209,18 @@ const search = (q: string) => {
   }, 500)
 }
 
+watchEffect(() => {
+  errors.value = validateDefinition()
+  isSaveDisabled.value = Object.keys(errors.value).length > 0
+})
+
 watch(
-  () => props.systemDef,
+  () => store.systemDefDrawerState.visible,
   (newVal) => {
-    loadSystemDef(newVal)
+    if (newVal) {
+      const systemDef = store.configForm.systemDef[store.systemDefDrawerState.systemDefIndex] || null
+      loadSystemDef(systemDef)
+    }
   },
   { immediate: true }
 )

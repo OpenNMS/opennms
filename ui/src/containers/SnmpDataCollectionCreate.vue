@@ -14,8 +14,25 @@
       </div>
     </div>
     <div class="content">
+      <div class="source">
+        <TableCard class="source-card">
+          <FeatherAutocomplete
+            class="my-autocomplete"
+            :disabled="store.selectedCollectionSource?.name && store.selectedCollectionSource?.id ? true : false"
+            :model-value="selectedCollectionSource"
+            @update:model-value="(item: any) => setSelectedCollectionSource(item)"
+            label="Source Name"
+            data-test="source-name"
+            :results="results"
+            type="single"
+            @search="search"
+          >
+          </FeatherAutocomplete>
+        </TableCard>
+      </div>
       <div class="system-defs">
         <SystemDefTable />
+        <SystemDefForm />
       </div>
       <div class="mib-groups"></div>
       <div class="resource-types"></div>
@@ -38,13 +55,20 @@
 </template>
 
 <script lang="ts" setup>
+import TableCard from '@/components/Common/TableCard.vue'
+import SystemDefForm from '@/components/SnmpDataCollectionCreate/SystemDefForm.vue'
 import SystemDefTable from '@/components/SnmpDataCollectionCreate/SystemDefTable.vue'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
+import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
-const store = useSnmpDataCollectionDetailStore()
 const router = useRouter()
+const loading = ref(false)
+const timeout = ref<number>(-1)
+const results = ref<Array<IAutocompleteItemType>>([])
+const store = useSnmpDataCollectionCreationStore()
+const selectedCollectionSource = ref<IAutocompleteItemType>()
 
 const handleCancel = () => {
   if (store.selectedCollectionSource) {
@@ -54,9 +78,33 @@ const handleCancel = () => {
   }
 }
 
+const search = (query: string) => {
+  loading.value = true
+  clearTimeout(timeout.value)
+  timeout.value = window.setTimeout(() => {
+    results.value = store.uploadedSourceNames
+      .filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
+      .map((x) => ({ _text: x.name, _value: x.id }))
+    loading.value = false
+  }, 500)
+}
+
+const setSelectedCollectionSource = (item: IAutocompleteItemType) => {
+  selectedCollectionSource.value = item
+}
+
 onMounted(async () => {
-  await store.fetchMibGroupNames()
-  await store.fetchResourceTypeNames()
+  await store.initializeCreationForm()
+  if (store.selectedCollectionSource) {
+    nextTick(() => {
+      selectedCollectionSource.value = {
+        _text: store.selectedCollectionSource?.name,
+        _value: store.selectedCollectionSource?.id
+      }
+    })
+  } else {
+    selectedCollectionSource.value = undefined as unknown as IAutocompleteItemType
+  }
 })
 </script>
 
@@ -72,6 +120,16 @@ onMounted(async () => {
 
     h3 {
       margin: 0;
+    }
+  }
+
+  .content {
+    .source {
+      margin-bottom: 20px;
+
+      .source-card {
+        padding: 20px;
+      }
     }
   }
 
