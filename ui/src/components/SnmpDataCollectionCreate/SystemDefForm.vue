@@ -80,6 +80,7 @@
         primary
         data-test="save-button"
         @click="handleSave"
+        :disabled="isSaveDisabled"
       >
         {{ props.systemDef ? 'Update' : 'Create' }}
       </FeatherButton>
@@ -88,7 +89,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
@@ -117,7 +118,13 @@ const loading = ref<boolean>(false)
 const results = ref<Array<IAutocompleteItemType>>([])
 const mibGroupNames = ref<Array<IAutocompleteItemType>>([])
 const errors = ref<SystemDefErrors>({})
+const isSaveDisabled = ref<boolean>(true)
 const store = useSnmpDataCollectionDetailStore()
+
+watchEffect(() => {
+  errors.value = validateDefinition()
+  isSaveDisabled.value = Object.keys(errors.value).length > 0
+})
 
 const loadSystemDef = (systemDef: SnmpCollectionSystemDefPayload | null) => {
   if (systemDef === null) {
@@ -140,6 +147,10 @@ const loadSystemDef = (systemDef: SnmpCollectionSystemDefPayload | null) => {
 }
 
 const handleSave = () => {
+  if (Object.keys(errors.value).length > 0) {
+    return
+  }
+
   const payload = mapSnmpDataCollectionSystemDefPayloadToServer(
     name.value,
     oidType.value === 'single' ? oidValue.value : '',
@@ -157,6 +168,27 @@ const handleSave = () => {
 const handleCancel = () => {
   emit('cancel')
 }
+
+const validateDefinition = (): SystemDefErrors => {
+  const validationErrors: SystemDefErrors = {}
+  if (!name.value.trim()) {
+    validationErrors['name'] = 'Name is required.'
+  }
+  if (!oidType.value) {
+    validationErrors['oidType'] = 'OID Type is required.'
+  }
+  if (!oidValue.value.trim()) {
+    validationErrors['oidValue'] = 'OID Value is required.'
+  }
+  if (oidValue.value && !OID_PATTERN.test(oidValue.value)) {
+    validationErrors['oidValue'] = 'OID Value format is invalid.'
+  }
+  if (mibGroupNames.value.length === 0) {
+    validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
+  }
+  return validationErrors
+}
+
 
 const search = (q: string) => {
   loading.value = true
