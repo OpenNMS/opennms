@@ -37,3 +37,12 @@ rules:
   type: GAUGE
   labels:
     quantile: "0.$3"
+
+# Per-device trapd metrics
+- pattern: 'org\.opennms\.netmgt\.trapd\.device<location="([^"]+)", ip="([^"]+)", type=([^>]+)><>(\w+)'
+  name: trapd_device_$4
+  type: COUNTER
+  labels:
+    location: "$1"
+    ip: "$2"
+    type: "$3"

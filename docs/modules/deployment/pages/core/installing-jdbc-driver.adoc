@@ -1,11 +1,11 @@
 
 [[install-jdbc-driver-core]]
-= Install JDBC Driver on {page-component-title} Core
+= Install JDBC Driver on Core
 :description: Learn how to install a JDBC driver in OpenNMS {page-component-title} to detect, poll, or collect on JDBC services.
 
 To detect, poll, or collect any JDBC service, you must install the appropriate JDBC driver.
 
-. Download the JDBC driver JAR file from a repository (for example, a public https://mvnrepository.com/[Maven repository]) or from the database vendor.
+. Download the JDBC driver JAR file from a repository, (for example, a public https://mvnrepository.com/[Maven repository]), or from the database vendor.
 . Install the JAR file in `$\{OPENNMS_HOME}/lib/`.
 . Restart {page-component-title}.
 

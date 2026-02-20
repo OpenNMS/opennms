@@ -1,6 +1,6 @@
 
 [[basic-deployment]]
-= OpenNMS {page-component-title}
+= Core
 :description: OpenNMS installation overview: PostgreSQL, REST endpoints, monitoring functions, provisioning, and web interface. OpenNMS architecture diagram.
 
 A basic {page-component-title} deployment installs and configures the core software, which includes PostgreSQL, REST endpoints, monitoring functions, provisioning, and the web interface.

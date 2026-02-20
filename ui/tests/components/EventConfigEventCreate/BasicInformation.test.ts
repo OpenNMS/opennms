@@ -1684,4 +1684,3 @@ describe('BasicInformation Component', () => {
     })
   })
 })
-

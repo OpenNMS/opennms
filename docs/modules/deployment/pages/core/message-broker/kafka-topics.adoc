@@ -12,10 +12,10 @@ All IPC topics use the following format:
 
 Where:
 
-* `{instanceId}` = OpenNMS instance ID (default: `OpenNMS`)
-* `{component}` = IPC component type (e.g., `rpc-request`, `rpc-response`, `Sink`, `twin`)
-* `{endpoint}` = Module or endpoint identifier
-* `{location}` = Minion location (where applicable)
+* `\{instanceId}` = OpenNMS instance ID (default: `OpenNMS`)
+* `\{component}` = IPC component type (e.g., `rpc-request`, `rpc-response`, `Sink`, `twin`)
+* `\{endpoint}` = Module or endpoint identifier
+* `\{location}` = Minion location (where applicable)
 
 == RPC Topics
 
@@ -23,7 +23,7 @@ RPC (Remote Procedure Call) topics are used for request/response communication b
 
 === Request Topics (per location)
 
-Format: `{instanceId}.{location}.rpc-request`
+Format: `\{instanceId}.\{location}.rpc-request`
 
 Example: `OpenNMS.Default.rpc-request`
 
@@ -31,7 +31,7 @@ NOTE: One request topic is required per Minion location.
 
 === Response Topic (global)
 
-Format: `{instanceId}.rpc-response`
+Format: `\{instanceId}.rpc-response`
 
 Example: `OpenNMS.rpc-response`
 
@@ -41,7 +41,7 @@ NOTE: A single response topic is used for all RPC responses.
 
 Sink topics are used for one-way message streaming from Minion to Core (e.g., events, traps, telemetry, flows).
 
-Format: `{instanceId}.Sink.{moduleId}`
+Format: `\{instanceId}.Sink.\{moduleId}`
 
 === Required Sink Topic
 
@@ -80,7 +80,7 @@ These topics are only needed when the corresponding feature is enabled:
 
 === Telemetry/Flow Sink Topics
 
-Telemetry and flow topics use the module ID format `Telemetry-{queueName}`. The queue name is defined in `telemetryd-configuration.xml`.
+Telemetry and flow topics use the module ID format `Telemetry-\{queueName}`. The queue name is defined in `telemetryd-configuration.xml`.
 
 NOTE: These are default queue names. If queue names were customized in `telemetryd-configuration.xml`, topic names will differ.
 
@@ -117,7 +117,7 @@ NOTE: These are default queue names. If queue names were customized in `telemetr
 | Graphite metrics
 |===
 
-NOTE: The actual telemetry topic names depend on your telemetry daemon configuration. The queue name is specified in `telemetryd-configuration.xml` and the module ID is `Telemetry-{queueName}`.
+NOTE: The actual telemetry topic names depend on your telemetry daemon configuration. The queue name is specified in `telemetryd-configuration.xml` and the module ID is `Telemetry-\{queueName}`.
 
 .Example Sink Topics
 ----
@@ -139,15 +139,15 @@ Twin topics are used for configuration synchronization between Core and Minion.
 
 === Request Topic (global)
 
-Format: `{instanceId}.twin.request`
+Format: `\{instanceId}.twin.request`
 
 Example: `OpenNMS.twin.request`
 
 === Response Topics
 
-Global response topic: `{instanceId}.twin.response`
+Global response topic: `\{instanceId}.twin.response`
 
-Per-location response topic: `{instanceId}.twin.response.{location}`
+Per-location response topic: `\{instanceId}.twin.response.\{location}`
 
 .Example Twin Topics
 ----

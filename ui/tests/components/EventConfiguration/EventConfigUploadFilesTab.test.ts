@@ -1412,4 +1412,3 @@ describe('EventConfigUploadFilesTab', () => {
     expect(wrapper.vm.eventFiles.map((f: any) => f.file.name)).toEqual(['file1.events.xml', 'file3.events.xml'])
   })
 })
-

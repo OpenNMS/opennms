@@ -23,6 +23,7 @@ package org.opennms.netmgt.eventd.processor;
 
 import java.util.Objects;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
@@ -91,7 +92,7 @@ public class EventIpcBroadcastProcessor implements EventProcessor, InitializingB
 
     private void process(Header eventHeader, Event event, boolean synchronous) {
         if (event.getLogmsg() != null && event.getLogmsg().getDest().equals("suppress")) {
-            LOG.debug("process: skip sending event {} to other daemons because is marked as suppress", event.getUei());
+            LOG.debug("process: skip sending event {} to other daemons because is marked as suppress, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
         } else {
             m_eventIpcBroadcaster.broadcastNow(event, synchronous);
         }

@@ -2,6 +2,46 @@
 
 = Changelog
 
+[[releasenotes-changelog-35.0.3]]
+
+== Release 35.0.3
+
+=== Bug
+
+* Update multiple libraries (Issue https://issues.opennms.org/browse/NMS-19438[NMS-19438])
+* MailTransportMonitor steps all over itself (Issue https://issues.opennms.org/browse/NMS-8099[NMS-8099])
+* Schema for prometheus collector missing from packages (Issue https://issues.opennms.org/browse/NMS-19269[NMS-19269])
+* Update glibc library (Issue https://issues.opennms.org/browse/NMS-19408[NMS-19408])
+* Update glibc-common library (Issue https://issues.opennms.org/browse/NMS-19410[NMS-19410])
+* Update glibc-minimal-langpack library (Issue https://issues.opennms.org/browse/NMS-19413[NMS-19413])
+* Update gnupg2 library (Issue https://issues.opennms.org/browse/NMS-19334[NMS-19334])
+* Update libbrotli library (Issue https://issues.opennms.org/browse/NMS-19217[NMS-19217])
+* Update libpng library (Issue https://issues.opennms.org/browse/NMS-19157[NMS-19157])
+* Update org.bitbucket.b_c:jose4j library (Issue https://issues.opennms.org/browse/NMS-19434[NMS-19434])
+* Update org.lz4:lz4-java library (Issue https://issues.opennms.org/browse/NMS-19198[NMS-19198])
+* Update sqlite-libs library (Issue https://issues.opennms.org/browse/NMS-19155[NMS-19155])
+* Update uglify-js library (Issue https://issues.opennms.org/browse/NMS-19245[NMS-19245])
+* opennms:twin-subscribe missing on minion (Issue https://issues.opennms.org/browse/NMS-19404[NMS-19404])
+
+=== Enhancement
+
+* Expose SNMP Trapd queue size metrics via JMX (Issue https://issues.opennms.org/browse/NMS-19277[NMS-19277])
+* Expose SNMP Traps dispatched not just in batch size (Issue https://issues.opennms.org/browse/NMS-19278[NMS-19278])
+* Investigate if we can measure SNMP Traps on the listener (Issue https://issues.opennms.org/browse/NMS-19279[NMS-19279])
+* Provide a unique identifier for Events and Alarms for log tracing across multiple instances (Issue https://issues.opennms.org/browse/NMS-19402[NMS-19402])
+* Provide internal SNMP Trap listener JMX metrics per device (Issue https://issues.opennms.org/browse/NMS-19403[NMS-19403])
+
+=== Story
+
+* Show configurable topics for Kafka Producer feature (Issue https://issues.opennms.org/browse/NMS-19366[NMS-19366])
+
+=== Task
+
+* Add a copy of COPYING in OpenNMS Core (Issue https://issues.opennms.org/browse/NMS-19442[NMS-19442])
+* Add a script to install and configure rrd for Mac/Ubuntu environments (Issue https://issues.opennms.org/browse/NMS-19144[NMS-19144])
+* Create CentOS 10 install documentation (Issue https://issues.opennms.org/browse/NMS-19060[NMS-19060])
+* Update the link for Version in about page (Issue https://issues.opennms.org/browse/NMS-19407[NMS-19407])
+
 [[releasenotes-changelog-35.0.2]]
 
 == Release 35.0.2
