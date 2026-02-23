@@ -40,10 +40,6 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
-import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +51,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -216,126 +213,97 @@ public class DataCollectionConfPersistenceService {
     }
 
     @Transactional
-    public void deleteSnmpDataCollectionSources(final SnmpDataCollectionSourceDeletePayload request) throws Exception {
-        snmpCollectionSourceDao.deleteByIds(request.getSnmpCollectionSourceIds());
+    public void deleteSnmpDataCollectionSources(final List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+
+            final var source = snmpCollectionSourceDao.get(id);
+            if (source == null) {
+                continue;
+            }
+            snmpCollectionSourceDao.delete(source);
+        }
     }
 
     @Transactional
-    public void deleteSnmpDataCollectionMibGroups(
-            final Integer snmpDataCollectionSourceId,
-            final SnmpDataCollectionMibGroupDeletePayload payload
-    ) {
-
-        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
-            throw new IllegalArgumentException("snmpDataCollectionSourceId must be a positive integer");
-        }
-        if (payload == null || payload.getMibGroupsIds() == null || payload.getMibGroupsIds().isEmpty()) {
-            return; // nothing to delete
-        }
-
-        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
-        if (source == null) {
-            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
-        }
-
-        // Normalize IDs: remove nulls, dedupe
-        final Set<Integer> idsToDelete = payload.getMibGroupsIds().stream()
-                .filter(id -> id != null && id > 0)
-                .collect(java.util.stream.Collectors.toSet());
-
-        if (idsToDelete.isEmpty()) {
-            return;
-        }
-        final List<SnmpCollectionMibGroup> mibGroupsToDelete =
-                snmpCollectionMibGroupDao.findAllBySource(snmpDataCollectionSourceId).stream()
-                        .filter(mib -> mib.getId() != null && idsToDelete.contains(mib.getId()))
-                        .toList();
-
-        if (mibGroupsToDelete.isEmpty()) {
-            return;
-        }
-
-        snmpCollectionMibGroupDao.deleteAll(mibGroupsToDelete);
+    public void deleteSnmpDataCollectionMibGroups(final Integer snmpDataCollectionSourceId,
+                                                  final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionMibGroupDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionMibGroupDao::delete,
+                "MibGroup"
+        );
     }
 
     @Transactional
-    public void deleteSnmpDataCollectionResourceTypes(
-            final Integer snmpDataCollectionSourceId,
-            final SnmpDataCollectionResourceTypeDeletePayload payload
-    ) {
-
-        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
-            throw new IllegalArgumentException("snmpDataCollectionSourceId must be a positive integer");
-        }
-        if (payload == null || payload.getResourceTypeIds() == null || payload.getResourceTypeIds().isEmpty()) {
-            return; // nothing to delete
-        }
-
-        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
-        if (source == null) {
-            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
-        }
-
-        // Normalize IDs: remove nulls, dedupe
-        final Set<Integer> idsToDelete = payload.getResourceTypeIds().stream()
-                .filter(id -> id != null && id > 0)
-                .collect(java.util.stream.Collectors.toSet());
-
-        if (idsToDelete.isEmpty()) {
-            return;
-        }
-
-        final List<SnmpCollectionResourceType> resourceTypesToDelete =
-                snmpCollectionResourceTypeDao.findAllBySource(snmpDataCollectionSourceId).stream()
-                        .filter(rt -> rt.getId() != null && idsToDelete.contains(rt.getId()))
-                        .toList();
-
-        if (resourceTypesToDelete.isEmpty()) {
-            return;
-        }
-
-        snmpCollectionResourceTypeDao.deleteAll(resourceTypesToDelete);
+    public void deleteSnmpDataCollectionResourceTypes(final Integer snmpDataCollectionSourceId,
+                                                      final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionResourceTypeDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionResourceTypeDao::delete,
+                "ResourceType"
+        );
     }
 
     @Transactional
-    public void deleteSnmpDataCollectionSystemDefs(
-            final Integer snmpDataCollectionSourceId,
-            final SnmpDataCollectionSystemDefDeletePayload payload
-    ) {
+    public void deleteSnmpDataCollectionSystemDefs(final Integer snmpDataCollectionSourceId,
+                                                   final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionSystemDefDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionSystemDefDao::delete,
+                "SystemDef"
+        );
+    }
 
+    private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
         if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
             throw new IllegalArgumentException("snmpDataCollectionSourceId must be a positive integer");
         }
-        if (payload == null || payload.getSystemDefIds() == null || payload.getSystemDefIds().isEmpty()) {
-            return; // nothing to delete
-        }
 
-        final SnmpCollectionSource source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
+        final var source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
         if (source == null) {
             throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
         }
-
-        // Normalize IDs: remove nulls, dedupe
-        final Set<Integer> idsToDelete = payload.getSystemDefIds().stream()
-                .filter(id -> id != null && id > 0)
-                .collect(java.util.stream.Collectors.toSet());
-
-        if (idsToDelete.isEmpty()) {
-            return;
-        }
-
-        final List<SnmpCollectionSystemDef> systemDefsToDelete =
-                snmpCollectionSystemDefDao.findAllBySource(snmpDataCollectionSourceId).stream()
-                        .filter(sd -> sd.getId() != null && idsToDelete.contains(sd.getId()))
-                        .toList();
-
-        if (systemDefsToDelete.isEmpty()) {
-            return;
-        }
-
-        snmpCollectionSystemDefDao.deleteAll(systemDefsToDelete);
+        return source;
     }
 
+    private <T> void deleteChildren(final Integer sourceId,
+                                    final List<Integer> ids,
+                                    final BiFunction<Integer, Integer, T> finder,
+                                    final Consumer<T> deleter,
+                                    final String entityLabel) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue; // or throw
+            }
+
+            final T entity = finder.apply(sourceId, id);
+            if (entity == null) {
+                throw new EntityNotFoundException(entityLabel + " not found for sourceId=" + sourceId + ", id=" + id);
+                // or: continue; (ignore missing)
+            }
+            deleter.accept(entity);
+        }
+    }
 
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,

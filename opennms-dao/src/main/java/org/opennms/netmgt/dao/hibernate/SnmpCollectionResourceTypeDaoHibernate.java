@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -96,38 +95,6 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public List<SnmpCollectionResourceType> filterResourceTypeConf(String name, String label, String vendor, String collectionSourceName, int offset, int limit) {
-        List<Object> queryParamList = new ArrayList<>();
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("from SnmpCollectionResourceType t where 1=1 ");
-
-
-        if (name != null && !name.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.name) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
-        }
-
-        if (label != null && !label.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.label) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(label.trim().toLowerCase()) + "%"); // contains match
-        }
-
-        if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
-        }
-
-        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.collectionSource.name) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
-        }
-
-        queryBuilder.append(" order by t.createdTime desc ");
-
-        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
-    }
-
-    @Override
     public PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
@@ -184,17 +151,6 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     @Override
     public SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
         return findUnique("from SnmpCollectionResourceType t where t.collectionSource.id = ? AND t.id = ? ", snmpCollectionSourceId, id);
-    }
-
-    @Override
-    public void deleteByResourceTypeIds(Integer snmpDataCollectionSourceId, List<Integer> snmpCollectionResourceTypeIds) {
-        int deletedCount = getHibernateTemplate().execute(session ->
-                session.createQuery("delete from SnmpCollectionResourceType t where t.collectionSource.id  = :snmpCollectionSourceId and  t.id in (:Ids)")
-                        .setParameter("snmpCollectionSourceId", snmpDataCollectionSourceId)
-                        .setParameterList("Ids", snmpCollectionResourceTypeIds)
-                        .executeUpdate()
-        );
-        LOG.info("Deleted {} SnmpCollectionResourceType(t) with IDs: {} for snmpCollectionSourceId: {}", deletedCount, snmpCollectionResourceTypeIds, snmpDataCollectionSourceId);
     }
 
 }

@@ -44,10 +44,6 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -843,35 +839,8 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionSourceDao.saveOrUpdate(s1);
         snmpCollectionSourceDao.saveOrUpdate(s2);
         snmpCollectionSourceDao.flush();
-
-        // --- BAD_REQUEST: null ids (expecting your REST layer to validate)
-        SnmpDataCollectionSourceDeletePayload badPayload1 = new SnmpDataCollectionSourceDeletePayload();
-        badPayload1.setSnmpCollectionSourceIds(null);
-
-        try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(badPayload1);
-            org.junit.Assert.fail("Expected exception for null source ids");
-        } catch (Exception e) {
-            // keep generic since actual exception type depends on validation layer
-            assertNotNull(e.getMessage());
-        }
-
-        // --- BAD_REQUEST: empty ids
-        SnmpDataCollectionSourceDeletePayload badPayload2 = new SnmpDataCollectionSourceDeletePayload();
-        badPayload2.setSnmpCollectionSourceIds(java.util.Collections.emptyList());
-
-        try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(badPayload2);
-            org.junit.Assert.fail("Expected exception for empty source ids");
-        } catch (Exception e) {
-            assertNotNull(e.getMessage());
-        }
-
         // --- SUCCESS: delete both
-        SnmpDataCollectionSourceDeletePayload okPayload = new SnmpDataCollectionSourceDeletePayload();
-        okPayload.setSnmpCollectionSourceIds(List.of(s1.getId(), s2.getId()));
-
-        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(okPayload);
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(List.of(s1.getId(), s2.getId()));
 
         snmpCollectionSourceDao.flush();
         snmpCollectionSourceDao.clear();
@@ -916,25 +885,15 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionMibGroupDao.flush();
 
         // --- BAD_REQUEST/NOT_FOUND: missing source id
-        SnmpDataCollectionMibGroupDeletePayload notFoundSourcePayload = new SnmpDataCollectionMibGroupDeletePayload();
-        notFoundSourcePayload.setMibGroupsIds(List.of(g1.getId()));
-
         try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(999999, notFoundSourcePayload);
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(999999, List.of(g1.getId()));
             Assert.fail("Expected EntityNotFoundException for missing source");
         } catch (EntityNotFoundException e) {
             assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
         }
 
-        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
-        SnmpDataCollectionMibGroupDeletePayload noMatchPayload = new SnmpDataCollectionMibGroupDeletePayload();
-        noMatchPayload.setMibGroupsIds(List.of(777777, 888888));
-
         // --- SUCCESS: delete both
-        SnmpDataCollectionMibGroupDeletePayload okPayload = new SnmpDataCollectionMibGroupDeletePayload();
-        okPayload.setMibGroupsIds(List.of(g1.getId(), g2.getId()));
-
-        dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(src.getId(), okPayload);
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(src.getId(), List.of(g1.getId(), g2.getId()));
 
         snmpCollectionMibGroupDao.flush();
         snmpCollectionMibGroupDao.clear();
@@ -979,26 +938,16 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionResourceTypeDao.flush();
 
         // --- BAD_REQUEST/NOT_FOUND: missing source id
-        SnmpDataCollectionResourceTypeDeletePayload notFoundSourcePayload = new SnmpDataCollectionResourceTypeDeletePayload();
-        notFoundSourcePayload.setResourceTypeIds(List.of(r1.getId()));
 
         try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(999999, notFoundSourcePayload);
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(999999, List.of(r1.getId()));
             Assert.fail("Expected EntityNotFoundException for missing source");
         } catch (EntityNotFoundException e) {
             assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
         }
 
-        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
-        SnmpDataCollectionResourceTypeDeletePayload noMatchPayload = new SnmpDataCollectionResourceTypeDeletePayload();
-        noMatchPayload.setResourceTypeIds(List.of(111111, 222222));
-
-
         // --- SUCCESS: delete both
-        SnmpDataCollectionResourceTypeDeletePayload okPayload = new SnmpDataCollectionResourceTypeDeletePayload();
-        okPayload.setResourceTypeIds(List.of(r1.getId(), r2.getId()));
-
-        dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(src.getId(), okPayload);
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(src.getId(), List.of(r1.getId(), r2.getId()));
 
         snmpCollectionResourceTypeDao.flush();
         snmpCollectionResourceTypeDao.clear();
@@ -1045,26 +994,15 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionSystemDefDao.flush();
 
         // --- BAD_REQUEST/NOT_FOUND: missing source id
-        SnmpDataCollectionSystemDefDeletePayload notFoundSourcePayload = new SnmpDataCollectionSystemDefDeletePayload();
-        notFoundSourcePayload.setSystemDefIds(List.of(d1.getId()));
-
         try {
-            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(999999, notFoundSourcePayload);
+            dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(999999, List.of(d1.getId()));
             Assert.fail("Expected EntityNotFoundException for missing source");
         } catch (EntityNotFoundException e) {
             assertTrue(e.getMessage().contains("SnmpDataCollectionSource not found for id: 999999"));
         }
 
-        // --- BAD_REQUEST/NOT_FOUND: request ids do not match DB
-        SnmpDataCollectionSystemDefDeletePayload noMatchPayload = new SnmpDataCollectionSystemDefDeletePayload();
-        noMatchPayload.setSystemDefIds(List.of(333333, 444444));
-
-
         // --- SUCCESS: delete both
-        SnmpDataCollectionSystemDefDeletePayload okPayload = new SnmpDataCollectionSystemDefDeletePayload();
-        okPayload.setSystemDefIds(List.of(d1.getId(), d2.getId()));
-
-        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(src.getId(), okPayload);
+        dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(src.getId(), List.of(d1.getId(), d2.getId()));
 
         snmpCollectionSystemDefDao.flush();
         snmpCollectionSystemDefDao.clear();

@@ -43,10 +43,6 @@ import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.DataCollectionConfRestApi;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -935,10 +931,7 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals("Snmp Data Collection IDs to delete must not be empty", bad1.getEntity());
 
         // --- BAD_REQUEST: empty ids
-        SnmpDataCollectionSourceDeletePayload payloadBad2 = new SnmpDataCollectionSourceDeletePayload();
-        payloadBad2.setSnmpCollectionSourceIds(Collections.emptyList());
-
-        Response bad2 = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(payloadBad2, securityContext);
+        Response bad2 = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(Collections.emptyList(), securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
         Assert.assertEquals("Snmp Data Collection IDs to delete must not be empty", bad2.getEntity());
 
@@ -961,10 +954,7 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionSourceDao.saveOrUpdate(src2);
         snmpCollectionSourceDao.flush();
 
-        SnmpDataCollectionSourceDeletePayload payloadOk = new SnmpDataCollectionSourceDeletePayload();
-        payloadOk.setSnmpCollectionSourceIds(List.of(src1.getId(), src2.getId()));
-
-        Response ok = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(payloadOk, securityContext);
+        Response ok = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(List.of(src1.getId(), src2.getId()), securityContext);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
         Assert.assertEquals("Snmp Data Collection deleted successfully", ok.getEntity());
 
@@ -1006,26 +996,17 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionMibGroupDao.flush();
 
         // --- BAD_REQUEST: null ids
-        SnmpDataCollectionMibGroupDeletePayload badPayload1 = new SnmpDataCollectionMibGroupDeletePayload();
-        badPayload1.setMibGroupsIds(null);
-
-        Response bad1 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), badPayload1, securityContext);
+        Response bad1 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), null, securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
         Assert.assertEquals("MIB Group IDs to delete must not be empty", bad1.getEntity());
 
         // --- BAD_REQUEST: empty ids
-        SnmpDataCollectionMibGroupDeletePayload badPayload2 = new SnmpDataCollectionMibGroupDeletePayload();
-        badPayload2.setMibGroupsIds(Collections.emptyList());
-
-        Response bad2 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), badPayload2, securityContext);
+        Response bad2 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), Collections.emptyList(), securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
         Assert.assertEquals("MIB Group IDs to delete must not be empty", bad2.getEntity());
 
         // --- SUCCESS: delete both
-        SnmpDataCollectionMibGroupDeletePayload okPayload = new SnmpDataCollectionMibGroupDeletePayload();
-        okPayload.setMibGroupsIds(List.of(g1.getId(), g2.getId()));
-
-        Response ok = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), okPayload, securityContext);
+        Response ok = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), List.of(g1.getId(), g2.getId()), securityContext);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
         Assert.assertEquals("Snmp Data Collection Mib Groups deleted successfully", ok.getEntity());
 
@@ -1071,26 +1052,17 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionResourceTypeDao.flush();
 
         // --- BAD_REQUEST: null ids
-        SnmpDataCollectionResourceTypeDeletePayload badPayload1 = new SnmpDataCollectionResourceTypeDeletePayload();
-        badPayload1.setResourceTypeIds(null);
-
-        Response bad1 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), badPayload1, securityContext);
+        Response bad1 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), null, securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
-        Assert.assertEquals("Resource Types IDs to delete must not be empty", bad1.getEntity());
+        Assert.assertEquals("Resource Type IDs to delete must not be empty", bad1.getEntity());
 
         // --- BAD_REQUEST: empty ids
-        SnmpDataCollectionResourceTypeDeletePayload badPayload2 = new SnmpDataCollectionResourceTypeDeletePayload();
-        badPayload2.setResourceTypeIds(Collections.emptyList());
-
-        Response bad2 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), badPayload2, securityContext);
+        Response bad2 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), Collections.emptyList(), securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
-        Assert.assertEquals("Resource Types IDs to delete must not be empty", bad2.getEntity());
+        Assert.assertEquals("Resource Type IDs to delete must not be empty", bad2.getEntity());
 
         // --- SUCCESS: delete both
-        SnmpDataCollectionResourceTypeDeletePayload okPayload = new SnmpDataCollectionResourceTypeDeletePayload();
-        okPayload.setResourceTypeIds(List.of(rt1.getId(), rt2.getId()));
-
-        Response ok = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), okPayload, securityContext);
+        Response ok = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), List.of(rt1.getId(), rt2.getId()), securityContext);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
         Assert.assertEquals("Snmp Data Collection Resource Types deleted successfully", ok.getEntity());
 
@@ -1136,26 +1108,17 @@ public class DataCollectionConfRestServiceIT {
         snmpCollectionSystemDefDao.flush();
 
         // --- BAD_REQUEST: null ids
-        SnmpDataCollectionSystemDefDeletePayload badPayload1 = new SnmpDataCollectionSystemDefDeletePayload();
-        badPayload1.setSystemDefIds(null);
-
-        Response bad1 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), badPayload1, securityContext);
+        Response bad1 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), null, securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
         Assert.assertEquals("System Def IDs to delete must not be empty", bad1.getEntity());
 
         // --- BAD_REQUEST: empty ids
-        SnmpDataCollectionSystemDefDeletePayload badPayload2 = new SnmpDataCollectionSystemDefDeletePayload();
-        badPayload2.setSystemDefIds(Collections.emptyList());
-
-        Response bad2 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), badPayload2, securityContext);
+        Response bad2 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), Collections.emptyList(), securityContext);
         Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
         Assert.assertEquals("System Def IDs to delete must not be empty", bad2.getEntity());
 
         // --- SUCCESS: delete both
-        SnmpDataCollectionSystemDefDeletePayload okPayload = new SnmpDataCollectionSystemDefDeletePayload();
-        okPayload.setSystemDefIds(List.of(d1.getId(), d2.getId()));
-
-        Response ok = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), okPayload, securityContext);
+        Response ok = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), List.of(d1.getId(), d2.getId()), securityContext);
         Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
         Assert.assertEquals("Snmp Data Collection System Def deleted successfully", ok.getEntity());
 

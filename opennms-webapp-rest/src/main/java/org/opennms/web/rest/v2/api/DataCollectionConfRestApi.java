@@ -31,10 +31,6 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionMibGroupDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionResourceTypeDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSourceDeletePayload;
-import org.opennms.web.rest.v2.model.SnmpDataCollectionSystemDefDeletePayload;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -356,28 +352,27 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext
     ) throws Exception;
 
-        @DELETE
-        @Path("/collectsources")
-        @Consumes(MediaType.APPLICATION_JSON)
-        @Produces(MediaType.APPLICATION_JSON)
-        @Operation(
-                summary = "Delete SNMP Data Collection Sources",
-                description = "Delete one or more SNMP data collection sources by their IDs.",
-                operationId = "deleteSnmpDataCollectionSources"
-        )
-        @ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Sources deleted successfully"),
-                @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid IDs)"),
-                @ApiResponse(responseCode = "500", description = "Internal server error")
-        })
-        Response deleteSnmpDataCollectionSources(
-                SnmpDataCollectionSourceDeletePayload snmpDataCollectionSourceDeletePayload,
-                @Context SecurityContext securityContext
-        ) throws Exception;
+    @DELETE
+    @Path("/collectsources")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Delete SNMP Data Collection Sources",
+            description = "Delete one or more SNMP data collection sources by their IDs.",
+            operationId = "deleteSnmpDataCollectionSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sources deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid IDs)"),
+            @ApiResponse(responseCode = "404", description = "One or more sources not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response deleteSnmpDataCollectionSources(
+            @QueryParam("id") List<Integer> ids,
+            @Context SecurityContext securityContext
+    );
 
     @DELETE
     @Path("/collectsources/{snmpDataCollectionSourceId}/mib-groups")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete MIB Groups for a Source",
@@ -386,18 +381,18 @@ public interface DataCollectionConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "MIB groups deleted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid MIB group IDs)"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid MIB group IDs or invalid source id)"),
+            @ApiResponse(responseCode = "404", description = "Source and/or MIB groups not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response deleteMibGroupsForSource(
             @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
-            SnmpDataCollectionMibGroupDeletePayload snmpDataCollectionMibGroupDeletePayload,
+            @QueryParam("id") List<Integer> ids,
             @Context SecurityContext securityContext
-    ) throws Exception;
+    );
 
     @DELETE
     @Path("/collectsources/{snmpDataCollectionSourceId}/resource-types")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete Resource Types for a Source",
@@ -406,18 +401,18 @@ public interface DataCollectionConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Resource types deleted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid resource type IDs)"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid resource type IDs or invalid source id)"),
+            @ApiResponse(responseCode = "404", description = "Source and/or resource types not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response deleteResourceTypesForSource(
             @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
-            SnmpDataCollectionResourceTypeDeletePayload snmpDataCollectionResourceTypeDeletePayload,
+            @QueryParam("id") List<Integer> ids,
             @Context SecurityContext securityContext
-    ) throws Exception;
+    );
 
     @DELETE
     @Path("/collectsources/{snmpDataCollectionSourceId}/system-defs")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete System Definitions for a Source",
@@ -426,13 +421,14 @@ public interface DataCollectionConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "System definitions deleted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid system definition IDs)"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid system definition IDs or invalid source id)"),
+            @ApiResponse(responseCode = "404", description = "Source and/or system definitions not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response deleteSystemDefsForSource(
             @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
-            SnmpDataCollectionSystemDefDeletePayload snmpDataCollectionSystemDefDeletePayload,
+            @QueryParam("id") List<Integer> ids,
             @Context SecurityContext securityContext
-    ) throws Exception;
+    );
 
 }
