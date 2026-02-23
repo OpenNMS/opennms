@@ -1,10 +1,19 @@
 import {
+  getAllMibGroupNames,
+  getAllResourceTypeNames,
   getSnmpDataCollectionMibGroups,
   getSnmpDataCollectionResourceTypes,
   getSnmpDataCollectionSourceById,
   getSnmpDataCollectionSystemDefinitions
 } from '@/services/snmpDataCollectionService'
-import { SnmpCollectionDetailState, SnmpCollectionSource } from '@/types/snmpDataCollection'
+import { CreateEditMode } from '@/types'
+import {
+  SnmpCollectionDetailStoreState,
+  SnmpCollectionMibGroup,
+  SnmpCollectionResourceType,
+  SnmpCollectionSource,
+  SnmpCollectionSystemDef
+} from '@/types/snmpDataCollection'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -14,7 +23,7 @@ const defaultPagination = {
 }
 
 export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollectionDetailStore', {
-  state: (): SnmpCollectionDetailState => ({
+  state: (): SnmpCollectionDetailStoreState => ({
     isLoading: false,
     selectedCollectionSource: null,
     systemDefinitions: [],
@@ -37,11 +46,50 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       sortOrder: 'desc',
       sortKey: 'createdTime'
     },
-    mibGroupsSearchTerm: ''
+    mibGroupsSearchTerm: '',
+    resourceTypeNames: [],
+    mibGroupNames: [],
+    selectedSystemDef: null,
+    selectedMibGroup: null,
+    selectedResourceType: null,
+    systemDefDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    },
+    resourceTypeDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    },
+    mibGroupDrawerState: {
+      visible: false,
+      isEditMode: CreateEditMode.None
+    }
   }),
   actions: {
     setSelectedCollectionSource(source: SnmpCollectionSource | null) {
       this.selectedCollectionSource = source
+    },
+    async fetchResourceTypeNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllResourceTypeNames()
+        this.resourceTypeNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection resource type names:', error)
+        this.isLoading = false
+      }
+    },
+    async fetchMibGroupNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllMibGroupNames()
+        this.mibGroupNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching SNMP collection MIB group names:', error)
+        this.isLoading = false
+      }
     },
     async fetchCollectionSourceById(id: string) {
       this.isLoading = true
@@ -66,6 +114,8 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
             this.systemDefsSorting.sortKey,
             this.systemDefsSorting.sortOrder
           )
+          await this.fetchResourceTypeNames()
+          await this.fetchMibGroupNames()
           this.systemDefinitions = response.systemDefinitions
           this.systemDefsPagination.total = response.totalRecords
           this.isLoading = false
@@ -201,6 +251,36 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       }
       this.resourceTypesSearchTerm = ''
       await this.fetchResourceTypes()
+    },
+    openSystemDefCreationDrawer(systemDef: SnmpCollectionSystemDef | null = null, isEditMode: CreateEditMode) {
+      this.selectedSystemDef = systemDef
+      this.systemDefDrawerState.visible = true
+      this.systemDefDrawerState.isEditMode = isEditMode
+    },
+    closeSystemDefDrawer() {
+      this.selectedSystemDef = null
+      this.systemDefDrawerState.visible = false
+      this.systemDefDrawerState.isEditMode = CreateEditMode.None
+    },
+    openMibGroupCreationDrawer(mibGroup: SnmpCollectionMibGroup | null = null, isEditMode: CreateEditMode) {
+      this.selectedMibGroup = mibGroup
+      this.mibGroupDrawerState.visible = true
+      this.mibGroupDrawerState.isEditMode = isEditMode
+    },
+    closeMibGroupDrawer() {
+      this.selectedMibGroup = null
+      this.mibGroupDrawerState.visible = false
+      this.mibGroupDrawerState.isEditMode = CreateEditMode.None
+    },
+    openResourceTypeCreationDrawer(resourceType: SnmpCollectionResourceType | null = null, isEditMode: CreateEditMode) {
+      this.selectedResourceType = resourceType
+      this.resourceTypeDrawerState.visible = true
+      this.resourceTypeDrawerState.isEditMode = isEditMode
+    },
+    closeResourceTypeDrawer() {
+      this.selectedResourceType = null
+      this.resourceTypeDrawerState.visible = false
+      this.resourceTypeDrawerState.isEditMode = CreateEditMode.None
     }
   }
 })

@@ -171,6 +171,7 @@ public class SnmpCollectionSystemDefDto {
                 ))
                 .collect(Collectors.toList());
     }
+
     public static SnmpCollectionSystemDef updateEntity(SnmpCollectionSystemDef entity, final SnmpCollectionSystemDefDto dto) {
         if (dto == null) {
             return null;

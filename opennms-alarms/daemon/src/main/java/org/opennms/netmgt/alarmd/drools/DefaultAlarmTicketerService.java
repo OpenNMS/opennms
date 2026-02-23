@@ -23,6 +23,7 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -129,7 +130,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     private void updateLastAutomationTime(OnmsAlarm alarm, Date now) {
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. lastAutomationTime will not be updated.", alarm);
+            LOG.warn("Alarm disappeared: {}. lastAutomationTime will not be updated, instanceId={}, alarmId={}", alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
 

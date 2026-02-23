@@ -18,12 +18,6 @@
         </div>
       </div>
       <div class="action-container">
-        <!-- <FeatherButton
-          primary
-          data-test="add-event-config"
-        >
-          Add Event Config
-        </FeatherButton> -->
         <FeatherButton
           primary
           data-test="enable-disable-source"
@@ -33,6 +27,7 @@
         <FeatherButton
           primary
           data-test="delete-source"
+          @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
         >
           Delete Source
         </FeatherButton>
@@ -72,22 +67,32 @@
             format(store.selectedCollectionSource.lastModified, 'MM/dd/yyyy') }}</span>
         </div>
       </div>
-      <div class="config-row">
-        <!-- <div class="config-field">
-          <span class="field-label">Event Count:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.eventCount }}</span>
-        </div> -->
+    </div>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
+        <SystemDefinitionsTable />
       </div>
-    </div>
-    <div class="system-defs-container">
-      <SystemDefinitionsTable />
-    </div>
-    <div class="resource-types-container">
-      <ResourceTypesTable />
-    </div>
-    <div class="mib-groups-container">
-      <MibGroupsTable />
-    </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
+        <MibGroupsTable />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
+        <ResourceTypesTable />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="store.mibGroupDrawerState.visible">
+        <MibGroupForm />
+      </div>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="store.resourceTypeDrawerState.visible">
+        <ResourceTypeForm />
+      </div>
+    </Transition>
   </div>
   <div
     v-else
@@ -101,12 +106,24 @@
       Go Back
     </FeatherButton>
   </div>
+  <DeleteConfirmationDialog
+    :visible="isDeleteDialogVisible"
+    :selected="selectedCollectionSource"
+    :type="'source'"
+    @close="closeDeleteCollectionSourceDialog"
+    @confirm="deleteCollectionSource"
+  />
 </template>
 
 <script setup lang="ts">
+import DeleteConfirmationDialog from '@/components/SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
+import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import ResourceTypeForm from '@/components/SnmpDataCollectionDetail/ResourceTypeForm.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteSnmpCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
@@ -115,6 +132,47 @@ import { format } from 'date-fns-tz'
 const router = useRouter()
 const route = useRoute()
 const store = useSnmpDataCollectionDetailStore()
+const isDeleteDialogVisible = ref(false)
+const selectedCollectionSource = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
+
+const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string } | null) => {
+  selectedCollectionSource.value = collectionSource
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteCollectionSourceDialog = () => {
+  selectedCollectionSource.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteCollectionSource = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'source' &&
+    selected?.id &&
+    selected?.id === selectedCollectionSource.value?.id &&
+    selected?.name === selectedCollectionSource.value?.name &&
+    store.selectedCollectionSource?.id === selectedCollectionSource.value?.id
+  ) {
+    const success = await deleteSnmpCollectionSources([selectedCollectionSource.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
+      })
+      router.push({ name: 'SNMP Data Collection' })
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete Collection Source '${selectedCollectionSource.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete Collection Source '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   if (route.params.id) {

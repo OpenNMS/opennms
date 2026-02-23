@@ -1,14 +1,20 @@
+import { CreateEditMode } from '@/types'
 import {
+  PersistSelectorStrategyForm,
   SnmpCollectionMibGroup,
+  SnmpCollectionMibGroupPayload,
   SnmpCollectionMibGroupResponse,
   SnmpCollectionResourceType,
+  SnmpCollectionResourceTypePayload,
   SnmpCollectionResourceTypeResponse,
   SnmpCollectionSource,
   SnmpCollectionSystemDef,
+  SnmpCollectionSystemDefPayload,
   SnmpCollectionSystemDefResponse,
   SnmpDataCollectionSourceNamesAndIds,
   SnmpDataCollectionSourceResponse,
-  SnmpDataCollectionSourceUploadResponse
+  SnmpDataCollectionSourceUploadResponse,
+  StorageStrategyForm
 } from '@/types/snmpDataCollection'
 
 export const mapUploadedDataCollectionFilesResponseFromServer = (
@@ -40,7 +46,7 @@ export const mapDataCollectionSourceFromServer = (source: any): SnmpCollectionSo
 
 export const mapSnmpDataCollectionSourceResponseFromServer = (response: any): SnmpDataCollectionSourceResponse => {
   return {
-    sources: response.snmpCollectionSourceList.map((source: any) => mapDataCollectionSourceFromServer(source)),
+    sources: response.snmpCollectionSourceList.map(mapDataCollectionSourceFromServer),
     totalRecords: response.totalRecords
   }
 }
@@ -62,7 +68,7 @@ export const mapSnmpCollectionSystemDefFromServer = (defs: any): SnmpCollectionS
     sysoidMask: defs.sysoidMask,
     ipAddresses: defs.ipAddresses,
     ipAddressMasks: defs.ipAddressMasks,
-    mibGroupNames: defs.mibGroupNames,
+    mibGroupNames: JSON.parse(defs.mibGroupNames),
     enabled: defs.enabled,
     collectionSourceId: defs.collectionSourceId,
     collectionSourceName: defs.collectionSourceName
@@ -71,7 +77,7 @@ export const mapSnmpCollectionSystemDefFromServer = (defs: any): SnmpCollectionS
 
 export const mapSnmpCollectionSystemDefResponseFromServer = (defs: any): SnmpCollectionSystemDefResponse => {
   return {
-    systemDefinitions: defs.dataCollectionSystemDefsList.map((def: any) => mapSnmpCollectionSystemDefFromServer(def)),
+    systemDefinitions: defs.dataCollectionSystemDefsList.map(mapSnmpCollectionSystemDefFromServer),
     totalRecords: defs.totalRecords
   }
 }
@@ -81,7 +87,7 @@ export const mapSnmpCollectionMibGroupFromServer = (group: any): SnmpCollectionM
     id: group.id,
     name: group.name,
     ifType: group.ifType,
-    mibGroupNames: group.mibGroupNames,
+    mibGroupNames: JSON.parse(group.mibGroupNames),
     mibObjects: group.mibObjects,
     mibObjProperties: group.mibObjProperties,
     enabled: group.enabled,
@@ -92,7 +98,7 @@ export const mapSnmpCollectionMibGroupFromServer = (group: any): SnmpCollectionM
 
 export const mapSnmpCollectionMibGroupResponseFromServer = (groups: any): SnmpCollectionMibGroupResponse => {
   return {
-    mibGroups: groups.dataCollectionMibGroupList.map((group: any) => mapSnmpCollectionMibGroupFromServer(group)),
+    mibGroups: groups.dataCollectionMibGroupList.map(mapSnmpCollectionMibGroupFromServer),
     totalRecords: groups.totalRecords
   }
 }
@@ -117,10 +123,91 @@ export const mapSnmpCollectionResourceTypeResponseFromServer = (
   resourceTypes: any
 ): SnmpCollectionResourceTypeResponse => {
   return {
-    resourceTypes: resourceTypes.dataCollectionResourceTypeList.map((resType: any) =>
-      mapSnmpCollectionResourceTypeFromServer(resType)
-    ),
+    resourceTypes: resourceTypes.dataCollectionResourceTypeList.map(mapSnmpCollectionResourceTypeFromServer),
     totalRecords: resourceTypes.totalRecords
   }
 }
 
+export const mapSnmpDataCollectionSystemDefPayloadToServer = (
+  name: string,
+  sysoid: string,
+  sysoidMask: string,
+  ipAddresses: string,
+  ipAddressMasks: string,
+  mibGroupNames: string[],
+  enabled: boolean,
+  selectedSystemDefId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionSystemDefPayload => {
+  const payload = {
+    name: name,
+    sysoid: sysoid,
+    sysoidMask: sysoidMask,
+    ipAddresses: ipAddresses,
+    ipAddressMasks: ipAddressMasks,
+    mibGroupNames: JSON.stringify(mibGroupNames),
+    enabled: enabled
+  } as SnmpCollectionSystemDefPayload
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedSystemDefId
+  }
+
+  return payload
+}
+
+export const mapSnmpDataCollectionMibGroupPayloadToServer = (
+  name: string,
+  ifType: string,
+  mibGroupNames: string[],
+  mibObjects: any[],
+  enabled: boolean,
+  selectedMibGroupId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionMibGroupPayload => {
+  const names = isEditMode === CreateEditMode.Edit ? JSON.stringify(mibGroupNames) : JSON.stringify([name])
+  const payload = {
+    name: name,
+    ifType: ifType,
+    mibGroupNames: names,
+    mibObjects: JSON.stringify(mibObjects),
+    enabled: enabled,
+    mibObjProperties: ''
+  } as SnmpCollectionMibGroupPayload
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedMibGroupId
+  }
+
+  return payload
+}
+
+export const mapSnmpDataCollectionResourceTypePayloadToServer = (
+  name: string,
+  label: string,
+  resourceLabel: string,
+  persistenceSelectorStrategy: string,
+  persistenceSelectorParams: PersistSelectorStrategyForm[],
+  storageStrategy: string,
+  storageStrategyParams: StorageStrategyForm[],
+  enabled: boolean,
+  selectedResourceTypeId: number,
+  isEditMode: CreateEditMode
+): SnmpCollectionResourceTypePayload => {
+  const payload = {
+    name: name,
+    label: label,
+    resourceLabel: resourceLabel,
+    persistenceSelectorStrategy: persistenceSelectorStrategy,
+    persistenceSelectorParams: JSON.stringify(persistenceSelectorParams),
+    storageStrategy: storageStrategy,
+    storageStrategyParams: JSON.stringify(storageStrategyParams),
+    enabled: enabled
+  } as SnmpCollectionResourceTypePayload
+
+  if (isEditMode === CreateEditMode.Edit) {
+    payload.id = selectedResourceTypeId
+  }
+
+  return payload
+}

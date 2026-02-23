@@ -1,23 +1,8 @@
+import { VALID_MIB_OBJ_TYPES } from '@/lib/constants'
 import { UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { XMLValidator } from 'fast-xml-parser'
 
 export const MAX_FILES_UPLOAD = 100
-
-// Valid MIB object types for datacollection
-const VALID_MIB_OBJ_TYPES = [
-  'counter',
-  'counter32',
-  'counter64',
-  'gauge',
-  'gauge32',
-  'gauge64',
-  'integer',
-  'integer32',
-  'timeticks',
-  'string',
-  'octetstring',
-  'opaque'
-]
 
 // Valid ifType values for groups
 const VALID_IF_TYPES = ['all', 'ignore']

@@ -1,0 +1,82 @@
+commands:
+  trivy-analyze:
+    steps:
+      - download-download-artifacts
+      - cached-checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Analyze the Trivy Reports
+          command: |
+            PY_SCRIPT_PATH=~/project/.circleci/pyscripts/analyze_trivy_report.py
+            if [[ ! -f "$PY_SCRIPT_PATH" ]]; then
+              echo "Error: analyze_trivy_report.py not found at $PY_SCRIPT_PATH"
+              echo "Trying to locate script..."
+              PY_SCRIPT_PATH=$(find ~/project -name analyze_trivy_report.py | head -1)
+              if [[ -n "$PY_SCRIPT_PATH" ]]; then
+                echo "Found script at: $PY_SCRIPT_PATH"
+              else
+                echo "Error: Could not find analyze_trivy_report.py anywhere in workspace!"
+                exit 1
+              fi
+            fi
+            echo "Executing analyze_trivy_report.py script..."
+            echo "Using script path: $PY_SCRIPT_PATH"
+            cd /home/circleci/project
+
+            images=("horizon" "sentinel" "minion")
+            for image in "${images[@]}"; do
+              base_path="/home/circleci/project/artifacts/${image}-image-single-arch-linux-amd64"
+              python3 "$PY_SCRIPT_PATH" "${base_path}-trivy_report.json"
+              python3 "$PY_SCRIPT_PATH" "${base_path}-trivy_filtered_vulnerabilities.json"
+            done
+            
+      - run:
+          name: Combine Trivy Reports
+          command: |
+            # Locate the combine_trivy_reports.py script
+            PY_SCRIPT_PATH=~/project/.circleci/pyscripts/combine_trivy_reports.py
+            if [[ ! -f "$PY_SCRIPT_PATH" ]]; then
+              echo "Error: combine_trivy_reports.py not found at $PY_SCRIPT_PATH"
+              echo "Trying to locate script..."
+              PY_SCRIPT_PATH=$(find ~/project -name combine_trivy_reports.py | head -1)
+              if [[ -n "$PY_SCRIPT_PATH" ]]; then
+                echo "Found script at: $PY_SCRIPT_PATH"
+              else
+                echo "Error: Could not find combine_trivy_reports.py anywhere in workspace!"
+                exit 1
+              fi
+            fi
+            echo "Executing combine_trivy_reports.py script..."
+            echo "Using script path: $PY_SCRIPT_PATH"
+            python3 "$PY_SCRIPT_PATH"
+
+      - run:
+          name: Create Jira Issues
+          context: Jira-secrets
+          command: |
+            if [[ ! -f /home/circleci/project/artifacts/filtered_vulnerabilities.txt ]]; then
+              echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
+              exit 0
+            fi
+  
+            echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
+            python3 .circleci/pyscripts/create_jira_issues.py
+
+      
+      - store_artifacts:
+          path: /home/circleci/project/horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: horizon-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+
+      - store_artifacts:
+          path: /home/circleci/project/sentinel-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: sentinel-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+
+      - store_artifacts:
+          path: /home/circleci/project/minion-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+          destination: minion-image-single-arch-linux-amd64-trivy_filtered_vulnerabilities.txt
+
+      - store_artifacts:
+          path: /home/circleci/project/artifacts/filtered_vulnerabilities.txt
+          destination: filtered_vulnerabilities.txt
+

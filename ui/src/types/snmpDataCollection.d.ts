@@ -1,4 +1,4 @@
-import { Pagination } from '.'
+import { CreateEditMode, Pagination } from '.'
 
 export interface SnmpDataCollectionStoreState {
   sources: SnmpCollectionSource[]
@@ -42,7 +42,7 @@ export interface UploadSnmpDataCollectionFileType {
   isDuplicate: boolean
 }
 
-export interface SnmpCollectionDetailState {
+export interface SnmpCollectionDetailStoreState {
   isLoading: boolean
   selectedCollectionSource: SnmpCollectionSource | null
   systemDefinitions: SnmpCollectionSystemDef[]
@@ -57,6 +57,23 @@ export interface SnmpCollectionDetailState {
   resourceTypesPagination: Pagination
   resourceTypesSorting: Sorting
   resourceTypesSearchTerm: string
+  resourceTypeNames: string[]
+  mibGroupNames: string[]
+  selectedSystemDef: SnmpCollectionSystemDef | null
+  selectedMibGroup: SnmpCollectionMibGroup | null
+  selectedResourceType: SnmpCollectionResourceType | null
+  systemDefDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
+  resourceTypeDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
+  mibGroupDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+  }
 }
 
 export interface SnmpDataCollectionSourceResponse {
@@ -76,10 +93,21 @@ export interface SnmpCollectionSystemDef {
   sysoidMask: string
   ipAddresses: string
   ipAddressMasks: string
-  mibGroupNames: string
+  mibGroupNames: string[]
   enabled: boolean
   collectionSourceId: number
   collectionSourceName: string
+}
+
+export interface SnmpCollectionSystemDefPayload {
+  id: number
+  name: string
+  sysoid: string
+  sysoidMask: string
+  ipAddresses: string
+  ipAddressMasks: string
+  mibGroupNames: string
+  enabled: boolean
 }
 
 export interface SnmpCollectionSystemDefResponse {
@@ -91,7 +119,7 @@ export interface SnmpCollectionMibGroup {
   id: number
   name: string
   ifType: string
-  mibGroupNames: string
+  mibGroupNames: string[]
   mibObjects: string
   mibObjProperties: string
   enabled: boolean
@@ -123,3 +151,80 @@ export interface SnmpCollectionResourceTypeResponse {
   totalRecords: number
 }
 
+export interface SystemDefErrors {
+  name?: string
+  oidType?: string
+  oidValue?: string
+  status?: string
+  ipAddresses?: string
+  ipAddressMasks?: string
+  mibGroupNames?: string
+}
+
+export interface SnmpCollectionMibGroupPayload {
+  id: number
+  name: string
+  ifType: string
+  mibGroupNames: string
+  mibObjects: string
+  mibObjProperties: string
+  enabled: boolean
+}
+
+export interface MibGroupObjectForm {
+  oid: string
+  alias: string
+  instance: string
+  maxval: string | null
+  minval: string | null
+  type: string
+}
+
+export interface PersistSelectorStrategyForm {
+  key: string
+  value: string
+}
+
+export interface StorageStrategyForm {
+  key: string
+  value: string
+}
+
+export interface MibGroupObjectFormErrors {
+  oid?: string
+  alias?: string
+  instance?: string
+  maxval?: string
+  minval?: string
+  type?: string
+}
+
+export interface MibGroupErrors {
+  name?: string
+  ifType?: string
+  status?: string
+  mibGroupNames?: string
+  mibObjects?: string
+  mibObjProperties?: string
+}
+
+export interface ResourceTypeErrors {
+  name?: string
+  label?: string
+  status?: string
+  resourceLabel?: string
+  persistenceSelectorStrategy?: string
+  storageStrategy?: string
+}
+
+export interface SnmpCollectionResourceTypePayload {
+  id: number
+  name: string
+  label: string
+  resourceLabel: string
+  persistenceSelectorStrategy: string
+  persistenceSelectorParams: string
+  storageStrategy: string
+  storageStrategyParams: string
+  enabled: boolean
+}

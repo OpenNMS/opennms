@@ -5,6 +5,15 @@
         <h2 class="title">MIB Groups</h2>
       </div>
       <div class="action-container">
+        <div class="add">
+          <FeatherButton
+            primary
+            data-test="add-mib-group-button"
+            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
+          >
+            Add MIB Group
+          </FeatherButton>
+        </div>
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -89,7 +98,12 @@
                     <FeatherDropdownItem data-test="change-status-button">
                       {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
                     </FeatherDropdownItem>
-                    <FeatherDropdownItem data-test="delete-mib-group-button"> Delete MIB Group </FeatherDropdownItem>
+                    <FeatherDropdownItem
+                      data-test="delete-mib-group-button"
+                      @click="openDeleteMibGroupDialog(mibGroup)"
+                    >
+                      Delete MIB Group
+                    </FeatherDropdownItem>
                   </FeatherDropdown>
                   <FeatherButton
                     primary
@@ -117,7 +131,7 @@
             >
               <td :colspan="5">
                 <h5>Mib Group Names</h5>
-                <p class="description">{{ JSON.parse(mibGroup.mibGroupNames).join(', ') }}</p>
+                <p class="description">{{ mibGroup.mibGroupNames.join(', ') }}</p>
                 <div v-if="JSON.parse(mibGroup.mibObjects).length > 0">
                   <h5>Mib Objects:</h5>
                   <div
@@ -153,11 +167,24 @@
         />
       </div>
     </div>
+    <div v-if="!store.mibGroups.length">
+      <EmptyList :content="{ msg: 'No MIB Groups found.' }" />
+    </div>
+    <DeleteConfirmationDialog
+      :visible="isDeleteDialogVisible"
+      :selected="selectedMibGroup"
+      type="mib-group"
+      @close="closeDeleteMibGroupDialog"
+      @confirm="deleteMibGroup"
+    />
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -169,14 +196,18 @@ import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import { FeatherPagination } from '@featherds/pagination'
+import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
-
+const isDeleteDialogVisible = ref(false)
+const selectedMibGroup = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
   { id: 'ifType', label: 'Interface Type' },
@@ -190,8 +221,7 @@ const sort = reactive({
 }) as any
 
 const onMibGroupEditClicked = (mibGroup: SnmpCollectionMibGroup) => {
-  // Placeholder for future action when a resource type is clicked
-  console.log('MIB Group clicked:', mibGroup)
+  store.openMibGroupCreationDrawer(mibGroup, CreateEditMode.Edit)
 }
 
 const toggleExpand = (id: number) => {
@@ -219,6 +249,46 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeMibGroupsSearchTerm(value)
 }, 500)
+
+const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string } | null) => {
+  selectedMibGroup.value = mibGroup
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteMibGroupDialog = () => {
+  selectedMibGroup.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteMibGroup = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'mib-group' &&
+    selected?.id &&
+    selected?.id === selectedMibGroup.value?.id &&
+    selected?.name === selectedMibGroup.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const success = await deleteMibGroups(store.selectedCollectionSource.id, [selected.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `MIB Group '${selected.name}' deleted successfully.`
+      })
+      await store.fetchMibGroups()
+      selectedMibGroup.value = null
+      isDeleteDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete MIB Group '${selected.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete MIB Group '${selected?.name ?? ''}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   await store.fetchMibGroups()

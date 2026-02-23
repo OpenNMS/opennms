@@ -33,13 +33,17 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 @Service
 public class TwinPublisherCommand implements Action {
 
-    @Reference
+    @Reference(optional = true)
     private TwinPublisher twinPublisher;
 
     @Override
     public Object execute() throws Exception {
-        twinPublisher.register("test.publisher", String.class).publish("Testing publisher");
-        System.out.println("Published test key, this is just to validate if publisher is available \n");
+        if (twinPublisher != null) {
+            twinPublisher.register("test.publisher", String.class).publish("Testing publisher");
+            System.out.println("Published test key, this is just to validate if publisher is available \n");
+        } else {
+            System.out.println("Twin publisher is not available \n");
+        }
         return null;
     }
 }

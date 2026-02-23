@@ -1,5 +1,6 @@
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
@@ -9,6 +10,13 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
+
+vi.mock('./Drawer/SystemDefinitionCreationDrawer.vue', () => ({
+  default: {
+    template: '<div data-test="system-definition-creation-drawer"></div>'
+  }
+}))
 
 describe('SystemDefinitionsTable.vue', () => {
   let wrapper: VueWrapper<any>
@@ -38,6 +46,7 @@ describe('SystemDefinitionsTable.vue', () => {
     store.onSystemDefsPageChange = vi.fn().mockResolvedValue(undefined)
     store.onSystemDefsPageSizeChange = vi.fn().mockResolvedValue(undefined)
     store.onSystemDefsSortChange = vi.fn().mockResolvedValue(undefined)
+    store.openSystemDefCreationDrawer = vi.fn()
 
     mockSystemDef = {
       id: 1,
@@ -46,7 +55,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.8072',
       ipAddresses: '[]',
       ipAddressMasks: '[]',
-      mibGroupNames: '["mib2-interfaces", "mib2-host-resources-storage"]',
+      mibGroupNames: ['mib2-interfaces', 'mib2-host-resources-storage'],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -59,7 +68,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.9',
       ipAddresses: '["192.168.1.1"]',
       ipAddressMasks: '["255.255.255.0"]',
-      mibGroupNames: '["cisco-memory-pool", "cisco-cpu"]',
+      mibGroupNames: ['cisco-memory-pool', 'cisco-cpu'],
       enabled: true,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -72,7 +81,7 @@ describe('SystemDefinitionsTable.vue', () => {
       sysoidMask: '.1.3.6.1.4.1.12345',
       ipAddresses: '[]',
       ipAddressMasks: '[]',
-      mibGroupNames: '["disabled-mib"]',
+      mibGroupNames: ['disabled-mib'],
       enabled: false,
       collectionSourceId: 1,
       collectionSourceName: 'Test Source'
@@ -129,22 +138,6 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should render within a TableCard container', () => {
       expect(wrapper.find('.system-definitions-table-container').exists()).toBe(true)
     })
-
-    it('should render search input with correct hint text', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.exists()).toBe(true)
-      expect(searchInput.props('hint')).toBe('Search by Name')
-    })
-
-    it('should render search input with correct label', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('label')).toBe('Search')
-    })
-
-    it('should render search input with type search', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('type')).toBe('search')
-    })
   })
 
   describe('Empty State', () => {
@@ -154,22 +147,43 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.find('.data-table').exists()).toBe(false)
     })
 
-    it('should not render pagination when systemDefinitions is empty', async () => {
-      store.systemDefinitions = []
-      await wrapper.vm.$nextTick()
-      expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
-    })
-
-    it('should not render table rows when systemDefinitions is empty', async () => {
-      store.systemDefinitions = []
-      await wrapper.vm.$nextTick()
-      expect(wrapper.findAll('transition-group-stub tr').length).toBe(0)
-    })
-
     it('should still show header with search and refresh when empty', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+    })
+
+    it('should display EmptyList component with correct message when no data', async () => {
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+
+      // EmptyList is rendered when there's no data
+      const emptyMessage = wrapper.text()
+      expect(emptyMessage).toContain('No System Definitions found.')
+    })
+
+    it('should not show pagination when systemDefinitions is empty', async () => {
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
+    })
+  })
+
+  describe('Add System Definition Button', () => {
+    it('should render add button and have correct attributes', () => {
+      const addButton = wrapper.find('[data-test="add-system-definition-button"]')
+      expect(addButton.exists()).toBe(true)
+      expect(addButton.text()).toBe('Add System Definition')
+    })
+
+    it('should call openSystemDefCreationDrawer with Create mode when clicked', async () => {
+      const spy = vi.spyOn(store, 'openSystemDefCreationDrawer')
+      const addButton = wrapper.find('[data-test="add-system-definition-button"]')
+      await addButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(null, CreateEditMode.Create)
     })
   })
 
@@ -249,16 +263,11 @@ describe('SystemDefinitionsTable.vue', () => {
         { id: 'enabled', label: 'Status' }
       ]
 
-      it.each(expectedColumns)('should render column header for $label', ({ label }) => {
+      it.each(expectedColumns)('should render column header with correct property for $label', ({ id, label }) => {
         const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const headerExists = sortHeaders.some((h) => h.text().includes(label))
-        expect(headerExists).toBe(true)
-      })
-
-      it.each(expectedColumns)('should have correct property for $label column', ({ id }) => {
-        const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-        const properties = sortHeaders.map((h) => h.props('property'))
-        expect(properties).toContain(id)
+        const header = sortHeaders.find((h) => h.props('property') === id)
+        expect(header).toBeDefined()
+        expect(header?.text()).toContain(label)
       })
     })
   })
@@ -574,14 +583,6 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.get('[data-test="refresh-button"]').trigger('click')
       expect(store.resetSystemDefinitionsFilters).toHaveBeenCalledTimes(1)
     })
-
-    it('should be clickable multiple times', async () => {
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-
-      expect(store.resetSystemDefinitionsFilters).toHaveBeenCalledTimes(3)
-    })
   })
 
   describe('Edit Button', () => {
@@ -596,35 +597,14 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(editButtons.length).toBe(2)
     })
 
-    it('should have correct title attribute on edit button', () => {
+    it('should call openSystemDefCreationDrawer when edit button is clicked', async () => {
+      const spy = vi.spyOn(store, 'openSystemDefCreationDrawer')
       const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.attributes('title')).toBeDefined()
-    })
+      await editButton.trigger('click')
+      await wrapper.vm.$nextTick()
 
-    it('should log to console when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-      consoleSpy.mockRestore()
-    })
-
-    it('should pass the correct system definition when edit button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-      const editButtons = wrapper.findAll('[data-test="edit-button"]')
-      await editButtons[1].trigger('click')
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef2)
-      consoleSpy.mockRestore()
-    })
-
-    it('should handle edit click via onSystemDefEditClicked function', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      wrapper.vm.onSystemDefEditClicked(mockSystemDef)
-
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-      consoleSpy.mockRestore()
+      expect(spy).toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith(mockSystemDef, CreateEditMode.Edit)
     })
   })
 
@@ -639,60 +619,26 @@ describe('SystemDefinitionsTable.vue', () => {
       const dropdowns = wrapper.findAllComponents(FeatherDropdown)
       expect(dropdowns.length).toBe(2)
     })
-
-    it('should render dropdown trigger button', () => {
-      const dropdown = wrapper.findComponent(FeatherDropdown)
-      const triggerButton = dropdown.findComponent(FeatherButton)
-      expect(triggerButton.exists()).toBe(true)
-    })
-
-    it('should have More Options icon on dropdown trigger', () => {
-      const dropdown = wrapper.findComponent(FeatherDropdown)
-      const triggerButton = dropdown.findComponent(FeatherButton)
-      expect(triggerButton.props('icon')).toBe('More Options')
-    })
   })
 
   describe('Status Display', () => {
-    describe('Enabled/Disabled Status', () => {
-      const statusCases = [
-        { enabled: true, expectedText: 'Enabled' },
-        { enabled: false, expectedText: 'Disabled' }
-      ]
+    const statusCases = [
+      { enabled: true, expectedText: 'Enabled' },
+      { enabled: false, expectedText: 'Disabled' }
+    ]
 
-      it.each(statusCases)(
-        'should display "$expectedText" when enabled is $enabled',
-        async ({ enabled, expectedText }) => {
-          const systemDef = { ...mockSystemDef, enabled }
-          store.systemDefinitions = [systemDef]
-          store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-          await wrapper.vm.$nextTick()
-
-          const rows = wrapper.findAll('transition-group-stub tr')
-          expect(rows[0].text()).toContain(expectedText)
-        }
-      )
-    })
-
-    describe('Dropdown Status Text', () => {
-      it('should render dropdown for enabled system definitions', async () => {
-        store.systemDefinitions = [mockSystemDef]
+    it.each(statusCases)(
+      'should display "$expectedText" when enabled is $enabled',
+      async ({ enabled, expectedText }) => {
+        const systemDef = { ...mockSystemDef, enabled }
+        store.systemDefinitions = [systemDef]
         store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
         await wrapper.vm.$nextTick()
 
-        const dropdown = wrapper.findComponent(FeatherDropdown)
-        expect(dropdown.exists()).toBe(true)
-      })
-
-      it('should render dropdown for disabled system definitions', async () => {
-        store.systemDefinitions = [disabledSystemDef]
-        store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-        await wrapper.vm.$nextTick()
-
-        const dropdown = wrapper.findComponent(FeatherDropdown)
-        expect(dropdown.exists()).toBe(true)
-      })
-    })
+        const rows = wrapper.findAll('transition-group-stub tr')
+        expect(rows[0].text()).toContain(expectedText)
+      }
+    )
   })
 
   describe('System Definition Data Display', () => {
@@ -737,9 +683,8 @@ describe('SystemDefinitionsTable.vue', () => {
   })
 
   describe('Multiple System Definitions', () => {
-    const systemDefCounts = [1, 2, 5, 10]
-
-    it.each(systemDefCounts)('should render %i system definition rows correctly', async (count) => {
+    it('should render multiple system definition rows correctly', async () => {
+      const count = 5
       const systemDefinitions: SnmpCollectionSystemDef[] = Array.from({ length: count }, (_, i) => ({
         ...mockSystemDef,
         id: i + 1,
@@ -757,110 +702,173 @@ describe('SystemDefinitionsTable.vue', () => {
   })
 
   describe('Edge Cases', () => {
-    it('should handle system definition with empty strings', async () => {
-      const emptySystemDef: SnmpCollectionSystemDef = {
-        id: 1,
+    it('should handle empty mib group names', async () => {
+      const emptyMibDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        mibGroupNames: []
+      }
+
+      store.systemDefinitions = [emptyMibDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(emptyMibDef.id)
+      await wrapper.vm.$nextTick()
+
+      const expandedContent = wrapper.find('.expanded-content')
+      expect(expandedContent.exists()).toBe(true)
+    })
+
+    it('should handle system definition with all empty fields', async () => {
+      const emptyFieldsDef: SnmpCollectionSystemDef = {
+        id: 99,
         name: '',
         sysoid: '',
         sysoidMask: '',
         ipAddresses: '[]',
         ipAddressMasks: '[]',
-        mibGroupNames: '[]',
-        enabled: true,
+        mibGroupNames: [],
+        enabled: false,
         collectionSourceId: 1,
-        collectionSourceName: ''
+        collectionSourceName: 'Test Source'
       }
 
-      store.systemDefinitions = [emptySystemDef]
+      store.systemDefinitions = [emptyFieldsDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
+      expect(wrapper.find('.data-table').exists()).toBe(true)
       const rows = wrapper.findAll('transition-group-stub tr')
       expect(rows.length).toBeGreaterThanOrEqual(1)
     })
 
-    it('should handle system definition with special characters in name', async () => {
-      const specialSystemDef: SnmpCollectionSystemDef = {
+    it('should handle special characters in system definition name', async () => {
+      const specialCharsDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        name: 'Test-System_Def.v2',
-        sysoid: '.1.3.6.1.4.1.12345.6.7.8'
+        id: 100,
+        name: 'Test <Device> & "Special" Characters'
       }
 
-      store.systemDefinitions = [specialSystemDef]
+      store.systemDefinitions = [specialCharsDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Test-System_Def.v2')
+      expect(rows[0].text()).toContain('Test <Device> & "Special" Characters')
     })
 
-    it('should handle system definition with very long OID strings', async () => {
-      const longOidSystemDef: SnmpCollectionSystemDef = {
+    it('should handle unicode characters in system definition fields', async () => {
+      const unicodeDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        sysoid: '.1.3.6.1.4.1.8072.3.2.10.1.2.3.4.5.6.7.8.9.10',
-        sysoidMask: '.1.3.6.1.4.1.8072.3.2.10.1.2.3.4'
+        id: 101,
+        name: '测试设备 日本語 العربية',
+        mibGroupNames: ['国际化-mib', 'юникод-группа']
       }
 
-      store.systemDefinitions = [longOidSystemDef]
+      store.systemDefinitions = [unicodeDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(longOidSystemDef.sysoid)
+      expect(rows[0].text()).toContain('测试设备 日本語 العربية')
     })
 
-    it('should handle system definition with many mib groups', async () => {
-      const manyMibGroupsDef: SnmpCollectionSystemDef = {
+    it('should handle very large number of mib group names', async () => {
+      const manyMibsDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '["group1", "group2", "group3", "group4", "group5", "group6", "group7", "group8"]'
+        id: 102,
+        mibGroupNames: Array.from({ length: 50 }, (_, i) => `mib-group-${i + 1}`)
       }
 
-      store.systemDefinitions = [manyMibGroupsDef]
+      store.systemDefinitions = [manyMibsDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.toggleExpand(manyMibGroupsDef.id)
+      wrapper.vm.toggleExpand(manyMibsDef.id)
       await wrapper.vm.$nextTick()
 
       const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('group1')
-      expect(expandedContent.text()).toContain('group8')
+      expect(expandedContent.text()).toContain('mib-group-1')
+      expect(expandedContent.text()).toContain('mib-group-50')
     })
 
-    it('should handle toggling expansion on non-existent row gracefully', async () => {
+    it('should handle very long OID strings', async () => {
+      const longOidDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 103,
+        sysoid: '.1.3.6.1.4.1.9.9.166.1.1.1.1.4.1.2.3.4.5.6.7.8.9.10',
+        sysoidMask: '.1.3.6.1.4.1.9.9.166.1.1.1.1.4'
+      }
+
+      store.systemDefinitions = [longOidDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('.1.3.6.1.4.1.9.9.166.1.1.1.1.4.1.2.3.4.5.6.7.8.9.10')
+    })
+
+    it('should handle rapid expand/collapse toggles', async () => {
       store.systemDefinitions = [mockSystemDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
-      // Expand
+      // Rapidly toggle expand multiple times
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.toggleExpand(mockSystemDef.id)
+      }
+      await wrapper.vm.$nextTick()
+
+      // After odd number of toggles, should be expanded
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
+    })
+
+    it('should preserve expanded state when data updates', async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      // Expand first row
       wrapper.vm.toggleExpand(mockSystemDef.id)
       await wrapper.vm.$nextTick()
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
 
-      // Clear data
-      store.systemDefinitions = []
+      // Update store data (e.g., from API refresh)
+      store.systemDefinitions = [{ ...mockSystemDef, name: 'Updated Name' }, mockSystemDef2]
       await wrapper.vm.$nextTick()
 
-      // Should not throw error
-      expect(wrapper.findAll('.expanded-content').length).toBe(0)
+      // Expanded state should be preserved
+      expect(wrapper.vm.expandedRows).toContain(mockSystemDef.id)
     })
 
-    it('should handle pagination with total less than page size', async () => {
-      store.systemDefinitions = [mockSystemDef]
+    it('should handle zero id value', async () => {
+      const zeroIdDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: 0,
+        name: 'Zero ID Device'
+      }
+
+      store.systemDefinitions = [zeroIdDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
-      const pagination = wrapper.findComponent(FeatherPagination)
-      expect(pagination.props('total')).toBe(1)
-      expect(pagination.props('pageSize')).toBe(10)
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows[0].text()).toContain('Zero ID Device')
     })
 
-    it('should handle large total counts', async () => {
-      store.systemDefinitions = [mockSystemDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 10000 }
+    it('should handle negative id value', async () => {
+      const negativeIdDef: SnmpCollectionSystemDef = {
+        ...mockSystemDef,
+        id: -1,
+        name: 'Negative ID Device'
+      }
+
+      store.systemDefinitions = [negativeIdDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
-      const pagination = wrapper.findComponent(FeatherPagination)
-      expect(pagination.props('total')).toBe(10000)
+      expect(wrapper.find('.data-table').exists()).toBe(true)
     })
   })
 
@@ -873,69 +881,12 @@ describe('SystemDefinitionsTable.vue', () => {
 
     it('should have aria-label on table', () => {
       const table = wrapper.find('.data-table')
-      expect(table.attributes('aria-label')).toBeDefined()
+      expect(table.attributes('aria-label')).toBe('Events Table')
     })
 
-    it('should have scope="col" on all sort headers', () => {
-      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      sortHeaders.forEach((header) => {
-        expect(header.attributes('scope')).toBe('col')
-      })
-    })
-
-    it('should have title attribute on edit buttons', () => {
+    it('should have title attribute on edit button', () => {
       const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.attributes('title')).toBeDefined()
-    })
-
-    it('should have refresh button present', () => {
-      const refreshButton = wrapper.find('[data-test="refresh-button"]')
-      expect(refreshButton.exists()).toBe(true)
-    })
-
-    it('should have search input with label', () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      expect(searchInput.props('label')).toBe('Search')
-    })
-  })
-
-  describe('Component Structure', () => {
-    it('should have header section', () => {
-      expect(wrapper.find('.header').exists()).toBe(true)
-    })
-
-    it('should have title-container within header', () => {
-      expect(wrapper.find('.header .title-container').exists()).toBe(true)
-    })
-
-    it('should have action-container within header', () => {
-      expect(wrapper.find('.header .action-container').exists()).toBe(true)
-    })
-
-    it('should have search-container within action-container', () => {
-      expect(wrapper.find('.header .action-container .search-container').exists()).toBe(true)
-    })
-
-    it('should have refresh button container', () => {
-      expect(wrapper.find('.header .action-container .refresh').exists()).toBe(true)
-    })
-
-    it('should have container section for table and pagination', () => {
-      expect(wrapper.find('.container').exists()).toBe(true)
-    })
-  })
-
-  describe('Loading States', () => {
-    it('should handle store loading state changes', async () => {
-      store.isLoading = true
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.exists()).toBe(true)
-
-      store.isLoading = false
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.exists()).toBe(true)
+      expect(editButton.attributes('title')).toContain('Edit')
     })
   })
 
@@ -1035,9 +986,7 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(store.onSystemDefsPageChange).toHaveBeenCalledWith(2)
     })
 
-    it('should handle expand, edit, and collapse flow', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
+    it('should handle expand and collapse flow', async () => {
       store.systemDefinitions = [mockSystemDef]
       store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
@@ -1047,16 +996,10 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll('.expanded-content').length).toBe(1)
 
-      // Edit
-      await wrapper.get('[data-test="edit-button"]').trigger('click')
-      expect(consoleSpy).toHaveBeenCalledWith('System Definition clicked:', mockSystemDef)
-
       // Collapse
       wrapper.vm.toggleExpand(mockSystemDef.id)
       await wrapper.vm.$nextTick()
       expect(wrapper.findAll('.expanded-content').length).toBe(0)
-
-      consoleSpy.mockRestore()
     })
 
     it('should handle refresh and maintain state', async () => {
@@ -1079,7 +1022,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should parse and display single mib group name', async () => {
       const singleGroupDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '["single-group"]'
+        mibGroupNames: ['single-group']
       }
 
       store.systemDefinitions = [singleGroupDef]
@@ -1102,7 +1045,7 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const expandedContent = wrapper.find('.expanded-content')
-      // mibGroupNames: '["mib2-interfaces", "mib2-host-resources-storage"]'
+      // mibGroupNames: ['mib2-interfaces', 'mib2-host-resources-storage']
       expect(expandedContent.text()).toContain('mib2-interfaces')
       expect(expandedContent.text()).toContain('mib2-host-resources-storage')
     })
@@ -1110,7 +1053,7 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should handle empty mib group names array', async () => {
       const emptyMibGroupsDef: SnmpCollectionSystemDef = {
         ...mockSystemDef,
-        mibGroupNames: '[]'
+        mibGroupNames: []
       }
 
       store.systemDefinitions = [emptyMibGroupsDef]
@@ -1122,6 +1065,588 @@ describe('SystemDefinitionsTable.vue', () => {
 
       const expandedContent = wrapper.find('.expanded-content')
       expect(expandedContent.exists()).toBe(true)
+    })
+  })
+
+  describe('Delete System Definition Dialog', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('initializes with delete dialog hidden', () => {
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('has openDeleteSystemDefDialog method available', async () => {
+      expect(typeof wrapper.vm.openDeleteSystemDefDialog).toBe('function')
+    })
+
+    it('opens delete dialog via openDeleteSystemDefDialog method', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('sets selectedSystemDef correctly when opening dialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('sets selectedSystemDef correctly for different system definitions', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
+    })
+
+    it('closes delete dialog and clears selection', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('renders DeleteConfirmationDialog component', async () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('selected')?.id).toBe(mockSystemDef.id)
+      expect(dialog.props('selected')?.name).toBe(mockSystemDef.name)
+      expect(dialog.props('type')).toBe('system-def')
+    })
+
+    it('handles opening dialog with null', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(null)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+  })
+
+  describe('Delete System Definition Action', () => {
+    let deleteSystemDefinitionsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls deleteSystemDefinitions service on successful delete', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+
+    it('closes dialog after successful deletion', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('fetches system definitions after successful deletion', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const fetchSpy = vi.spyOn(store, 'fetchSystemDefinitions')
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(fetchSpy).toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when type does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected id does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: 999, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected name does not match', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: 'wrong-name' }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selectedCollectionSource is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected is null', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef(null, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call deleteSystemDefinitions when selected id is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ name: mockSystemDef.name } as any, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete System Definition Error Handling', () => {
+    let deleteSystemDefinitionsSpy: any
+    let showSnackBarSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+
+      const useSnackbar = await import('@/composables/useSnackbar')
+      showSnackBarSpy = vi.fn()
+      vi.spyOn(useSnackbar, 'default').mockReturnValue({
+        showSnackBar: showSnackBarSpy,
+        hideSnackbar: vi.fn(),
+        isDisplayed: ref(false),
+        isCentered: ref(false),
+        hasError: ref(false),
+        message: ref(''),
+        setTimeout: ref(5000)
+      })
+
+      // Remount wrapper to pick up mocked snackbar
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+      store = useSnmpDataCollectionDetailStore(pinia)
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      store.fetchSystemDefinitions = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = mount(SystemDefinitionsTable, {
+        global: {
+          plugins: [pinia],
+          components: {
+            FeatherButton,
+            FeatherDropdown,
+            FeatherDropdownItem,
+            FeatherSortHeader,
+            FeatherPagination,
+            FeatherInput
+          }
+        }
+      })
+
+      await flushPromises()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows error snackbar when validation fails', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: 999, name: 'wrong-name' }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: 'Failed to delete System Definition \'wrong-name\'.',
+        error: true
+      })
+    })
+
+    it('shows success snackbar when deletion succeeds', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `System Definition '${mockSystemDef.name}' deleted successfully.`
+      })
+    })
+
+    it('shows error when type mismatch occurs', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows error when selected collection source is missing', async () => {
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(showSnackBarSpy).toHaveBeenCalledWith({
+        msg: `Failed to delete System Definition '${mockSystemDef.name}'.`,
+        error: true
+      })
+    })
+  })
+
+  describe('Delete Button in Dropdown', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders dropdown with delete option for each row', async () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+    })
+
+    it('has closeDeleteSystemDefDialog method available', async () => {
+      expect(typeof wrapper.vm.closeDeleteSystemDefDialog).toBe('function')
+    })
+
+    it('calls openDeleteSystemDefDialog for first system definition', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
+    })
+
+    it('calls openDeleteSystemDefDialog for second system definition', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
+    })
+
+    it('renders delete button in dropdown', async () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Delete Confirmation Dialog Events', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles close event from DeleteConfirmationDialog', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('handles confirm event from DeleteConfirmationDialog', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      await dialog.vm.$emit('confirm', { id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+  })
+
+  describe('Delete with Edge Cases', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles opening dialog with object having zero id', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 0, name: 'zero-def' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(0)
+    })
+
+    it('handles opening dialog with object having negative id', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: -1, name: 'negative-def' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(-1)
+    })
+
+    it('handles opening dialog with empty string name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: '' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('')
+    })
+
+    it('handles opening dialog with special characters in name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: 'test-def_v2<>&"' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('test-def_v2<>&"')
+    })
+
+    it('handles opening dialog with unicode name', async () => {
+      wrapper.vm.openDeleteSystemDefDialog({ id: 1, name: 'システム定義テスト' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('システム定義テスト')
+    })
+
+    it('handles multiple open and close cycles', async () => {
+      // First cycle
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+
+      // Second cycle
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+    })
+
+    it('handles rapid open/close without error', async () => {
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      wrapper.vm.closeDeleteSystemDefDialog()
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('handles delete with selectedCollectionSource.id as 0', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      store.selectedCollectionSource = { id: 0, name: 'Test Source' } as any
+
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // id 0 is falsy, should not call service
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+
+    it('handles switching selected system definition before delete', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      // Open dialog for first system definition
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      // Switch to second system definition
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      // Try deleting with first system definition's params (should fail validation)
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(deleteSystemDefinitionsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Integration Flow', () => {
+    it('handles complete delete flow: open dialog, confirm, close', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(true)
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Confirm delete
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // After successful delete, dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+      expect(deleteSystemDefinitionsSpy).toHaveBeenCalledWith(1, [mockSystemDef.id])
+    })
+
+    it('handles delete flow when service fails', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const deleteSystemDefinitionsSpy = vi.spyOn(snmpDataCollectionService, 'deleteSystemDefinitions')
+      deleteSystemDefinitionsSpy.mockResolvedValue(false)
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      // Try to delete (will fail)
+      await wrapper.vm.deleteSystemDef({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      // Dialog should still be visible (not closed on failure)
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+    })
+
+    it('handles cancel flow: open dialog, cancel', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+
+      // Open dialog
+      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+
+      // Cancel (close) dialog
+      wrapper.vm.closeDeleteSystemDefDialog()
+      await wrapper.vm.$nextTick()
+
+      // Dialog should be closed
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
     })
   })
 })

@@ -1,0 +1,3 @@
+# Remove THIRD-PARTY.txt from etc folder as it should be under licenses
+
+rm_conffile /opt/opennms/etc/THIRD-PARTY.txt 35.0.3

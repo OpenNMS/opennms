@@ -666,11 +666,15 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
-# Put the agent, bin, etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/licenses ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(644,opennms,opennms) |" | \
+	sort >> %{_tmppath}/files.main
+# Put the agent, bin, etc, lib, licenses, and system subdirectories into the package
 find %{buildroot}%{instprefix}/agent \
 	%{buildroot}%{instprefix}/bin \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
+	%{buildroot}%{instprefix}/licenses \
 	%{buildroot}%{instprefix}/system \
 	-type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -943,6 +947,11 @@ fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /opt/opennms/bin/ensure-user-ping.sh manually."
+
+# Clean up obsolete THIRD-PARTY.txt left behind from older installations
+if [ -f "${ROOT_INST}/etc/THIRD-PARTY.txt" ]; then
+    rm -f "${ROOT_INST}/etc/THIRD-PARTY.txt"
+fi
 
 echo ""
 echo " *** Thanks for using OpenNMS!”

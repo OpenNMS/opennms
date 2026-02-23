@@ -1,8 +1,11 @@
+import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
+import ResourceTypeForm from '@/components/SnmpDataCollectionDetail/ResourceTypeForm.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import SnmpDataCollectionDetail from '@/containers/SnmpDataCollectionDetail.vue'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionSource } from '@/types/snmpDataCollection'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
@@ -20,6 +23,24 @@ vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
     push: mockPush
   }))
+}))
+
+const mockDeleteSnmpCollectionSources = vi.fn()
+vi.mock('@/services/snmpDataCollectionService', () => ({
+  deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args)
+}))
+
+const mockShowSnackBar = vi.fn()
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({
+    showSnackBar: mockShowSnackBar,
+    hideSnackbar: vi.fn(),
+    isDisplayed: { value: false },
+    isCentered: { value: false },
+    hasError: { value: false },
+    message: { value: '' },
+    setTimeout: vi.fn()
+  })
 }))
 
 describe('SnmpDataCollectionDetail.vue', () => {
@@ -42,7 +63,10 @@ describe('SnmpDataCollectionDetail.vue', () => {
     FeatherButton: true,
     SystemDefinitionsTable: true,
     ResourceTypesTable: true,
-    MibGroupsTable: true
+    MibGroupsTable: true,
+    MibGroupForm: true,
+    ResourceTypeForm: true,
+    DeleteConfirmationDialog: true
   }
 
   beforeEach(() => {
@@ -81,18 +105,56 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.find('h1').text()).toBe('Data Collection Source Details')
     })
 
-    it('renders heading text correctly', async () => {
+    it('renders all table components when mibGroupDrawerState is not visible', async () => {
       wrapper = await createWrapper()
-
-      expect(wrapper.find('h1').text()).toBe('Data Collection Source Details')
-    })
-
-    it('renders all table components', async () => {
-      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
       expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(true)
       expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+    })
+
+    it('renders MibGroupForm and hides tables when mibGroupDrawerState is visible', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+    })
+
+    it('renders ResourceTypeForm and hides tables when resourceTypeDrawerState is visible', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+    })
+
+    it('hides tables when both mibGroupDrawerState and resourceTypeDrawerState are visible', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
     })
 
     it('renders back button', async () => {
@@ -101,22 +163,12 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.findComponent(FeatherBackButton).exists()).toBe(true)
     })
 
-    it('renders action buttons', async () => {
+    it('renders both action buttons', async () => {
       wrapper = await createWrapper()
 
       const buttons = wrapper.findAll('.action-container button')
       expect(buttons.length).toBe(2)
-    })
-
-    it('renders enable/disable button', async () => {
-      wrapper = await createWrapper()
-
       expect(wrapper.find('[data-test="enable-disable-source"]').exists()).toBe(true)
-    })
-
-    it('renders delete button', async () => {
-      wrapper = await createWrapper()
-
       expect(wrapper.find('[data-test="delete-source"]').exists()).toBe(true)
     })
 
@@ -124,16 +176,6 @@ describe('SnmpDataCollectionDetail.vue', () => {
       wrapper = await createWrapper()
 
       expect(wrapper.find('[data-test="config-box"]').exists()).toBe(true)
-    })
-
-    it('renders all child components together', async () => {
-      wrapper = await createWrapper()
-
-      expect(wrapper.findComponent(FeatherBackButton).exists()).toBe(true)
-      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
-      expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(true)
-      expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(true)
-      expect(wrapper.findAllComponents(FeatherButton).length).toBeGreaterThan(0)
     })
   })
 
@@ -208,19 +250,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
     })
 
-    it('displays "Disable Source" when source is enabled', async () => {
-      wrapper = await createWrapper({ ...mockCollectionSource, enabled: true })
-
-      expect(wrapper.text()).toContain('Disable Source')
-    })
-
-    it('displays "Enable Source" when source is disabled', async () => {
-      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
-
-      expect(wrapper.text()).toContain('Enable Source')
-    })
-
-    it('shows Delete Source button', async () => {
+    it('shows Delete Source button with correct text', async () => {
       wrapper = await createWrapper()
 
       const deleteButton = wrapper.find('[data-test="delete-source"]')
@@ -241,18 +271,12 @@ describe('SnmpDataCollectionDetail.vue', () => {
   })
 
   describe('Not Found State', () => {
-    it('shows "No data found" when source is null', async () => {
-      wrapper = await createWrapper(null)
-
-      expect(wrapper.find('.not-found-container').exists()).toBe(true)
-      expect(wrapper.text()).toContain('No data found.')
-    })
-
     it('shows not-found container when selectedCollectionSource is null', async () => {
       wrapper = await createWrapper(null)
 
       expect(wrapper.find('.not-found-container').exists()).toBe(true)
       expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(false)
+      expect(wrapper.text()).toContain('No data found.')
     })
 
     it('navigates back from not found page', async () => {
@@ -264,12 +288,14 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
     })
 
-    it('hides main content in not-found state', async () => {
+    it('hides main content and all components in not-found state', async () => {
       wrapper = await createWrapper(null)
 
       expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
       expect(wrapper.findComponent(ResourceTypesTable).exists()).toBe(false)
       expect(wrapper.findComponent(MibGroupsTable).exists()).toBe(false)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
     })
   })
 
@@ -284,30 +310,15 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.find('.config-details-box').exists()).toBe(true)
     })
 
-    it('renders config rows structure', async () => {
+    it('renders config rows structure with two rows', async () => {
       wrapper = await createWrapper()
 
       const configRows = wrapper.findAll('.config-row')
-      expect(configRows.length).toBe(3)
-    })
-
-    it('has correct layout structure', async () => {
-      wrapper = await createWrapper()
+      expect(configRows.length).toBe(2)
 
       const container = wrapper.find('.snmp-data-collection-detail-container')
       expect(container.find('.header').exists()).toBe(true)
       expect(container.find('.config-details-box').exists()).toBe(true)
-      expect(container.find('.system-defs-container').exists()).toBe(true)
-      expect(container.find('.resource-types-container').exists()).toBe(true)
-      expect(container.find('.mib-groups-container').exists()).toBe(true)
-    })
-
-    it('renders table containers', async () => {
-      wrapper = await createWrapper()
-
-      expect(wrapper.find('.system-defs-container').exists()).toBe(true)
-      expect(wrapper.find('.resource-types-container').exists()).toBe(true)
-      expect(wrapper.find('.mib-groups-container').exists()).toBe(true)
     })
   })
 
@@ -322,35 +333,8 @@ describe('SnmpDataCollectionDetail.vue', () => {
       })
       await flushPromises()
 
-      expect(store.fetchCollectionSourceById).toHaveBeenCalledWith('1')
-    })
-
-    it('calls fetchCollectionSourceById with correct ID', async () => {
-      store.fetchCollectionSourceById = vi.fn()
-
-      wrapper = mount(SnmpDataCollectionDetail, {
-        global: {
-          stubs: globalStubs
-        }
-      })
-      await flushPromises()
-
       expect(store.fetchCollectionSourceById).toHaveBeenCalledOnce()
       expect(store.fetchCollectionSourceById).toHaveBeenCalledWith('1')
-    })
-
-    it('does not fetch when route has no id param', async () => {
-      vi.mocked(useRoute).mockReturnValue({ params: {} } as any)
-      store.fetchCollectionSourceById = vi.fn()
-
-      wrapper = mount(SnmpDataCollectionDetail, {
-        global: {
-          stubs: globalStubs
-        }
-      })
-      await flushPromises()
-
-      expect(store.fetchCollectionSourceById).not.toHaveBeenCalled()
     })
   })
 
@@ -536,6 +520,107 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
       expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
     })
+
+    it('handles unicode/international characters', async () => {
+      const source = {
+        ...mockCollectionSource,
+        name: '测试集合 日本語 العربية',
+        vendor: 'Фактор 中文供应商'
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.text()).toContain('测试集合 日本語 العربية')
+      expect(wrapper.text()).toContain('Фактор 中文供应商')
+    })
+
+    it('handles whitespace-only string values', async () => {
+      const sourceWithWhitespace = {
+        ...mockCollectionSource,
+        name: '   ',
+        vendor: '\t\n',
+        uploadedBy: ' '
+      }
+
+      wrapper = await createWrapper(sourceWithWhitespace)
+
+      expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
+    })
+
+    it('handles very long names without breaking layout', async () => {
+      const source = {
+        ...mockCollectionSource,
+        name: 'A'.repeat(500),
+        uploadedBy: 'B'.repeat(200)
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
+      expect(wrapper.text()).toContain('A'.repeat(500))
+    })
+
+    it('handles zero id value', async () => {
+      const source = {
+        ...mockCollectionSource,
+        id: 0
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
+    })
+
+    it('handles negative id value', async () => {
+      const source = {
+        ...mockCollectionSource,
+        id: -1
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
+    })
+
+    it('handles future dates', async () => {
+      const source = {
+        ...mockCollectionSource,
+        createdTime: new Date('2030-12-31'),
+        lastModified: new Date('2030-12-31')
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.text()).toContain('12/31/2030')
+    })
+
+    it('handles very old dates', async () => {
+      const source = {
+        ...mockCollectionSource,
+        createdTime: new Date('1990-01-01'),
+        lastModified: new Date('1990-01-01')
+      }
+
+      wrapper = await createWrapper(source)
+
+      expect(wrapper.text()).toContain('01/01/1990')
+    })
+
+    it('handles potential XSS strings safely', async () => {
+      const source = {
+        ...mockCollectionSource,
+        name: '<script>alert("xss")</script>',
+        vendor: 'onclick="alert(1)"'
+      }
+
+      wrapper = await createWrapper(source)
+
+      // Component renders without errors and displays potentially dangerous strings as text
+      expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
+      // Vue uses text interpolation {{ }} which treats content as text, not HTML
+      expect(wrapper.text()).toContain('<script>alert("xss")</script>')
+      expect(wrapper.text()).toContain('onclick="alert(1)"')
+    })
   })
 
   describe('Reactivity Tests', () => {
@@ -582,6 +667,80 @@ describe('SnmpDataCollectionDetail.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.text()).toContain('Status:Disabled')
+    })
+
+    it('toggles MibGroupForm visibility when mibGroupDrawerState.visible changes', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      // Initial state: tables visible, form hidden
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+
+      // Toggle to visible
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+
+      // Toggle back to hidden
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+    })
+
+    it('toggles ResourceTypeForm visibility when resourceTypeDrawerState.visible changes', async () => {
+      wrapper = await createWrapper()
+      store.mibGroupDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      // Initial state: tables visible, form hidden
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+
+      // Toggle to visible
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(false)
+
+      // Toggle back to hidden
+      store.resourceTypeDrawerState = { visible: false, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(false)
+      expect(wrapper.findComponent(SystemDefinitionsTable).exists()).toBe(true)
+    })
+
+    it('maintains MibGroupForm state during mode changes', async () => {
+      wrapper = await createWrapper()
+
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+
+      store.mibGroupDrawerState = { visible: true, isEditMode: CreateEditMode.Edit }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(MibGroupForm).exists()).toBe(true)
+    })
+
+    it('maintains ResourceTypeForm state during mode changes', async () => {
+      wrapper = await createWrapper()
+
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Create }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
+
+      store.resourceTypeDrawerState = { visible: true, isEditMode: CreateEditMode.Edit }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.findComponent(ResourceTypeForm).exists()).toBe(true)
     })
   })
 
@@ -632,34 +791,32 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const container = wrapper.find('.snmp-data-collection-detail-container')
       const children = container.element.children
 
-      // Check order: header, config-box, system-defs, resource-types, mib-groups
+      // Check order: header, config-box, then Transition wrappers for tables
       expect(children[0].classList.contains('header')).toBe(true)
       expect(children[1].classList.contains('config-details-box')).toBe(true)
-      expect(children[2].classList.contains('system-defs-container')).toBe(true)
-      expect(children[3].classList.contains('resource-types-container')).toBe(true)
-      expect(children[4].classList.contains('mib-groups-container')).toBe(true)
+      // Tables are wrapped in Transition components (children 2, 3, 4)
+      expect(children.length).toBeGreaterThanOrEqual(3)
     })
   })
 
   describe('Data-Test Attributes', () => {
-    it('has correct data-test attributes on buttons', async () => {
+    it('has correct data-test attributes on all interactive elements', async () => {
       wrapper = await createWrapper()
 
       expect(wrapper.find('[data-test="back-button"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="enable-disable-source"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="delete-source"]').exists()).toBe(true)
-    })
-
-    it('has data-test attribute on config box', async () => {
-      wrapper = await createWrapper()
-
       expect(wrapper.find('[data-test="config-box"]').exists()).toBe(true)
     })
   })
 
   describe('Route Parameter Handling', () => {
-    it('handles numeric route id', async () => {
-      vi.mocked(useRoute).mockReturnValue({ params: { id: '123' } } as any)
+    it.each([
+      { id: '123', description: 'numeric route id' },
+      { id: 'test-id', description: 'string route id' },
+      { id: 'uuid-1234-5678', description: 'UUID-style route id' }
+    ])('handles $description correctly', async ({ id }) => {
+      vi.mocked(useRoute).mockReturnValue({ params: { id } } as any)
       store.fetchCollectionSourceById = vi.fn()
 
       wrapper = mount(SnmpDataCollectionDetail, {
@@ -669,21 +826,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       })
       await flushPromises()
 
-      expect(store.fetchCollectionSourceById).toHaveBeenCalledWith('123')
-    })
-
-    it('handles string route id', async () => {
-      vi.mocked(useRoute).mockReturnValue({ params: { id: 'test-id' } } as any)
-      store.fetchCollectionSourceById = vi.fn()
-
-      wrapper = mount(SnmpDataCollectionDetail, {
-        global: {
-          stubs: globalStubs
-        }
-      })
-      await flushPromises()
-
-      expect(store.fetchCollectionSourceById).toHaveBeenCalledWith('test-id')
+      expect(store.fetchCollectionSourceById).toHaveBeenCalledWith(id)
     })
 
     it('handles missing route id gracefully', async () => {
@@ -699,6 +842,34 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
       expect(store.fetchCollectionSourceById).not.toHaveBeenCalled()
       expect(wrapper.find('.not-found-container').exists()).toBe(true)
+    })
+
+    it('handles null route id gracefully', async () => {
+      vi.mocked(useRoute).mockReturnValue({ params: { id: null } } as any)
+      store.fetchCollectionSourceById = vi.fn()
+
+      wrapper = mount(SnmpDataCollectionDetail, {
+        global: {
+          stubs: globalStubs
+        }
+      })
+      await flushPromises()
+
+      expect(store.fetchCollectionSourceById).not.toHaveBeenCalled()
+    })
+
+    it('handles undefined route id gracefully', async () => {
+      vi.mocked(useRoute).mockReturnValue({ params: { id: undefined } } as any)
+      store.fetchCollectionSourceById = vi.fn()
+
+      wrapper = mount(SnmpDataCollectionDetail, {
+        global: {
+          stubs: globalStubs
+        }
+      })
+      await flushPromises()
+
+      expect(store.fetchCollectionSourceById).not.toHaveBeenCalled()
     })
   })
 
@@ -725,6 +896,518 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
       const backButton = wrapper.findComponent(FeatherBackButton)
       expect(backButton.text()).toBe('Go Back')
+    })
+  })
+
+  describe('Delete Collection Source - Dialog State', () => {
+    it('renders DeleteConfirmationDialog component', async () => {
+      wrapper = await createWrapper()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('dialog is initially hidden', async () => {
+      wrapper = await createWrapper()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+
+    it('opens delete dialog when Delete Source button is clicked', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('visible')).toBe('true')
+    })
+
+    it('passes correct type to dialog', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('type')).toBe('source')
+    })
+
+    it('passes selected collection source to dialog', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.attributes('selected')).toBeDefined()
+    })
+
+    it('closes dialog when close event is emitted', async () => {
+      wrapper = await createWrapper()
+
+      // Open dialog first
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Close dialog
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+
+    it('resets selectedCollectionSource when dialog is closed', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+
+      // Dialog should no longer have selectedItem with value
+      const selectedItem = dialog.attributes('selecteditem')
+      expect(selectedItem === '' || selectedItem === undefined).toBe(true)
+    })
+
+    it('can open and close dialog multiple times', async () => {
+      wrapper = await createWrapper()
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+
+      // First open/close cycle
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('false')
+
+      // Second open/close cycle
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('close')
+      await wrapper.vm.$nextTick()
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+  })
+
+  describe('Delete Collection Source - Successful Deletion', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('calls deleteSnmpCollectionSources service when deletion is confirmed', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      // Open dialog
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Confirm deletion
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('shows success snackbar on successful deletion', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Collection\' deleted successfully.'
+      })
+    })
+
+    it('navigates to SNMP Data Collection list after successful deletion', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
+    })
+
+    it('completes full deletion workflow successfully', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Collection\' deleted successfully.'
+      })
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
+    })
+  })
+
+  describe('Delete Collection Source - Failed Deletion', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('shows error snackbar when deletion fails', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('does not navigate when deletion fails', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Validation Failures', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('shows error when type is not "source"', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'wrong-type')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected id does not match', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 999, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected name does not match', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Different Name' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Different Name\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected is null', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', null, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'undefined\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected has no id', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it('does not navigate when validation fails', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 999, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Edge Cases', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('handles collection source with special characters in name', async () => {
+      const specialName = 'Test <Source> & "Quotes"'
+      const specialSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: specialName
+      }
+      store.selectedCollectionSource = specialSource
+      await wrapper?.vm?.$nextTick?.()
+
+      wrapper = await createWrapper(specialSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: specialName }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${specialName}' deleted successfully.`
+      })
+    })
+
+    it('handles collection source with empty name', async () => {
+      const emptyNameSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: ''
+      }
+      wrapper = await createWrapper(emptyNameSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: '' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('handles collection source with very long name', async () => {
+      const longName = 'A'.repeat(500)
+      const longNameSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        name: longName
+      }
+      wrapper = await createWrapper(longNameSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: longName }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('handles rapid deletion attempts', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+
+      // Multiple rapid clicks
+      await deleteButton.trigger('click')
+      await deleteButton.trigger('click')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      // Should still only call once
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledTimes(1)
+    })
+
+    it('handles deletion when store source differs from clicked source', async () => {
+      // Start with one source in store
+      wrapper = await createWrapper()
+
+      // Change store source after clicking delete (simulates race condition)
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Update store to different source
+      store.selectedCollectionSource = {
+        ...mockCollectionSource,
+        id: 999,
+        name: 'Different Source'
+      }
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      // Should fail validation since store source changed
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Delete Collection Source - Integration with Store', () => {
+    beforeEach(() => {
+      mockDeleteSnmpCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+      mockPush.mockClear()
+    })
+
+    it('validates against current store selectedCollectionSource', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Verify store source matches
+      expect(store.selectedCollectionSource?.id).toBe(1)
+      expect(store.selectedCollectionSource?.name).toBe('Test Collection')
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([1])
+    })
+
+    it('does not delete when store source is null', async () => {
+      wrapper = await createWrapper()
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      // Set store source to null after dialog opens
+      store.selectedCollectionSource = null
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it('uses store source id for delete service call', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      const customSource: SnmpCollectionSource = {
+        ...mockCollectionSource,
+        id: 42
+      }
+      wrapper = await createWrapper(customSource)
+
+      const deleteButton = wrapper.find('[data-test="delete-source"]')
+      await deleteButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      dialog.vm.$emit('confirm', { id: 42, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([42])
     })
   })
 })

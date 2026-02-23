@@ -3,8 +3,7 @@
 You can store your PostgreSQL credentials in the secure credentials vault.
 To do this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`:
 
-. Create encrypted credentials for the PostgreSQL database connections:
-+
+.Create encrypted credentials for the PostgreSQL database connections
 [source, console]
 ----
 sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password <1>
@@ -12,16 +11,16 @@ sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 ----
 <1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
 
-.Detect Java environment and persist in /usr/share/opennms/etc/java.conf
+.Detect Java environment and persist in $\{OPENNMS_HOME}/etc/java.conf
 [source, console]
 ----
-sudo /opt/opennms/bin/runjava -s
+sudo ${OPENNMS_HOME}/bin/runjava -s
 ----
 
 .Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
 [source, console]
 ----
-sudo /opt/opennms/bin/install -dis
+sudo ${OPENNMS_HOME}/bin/install -dis
 ----
 
 .Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
