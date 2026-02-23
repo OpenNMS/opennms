@@ -155,7 +155,11 @@ const handleSave = () => {
     CreateEditMode.Create
   )
 
-  store.configForm.systemDef.push(payload)
+  if (store.systemDefDrawerState.isEditMode === CreateEditMode.Edit) {
+    store.configForm.systemDef[store.systemDefDrawerState.systemDefIndex] = payload
+  } else {
+    store.configForm.systemDef.push(payload)
+  }
   handleCancel()
 }
 

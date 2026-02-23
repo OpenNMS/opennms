@@ -131,6 +131,7 @@
     </div>
     <MibObjectCreationDrawer
       :state="mibObjectDrawerState"
+      :names="store.resourceTypeNames"
       @cancel="closeMibObjectDrawer"
       @save="saveMibObject"
     />

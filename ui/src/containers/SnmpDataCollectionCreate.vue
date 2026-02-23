@@ -45,7 +45,10 @@
         <SystemDefTable />
         <SystemDefForm />
       </div>
-      <div class="mib-groups"></div>
+      <div class="mib-groups">
+        <MibGroupTable />
+        <MibGroupForm />
+      </div>
       <div class="resource-types">
         <ResourceTypeTable />
         <ResourceTypeForm />
@@ -111,6 +114,8 @@
 
 <script lang="ts" setup>
 import TableCard from '@/components/Common/TableCard.vue'
+import MibGroupForm from '@/components/SnmpDataCollectionCreate/MibGroupForm.vue'
+import MibGroupTable from '@/components/SnmpDataCollectionCreate/MibGroupTable.vue'
 import ResourceTypeForm from '@/components/SnmpDataCollectionCreate/ResourceTypeForm.vue'
 import ResourceTypeTable from '@/components/SnmpDataCollectionCreate/ResourceTypeTable.vue'
 import SystemDefForm from '@/components/SnmpDataCollectionCreate/SystemDefForm.vue'

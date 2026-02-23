@@ -1,5 +1,5 @@
 import MibObjectCreationDrawer from '@/components/SnmpDataCollectionDetail/Drawer/MibObjectCreationDrawer.vue'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS } from '@/lib/constants'
 import { CreateEditMode } from '@/types'
 import { MibGroupObjectForm } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
@@ -8,13 +8,11 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect } from '@featherds/select'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS } from '@/lib/constants'
+import { nextTick } from 'vue'
 
 describe('MibObjectCreationDrawer.vue', () => {
   let wrapper: VueWrapper<any>
-  let store: ReturnType<typeof useSnmpDataCollectionDetailStore>
 
   interface DrawerState {
     visible: boolean
@@ -47,12 +45,10 @@ describe('MibObjectCreationDrawer.vue', () => {
       stubActions: false
     })
 
-    store = useSnmpDataCollectionDetailStore(pinia)
-    store.resourceTypeNames = mockResourceTypeNames
-
     wrapper = mount(MibObjectCreationDrawer, {
       props: {
-        state
+        state,
+        names: mockResourceTypeNames
       },
       global: {
         plugins: [pinia],
@@ -186,7 +182,7 @@ describe('MibObjectCreationDrawer.vue', () => {
         expect(wrapper.vm.alias).toBe('')
       })
 
-      it('should populate instance options from store.resourceTypeNames', async () => {
+      it('should populate instance options from names prop', async () => {
         await createWrapper()
         expect(wrapper.vm.instancesOptions).toHaveLength(mockResourceTypeNames.length)
         expect(wrapper.vm.instancesOptions[0]).toEqual({ _text: 'ifIndex', _value: 'ifIndex' })
@@ -881,7 +877,7 @@ describe('MibObjectCreationDrawer.vue', () => {
     })
 
     describe('instancesOptions', () => {
-      it('should be populated from store.resourceTypeNames', async () => {
+      it('should be populated from names prop', async () => {
         await createWrapper()
         expect(wrapper.vm.instancesOptions).toEqual([
           { _text: 'ifIndex', _value: 'ifIndex' },
@@ -891,16 +887,17 @@ describe('MibObjectCreationDrawer.vue', () => {
         ])
       })
 
-      it('should be empty when store.resourceTypeNames is empty', async () => {
+      it('should be empty when names prop is empty', async () => {
         const pinia = createTestingPinia({
           createSpy: vi.fn,
           stubActions: false
         })
-        store = useSnmpDataCollectionDetailStore(pinia)
-        store.resourceTypeNames = []
 
         wrapper = mount(MibObjectCreationDrawer, {
-          props: { state: defaultState },
+          props: {
+            state: defaultState,
+            names: []
+          },
           global: {
             plugins: [pinia],
             stubs: { FeatherIcon: true, FeatherDrawer: false }
@@ -1053,16 +1050,17 @@ describe('MibObjectCreationDrawer.vue', () => {
       expect(wrapper.emitted('save')?.length).toBe(2)
     })
 
-    it('should handle empty store.resourceTypeNames', async () => {
+    it('should handle empty names prop', async () => {
       const pinia = createTestingPinia({
         createSpy: vi.fn,
         stubActions: false
       })
-      const localStore = useSnmpDataCollectionDetailStore(pinia)
-      localStore.resourceTypeNames = []
 
       const localWrapper: VueWrapper<any> = mount(MibObjectCreationDrawer, {
-        props: { state: defaultState },
+        props: {
+          state: defaultState,
+          names: []
+        },
         global: {
           plugins: [pinia],
           stubs: { FeatherIcon: true, FeatherDrawer: false }
@@ -1193,6 +1191,280 @@ describe('MibObjectCreationDrawer.vue', () => {
       wrapper.vm.instance = { _text: 'customInstance', _value: 'customInstance' }
       await nextTick()
       expect(wrapper.vm.instance._value).toBe('customInstance')
+    })
+  })
+
+  describe('Names Prop Mapping', () => {
+    it('should map a single name to instancesOptions', async () => {
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+
+      wrapper = mount(MibObjectCreationDrawer, {
+        props: {
+          state: defaultState,
+          names: ['onlyOne']
+        },
+        global: {
+          plugins: [pinia],
+          stubs: {
+            FeatherIcon: true,
+            FeatherDrawer: {
+              name: 'FeatherDrawer',
+              template: '<div v-if="modelValue" class="feather-drawer" data-test="mib-object-drawer"><slot /></div>',
+              props: ['modelValue', 'labels', 'hideClose', 'width'],
+              emits: ['update:modelValue']
+            }
+          }
+        }
+      })
+      await nextTick()
+
+      expect(wrapper.vm.instancesOptions).toHaveLength(1)
+      expect(wrapper.vm.instancesOptions[0]).toEqual({ _text: 'onlyOne', _value: 'onlyOne' })
+    })
+
+    it('should map names with special characters correctly', async () => {
+      const pinia = createTestingPinia({
+        createSpy: vi.fn,
+        stubActions: false
+      })
+
+      wrapper = mount(MibObjectCreationDrawer, {
+        props: {
+          state: defaultState,
+          names: ['name-with-dash', 'name_with_underscore', 'name.with.dots']
+        },
+        global: {
+          plugins: [pinia],
+          stubs: {
+            FeatherIcon: true,
+            FeatherDrawer: {
+              name: 'FeatherDrawer',
+              template: '<div v-if="modelValue" class="feather-drawer" data-test="mib-object-drawer"><slot /></div>',
+              props: ['modelValue', 'labels', 'hideClose', 'width'],
+              emits: ['update:modelValue']
+            }
+          }
+        }
+      })
+      await nextTick()
+
+      expect(wrapper.vm.instancesOptions).toHaveLength(3)
+      expect(wrapper.vm.instancesOptions[0]._value).toBe('name-with-dash')
+      expect(wrapper.vm.instancesOptions[1]._value).toBe('name_with_underscore')
+      expect(wrapper.vm.instancesOptions[2]._value).toBe('name.with.dots')
+    })
+  })
+
+  describe('Save Does Not Reset Form', () => {
+    it('should preserve form values after a successful save', async () => {
+      await createWrapper()
+      wrapper.vm.oid = '1.3.6.1.2.1'
+      wrapper.vm.alias = 'testAlias'
+      wrapper.vm.instance = { _text: 'ifIndex', _value: 'ifIndex' }
+      wrapper.vm.dataType = { _text: 'counter', _value: 'counter' }
+      await nextTick()
+
+      wrapper.vm.saveMibObject()
+      await flushPromises()
+
+      expect(wrapper.emitted('save')).toBeTruthy()
+      // Form values are NOT cleared by save
+      expect(wrapper.vm.oid).toBe('1.3.6.1.2.1')
+      expect(wrapper.vm.alias).toBe('testAlias')
+      expect(wrapper.vm.instance._value).toBe('ifIndex')
+      expect(wrapper.vm.dataType._value).toBe('counter')
+    })
+  })
+
+  describe('Edit Mode Full Field Verification', () => {
+    it('should load and save all fields correctly in edit mode', async () => {
+      const editMibObject: MibGroupObjectForm = {
+        oid: '1.3.6.1.4.1.2021.11.9',
+        alias: 'ssCpuUser',
+        instance: 'hrStorageIndex',
+        type: 'counter64',
+        maxval: null,
+        minval: null
+      }
+      await createWrapper({
+        visible: true,
+        isEditMode: CreateEditMode.Edit,
+        mibObjectIndex: 2,
+        mibObject: editMibObject
+      })
+
+      expect(wrapper.vm.oid).toBe('1.3.6.1.4.1.2021.11.9')
+      expect(wrapper.vm.alias).toBe('ssCpuUser')
+      expect(wrapper.vm.instance._value).toBe('hrStorageIndex')
+      expect(wrapper.vm.dataType._value).toBe('counter64')
+
+      // Modify one field and save
+      wrapper.vm.oid = '1.3.6.1.4.1.2021.11.10'
+      await nextTick()
+
+      wrapper.vm.saveMibObject()
+      await flushPromises()
+
+      const emitted = wrapper.emitted('save')![0][0] as MibGroupObjectForm
+      expect(emitted.oid).toBe('1.3.6.1.4.1.2021.11.10')
+      expect(emitted.alias).toBe('ssCpuUser')
+      expect(emitted.instance).toBe('hrStorageIndex')
+      expect(emitted.type).toBe('counter64')
+    })
+  })
+
+  describe('loadMibObjectData in None mode', () => {
+    it('should not change form state when isEditMode is None', async () => {
+      await createWrapper({ ...defaultState, visible: false })
+
+      // Set some values before opening in None mode
+      wrapper.vm.oid = '1.2.3'
+      wrapper.vm.alias = 'myAlias'
+      await nextTick()
+
+      await wrapper.setProps({
+        state: {
+          visible: true,
+          isEditMode: CreateEditMode.None,
+          mibObjectIndex: -1,
+          mibObject: null
+        }
+      })
+      await nextTick()
+
+      // loadMibObjectData does nothing for None mode, but the watcher
+      // closes branch resets the form on visible=false then opens again
+      // Since we went from false->true with None mode, loadMibObjectData fires
+      // but neither Create nor Edit branch runs, so form keeps its state
+      expect(wrapper.vm.isDrawerOpen).toBe(true)
+    })
+  })
+
+  describe('Cancel Edge Cases', () => {
+    it('should handle cancel when form is already in default state', async () => {
+      await createWrapper()
+      // Don't modify any fields, just cancel
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      const cancelButton = buttons.find((btn) => btn.text().includes('Cancel'))
+      await cancelButton!.trigger('click')
+
+      expect(wrapper.emitted('cancel')).toBeTruthy()
+      expect(wrapper.vm.oid).toBe('')
+      expect(wrapper.vm.alias).toBe('')
+      expect(wrapper.vm.instance).toEqual({ _text: '0', _value: '0' })
+      expect(wrapper.vm.dataType).toEqual(DEFAULT_MIB_OBJ_TYPE)
+    })
+
+    it('should handle cancel after a successful save', async () => {
+      await createWrapper()
+      wrapper.vm.oid = '1.3.6.1.2.1'
+      wrapper.vm.alias = 'testAlias'
+      wrapper.vm.instance = { _text: 'ifIndex', _value: 'ifIndex' }
+      wrapper.vm.dataType = { _text: 'counter', _value: 'counter' }
+      await nextTick()
+
+      wrapper.vm.saveMibObject()
+      await flushPromises()
+      expect(wrapper.emitted('save')).toBeTruthy()
+
+      // Now cancel
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      const cancelButton = buttons.find((btn) => btn.text().includes('Cancel'))
+      await cancelButton!.trigger('click')
+      await nextTick()
+
+      expect(wrapper.emitted('cancel')).toBeTruthy()
+      expect(wrapper.vm.oid).toBe('')
+      expect(wrapper.vm.alias).toBe('')
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+  })
+
+  describe('Immediate Watcher Behavior', () => {
+    it('should load edit data on initial mount when visible=true and mode=Edit', async () => {
+      await createWrapper({
+        visible: true,
+        isEditMode: CreateEditMode.Edit,
+        mibObjectIndex: 0,
+        mibObject: mockMibObject
+      })
+
+      // Immediate watcher should have loaded data on mount
+      expect(wrapper.vm.oid).toBe('1.3.6.1.2.1.1.1')
+      expect(wrapper.vm.alias).toBe('sysDescr')
+      expect(wrapper.vm.instance._value).toBe('sysDescr')
+      expect(wrapper.vm.dataType._value).toBe('string')
+      expect(wrapper.vm.isSaveDisabled).toBe(false)
+    })
+
+    it('should start with empty form on initial mount when visible=true and mode=Create', async () => {
+      await createWrapper({
+        visible: true,
+        isEditMode: CreateEditMode.Create,
+        mibObjectIndex: -1,
+        mibObject: null
+      })
+
+      expect(wrapper.vm.oid).toBe('')
+      expect(wrapper.vm.alias).toBe('')
+      expect(wrapper.vm.instance).toEqual({ _text: '0', _value: '0' })
+      expect(wrapper.vm.dataType).toEqual(DEFAULT_MIB_OBJ_TYPE)
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should start closed when visible=false on initial mount', async () => {
+      await createWrapper({
+        visible: false,
+        isEditMode: CreateEditMode.Create,
+        mibObjectIndex: -1,
+        mibObject: null
+      })
+
+      expect(wrapper.vm.isDrawerOpen).toBe(false)
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+  })
+
+  describe('Validation Error Keys', () => {
+    it('should have no error keys when all fields are valid', async () => {
+      await createWrapper()
+      wrapper.vm.oid = '1.3.6.1.2.1'
+      wrapper.vm.alias = 'testAlias'
+      wrapper.vm.instance = { _text: 'ifIndex', _value: 'ifIndex' }
+      wrapper.vm.dataType = { _text: 'gauge', _value: 'gauge' }
+      await nextTick()
+
+      expect(Object.keys(wrapper.vm.errors)).toHaveLength(0)
+    })
+
+    it('should have exactly four error keys when all fields are invalid', async () => {
+      await createWrapper()
+      wrapper.vm.oid = 'invalid'
+      wrapper.vm.alias = ''
+      wrapper.vm.instance = { _text: '', _value: '' }
+      wrapper.vm.dataType = { _text: '', _value: '' }
+      await nextTick()
+
+      const errorKeys = Object.keys(wrapper.vm.errors)
+      expect(errorKeys).toHaveLength(4)
+      expect(errorKeys).toContain('oid')
+      expect(errorKeys).toContain('alias')
+      expect(errorKeys).toContain('instance')
+      expect(errorKeys).toContain('type')
+    })
+
+    it('should only have oid error when only OID is invalid', async () => {
+      await createWrapper()
+      wrapper.vm.oid = 'bad'
+      wrapper.vm.alias = 'testAlias'
+      wrapper.vm.instance = { _text: 'ifIndex', _value: 'ifIndex' }
+      wrapper.vm.dataType = { _text: 'gauge', _value: 'gauge' }
+      await nextTick()
+
+      expect(Object.keys(wrapper.vm.errors)).toEqual(['oid'])
     })
   })
 

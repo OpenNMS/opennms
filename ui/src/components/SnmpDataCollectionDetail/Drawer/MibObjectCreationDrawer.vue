@@ -74,7 +74,6 @@
 
 <script lang="ts" setup>
 import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS, OID_PATTERN } from '@/lib/constants'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { MibGroupObjectForm, MibGroupObjectFormErrors } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
@@ -90,19 +89,19 @@ const props = defineProps<{
     isEditMode: CreateEditMode
     mibObjectIndex: number,
     mibObject: MibGroupObjectForm | null
-  }
+  },
+  names: string[]
 }>()
 const emit = defineEmits<{
   (e: 'cancel'): void
   (e: 'save', mibObject: MibGroupObjectForm): void
 }>()
 
-const store = useSnmpDataCollectionDetailStore()
 const isDrawerOpen = ref(props.state.visible)
 const oid = ref('')
 const dataType = ref<ISelectItemType>(DEFAULT_MIB_OBJ_TYPE)
 const instance = ref<ISelectItemType>({ _text: '0', _value: '0' })
-const instancesOptions = ref<ISelectItemType[]>(store.resourceTypeNames.map((name) => ({ _text: name, _value: name })))
+const instancesOptions = ref<ISelectItemType[]>(props.names.map((name) => ({ _text: name, _value: name })))
 const alias = ref('')
 const errors = ref<MibGroupObjectFormErrors>({})
 const isSaveDisabled = ref(true)
