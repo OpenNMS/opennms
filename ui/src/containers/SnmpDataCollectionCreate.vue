@@ -1,16 +1,26 @@
 <template>
   <div class="snmp-data-collection-create-container">
     <div class="header">
-      <div>
-        <FeatherBackButton
-          data-test="back-button"
-          @click="handleCancel"
-        >
-          Go Back
-        </FeatherBackButton>
+      <div class="title">
+        <div>
+          <FeatherBackButton
+            data-test="back-button"
+            @click="handleCancel"
+          >
+            Go Back
+          </FeatherBackButton>
+        </div>
+        <div>
+          <h3>Create SNMP Data Collection Source</h3>
+        </div>
       </div>
-      <div>
-        <h3>Create SNMP Data Collection Source</h3>
+      <div class="action">
+        <FeatherButton
+          primary
+          data-test="save-button"
+        >
+          Create Data Collection Source
+        </FeatherButton>
       </div>
     </div>
     <div class="content">
@@ -35,7 +45,10 @@
         <SystemDefForm />
       </div>
       <div class="mib-groups"></div>
-      <div class="resource-types"></div>
+      <div class="resource-types">
+        <ResourceTypeTable />
+        <ResourceTypeForm />
+      </div>
     </div>
     <div class="footer">
       <FeatherButton
@@ -56,6 +69,8 @@
 
 <script lang="ts" setup>
 import TableCard from '@/components/Common/TableCard.vue'
+import ResourceTypeForm from '@/components/SnmpDataCollectionCreate/ResourceTypeForm.vue'
+import ResourceTypeTable from '@/components/SnmpDataCollectionCreate/ResourceTypeTable.vue'
 import SystemDefForm from '@/components/SnmpDataCollectionCreate/SystemDefForm.vue'
 import SystemDefTable from '@/components/SnmpDataCollectionCreate/SystemDefTable.vue'
 import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
@@ -114,12 +129,24 @@ onMounted(async () => {
 
   .header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 20px;
     margin-bottom: 20px;
 
-    h3 {
-      margin: 0;
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h3 {
+        margin: 0;
+      }
+    }
+
+    .action {
+      button {
+        margin: 0;
+      }
     }
   }
 

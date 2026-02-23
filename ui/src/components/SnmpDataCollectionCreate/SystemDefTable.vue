@@ -28,37 +28,71 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr
+        <TransitionGroup
+          name="data-table"
+          tag="tbody"
+        >
+          <template
             v-for="(systemDef, index) in store.configForm.systemDef"
-            :key="systemDef.id"
+            :key="index"
           >
-            <td>{{ systemDef.name }}</td>
-            <td>{{ systemDef.sysoid }}</td>
-            <td>{{ systemDef.sysoidMask }}</td>
-            <td>{{ systemDef.enabled ? 'Enabled' : 'Disabled' }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit"
-                  :title="`Edit ${systemDef.name}`"
-                  data-test="edit-button"
-                  @click="onSystemDefEditClicked(systemDef)"
-                >
-                  <FeatherIcon :icon="Edit" />
-                </FeatherButton>
-                <FeatherButton
-                  icon="Delete"
-                  :title="`Delete ${systemDef.name}`"
-                  data-test="delete-button"
-                  @click="onSystemDefDeleteClicked(systemDef, index)"
-                >
-                  <FeatherIcon :icon="Delete" />
-                </FeatherButton>
-              </div>
-            </td>
-          </tr>
-        </tbody>
+            <tr>
+              <td>{{ systemDef.name }}</td>
+              <td>{{ systemDef.sysoid }}</td>
+              <td>{{ systemDef.sysoidMask }}</td>
+              <td>{{ systemDef.enabled ? 'Enabled' : 'Disabled' }}</td>
+              <td>
+                <div class="action-container">
+                  <FeatherButton
+                    icon="Edit"
+                    :title="`Edit ${systemDef.name}`"
+                    data-test="edit-button"
+                    @click="onSystemDefEditClicked(systemDef)"
+                  >
+                    <FeatherIcon :icon="Edit" />
+                  </FeatherButton>
+                  <FeatherButton
+                    icon="Delete"
+                    :title="`Delete ${systemDef.name}`"
+                    data-test="delete-button"
+                    @click="onSystemDefDeleteClicked(systemDef, index)"
+                  >
+                    <FeatherIcon :icon="Delete" />
+                  </FeatherButton>
+                  <FeatherButton
+                    primary
+                    :icon="`${expandedRows.includes(index)
+                    ? 'Expand Less'
+                    : 'Expand More'
+                    }`"
+                    @click="toggleExpand(index)"
+                  >
+                    <FeatherIcon
+                      :icon="ExpandLess"
+                      v-if="expandedRows.includes(index)"
+                    />
+                    <FeatherIcon
+                      :icon="ExpandMore"
+                      v-else
+                    />
+                  </FeatherButton>
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-if="expandedRows.includes(index)"
+              class="expanded-content"
+            >
+              <td :colspan="5">
+                <h6>Mib Group Names:</h6>
+                <p
+                  class="description"
+                  v-html="JSON.parse(systemDef.mibGroupNames || '[]').join(', ')"
+                ></p>
+              </td>
+            </tr>
+          </template>
+        </TransitionGroup>
       </table>
       <div v-if="!store.configForm.systemDef.length">
         <EmptyList :content="{ msg: 'No System Definitions found.' }" />
@@ -68,17 +102,29 @@
 </template>
 
 <script lang="ts" setup>
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
+import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDefPayload } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
+import ExpandLess from '@featherds/icon/navigation/ExpandLess'
+import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
-import { CreateEditMode } from '@/types'
 
 const store = useSnmpDataCollectionCreationStore()
+const expandedRows = ref<number[]>([])
+
+const toggleExpand = (id: number) => {
+  const index = expandedRows.value.indexOf(id)
+  if (index === -1) {
+    expandedRows.value.push(id)
+  } else {
+    expandedRows.value.splice(index, 1)
+  }
+}
 
 const onSystemDefEditClicked = (systemDef: SnmpCollectionSystemDefPayload) => {
   store.systemDefDrawerState = {
@@ -102,13 +148,14 @@ const onAddSystemDefClicked = () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
+@import '@featherds/styles/themes/variables';
+@import '@featherds/styles/mixins/typography';
+@import '@featherds/table/scss/table';
+@import '@/styles/_transitionDataTable';
 
 .system-def-table-card {
   padding: 20px;
+  margin-bottom: 20px;
 
   .header {
     display: flex;
@@ -118,7 +165,7 @@ const onAddSystemDefClicked = () => {
 
     .title-container {
       .title {
-        @include typography.headline3;
+        @include headline3;
         margin: 0;
       }
     }
@@ -137,17 +184,17 @@ const onAddSystemDefClicked = () => {
   .container {
     table {
       width: 100%;
-      @include table.table;
+      @include table;
 
       thead {
-        background: var(variables.$background);
+        background: var($background);
         text-transform: uppercase;
       }
 
       td {
         white-space: nowrap;
         box-shadow: none;
-        border-bottom: 1px solid var(variables.$border-on-surface);
+        border-bottom: 1px solid var($border-on-surface);
 
         .action-container {
           display: flex;
@@ -175,7 +222,6 @@ const onAddSystemDefClicked = () => {
         }
       }
     }
-
   }
 }
 </style>

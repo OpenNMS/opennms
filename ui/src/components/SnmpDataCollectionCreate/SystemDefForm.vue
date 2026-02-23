@@ -151,7 +151,7 @@ const handleSave = () => {
     '',
     mibGroupNames.value.map((x) => x._value as string),
     status.value,
-    store.systemDefDrawerState?.systemDefIndex || 0,
+    0,
     CreateEditMode.Create
   )
 
@@ -227,13 +227,14 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/table/scss/table';
-@use '@/styles/_transitionDataTable';
+@import '@featherds/styles/themes/variables';
+@import '@featherds/styles/mixins/typography';
+@import '@featherds/table/scss/table';
+@import '@/styles/_transitionDataTable';
 
 .system-def-form-card {
   padding: 20px;
+  margin-bottom: 20px;
 
   .header {
     display: flex;
@@ -243,7 +244,7 @@ watch(
 
     .title-container {
       .title {
-        @include typography.headline3;
+        @include headline3;
         margin: 0;
       }
     }
