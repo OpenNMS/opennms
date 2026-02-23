@@ -17,6 +17,7 @@
       <div class="action">
         <FeatherButton
           primary
+          @click="showSourceCreationDialog"
           data-test="save-button"
         >
           Create Data Collection Source
@@ -64,6 +65,47 @@
         Create
       </FeatherButton>
     </div>
+    <FeatherDialog
+      v-model="sourceCreationDialogState"
+      :labels="labels"
+      hide-close
+      @hidden="handleSourceCreationCancel"
+    >
+      <div class="modal-body-form">
+        <div>
+          <FeatherInput
+            label="Data Collection Source Name"
+            v-model="configName"
+            :error="sourceCreationErrors?.name"
+            data-test="source-name"
+          />
+        </div>
+        <div>
+          <FeatherInput
+            label="Vendor"
+            v-model="vendor"
+            :error="sourceCreationErrors?.vendor"
+            data-test="vendor"
+          />
+        </div>
+      </div>
+      <template v-slot:footer>
+        <FeatherButton
+          @click="handleSourceCreationCancel"
+          data-test="cancel-source-button"
+        >
+          Cancel
+        </FeatherButton>
+        <FeatherButton
+          primary
+          @click="handleSourceCreationSave"
+          :disabled="Object.keys(sourceCreationErrors || {}).length > 0"
+          data-test="create-source-button"
+        >
+          Create Source
+        </FeatherButton>
+      </template>
+    </FeatherDialog>
   </div>
 </template>
 
@@ -77,6 +119,8 @@ import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionC
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDialog } from '@featherds/dialog'
+import { FeatherInput } from '@featherds/input'
 
 const router = useRouter()
 const loading = ref(false)
@@ -84,6 +128,12 @@ const timeout = ref<number>(-1)
 const results = ref<Array<IAutocompleteItemType>>([])
 const store = useSnmpDataCollectionCreationStore()
 const selectedCollectionSource = ref<IAutocompleteItemType>()
+const configName = ref('')
+const vendor = ref('')
+const sourceCreationDialogState = ref(false)
+const labels = {
+  title: 'Create New Data Collection Source'
+}
 
 const handleCancel = () => {
   if (store.selectedCollectionSource) {
@@ -106,6 +156,38 @@ const search = (query: string) => {
 
 const setSelectedCollectionSource = (item: IAutocompleteItemType) => {
   selectedCollectionSource.value = item
+}
+
+const sourceCreationErrors = computed(() => {
+  let error: any = {}
+  if (configName.value.trim() === '') {
+    error.name = 'Configuration name is required.'
+  }
+  if (vendor.value && vendor.value.length > 128) {
+    error.vendor = 'Vendor must be less than 128 characters.'
+  }
+  return Object.keys(error).length > 0 ? error : null
+})
+
+const showSourceCreationDialog = () => {
+  configName.value = ''
+  vendor.value = ''
+  sourceCreationDialogState.value = true
+}
+
+const handleSourceCreationCancel = () => {
+  sourceCreationDialogState.value = false
+  configName.value = ''
+  vendor.value = ''
+}
+
+const handleSourceCreationSave = () => {
+  // store.createSource({ name: configName.value, vendor: vendor.value })
+  //   .then(() => {
+  //     sourceCreationDialogState.value = false
+  //     configName.value = ''
+  //     vendor.value = ''
+  //   })
 }
 
 onMounted(async () => {
@@ -170,6 +252,10 @@ onMounted(async () => {
       margin: 0;
     }
   }
+}
+
+.modal-body-form {
+  width: 50rem;
 }
 </style>
 
