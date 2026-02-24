@@ -25,6 +25,7 @@ package org.opennms.netmgt.events.commands;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlException;
 import org.apache.commons.jexl3.JexlExpression;
 import org.apache.commons.jexl3.MapContext;
 import org.apache.commons.jexl3.introspection.JexlPermissions;
@@ -51,8 +52,11 @@ public class AlarmClearCommand implements Action {
     @Option(name = "-i", aliases = "--alarm-id", description = "Clear this alarm ID. Can be provided multiple times, e.g. '-i 10 -i 12 -i 13'", required = false, multiValued = true)
     private List<Integer> alarmIds;
 
-    @Option(name = "-v", aliases = "--verbose", description = "Be verbose; display matching alarm objects.", required = false)
+    @Option(name = "-v", aliases = "--verbose", description = "Be verbose; display matching alarm objects", required = false)
     private boolean verbose = false;
+
+    @Option(name = "-d", aliases = "--dry-run", description = "Show matches, but don't actually clear anything", required = false)
+    private boolean dryrun = false;
 
     @Override
     public Object execute() {
@@ -84,7 +88,9 @@ public class AlarmClearCommand implements Action {
                 } else {
                     System.out.printf("Clearing alarm with ID '%d' and reduction key: '%s'\n", alarm.getId(), alarm.getReductionKey());
                 }
-                alarmDao.clear(alarm.getId());
+                if (!dryrun) {
+                    alarmDao.clear(alarm.getId());
+                }
             }
             // handle multiple ids
             if (alarmIds != null) {
@@ -94,11 +100,13 @@ public class AlarmClearCommand implements Action {
                         alarmIdMatched = true;
                         didMatchAtLeastOneAlarm = true;
                         if (verbose) {
-                            System.out.printf("Clearing matched alarm object '%s'", alarm);
+                            System.out.printf("Clearing matched alarm object '%s'\n", alarm);
                         } else {
                             System.out.printf("Clearing alarm with ID '%d' and reduction key: '%s'\n", alarm.getId(), alarm.getReductionKey());
                         }
-                        alarmDao.clear(alarm.getId());
+                        if (!dryrun) {
+                            alarmDao.clear(alarm.getId());
+                        }
                     }
                 }
             }
@@ -118,8 +126,17 @@ public class AlarmClearCommand implements Action {
 
     private static boolean testAlarmAgainstExpression(JexlExpression expression, Alarm alarm) {
         final JexlContext jc = new MapContext();
+        Object result;
         jc.set("alarm", alarm);
-        return (boolean)expression.evaluate(jc);
+        try {
+            result = expression.evaluate(jc);
+            if (result instanceof Boolean ) {
+                return (boolean)result;
+            }
+        } catch (JexlException ex) {
+            System.out.printf("Error evaluating expression: %s", ex);
+        }
+        return false;
     }
 }
 
