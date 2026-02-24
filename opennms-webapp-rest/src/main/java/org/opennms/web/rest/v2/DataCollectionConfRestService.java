@@ -54,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.LinkedHashMap;
 import java.util.Date;
-import java.util.function.Supplier;
 
 @Component
 public class DataCollectionConfRestService  implements DataCollectionConfRestApi {
@@ -496,7 +495,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         return handleDelete(
-                () -> { dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(ids); return null; },
+                () -> dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(ids),
                 "Snmp Data Collection deleted successfully"
         );
     }
@@ -511,7 +510,8 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         return handleDelete(
-                () -> { dataCollectionConfPersistenceService.deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId, ids); return null; },
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId, ids),
                 "Snmp Data Collection Mib Groups deleted successfully"
         );
     }
@@ -526,7 +526,8 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         return handleDelete(
-                () -> { dataCollectionConfPersistenceService.deleteSnmpDataCollectionResourceTypes(snmpDataCollectionSourceId, ids); return null; },
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionResourceTypes(snmpDataCollectionSourceId, ids),
                 "Snmp Data Collection Resource Types deleted successfully"
         );
     }
@@ -541,14 +542,15 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
 
         return handleDelete(
-                () -> { dataCollectionConfPersistenceService.deleteSnmpDataCollectionSystemDefs(snmpDataCollectionSourceId, ids); return null; },
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionSystemDefs(snmpDataCollectionSourceId, ids),
                 "Snmp Data Collection System Def deleted successfully"
         );
     }
 
-    private Response handleDelete(final Supplier<Void> action, final String successMessage) {
+    private Response handleDelete(final DeleteAction action, final String successMessage) {
         try {
-            action.get();
+            action.run();
 
             return Response.ok()
                     .entity(successMessage)
@@ -573,6 +575,11 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(message)
                 .build();
+    }
+
+    @FunctionalInterface
+    private interface DeleteAction {
+        void run();
     }
 
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {

@@ -303,13 +303,12 @@ public class DataCollectionConfPersistenceService {
 
         for (final Integer id : ids) {
             if (id == null || id <= 0) {
-                continue; // or throw
+                continue;
             }
 
             final T entity = finder.apply(sourceId, id);
             if (entity == null) {
-                throw new EntityNotFoundException(entityLabel + " not found for sourceId=" + sourceId + ", id=" + id);
-                // or: continue; (ignore missing)
+                continue;
             }
             deleter.accept(entity);
         }
