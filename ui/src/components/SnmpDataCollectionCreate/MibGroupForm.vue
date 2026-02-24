@@ -1,8 +1,14 @@
 <template>
-  <TableCard class="mib-group-form-container">
+  <TableCard
+    class="mib-group-form-card"
+    v-if="store.mibGroupDrawerState.isEditMode !== CreateEditMode.None"
+  >
     <div class="header">
       <div class="title-container">
-        <h2 class="title">{{ title }}</h2>
+        <h3 class="title">
+          {{ store.mibGroupDrawerState.isEditMode === CreateEditMode.Edit ? 'Update MIB Group'
+            : 'Create MIB Group' }}
+        </h3>
       </div>
     </div>
     <div class="content">
@@ -116,15 +122,15 @@
     <div class="footer">
       <FeatherButton
         data-test="cancel-mib-group"
-        @click="closeMibGroupDrawer"
+        @click="handleCancel"
       >
         Cancel
       </FeatherButton>
       <FeatherButton
         primary
         data-test="save-mib-group"
-        :disabled="isSaveDisabled"
         @click="saveMibGroup"
+        :disabled="isSaveDisabled"
       >
         Save
       </FeatherButton>
@@ -139,12 +145,11 @@
 </template>
 
 <script lang="ts" setup>
-import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_IF_TYPE_FILTER, IF_TYPE_FILTERS_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionMibGroupPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
 import { CreateEditMode } from '@/types'
-import { MibGroupErrors, MibGroupObjectForm } from '@/types/snmpDataCollection'
+import { MibGroupErrors, MibGroupObjectForm, SnmpCollectionMibGroupPayload } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
@@ -155,17 +160,15 @@ import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import MibObjectCreationDrawer from './Drawer/MibObjectCreationDrawer.vue'
-import { createMibGroup, updateMibGroup } from '@/services/snmpDataCollectionService'
+import MibObjectCreationDrawer from '../SnmpDataCollectionDetail/Drawer/MibObjectCreationDrawer.vue'
 
-const store = useSnmpDataCollectionDetailStore()
+const store = useSnmpDataCollectionCreationStore()
 const name = ref('')
 const ifType = ref<ISelectItemType>(DEFAULT_IF_TYPE_FILTER)
 const mibObjects = ref<MibGroupObjectForm[]>([])
 const status = ref(true)
 const errors = ref<MibGroupErrors>({})
 const isSaveDisabled = ref(true)
-const snackbar = useSnackbar()
 const mibObjectDrawerState = ref<{
   visible: boolean
   isEditMode: CreateEditMode
@@ -177,12 +180,6 @@ const mibObjectDrawerState = ref<{
   mibObjectIndex: -1,
   mibObject: null
 })
-
-const title = computed(() =>
-  store.mibGroupDrawerState.isEditMode === CreateEditMode.Create
-    ? 'Create Mib Group'
-    : 'Edit Mib Group'
-)
 
 const openMibObjectDrawer = (index: number, mibObject: MibGroupObjectForm | null, isEditMode: CreateEditMode) => {
   mibObjectDrawerState.value = {
@@ -202,6 +199,10 @@ const closeMibObjectDrawer = () => {
   }
 }
 
+const deleteMibObject = (index: number) => {
+  mibObjects.value.splice(index, 1)
+}
+
 const saveMibObject = (mibObject: MibGroupObjectForm) => {
   if (mibObjectDrawerState.value.isEditMode === CreateEditMode.Create) {
     mibObjects.value.push(mibObject)
@@ -214,13 +215,62 @@ const saveMibObject = (mibObject: MibGroupObjectForm) => {
   closeMibObjectDrawer()
 }
 
-const closeMibGroupDrawer = () => {
-  closeMibObjectDrawer()
-  store.closeMibGroupDrawer()
+const saveMibGroup = () => {
+  if (Object.keys(errors.value).length > 0) {
+    return
+  }
+
+  const payload = mapSnmpDataCollectionMibGroupPayloadToServer(
+    name.value,
+    ifType.value._value as string,
+    [],
+    mibObjects.value,
+    status.value,
+    0,
+    CreateEditMode.Create
+  )
+
+  if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Edit) {
+    store.configForm.mibGroup[store.mibGroupDrawerState.mibGroupIndex] = payload
+  } else {
+    store.configForm.mibGroup.push(payload)
+  }
+  handleCancel()
 }
 
-const deleteMibObject = (index: number) => {
-  mibObjects.value.splice(index, 1)
+const handleCancel = () => {
+  name.value = ''
+  ifType.value = DEFAULT_IF_TYPE_FILTER
+  mibObjects.value = []
+  status.value = true
+  store.mibGroupDrawerState = {
+    visible: false,
+    isEditMode: CreateEditMode.None,
+    mibGroupIndex: -1
+  }
+}
+
+const loadMibGroup = (mibGroup: SnmpCollectionMibGroupPayload | null) => {
+  if (mibGroup === null) {
+    name.value = ''
+    ifType.value = DEFAULT_IF_TYPE_FILTER
+    mibObjects.value = []
+    status.value = true
+  }
+  if (mibGroup !== null) {
+    const group = store.configForm.mibGroup[store.mibGroupDrawerState.mibGroupIndex] || null
+    if (group) {
+      name.value = group.name
+      ifType.value = IF_TYPE_FILTERS_OPTIONS.find(option => option._value === group.ifType) || DEFAULT_IF_TYPE_FILTER
+      mibObjects.value = JSON.parse(group.mibObjects).map((obj: any) => ({
+        oid: obj.oid,
+        instance: obj.instance,
+        alias: obj.alias,
+        type: obj.type
+      }))
+      status.value = group.enabled
+    }
+  }
 }
 
 const validateMibGroup = (): MibGroupErrors => {
@@ -234,65 +284,6 @@ const validateMibGroup = (): MibGroupErrors => {
   return validationErrors
 }
 
-const loadInitialData = () => {
-  if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
-    name.value = ''
-    ifType.value = DEFAULT_IF_TYPE_FILTER
-    status.value = true
-    mibObjects.value = []
-  }
-  if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Edit) {
-    const group = store.selectedMibGroup
-    if (group) {
-      name.value = group.name
-      ifType.value = { _text: group.ifType, _value: group.ifType }
-      status.value = group.enabled
-      mibObjects.value = JSON.parse(group.mibObjects) || []
-    }
-  }
-}
-
-const saveMibGroup = async () => {
-  errors.value = validateMibGroup()
-  if (Object.keys(errors.value).length > 0) {
-    return
-  }
-
-  if (!store.selectedCollectionSource?.id) {
-    snackbar.showSnackBar({ msg: 'Please select a Collection Source first.', error: true })
-    return
-  }
-
-  try {
-    const payload = mapSnmpDataCollectionMibGroupPayloadToServer(
-      name.value,
-      ifType.value._value as string,
-      store.selectedMibGroup?.mibGroupNames || [],
-      mibObjects.value,
-      status.value,
-      store.selectedMibGroup?.id || 0,
-      store.mibGroupDrawerState.isEditMode
-    )
-    let response
-    if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
-      response = await createMibGroup(payload, store.selectedCollectionSource.id)
-    } else if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Edit) {
-      response = await updateMibGroup(payload, store.selectedCollectionSource.id)
-    }
-
-    if (response) {
-      await store.fetchMibGroups()
-      snackbar.showSnackBar({ msg: `MIB Group ${store.mibGroupDrawerState.isEditMode === CreateEditMode.Create ? 'created' : 'updated'} successfully.` })
-      closeMibGroupDrawer()
-    } else {
-      snackbar.showSnackBar({ msg: 'An error occurred while saving the MIB Group.', error: true })
-    }
-  } catch (error) {
-    console.error('Error saving MIB Group:', error)
-    snackbar.showSnackBar({ msg: 'An error occurred while saving the MIB Group.', error: true })
-  }
-}
-
 watchEffect(() => {
   errors.value = validateMibGroup()
   isSaveDisabled.value = Object.keys(errors.value).length > 0
@@ -300,17 +291,10 @@ watchEffect(() => {
 
 watch(
   () => store.mibGroupDrawerState.visible,
-  (visible) => {
-    if (visible) {
-      loadInitialData()
-    } else {
-      // Reset form data and errors when drawer is closed
-      name.value = ''
-      ifType.value = DEFAULT_IF_TYPE_FILTER
-      status.value = true
-      mibObjects.value = []
-      errors.value = {}
-      isSaveDisabled.value = true
+  (newVal) => {
+    if (newVal) {
+      const mibGroup = store.configForm.mibGroup[store.mibGroupDrawerState.mibGroupIndex] || null
+      loadMibGroup(mibGroup)
     }
   },
   { immediate: true }
@@ -323,21 +307,30 @@ watch(
 @import '@featherds/table/scss/table';
 @import '@/styles/_transitionDataTable';
 
-.mib-group-form-container {
-  margin-top: 10px;
-  padding: 25px;
+.mib-group-form-card {
+  padding: 20px;
+  margin-bottom: 20px;
 
   .header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 
     .title-container {
-      display: flex;
-      align-items: center;
-
       .title {
         @include headline3;
+        margin: 0;
+      }
+    }
+
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      button {
+        margin: 0;
       }
     }
   }
@@ -383,7 +376,6 @@ watch(
         }
       }
     }
-
   }
 
   .footer {

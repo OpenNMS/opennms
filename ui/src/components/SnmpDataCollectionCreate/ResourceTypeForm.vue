@@ -1,8 +1,14 @@
 <template>
-  <TableCard class="resource-type-form-container">
+  <TableCard
+    class="resource-type-form-card"
+    v-if="store.resourceTypeDrawerState.isEditMode !== CreateEditMode.None"
+  >
     <div class="header">
       <div class="title-container">
-        <h2 class="title">{{ title }}</h2>
+        <h3 class="title">
+          {{ store.resourceTypeDrawerState.isEditMode === CreateEditMode.Edit ? 'Update Resource Type'
+            : 'Create Resource Type' }}
+        </h3>
       </div>
     </div>
     <div class="content">
@@ -214,7 +220,7 @@
     <div class="footer">
       <FeatherButton
         data-test="cancel-resource-type"
-        @click="closeResourceTypeDrawer"
+        @click="handleCancel"
       >
         Cancel
       </FeatherButton>
@@ -236,13 +242,11 @@
 </template>
 
 <script lang="ts" setup>
-import useSnackbar from '@/composables/useSnackbar'
 import { PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STATUS_OPTIONS, STORAGE_STRATEGY_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionResourceTypePayloadToServer } from '@/mappers/snmpDataCollection.mapper'
-import { createResourceType, updateResourceType } from '@/services/snmpDataCollectionService'
-import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
+import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
 import { CreateEditMode } from '@/types'
-import { PersistSelectorStrategyForm, ResourceTypeErrors, StorageStrategyForm } from '@/types/snmpDataCollection'
+import { PersistSelectorStrategyForm, ResourceTypeErrors, SnmpCollectionResourceTypePayload, StorageStrategyForm } from '@/types/snmpDataCollection'
 import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -252,15 +256,9 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import ResourceTypeParameterDrawer from './Drawer/ResourceTypeParameterDrawer.vue'
+import ResourceTypeParameterDrawer from '../SnmpDataCollectionDetail/Drawer/ResourceTypeParameterDrawer.vue'
 
-const storageStrategyLoading = ref(false)
-const storageStrategyTimeout = ref(-1)
-const persistenceSelectorStrategyLoading = ref(false)
-const persistenceSelectorStrategyTimeout = ref(-1)
-const persistenceSelectorStrategyResults = ref([] as IAutocompleteItemType[])
-const storageStrategyResults = ref([] as IAutocompleteItemType[])
-const store = useSnmpDataCollectionDetailStore()
+const store = useSnmpDataCollectionCreationStore()
 const name = ref('')
 const resourceLabel = ref('')
 const label = ref('')
@@ -269,8 +267,13 @@ const storageStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const storageStrategyParams = ref<StorageStrategyForm[]>([])
 const persistenceSelectorStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const persistenceSelectorStrategyParams = ref<PersistSelectorStrategyForm[]>([])
+const persistenceSelectorStrategyLoading = ref(false)
+const persistenceSelectorStrategyTimeout = ref(-1)
+const persistenceSelectorStrategyResults = ref([] as IAutocompleteItemType[])
+const storageStrategyLoading = ref(false)
+const storageStrategyTimeout = ref(-1)
+const storageStrategyResults = ref([] as IAutocompleteItemType[])
 const errors = ref<ResourceTypeErrors>({})
-const snackbar = useSnackbar()
 const isSaveDisabled = ref(true)
 const resourceTypeDrawerState = ref<{
   type: 'storageStrategy' | 'persistenceSelectorStrategy' | null
@@ -289,182 +292,6 @@ const resourceTypeDrawerState = ref<{
   persistenceSelectorStrategyObject: null,
   storageStrategyObject: null
 })
-const title = computed(() =>
-  store.resourceTypeDrawerState.isEditMode === CreateEditMode.Create
-    ? 'Create Resource Type'
-    : 'Edit Resource Type'
-)
-
-const validateResourceType = () => {
-  const validationErrors: ResourceTypeErrors = {}
-  if (!name.value.trim()) {
-    validationErrors.name = 'Name is required'
-  }
-  if (!label.value.trim()) {
-    validationErrors.label = 'Label is required'
-  }
-  if (!storageStrategy.value?._value) {
-    validationErrors.storageStrategy = 'Storage Strategy is required'
-  }
-  if (!persistenceSelectorStrategy.value?._value) {
-    validationErrors.persistenceSelectorStrategy = 'Persistence Selector Strategy is required'
-  }
-  return validationErrors
-}
-
-const closeStrategyDrawer = () => {
-  resourceTypeDrawerState.value = {
-    type: null,
-    visible: false,
-    isEditMode: CreateEditMode.None,
-    persistenceSelectorStrategyIndex: -1,
-    storageStrategyIndex: -1,
-    persistenceSelectorStrategyObject: null,
-    storageStrategyObject: null
-  }
-}
-
-const loadResourceTypeData = () => {
-  if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Create) {
-    storageStrategyParams.value = []
-    persistenceSelectorStrategyParams.value = []
-    storageStrategy.value = undefined as unknown as IAutocompleteItemType
-    persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
-    name.value = ''
-    label.value = ''
-    resourceLabel.value = ''
-    status.value = true
-  }
-  if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Edit) {
-    const resourceType = store.selectedResourceType
-    if (resourceType) {
-      name.value = resourceType.name
-      label.value = resourceType.label
-      resourceLabel.value = resourceType.resourceLabel
-      status.value = resourceType.enabled
-      storageStrategyParams.value = JSON.parse(resourceType.storageStrategyParams || '[]')
-      persistenceSelectorStrategyParams.value = JSON.parse(resourceType.persistenceSelectorParams || '[]')
-      nextTick(() => {
-        storageStrategy.value = { _text: resourceType.storageStrategy, _value: resourceType.storageStrategy }
-        persistenceSelectorStrategy.value = { _text: resourceType.persistenceSelectorStrategy, _value: resourceType.persistenceSelectorStrategy }
-      })
-    }
-  }
-}
-
-const openStorageStrategyDrawer = (
-  isEditMode: CreateEditMode,
-  storageStrategyIndex = -1,
-  storageStrategyObject: StorageStrategyForm | null = null
-) => {
-  resourceTypeDrawerState.value.visible = true
-  resourceTypeDrawerState.value.type = 'storageStrategy'
-  resourceTypeDrawerState.value.isEditMode = isEditMode
-  resourceTypeDrawerState.value.storageStrategyIndex = storageStrategyIndex
-  resourceTypeDrawerState.value.storageStrategyObject = storageStrategyObject
-}
-
-const deleteStorageStrategy = (index: number) => {
-  storageStrategyParams.value.splice(index, 1)
-}
-
-const deletePersistenceSelectorStrategy = (index: number) => {
-  persistenceSelectorStrategyParams.value.splice(index, 1)
-}
-
-const openPersistenceSelectorStrategyDrawer = (
-  isEditMode: CreateEditMode,
-  persistenceSelectorStrategyIndex = -1,
-  persistenceSelectorStrategyObject: PersistSelectorStrategyForm | null = null
-) => {
-  resourceTypeDrawerState.value.visible = true
-  resourceTypeDrawerState.value.type = 'persistenceSelectorStrategy'
-  resourceTypeDrawerState.value.isEditMode = isEditMode
-  resourceTypeDrawerState.value.persistenceSelectorStrategyIndex =
-    persistenceSelectorStrategyIndex
-  resourceTypeDrawerState.value.persistenceSelectorStrategyObject = persistenceSelectorStrategyObject
-}
-
-const closeResourceTypeDrawer = () => {
-  name.value = ''
-  label.value = ''
-  resourceLabel.value = ''
-  status.value = true
-  storageStrategy.value = undefined as unknown as IAutocompleteItemType
-  storageStrategyParams.value = []
-  persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
-  persistenceSelectorStrategyParams.value = []
-  errors.value = {}
-  closeStrategyDrawer()
-  store.closeResourceTypeDrawer()
-}
-
-const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy', key: string, value: string) => {
-  if (type === 'storageStrategy') {
-    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.storageStrategyIndex > -1) {
-      storageStrategyParams.value[resourceTypeDrawerState.value.storageStrategyIndex] = { key, value }
-    }
-    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
-      storageStrategyParams.value.push({ key, value })
-    }
-  }
-  if (type === 'persistenceSelectorStrategy') {
-    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.persistenceSelectorStrategyIndex > -1) {
-      persistenceSelectorStrategyParams.value[resourceTypeDrawerState.value.persistenceSelectorStrategyIndex] = { key, value }
-    }
-    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
-      persistenceSelectorStrategyParams.value.push({ key, value })
-    }
-  }
-  closeStrategyDrawer()
-}
-
-const saveResourceType = async () => {
-  errors.value = validateResourceType()
-  if (Object.keys(errors.value).length > 0) {
-    return
-  }
-
-  if (!store.selectedCollectionSource?.id) {
-    snackbar.showSnackBar({ msg: 'Please select a Collection Source first.', error: true })
-    return
-  }
-
-  try {
-    const payload = mapSnmpDataCollectionResourceTypePayloadToServer(
-      name.value,
-      label.value,
-      resourceLabel.value,
-      persistenceSelectorStrategy.value?._value as string,
-      persistenceSelectorStrategyParams.value,
-      storageStrategy.value?._value as string,
-      storageStrategyParams.value,
-      status.value,
-      store.selectedResourceType?.id || 0,
-      store.resourceTypeDrawerState.isEditMode
-    )
-
-    let response
-    if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Create) {
-      response = await createResourceType(payload, store.selectedCollectionSource.id)
-    }
-    if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Edit) {
-      response = await updateResourceType(payload, store.selectedCollectionSource.id)
-    }
-
-    if (response) {
-      snackbar.showSnackBar({ msg: `Resource Type ${store.resourceTypeDrawerState.isEditMode === CreateEditMode.Create ? 'created' : 'updated'} successfully.` })
-      await store.fetchResourceTypes()
-      closeResourceTypeDrawer()
-    } else {
-      snackbar.showSnackBar({ msg: 'An error occurred while saving the Resource Type. Please try again.', error: true })
-    }
-
-  } catch (e) {
-    console.error('Error saving Resource Type:', e)
-    snackbar.showSnackBar({ msg: 'An error occurred while saving the Resource Type. Please try again.', error: true })
-  }
-}
 
 const onSearchStorageStrategy = async (q: string) => {
   storageStrategyLoading.value = true
@@ -518,6 +345,161 @@ const onSearchPersistenceSelectorStrategy = async (q: string) => {
   }, 500)
 }
 
+const deleteStorageStrategy = (index: number) => {
+  storageStrategyParams.value.splice(index, 1)
+}
+
+const deletePersistenceSelectorStrategy = (index: number) => {
+  persistenceSelectorStrategyParams.value.splice(index, 1)
+}
+
+const openStorageStrategyDrawer = (
+  isEditMode: CreateEditMode,
+  storageStrategyIndex = -1,
+  storageStrategyObject: StorageStrategyForm | null = null
+) => {
+  resourceTypeDrawerState.value.visible = true
+  resourceTypeDrawerState.value.type = 'storageStrategy'
+  resourceTypeDrawerState.value.isEditMode = isEditMode
+  resourceTypeDrawerState.value.storageStrategyIndex = storageStrategyIndex
+  resourceTypeDrawerState.value.storageStrategyObject = storageStrategyObject
+}
+
+const openPersistenceSelectorStrategyDrawer = (
+  isEditMode: CreateEditMode,
+  persistenceSelectorStrategyIndex = -1,
+  persistenceSelectorStrategyObject: PersistSelectorStrategyForm | null = null
+) => {
+  resourceTypeDrawerState.value.visible = true
+  resourceTypeDrawerState.value.type = 'persistenceSelectorStrategy'
+  resourceTypeDrawerState.value.isEditMode = isEditMode
+  resourceTypeDrawerState.value.persistenceSelectorStrategyIndex =
+    persistenceSelectorStrategyIndex
+  resourceTypeDrawerState.value.persistenceSelectorStrategyObject = persistenceSelectorStrategyObject
+}
+
+const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy', key: string, value: string) => {
+  if (type === 'storageStrategy') {
+    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.storageStrategyIndex > -1) {
+      storageStrategyParams.value[resourceTypeDrawerState.value.storageStrategyIndex] = { key, value }
+    }
+    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
+      storageStrategyParams.value.push({ key, value })
+    }
+  }
+  if (type === 'persistenceSelectorStrategy') {
+    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.persistenceSelectorStrategyIndex > -1) {
+      persistenceSelectorStrategyParams.value[resourceTypeDrawerState.value.persistenceSelectorStrategyIndex] = { key, value }
+    }
+    if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
+      persistenceSelectorStrategyParams.value.push({ key, value })
+    }
+  }
+  closeStrategyDrawer()
+}
+
+const closeStrategyDrawer = () => {
+  resourceTypeDrawerState.value = {
+    type: null,
+    visible: false,
+    isEditMode: CreateEditMode.None,
+    persistenceSelectorStrategyIndex: -1,
+    storageStrategyIndex: -1,
+    persistenceSelectorStrategyObject: null,
+    storageStrategyObject: null
+  }
+}
+
+const handleCancel = () => {
+  name.value = ''
+  label.value = ''
+  resourceLabel.value = ''
+  status.value = true
+  storageStrategy.value = undefined as unknown as IAutocompleteItemType
+  storageStrategyParams.value = []
+  persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
+  persistenceSelectorStrategyParams.value = []
+  errors.value = {}
+  store.resourceTypeDrawerState = {
+    visible: false,
+    isEditMode: CreateEditMode.None,
+    resourceTypeIndex: -1
+  }
+  closeStrategyDrawer()
+}
+
+const validateResourceType = () => {
+  const validationErrors: ResourceTypeErrors = {}
+  if (!name.value.trim()) {
+    validationErrors.name = 'Name is required'
+  }
+  if (!label.value.trim()) {
+    validationErrors.label = 'Label is required'
+  }
+  if (!storageStrategy.value?._value) {
+    validationErrors.storageStrategy = 'Storage Strategy is required'
+  }
+  if (!persistenceSelectorStrategy.value?._value) {
+    validationErrors.persistenceSelectorStrategy = 'Persistence Selector Strategy is required'
+  }
+  return validationErrors
+}
+
+const loadResourceType = (resourceType: SnmpCollectionResourceTypePayload | null) => {
+  if (resourceType === null) {
+    name.value = ''
+    label.value = ''
+    resourceLabel.value = ''
+    status.value = true
+    storageStrategy.value = undefined as unknown as IAutocompleteItemType
+    storageStrategyParams.value = []
+    persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
+    persistenceSelectorStrategyParams.value = []
+  }
+  if (resourceType !== null) {
+    const resourceType = store.configForm.resourceType[store.resourceTypeDrawerState.resourceTypeIndex] || null
+    if (resourceType) {
+      name.value = resourceType.name
+      label.value = resourceType.label
+      resourceLabel.value = resourceType.resourceLabel
+      status.value = resourceType.enabled
+      storageStrategyParams.value = JSON.parse(resourceType.storageStrategyParams || '[]')
+      persistenceSelectorStrategyParams.value = JSON.parse(resourceType.persistenceSelectorParams || '[]')
+      nextTick(() => {
+        storageStrategy.value = { _text: resourceType.storageStrategy, _value: resourceType.storageStrategy }
+        persistenceSelectorStrategy.value = { _text: resourceType.persistenceSelectorStrategy, _value: resourceType.persistenceSelectorStrategy }
+      })
+    }
+  }
+}
+
+
+const saveResourceType = () => {
+  if (Object.keys(errors.value).length > 0) {
+    return
+  }
+
+  const payload = mapSnmpDataCollectionResourceTypePayloadToServer(
+    name.value,
+    label.value,
+    resourceLabel.value,
+    persistenceSelectorStrategy.value?._value as string,
+    persistenceSelectorStrategyParams.value,
+    storageStrategy.value?._value as string,
+    storageStrategyParams.value,
+    status.value,
+    0,
+    CreateEditMode.Create
+  )
+
+  if (store.resourceTypeDrawerState.isEditMode === CreateEditMode.Edit) {
+    store.configForm.resourceType[store.resourceTypeDrawerState.resourceTypeIndex] = payload
+  } else {
+    store.configForm.resourceType.push(payload)
+  }
+  handleCancel()
+}
+
 watchEffect(() => {
   errors.value = validateResourceType()
   isSaveDisabled.value = Object.keys(errors.value).length > 0
@@ -525,18 +507,10 @@ watchEffect(() => {
 
 watch(
   () => store.resourceTypeDrawerState.visible,
-  (visible) => {
-    if (visible) {
-      loadResourceTypeData()
-    } else {
-      name.value = ''
-      label.value = ''
-      resourceLabel.value = ''
-      status.value = true
-      storageStrategy.value = undefined as unknown as IAutocompleteItemType
-      persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
-      storageStrategyParams.value = []
-      persistenceSelectorStrategyParams.value = []
+  (newVal) => {
+    if (newVal) {
+      const resourceType = store.configForm.resourceType[store.resourceTypeDrawerState.resourceTypeIndex] || null
+      loadResourceType(resourceType)
     }
   },
   { immediate: true }
@@ -549,23 +523,36 @@ watch(
 @import '@featherds/table/scss/table';
 @import '@/styles/_transitionDataTable';
 
-.resource-type-form-container {
-  margin-top: 10px;
-  padding: 25px;
+.resource-type-form-card {
+  padding: 20px;
+  margin-bottom: 20px;
 
   .header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 
     .title-container {
-      display: flex;
-      align-items: center;
-
       .title {
         @include headline3;
+        margin: 0;
       }
     }
+
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      button {
+        margin: 0;
+      }
+    }
+  }
+
+  .spacer {
+    min-height: 0.5em;
   }
 
   .content {

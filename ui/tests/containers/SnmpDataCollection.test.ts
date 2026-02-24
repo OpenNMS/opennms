@@ -204,20 +204,17 @@ describe('SnmpDataCollection.vue', () => {
   })
 
   describe('Button Interactions - Create Source', () => {
-    it('logs message when Create button is clicked', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+    it('navigates to create page when Create button is clicked', async () => {
       const wrapper = createWrapper()
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[0].trigger('click')
 
-      expect(consoleSpy).toHaveBeenCalledWith('Create New Data Collection Source clicked')
-
-      consoleSpy.mockRestore()
+      expect(mockPush).toHaveBeenCalledOnce()
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
     })
 
     it('handles multiple Create button clicks', async () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const wrapper = createWrapper()
 
       const createButton = wrapper.findAllComponents(FeatherButton)[0]
@@ -225,19 +222,21 @@ describe('SnmpDataCollection.vue', () => {
       await createButton.trigger('click')
       await createButton.trigger('click')
 
-      expect(consoleSpy).toHaveBeenCalledTimes(3)
-      expect(consoleSpy).toHaveBeenCalledWith('Create New Data Collection Source clicked')
-
-      consoleSpy.mockRestore()
+      expect(mockPush).toHaveBeenCalledTimes(3)
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
     })
 
-    it('does not navigate when Create button is clicked', async () => {
+    it('calls router.push with correct route name', async () => {
       const wrapper = createWrapper()
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[0].trigger('click')
 
-      expect(mockPush).not.toHaveBeenCalled()
+      expect(mockPush).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'SNMP Data Collection Create'
+        })
+      )
     })
   })
 
@@ -361,24 +360,13 @@ describe('SnmpDataCollection.vue', () => {
       expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
     })
 
-    it('handles missing router gracefully for Create button', async () => {
-      const wrapperWithoutRouter = mount(SnmpDataCollection, {
-        global: {
-          stubs: {
-            SnmpDataCollectionSourcesTable: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+    it('handles Create button click with mocked router', async () => {
+      const wrapper = createWrapper()
 
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-
-      const buttons = wrapperWithoutRouter.findAllComponents(FeatherButton)
+      const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[0].trigger('click')
 
-      expect(consoleSpy).toHaveBeenCalled()
-
-      consoleSpy.mockRestore()
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
     })
 
     it('buttons are visible and clickable', () => {
@@ -419,13 +407,12 @@ describe('SnmpDataCollection.vue', () => {
 
   describe('Parametrized Tests - Button Click Scenarios', () => {
     it.each([
-      { clicks: 1, buttonIndex: 0, buttonName: 'Create' },
-      { clicks: 2, buttonIndex: 0, buttonName: 'Create' },
-      { clicks: 5, buttonIndex: 0, buttonName: 'Create' },
-      { clicks: 1, buttonIndex: 1, buttonName: 'Import' },
-      { clicks: 3, buttonIndex: 1, buttonName: 'Import' }
-    ])('handles $clicks click(s) on $buttonName button', async ({ clicks, buttonIndex }) => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+      { clicks: 1, buttonIndex: 0, buttonName: 'Create', routeName: 'SNMP Data Collection Create' },
+      { clicks: 2, buttonIndex: 0, buttonName: 'Create', routeName: 'SNMP Data Collection Create' },
+      { clicks: 5, buttonIndex: 0, buttonName: 'Create', routeName: 'SNMP Data Collection Create' },
+      { clicks: 1, buttonIndex: 1, buttonName: 'Import', routeName: 'SNMP Data Collection Import' },
+      { clicks: 3, buttonIndex: 1, buttonName: 'Import', routeName: 'SNMP Data Collection Import' }
+    ])('handles $clicks click(s) on $buttonName button', async ({ clicks, buttonIndex, routeName }) => {
       const wrapper = createWrapper()
 
       const button = wrapper.findAllComponents(FeatherButton)[buttonIndex]
@@ -434,13 +421,8 @@ describe('SnmpDataCollection.vue', () => {
         await button.trigger('click')
       }
 
-      if (buttonIndex === 0) {
-        expect(consoleSpy).toHaveBeenCalledTimes(clicks)
-      } else {
-        expect(mockPush).toHaveBeenCalledTimes(clicks)
-      }
-
-      consoleSpy.mockRestore()
+      expect(mockPush).toHaveBeenCalledTimes(clicks)
+      expect(mockPush).toHaveBeenCalledWith({ name: routeName })
     })
   })
 
@@ -462,7 +444,7 @@ describe('SnmpDataCollection.vue', () => {
   })
 
   describe('Router Navigation', () => {
-    it('passes correct route object structure', async () => {
+    it('passes correct route object structure for Import', async () => {
       const wrapper = createWrapper()
 
       const buttons = wrapper.findAllComponents(FeatherButton)
@@ -473,7 +455,18 @@ describe('SnmpDataCollection.vue', () => {
       expect(callArgs.name).toBe('SNMP Data Collection Import')
     })
 
-    it('does not pass any route parameters', async () => {
+    it('passes correct route object structure for Create', async () => {
+      const wrapper = createWrapper()
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+
+      const callArgs = mockPush.mock.calls[0][0]
+      expect(callArgs).toHaveProperty('name')
+      expect(callArgs.name).toBe('SNMP Data Collection Create')
+    })
+
+    it('does not pass any route parameters for Import', async () => {
       const wrapper = createWrapper()
 
       const buttons = wrapper.findAllComponents(FeatherButton)
@@ -482,6 +475,41 @@ describe('SnmpDataCollection.vue', () => {
       const callArgs = mockPush.mock.calls[0][0]
       expect(callArgs).not.toHaveProperty('params')
       expect(callArgs).not.toHaveProperty('query')
+    })
+
+    it('does not pass any route parameters for Create', async () => {
+      const wrapper = createWrapper()
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+
+      const callArgs = mockPush.mock.calls[0][0]
+      expect(callArgs).not.toHaveProperty('params')
+      expect(callArgs).not.toHaveProperty('query')
+    })
+
+    it('navigates to different routes for Create and Import', async () => {
+      const wrapper = createWrapper()
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+      await buttons[1].trigger('click')
+
+      expect(mockPush).toHaveBeenCalledTimes(2)
+      expect(mockPush).toHaveBeenNthCalledWith(1, { name: 'SNMP Data Collection Create' })
+      expect(mockPush).toHaveBeenNthCalledWith(2, { name: 'SNMP Data Collection Import' })
+    })
+
+    it('Create and Import route names are distinct', async () => {
+      const wrapper = createWrapper()
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+      await buttons[1].trigger('click')
+
+      const createRoute = mockPush.mock.calls[0][0]
+      const importRoute = mockPush.mock.calls[1][0]
+      expect(createRoute.name).not.toBe(importRoute.name)
     })
   })
 
@@ -501,6 +529,67 @@ describe('SnmpDataCollection.vue', () => {
       const buttons = actionDiv.findAllComponents(FeatherButton)
 
       expect(buttons).toHaveLength(2)
+    })
+
+    it('heading is within header container', () => {
+      const wrapper = createWrapper()
+
+      const header = wrapper.find('.header')
+      expect(header.find('.heading h1').exists()).toBe(true)
+    })
+
+    it('BreadCrumbs is rendered before header', () => {
+      const wrapper = createWrapper()
+
+      const container = wrapper.find('.snmp-data-collection-container')
+      const children = container.element.children
+      const featherRow = container.find('.feather-row')
+      const header = container.find('.header')
+
+      // feather-row (BreadCrumbs) should appear before header in DOM
+      const featherRowIndex = Array.from(children).indexOf(featherRow.element)
+      const headerIndex = Array.from(children).indexOf(header.element)
+      expect(featherRowIndex).toBeLessThan(headerIndex)
+    })
+  })
+
+  describe('Computed Properties', () => {
+    it('homeUrl is reactive to menuStore changes', async () => {
+      menuStore.mainMenu = { homeUrl: '/first' } as any
+      const wrapper = createWrapper()
+
+      let breadcrumbs = wrapper.findComponent(BreadCrumbs)
+      expect(breadcrumbs.props('items')[0].to).toBe('/first')
+
+      menuStore.mainMenu = { homeUrl: '/second' } as any
+      await wrapper.vm.$nextTick()
+
+      breadcrumbs = wrapper.findComponent(BreadCrumbs)
+      expect(breadcrumbs.props('items')[0].to).toBe('/second')
+    })
+
+    it('breadcrumbs always has exactly two items', () => {
+      menuStore.mainMenu = { homeUrl: '/home' } as any
+      const wrapper = createWrapper()
+
+      const breadcrumbs = wrapper.findComponent(BreadCrumbs)
+      expect(breadcrumbs.props('items')).toHaveLength(2)
+    })
+
+    it('second breadcrumb is always SNMP Data Collection with position last', () => {
+      const wrapper = createWrapper()
+
+      const breadcrumbs = wrapper.findComponent(BreadCrumbs)
+      const items = breadcrumbs.props('items')
+      expect(items[1]).toEqual({ label: 'SNMP Data Collection', to: '#', position: 'last' })
+    })
+
+    it('first breadcrumb always has isAbsoluteLink true', () => {
+      menuStore.mainMenu = { homeUrl: '/any-path' } as any
+      const wrapper = createWrapper()
+
+      const breadcrumbs = wrapper.findComponent(BreadCrumbs)
+      expect(breadcrumbs.props('items')[0].isAbsoluteLink).toBe(true)
     })
   })
 })

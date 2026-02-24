@@ -76,6 +76,35 @@ export interface SnmpCollectionDetailStoreState {
   }
 }
 
+export interface SnmpDataCollectionCreationStoreState {
+  selectedCollectionSource: IAutocompleteItemType
+  uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
+  resourceTypeNames: string[]
+  mibGroupNames: string[]
+  resourceTypeNames: string[]
+  isLoading: boolean
+  configForm: {
+    systemDef: SnmpCollectionSystemDefPayload[]
+    mibGroup: SnmpCollectionMibGroupPayload[]
+    resourceType: SnmpCollectionResourceTypePayload[]
+  }
+  systemDefDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode,
+    systemDefIndex: number
+  }
+  resourceTypeDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+    resourceTypeIndex: number
+  }
+  mibGroupDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+    mibGroupIndex: number
+  }
+}
+
 export interface SnmpDataCollectionSourceResponse {
   sources: SnmpCollectionSource[]
   totalRecords: number
