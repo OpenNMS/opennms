@@ -1,4 +1,4 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0">
     <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao"/>
     <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
     <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
@@ -17,13 +17,32 @@
         <property name="sessionUtils" ref="sessionUtils"/>
         <property name="scv" ref="secureCredentialsVault"/>
     </bean>
-    
+
+    <cm:property-placeholder id="org.opennms.netmgt.threshd.metadata.cache"
+                             persistent-id="org.opennms.netmgt.threshd.metadata.cache"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="expireAfterWrite" value="600"/>
+            <cm:property name="expireAfterAccess" value="-1"/>
+            <cm:property name="refreshAfterWrite" value="-1"/>
+            <cm:property name="maximumSize" value="-1"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="cachedEntityScopeProvider" class="org.opennms.core.mate.model.CachedEntityScopeProviderImpl">
+        <argument ref="entityScopeProvider"/>
+        <argument value="${expireAfterWrite}"/>
+        <argument value="${expireAfterAccess}"/>
+        <argument value="${refreshAfterWrite}"/>
+        <argument value="${maximumSize}"/>
+    </bean>
+
     <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">
         <property name="threshdDao" ref="threshdDao"/>
         <property name="thresholdingDao" ref="thresholdingDao"/>
         <property name="pollOutagesDao" ref="pollOutagesDao"/>
         <property name="ifLabelDao" ref="ifLabelDao"/>
-        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+        <property name="entityScopeProvider" ref="cachedEntityScopeProvider"/>
     </bean>
     
     <bean id="thresholdStateMonitor" class="org.opennms.netmgt.threshd.BlobStoreAwareMonitor">
