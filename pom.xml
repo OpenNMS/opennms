@@ -1896,7 +1896,7 @@
     <felixConverterVersion>1.0.14</felixConverterVersion>
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
-    <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion> <!-- -->
+    <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.2</jansiVersion>
     <jlineVersion>3.30.6</jlineVersion>
     <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
