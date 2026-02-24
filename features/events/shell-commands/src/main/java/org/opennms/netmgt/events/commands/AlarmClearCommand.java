@@ -134,7 +134,7 @@ public class AlarmClearCommand implements Action {
                 return (boolean)result;
             }
         } catch (JexlException ex) {
-            System.out.printf("Error evaluating expression: %s", ex);
+            System.out.printf("Error evaluating expression: %s \n", ex);
         }
         return false;
     }
