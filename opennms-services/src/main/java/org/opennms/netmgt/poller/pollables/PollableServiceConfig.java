@@ -22,6 +22,7 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +30,11 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -72,7 +78,9 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private final ServiceMonitorAdaptor m_DeviceConfigMonitorAdaptor;
 
     private final ReadablePollOutagesDao m_pollOutagesDao;
-    
+
+    private final EntityScopeProvider m_entityScopeProvider;
+
     /**
      * <p>Constructor for PollableServiceConfig.</p>
      *
@@ -84,6 +92,13 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
                                  ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient,
                                  ReadablePollOutagesDao pollOutagesDao, ServiceMonitorAdaptor serviceMonitorAdaptor) {
+        this(svc, pollerConfig, pkg, timer, persisterFactory, thresholdingService, locationAwarePollerClient, pollOutagesDao, serviceMonitorAdaptor, null);
+    }
+
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
+                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient,
+                                 ReadablePollOutagesDao pollOutagesDao, ServiceMonitorAdaptor serviceMonitorAdaptor,
+                                 EntityScopeProvider entityScopeProvider) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
         m_pkg = pkg;
@@ -93,6 +108,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
         m_DeviceConfigMonitorAdaptor = serviceMonitorAdaptor;
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_entityScopeProvider = entityScopeProvider;
 
         this.findService();
     }
@@ -190,11 +206,23 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_pkg = newPkg;
 
         this.findService();
+        m_parameters = null;
     }
 
     private synchronized Map<String,Object> getParameters() {
         if (m_parameters == null) {
-            m_parameters = m_configService.getParameterMap();
+            final Map<String, Object> raw = m_configService.getParameterMap();
+            if (m_entityScopeProvider != null) {
+                final Scope scope = new FallbackScope(
+                        m_entityScopeProvider.getScopeForNode(m_service.getNodeId()),
+                        m_entityScopeProvider.getScopeForInterface(m_service.getNodeId(), m_service.getIpAddr()),
+                        m_entityScopeProvider.getScopeForService(m_service.getNodeId(), m_service.getAddress(), m_service.getSvcName()),
+                        MapScope.singleContext(Scope.ScopeName.SERVICE, "pattern", m_patternVariables)
+                );
+                m_parameters = new HashMap<>(Interpolator.interpolateObjects(raw, scope));
+            } else {
+                m_parameters = raw;
+            }
         }
         return m_parameters;
     }

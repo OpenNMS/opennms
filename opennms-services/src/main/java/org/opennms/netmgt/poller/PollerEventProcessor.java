@@ -161,6 +161,12 @@ final class PollerEventProcessor implements EventListener {
         // node location change
         ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
 
+        // node updated
+        ueiList.add(EventConstants.NODE_UPDATED_EVENT_UEI);
+
+        // node scan completed
+        ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
+
         // for reloading poller configuration and re-scheduling pollers
         ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
 
@@ -387,6 +393,21 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
+    private void nodeUpdatedHandler(IEvent event) {
+        final Long nodeId = event.getNodeid();
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode == null) {
+            LOG.debug("nodeUpdatedHandler: node {} not found in pollable network, ignoring.", nodeId);
+            return;
+        }
+        LOG.debug("nodeUpdatedHandler: clearing cached parameters for node {}", nodeId);
+        for (final PollableInterface iface : pnode.getInterfaces()) {
+            for (final PollableService svc : iface.getServices()) {
+                svc.refreshConfig();
+            }
+        }
+    }
+
     private void interfaceDeletedHandler(IEvent event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
@@ -603,8 +624,9 @@ final class PollerEventProcessor implements EventListener {
                 serviceDeletedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
-            if (event.getNodeid() > 0) { 
+            if (event.getNodeid() > 0) {
                 serviceReschedule(event, false);
+                nodeUpdatedHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) {
@@ -614,6 +636,12 @@ final class PollerEventProcessor implements EventListener {
         } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
             if (event.getNodeid() > 0) {
                 serviceReschedule(event, false);
+                nodeUpdatedHandler(event);
+            }
+        } else if (event.getUei().equals(EventConstants.NODE_UPDATED_EVENT_UEI) ||
+                   event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI)) {
+            if (event.getNodeid() > 0) {
+                nodeUpdatedHandler(event);
             }
         } // end single event process
 
