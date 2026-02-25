@@ -19,6 +19,7 @@ export const useSnmpDataCollectionStore = defineStore('useSnmpDataCollectionStor
     sourcesPagination: { ...defaultPagination },
     sourcesSearchTerm: '',
     uploadedSourceNames: [],
+    activeTab: 0,
     sourcesSorting: {
       sortOrder: 'desc',
       sortKey: 'createdTime'

@@ -8,6 +8,7 @@ export interface SnmpDataCollectionStoreState {
   sourcesSorting: Sorting
   isLoading: boolean
   uploadedSourceNames: SnmpDataCollectionSourceNamesAndIds[]
+  activeTab: number
 }
 
 export interface SnmpCollectionSource {

@@ -1,4 +1,4 @@
-import DataCollectionFilesUploadReportDialog from '@/components/SnmpDataCollectionSourceImport/Dialog/DataCollectionFilesUploadReportDialog.vue'
+import DataCollectionFilesUploadReportDialog from '@/components/SnmpDataCollection/Dialog/DataCollectionFilesUploadReportDialog.vue'
 import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'

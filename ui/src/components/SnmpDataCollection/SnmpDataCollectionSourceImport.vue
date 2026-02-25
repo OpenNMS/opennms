@@ -1,127 +1,153 @@
 <template>
-  <TableCard class="card">
-    <div class="title">
-      <h2>Selected Files</h2>
-    </div>
-    <div class="section">
-      <div class="selected-files-section">
-        <div v-if="sourceFiles.length > 0">
-          <Draggable
-            v-model="sourceFiles"
-            item-key="value"
-            handle=".drag-handle"
-            class="columns-drag-container"
-          >
-            <template #item="{ element, index }">
-              <div class="file">
-                <div class="file-icon">
-                  <FeatherIcon :icon="Text" />
-                  <span>
-                    {{ ellipsify(element.file.name, 39) }}
-                  </span>
-                </div>
-                <div class="actions">
-                  <FeatherTooltip
-                    v-if="element.isDuplicate"
-                    :title="'File is a duplicate of another file that has been already uploaded.'"
-                    v-slot="{ attrs, on }"
-                  >
-                    <FeatherIcon
-                      :icon="Warning"
-                      v-bind="attrs"
-                      v-on="on"
-                      class="warning-icon"
-                      @click="openFileRenameDialog(index)"
-                    />
-                  </FeatherTooltip>
-                  <FeatherTooltip
-                    v-if="element.isValid && !element.isDuplicate"
-                    :title="'File is valid'"
-                    v-slot="{ attrs, on }"
-                  >
-                    <FeatherIcon
-                      :icon="CheckCircle"
-                      v-bind="attrs"
-                      v-on="on"
-                      class="success-icon"
-                    />
-                  </FeatherTooltip>
-                  <FeatherTooltip
-                    v-if="!element.isValid"
-                    :title="element.errors.map((error: string) => `${error}. `).join('\n')"
-                    v-slot="{ attrs, on }"
-                  >
-                    <FeatherIcon
-                      :icon="Error"
-                      v-bind="attrs"
-                      v-on="on"
-                      class="error-icon"
-                    />
-                  </FeatherTooltip>
-                  <FeatherButton
-                    icon="Apps"
-                    text
-                  >
-                    <FeatherIcon
-                      class="close-icon drag-handle"
-                      :icon="Apps"
-                    />
-                  </FeatherButton>
-                  <FeatherButton
-                    icon="Trash"
-                    data-test="remove-files-button"
-                    @click="removeFile(index)"
-                  >
-                    <FeatherIcon :icon="Delete" />
-                  </FeatherButton>
-                </div>
-              </div>
-            </template>
-          </Draggable>
+  <TableCard class="data-collection-source-import-container">
+    <div class="header">
+      <div class="title-container">
+        <div class="title">
+          <h3>Import Data Collection Source</h3>
         </div>
-        <div v-else>
-          <p>No files selected</p>
+        <div class="sub">
+          <p>
+            Upload files in the XML format. You can select multiple files at once or upload all files in a specific
+            folder.
+          </p>
         </div>
       </div>
-      <div class="upload-action-section">
-        <input
-          type="file"
-          accept=".xml"
-          multiple
-          @change="handleSourceFileUpload"
-          data-test="snmp-data-collection-file-input"
-          ref="sourceFileInput"
+      <div class="action-container">
+        <div class="section-left">
+          <input
+            type="file"
+            accept=".xml"
+            multiple
+            @change="handleSourceFileUpload"
+            data-test="snmp-data-collection-file-input"
+            ref="sourceFileInput"
+          />
+          <input
+            type="file"
+            multiple
+            webkitdirectory
+            directory
+            @change="handleSourceFolderUpload"
+            data-test="snmp-data-collection-folder-input"
+            ref="sourceFolderInput"
+          />
+          <FeatherButton
+            secondary
+            data-test="choose-file-button"
+            @click="openFileDialog"
+            :disabled="isLoading"
+          >
+            <FeatherIcon :icon="UploadFile" />
+            Choose files to upload
+          </FeatherButton>
+          <FeatherButton
+            secondary
+            data-test="choose-folder-button"
+            @click="openFolderDialog"
+            :disabled="isLoading"
+          >
+            <FeatherIcon :icon="FolderAdd" />
+            Choose folder to upload
+          </FeatherButton>
+        </div>
+        <div class="section-right">
+          <FeatherButton
+            primary
+            :disabled="shouldUploadDisabled"
+            @click="uploadFiles"
+            data-test="upload-button"
+          >
+            <FeatherSpinner v-if="isLoading" />
+            <span v-else>Upload Files</span>
+          </FeatherButton>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <table
+        class="data-table"
+        aria-label="Events Table"
+      >
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <TransitionGroup
+          name="data-table"
+          tag="tbody"
+          v-if="sourceFiles.length"
+        >
+          <tr
+            v-for="(file, index) in sourceFiles"
+            :key="index"
+          >
+            <td>
+              <div class="file">
+                <FeatherIcon :icon="Apps" />
+                <span>{{ ellipsify(file.file.name, 39) }}</span>
+                <FeatherChip
+                  v-if="!file.isValid"
+                  class="error-chip"
+                >
+                  {{ file.errors.join('. ') }}
+                </FeatherChip>
+                <FeatherChip
+                  v-if="file.isDuplicate"
+                  class="warning-chip"
+                >
+                  File with the same name already exists. Please rename or choose to overwrite.
+                </FeatherChip>
+                <FeatherIcon
+                  v-if="!file.isValid"
+                  :icon="Error"
+                  class="error-icon"
+                />
+                <FeatherIcon
+                  v-if="file.isDuplicate"
+                  :icon="Warning"
+                  class="warning-icon"
+                  @click="openFileRenameDialog(index)"
+                />
+                <FeatherIcon
+                  v-if="file.isValid && !file.isDuplicate"
+                  :icon="CheckCircle"
+                  class="success-icon"
+                />
+              </div>
+            </td>
+            <td>
+              <FeatherButton
+                icon="Trash"
+                data-test="remove-files-button"
+                @click="removeFile(index)"
+              >
+                <FeatherIcon :icon="Delete" />
+              </FeatherButton>
+            </td>
+          </tr>
+        </TransitionGroup>
+      </table>
+      <div
+        class="alerts-pagination"
+        v-if="sourceFiles.length"
+      >
+        <FeatherPagination
+          :modelValue="store.sourcesPagination.page"
+          :pageSize="store.sourcesPagination.pageSize"
+          :total="store.sourcesPagination.total"
+          :pageSizes="[10, 20, 50, 100, 200]"
+          @update:modelValue="store.onSourcePageChange"
+          @update:pageSize="store.onSourcePageSizeChange"
+          data-test="FeatherPagination"
         />
-        <input
-          type="file"
-          multiple
-          webkitdirectory
-          directory
-          @change="handleSourceFolderUpload"
-          data-test="snmp-data-collection-folder-input"
-          ref="sourceFolderInput"
+      </div>
+      <div v-if="!sourceFiles.length">
+        <EmptyList
+          :content="emptyListContent"
+          data-test="empty-list"
         />
-        <FeatherButton
-          @click="openFileDialog"
-          :disabled="isLoading"
-        >
-          Choose files to upload
-        </FeatherButton>
-        <FeatherButton
-          @click="openFolderDialog"
-          :disabled="isLoading"
-        >
-          Choose folder to upload
-        </FeatherButton>
-        <FeatherButton
-          primary
-          :disabled="shouldUploadDisabled"
-          @click="uploadFiles"
-          data-test="upload-button"
-        >
-          <FeatherSpinner v-if="isLoading" />
-          <span v-else>Upload Files</span>
-        </FeatherButton>
       </div>
     </div>
     <div class="info-section">
@@ -184,17 +210,19 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Delete from '@featherds/icon/action/Delete'
-import Text from '@featherds/icon/file/Text'
+import UploadFile from '@featherds/icon/action/UploadFile'
+import FolderAdd from '@featherds/icon/file/FolderAdd'
 import Apps from '@featherds/icon/navigation/Apps'
 import Error from '@featherds/icon/notification/Error'
 import Warning from '@featherds/icon/notification/Warning'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSpinner } from '@featherds/progress'
-import { FeatherTooltip } from '@featherds/tooltip'
-import Draggable from 'vuedraggable'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
-import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
+import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
+import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionStore()
 const sourceFolderInput = ref<HTMLInputElement | null>(null)
@@ -207,6 +235,9 @@ const router = useRouter()
 const displayRenameDialog = ref(false)
 const selectedIndex = ref<number | null>(null)
 const uploadedDataCollectionFilesReportDialogState = ref(false)
+const emptyListContent = {
+  msg: 'No files selected for upload.'
+}
 const shouldUploadDisabled = computed(() => {
   return (
     sourceFiles.value.length === 0 ||
@@ -364,6 +395,7 @@ const openFileRenameDialog = (index: number) => {
 const closeRenameDialog = () => {
   displayRenameDialog.value = false
   selectedIndex.value = null
+  store.activeTab = 0
 }
 
 const renameFile = async (newFileName: string) => {
@@ -408,61 +440,104 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@use "@featherds/styles/themes/variables";
+@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/typography';
+@use '@featherds/table/scss/table';
+@use '@/styles/_transitionDataTable';
 
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+.data-collection-source-import-container {
   gap: 20px;
   padding: 20px;
+  border: 1px solid var(--feather-border-on-surface);
 
-  .section {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
+  .header {
+    .title-container {
+      .title {
+        h2 {
+          margin: 0;
+          @include typography.headline3;
+        }
+      }
 
-    .selected-files-section {
-      border: 1px solid var(variables.$border-on-surface);
-      border-radius: 5px;
-      padding: 10px;
-      width: 500px;
-      height: 500px;
-      overflow: auto;
+      .sub {
+        p {
+          margin: 0;
+        }
+      }
+    }
 
-      .file {
+    .action-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 40px 0px 20px 0px;
+
+      .section-left {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        border-bottom: 1px solid var(variables.$border-on-surface);
-        margin-bottom: 5px;
+        gap: 10px;
 
-        .file-icon {
-          display: flex;
-          align-items: center;
-          gap: 10px;
+        input {
+          display: none;
+        }
+      }
 
-          svg {
-            font-size: 1.5rem;
-          }
+      .section-right {
+        display: flex;
+        gap: 10px;
 
-          span {
-            font-size: 1rem;
-          }
-
-          .invalid-text {
-            color: var(variables.$error);
+        button {
+          :deep(.spinner) {
+            height: 1.5rem !important;
+            width: 1.5rem !important;
           }
         }
+      }
+    }
+  }
 
-        .actions {
+  .container {
+    table {
+      width: 100%;
+      border: 1px solid var(--feather-border-on-surface);
+      @include table.table;
+
+      thead {
+        background: var(variables.$background);
+        text-transform: uppercase;
+
+        th:first-child {
+          width: 85%;
+        }
+      }
+
+      td {
+        white-space: nowrap;
+        box-shadow: none;
+        border-bottom: 1px solid var(variables.$border-on-surface);
+
+        div {
+          border-radius: 5px;
+          padding: 0px 5px 0px 5px;
+        }
+
+        .file {
           display: flex;
           align-items: center;
           gap: 10px;
 
-          button {
-            margin: 0px;
+          .error-chip {
+            background-color: #A5021F33;
+            color: #A5021F;
+            min-width: none;
+            max-width: none;
+          }
+
+          .warning-chip {
+            background-color: #FBE94733;
+            color: #FBE947;
+            min-width: none;
+            max-width: none;
+
           }
 
           .success-icon {
@@ -486,29 +561,23 @@ onMounted(async () => {
             width: 2em;
           }
         }
+
+        .action-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
       }
     }
 
-    .upload-action-section {
+    .alerts-pagination {
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      gap: 10px;
+      padding: 30px 0px 0px 0px;
+    }
 
-      input {
-        display: none;
-      }
-
-      button {
-        width: 100%;
-        margin-left: 0;
-
-        :deep(.spinner) {
-          height: 1.5rem !important;
-          width: 1.5rem !important;
-        }
-      }
+    .feather-pagination {
+      border: none !important;
     }
   }
 

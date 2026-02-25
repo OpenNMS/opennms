@@ -125,8 +125,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(store.fetchSnmpCollectionSources).toHaveBeenCalled()
     })
 
-    it('renders the title correctly', () => {
-      expect(wrapper.text()).toContain('Data Collection Sources')
+    it('renders the Create New Data Collection Source button text', () => {
+      expect(wrapper.text()).toContain('Create New Data Collection Source')
     })
 
     it('renders search input', () => {
@@ -1173,7 +1173,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       })
 
       vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click: vi.fn() } as any)
-      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (obj: Blob | MediaSource) => string
+      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (
+        obj: Blob | MediaSource
+      ) => string
       window.URL.revokeObjectURL = vi.fn() as unknown as (url: string) => void
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
@@ -1188,7 +1190,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       })
 
       vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click: vi.fn() } as any)
-      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (obj: Blob | MediaSource) => string
+      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (
+        obj: Blob | MediaSource
+      ) => string
       window.URL.revokeObjectURL = vi.fn() as unknown as (url: string) => void
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'json')
@@ -1210,7 +1214,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click: vi.fn() } as any)
-      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (obj: Blob | MediaSource) => string
+      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (
+        obj: Blob | MediaSource
+      ) => string
       window.URL.revokeObjectURL = vi.fn() as unknown as (url: string) => void
     })
 
@@ -1251,6 +1257,49 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       expect(mockLink.download).toBe('.xml')
     })
+
+    it('handles download with empty data response', async () => {
+      mockDownloadSnmpDataCollectionById.mockResolvedValue({
+        data: '',
+        headers: { 'content-type': 'application/xml' }
+      })
+      const mockLink = { href: '', download: '', click: vi.fn() }
+      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any)
+
+      await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
+
+      expect(mockLink.click).toHaveBeenCalled()
+    })
+
+    it('handles download with missing content-type header', async () => {
+      mockDownloadSnmpDataCollectionById.mockResolvedValue({
+        data: '<xml/>',
+        headers: {}
+      })
+      const mockLink = { href: '', download: '', click: vi.fn() }
+      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any)
+
+      await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
+
+      expect(mockLink.click).toHaveBeenCalled()
+      expect(mockLink.download).toBe('Test Source.xml')
+    })
+
+    it.each([{ format: 'xml' }, { format: 'json' }])(
+      'does not show error snackbar on successful $format download',
+      async ({ format }) => {
+        mockDownloadSnmpDataCollectionById.mockResolvedValue({
+          data: 'data',
+          headers: { 'content-type': `application/${format}` }
+        })
+        const mockLink = { href: '', download: '', click: vi.fn() }
+        vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any)
+
+        await wrapper.vm.downloadCollectionSource(mockSource, format)
+
+        expect(mockShowSnackBar).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('Delete Edge Cases', () => {
@@ -1298,6 +1347,532 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       // mockSource2 should still exist in store
       expect(store.sources).toContainEqual(mockSource2)
+    })
+
+    it('handles delete service throwing an exception', async () => {
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+      mockDeleteSnmpCollectionSources.mockRejectedValue(new Error('Network error'))
+
+      await expect(
+        wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+      ).rejects.toThrow('Network error')
+    })
+
+    it('switching selected source in dialog updates correctly', async () => {
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource)
+
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource2)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+    })
+
+    it('close then reopen dialog resets selected source correctly', async () => {
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+      wrapper.vm.closeDeleteCollectionSourceDialog()
+      expect(wrapper.vm.selectedCollectionSource).toBeNull()
+
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource2)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
+    })
+  })
+
+  describe('Create Source Button', () => {
+    it('renders Create New Data Collection Source button', () => {
+      expect(wrapper.text()).toContain('Create New Data Collection Source')
+    })
+
+    it('navigates to SNMP Data Collection Create when clicked', async () => {
+      const createButton = wrapper
+        .findAllComponents(FeatherButton)
+        .find((btn: any) => btn.text().includes('Create New Data Collection Source'))
+      expect(createButton).toBeDefined()
+      await createButton!.trigger('click')
+
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+    })
+
+    it('calls goToCreateSource function to navigate', () => {
+      wrapper.vm.goToCreateSource()
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+    })
+
+    it('goToCreateSource can be called multiple times', () => {
+      wrapper.vm.goToCreateSource()
+      wrapper.vm.goToCreateSource()
+      expect(mockPush).toHaveBeenCalledTimes(2)
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection Create' })
+    })
+  })
+
+  describe('Edit Button', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders edit button for each row', async () => {
+      expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(true)
+    })
+
+    it('renders edit buttons for multiple rows', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      const editButtons = wrapper.findAll('[data-test="edit-button"]')
+      expect(editButtons).toHaveLength(2)
+    })
+
+    it('edit button contains an icon element', async () => {
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      expect(editButton.exists()).toBe(true)
+      // The button itself wraps a FeatherIcon
+      expect(editButton.html()).toContain('feather-icon')
+    })
+  })
+
+  describe('Dropdown Item DOM Interactions', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders a FeatherDropdown in the action column', () => {
+      const dropdown = wrapper.findComponent(FeatherDropdown)
+      expect(dropdown.exists()).toBe(true)
+    })
+
+    it('dropdown trigger has correct aria label with source name', () => {
+      const dropdown = wrapper.findComponent(FeatherDropdown)
+      const triggerButton = dropdown.find('button')
+      expect(triggerButton.attributes('aria-label')).toBe(`More actions for ${mockSource.name}`)
+    })
+
+    it('renders one dropdown per source row', () => {
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns).toHaveLength(1)
+    })
+
+    it('renders two dropdowns with 2 source rows', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns).toHaveLength(2)
+    })
+
+    it('renders three dropdowns with 3 source rows', async () => {
+      store.sources = [mockSource, mockSource2, disabledMockSource]
+      await wrapper.vm.$nextTick()
+
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns).toHaveLength(3)
+    })
+
+    it('each dropdown trigger has aria label with correct source name', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns).toHaveLength(2)
+
+      const firstTrigger = dropdowns[0].find('button')
+      expect(firstTrigger.attributes('aria-label')).toBe(`More actions for ${mockSource.name}`)
+
+      const secondTrigger = dropdowns[1].find('button')
+      expect(secondTrigger.attributes('aria-label')).toBe(`More actions for ${mockSource2.name}`)
+    })
+  })
+
+  describe('Search Input Details', () => {
+    it('search input has label "Search"', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.exists()).toBe(true)
+      expect(searchInput.props('label')).toBe('Search')
+    })
+
+    it('search input has type "search"', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('type')).toBe('search')
+    })
+
+    it('search input has correct hint text', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('hint')).toBe('Search by Source, Vendor or Description')
+    })
+
+    it('search input is bound to store sourcesSearchTerm', async () => {
+      store.sourcesSearchTerm = 'my search'
+      await wrapper.vm.$nextTick()
+
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('modelValue')).toBe('my search')
+    })
+  })
+
+  describe('EmptyList Component', () => {
+    it('renders EmptyList with correct content prop', async () => {
+      store.sources = []
+      await wrapper.vm.$nextTick()
+
+      const emptyList = wrapper.findComponent({ name: 'EmptyList' })
+      expect(emptyList.exists()).toBe(true)
+      expect(emptyList.props('content')).toEqual({ msg: 'No results found.' })
+    })
+
+    it('does not render EmptyList when sources exist', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(false)
+    })
+  })
+
+  describe('Actions Column Header', () => {
+    it('renders non-sortable Actions header', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const thElements = wrapper.findAll('thead th')
+      const actionsHeader = thElements.find((th: any) => th.text() === 'Actions')
+      expect(actionsHeader).toBeDefined()
+    })
+
+    it('renders 4 sort headers plus 1 Actions header', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      expect(sortHeaders).toHaveLength(4)
+
+      // "Actions" is a plain <th>, not a FeatherSortHeader
+      const allTh = wrapper.findAll('thead th')
+      expect(allTh.length).toBeGreaterThanOrEqual(1)
+    })
+  })
+
+  describe('Table Aria Label', () => {
+    it('table has aria-label set to "Events Table"', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const table = wrapper.find('.data-table')
+      expect(table.attributes('aria-label')).toBe('Events Table')
+    })
+  })
+
+  describe('Pagination Data Test Attribute', () => {
+    it('pagination has data-test="FeatherPagination"', async () => {
+      store.sources = [mockSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="FeatherPagination"]').exists()).toBe(true)
+    })
+  })
+
+  describe('State Transitions', () => {
+    it('transitions from empty to populated state', async () => {
+      store.sources = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+      expect(wrapper.find('.data-table').exists()).toBe(false)
+
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(false)
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+    })
+
+    it('transitions from populated to empty state', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+
+      store.sources = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.data-table').exists()).toBe(false)
+      expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+    })
+
+    it('pagination appears and disappears with sources', async () => {
+      store.sources = [mockSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.alerts-pagination').exists()).toBe(true)
+
+      store.sources = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
+    })
+  })
+
+  describe('DeleteConfirmationDialog Props', () => {
+    it('always passes type="source" to DeleteConfirmationDialog', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('type')).toBe('source')
+    })
+
+    it('passes null as selected when dialog is not opened', () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('selected')).toBeNull()
+    })
+
+    it('updates selected prop when dialog is opened with different sources', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+      await wrapper.vm.$nextTick()
+
+      let dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('selected')).toEqual(mockSource)
+
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource2)
+      await wrapper.vm.$nextTick()
+
+      dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.props('selected')).toEqual(mockSource2)
+    })
+  })
+
+  describe('Debounce Behavior', () => {
+    it('debounce resets timer on subsequent inputs', async () => {
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+
+      await searchInput.setValue('a')
+      vi.advanceTimersByTime(400)
+      expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
+
+      await searchInput.setValue('ab')
+      vi.advanceTimersByTime(400)
+      // Still not called because the 400ms is from the second setValue, not 500ms total
+      expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(100)
+      await wrapper.vm.$nextTick()
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledTimes(1)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('ab')
+    })
+
+    it('does not call store when search changes within debounce window', async () => {
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+
+      await searchInput.setValue('first')
+      vi.advanceTimersByTime(100)
+      await searchInput.setValue('second')
+      vi.advanceTimersByTime(100)
+      await searchInput.setValue('third')
+      vi.advanceTimersByTime(100)
+
+      expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
+
+      vi.advanceTimersByTime(500)
+      await wrapper.vm.$nextTick()
+
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledTimes(1)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('third')
+    })
+
+    it('calls store multiple times for searches separated by full debounce period', async () => {
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+
+      await searchInput.setValue('first')
+      vi.advanceTimersByTime(500)
+      await wrapper.vm.$nextTick()
+
+      await searchInput.setValue('second')
+      vi.advanceTimersByTime(500)
+      await wrapper.vm.$nextTick()
+
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledTimes(2)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenNthCalledWith(1, 'first')
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenNthCalledWith(2, 'second')
+    })
+  })
+
+  describe('Dropdown Trigger Button', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('dropdown trigger button has correct icon label with source name', () => {
+      const dropdownButtons = wrapper.findAllComponents(FeatherButton)
+      const moreActionsBtn = dropdownButtons.find(
+        (btn: any) => btn.props('icon') === `More actions for ${mockSource.name}`
+      )
+      expect(moreActionsBtn).toBeDefined()
+    })
+
+    it('dropdown trigger button is a FeatherButton with correct icon text', () => {
+      const dropdownButtons = wrapper.findAllComponents(FeatherButton)
+      const moreActionsBtn = dropdownButtons.find(
+        (btn: any) => btn.props('icon') === `More actions for ${mockSource.name}`
+      )
+      expect(moreActionsBtn).toBeDefined()
+      expect(moreActionsBtn!.exists()).toBe(true)
+    })
+  })
+
+  describe('Delete Success Messages', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+    })
+
+    it('shows success message with correct source name', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Source\' deleted successfully.'
+      })
+    })
+
+    it('shows failure message with correct source name on service failure', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+
+      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Test Source\'.',
+        error: true
+      })
+    })
+
+    it('shows failure message with selected name when validation fails', async () => {
+      await wrapper.vm.deleteCollectionSource({ id: 999, name: 'Other Source' }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to delete Collection Source \'Other Source\'.',
+        error: true
+      })
+    })
+  })
+
+  describe('Row Data Correctness', () => {
+    it('renders all 4 data columns per row', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      const tds = rows[0].findAll('td')
+      // 4 data columns + 1 actions column
+      expect(tds).toHaveLength(5)
+    })
+
+    it('renders data in correct column order', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      const tds = rows[0].findAll('td')
+
+      expect(tds[0].text()).toBe('Test Source')
+      expect(tds[1].text()).toBe('Cisco')
+      expect(tds[2].text()).toBe('TestUser')
+      expect(tds[3].text()).toBe('Enabled')
+    })
+
+    it('renders disabled source data in correct column order', async () => {
+      store.sources = [disabledMockSource]
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      const tds = rows[0].findAll('td')
+
+      expect(tds[0].text()).toBe('Disabled Source')
+      expect(tds[1].text()).toBe('HP')
+      expect(tds[2].text()).toBe('DisabledUser')
+      expect(tds[3].text()).toBe('Disabled')
+    })
+  })
+
+  describe('Header Layout', () => {
+    it('renders section-left with search and refresh', () => {
+      expect(wrapper.find('.section-left').exists()).toBe(true)
+      expect(wrapper.find('.search-container').exists()).toBe(true)
+      expect(wrapper.find('.refresh').exists()).toBe(true)
+    })
+
+    it('renders section-right with create button', () => {
+      expect(wrapper.find('.section-right').exists()).toBe(true)
+      expect(wrapper.find('.add').exists()).toBe(true)
+    })
+  })
+
+  describe('Concurrent Operations', () => {
+    it('handles search then immediate refresh', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test')
+      vi.advanceTimersByTime(250) // mid-debounce
+
+      await wrapper.get('[data-test="refresh-button"]').trigger('click')
+      expect(store.refreshSourcesfilters).toHaveBeenCalled()
+
+      // Complete the debounce
+      vi.advanceTimersByTime(250)
+      await wrapper.vm.$nextTick()
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
+    })
+
+    it('handles sort then page change', async () => {
+      store.sources = [mockSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 50 }
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
+      expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'asc')
+
+      const pagination = wrapper.getComponent(FeatherPagination)
+      await pagination.vm.$emit('update:modelValue', 3)
+      expect(store.onSourcePageChange).toHaveBeenCalledWith(3)
+    })
+  })
+
+  describe('View Button Per Row', () => {
+    it('renders correct number of view buttons for multiple sources', async () => {
+      store.sources = [mockSource, mockSource2, disabledMockSource]
+      await wrapper.vm.$nextTick()
+
+      const viewButtons = wrapper.findAll('[data-test="view-button"]')
+      expect(viewButtons).toHaveLength(3)
+    })
+  })
+
+  describe('Parametrized Delete Validation Tests', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+    })
+
+    it.each([
+      { selected: null, type: 'source', desc: 'null selected' },
+      { selected: { id: 1, name: 'Test Source' }, type: '', desc: 'empty type' },
+      { selected: { id: 0, name: 'Test Source' }, type: 'source', desc: 'zero id' },
+      { selected: { id: 999, name: 'Test Source' }, type: 'source', desc: 'mismatched id' },
+      { selected: { id: 1, name: 'Wrong' }, type: 'source', desc: 'mismatched name' }
+    ])('rejects delete with $desc', async ({ selected, type }) => {
+      await wrapper.vm.deleteCollectionSource(selected, type)
+
+      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
     })
   })
 })
