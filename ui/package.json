@@ -21,7 +21,8 @@
     "test:coverage:sonar": "vitest run --coverage",
     "lint": "eslint --ignore-path ../.gitignore --ext .ts,.vue .",
     "lint:fix": "eslint --ignore-path ../.gitignore --ext .ts,.vue . --fix",
-    "format": "prettier --ignore-path ../.gitignore --write \"**/*.+(ts)\""
+    "format": "prettier --ignore-path ../.gitignore --write \"**/*.+(ts)\"",
+    "tsconly": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@featherds/app-bar": "0.12.43",
@@ -90,7 +91,7 @@
     "uuid": "^10.0.0",
     "vite-svg-loader": "^4.0.0",
     "vkbeautify": "^0.99.3",
-    "vue": "^3.5.14",
+    "vue": "3.4.38",
     "vue-diff": "^1.2.4",
     "vue-router": "^4.2.4",
     "vue3-ace-editor": "^2.2.4",
