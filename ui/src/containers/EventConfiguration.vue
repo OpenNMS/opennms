@@ -16,6 +16,12 @@
         >
           Create New Event Source
         </FeatherButton>
+        <FeatherButton
+          primary
+          @click="goToCreateEventConfig()"
+        >
+          Create New Event Config
+        </FeatherButton>
       </div>
     </div>
     <div class="tabs">
@@ -29,12 +35,15 @@
 import CreateEventConfigurationDialog from '@/components/EventConfiguration/Dialog/CreateEventConfigurationDialog.vue'
 import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { getDefaultEventConfigEvent } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { BreadCrumb } from '@/types'
+import { BreadCrumb, CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigStore()
+const router = useRouter()
 const menuStore = useMenuStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
@@ -44,6 +53,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
     { label: 'Manage Event Configurations', to: '#', position: 'last' }
   ]
 })
+
+const goToCreateEventConfig = () => {
+  const modificationStore = useEventModificationStore()
+  modificationStore.openCreateWithoutSource(CreateEditMode.Create, getDefaultEventConfigEvent())
+  router.push({ name: 'Event Configuration Create' })
+}
 </script>
 
 <style lang="scss" scoped>

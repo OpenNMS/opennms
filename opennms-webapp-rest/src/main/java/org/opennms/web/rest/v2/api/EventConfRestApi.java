@@ -207,6 +207,20 @@ public interface EventConfRestApi {
     })
     Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
 
+    @GET
+    @Path("/sources/names-and-ids")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get EventConf Source Names and IDs",
+            description = "Retrieve the names and IDs of all EventConf sources stored in the database.",
+            operationId = "getEventConfSourceNamesAndIds"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved source names and IDs"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventConfSourceNamesAndIds(@Context SecurityContext securityContext) throws Exception;
+
     @POST
     @Path("/sources/{sourceId}/events")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
