@@ -207,6 +207,7 @@ import { uploadDataCollectionFiles } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { SnmpDataCollectionSourceUploadResponse, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Delete from '@featherds/icon/action/Delete'
@@ -222,7 +223,6 @@ import TableCard from '../Common/TableCard.vue'
 import DataCollectionFilesUploadReportDialog from './Dialog/DataCollectionFilesUploadReportDialog.vue'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 import { isDuplicateFile, validateSnmpDataCollectionSourceFile } from './snmpDataCollectionSourceXmlValidator'
-import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionStore()
 const sourceFolderInput = ref<HTMLInputElement | null>(null)
@@ -231,7 +231,6 @@ const uploadFilesReport = ref<SnmpDataCollectionSourceUploadResponse>({} as Snmp
 const sourceFiles = ref<UploadSnmpDataCollectionFileType[]>([])
 const isLoading = ref(false)
 const snackbar = useSnackbar()
-const router = useRouter()
 const displayRenameDialog = ref(false)
 const selectedIndex = ref<number | null>(null)
 const uploadedDataCollectionFilesReportDialogState = ref(false)
@@ -364,10 +363,12 @@ const uploadFiles = async () => {
       errors: [...response.errors],
       success: [...response.success]
     }
-    isLoading.value = false
     sourceFiles.value = []
     sourceFileInput.value!.value = ''
+    store.fetchAllSourcesNames()
+    store.fetchSnmpCollectionSources()
     uploadedDataCollectionFilesReportDialogState.value = true
+    isLoading.value = false
   } catch (err) {
     console.error(err)
     isLoading.value = false
@@ -383,8 +384,8 @@ const closeUploadReportDialog = () => {
 }
 
 const gotoViewTab = () => {
+  store.activeTab = 0
   uploadedDataCollectionFilesReportDialogState.value = false
-  router.push({ name: 'SNMP Data Collection' })
 }
 
 const openFileRenameDialog = (index: number) => {
@@ -395,7 +396,6 @@ const openFileRenameDialog = (index: number) => {
 const closeRenameDialog = () => {
   displayRenameDialog.value = false
   selectedIndex.value = null
-  store.activeTab = 0
 }
 
 const renameFile = async (newFileName: string) => {
