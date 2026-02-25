@@ -154,7 +154,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor not found: " + className);
         }
 
-        final Map<String, Object> interpolatedAttributes = this.getInterpolatedAttributes();
+        // The normal Poller path (PollableServiceConfig) will double-interpolate, but that's a no-op
+        // DCB related raw expressions will be interpolated here.
+        final Scope scope = getScope();
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(this.attributes, scope);
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
@@ -186,7 +189,10 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // such as the agent details and other state related attributes
         // which should be included in the request
         final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
+        final Map<String, Object> runtimeAttributes = serviceMonitor.getRuntimeAttributes(request, parameters);
+        if (!runtimeAttributes.isEmpty()) {
+            request.addAttributes(Interpolator.interpolateAttributes(runtimeAttributes, scope));
+        }
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {
