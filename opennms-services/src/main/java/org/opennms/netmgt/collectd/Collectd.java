@@ -282,7 +282,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
         // node location changed event
         ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
-        
+
+        // metadata changes that invalidate interpolated parameter cache
+        ueiList.add(EventConstants.NODE_UPDATED_EVENT_UEI);
+        ueiList.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
+        ueiList.add(EventConstants.PROVISION_SCAN_COMPLETE_UEI);
+
         getEventIpcManager().addEventListener(this, ueiList);
     }
 
@@ -687,6 +692,10 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleNodeCategoryMembershipChanged(event);
             } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
                 handleNodeLocationChanged(event);
+            } else if (event.getUei().equals(EventConstants.NODE_UPDATED_EVENT_UEI)
+                    || event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)
+                    || event.getUei().equals(EventConstants.PROVISION_SCAN_COMPLETE_UEI)) {
+                handleMetadataChanged(event);
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
@@ -944,6 +953,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
         Long nodeId = event.getNodeid();
 
+        refreshParametersForNode(nodeId);
+
         unscheduleNodeAndMarkForDeletion(nodeId);
 
         LOG.debug("nodeCategoryMembershipChanged: unscheduling nodeid {} completed.", nodeId);
@@ -968,6 +979,23 @@ public class Collectd extends AbstractServiceDaemon implements
         LOG.debug("nodeLocationChanged: unscheduling nodeid {} completed.", nodeId);
 
         scheduleNode(nodeId.intValue());
+    }
+
+    private void handleMetadataChanged(IEvent event) throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        Long nodeId = event.getNodeid();
+        LOG.debug("handleMetadataChanged: refreshing cached parameters for nodeid {}", nodeId);
+        refreshParametersForNode(nodeId);
+    }
+
+    private void refreshParametersForNode(Long nodeId) {
+        synchronized (m_collectableServices) {
+            for (CollectableService cSvc : m_collectableServices) {
+                if (cSvc.getNodeId() == nodeId) {
+                    cSvc.getSpecification().refreshParameters();
+                }
+            }
+        }
     }
 
     private void rebuildScheduler() {

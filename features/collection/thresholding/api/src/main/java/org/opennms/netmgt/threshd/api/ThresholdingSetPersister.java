@@ -29,6 +29,8 @@ public interface ThresholdingSetPersister {
 
     void reinitializeThresholdingSets();
 
+    default void refreshScope(int nodeId) {}
+
     void clear(ThresholdingSession session);
 
 }

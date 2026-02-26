@@ -93,6 +93,13 @@ public class DefaultThresholdingSetPersister implements ThresholdingSetPersister
     }
 
     @Override
+    public void refreshScope(int nodeId) {
+        thresholdingSets.entrySet().stream()
+                .filter(e -> e.getKey().getNodeId() == nodeId)
+                .forEach(e -> e.getValue().refreshScope());
+    }
+
+    @Override
     public void clear(ThresholdingSession session) {
         ThresholdingSessionKey key = session.getKey();
         thresholdingSets.remove(key);

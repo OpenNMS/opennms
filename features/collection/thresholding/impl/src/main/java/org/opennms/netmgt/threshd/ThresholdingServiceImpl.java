@@ -70,7 +70,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
             Lists.newArrayList(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
                                EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI,
                                EventConstants.RELOAD_DAEMON_CONFIG_UEI,
-                               EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
+                               EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI,
+                               EventConstants.NODE_UPDATED_EVENT_UEI,
+                               EventConstants.ASSET_INFO_CHANGED_EVENT_UEI,
+                               EventConstants.PROVISION_SCAN_COMPLETE_UEI);
 
     private ThresholdingSetPersister thresholdingSetPersister;
 
@@ -148,6 +151,11 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         case EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI:
             reinitializeThresholdingSets(e);
             break;
+        case EventConstants.NODE_UPDATED_EVENT_UEI:
+        case EventConstants.ASSET_INFO_CHANGED_EVENT_UEI:
+        case EventConstants.PROVISION_SCAN_COMPLETE_UEI:
+            handleMetadataChanged(e);
+            break;
         default:
             LOG.debug("Unexpected Event for Thresholding: {}", e);
             break;
@@ -166,6 +174,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
         threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
+    }
+
+    private void handleMetadataChanged(IEvent event) {
+        Long nodeId = event.getNodeid();
+        LOG.debug("Metadata changed for node {}, refreshing cached scope: {}", nodeId, event.getUei());
+        if (nodeId != null) {
+            thresholdingSetPersister.refreshScope(nodeId.intValue());
+        }
     }
 
     @Override

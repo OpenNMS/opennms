@@ -234,6 +234,10 @@ public final class ThresholdEntity implements Cloneable {
      * @param resource a {@link org.opennms.netmgt.threshd.CollectionResourceWrapper} object.
      */
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
+        return evaluateAndCreateEvents(resource, values, date, getScopeForResource(resource));
+    }
+
+    public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date, Scope scope) {
         List<Event> events = new LinkedList<Event>();
 
         String instance = null;
@@ -251,9 +255,6 @@ public final class ThresholdEntity implements Cloneable {
 
         // This reference contains the function that will be used by each evaluator to retrieve the status
         AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
-
-        // compute scope here, see NMS-16966
-        final Scope scope = getScopeForResource(resource);
 
         // Depending on the type of threshold, we want to evaluate it differently
         // Threshold Values like value, rearm, trigger and expression are interpolated and cached in state so that

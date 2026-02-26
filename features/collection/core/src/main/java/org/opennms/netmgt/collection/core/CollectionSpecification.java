@@ -81,6 +81,7 @@ public class CollectionSpecification {
     private final ReadablePollOutagesDao m_pollOutagesDao;
     private final String collectorImplClassName;
     private final ScopeProvider scopeProvider;
+    private volatile Map<String, Object> m_interpolatedParameters;
 
     public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider) {
         m_package = Objects.requireNonNull(wpkg);
@@ -179,7 +180,16 @@ public class CollectionSpecification {
      * @return A read only Map instance
      */
     public ServiceParameters getServiceParameters() {
-        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope())));
+        Map<String, Object> cached = m_interpolatedParameters;
+        if (cached == null) {
+            cached = Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope());
+            m_interpolatedParameters = cached;
+        }
+        return new ServiceParameters(Collections.unmodifiableMap(cached));
+    }
+
+    public void refreshParameters() {
+        m_interpolatedParameters = null;
     }
 
     private boolean isTrue(String stg) {
@@ -285,7 +295,7 @@ public class CollectionSpecification {
         try {
             CollectorRequestBuilder requestBuilder = m_locationAwareCollectorClient.collect();
             requestBuilder.withAgent(agent)
-                    .withAttributes(getPropertyMap())
+                    .withAttributes(getServiceParameters().getParameters())
                     .withTimeToLive(getService().getInterval());
             if(!getCollector().getClass().getCanonicalName().equals(collectorImplClassName)) {
                 requestBuilder.withCollectorClassName(collectorImplClassName);
@@ -377,6 +387,7 @@ public class CollectionSpecification {
         if (refreshedPackage != null) {
             setPackage(refreshedPackage);
         }
+        m_interpolatedParameters = null;
     }
 
     /**

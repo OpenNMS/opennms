@@ -116,12 +116,8 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
             throw new IllegalArgumentException("Agent is required.");
         }
 
-        final Scope scope = new FallbackScope(
-                this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId()),
-                this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress()))
-        );
-
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, scope);
+        // Attributes are pre-interpolated by CollectionSpecification, use them directly
+        final Map<String, Object> interpolatedAttributes = new HashMap<>(this.attributes);
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(agent.getNodeId())
@@ -149,10 +145,16 @@ public class CollectorRequestBuilderImpl implements CollectorRequestBuilder {
         // Retrieve the runtime attributes, which may include attributes
         // such as the agent details and other state related attributes
         // which should be included in the request
-        final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes), scope);
-        final Map<String, Object> allAttributes = new HashMap<>();
-        allAttributes.putAll(interpolatedAttributes);
-        allAttributes.putAll(runtimeAttributes);
+        final Map<String, Object> rawRuntimeAttributes = serviceCollector.getRuntimeAttributes(agent, interpolatedAttributes);
+        final Map<String, Object> allAttributes = new HashMap<>(interpolatedAttributes);
+        if (rawRuntimeAttributes != null && !rawRuntimeAttributes.isEmpty()) {
+            final Scope scope = new FallbackScope(
+                    this.client.getEntityScopeProvider().getScopeForNode(agent.getNodeId()),
+                    this.client.getEntityScopeProvider().getScopeForInterface(agent.getNodeId(), InetAddressUtils.toIpAddrString(agent.getAddress()))
+            );
+            final Map<String, Object> runtimeAttributes = Interpolator.interpolateAttributes(rawRuntimeAttributes, scope);
+            allAttributes.putAll(runtimeAttributes);
+        }
 
         // The runtime attributes may include objects which need to be marshaled.
         // Only marshal these if the request is being executed at another location.

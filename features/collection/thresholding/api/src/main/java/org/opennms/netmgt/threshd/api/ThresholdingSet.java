@@ -23,4 +23,6 @@ package org.opennms.netmgt.threshd.api;
 
 public interface ThresholdingSet {
     void reinitialize();
+
+    default void refreshScope() {}
 }
