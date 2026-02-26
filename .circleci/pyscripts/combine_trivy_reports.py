@@ -104,4 +104,4 @@ if __name__ == "__main__":
     with open(f'{base_path}/artifacts/filtered_vulnerabilities.txt', 'a') as outfile:
         for vuln in vulnerabilities:
             # logging.info(f"Writing vulnerability {vuln['VulnerabilityID']} to output file.")
-            outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {",".join(vuln['Products'])}\n")
+            outfile.write(f"{vuln['VulnerabilityID']} | {vuln['Severity']} | {vuln['Status']} | {vuln['InstalledVersion']} | {vuln['FixedVersion']} | {vuln['Class']} | {vuln['Target']} | {vuln['PkgName']} | {vuln['PkgPath']} | {vuln['Title']} | {', '.join(vuln['Products'])}\n")

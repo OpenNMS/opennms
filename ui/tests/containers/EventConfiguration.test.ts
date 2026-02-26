@@ -25,6 +25,27 @@ describe('EventConfig.vue', () => {
   let menuStore: ReturnType<typeof useMenuStore>
   let modificationStore: ReturnType<typeof useEventModificationStore>
 
+  const globalConfig = {
+    global: {
+      stubs: {
+        EventConfigTabContainer: true,
+        CreateEventConfigurationDialog: true,
+        BreadCrumbs: true,
+        'router-link': true
+      }
+    }
+  }
+
+  const globalConfigWithoutBreadcrumbs = {
+    global: {
+      stubs: {
+        EventConfigTabContainer: true,
+        CreateEventConfigurationDialog: true,
+        'router-link': true
+      }
+    }
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockPush.mockClear()
@@ -35,15 +56,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders heading text', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     expect(store).toBeDefined()
     expect(wrapper.find('h1').text()).toBe('Manage Event Configurations')
@@ -51,14 +64,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders BreadCrumbs component', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
   })
@@ -66,14 +72,7 @@ describe('EventConfig.vue', () => {
   it('renders BreadCrumbs with correct items', () => {
     menuStore.mainMenu = { homeUrl: '/home' } as any
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -84,14 +83,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders BreadCrumbs with undefined homeUrl when mainMenu is not set', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -102,28 +94,13 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders CreateEventConfigurationDialog component', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     expect(wrapper.findComponent(CreateEventConfigurationDialog).exists()).toBe(true)
   })
 
   it('renders Create New Event Configuration button', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     const button = wrapper.find('button')
     expect(button.exists()).toBe(true)
@@ -133,15 +110,7 @@ describe('EventConfig.vue', () => {
   it('calls store method when Create button is clicked', async () => {
     store.showCreateEventConfigSourceDialog = vi.fn()
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     const button = wrapper.find('button')
     await button.trigger('click')
@@ -150,15 +119,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('applies correct CSS classes', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     expect(wrapper.find('.event-config').exists()).toBe(true)
     expect(wrapper.find('.header').exists()).toBe(true)
@@ -168,15 +129,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders all child components together', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
@@ -185,12 +138,9 @@ describe('EventConfig.vue', () => {
 
   it('button has primary attribute', () => {
     const wrapper = mount(EventConfiguration, {
+      ...globalConfig,
       global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        },
+        ...globalConfig.global,
         components: {
           FeatherButton
         }
@@ -205,14 +155,7 @@ describe('EventConfig.vue', () => {
   it('updates breadcrumbs when homeUrl changes', async () => {
     menuStore.mainMenu = { homeUrl: '/initial' } as any
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     let breadcrumbs = wrapper.findComponent(BreadCrumbs)
     let items = breadcrumbs.props('items')
@@ -228,15 +171,7 @@ describe('EventConfig.vue', () => {
 
   it('maintains component structure after interactions', async () => {
     store.showCreateEventConfigSourceDialog = vi.fn()
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     await wrapper.find('button').trigger('click')
 
@@ -245,15 +180,7 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders feather-row and feather-col structure', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     expect(wrapper.find('.feather-row').exists()).toBe(true)
     expect(wrapper.find('.feather-col-12').exists()).toBe(true)
@@ -262,15 +189,7 @@ describe('EventConfig.vue', () => {
   it('handles multiple button clicks', async () => {
     store.showCreateEventConfigSourceDialog = vi.fn()
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     const button = wrapper.find('button')
     await button.trigger('click')
@@ -283,14 +202,7 @@ describe('EventConfig.vue', () => {
   it('renders with null homeUrl', () => {
     menuStore.mainMenu = { homeUrl: null } as any
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -301,14 +213,7 @@ describe('EventConfig.vue', () => {
   it('renders with empty string homeUrl', () => {
     menuStore.mainMenu = { homeUrl: '' } as any
 
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -317,30 +222,14 @@ describe('EventConfig.vue', () => {
   })
 
   it('unmounts without errors', () => {
-    const wrapper = mount(EventConfiguration, {
-      global: {
-        stubs: {
-          EventConfigTabContainer: true,
-          CreateEventConfigurationDialog: true,
-          BreadCrumbs: true
-        }
-      }
-    })
+    const wrapper = mount(EventConfiguration, globalConfig)
 
     expect(() => wrapper.unmount()).not.toThrow()
   })
 
   describe('Create New Event Config Button', () => {
     it('renders "Create New Event Config" button', () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       expect(buttons.length).toBe(2)
@@ -348,15 +237,7 @@ describe('EventConfig.vue', () => {
     })
 
     it('renders both action buttons', () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       expect(buttons[0].text()).toBe('Create New Event Source')
@@ -365,12 +246,9 @@ describe('EventConfig.vue', () => {
 
     it('both buttons have primary attribute', () => {
       const wrapper = mount(EventConfiguration, {
+        ...globalConfig,
         global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          },
+          ...globalConfig.global,
           components: {
             FeatherButton
           }
@@ -385,15 +263,7 @@ describe('EventConfig.vue', () => {
     it('calls goToCreateEventConfig when Create New Event Config button is clicked', async () => {
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -411,15 +281,7 @@ describe('EventConfig.vue', () => {
     })
 
     it('navigates to Event Configuration Create route', async () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -430,15 +292,7 @@ describe('EventConfig.vue', () => {
     it('sets up modification store with Create mode', async () => {
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -452,15 +306,7 @@ describe('EventConfig.vue', () => {
     it('sets up modification store with default event config', async () => {
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -478,15 +324,7 @@ describe('EventConfig.vue', () => {
     it('handles multiple clicks on Create New Event Config button', async () => {
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -502,15 +340,7 @@ describe('EventConfig.vue', () => {
       store.showCreateEventConfigSourceDialog = vi.fn()
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[0].trigger('click')
@@ -524,15 +354,7 @@ describe('EventConfig.vue', () => {
       store.showCreateEventConfigSourceDialog = vi.fn()
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[1].trigger('click')
@@ -546,15 +368,7 @@ describe('EventConfig.vue', () => {
       store.showCreateEventConfigSourceDialog = vi.fn()
       modificationStore.openCreateWithoutSource = vi.fn()
 
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const buttons = wrapper.findAllComponents(FeatherButton)
       await buttons[0].trigger('click')
@@ -568,15 +382,7 @@ describe('EventConfig.vue', () => {
 
   describe('Component Layout', () => {
     it('buttons are in action div', () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const actionDiv = wrapper.find('.action')
       const buttons = actionDiv.findAllComponents(FeatherButton)
@@ -584,15 +390,7 @@ describe('EventConfig.vue', () => {
     })
 
     it('heading and action are in header', () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const header = wrapper.find('.header')
       expect(header.find('.heading').exists()).toBe(true)
@@ -600,15 +398,7 @@ describe('EventConfig.vue', () => {
     })
 
     it('maintains proper structure with all sections', () => {
-      const wrapper = mount(EventConfiguration, {
-        global: {
-          stubs: {
-            EventConfigTabContainer: true,
-            CreateEventConfigurationDialog: true,
-            BreadCrumbs: true
-          }
-        }
-      })
+      const wrapper = mount(EventConfiguration, globalConfig)
 
       const eventConfig = wrapper.find('.event-config')
       expect(eventConfig.find('.feather-row').exists()).toBe(true)

@@ -54,6 +54,16 @@ sudo install -d -o opennms -g opennms /opt/opennms/etc
 sudo -u opennms cp -r /etc/opennms/* /opt/opennms/etc
 ```
 
+=== Ticketing plugin is now automatic
+
+The `OSGiBasedTicketerPlugin` is now the default ticketer plugin.
+Ticketing is automatically enabled when an OSGi-based ticketer plugin is installed and disabled when it is removed.
+The `NullTicketerPlugin` and the `opennms.ticketer.plugin` property have been removed.
+
+If you have `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.NullTicketerPlugin` in a custom properties file under `etc/opennms.properties.d/`, remove that entry before upgrading.
+If you previously set `opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin`, that entry is now redundant and can be removed.
+The `opennms.alarmTroubleTicketEnabled` property is no longer required but can still be used to explicitly enable or disable ticketing.
+
 === Removed JRobin implementation
 
 JRobin, the pure-Java RRD implementation has been removed.

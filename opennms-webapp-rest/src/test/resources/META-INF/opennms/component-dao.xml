@@ -19,7 +19,7 @@
     </bean>
 
     <bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">
-        <property name="pluginClass" value="org.opennms.netmgt.ticketd.NullTicketerPlugin"/>
+        <property name="pluginClass" value="org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin"/>
     </bean>
 
     <bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
