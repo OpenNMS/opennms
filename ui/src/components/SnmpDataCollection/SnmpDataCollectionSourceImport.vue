@@ -470,8 +470,8 @@ onMounted(async () => {
 
 
 .data-collection-source-import-container {
-  gap: 20px;
-  padding: 20px;
+  margin-top: 10px;
+  padding: 25px;
   border: 1px solid var(--feather-border-on-surface);
 
   .header {
