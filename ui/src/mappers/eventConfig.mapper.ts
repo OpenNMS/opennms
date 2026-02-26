@@ -3,7 +3,8 @@ import {
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
-  EventConfigSourcesResponse
+  EventConfigSourcesResponse,
+  UploadedSourceNamesResponse
 } from '@/types/eventConfig'
 import vkbeautify from 'vkbeautify'
 
@@ -88,5 +89,12 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
 
 export const mapEventConfEventEditRequest = (content: any, status: boolean): string => {
   return vkbeautify.xml(`<eventEdit><enabled>${status}</enabled>${content as string}</eventEdit>`)
+}
+
+export const mapUploadedSourceNamesFromServer = (content: any): Array<UploadedSourceNamesResponse> => {
+  return content.map((source: any) => ({
+    id: source.id,
+    name: source.name
+  } as UploadedSourceNamesResponse))
 }
 

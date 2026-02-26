@@ -328,12 +328,17 @@ public class NrtController {
             // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
             // by the ResourceStorageDao.
             ResourcePath pathToMetaFile;
-            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS || TimeSeries.getTimeseriesStrategy() == Strategy.INTEGRATION) {
+           final Strategy strategy = TimeSeries.getTimeseriesStrategy();
+            if (strategy == Strategy.NEWTS || strategy == Strategy.INTEGRATION) {
                 String path = attr.getRrdRelativePath();
                 if (path.startsWith("/")) {
                     path = path.substring(1);
                 }
-                pathToMetaFile = ResourcePath.get(path.split(":"));
+                if (strategy == Strategy.NEWTS) {
+                    pathToMetaFile = ResourcePath.get(path.split(":"));
+                } else {
+                    pathToMetaFile = ResourcePath.get(path.split("/+"));
+                }
             } else {
                 final String knownExtensions[] = new String[]{".rrd"};
                 String metaFileNameWithoutExtension = attr.getRrdFile();

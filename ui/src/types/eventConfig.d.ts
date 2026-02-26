@@ -36,7 +36,7 @@ export type EventConfigStoreState = {
   sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
-  uploadedSourceNames: string[]
+  uploadedSources: Array<UploadedSourceNamesResponse>
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -137,3 +137,7 @@ export type EventFormErrors = {
   clearKey?: string
 }
 
+export type UploadedSourceNamesResponse = {
+  id: number
+  name: string
+}

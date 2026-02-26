@@ -3,21 +3,35 @@ import EventConfigTabContainer from '@/components/EventConfiguration/EventConfig
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import EventConfiguration from '@/containers/EventConfiguration.vue'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+const mockPush = vi.fn()
+
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}))
+
 describe('EventConfig.vue', () => {
   let store: ReturnType<typeof useEventConfigStore>
   let menuStore: ReturnType<typeof useMenuStore>
+  let modificationStore: ReturnType<typeof useEventModificationStore>
 
   beforeEach(() => {
+    vi.clearAllMocks()
+    mockPush.mockClear()
     setActivePinia(createTestingPinia())
     store = useEventConfigStore()
     menuStore = useMenuStore()
+    modificationStore = useEventModificationStore()
   })
 
   it('renders heading text', () => {
@@ -315,5 +329,291 @@ describe('EventConfig.vue', () => {
 
     expect(() => wrapper.unmount()).not.toThrow()
   })
-})
 
+  describe('Create New Event Config Button', () => {
+    it('renders "Create New Event Config" button', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      expect(buttons.length).toBe(2)
+      expect(buttons[1].text()).toBe('Create New Event Config')
+    })
+
+    it('renders both action buttons', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      expect(buttons[0].text()).toBe('Create New Event Source')
+      expect(buttons[1].text()).toBe('Create New Event Config')
+    })
+
+    it('both buttons have primary attribute', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          },
+          components: {
+            FeatherButton
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      expect(buttons[0].props('primary')).toBe(true)
+      expect(buttons[1].props('primary')).toBe(true)
+    })
+
+    it('calls goToCreateEventConfig when Create New Event Config button is clicked', async () => {
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+
+      expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledWith(
+        CreateEditMode.Create,
+        expect.objectContaining({
+          uei: '',
+          eventLabel: '',
+          description: '',
+          enabled: true
+        })
+      )
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration Create' })
+    })
+
+    it('navigates to Event Configuration Create route', async () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration Create' })
+    })
+
+    it('sets up modification store with Create mode', async () => {
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+
+      expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledWith(
+        CreateEditMode.Create,
+        expect.any(Object)
+      )
+    })
+
+    it('sets up modification store with default event config', async () => {
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+
+      const callArg = (modificationStore.openCreateWithoutSource as any).mock.calls[0][1]
+      expect(callArg).toHaveProperty('id')
+      expect(callArg.id).toBeGreaterThan(0)
+      expect(callArg).toHaveProperty('uei', '')
+      expect(callArg).toHaveProperty('eventLabel', '')
+      expect(callArg).toHaveProperty('enabled', true)
+      expect(callArg).toHaveProperty('severity')
+      expect(callArg).toHaveProperty('xmlContent', '')
+    })
+
+    it('handles multiple clicks on Create New Event Config button', async () => {
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+      await buttons[1].trigger('click')
+
+      expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledTimes(2)
+      expect(mockPush).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('Button Interactions', () => {
+    it('Create New Event Source button click does not affect Event Config button', async () => {
+      store.showCreateEventConfigSourceDialog = vi.fn()
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+
+      expect(store.showCreateEventConfigSourceDialog).toHaveBeenCalledOnce()
+      expect(modificationStore.openCreateWithoutSource).not.toHaveBeenCalled()
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+
+    it('Create New Event Config button click does not affect Event Source button', async () => {
+      store.showCreateEventConfigSourceDialog = vi.fn()
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[1].trigger('click')
+
+      expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledOnce()
+      expect(mockPush).toHaveBeenCalledOnce()
+      expect(store.showCreateEventConfigSourceDialog).not.toHaveBeenCalled()
+    })
+
+    it('can click both buttons in sequence', async () => {
+      store.showCreateEventConfigSourceDialog = vi.fn()
+      modificationStore.openCreateWithoutSource = vi.fn()
+
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const buttons = wrapper.findAllComponents(FeatherButton)
+      await buttons[0].trigger('click')
+      await buttons[1].trigger('click')
+
+      expect(store.showCreateEventConfigSourceDialog).toHaveBeenCalledOnce()
+      expect(modificationStore.openCreateWithoutSource).toHaveBeenCalledOnce()
+      expect(mockPush).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('Component Layout', () => {
+    it('buttons are in action div', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const actionDiv = wrapper.find('.action')
+      const buttons = actionDiv.findAllComponents(FeatherButton)
+      expect(buttons.length).toBe(2)
+    })
+
+    it('heading and action are in header', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const header = wrapper.find('.header')
+      expect(header.find('.heading').exists()).toBe(true)
+      expect(header.find('.action').exists()).toBe(true)
+    })
+
+    it('maintains proper structure with all sections', () => {
+      const wrapper = mount(EventConfiguration, {
+        global: {
+          stubs: {
+            EventConfigTabContainer: true,
+            CreateEventConfigurationDialog: true,
+            BreadCrumbs: true
+          }
+        }
+      })
+
+      const eventConfig = wrapper.find('.event-config')
+      expect(eventConfig.find('.feather-row').exists()).toBe(true)
+      expect(eventConfig.find('.header').exists()).toBe(true)
+      expect(eventConfig.find('.tabs').exists()).toBe(true)
+    })
+  })
+})
