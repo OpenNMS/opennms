@@ -43,7 +43,7 @@
               :key="col.label"
               scope="col"
               :property="col.id"
-              :sort="(sort as any)[col.id]"
+              :sort="isSortableColumn(col.id) ? (sort as any)[col.id] : ''"
               v-on:sort-changed="sortChanged"
             >
               {{ col.label }}
@@ -203,6 +203,9 @@ const columns = computed(() => [
   { id: 'severity', label: 'Severity' },
   { id: 'enabled', label: 'Status' }
 ])
+
+const sortableColumns = ['uei', 'eventLabel']
+const isSortableColumn = (columnId: string) => sortableColumns.includes(columnId)
 
 const sort = reactive({
   uei: SORT.NONE,

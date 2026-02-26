@@ -396,6 +396,9 @@ describe('BasicInformation Component', () => {
   })
 
   it('should handle save event failure', async () => {
+    // Suppress console.error for this test since we're intentionally triggering an error
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
     vi.mocked(updateEventConfigEventById).mockRejectedValue(new Error('API Error'))
     wrapper.vm.isValid = true
     await wrapper.vm.$nextTick()
@@ -405,6 +408,9 @@ describe('BasicInformation Component', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(updateEventConfigEventById).toHaveBeenCalled()
+
+    // Restore console.error
+    consoleErrorSpy.mockRestore()
   })
 
   describe('XML Content Generation', () => {
