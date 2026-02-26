@@ -486,6 +486,102 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
     }
 
+    @Override
+    public Response deleteSnmpDataCollectionSources(final List<Integer> ids,
+                                                    final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("Snmp Data Collection IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(ids),
+                "Snmp Data Collection deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteMibGroupsForSource(final Integer snmpDataCollectionSourceId,
+                                             final List<Integer> ids,
+                                             final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("MIB Group IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection Mib Groups deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteResourceTypesForSource(final Integer snmpDataCollectionSourceId,
+                                                 final List<Integer> ids,
+                                                 final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("Resource Type IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionResourceTypes(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection Resource Types deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteSystemDefsForSource(final Integer snmpDataCollectionSourceId,
+                                              final List<Integer> ids,
+                                              final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("System Def IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionSystemDefs(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection System Def deleted successfully"
+        );
+    }
+
+    private Response handleDelete(final DeleteAction action, final String successMessage) {
+        try {
+            action.run();
+
+            return Response.ok()
+                    .entity(successMessage)
+                    .build();
+
+        } catch (IllegalArgumentException ex) {
+            return badRequest(ex.getMessage());
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex.getMessage())
+                    .build();
+
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred")
+                    .build();
+        }
+    }
+
+    private Response badRequest(final String message) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(message)
+                .build();
+    }
+
+    @FunctionalInterface
+    private interface DeleteAction {
+        void run();
+    }
+
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
     }

@@ -271,4 +271,5 @@ public class SnmpCollectionResourceTypeDaoIT {
         assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
         assertEquals("disk-resource", (result.getRecords().get(1)).getName());
     }
+
 }
