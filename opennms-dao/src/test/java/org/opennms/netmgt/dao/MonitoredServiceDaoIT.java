@@ -129,6 +129,10 @@ public class MonitoredServiceDaoIT implements InitializingBean {
         final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAllServices();
         final List<OnmsMonitoredService> schedulingSvcs = m_monitoredServiceDao.findAllServicesForScheduling();
 
+        // Detach all entities so lazy loading will fail — this proves the
+        // query eagerly fetched the associations we need.
+        m_monitoredServiceDao.clear();
+
         // Should have one fewer than findAllServices (the 'D' service is excluded)
         assertTrue(schedulingSvcs.size() > 0);
         assertTrue("findAllServicesForScheduling should return fewer services than findAllServices " +
@@ -140,7 +144,7 @@ public class MonitoredServiceDaoIT implements InitializingBean {
             assertTrue("Expected status A or N but got " + svc.getStatus(),
                     "A".equals(svc.getStatus()) || "N".equals(svc.getStatus()));
 
-            // Verify associations are eagerly fetched (no lazy-load needed)
+            // Verify associations are eagerly fetched (no lazy-load after clear)
             assertNotNull(svc.getServiceType());
             assertNotNull(svc.getIpInterface());
             assertNotNull(svc.getIpInterface().getNode());
