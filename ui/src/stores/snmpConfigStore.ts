@@ -26,7 +26,7 @@ import { getDefaultSnmpSecurityLevel, isValidSnmpSecurityLevel } from '@/lib/snm
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
 import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition, saveSnmpProfile } from '@/services/snmpConfigService'
 import { MonitoringLocation } from '@/types'
-import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { IpAddressRange, SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { ValidationResult } from '@/types/validation'
 
 export enum SnmpLookupEditMode {
@@ -246,46 +246,19 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     return resp
   }
 
-  const saveDefinition = async (config: SnmpAgentConfig, firstIp: string, lastIp?: string): Promise<ValidationResult> => {
-    const specific = firstIp && lastIp ? [] : [firstIp]
-    const range = firstIp && lastIp ? [{ begin: firstIp, end: lastIp }] : []
+  const saveDefinition = async (definition: SnmpDefinition): Promise<ValidationResult> => {
+    const definitionToSave = {
+      ...definition,
+      version: definition.version || DEFAULT_SNMP_VERSION
+    }
 
-    const definition = {
-      proxyHost: config.proxyHost,
-      maxVarsPerPdu: config.maxVarsPerPdu,
-      maxRepetitions: config.maxRepetitions,
-      maxRequestSize: config.maxRequestSize,
-      version: config.version || DEFAULT_SNMP_VERSION,
-      writeCommunity: config.writeCommunity,
-      readCommunity: config.readCommunity,
-      timeout: config.timeout,
-      retry: config.retry,
-      port: config.port,
-      ttl: config.ttl,
-      encrypted: config.encrypted,
-      securityName: config.securityName,
-      securityLevel: config.securityLevel,
-      authPassphrase: config.authPassphrase,
-      authProtocol: config.authProtocol,
-      engineId: config.engineId,
-      contextEngineId: config.contextEngineId,
-      contextName: config.contextName,
-      privacyPassphrase: config.privacyPassphrase,
-      privacyProtocol: config.privacyProtocol,
-      enterpriseId: config.enterpriseId,
-      range,
-      specific,
-      ipMatch: [],
-      location: config.location,
-      profileLabel: config.profileLabel
-    } as SnmpDefinition
-
-    const resp = await saveSnmpDefinition(definition)
+    const resp = await saveSnmpDefinition(definitionToSave)
     return resp
   }
 
-  const removeDefinition = async (ipAddress: string, location: string): Promise<ValidationResult> => {
-    const resp = await deleteSnmpDefinition(ipAddress, location)
+  const removeDefinition = async (ranges: IpAddressRange[] | null, specifics: string[] | null,
+    ipMatches: string[] | null, location: string): Promise<ValidationResult> => {
+    const resp = await deleteSnmpDefinition(ranges, specifics, ipMatches, location)
     return resp
   }
 

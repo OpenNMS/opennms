@@ -1,38 +1,72 @@
 <template>
   <div class="snmp-config-definition-details">
-    <div v-if="props.displayIps" class="feather-row">
-      <div class="feather-col-6">
-        <label class="label">First IP Address:</label>
+    <FeatherCard v-if="props.displayIps" title="Add more IP ranges to the configuration" class="ip-range-card">
+      <div class="feather-row">
+        <div class="feather-col-6">
+          <div class="feather-row">
+            <div class="feather-col-6">
+              <label class="label">First or Specific IP Address:</label>
+            </div>
+            <div class="feather-col-6">
+              <label class="label">Last IP Address (for IP Range):</label>
+            </div>
+          </div>
+        </div>
+        <div class="feather-col-6">
+          <label class="label">IPLIKE Expression:</label>
+        </div>
       </div>
-      <div class="feather-col-6">
-        <label class="label">Last IP Address (for IP Range):</label>
+      <div class="feather-row">
+        <div class="feather-col-6">
+          <div class="feather-row">
+            <div class="feather-col-6">
+              <FeatherInput
+                label=""
+                data-test="snmp-definition-first-ip-address"
+                :error="errors.firstIpAddress ?? errors.invalidRangeConfig"
+                v-model.trim="firstIpAddress"
+                hint="First IP Address in range or specific IP"
+              >
+              </FeatherInput>
+            </div>
+            <div class="feather-col-6">
+              <FeatherInput
+                label=""
+                data-test="snmp-definition-last-ip-address"
+                :error="errors.lastIpAddress ?? errors.invalidRangeConfig"
+                v-model.trim="lastIpAddress"
+                hint="Last IP Address in range (leave blank if not a range)"
+              >
+              </FeatherInput>
+            </div>
+          </div>
+        </div>
+        <div class="feather-col-6">
+          <div class="feather-row">
+            <div class="feather-col-6">
+              <FeatherInput
+                label=""
+                data-test="snmp-definition-ipmatch-expression"
+                :error="errors.ipMatch ?? errors.invalidRangeConfig"
+                v-model.trim="ipMatchValue"
+                hint="IPLIKE Expression (cannot be used with First/Last IP)"
+              >
+              </FeatherInput>
+            </div>
+            <div class="feather-col-6">
+              <FeatherButton
+                primary
+                :disabled="!firstIpAddress && !lastIpAddress && !ipMatchValue"
+                @click="onAddRange"
+                data-test="add-definition-range-button"
+              >
+                Add
+              </FeatherButton>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div 
-      class="feather-row"
-      v-if="props.displayIps"
-    >
-      <div class="feather-col-6">
-        <FeatherInput
-          label=""
-          data-test="snmp-definition-first-ip-address"
-          :error="errors.firstIpAddress"
-          v-model.trim="firstIpAddress"
-          hint="First IP Address in range"
-        >
-        </FeatherInput>
-      </div>
-      <div class="feather-col-6">
-        <FeatherInput
-          label=""
-          data-test="snmp-definition-last-ip-address"
-          :error="errors.lastIpAddress"
-          v-model.trim="lastIpAddress"
-          hint="Last IP Address in range"
-        >
-        </FeatherInput>
-      </div>
-    </div>
+    </FeatherCard>
 
     <div class="feather-row">
       <div class="feather-col-6" v-if="!props.suppressMonitoringLocation">
@@ -191,6 +225,7 @@
 
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
+import { FeatherCard } from '@featherds/card'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
@@ -209,12 +244,14 @@ const props = defineProps<{
   suppressMonitoringLocation?: boolean,
   firstIp: string,
   lastIp?: string,
+  ipMatch?: string,
   config?: SnmpAgentConfig
 }>()
  
 const emit = defineEmits<{
   (e: 'cancel'): void
-  (e: 'save', config: SnmpAgentConfig, firstIp?: string, lastIp?: string): void
+  (e: 'save', config: SnmpAgentConfig, firstIp?: string, lastIp?: string, ipMatch?: string): void
+  (e: 'add-range', firstIp: string, lastIp: string, ipMatch: string): void
   (e: 'validation-error', formErrors: SnmpConfigFormErrors): void
 }>()
  
@@ -233,6 +270,7 @@ const errors = ref<SnmpConfigFormErrors>({})
 // local data for form inputs
 const firstIpAddress = ref('')
 const lastIpAddress = ref('')
+const ipMatchValue = ref('')
 const selectedMonitoringLocation = ref<ISelectItemType>({ _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION })
 const formConfig = reactive<SnmpBaseConfiguration>(getDefaultSnmpBaseConfiguration())
 const scvSearchDrawerOpen = ref(false)
@@ -320,6 +358,7 @@ const loadInitialValues = () => {
     
   firstIpAddress.value = props.firstIp || ''
   lastIpAddress.value =  props.lastIp || ''
+  ipMatchValue.value = props.ipMatch || ''
   selectedMonitoringLocation.value = { _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION }
   
   // Load all config fields into formConfig
@@ -378,6 +417,17 @@ const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
   }
 }
 
+const onAddRange = () => {
+  handleValidate()
+
+  if (!isValid.value) {
+    emit('validation-error', errors.value)
+    return
+  }
+
+  emit('add-range', firstIpAddress.value, lastIpAddress.value, ipMatchValue.value)
+}
+
 const onScvButtonClick = (key: string) => {
   scvSelectedProperty.value = key
   scvSearchDrawerOpen.value = true
@@ -394,45 +444,65 @@ const scvItemSelected = (item: ScvSearchItem) => {
 }
 
 const handleSave = async () => {
-  handleValidate()
+  handleValidate(true)
+
+  if (!isValid.value) {
+    emit('validation-error', errors.value)
+    return
+  }
+
+  const formToSave: SnmpBaseConfiguration = {
+    version: formConfig.version,
+    readCommunity: formConfig.readCommunity ?? undefined,
+    writeCommunity: formConfig.writeCommunity ?? undefined,
+    timeout: formConfig.timeout,
+    retry: formConfig.retry,
+    port: formConfig.port,
+    proxyHost: formConfig.proxyHost ?? undefined,
+    maxRequestSize: formConfig.maxRequestSize,
+    maxVarsPerPdu: formConfig.maxVarsPerPdu,
+    maxRepetitions: formConfig.maxRepetitions,
+    ttl: formConfig.ttl,
+    securityName: formConfig.securityName ?? undefined,
+    securityLevel: formConfig.securityLevel,
+    authPassphrase: formConfig.authPassphrase ?? undefined,
+    authProtocol: formConfig.authProtocol ?? undefined,
+    engineId: formConfig.engineId ?? undefined,
+    contextEngineId: formConfig.contextEngineId ?? undefined,
+    contextName: formConfig.contextName ?? undefined,
+    privacyPassphrase: formConfig.privacyPassphrase ?? undefined,
+    privacyProtocol: formConfig.privacyProtocol ?? undefined,
+    enterpriseId: formConfig.enterpriseId ?? undefined
+  }
 
   try {
-    if (!isValid.value) {
-      emit('validation-error', errors.value)
-      return
-    }
-
     let configToSave: SnmpAgentConfig = {
-      ...formConfig,
+      ...formToSave,
       location: String(selectedMonitoringLocation.value?._value ?? ''),
       id: props.config?.id
     }
 
-    emit('save', configToSave, firstIpAddress.value, lastIpAddress.value)
+    emit('save', configToSave, firstIpAddress.value, lastIpAddress.value, ipMatchValue.value)
   } catch (error) {
     console.error(error)
   }
-}
-
-const updateIpAddresses = (begin: string, end?: string) => {
-  firstIpAddress.value = begin || ''
-  lastIpAddress.value = end || ''
 }
 
 const handleCancel = () => {
   emit('cancel')
 }
 
-const handleValidate = () => {
+const handleValidate = (isSaving?: boolean) => {
   const version = String(snmpVersion.value?._value || '')
-  // if we are not displaying IPs, pass a fake valid IP to avoid validation errors
+  // if we are not displaying IPs, or if we are saving, pass a fake valid IP to avoid validation errors
   const fakeValidIp = '10.0.0.0'
 
   const currentErrors = validateDefinition(
     formConfig,
     version,
-    props.displayIps ? firstIpAddress.value : fakeValidIp,
-    lastIpAddress.value
+    props.displayIps && !isSaving ? firstIpAddress.value : fakeValidIp,
+    lastIpAddress.value,
+    ipMatchValue.value
   )
 
   errors.value = currentErrors as SnmpConfigFormErrors
@@ -443,8 +513,14 @@ const handleValidate = () => {
   }
 }
 
+const clearIpFields = () => {
+  firstIpAddress.value = ''
+  lastIpAddress.value = ''
+  ipMatchValue.value = ''
+}
+
 defineExpose({
-  updateIpAddresses
+  clearIpFields
 })
 
 watch([() => props.config, () => props.isCreate], () => {
@@ -453,10 +529,13 @@ watch([() => props.config, () => props.isCreate], () => {
   isLoading.value = false
 })
 
-watch([() => props.firstIp, () => props.lastIp], () => {
+// this does not always seem to trigger, so parent can call 'clearIpFields' via defineExpose
+// to ensure fields are cleared when switching between definitions with different IP configurations
+watch([() => props.firstIp, () => props.lastIp, () => props.ipMatch], () => {
   if (props.displayIps) {
     firstIpAddress.value = props.firstIp || ''
     lastIpAddress.value = props.lastIp || ''
+    ipMatchValue.value = props.ipMatch || ''
   }
 })
 
@@ -506,6 +585,11 @@ onMounted(() => {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
+  }
+
+  .ip-range-card {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
   }
 }
 </style>

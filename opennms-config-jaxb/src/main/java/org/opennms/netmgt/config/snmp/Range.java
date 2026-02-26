@@ -22,12 +22,14 @@
 package org.opennms.netmgt.config.snmp;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -86,11 +88,7 @@ public class Range implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((begin == null) ? 0 : begin.hashCode());
-        result = prime * result + ((end == null) ? 0 : end.hashCode());
-        return result;
+        return Objects.hash(begin, end);
     }
 
     @Override
@@ -105,25 +103,15 @@ public class Range implements Serializable {
             return false;
         }
         Range other = (Range) obj;
-        if (begin == null) {
-            if (other.begin != null) {
-                return false;
-            }
-        } else if (!begin.equals(other.begin)) {
-            return false;
-        }
-        if (end == null) {
-            if (other.end != null) {
-                return false;
-            }
-        } else if (!end.equals(other.end)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(begin, other.begin)
+                && Objects.equals(end, other.end);
     }
 
     @Override
     public String toString() {
-        return "Range [begin=" + begin + ", end=" + end + "]";
+        return "Range [" +
+                "begin=" + begin +
+                ", end=" + end +
+                "]";
     }
 }

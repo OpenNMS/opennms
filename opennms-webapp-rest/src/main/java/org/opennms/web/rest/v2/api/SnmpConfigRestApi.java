@@ -88,17 +88,19 @@ public interface SnmpConfigRestApi {
     @Path("/definition")
     @Operation(
             summary = "Delete an SNMP configuration definition",
-            description = "Delete an SNMP configuration definition given an ipAddress and location",
+            description = "Delete an SNMP configuration definition for a location. User can provide comma-separated lists of specific IPs or IP ranges or IP match expressions to delete.",
             operationId = "removeDefinition"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "SNMP configuration definition for the given item removed successfully",
                     content = @Content),
-            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters, or no matching definition found",
                     content = @Content)
     })
     Response removeDefinition(
-            @QueryParam("ipAddress") String ipAddress,
+            @QueryParam("specifics") String specifics,
+            @QueryParam("ranges") String ranges,
+            @QueryParam("ipmatches") String ipMatches,
             @QueryParam("location") String location);
 
     @POST

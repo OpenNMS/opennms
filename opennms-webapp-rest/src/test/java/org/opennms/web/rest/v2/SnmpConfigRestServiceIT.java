@@ -46,7 +46,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.URL;
@@ -55,9 +54,10 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -292,7 +292,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("profile2", config.getProfileLabel());
 
         // Delete part of the definition
-        response = snmpConfigRestApi.removeDefinition("10.99.0.1", "Default");
+        response = snmpConfigRestApi.removeDefinition("10.99.0.1", null, null, "Default");
         assertNotNull(response);
         assertEquals(204, response.getStatus());
 
@@ -314,7 +314,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("testing99", config.getReadCommunity());
 
         // Delete the rest of the definition
-        response = snmpConfigRestApi.removeDefinition("10.99.0.2", "Default");
+        response = snmpConfigRestApi.removeDefinition("10.99.0.2", null, null, "Default");
         assertNotNull(response);
         assertEquals(204, response.getStatus());
 
@@ -326,6 +326,159 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         config = (SnmpAgentConfig) response.getEntity();
         assertNotNull(config);
         assertEquals("public", config.getReadCommunity());
+    }
+
+    @Test
+    public void testAddAndRemoveDefinitionRanges() {
+        // get the original config
+        final SnmpConfig originalConfig = getCurrentConfig();
+
+        // Add a new definition
+        Definition definition = new Definition();
+        definition.addRange(new Range("10.99.0.1", "10.99.0.99"));
+        definition.addSpecific("10.0.0.1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterAdd = getCurrentConfig();
+        assertNotEquals(originalConfig, updatedConfigAfterAdd);
+
+        // Check if config was updated with new community string
+        List<String> ipsToTest =
+                List.of("10.0.0.1", "10.99.0.1", "10.99.0.2", "10.99.0.98", "10.99.0.99");
+
+        ipsToTest.forEach(ip -> {
+            Response resp = snmpConfigRestApi.getConfigForIp(ip, "Default");
+            assertNotNull(resp);
+            assertEquals(200, resp.getStatus());
+
+            SnmpAgentConfig config = (SnmpAgentConfig) resp.getEntity();
+            assertNotNull(config);
+            assertEquals("testing99", config.getReadCommunity());
+        });
+
+        response = snmpConfigRestApi.removeDefinition(null, "10.99.0.1-10.99.0.99", null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterDelete = getCurrentConfig();
+        assertNotEquals(updatedConfigAfterDelete, updatedConfigAfterAdd);
+
+        // Check if config reverted to the default
+        List<String> deletedRangeIps =
+                List.of("10.99.0.1", "10.99.0.2", "10.99.0.98", "10.99.0.99");
+
+        deletedRangeIps.forEach(ip -> {
+            Response resp = snmpConfigRestApi.getConfigForIp(ip, "Default");
+            assertNotNull(resp);
+            assertEquals(200, resp.getStatus());
+
+            SnmpAgentConfig config = (SnmpAgentConfig) resp.getEntity();
+            assertNotNull(config);
+            assertEquals("public", config.getReadCommunity());
+        });
+
+        // this one was not yet deleted, should still have updated config
+        response = snmpConfigRestApi.getConfigForIp("10.0.0.1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        SnmpAgentConfig config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("testing99", config.getReadCommunity());
+
+        // Now delete the specific item
+        response = snmpConfigRestApi.removeDefinition("10.0.0.1", null, null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterSecondDelete = getCurrentConfig();
+        assertNotEquals(updatedConfigAfterSecondDelete, updatedConfigAfterAdd);
+
+        response = snmpConfigRestApi.getConfigForIp("10.0.0.1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("public", config.getReadCommunity());
+    }
+
+    @Test
+    public void testAddIpMatch() {
+        // get the original config
+        final SnmpConfig originalConfig = getCurrentConfig();
+
+        // Add a new definition
+        Definition definition = new Definition();
+        definition.addIpMatch("10.0.0.*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterAdd = getCurrentConfig();
+        assertNotEquals(originalConfig, updatedConfigAfterAdd);
+
+        // Check if config was updated with new community string
+        assertTrue(updatedConfigAfterAdd.getDefinitions().stream()
+                .anyMatch(d -> d.getIpMatches().contains("10.0.0.*")));
+
+        final int originalDefinitionCount = originalConfig.getDefinitions().size();
+        final int updatedDefinitionCount = updatedConfigAfterAdd.getDefinitions().size();
+        assertEquals(originalDefinitionCount + 1, updatedDefinitionCount);
+    }
+
+    @Test
+    public void testRemoveDefinitionWithOutOfRangeSpecificsDoesNotChangeConfig() {
+        // get the original config
+        final SnmpConfig originalConfig = getCurrentConfig();
+
+        // try to delete a non-existent specific IP
+        Response response = snmpConfigRestApi.removeDefinition("99.99.99.99", null, null, "Default");
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+
+        String message = (String) response.getEntity();
+        assertEquals(SnmpConfigRestService.DEFINITION_NO_ITEMS_REMOVED_MESSAGE, message);
+
+        // get the updated config
+        final SnmpConfig updatedConfig = getCurrentConfig();
+
+        // config should not have changed
+        assertEquals(originalConfig, updatedConfig);
+    }
+
+    @Test
+    public void testRemoveDefinitionWithOutOfRangeRangesAndSpecificsAndIpMatchesDoesNotChangeConfig() {
+        // get the original config
+        final SnmpConfig originalConfig = getCurrentConfig();
+
+        // try to delete non-existent items
+        final String specifics = "99.99.99.99";
+        final String ranges = "91.0.0.1-91.0.0.20,93.0.0.1-95.0.0.9";
+        final String ipMatches = "88.0.0.*";
+
+        Response response = snmpConfigRestApi.removeDefinition(specifics, ranges, ipMatches, "Default");
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+
+        String message = (String) response.getEntity();
+        assertEquals(SnmpConfigRestService.DEFINITION_NO_ITEMS_REMOVED_MESSAGE, message);
+
+        // get the updated config
+        final SnmpConfig updatedConfig = getCurrentConfig();
+
+        // config should not have changed
+        assertEquals(originalConfig, updatedConfig);
     }
 
     @Test
@@ -347,23 +500,42 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertNotNull(response);
         assertEquals(400, response.getStatus());
         message = (String) response.getEntity();
-        assertEquals(SnmpConfigRestService.DEFINITION_INVALID_RANGE_MESSAGE, message);
+        assertEquals(SnmpConfigRestService.DEFINITION_MISSING_CONTENTS_MESSAGE, message);
 
         // invalid firstIpAddress, this is actually validating in SnmpConfigManager
         final Definition invalidFirstIpDefinition = new Definition();
         invalidFirstIpDefinition.addRange(new Range("10.", "10.99.0.2"));
         invalidFirstIpDefinition.setLocation("Default");
         invalidFirstIpDefinition.setReadCommunity("testing99");
-        assertThrows(WebApplicationException.class, () -> snmpConfigRestApi.addDefinition(invalidFirstIpDefinition))
-            .getMessage().contains("Error adding SNMP definition.");
+
+        response = snmpConfigRestApi.addDefinition(invalidFirstIpDefinition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        message = (String) response.getEntity();
+        assertEquals("Invalid range begin IP address: 10.", message);
 
         // invalid lastIpAddress
         final Definition invalidLastIpDefinition = new Definition();
         invalidLastIpDefinition.addRange(new Range("10.0.0.1", "10."));
         invalidLastIpDefinition.setLocation("Default");
         invalidLastIpDefinition.setReadCommunity("testing99");
-        assertThrows(WebApplicationException.class, () -> snmpConfigRestApi.addDefinition(invalidLastIpDefinition))
-                .getMessage().contains("Error adding SNMP definition.");
+
+        response = snmpConfigRestApi.addDefinition(invalidLastIpDefinition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        message = (String) response.getEntity();
+        assertEquals("Invalid range end IP address: 10.", message);
+
+        // invalid ipMatch expression
+        definition = new Definition();
+        definition.addIpMatch("10.0.0.");
+        definition.setReadCommunity("testing99");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        message = (String) response.getEntity();
+        assertEquals("Invalid IP match expression: '10.0.0.'.", message);
 
         // invalid location
         definition = new Definition();
@@ -635,5 +807,136 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         String errorMessage = (String) resp.getEntity();
         assertEquals("Invalid configuration file.", errorMessage);
+    }
+
+    @Test
+    public void testAddDefinitionWithRangeAndIpMatchFails() {
+        // Definition with both range and ipMatch
+        Definition definition = new Definition();
+        definition.addRange(new Range("10.1.1.1", "10.1.1.10"));
+        definition.addIpMatch("10.1.1.*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals(SnmpConfigRestService.DEFINITION_CANNOT_MIX_RANGE_AND_IPMATCH_MESSAGE, message);
+    }
+
+    @Test
+    public void testAddDefinitionWithSpecificAndIpMatchFails() {
+        // Definition with both specific and ipMatch
+        Definition definition = new Definition();
+        definition.addSpecific("10.2.2.2");
+        definition.addIpMatch("10.2.2.*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals(SnmpConfigRestService.DEFINITION_CANNOT_MIX_RANGE_AND_IPMATCH_MESSAGE, message);
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidSpecificIp() {
+        // Definition with invalid specific IP address
+        final Definition definition = new Definition();
+        definition.addSpecific("not-an-ip");
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid specific IP address: not-an-ip", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidRangeBeginIp() {
+        // Definition with invalid range begin IP
+        final Definition definition = new Definition();
+        definition.addRange(new Range("invalid-begin", "10.1.1.10"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid range begin IP address: invalid-begin", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidRangeEndIp() {
+        // Definition with invalid range end IP
+        final Definition definition = new Definition();
+        definition.addRange(new Range("10.1.1.1", "invalid-end"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid range end IP address: invalid-end", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithMixedIpVersionsInRange() {
+        // Definition with IPv4 begin and IPv6 end
+        Definition definition = new Definition();
+        definition.addRange(new Range("10.1.1.1", "::1"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid range: begin and end must be same IP version. begin=10.1.1.1, end=::1", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidIpMatch() {
+        // Definition with invalid ip-match pattern (fails XSD validation)
+        Definition definition = new Definition();
+        definition.addIpMatch("invalid-pattern!");
+        definition.setLocation("Default");
+        definition.setReadCommunity("test");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertTrue(message.contains("Invalid IP match expression: 'invalid-pattern!'."));
+    }
+
+    /**
+     * Helper method to get the Rest service's current SNMP config.
+     */
+    private SnmpConfig getCurrentConfig() {
+        SnmpConfig config = null;
+
+        // get the original config
+        final Response response = snmpConfigRestApi.downloadConfig(null);
+
+        if (response == null || response.getStatus() != 200) {
+            return null;
+        }
+
+        try {
+            byte[] bytes = (byte[]) response.getEntity();
+            String json = new String(bytes, StandardCharsets.UTF_8);
+            config = mapper.readValue(json, SnmpConfig.class);
+        } catch (Exception e) {
+            Assert.fail("Error retrieving or parsing downloaded Json file.");
+        }
+
+        return config;
     }
 }

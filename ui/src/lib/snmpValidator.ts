@@ -29,6 +29,8 @@ const VALID_SECURITY_LEVELS = [SnmpSecurityLevel.NoAuthNoPriv, SnmpSecurityLevel
 const MIN_PORT = 1
 const MAX_PORT = 65535
 const MAX_REQUEST_SIZE_MINIMUM = 484
+const IPLIKE_REGEX = /^(([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.){3}([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)$/
+export const IP_MATCH_ERROR = 'IP Match expression must be in the format of an IPLIKE expression, e.g. 10.0.0.* or 10.0.1-9.*'
 
 export const SecurityLevelSelectionOptions = [
   { _text: 'No Auth (1)', _value: String(SnmpSecurityLevel.NoAuthNoPriv) },
@@ -56,7 +58,8 @@ export const validateDefinition = (
   config: SnmpBaseConfiguration,
   snmpVersion: string,
   firstIpAddress: string,
-  lastIpAddress: string
+  lastIpAddress: string,
+  ipMatch: string
 ): SnmpConfigFormErrors => {
   const errors: SnmpConfigFormErrors = {}
 
@@ -68,17 +71,33 @@ export const validateDefinition = (
     errors.snmpVersion = 'SNMP Version must be one of: ' + SNMP_VERSIONS.join(', ')
   }
 
-  if (firstIpAddress.length === 0) {
-    errors.firstIpAddress = 'First IP Address is required'
-  } else if (!isIP(firstIpAddress)) {
-    errors.firstIpAddress = 'First IP Address must be a valid IP address'
+  const isRange = firstIpAddress && lastIpAddress
+  const isSpecific = firstIpAddress && !lastIpAddress
+  const isIpMatch = !firstIpAddress && !lastIpAddress && ipMatch
+  const isRangeOrSpecific = isRange || isSpecific
+
+  // error if neither range, specific or ipMatch is provided, or if ipMatch is provided along with range or specific
+  if ((!isRange && !isSpecific && !isIpMatch) || (isRangeOrSpecific && isIpMatch)) {
+    errors.invalidRangeConfig = 'You must specify either a range, specific or IP Match expression'
   }
 
-  if (lastIpAddress?.length > 0 && !isIP(lastIpAddress)) {
-    errors.lastIpAddress = 'If provided, last IP Address must be a valid IP address'
+  if (isRange || isSpecific) {
+    if (!isIP(firstIpAddress)) {
+      errors.firstIpAddress = 'First IP Address must be a valid IP address'
+    }
   }
 
-  // TODO: Add validation for IP range (first <= last)
+  if (isRange) {
+    if (!isIP(lastIpAddress)) {
+      errors.lastIpAddress = 'If provided, last IP Address must be a valid IP address'
+    }
+  }
+
+  if (isIpMatch) {
+    if (!IPLIKE_REGEX.test(ipMatch)) {
+      errors.ipMatch = IP_MATCH_ERROR
+    }
+  }
 
   if (config.port !== undefined) {
     if (isNaN(config.port) || config.port < MIN_PORT || config.port > MAX_PORT) {

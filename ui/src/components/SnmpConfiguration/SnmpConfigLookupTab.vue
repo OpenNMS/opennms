@@ -6,25 +6,15 @@
         @lookup-complete="onLookupComplete"
       />
       <div class="snmp-config-details" v-if="store.snmpLookupEditMode === SnmpLookupEditMode.Edit">
-        <div>
-          <FeatherBackButton
-            data-test="back-button"
-            @click="handleBackButtonClick"
-          >
-            Return to Lookup
-          </FeatherBackButton>
-        </div>
         <h3>SNMP Configuration Found</h3>
         <div class="large-spacer"></div>
         <div class="section-content">
-          <SnmpConfigDetailsPanel
-            :displayIps="true"
+          <SnmpConfigDefinitionBasicInformation
             :isCreate="false"
-            :firstIp="ipAddress"
-            :config="lookupConfig"
-            @cancel="onDetailsCancel"
-            @validation-error="onDetailsValidationError"
-            @save="onDetailsSave"
+            :definition="currentDefinition"
+            @cancel="handleBackButtonClick"
+            @save="onSaveDefinition"
+            @validationError="onDetailsValidationError"
           />
         </div>
       </div>
@@ -33,23 +23,24 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherBackButton } from '@featherds/back-button'
 import useSnackbar from '@/composables/useSnackbar'
-import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { SnmpAgentConfig } from '@/types/snmpConfig'
+import { getDefaultSnmpDefinition, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { SnmpAgentConfig, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigLookupPanel from './SnmpConfigLookupPanel.vue'
-import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
+import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
 
 const lookupConfig = ref<SnmpAgentConfig>()
+const currentDefinition = ref<SnmpDefinition>(getDefaultSnmpDefinition())
 
 // lookup config response individual parameters to edit
 const ipAddress = ref('')
 
 const resetValues = () => {
   lookupConfig.value = undefined
+  currentDefinition.value = getDefaultSnmpDefinition()
   ipAddress.value = ''
 }
 
@@ -61,23 +52,43 @@ const handleBackButtonClick = () => {
 const onLookupComplete = (config: SnmpAgentConfig, ip: string) => {
   lookupConfig.value = config
   ipAddress.value = ip
-}
 
-const onDetailsCancel = () => {
-  store.setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
+  currentDefinition.value = {
+    version: config.version,
+    port: config.port,
+    timeout: config.timeout,
+    retry: config.retry,
+    maxRequestSize: config.maxRequestSize,
+    maxVarsPerPdu: config.maxVarsPerPdu,
+    maxRepetitions: config.maxRepetitions,
+    ttl: config.ttl,
+    readCommunity: config.readCommunity,
+    writeCommunity: config.writeCommunity,
+    proxyHost: config.proxyHost,
+    securityName: config.securityName,
+    securityLevel: config.securityLevel,
+    authPassphrase: config.authPassphrase,
+    authProtocol: config.authProtocol,
+    engineId: config.engineId,
+    contextEngineId: config.contextEngineId,
+    contextName: config.contextName,
+    privacyPassphrase: config.privacyPassphrase,
+    privacyProtocol: config.privacyProtocol,
+    enterpriseId: config.enterpriseId,
+    location: config.location,
+    profileLabel: config.profileLabel,
+    range: [],
+    specific: [ip],
+    ipMatch: []
+  } as SnmpDefinition
 }
 
 const onDetailsValidationError = () => {
   snackbar.showSnackBar({ msg: 'Save failed. Please fix invalid values.', error: true })
 }
 
-const onDetailsSave = async (config: SnmpAgentConfig, firstIp?: string, lastIp?: string) => {
-  if (!firstIp) {
-    snackbar.showSnackBar({ msg: 'First IP address is required.', error: true })
-    return
-  }
-
-  const resp = await store.saveDefinition(config, firstIp, lastIp)
+const onSaveDefinition = async (definition: SnmpDefinition) => {
+  const resp = await store.saveDefinition(definition)
 
   if (resp.success) {
     snackbar.showSnackBar({ msg: 'Configuration saved successfully' })

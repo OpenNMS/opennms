@@ -10,7 +10,7 @@ import {
   saveSnmpProfile
 } from '@/services/snmpConfigService'
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
-import { SnmpAgentConfig, SnmpConfig, SnmpProfile } from '@/types/snmpConfig'
+import { IpAddressRange, SnmpAgentConfig, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { MonitoringLocationApiResponse } from '@/types'
 import { createSuccessResponse, createFailureResult } from '@/types/validation'
 import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_VERSION } from '@/lib/constants'
@@ -357,7 +357,13 @@ describe('useSnmpConfigStore', () => {
       const successResponse = createSuccessResponse()
       vi.mocked(saveSnmpDefinition).mockResolvedValue(successResponse)
 
-      const result = await store.saveDefinition(mockSnmpAgentConfig, '10.0.0.1')
+      const definition = {
+        ...mockSnmpAgentConfig,
+        range: [] as IpAddressRange[],
+        specific: ['10.0.0.1']
+      } as SnmpDefinition
+
+      const result = await store.saveDefinition(definition)
 
       expect(saveSnmpDefinition).toHaveBeenCalledTimes(1)
       const callArg = vi.mocked(saveSnmpDefinition).mock.calls[0][0]
@@ -371,7 +377,13 @@ describe('useSnmpConfigStore', () => {
       const successResponse = createSuccessResponse()
       vi.mocked(saveSnmpDefinition).mockResolvedValue(successResponse)
 
-      const result = await store.saveDefinition(mockSnmpAgentConfig, '10.0.0.1', '10.0.0.100')
+      const definition = {
+        ...mockSnmpAgentConfig,
+        range: [{ begin: '10.0.0.1', end: '10.0.0.100'}],
+        specific: [] as string[]
+      } as SnmpDefinition
+
+      const result = await store.saveDefinition(definition)
 
       expect(saveSnmpDefinition).toHaveBeenCalledTimes(1)
       const callArg = vi.mocked(saveSnmpDefinition).mock.calls[0][0]
@@ -408,7 +420,13 @@ describe('useSnmpConfigStore', () => {
         profileLabel: 'CustomProfile'
       }
 
-      await store.saveDefinition(customConfig, '10.0.0.1')
+      const definition = {
+        ...customConfig,
+        range: [] as IpAddressRange[],
+        specific: ['10.0.0.1']
+      } as SnmpDefinition
+
+      await store.saveDefinition(definition)
 
       const callArg = vi.mocked(saveSnmpDefinition).mock.calls[0][0] as any
       expect(callArg.version).toBe('v3')
@@ -439,7 +457,13 @@ describe('useSnmpConfigStore', () => {
 
       const configWithoutVersion = { ...mockSnmpAgentConfig, version: undefined }
 
-      await store.saveDefinition(configWithoutVersion as any, '10.0.0.1')
+      const definition = {
+        ...configWithoutVersion,
+        range: [] as IpAddressRange[],
+        specific: ['10.0.0.1']
+      } as SnmpDefinition
+
+      await store.saveDefinition(definition)
 
       const callArg = vi.mocked(saveSnmpDefinition).mock.calls[0][0]
       expect(callArg.version).toBe(DEFAULT_SNMP_VERSION)
@@ -451,9 +475,9 @@ describe('useSnmpConfigStore', () => {
       const successResponse = createSuccessResponse()
       vi.mocked(deleteSnmpDefinition).mockResolvedValue(successResponse)
 
-      const result = await store.removeDefinition('10.0.0.1', DEFAULT_MONITORING_LOCATION)
+      const result = await store.removeDefinition(null, ['10.0.0.1'], null, DEFAULT_MONITORING_LOCATION)
 
-      expect(deleteSnmpDefinition).toHaveBeenCalledWith('10.0.0.1', DEFAULT_MONITORING_LOCATION)
+      expect(deleteSnmpDefinition).toHaveBeenCalledWith(null, ['10.0.0.1'], null, DEFAULT_MONITORING_LOCATION)
       expect(result).toEqual(successResponse)
     })
 
@@ -461,8 +485,9 @@ describe('useSnmpConfigStore', () => {
       const failureResponse = createFailureResult('Failed to delete')
       vi.mocked(deleteSnmpDefinition).mockResolvedValue(failureResponse)
 
-      const result = await store.removeDefinition('10.0.0.1', DEFAULT_MONITORING_LOCATION)
+      const result = await store.removeDefinition(null, null, null, DEFAULT_MONITORING_LOCATION)
 
+      expect(deleteSnmpDefinition).toHaveBeenCalledWith(null, null, null, DEFAULT_MONITORING_LOCATION)
       expect(result).toEqual(failureResponse)
       expect(result.success).toBe(false)
     })

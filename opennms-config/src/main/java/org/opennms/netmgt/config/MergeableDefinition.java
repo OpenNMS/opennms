@@ -38,9 +38,8 @@ import org.opennms.netmgt.config.snmp.Range;
 final class MergeableDefinition {
     
     /**
-     * This field should remaining encapsulated for there is
+     * This field should remain encapsulated for there is
      * synchronization in the getter.
-     * 
      */
     private final Definition m_snmpConfigDef;
     private IPAddressRangeSet m_configRanges = new IPAddressRangeSet();
@@ -57,7 +56,7 @@ final class MergeableDefinition {
             m_configRanges.add(new IPAddressRange(r.getBegin(), r.getEnd()));
         }
         
-        for(String s : def.getSpecifics()) {
+        for (String s : def.getSpecifics()) {
             m_configRanges.add(new IPAddressRange(s));
         }
     }
@@ -74,13 +73,12 @@ final class MergeableDefinition {
      * @param eventDefinition a {@link org.opennms.netmgt.config.MergeableDefinition} object.
      */
     protected void mergeMatchingAttributeDef(MergeableDefinition eventDefinition)  {
-        
         m_configRanges.addAll(eventDefinition.getAddressRanges());
         
-        getConfigDef().setRanges(new ArrayList<Range>());
-        getConfigDef().setSpecifics(new ArrayList<String>());
+        getConfigDef().setRanges(new ArrayList<>());
+        getConfigDef().setSpecifics(new ArrayList<>());
         
-        for(IPAddressRange range : m_configRanges) {
+        for (IPAddressRange range : m_configRanges) {
             if (range.isSingleton()) {
                 getConfigDef().addSpecific(range.getBegin().toUserString());
             } else {
@@ -89,10 +87,9 @@ final class MergeableDefinition {
                 xmlRange.setEnd(range.getEnd().toUserString());
                 getConfigDef().addRange(xmlRange);
             }
-            
-        }        
+        }
     }
-    
+
     /**
      * <p>getConfigDef</p>
      *
@@ -131,7 +128,7 @@ final class MergeableDefinition {
                 && areEquals(getConfigDef().getProfileLabel(), other.getConfigDef().getProfileLabel());
     }
     
-    boolean isEmpty(String s) {
+    private static boolean isEmpty(String s) {
         return s == null || "".equals(s.trim());
     }
     
@@ -141,7 +138,7 @@ final class MergeableDefinition {
      * 
      * @return true if the definition has no attributes (e.g. version, port, etc.) set.
      */
-    boolean isTrivial() {
+    public boolean isTrivial() {
         return isEmpty(getConfigDef().getReadCommunity()) 
         && isEmpty(getConfigDef().getVersion())
         && isEmpty(getConfigDef().getAuthPassphrase())
@@ -165,15 +162,13 @@ final class MergeableDefinition {
         && !getConfigDef().hasTTL();
     }
 
-
-    void removeRanges(MergeableDefinition eventDefinition) {
-        
+    public void removeRanges(MergeableDefinition eventDefinition) {
         m_configRanges.removeAll(eventDefinition.getAddressRanges());
 
-        getConfigDef().setRanges(new ArrayList<Range>());
-        getConfigDef().setSpecifics(new ArrayList<String>());
+        getConfigDef().setRanges(new ArrayList<>());
+        getConfigDef().setSpecifics(new ArrayList<>());
         
-        for(IPAddressRange r : m_configRanges) {
+        for (IPAddressRange r : m_configRanges) {
             if (r.isSingleton()) {
                 getConfigDef().addSpecific(r.getBegin().toUserString());
             } else {
@@ -182,16 +177,16 @@ final class MergeableDefinition {
                 xmlRange.setEnd(r.getEnd().toUserString());
                 getConfigDef().addRange(xmlRange);
             }
-            
         }
     }
 
     /**
-     * A definition is empty if there is no range and no specific defined.
+     * A definition is empty if there is no range, no specific and no ipMatch defined.
      * @return true if the range count and specific count is 0.
      */
-    boolean isEmpty() {
-        return getConfigDef().getRanges().size() < 1 && getConfigDef().getSpecifics().size() < 1;
+    public boolean isEmpty() {
+        return getConfigDef().getRanges().isEmpty()
+                && getConfigDef().getSpecifics().isEmpty()
+                && getConfigDef().getIpMatches().isEmpty();
     }
-
 }
