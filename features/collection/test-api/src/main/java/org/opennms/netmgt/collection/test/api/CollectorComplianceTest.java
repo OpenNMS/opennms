@@ -128,7 +128,7 @@ public abstract class CollectorComplianceTest {
 
         // getRuntimeAttributes() should return a valid map
         final Map<String, Object> requiredParams = getRequiredParameters();
-        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), EmptyScope.EMPTY);
+        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), () -> EmptyScope.EMPTY);
 
         // collect() should return a valid collection set
         final Map<String, Object> allParms = new HashMap<>();
@@ -167,7 +167,7 @@ public abstract class CollectorComplianceTest {
 
         // getRuntimeAttributes() should return a valid map
         final Map<String, Object> requiredParams = getRequiredParameters();
-        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), EmptyScope.EMPTY);
+        final Map<String, Object> runtimeAttrs = Interpolator.interpolateAttributes(opennmsCollector.getRuntimeAttributes(agent, Collections.unmodifiableMap(requiredParams)), () -> EmptyScope.EMPTY);
 
         // marshalParameters() should marshal all parameters to strings
         final Map<String, Object> allParms = new HashMap<>();

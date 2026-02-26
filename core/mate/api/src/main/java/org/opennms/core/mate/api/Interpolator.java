@@ -21,21 +21,23 @@
  */
 package org.opennms.core.mate.api;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.xml.JaxbUtils;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.core.xml.JaxbUtils;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 
 public class Interpolator {
     private static final String OUTER_REGEXP = "\\$\\{([^\\{\\}]+?:[^\\{\\}]+?)\\}";
@@ -44,6 +46,15 @@ public class Interpolator {
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
 
     private static final int MAX_RECURSION_DEPTH = SystemProperties.getInteger("org.opennms.mate.maxRecursionDepth", 8);
+
+    private static LoadingCache<ScopeProvider, Scope> scopeCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(300, TimeUnit.SECONDS)
+            .build(new CacheLoader<ScopeProvider, Scope>() {
+                @Override
+                public Scope load(final ScopeProvider scopeProvider) {
+                    return scopeProvider.getScope();
+                }
+            });
 
     private static class ToBeInterpolated {
         private final Object value;
@@ -54,8 +65,8 @@ public class Interpolator {
 
     private Interpolator() {}
 
-    public static Map<String, Object> interpolateAttributes(final Map<String, Object> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> interpolateAttribute(raw, scope));
+    public static Map<String, Object> interpolateAttributes(final Map<String, Object> attributes, final ScopeProvider scopeProvider) {
+        return Maps.transformValues(attributes, (raw) -> interpolateAttribute(raw, scopeProvider));
     }
 
     public static ToBeInterpolated pleaseInterpolate(final Object value) {
@@ -66,67 +77,68 @@ public class Interpolator {
         return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e-> pleaseInterpolate(e.getValue())));
     }
 
-    public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> interpolate(raw, scope));
+    public static Map<String, Object> interpolateObjects(final Map<String, Object> attributes, final ScopeProvider scopeProvider) {
+        return Maps.transformValues(attributes, (raw) -> interpolate(raw, scopeProvider));
     }
 
-    public static Map<String, String> interpolateStrings(final Map<String, String> attributes, final Scope scope) {
-        return Maps.transformValues(attributes, (raw) -> raw != null ? interpolate(raw, scope).output : null);
+    public static Map<String, String> interpolateStrings(final Map<String, String> attributes, final ScopeProvider scopeProvider) {
+        return Maps.transformValues(attributes, (raw) -> raw != null ? interpolate(raw, scopeProvider).output : null);
     }
 
-    private static Object interpolateAttribute(final Object value, final Scope scope) {
+    private static Object interpolateAttribute(final Object value, final ScopeProvider scopeProvider) {
         if (value == null) {
             return null;
         }
         if (value instanceof ToBeInterpolated) {
-            return interpolate(((ToBeInterpolated) value).value, scope);
+            return interpolate(((ToBeInterpolated) value).value, scopeProvider);
         }
 
         return value;
     }
 
-    public static Object interpolate(final Object value, final Scope scope) {
+    public static Object interpolate(final Object value, final ScopeProvider scopeProvider) {
         if (value == null) {
             return null;
         }
         if (value instanceof String) {
-            return interpolate((String) value, scope).output;
+            return interpolate((String) value, scopeProvider).output;
         } else {
             if (value.getClass().isAnnotationPresent(XmlRootElement.class)) {
-                return JaxbUtils.unmarshal(value.getClass(), interpolate(JaxbUtils.marshal(value), scope).output, false);
+                return JaxbUtils.unmarshal(value.getClass(), interpolate(JaxbUtils.marshal(value), scopeProvider).output, false);
             } else {
                 return value;
             }
         }
     }
 
-    public static Result interpolate(final String raw, final Scope scope) {
+    public static Result interpolate(final String raw, final ScopeProvider scopeProvider) {
         if (raw == null) {
             return new Result(null, List.of());
         }
 
         final ImmutableList.Builder<ResultPart> parts = ImmutableList.builder();
-        final String output = interpolateRecursive(raw, parts, scope, 1);
+        final String output = interpolateRecursive(raw, parts, scopeProvider, 1);
 
         return new Result(output, parts.build());
     }
 
-    private static String interpolateRecursive(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope, final int depth) {
+    private static String interpolateRecursive(final String input, final ImmutableList.Builder<ResultPart> parts, final ScopeProvider scopeProvider, final int depth) {
         if (depth > MAX_RECURSION_DEPTH) {
             return input;
         }
 
-        final String result = interpolateSingle(input, parts, scope);
+        final String result = interpolateSingle(input, parts, scopeProvider);
         if (Objects.equals(input, result)) {
             return result;
         }
 
-        return interpolateRecursive(result, parts, scope, depth + 1);
+        return interpolateRecursive(result, parts, scopeProvider, depth + 1);
     }
 
-    private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) {
+    private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final ScopeProvider scopeProvider) {
         final StringBuilder output = new StringBuilder();
         final Matcher outerMatcher = OUTER_PATTERN.matcher(input);
+
         while (outerMatcher.find()) {
             final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
 
@@ -136,7 +148,7 @@ public class Interpolator {
                     final String[] arr = innerMatcher.group(1).split(":", 2);
                     final ContextKey contextKey = new ContextKey(arr[0], arr[1]);
 
-                    final Optional<Scope.ScopeValue> replacement = scope.get(contextKey);
+                    final Optional<Scope.ScopeValue> replacement = scopeCache.getUnchecked(scopeProvider).get(contextKey);
                     if (replacement.isPresent()) {
                         result = Matcher.quoteReplacement(replacement.get().value);
                         parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(1), replacement.get()));

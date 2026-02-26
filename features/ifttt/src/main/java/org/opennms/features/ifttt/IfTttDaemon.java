@@ -339,7 +339,7 @@ public class IfTttDaemon {
                 for (final Trigger trigger : triggerSet.getTriggers()) {
 
                     new IfTttTrigger()
-                            .key(Interpolator.interpolate(ifTttConfig.getKey(), entityScopeProvider.getScopeForScv()).output)
+                            .key(Interpolator.interpolate(ifTttConfig.getKey(), () -> entityScopeProvider.getScopeForScv()).output)
                             .event(trigger.getEventName())
                             .value1(variableNameExpansion.replace(trigger.getValue1()))
                             .value2(variableNameExpansion.replace(trigger.getValue2()))

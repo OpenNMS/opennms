@@ -70,7 +70,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",1000.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(100.0));
     }
     
@@ -84,7 +84,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(1000.0));
     }
     
@@ -98,7 +98,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(90.0));
     }
 
@@ -112,7 +112,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname",100.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(110.0));
     }
     
@@ -127,7 +127,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",100.0);
         values.put("dsname2",5.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(20.0));
     }
     
@@ -142,7 +142,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
         values.put("dsname2",5.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(100.0));
     }
     
@@ -157,7 +157,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
         values.put("dsname2",5.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(25.0));
     }
     
@@ -172,7 +172,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         Map<String, Double> values=new HashMap<String,Double>();
         values.put("dsname1",20.0);
         values.put("dsname2",5.0);
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(15.0));
     }
     
@@ -193,7 +193,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         values.put("hrStorageAllocationUnits",1024.0); //1K units
         values.put("hrStorageSize",2048.0); //2MB total size
         values.put("hrStorageUsed",1024.0); //1MB used
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         
         //1MB free, hopefully
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(1024.0*1024.0));
@@ -219,7 +219,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         values.put("trueval",3.0);
         values.put("falseval",7.0);
         
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Conditional Expression result", Double.valueOf(result), Double.valueOf(7.0));
     }
     
@@ -243,7 +243,7 @@ public class ThresholdExpressionTestCase extends TestCase {
         values.put("trueval",3.0);
         values.put("falseval",7.0);
         
-        double result=wrapper.interpolateAndEvaluate(values, scope).value;
+        double result=wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Conditional Expression result", Double.valueOf(result), Double.valueOf(3.0));
     }
     
@@ -258,13 +258,13 @@ public class ThresholdExpressionTestCase extends TestCase {
         Map<String,Double> values=new HashMap<String,Double>();
         values.put("variable", -25.0);
         
-        double result = wrapper.interpolateAndEvaluate(values, scope).value;
+        double result = wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Conditional Expression result", Double.valueOf(20.0), result);
         
         values.clear();
         values.put("variable", 25.0);
         
-        result = wrapper.interpolateAndEvaluate(values, scope).value;
+        result = wrapper.interpolateAndEvaluate(values, () -> scope).value;
         assertEquals("Conditional Expression result", Double.valueOf(30.0), result);
     }
 }

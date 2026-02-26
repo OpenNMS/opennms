@@ -489,7 +489,7 @@ public class NSClientPeerFactory {
      * @return
      */
     private String determinePassword(final Definition def) {
-        return Interpolator.interpolate((def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword()), getSecureCredentialsScope()).output;
+        return Interpolator.interpolate((def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword()), this::getSecureCredentialsScope).output;
     }
 
     /**

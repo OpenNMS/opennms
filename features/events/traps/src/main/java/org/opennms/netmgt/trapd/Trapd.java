@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.scv.api.SecureCredentialsVault;
@@ -252,43 +253,43 @@ public class Trapd extends AbstractServiceDaemon {
         m_twinSession.publish(from(m_config));
     }
 
-    public static SnmpV3User interpolateUser(final SnmpV3User snmpV3User, final Scope scope) {
+    public static SnmpV3User interpolateUser(final SnmpV3User snmpV3User, final ScopeProvider scopeProvider) {
         final SnmpV3User interpolatedSnmpV3User = new SnmpV3User();
-        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpV3User.getEngineId(), scope).output);
+        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpV3User.getEngineId(), scopeProvider).output);
         interpolatedSnmpV3User.setSecurityLevel(snmpV3User.getSecurityLevel());
-        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpV3User.getSecurityName(), scope).output);
-        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpV3User.getAuthProtocol(), scope).output);
-        interpolatedSnmpV3User.setPrivProtocol(Interpolator.interpolate(snmpV3User.getPrivProtocol(), scope).output);
-        interpolatedSnmpV3User.setPrivPassPhrase(Interpolator.interpolate(snmpV3User.getPrivPassPhrase(), scope).output);
-        interpolatedSnmpV3User.setAuthPassPhrase(Interpolator.interpolate(snmpV3User.getAuthPassPhrase(), scope).output);
+        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpV3User.getSecurityName(), scopeProvider).output);
+        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpV3User.getAuthProtocol(), scopeProvider).output);
+        interpolatedSnmpV3User.setPrivProtocol(Interpolator.interpolate(snmpV3User.getPrivProtocol(), scopeProvider).output);
+        interpolatedSnmpV3User.setPrivPassPhrase(Interpolator.interpolate(snmpV3User.getPrivPassPhrase(), scopeProvider).output);
+        interpolatedSnmpV3User.setAuthPassPhrase(Interpolator.interpolate(snmpV3User.getAuthPassPhrase(), scopeProvider).output);
         return interpolatedSnmpV3User;
     }
 
-    public static Snmpv3User interpolateUser(final Snmpv3User snmpv3User, final Scope scope) {
+    public static Snmpv3User interpolateUser(final Snmpv3User snmpv3User, final ScopeProvider scopeProvider) {
         final Snmpv3User interpolatedSnmpV3User = new Snmpv3User();
-        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpv3User.getEngineId(), scope).output);
+        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpv3User.getEngineId(), scopeProvider).output);
         interpolatedSnmpV3User.setSecurityLevel(snmpv3User.getSecurityLevel());
-        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpv3User.getSecurityName(), scope).output);
-        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpv3User.getAuthProtocol(), scope).output);
-        interpolatedSnmpV3User.setPrivacyProtocol(Interpolator.interpolate(snmpv3User.getPrivacyProtocol(), scope).output);
-        interpolatedSnmpV3User.setPrivacyPassphrase(Interpolator.interpolate(snmpv3User.getPrivacyPassphrase(), scope).output);
-        interpolatedSnmpV3User.setAuthPassphrase(Interpolator.interpolate(snmpv3User.getAuthPassphrase(), scope).output);
+        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpv3User.getSecurityName(), scopeProvider).output);
+        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpv3User.getAuthProtocol(), scopeProvider).output);
+        interpolatedSnmpV3User.setPrivacyProtocol(Interpolator.interpolate(snmpv3User.getPrivacyProtocol(), scopeProvider).output);
+        interpolatedSnmpV3User.setPrivacyPassphrase(Interpolator.interpolate(snmpv3User.getPrivacyPassphrase(), scopeProvider).output);
+        interpolatedSnmpV3User.setAuthPassphrase(Interpolator.interpolate(snmpv3User.getAuthPassphrase(), scopeProvider).output);
         return interpolatedSnmpV3User;
     }
 
     public SnmpV3User interpolateUser(final SnmpV3User snmpV3User) {
-        return interpolateUser(snmpV3User, new SecureCredentialsVaultScope(this.secureCredentialsVault));
+        return interpolateUser(snmpV3User, () -> new SecureCredentialsVaultScope(this.secureCredentialsVault));
     }
 
     public Snmpv3User interpolateUser(final Snmpv3User snmpv3User) {
-        return interpolateUser(snmpv3User, new SecureCredentialsVaultScope(this.secureCredentialsVault));
+        return interpolateUser(snmpv3User, () -> new SecureCredentialsVaultScope(this.secureCredentialsVault));
     }
 
     public TrapListenerConfig from(final TrapdConfig config) {
         final TrapListenerConfig result = new TrapListenerConfig();
         final Scope scope = new SecureCredentialsVaultScope(this.secureCredentialsVault);
         result.setSnmpV3Users(config.getSnmpV3Users().stream()
-                .map(e->interpolateUser(e, scope))
+                .map(e->interpolateUser(e, () -> scope))
                 .collect(Collectors.toList())
         );
         return result;

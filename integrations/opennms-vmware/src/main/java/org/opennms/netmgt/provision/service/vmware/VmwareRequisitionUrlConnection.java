@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
@@ -99,9 +100,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
                 if (vmwareServer == null) {
                     logger.error("Error getting credentials for VMware management server '{}'.", parameters.get("host"));
                 } else {
-                    final Scope scvScope = new SecureCredentialsVaultScope(getSecureCredentialsVault());
-                    parameters.put("username", Interpolator.interpolate(vmwareServer.getUsername(), scvScope).output);
-                    parameters.put("password", Interpolator.interpolate(vmwareServer.getPassword(), scvScope).output);
+                    final ScopeProvider scopeProvider = () -> new SecureCredentialsVaultScope(getSecureCredentialsVault());
+                    parameters.put("username", Interpolator.interpolate(vmwareServer.getUsername(), scopeProvider).output);
+                    parameters.put("password", Interpolator.interpolate(vmwareServer.getPassword(), scopeProvider).output);
                 }
             }
         }

@@ -22,14 +22,7 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import java.util.Objects;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
+import io.swagger.v3.oas.annotations.Hidden;
 import org.opennms.core.mate.api.EnvironmentScope;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
@@ -39,7 +32,12 @@ import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.v3.oas.annotations.Hidden;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * Top-level element for the opennms-database.xml configuration
@@ -447,9 +445,9 @@ public class JdbcDataSource implements java.io.Serializable {
 
     public String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
         final Interpolator.Result result = Interpolator.interpolate(value,
-            new FallbackScope(
-                new SecureCredentialsVaultScope(secureCredentialsVault),
-                new EnvironmentScope()
+                () -> new FallbackScope(
+                    new SecureCredentialsVaultScope(secureCredentialsVault),
+                    new EnvironmentScope()
             ));
         return result.output;
     }

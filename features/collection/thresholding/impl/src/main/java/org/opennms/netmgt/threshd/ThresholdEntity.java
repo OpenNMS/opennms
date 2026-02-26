@@ -21,21 +21,12 @@
  */
 package org.opennms.netmgt.threshd;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-
+import com.google.common.net.InetAddresses;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -45,7 +36,13 @@ import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.InetAddresses;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Wraps the XML created org.opennms.netmgt.config.threshd.Threshold class
@@ -253,7 +250,7 @@ public final class ThresholdEntity implements Cloneable {
         AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
 
         // compute scope here, see NMS-16966
-        final Scope scope = getScopeForResource(resource);
+        final ScopeProvider scopeProvider = getScopeProviderForResource(m_entityScopeProvider, resource);
 
         // Depending on the type of threshold, we want to evaluate it differently
         // Threshold Values like value, rearm, trigger and expression are interpolated and cached in state so that
@@ -266,7 +263,7 @@ public final class ThresholdEntity implements Cloneable {
                 ThresholdValuesSupplier thresholdValuesSupplier = new ThresholdValuesSupplier() {
                     @Override
                     public ThresholdEvaluatorState.ThresholdValues get() {
-                        ThresholdEvaluatorState.ThresholdValues thresholdValues = thresholdConfigWrapper.interpolateThresholdValues(scope);
+                        ThresholdEvaluatorState.ThresholdValues thresholdValues = thresholdConfigWrapper.interpolateThresholdValues(scopeProvider);
                         thresholdValues.setDsValue(computedValue);
                         return thresholdValues;
                     }
@@ -288,7 +285,7 @@ public final class ThresholdEntity implements Cloneable {
                     @Override
                     public ExpressionConfigWrapper.ExpressionThresholdValues get() throws ThresholdExpressionException {
                         return expressionConfigWrapper
-                                .interpolateAndEvaluate(values, scope);
+                                .interpolateAndEvaluate(values, scopeProvider);
                     }
                     // This covers the case where an expression has already been interpolated and the evaluator is
                     // providing us that expression that it has persisted along with its state so that we do not need to
@@ -324,7 +321,7 @@ public final class ThresholdEntity implements Cloneable {
         return events;
     }
 
-    public static Scope getScopeForResource(EntityScopeProvider entityScopeProvider, CollectionResourceWrapper resource) {
+    public static ScopeProvider getScopeProviderForResource(EntityScopeProvider entityScopeProvider, CollectionResourceWrapper resource) {
         // Default to empty scopes and then attempt to populate each of node, interface, and service
         // scopes below
         Scope[] scopes = new Scope[]{EmptyScope.EMPTY, EmptyScope.EMPTY, EmptyScope.EMPTY};
@@ -339,11 +336,11 @@ public final class ThresholdEntity implements Cloneable {
                         InetAddresses.forString(interfaceIp), resource.getServiceName());
             }
         }
-        return new FallbackScope(scopes);
+        return () -> new FallbackScope(scopes);
     }
 
-    public Scope getScopeForResource(CollectionResourceWrapper resource) {
-        return getScopeForResource(m_entityScopeProvider, resource);
+    public ScopeProvider getScopeForResource(CollectionResourceWrapper resource) {
+        return getScopeProviderForResource(m_entityScopeProvider, resource);
     }
 
     /**

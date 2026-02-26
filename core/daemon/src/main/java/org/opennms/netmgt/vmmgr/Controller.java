@@ -21,25 +21,10 @@
  */
 package org.opennms.netmgt.vmmgr;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-
 import com.google.common.annotations.VisibleForTesting;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.mate.api.EnvironmentScope;
 import org.opennms.core.mate.api.FallbackScope;
@@ -51,9 +36,22 @@ import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>This {@link Controller} class is used to interact with a Manager
@@ -210,7 +208,7 @@ public class Controller {
             // Interpolate scv and env related properties
             final String value = (String) entry.getValue();
             if (value.contains("${scv:") || value.contains("${env:")) {
-                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(value, scope).output);
+                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(value, () -> scope).output);
             }
         }
     }

@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
@@ -69,6 +70,7 @@ public class ThresholdStateIT {
     private final ThresholdingSession thresholdingSession = MockSession.getSession();
     private ThresholdStateMonitor monitor;
     private final Scope scope = mock(Scope.class);
+    private final ScopeProvider scopeProvider = () -> scope;
 
     @Before
     public void setup() {
@@ -93,7 +95,7 @@ public class ThresholdStateIT {
         // it correctly sees that the threshold has been exceeded twice and triggers the threshold
         ThresholdEvaluatorState item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(),
                 thresholdingSession);
-        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scopeProvider);
 
         ThresholdEvaluatorState.Status status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("first threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
@@ -134,7 +136,7 @@ public class ThresholdStateIT {
         // Now evaluate a threshold multiple times
         ThresholdEvaluatorState item = new ThresholdEvaluatorHighLow.ThresholdEvaluatorStateHighLow(getWrapper(),
                 thresholdingSession);
-        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scopeProvider);
         item.evaluate(100.0, thresholdValues, null);
         item.evaluate(100.0, thresholdValues, null);
         
@@ -157,7 +159,7 @@ public class ThresholdStateIT {
                 thresholdingSession);
 
         // Two evaluations exceeding the threshold should trigger
-        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scope);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = getWrapper().interpolateThresholdValues(scopeProvider);
         ThresholdEvaluatorState.Status status = item.evaluate(100.0, thresholdValues, null);
         assertEquals("first threshold evaluation status", ThresholdEvaluatorState.Status.NO_CHANGE, status);
         status = item.evaluate(100.0, thresholdValues, null);

@@ -36,6 +36,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -79,9 +80,9 @@ public abstract class VmwareRequisitionTool {
                 VmwareConfig config = JaxbUtils.unmarshal(VmwareConfig.class, cfg);
                 for (VmwareServer srv : config.getVmwareServerCollection()) {
                     if (srv.getHostname().equals(url.getHost())) {
-                        final Scope scvScope = new SecureCredentialsVaultScope(secureCredentialsVault);
-                        username = Interpolator.interpolate(srv.getUsername(), scvScope).output;
-                        password = Interpolator.interpolate(srv.getPassword(), scvScope).output;
+                        final ScopeProvider scopeProvider = () -> new SecureCredentialsVaultScope(secureCredentialsVault);
+                        username = Interpolator.interpolate(srv.getUsername(), scopeProvider).output;
+                        password = Interpolator.interpolate(srv.getPassword(), scopeProvider).output;
                     }
                 }
                 if (username == null || password == null) {

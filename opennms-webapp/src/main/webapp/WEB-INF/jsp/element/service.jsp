@@ -161,6 +161,7 @@
 </c:url>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.opennms.core.mate.api.ScopeProvider" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}")
           .breadcrumb("Search", "element/index.jsp")
@@ -422,7 +423,11 @@ function doDelete() {
                                   <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
                                   <td><%=WebSecurityUtils.sanitizeString(entry.getValue())%></td>
                                   <%
-                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), scope);
+                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), new ScopeProvider() {
+                                          public Scope getScope() {
+                                              return scope;
+                                          }
+                                      });
 
                                       if (result.parts.size() == 1) {
                                           %>
@@ -481,7 +486,11 @@ function doDelete() {
                                   <td colspan="2"><%=WebSecurityUtils.sanitizeString(entry.getKey())%></td>
                                   <td><%=WebSecurityUtils.sanitizeString(entry.getValue())%></td>
                                   <%
-                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), scope);
+                                      final Interpolator.Result result = Interpolator.interpolate(entry.getValue(), new ScopeProvider() {
+                                          public Scope getScope() {
+                                              return scope;
+                                          }
+                                      });
 
                                       if (result.parts.size() == 1) {
                                           %>

@@ -21,6 +21,28 @@
  */
 package org.opennms.netmgt.timeseries.samplewrite;
 
+import com.google.common.base.Strings;
+import com.google.common.cache.CacheLoader;
+import com.google.common.collect.Maps;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.integration.api.v1.timeseries.Tag;
+import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.LatencyCollectionResource;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,35 +52,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.inject.Inject;
-
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.FallbackScope;
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
-import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.collection.api.LatencyCollectionResource;
-import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Maps;
-
 import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
 
 
-/** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
- * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
+/**
+ * Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
+ * OpenNMS but can be used to enrich the data in the timeseries database to be used externally.
+ */
 public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetaTagDataLoader.class);
@@ -83,55 +83,57 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
 
     public Set<Tag> load(final CollectionResource resource) {
         return sessionUtils.withReadOnlyTransaction(() -> {
-
             final Set<Tag> tags = new HashSet<>();
-            List<Scope> scopes = new ArrayList<>();
+            final List<Scope> scopes = new ArrayList<>();
+            final String nodeCriteria = getNodeCriteriaFromResource(resource);
+            final Optional<OnmsNode> nodeOptional = getNode(nodeCriteria);
 
-            // node related scopes
-            String nodeCriteria = getNodeCriteriaFromResource(resource);
-            Optional<OnmsNode> nodeOptional = getNode(nodeCriteria);
-            if (nodeOptional.isPresent()) {
-                OnmsNode node = nodeOptional.get();
-                scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
-                    // We expect #getInstance to return the ifIndex for interface-level resources
-                    try {
-                        int ifIndex = Integer.parseInt(resource.getInstance());
-                        scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), ifIndex));
-                    } catch(NumberFormatException nfe) {
-                        // pass
-                    }
-                }
-
-                try {
-                    if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
-                            resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
-                            Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
-                        if (resource instanceof LatencyCollectionResource) {
-                            String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
-                                    ((LatencyCollectionResource) resource).getServiceName()));
-                        } else {
-                            String[] ipAddressAndService = parseInstance(resource.getInstance());
-                            String ipAddress = ipAddressAndService[0];
-                            String serviceName = ipAddressAndService[1];
-                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(),
-                                    InetAddressUtils.addr(ipAddress), serviceName));
+            final ScopeProvider scopeProvider = () -> {
+                if (nodeOptional.isPresent()) {
+                    OnmsNode node = nodeOptional.get();
+                    scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
+                    if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
+                        // We expect #getInstance to return the ifIndex for interface-level resources
+                        try {
+                            int ifIndex = Integer.parseInt(resource.getInstance());
+                            scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), ifIndex));
+                        } catch (NumberFormatException nfe) {
+                            // pass
                         }
                     }
-                } catch (Exception e) {
-                    LOG.error("Failed to add scope for resource {}", resource, e);
+
+                    try {
+                        if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
+                                resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
+                                Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
+                            if (resource instanceof LatencyCollectionResource) {
+                                String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                                scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                                scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                        ((LatencyCollectionResource) resource).getServiceName()));
+                            } else {
+                                String[] ipAddressAndService = parseInstance(resource.getInstance());
+                                String ipAddress = ipAddressAndService[0];
+                                String serviceName = ipAddressAndService[1];
+                                scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                                scopes.add(this.entityScopeProvider.getScopeForService(node.getId(),
+                                        InetAddressUtils.addr(ipAddress), serviceName));
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Failed to add scope for resource {}", resource, e);
+                    }
+
                 }
 
-            }
+                // create tags for scopes
+                return new FallbackScope(scopes);
+            };
 
             // create tags for scopes
-            Scope scope = new FallbackScope(scopes);
-            Map<String, String> configuredMetaTags = this.config.getConfiguredMetaTags();
-            for(Map.Entry<String, String> entry: configuredMetaTags.entrySet()) {
-                final String value = Interpolator.interpolate(entry.getValue(), scope).output;
+            final Map<String, String> configuredMetaTags = this.config.getConfiguredMetaTags();
+            for (final Map.Entry<String, String> entry : configuredMetaTags.entrySet()) {
+                final String value = Interpolator.interpolate(entry.getValue(), scopeProvider).output;
                 // Ignore tags with empty values
                 if (Strings.isNullOrEmpty(value)) {
                     continue;
@@ -148,7 +150,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
 
     private void mapCategories(final Set<Tag> tags, final OnmsNode node) {
         Objects.requireNonNull(node);
-        if(config.isCategoriesEnabled()) {
+        if (config.isCategoriesEnabled()) {
             List<String> catList = new ArrayList<>();
             node.getCategories().stream()
                     .map(OnmsCategory::getName)
@@ -156,7 +158,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         tags.add(new ImmutableTag("cat_" + catName, catName));
                         catList.add(catName);
                     });
-            if (!catList.isEmpty() ) {
+            if (!catList.isEmpty()) {
                 Collections.sort(catList);
                 String categories = String.join(",", catList);
                 tags.add(new ImmutableTag("categories", categories));
@@ -232,7 +234,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
         String ipAddress = instance.substring(0, instance.indexOf("["));
         String serviceName = instance.substring(instance.indexOf("[") + 1, instance.length() - 1);
 
-        return new String[] {ipAddress, serviceName};
+        return new String[]{ipAddress, serviceName};
     }
 
     private boolean checkNumeric(String nodeCriteria) {

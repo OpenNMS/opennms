@@ -21,15 +21,14 @@
  */
 package org.opennms.netmgt.search.providers;
 
-import java.util.Objects;
-
+import com.google.common.collect.ImmutableMap;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Match;
 import org.opennms.netmgt.search.api.SearchResultItem;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Objects;
 
 public class SearchResultItemBuilder {
 
@@ -43,7 +42,7 @@ public class SearchResultItemBuilder {
         searchResultItem.setIdentifier(node.getNodeId());
         searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
         searchResultItem.setLabel(node.getLabel());
-        searchResultItem.setInfo(Interpolator.interpolate(CUSTOM_INFO, entityScopeProvider.getScopeForNode(node.getId())).output);
+        searchResultItem.setInfo(Interpolator.interpolate(CUSTOM_INFO, () -> entityScopeProvider.getScopeForNode(node.getId())).output);
 
         final var properties = ImmutableMap.<String, String>builder()
                 .put("label", node.getLabel());

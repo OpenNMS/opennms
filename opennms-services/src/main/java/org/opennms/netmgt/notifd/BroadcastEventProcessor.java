@@ -21,32 +21,16 @@
  */
 package org.opennms.netmgt.notifd;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
-import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.MapScope;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.RowProcessor;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
@@ -81,9 +65,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>BroadcastEventProcessor class.</p>
@@ -389,10 +388,11 @@ public final class BroadcastEventProcessor implements EventListener {
             final boolean wasAcked = wa;
 
             final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
+            final int notifIdFinal = notifId;
 
             final Map<String, String> parmMap = new HashMap(Interpolator.interpolateStrings(
                     rebuildParameterMap(notifId, resolutionPrefix, skipNumericPrefix),
-                    new FallbackScope(
+                    () -> new FallbackScope(
                             m_entityScopeProvider.getScopeForNode(nodeId),
                             m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
                             m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
@@ -400,7 +400,7 @@ public final class BroadcastEventProcessor implements EventListener {
                                     new ImmutableMap.Builder<String, String>()
                                             .put("eventID", String.valueOf(event.getDbid()))
                                             .put("eventUEI", event.getUei())
-                                            .put("noticeid", String.valueOf(notifId))
+                                            .put("noticeid", String.valueOf(notifIdFinal))
                                             .build()
                             )
                     )
@@ -776,7 +776,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
         final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
 
-        paramMap = new HashMap(Interpolator.interpolateStrings(paramMap, new FallbackScope(
+        paramMap = new HashMap(Interpolator.interpolateStrings(paramMap, () -> new FallbackScope(
             m_entityScopeProvider.getScopeForNode(nodeId),
             m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
             m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),

@@ -21,12 +21,7 @@
  */
 package org.opennms.core.mate.commands;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Strings;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -44,7 +39,11 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
-import com.google.common.base.Strings;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Command(scope = "opennms", name = "metadata-test", description = "Test Meta-Data replacement")
 @Service
@@ -118,7 +117,7 @@ public class MetaCommand implements Action {
                 System.out.printf("---%n");
 
                 if (!Strings.isNullOrEmpty(this.expression)) {
-                    final Interpolator.Result result = Interpolator.interpolate(this.expression, new FallbackScope(nodeScope, interfaceScope, serviceScope));
+                    final Interpolator.Result result = Interpolator.interpolate(this.expression, () -> new FallbackScope(nodeScope, interfaceScope, serviceScope));
                     System.out.printf("Input: '%s'%nOutput: '%s'%n", this.expression, result.output);
 
                     System.out.printf("Details:%n");

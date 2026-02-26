@@ -21,9 +21,13 @@
  */
 package org.opennms.netmgt.poller.monitors;
 
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
+import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MetadataConstants;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
@@ -32,10 +36,6 @@ import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
-import org.opennms.core.mate.api.MetadataConstants;
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.FallbackScope;
-import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -46,9 +46,8 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExceptionHandler<PollStatus> {
     private final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
@@ -64,7 +63,7 @@ public class MinionRpcMonitor extends AbstractServiceMonitor implements RpcExcep
         // Create the client
         final RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.get().getClient(EchoRpcModule.INSTANCE);
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(parameters, new FallbackScope(
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(parameters, () -> new FallbackScope(
                 entityScopeProvider.get().getScopeForNode(svc.getNodeId()),
                 entityScopeProvider.get().getScopeForInterface(svc.getNodeId(), svc.getIpAddr()),
                 entityScopeProvider.get().getScopeForService(svc.getNodeId(), svc.getAddress(), svc.getSvcName())

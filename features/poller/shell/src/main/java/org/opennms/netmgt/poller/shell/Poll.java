@@ -21,23 +21,6 @@
  */
 package org.opennms.netmgt.poller.shell;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -46,10 +29,8 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.MapScope;
-import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
@@ -67,9 +48,21 @@ import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
+
+import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Command(scope = "opennms", name = "poll", description = "Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package.")
 @Service
@@ -185,12 +178,12 @@ public class Poll implements Action {
             System.out.printf("Monitor: %s%n", className);
         }
 
-        final Scope scope = entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
+        final ScopeProvider scopeProvider = () -> entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
 
         for (final Map.Entry<String,Object> e : parameters.entrySet()) {
             System.out.printf("Parameter %s:%n", e.getKey());
             System.out.printf("  - configured: %s%n", e.getValue());
-            System.out.printf("  - effective: %s%n", Interpolator.interpolate((String) e.getValue(), scope).output);
+            System.out.printf("  - effective: %s%n", Interpolator.interpolate((String) e.getValue(), scopeProvider).output);
         }
 
         while (true) {
