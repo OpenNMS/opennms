@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -259,7 +260,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             return eventsList;
         }
         // compute scope here, see NMS-16966
-        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resourceWrapper);
+        final ScopeProvider scopeProvider = ThresholdEntity.getScopeProviderForResource(m_entityScopeProvider, resourceWrapper);
 
         LOG.debug("applyThresholds: Applying thresholds on {} using {} attributes.", resourceWrapper, attributesMap.size());
         Date date = new Date();
@@ -288,7 +289,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                                 if(!valueMissing || relaxed) {
                                     LOG.info("applyThresholds: All attributes found for {}, evaluating", resourceWrapper);
 
-                                    resourceWrapper.setDsLabel(Interpolator.interpolate(thresholdEntity.getDatasourceLabel(), scope).output);
+                                    resourceWrapper.setDsLabel(Interpolator.interpolate(thresholdEntity.getDatasourceLabel(), scopeProvider).output);
                                     try {
                                         List<Event> thresholdEvents = thresholdEntity.evaluateAndCreateEvents(resourceWrapper, values, date);
                                         eventsList.addAll(thresholdEvents);
@@ -316,7 +317,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         }
 
         // compute scope here, see NMS-16966
-        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resource);
+        final ScopeProvider scopeProvider = ThresholdEntity.getScopeProviderForResource(m_entityScopeProvider, resource);
 
         // Find the filters for threshold definition for selected group/dataSource
         final List<ResourceFilter> filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilters();
@@ -331,10 +332,10 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             count++;
 
             // Read Resource Attribute and apply filter rules if attribute is not null
-            String attr = resource.getFieldValue(Interpolator.interpolate(f.getField(), scope).output);
+            String attr = resource.getFieldValue(Interpolator.interpolate(f.getField(), scopeProvider).output);
             if (attr != null) {
                 try {
-                    final Pattern p = Pattern.compile(f.getContent().map(s -> Interpolator.interpolate(s, scope).output).orElse(""));
+                    final Pattern p = Pattern.compile(f.getContent().map(s -> Interpolator.interpolate(s, scopeProvider).output).orElse(""));
                     final Matcher m = p.matcher(attr);
                     boolean pass = m.matches();
                     LOG.debug("passedThresholdFilters: the value of {} is {}. Pass filter? {}", f.getField(), attr, pass);

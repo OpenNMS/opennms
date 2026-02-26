@@ -33,6 +33,7 @@ import org.apache.commons.jexl2.MapContext;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
             // We need to remove any mate data that are part of the expression before we try to find the datasources so
             // we will interpolate with an empty scope and rely on default values to keep the expression valid
             ExpressionImpl e = (ExpressionImpl) jexlEngine
-                    .createExpression(interpolateExpression(m_expression.getExpression(), EmptyScope.EMPTY));
+                    .createExpression(interpolateExpression(m_expression.getExpression(), () -> EmptyScope.EMPTY));
             LOG.trace("List of Variables on the Expression: {}", e.getVariables());
             for (List<String> list : e.getVariables()) { // Requires JEXL 2.1.x
                 if (list.get(0).equalsIgnoreCase("math")) {
@@ -169,11 +170,11 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
      * Evaluate with un-interpolated expression that may contain mate data, meaning we need to interpolate it first. The
      * interpolation should happen once here and future calls to evaluate should use the resulting interpolated value.
      */
-    public ExpressionThresholdValues interpolateAndEvaluate(Map<String, Double> values, Scope scope)
+    public ExpressionThresholdValues interpolateAndEvaluate(Map<String, Double> values, ScopeProvider scopeProvider)
             throws ThresholdExpressionException {
-        String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scope);
+        String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scopeProvider);
         ExpressionThresholdValues expressionThresholdValues = new ExpressionThresholdValues(interpolatedExpression, evaluate(interpolatedExpression, values));
-        ThresholdEvaluatorState.ThresholdValues thresholdValues = interpolateThresholdValues(scope);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = interpolateThresholdValues(scopeProvider);
         expressionThresholdValues.setThresholdValues(thresholdValues);
         return expressionThresholdValues;
     }
@@ -183,8 +184,8 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         thresholdDefVisitor.visit(this);
     }
 
-    private String interpolateExpression(String expression, Scope scope) {
-        return Interpolator.interpolate(expression, scope).output;
+    private String interpolateExpression(String expression, ScopeProvider scopeProvider) {
+        return Interpolator.interpolate(expression, scopeProvider).output;
     }
     
     public static class ExpressionThresholdValues {

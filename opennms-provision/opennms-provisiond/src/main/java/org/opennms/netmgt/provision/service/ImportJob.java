@@ -67,7 +67,7 @@ public class ImportJob implements Job {
     }
 
     public String interpolate(String url) {
-        return Interpolator.interpolate(url, entityScopeProvider.getScopeForScv()).output;
+        return Interpolator.interpolate(url, () -> entityScopeProvider.getScopeForScv()).output;
     }
     
     /**

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcTarget;
 import org.opennms.core.mate.api.MetadataConstants;
@@ -118,8 +119,8 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return this;
     }
 
-    private Scope getScope() {
-        return new FallbackScope(
+    private ScopeProvider getScopeProvider() {
+        return () -> new FallbackScope(
                 this.client.getEntityScopeProvider().getScopeForNode(this.service.getNodeId()),
                 this.client.getEntityScopeProvider().getScopeForInterface(this.service.getNodeId(), this.service.getIpAddr()),
                 this.client.getEntityScopeProvider().getScopeForService(this.service.getNodeId(), this.service.getAddress(), this.service.getSvcName()),
@@ -129,7 +130,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
 
     @Override
     public Map<String, Object> getInterpolatedAttributes() {
-        return Interpolator.interpolateObjects(this.attributes, getScope());
+        return Interpolator.interpolateObjects(this.attributes, getScopeProvider());
     }
 
     @Override
@@ -177,7 +178,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // such as the agent details and other state related attributes
         // which should be included in the request
         final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
+        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScopeProvider()));
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {

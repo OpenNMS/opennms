@@ -244,7 +244,7 @@ public class WSManCollectorTest {
 
         Map<String, Object> collectionParams = Maps.newHashMap();
         collectionParams.put("collection", "default");
-        collectionParams.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, collectionParams), EmptyScope.EMPTY));
+        collectionParams.putAll(Interpolator.interpolateAttributes(collector.getRuntimeAttributes(agent, collectionParams), () -> EmptyScope.EMPTY));
         CollectionSet collectionSet = collector.collect(agent, collectionParams);
 
         assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());

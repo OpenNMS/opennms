@@ -167,7 +167,7 @@ public class EntityScopeProviderIT {
 
         this.secureCredentialsVault.setCredentials("alias", new Credentials("horizon", "OpenNMS@30"));
 
-        Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, this.provider.getScopeForNode(this.populator.getNode1().getId()));
+        Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, () -> this.provider.getScopeForNode(this.populator.getNode1().getId()));
 
         Assert.assertEquals(interpolatedAttributes.get("username"), "horizon");
         Assert.assertEquals(interpolatedAttributes.get("password"), "OpenNMS@30");

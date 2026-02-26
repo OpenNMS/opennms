@@ -21,21 +21,10 @@
  */
 package org.opennms.features.reporting.repository.remote;
 
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.cxf.common.util.Base64Utility;
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
@@ -45,6 +34,16 @@ import org.opennms.features.reporting.sdo.RemoteReportSDO;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>DefaultRemoteRepository class.</p>
@@ -93,9 +92,9 @@ public class DefaultRemoteRepository implements ReportRepository {
         this.m_remoteRepositoryDefintion = remoteRepositoryDefinition;
         this.m_jasperReportsVersion = jasperReportsVersion;
 
-        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
-        final String loginUser = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginUser(), scope).output;
-        final String loginRepoPassword = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginRepoPassword(), scope).output;
+        final ScopeProvider scopeProvider = () -> new SecureCredentialsVaultScope(secureCredentialsVault);
+        final String loginUser = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginUser(),scopeProvider).output;
+        final String loginRepoPassword = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginRepoPassword(), scopeProvider).output;
         m_authorizationHeader = "Basic " + Base64Utility.encode((loginUser + ":" + loginRepoPassword).getBytes());
     }
 

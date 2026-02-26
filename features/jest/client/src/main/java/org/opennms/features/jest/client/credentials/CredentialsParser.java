@@ -69,7 +69,7 @@ public class CredentialsParser {
                     final Scope scvScope = entityScopeProvider.getScopeForScv();
                     credentialsMap.put(
                             new AuthScope(httpHost),
-                            new UsernamePasswordCredentials(Interpolator.interpolate(scope.getUsername(), scvScope).output, Interpolator.interpolate(scope.getPassword(), scvScope).output));
+                            new UsernamePasswordCredentials(Interpolator.interpolate(scope.getUsername(), () -> scvScope).output, Interpolator.interpolate(scope.getPassword(), () -> scvScope).output));
                 } catch (MalformedURLException ex) {
                     LOG.error("Defined url is invalid: {}", ex.getMessage());
                 }

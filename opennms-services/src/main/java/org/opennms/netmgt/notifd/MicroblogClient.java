@@ -21,14 +21,8 @@
  */
 package org.opennms.netmgt.notifd;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Optional;
-
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
@@ -38,11 +32,16 @@ import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.notifd.MicroblogAuthorization.MicroblogAuthorizationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Optional;
 
 public class MicroblogClient {
     private final MicroblogConfigurationDao m_configDao;
@@ -207,14 +206,14 @@ public class MicroblogClient {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setClientURL(mp.getServiceUrl());
 
-        final Scope scope = new SecureCredentialsVaultScope(m_secureCredentialsVault);
+        final ScopeProvider scopeProvider = () -> new SecureCredentialsVaultScope(m_secureCredentialsVault);
 
-        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(Interpolator.interpolate(mp.getOauthConsumerKey().orElse(null), scope).output);
-        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(Interpolator.interpolate(mp.getOauthConsumerSecret().orElse(null), scope).output);
-        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(Interpolator.interpolate(mp.getOauthAccessToken().orElse(null),scope).output);
-        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(Interpolator.interpolate(mp.getOauthAccessTokenSecret().orElse(null),scope).output);
-        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(Interpolator.interpolate(mp.getAuthenUsername().orElse(null), scope).output);
-        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(Interpolator.interpolate(mp.getAuthenPassword().orElse(null), scope).output);
+        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(Interpolator.interpolate(mp.getOauthConsumerKey().orElse(null), scopeProvider).output);
+        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(Interpolator.interpolate(mp.getOauthConsumerSecret().orElse(null), scopeProvider).output);
+        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(Interpolator.interpolate(mp.getOauthAccessToken().orElse(null),scopeProvider).output);
+        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(Interpolator.interpolate(mp.getOauthAccessTokenSecret().orElse(null),scopeProvider).output);
+        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(Interpolator.interpolate(mp.getAuthenUsername().orElse(null), scopeProvider).output);
+        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(Interpolator.interpolate(mp.getAuthenPassword().orElse(null), scopeProvider).output);
 
         return new TwitterFactory(builder.build()).getInstance();
     }

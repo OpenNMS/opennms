@@ -21,31 +21,14 @@
  */
 package org.opennms.netmgt.config;
 
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
@@ -69,8 +52,25 @@ import org.springframework.beans.FatalBeanException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
 
 /**
  * This class is the main repository for SNMP configuration information used by
@@ -338,11 +338,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             final Scope scope = getSecureCredentialsScope();
 
             if (scope != null) {
-                agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scope).output);
-                agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scope).output);
-                agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scope).output);
-                agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scope).output);
-                agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scope).output);
+                final ScopeProvider scopeProvider = () -> scope;
+                agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scopeProvider).output);
+                agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scopeProvider).output);
+                agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scopeProvider).output);
+                agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scopeProvider).output);
+                agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scopeProvider).output);
             } else {
                 LOG.warn("Failed metadata interpolation for SNMP profile {}/{}", snmpProfile.getLabel(), InetAddressUtils.str(address));
             }
@@ -391,11 +392,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 final Scope scope = getSecureCredentialsScope();
 
                 if (scope != null) {
-                    agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scope).output);
-                    agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scope).output);
-                    agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scope).output);
-                    agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scope).output);
-                    agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scope).output);
+                    final ScopeProvider scopeProvider = () -> scope;
+                    agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scopeProvider).output);
+                    agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scopeProvider).output);
+                    agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scopeProvider).output);
+                    agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scopeProvider).output);
+                    agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scopeProvider).output);
                 } else {
                     LOG.warn("Failed metadata interpolation for agent config {}/{}/{}", location, InetAddressUtils.str(agentInetAddress), requestedSnmpVersion);
                 }

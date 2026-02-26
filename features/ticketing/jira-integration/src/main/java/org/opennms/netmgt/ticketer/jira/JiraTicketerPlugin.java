@@ -224,7 +224,7 @@ public class JiraTicketerPlugin implements Plugin {
         final Properties interpolatedProperties = new Properties();
 
         for(final Entry<Object, Object> entry : props.entrySet()) {
-            interpolatedProperties.put(entry.getKey(), Interpolator.interpolate((String) entry.getValue(), scope).output);
+            interpolatedProperties.put(entry.getKey(), Interpolator.interpolate((String) entry.getValue(), () -> scope).output);
         }
 
         LOG.debug("Loaded user: {}", interpolatedProperties.getProperty("jira.username"));

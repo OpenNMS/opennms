@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
@@ -248,20 +249,20 @@ public abstract class BaseThresholdDefConfigWrapper {
     
     public abstract void accept(ThresholdDefVisitor thresholdDefVisitor);
 
-    public ThresholdEvaluatorState.ThresholdValues interpolateThresholdValues(Scope scope) {
-        Double thresholdValue = interpolateDoubleValue(getValueString(), scope).orElse(getValue());
-        Double rearm = interpolateDoubleValue(getRearmString(), scope).orElse(getRearm());
-        Integer trigger = interpolateIntegerValue(getTriggerString(), scope).orElse(getTrigger());
+    public ThresholdEvaluatorState.ThresholdValues interpolateThresholdValues(ScopeProvider scopeProvider) {
+        Double thresholdValue = interpolateDoubleValue(getValueString(), scopeProvider).orElse(getValue());
+        Double rearm = interpolateDoubleValue(getRearmString(), scopeProvider).orElse(getRearm());
+        Integer trigger = interpolateIntegerValue(getTriggerString(), scopeProvider).orElse(getTrigger());
         return new ThresholdEvaluatorState.ThresholdValues(thresholdValue, rearm, trigger);
     }
 
-    private Optional<Double> interpolateDoubleValue(String value, Scope scope) {
-        String interpolatedValue = Interpolator.interpolate(value, scope).output;
+    private Optional<Double> interpolateDoubleValue(String value, ScopeProvider scopeProvider) {
+        String interpolatedValue = Interpolator.interpolate(value, scopeProvider).output;
         return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
     }
 
-    private Optional<Integer> interpolateIntegerValue(String value, Scope scope) {
-        String interpolatedValue = Interpolator.interpolate(value, scope).output;
+    private Optional<Integer> interpolateIntegerValue(String value, ScopeProvider scopeProvider) {
+        String interpolatedValue = Interpolator.interpolate(value, scopeProvider).output;
         return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
     }
 

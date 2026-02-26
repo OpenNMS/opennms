@@ -52,6 +52,7 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -182,9 +183,9 @@ public class XMPPNotificationManager {
 			xmppServer = this.props.getProperty("xmpp.server");
 			String xmppServiceName = this.props.getProperty("xmpp.servicename", xmppServer);
 
-			final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
-			xmppUser = Interpolator.interpolate(this.props.getProperty("xmpp.user"), scope).output;
-			xmppPassword = Interpolator.interpolate(this.props.getProperty("xmpp.pass"), scope).output;
+			final ScopeProvider scopeProvider = () -> new SecureCredentialsVaultScope(secureCredentialsVault);
+			xmppUser = Interpolator.interpolate(this.props.getProperty("xmpp.user"), scopeProvider).output;
+			xmppPassword = Interpolator.interpolate(this.props.getProperty("xmpp.pass"), scopeProvider).output;
 
 			xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port", XMPP_PORT));
 

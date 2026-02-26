@@ -21,24 +21,10 @@
  */
 package org.opennms.netmgt.vmmgr;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.nio.file.Paths;
-import java.util.Map;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-
 import com.google.common.annotations.VisibleForTesting;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
@@ -47,9 +33,16 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
+import javax.management.*;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * <p>This {@link Controller} class is used to interact with a Manager
@@ -197,7 +190,7 @@ public class Controller {
             }
             // Since we are only interpolating scv related properties, we restrict this to interpolating only scv related properties.
             if (((String) entry.getValue()).contains("${scv:")) {
-                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
+                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), () -> scope).output);
             }
         }
     }

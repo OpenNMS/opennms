@@ -179,7 +179,7 @@ public class CollectionSpecification {
      * @return A read only Map instance
      */
     public ServiceParameters getServiceParameters() {
-        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope())));
+        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider)));
     }
 
     private boolean isTrue(String stg) {

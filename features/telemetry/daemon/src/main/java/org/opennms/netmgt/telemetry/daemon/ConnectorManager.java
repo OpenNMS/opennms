@@ -21,17 +21,7 @@
  */
 package org.opennms.netmgt.telemetry.daemon;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
@@ -48,7 +38,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -113,7 +112,7 @@ public class ConnectorManager {
     }
 
     private Map<String, String> getInterpolated(Map<String, String> parameterMap, ServiceRef serviceRef) {
-        return Interpolator.interpolateStrings(parameterMap, new FallbackScope(
+        return Interpolator.interpolateStrings(parameterMap, () -> new FallbackScope(
                 entityScopeProvider.getScopeForNode(serviceRef.getNodeId()),
                 entityScopeProvider.getScopeForInterface(serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress())),
                 entityScopeProvider.getScopeForService(serviceRef.getNodeId(), serviceRef.getIpAddress(), serviceRef.getServiceName())

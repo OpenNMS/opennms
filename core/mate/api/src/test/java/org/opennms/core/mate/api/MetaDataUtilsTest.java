@@ -21,20 +21,20 @@
  */
 package org.opennms.core.mate.api;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 import org.opennms.netmgt.config.pagesequence.Parameter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class MetaDataUtilsTest {
     final Map<ContextKey, String> metaData = new HashMap<>();
@@ -60,7 +60,7 @@ public class MetaDataUtilsTest {
         attributes.put("attribute1", "aaa${ctx1:key1|default}bbb");
         attributes.put("attribute2", Interpolator.pleaseInterpolate("aaa${ctx1:key1|default}bbb"));
 
-        Map<String, Object> interpolatedAttributes = Interpolator.interpolateAttributes(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        Map<String, Object> interpolatedAttributes = Interpolator.interpolateAttributes(attributes, () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
 
         assertEquals("aaa${ctx1:key1|default}bbb", interpolatedAttributes.get("attribute1"));
         assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute2"));
@@ -83,7 +83,7 @@ public class MetaDataUtilsTest {
         attributes.put("attribute11", "aaa${ctx5:key1}bbb");
         attributes.put("attribute12", "xx${ctx6:key1}yy");
 
-        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        final Map<String, Object> interpolatedAttributes = Interpolator.interpolateObjects(attributes, () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
 
         assertEquals(attributes.size(), interpolatedAttributes.size());
         assertEquals("aaaval1bbb", interpolatedAttributes.get("attribute1"));
@@ -108,7 +108,7 @@ public class MetaDataUtilsTest {
         System.err.println(pageSequence);
         final Map<String, Object> input = new HashMap<>();
         input.put("page-sequence", pageSequence);
-        final Map<String, Object> output = Interpolator.interpolateObjects(input, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        final Map<String, Object> output = Interpolator.interpolateObjects(input, () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
         assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(0).getPort());
         assertEquals("1234", ((PageSequence)output.get("page-sequence")).getPages().get(1).getPort());
         assertEquals("8980", ((PageSequence)output.get("page-sequence")).getPages().get(2).getPort());
@@ -117,7 +117,7 @@ public class MetaDataUtilsTest {
 
     @Test
     public void testNewRegExpPattern() {
-        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
+        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
         assertEquals(2, result.parts.size());
         assertEquals("val1", result.parts.get(0).value.value);
         assertEquals("val4", result.parts.get(1).value.value);
@@ -139,8 +139,8 @@ public class MetaDataUtilsTest {
                 () -> new MapScope(Scope.ScopeName.INTERFACE, map2)
         );
 
-        assertEquals("value1", Interpolator.interpolate("${foobar:key1}", fallBackScopeProvider.getScope()).output);
-        assertEquals("value2", Interpolator.interpolate("${foobar:key2}", fallBackScopeProvider.getScope()).output);
-        assertEquals("new3", Interpolator.interpolate("${foobar:key3}", fallBackScopeProvider.getScope()).output);
+        assertEquals("value1", Interpolator.interpolate("${foobar:key1}", () -> fallBackScopeProvider.getScope()).output);
+        assertEquals("value2", Interpolator.interpolate("${foobar:key2}", () -> fallBackScopeProvider.getScope()).output);
+        assertEquals("new3", Interpolator.interpolate("${foobar:key3}", () -> fallBackScopeProvider.getScope()).output);
     }
 }

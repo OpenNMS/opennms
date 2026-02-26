@@ -435,7 +435,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(final Definition def) {
-        return Interpolator.interpolate(def.getUsername().orElse(getConfig().getUsername().orElse(WmiAgentConfig.DEFAULT_USERNAME)), getSecureCredentialsScope()).output;
+        return Interpolator.interpolate(def.getUsername().orElse(getConfig().getUsername().orElse(WmiAgentConfig.DEFAULT_USERNAME)), () -> getSecureCredentialsScope()).output;
     }
 
     /**
@@ -457,7 +457,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         if (literalPass.endsWith("===")) {
             return new String(Base64.decodeBase64(literalPass));
         }
-        return Interpolator.interpolate(literalPass, getSecureCredentialsScope()).output;
+        return Interpolator.interpolate(literalPass, () -> getSecureCredentialsScope()).output;
     }
 
     /**

@@ -21,22 +21,22 @@
  */
 package org.opennms.javamail;
 
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.FatalBeanException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import org.opennms.core.mate.api.EmptyScope;
-import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.FatalBeanException;
 
 /**
  * Provides access to the default javamail configuration data.
@@ -77,38 +77,38 @@ public abstract class JavaMailerConfig {
      * @return a Properties object representing the configuration properties
      * @throws java.io.IOException if any.
      */
-    public static synchronized Properties getProperties(final Scope scope) throws IOException {
+    public static synchronized Properties getProperties(final ScopeProvider scopeProvider) throws IOException {
         LOG.debug("JavaMailConfig: Loading javamail properties");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
         in.close();
-        return interpolate(properties, scope);
+        return interpolate(properties, scopeProvider);
     }
 
     public static synchronized Properties getProperties() throws IOException {
-        return getProperties(getSecureCredentialsScope());
+        return getProperties(() -> getSecureCredentialsScope());
     }
 
-    private static Properties interpolate(final Properties properties, final String key, final Scope scope) {
+    private static Properties interpolate(final Properties properties, final String key, final ScopeProvider scopeProvider) {
         final String value = properties.getProperty(key);
 
         if (value != null) {
-            properties.put(key, Interpolator.interpolate(value, scope).output);
+            properties.put(key, Interpolator.interpolate(value, scopeProvider).output);
         }
 
         return properties;
     }
 
-    private static Properties interpolate(final Properties properties, final Scope scope) {
-        if (scope == null) {
+    private static Properties interpolate(final Properties properties, final ScopeProvider scopeProvider) {
+        if (scopeProvider == null) {
             LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of properties");
             return properties;
         }
 
-        interpolate(properties, "org.opennms.core.utils.authenticateUser", scope);
-        interpolate(properties, "org.opennms.core.utils.authenticatePassword", scope);
+        interpolate(properties, "org.opennms.core.utils.authenticateUser", scopeProvider);
+        interpolate(properties, "org.opennms.core.utils.authenticatePassword", scopeProvider);
 
         return properties;
     }
@@ -121,6 +121,6 @@ public abstract class JavaMailerConfig {
             return string;
         }
 
-        return Interpolator.interpolate(string, scope).output;
+        return Interpolator.interpolate(string, () -> scope).output;
     }
 }
