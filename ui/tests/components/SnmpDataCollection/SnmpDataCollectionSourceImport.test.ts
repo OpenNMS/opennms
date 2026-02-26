@@ -134,6 +134,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
   const setSourceFiles = async (files: UploadSnmpDataCollectionFileType[]) => {
     wrapper.vm.sourceFiles = files
+    wrapper.vm.total = files.length
+    wrapper.vm.tableRecord = files.slice(0, wrapper.vm.pageSize)
     await wrapper.vm.$nextTick()
   }
 
@@ -753,6 +755,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
     it('should show empty list after removing all files', async () => {
       wrapper.vm.sourceFiles = []
+      wrapper.vm.tableRecord = []
+      wrapper.vm.total = 0
       await wrapper.vm.$nextTick()
 
       const emptyList = wrapper.find('[data-test="empty-list"]')
@@ -1048,8 +1052,8 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     describe('Rename Dialog', () => {
-      beforeEach(() => {
-        wrapper.vm.sourceFiles = [{ file: mockFile, isValid: true, errors: [], isDuplicate: true }]
+      beforeEach(async () => {
+        await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
       })
 
       it('should open rename dialog when warning icon is clicked', async () => {
@@ -1700,15 +1704,14 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
 
   // ─── Pagination ──────────────────────────────────────────────────────
   describe('Pagination', () => {
-    it('should pass correct pagination props to FeatherPagination', async () => {
-      store.sourcesPagination = { page: 2, pageSize: 20, total: 100 }
+    it('should pass correct default pagination props to FeatherPagination', async () => {
       await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
 
       const pagination = wrapper.findComponent({ name: 'FeatherPagination' })
       expect(pagination.exists()).toBe(true)
-      expect(pagination.props('modelValue')).toBe(2)
-      expect(pagination.props('pageSize')).toBe(20)
-      expect(pagination.props('total')).toBe(100)
+      expect(pagination.props('modelValue')).toBe(1)
+      expect(pagination.props('pageSize')).toBe(10)
+      expect(pagination.props('total')).toBe(1)
     })
 
     it('should pass pageSizes array to FeatherPagination', async () => {
@@ -1730,16 +1733,40 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(pagination.exists()).toBe(true)
     })
 
-    it('should reflect store pagination page changes', async () => {
-      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+    it('should reflect local pagination changes via onPageChange', async () => {
+      const manyFiles = Array.from(
+        { length: 25 },
+        (_, i) => ({
+          file: new File(['content'], `file-${i}.xml`, { type: 'application/xml' }),
+          isValid: true, errors: [] as string[], isDuplicate: false
+        })
+      )
+      await setSourceFiles(manyFiles)
 
-      store.sourcesPagination = { page: 3, pageSize: 50, total: 200 }
+      wrapper.vm.onPageChange(2)
       await wrapper.vm.$nextTick()
 
       const pagination = wrapper.findComponent({ name: 'FeatherPagination' })
-      expect(pagination.props('modelValue')).toBe(3)
-      expect(pagination.props('pageSize')).toBe(50)
-      expect(pagination.props('total')).toBe(200)
+      expect(pagination.props('modelValue')).toBe(2)
+      expect(pagination.props('total')).toBe(25)
+    })
+
+    it('should reflect local pagination changes via onPageSizeChange', async () => {
+      const manyFiles = Array.from(
+        { length: 25 },
+        (_, i) => ({
+          file: new File(['content'], `file-${i}.xml`, { type: 'application/xml' }),
+          isValid: true, errors: [] as string[], isDuplicate: false
+        })
+      )
+      await setSourceFiles(manyFiles)
+
+      wrapper.vm.onPageSizeChange(20)
+      await wrapper.vm.$nextTick()
+
+      const pagination = wrapper.findComponent({ name: 'FeatherPagination' })
+      expect(pagination.props('pageSize')).toBe(20)
+      expect(pagination.props('modelValue')).toBe(1) // resets to page 1
     })
   })
 
@@ -2487,9 +2514,742 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
       expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(false)
 
       wrapper.vm.sourceFiles = []
+      wrapper.vm.tableRecord = []
+      wrapper.vm.total = 0
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('[data-test="empty-list"]').exists()).toBe(true)
+    })
+  })
+
+  // ─── tableRecord & Pagination Logic ──────────────────────────────────
+  describe('tableRecord & Pagination Logic', () => {
+    const createFiles = (count: number) =>
+      Array.from({ length: count }, (_, i) => ({
+        file: new File(['content'], `file-${i}.xml`, { type: 'application/xml' }),
+        isValid: true,
+        errors: [] as string[],
+        isDuplicate: false
+      }))
+
+    it('should slice sourceFiles into tableRecord based on pageSize', async () => {
+      const files = createFiles(15)
+      await setSourceFiles(files)
+
+      // Default pageSize is 10, page is 1
+      expect(wrapper.vm.tableRecord).toHaveLength(10)
+      expect(wrapper.vm.tableRecord[0].file.name).toBe('file-0.xml')
+      expect(wrapper.vm.tableRecord[9].file.name).toBe('file-9.xml')
+    })
+
+    it('should update tableRecord when onPageChange is called', async () => {
+      const files = createFiles(15)
+      await setSourceFiles(files)
+
+      wrapper.vm.onPageChange(2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.page).toBe(2)
+      expect(wrapper.vm.tableRecord).toHaveLength(5)
+      expect(wrapper.vm.tableRecord[0].file.name).toBe('file-10.xml')
+    })
+
+    it('should update tableRecord when onPageSizeChange is called', async () => {
+      const files = createFiles(25)
+      await setSourceFiles(files)
+
+      wrapper.vm.onPageSizeChange(20)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.pageSize).toBe(20)
+      expect(wrapper.vm.page).toBe(1) // reset to page 1
+      expect(wrapper.vm.tableRecord).toHaveLength(20)
+    })
+
+    it('should reset page to 1 on pageSize change', async () => {
+      const files = createFiles(25)
+      await setSourceFiles(files)
+
+      // Go to page 2 first
+      wrapper.vm.onPageChange(2)
+      expect(wrapper.vm.page).toBe(2)
+
+      // Change page size should reset to page 1
+      wrapper.vm.onPageSizeChange(5)
+      expect(wrapper.vm.page).toBe(1)
+      expect(wrapper.vm.tableRecord).toHaveLength(5)
+    })
+
+    it('should handle pageSize larger than total files', async () => {
+      const files = createFiles(3)
+      await setSourceFiles(files)
+
+      wrapper.vm.onPageSizeChange(50)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.tableRecord).toHaveLength(3)
+    })
+
+    it('should handle empty sourceFiles with pagination', () => {
+      wrapper.vm.onPageChange(1)
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+    })
+
+    it('should update total when files are added via triggerFileInput', async () => {
+      await triggerFileInput([mockFile, mockFile2])
+
+      expect(wrapper.vm.total).toBe(2)
+      expect(wrapper.vm.tableRecord).toHaveLength(2)
+    })
+
+    it('should update total when files are added via triggerFolderInput', async () => {
+      await triggerFolderInput([mockFile, mockFile2])
+
+      expect(wrapper.vm.total).toBe(2)
+      expect(wrapper.vm.tableRecord).toHaveLength(2)
+    })
+
+    it('should update total and tableRecord after removeFile', async () => {
+      await triggerFileInput([mockFile, mockFile2])
+
+      // Verify initial state
+      expect(wrapper.vm.total).toBe(2)
+      expect(wrapper.vm.tableRecord).toHaveLength(2)
+
+      wrapper.vm.removeFile(0)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.total).toBe(1)
+      expect(wrapper.vm.tableRecord).toHaveLength(1)
+      expect(wrapper.vm.tableRecord[0].file.name).toBe('test-file-2.xml')
+    })
+
+    it('should clear total and tableRecord after successful upload', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      await triggerFileInput([mockFile])
+
+      expect(wrapper.vm.total).toBe(1)
+      expect(wrapper.vm.tableRecord).toHaveLength(1)
+
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      expect(wrapper.vm.total).toBe(0)
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+      expect(wrapper.vm.sourceFiles).toHaveLength(0)
+    })
+
+    it('should display only first page of files in table', async () => {
+      const files = createFiles(15)
+      await setSourceFiles(files)
+
+      // Default pageSize is 10
+      const rows = wrapper.findAll('tr')
+      // 1 header + 10 data rows
+      expect(rows).toHaveLength(11)
+    })
+  })
+
+  // ─── removeFile Edge Cases ───────────────────────────────────────────
+  describe('removeFile Edge Cases', () => {
+    it('should update total after removing a file', async () => {
+      await triggerFileInput([mockFile, mockFile2])
+      expect(wrapper.vm.total).toBe(2)
+
+      wrapper.vm.removeFile(0)
+      expect(wrapper.vm.total).toBe(1)
+    })
+
+    it('should recalculate tableRecord after removing file', async () => {
+      const file3 = new File(['c3'], 'file-3.xml', { type: 'application/xml' })
+      await triggerFileInput([mockFile, mockFile2, file3])
+
+      wrapper.vm.removeFile(1) // remove test-file-2.xml
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.sourceFiles[0].file.name).toBe('test-file.xml')
+      expect(wrapper.vm.sourceFiles[1].file.name).toBe('file-3.xml')
+      expect(wrapper.vm.tableRecord).toHaveLength(2)
+    })
+
+    it('should handle removing last file from middle page', async () => {
+      // Create 11 files, go to page 2 (1 file), then remove it
+      const files = Array.from({ length: 11 }, (_, i) =>
+        new File(['c'], `f-${i}.xml`, { type: 'application/xml' })
+      )
+      await triggerFileInput(files)
+
+      wrapper.vm.onPageChange(2)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.tableRecord).toHaveLength(1)
+
+      // Remove the last file (index 10 in sourceFiles)
+      wrapper.vm.removeFile(10)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.sourceFiles).toHaveLength(10)
+      expect(wrapper.vm.total).toBe(10)
+    })
+  })
+
+  // ─── openFileRenameDialog ────────────────────────────────────────────
+  describe('openFileRenameDialog', () => {
+    it('should set displayRenameDialog to true', () => {
+      wrapper.vm.openFileRenameDialog(0)
+      expect(wrapper.vm.displayRenameDialog).toBe(true)
+    })
+
+    it('should set selectedIndex to the given index', () => {
+      wrapper.vm.openFileRenameDialog(5)
+      expect(wrapper.vm.selectedIndex).toBe(5)
+    })
+
+    it('should open dialog with correct index when warning icon is clicked', async () => {
+      await setSourceFiles([
+        { file: mockFile, isValid: true, errors: [], isDuplicate: false },
+        { file: mockFile2, isValid: true, errors: [], isDuplicate: true }
+      ])
+
+      const warningIcons = wrapper.findAll('.warning-icon')
+      expect(warningIcons).toHaveLength(1)
+      await warningIcons[0].trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(true)
+      // The index is the table row index (1 for second file in the rendered list)
+      expect(wrapper.vm.selectedIndex).toBe(1)
+    })
+  })
+
+  // ─── Ellipsify Edge Cases ────────────────────────────────────────────
+  describe('Ellipsify Edge Cases', () => {
+    it('should display filename exactly 39 chars without truncation', async () => {
+      // 35 chars + ".xml" = 39 chars exactly
+      const name = 'abcdefghijklmnopqrstuvwxyz123456789.xml'
+      expect(name.length).toBe(39)
+      const file = new File(['c'], name, { type: 'application/xml' })
+      await setSourceFiles([{ file, isValid: true, errors: [], isDuplicate: false }])
+
+      const fileDiv = wrapper.find('.file span')
+      expect(fileDiv.text()).toBe(name)
+    })
+
+    it('should truncate filename longer than 39 chars', async () => {
+      const name = 'abcdefghijklmnopqrstuvwxyz1234567890.xml'
+      expect(name.length).toBe(40)
+      const file = new File(['c'], name, { type: 'application/xml' })
+      await setSourceFiles([{ file, isValid: true, errors: [], isDuplicate: false }])
+
+      const fileDiv = wrapper.find('.file span')
+      expect(fileDiv.text()).not.toBe(name)
+      expect(fileDiv.text()).toContain('…')
+    })
+
+    it('should show short filename as-is', async () => {
+      const file = new File(['c'], 'a.xml', { type: 'application/xml' })
+      await setSourceFiles([{ file, isValid: true, errors: [], isDuplicate: false }])
+
+      const fileDiv = wrapper.find('.file span')
+      expect(fileDiv.text()).toBe('a.xml')
+    })
+  })
+
+  // ─── Upload clears sourceFileInput ref ───────────────────────────────
+  describe('Upload clears sourceFileInput ref', () => {
+    it('should reset sourceFileInput value after successful upload', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      const fileInput = wrapper.find('[data-test="snmp-data-collection-file-input"]')
+      const inputElement = fileInput.element as HTMLInputElement
+
+      // Simulate a file input value
+      Object.defineProperty(inputElement, 'value', {
+        value: 'C:\\fakepath\\test.xml',
+        writable: true,
+        configurable: true
+      })
+
+      wrapper.vm.sourceFiles = [{ file: mockFile, isValid: true, errors: [], isDuplicate: false }]
+
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      expect(inputElement.value).toBe('')
+    })
+  })
+
+  // ─── Folder upload does not log warn when no files ───────────────────
+  describe('Folder Upload No-Op Behaviour', () => {
+    it('should not log console.warn when folder input has null files', async () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      const folderInput = wrapper.find('[data-test="snmp-data-collection-folder-input"]')
+      Object.defineProperty(folderInput.element, 'files', { value: null, writable: true })
+      await folderInput.trigger('change')
+      await flushPromises()
+
+      // handleSourceFolderUpload does NOT log a warn (unlike handleSourceFileUpload)
+      expect(consoleSpy).not.toHaveBeenCalled()
+      consoleSpy.mockRestore()
+    })
+
+    it('should log console.warn when file input has null files', async () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      const fileInput = wrapper.find('[data-test="snmp-data-collection-file-input"]')
+      Object.defineProperty(fileInput.element, 'files', { value: null, writable: true })
+      await fileInput.trigger('change')
+      await flushPromises()
+
+      expect(consoleSpy).toHaveBeenCalledWith('No files selected')
+      consoleSpy.mockRestore()
+    })
+  })
+
+  // ─── File Upload with snackbar ───────────────────────────────────────
+  describe('File Upload Snackbar Behavior', () => {
+    it('should show snackbar for each invalid file during file upload', async () => {
+      vi.mocked(validateSnmpDataCollectionSourceFile)
+        .mockResolvedValueOnce({ isValid: false, errors: ['Err1'] })
+        .mockResolvedValueOnce({ isValid: false, errors: ['Err2'] })
+
+      await triggerFileInput([mockFile, mockFile2])
+
+      expect(mockShowSnackBar).toHaveBeenCalledTimes(2)
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Error processing file test-file.xml.',
+        error: true
+      })
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Error processing file test-file-2.xml.',
+        error: true
+      })
+    })
+
+    it('should show error snackbar on upload failure', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      wrapper.vm.sourceFiles = [{ file: mockFile, isValid: true, errors: [], isDuplicate: false }]
+      vi.mocked(uploadDataCollectionFiles).mockRejectedValueOnce(new Error('Network fail'))
+
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+      consoleErrorSpy.mockRestore()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Error uploading files',
+        error: true
+      })
+    })
+
+    it('should show snackbar for invalid folder file', async () => {
+      vi.mocked(validateSnmpDataCollectionSourceFile).mockResolvedValueOnce({
+        isValid: false,
+        errors: ['Bad schema']
+      })
+
+      await triggerFolderInput([mockFile])
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Error processing file test-file.xml.',
+        error: true
+      })
+    })
+
+    it('should not show snackbar for valid file', async () => {
+      await triggerFileInput([mockFile])
+
+      expect(mockShowSnackBar).not.toHaveBeenCalled()
+    })
+
+    it('should show extension validation snackbar for non-xml files', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      const txtFile = new File(['text'], 'data.txt', { type: 'text/plain' })
+      wrapper.vm.sourceFiles = [{ file: txtFile, isValid: true, errors: [], isDuplicate: false }]
+
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'All files must be XML files with .xml extension',
+        error: true
+      })
+    })
+  })
+
+  // ─── Error icon click does NOT open dialog ───────────────────────────
+  describe('Icon Click Behavior', () => {
+    it('should open rename dialog when warning icon is clicked', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
+
+      const warningIcon = wrapper.find('.warning-icon')
+      await warningIcon.trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(true)
+    })
+
+    it('should NOT open rename dialog when error icon exists', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: false, errors: ['bad'], isDuplicate: false }])
+
+      // Error icon has no click handler in template
+      const errorIcon = wrapper.find('.error-icon')
+      expect(errorIcon.exists()).toBe(true)
+      await errorIcon.trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(false)
+    })
+
+    it('should NOT have click handler on success icon', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+
+      const successIcon = wrapper.find('.success-icon')
+      expect(successIcon.exists()).toBe(true)
+      await successIcon.trigger('click')
+
+      expect(wrapper.vm.displayRenameDialog).toBe(false)
+    })
+  })
+
+  // ─── Computed shouldUploadDisabled Edge Cases ────────────────────────
+  describe('shouldUploadDisabled Edge Cases', () => {
+    it('should be disabled when all files are invalid even if not duplicate', async () => {
+      await setSourceFiles([
+        { file: mockFile, isValid: false, errors: ['err'], isDuplicate: false },
+        { file: mockFile2, isValid: false, errors: ['err'], isDuplicate: false }
+      ])
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+    })
+
+    it('should be disabled when all files are duplicate even if valid', async () => {
+      await setSourceFiles([
+        { file: mockFile, isValid: true, errors: [], isDuplicate: true },
+        { file: mockFile2, isValid: true, errors: [], isDuplicate: true }
+      ])
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+    })
+
+    it('should be disabled when file is both invalid and duplicate', async () => {
+      await setSourceFiles([
+        { file: mockFile, isValid: false, errors: ['err'], isDuplicate: true }
+      ])
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+    })
+
+    it('should transition from disabled to enabled when file becomes valid', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: false, errors: ['err'], isDuplicate: false }])
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+
+      wrapper.vm.sourceFiles[0].isValid = true
+      wrapper.vm.sourceFiles[0].errors = []
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+    })
+
+    it('should transition from disabled to enabled when duplicate is resolved', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: true }])
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+
+      wrapper.vm.sourceFiles[0].isDuplicate = false
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+    })
+
+    it('should become disabled when isLoading changes to true', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+
+      wrapper.vm.isLoading = true
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+    })
+  })
+
+  // ─── handleSourceFileUpload tableRecord update ───────────────────────
+  describe('handleSourceFileUpload Side Effects', () => {
+    it('should update tableRecord after file selection', async () => {
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+
+      await triggerFileInput([mockFile])
+
+      expect(wrapper.vm.tableRecord).toHaveLength(1)
+      expect(wrapper.vm.tableRecord[0].file.name).toBe('test-file.xml')
+    })
+
+    it('should update total after file selection', async () => {
+      expect(wrapper.vm.total).toBe(0)
+
+      await triggerFileInput([mockFile, mockFile2])
+
+      expect(wrapper.vm.total).toBe(2)
+    })
+
+    it('should not add duplicate to tableRecord', async () => {
+      vi.mocked(isDuplicateFile).mockReturnValue(true)
+
+      await triggerFileInput([mockFile])
+
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+      expect(wrapper.vm.total).toBe(0)
+    })
+
+    it('should show snackbar and add file when server duplicate detected', async () => {
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+
+      await triggerFileInput([mockFile])
+
+      // File is added with isDuplicate=true (not skipped in file upload - only skipped in folder upload)
+      expect(wrapper.vm.sourceFiles).toHaveLength(1)
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
+    })
+  })
+
+  // ─── handleSourceFolderUpload tableRecord update ─────────────────────
+  describe('handleSourceFolderUpload Side Effects', () => {
+    it('should update tableRecord after folder file selection', async () => {
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+
+      await triggerFolderInput([mockFile, mockFile2])
+
+      expect(wrapper.vm.tableRecord).toHaveLength(2)
+    })
+
+    it('should update total after folder file selection', async () => {
+      expect(wrapper.vm.total).toBe(0)
+
+      await triggerFolderInput([mockFile])
+
+      expect(wrapper.vm.total).toBe(1)
+    })
+
+    it('should skip already-uploaded and not include in tableRecord', async () => {
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+      vi.mocked(isDuplicateFile).mockReturnValue(false)
+
+      await triggerFolderInput([mockFile, mockFile2])
+
+      // test-file.xml skipped, test-file-2.xml added
+      expect(wrapper.vm.tableRecord).toHaveLength(1)
+      expect(wrapper.vm.tableRecord[0].file.name).toBe('test-file-2.xml')
+    })
+
+    it('should handle processing error for folder file and still continue', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      vi.mocked(validateSnmpDataCollectionSourceFile)
+        .mockRejectedValueOnce(new Error('fail'))
+        .mockResolvedValueOnce({ isValid: true, errors: [] })
+
+      await triggerFolderInput([mockFile, mockFile2])
+      consoleSpy.mockRestore()
+
+      // First file fails, second succeeds
+      expect(wrapper.vm.sourceFiles).toHaveLength(1)
+      expect(wrapper.vm.sourceFiles[0].file.name).toBe('test-file-2.xml')
+    })
+  })
+
+  // ─── Multiple file interactions sequence test ────────────────────────
+  describe('Multi-step File Interaction Flows', () => {
+    it('should handle add files, remove some, add more, then upload', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+
+      // Add two files
+      await triggerFileInput([mockFile, mockFile2])
+      expect(wrapper.vm.sourceFiles).toHaveLength(2)
+
+      // Remove first
+      wrapper.vm.removeFile(0)
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.sourceFiles).toHaveLength(1)
+
+      // Add another file
+      const file3 = new File(['c3'], 'file-3.xml', { type: 'application/xml' })
+      await triggerFileInput([file3])
+      expect(wrapper.vm.sourceFiles).toHaveLength(2)
+
+      // Upload
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      const calledWith = vi.mocked(uploadDataCollectionFiles).mock.calls[0][0] as File[]
+      expect(calledWith).toHaveLength(2)
+      expect(calledWith[0].name).toBe('test-file-2.xml')
+      expect(calledWith[1].name).toBe('file-3.xml')
+
+      // Verify cleared
+      expect(wrapper.vm.sourceFiles).toHaveLength(0)
+      expect(wrapper.vm.total).toBe(0)
+    })
+
+    it('should handle file upload then folder upload accumulating files', async () => {
+      await triggerFileInput([mockFile])
+      expect(wrapper.vm.sourceFiles).toHaveLength(1)
+
+      const folderFile = new File(['folder'], 'folder-file.xml', { type: 'application/xml' })
+      await triggerFolderInput([folderFile])
+      expect(wrapper.vm.sourceFiles).toHaveLength(2)
+      expect(wrapper.vm.total).toBe(2)
+    })
+
+    it('should handle rename then upload flow', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+
+      await triggerFileInput([mockFile])
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(true)
+
+      // Rename
+      wrapper.vm.selectedIndex = 0
+      await wrapper.vm.renameFile('renamed-file.xml')
+      await flushPromises()
+
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+
+      // Upload
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([expect.objectContaining({ name: 'renamed-file.xml' })])
+    })
+
+    it('should handle overwrite then upload flow', async () => {
+      store.fetchSnmpCollectionSources = vi.fn().mockResolvedValue(undefined)
+      store.uploadedSourceNames = [{ id: 1, name: 'test-file.xml' }]
+
+      await triggerFileInput([mockFile])
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(true)
+
+      // Overwrite
+      wrapper.vm.selectedIndex = 0
+      wrapper.vm.overwriteFile()
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.sourceFiles[0].isDuplicate).toBe(false)
+      expect(wrapper.vm.shouldUploadDisabled).toBe(false)
+
+      // Upload
+      await wrapper.vm.uploadFiles()
+      await flushPromises()
+
+      expect(uploadDataCollectionFiles).toHaveBeenCalledWith([mockFile])
+    })
+  })
+
+  // ─── Initial State Verification ──────────────────────────────────────
+  describe('Initial State Verification', () => {
+    it('should have empty sourceFiles initially', () => {
+      expect(wrapper.vm.sourceFiles).toHaveLength(0)
+    })
+
+    it('should have isLoading as false initially', () => {
+      expect(wrapper.vm.isLoading).toBe(false)
+    })
+
+    it('should have displayRenameDialog as false initially', () => {
+      expect(wrapper.vm.displayRenameDialog).toBe(false)
+    })
+
+    it('should have selectedIndex as null initially', () => {
+      expect(wrapper.vm.selectedIndex).toBeNull()
+    })
+
+    it('should have uploadedDataCollectionFilesReportDialogState as false initially', () => {
+      expect(wrapper.vm.uploadedDataCollectionFilesReportDialogState).toBe(false)
+    })
+
+    it('should have page as 1 initially', () => {
+      expect(wrapper.vm.page).toBe(1)
+    })
+
+    it('should have pageSize as 10 initially', () => {
+      expect(wrapper.vm.pageSize).toBe(10)
+    })
+
+    it('should have total as 0 initially', () => {
+      expect(wrapper.vm.total).toBe(0)
+    })
+
+    it('should have empty tableRecord initially', () => {
+      expect(wrapper.vm.tableRecord).toHaveLength(0)
+    })
+
+    it('should have empty uploadFilesReport initially', () => {
+      expect(wrapper.vm.uploadFilesReport).toEqual({})
+    })
+  })
+
+  // ─── closeUploadReportDialog ─────────────────────────────────────────
+  describe('closeUploadReportDialog', () => {
+    it('should set uploadedDataCollectionFilesReportDialogState to false', () => {
+      wrapper.vm.uploadedDataCollectionFilesReportDialogState = true
+      wrapper.vm.closeUploadReportDialog()
+      expect(wrapper.vm.uploadedDataCollectionFilesReportDialogState).toBe(false)
+    })
+
+    it('should not affect store.activeTab', () => {
+      store.activeTab = 1
+      wrapper.vm.uploadedDataCollectionFilesReportDialogState = true
+      wrapper.vm.closeUploadReportDialog()
+      expect(store.activeTab).toBe(1)
+    })
+
+    it('should not affect sourceFiles', async () => {
+      await setSourceFiles([{ file: mockFile, isValid: true, errors: [], isDuplicate: false }])
+      wrapper.vm.uploadedDataCollectionFilesReportDialogState = true
+
+      wrapper.vm.closeUploadReportDialog()
+
+      expect(wrapper.vm.sourceFiles).toHaveLength(1)
+    })
+  })
+
+  // ─── Mixed invalid and duplicate files in UI ─────────────────────────
+  describe('Mixed File States Display', () => {
+    it('should show error chip and warning chip for file that is both invalid and duplicate', async () => {
+      await setSourceFiles([{
+        file: mockFile,
+        isValid: false,
+        errors: ['Invalid root element'],
+        isDuplicate: true
+      }])
+
+      expect(wrapper.find('.error-chip').exists()).toBe(true)
+      expect(wrapper.find('.error-chip').text()).toBe('Invalid root element')
+      expect(wrapper.find('.warning-chip').exists()).toBe(true)
+      expect(wrapper.find('.warning-chip').text()).toContain('File with the same name already exists')
+    })
+
+    it('should show error icon and warning icon but not success icon for invalid duplicate', async () => {
+      await setSourceFiles([{
+        file: mockFile,
+        isValid: false,
+        errors: ['err'],
+        isDuplicate: true
+      }])
+
+      expect(wrapper.find('.error-icon').exists()).toBe(true)
+      expect(wrapper.find('.warning-icon').exists()).toBe(true)
+      expect(wrapper.find('.success-icon').exists()).toBe(false)
+    })
+
+    it('should show only success icon for valid non-duplicate file', async () => {
+      await setSourceFiles([{
+        file: mockFile,
+        isValid: true,
+        errors: [],
+        isDuplicate: false
+      }])
+
+      expect(wrapper.find('.success-icon').exists()).toBe(true)
+      expect(wrapper.find('.error-icon').exists()).toBe(false)
+      expect(wrapper.find('.warning-icon').exists()).toBe(false)
+      expect(wrapper.find('.error-chip').exists()).toBe(false)
+      expect(wrapper.find('.warning-chip').exists()).toBe(false)
     })
   })
 })

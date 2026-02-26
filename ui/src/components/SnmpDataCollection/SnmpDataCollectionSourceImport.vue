@@ -77,10 +77,10 @@
         <TransitionGroup
           name="data-table"
           tag="tbody"
-          v-if="sourceFiles.length"
+          v-if="tableRecord.length"
         >
           <tr
-            v-for="(file, index) in sourceFiles"
+            v-for="(file, index) in tableRecord"
             :key="index"
           >
             <td>
@@ -131,19 +131,19 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="sourceFiles.length"
+        v-if="tableRecord.length"
       >
         <FeatherPagination
-          :modelValue="store.sourcesPagination.page"
-          :pageSize="store.sourcesPagination.pageSize"
-          :total="store.sourcesPagination.total"
+          :modelValue="page"
+          :pageSize="pageSize"
+          :total="total"
           :pageSizes="[10, 20, 50, 100, 200]"
-          @update:modelValue="store.onSourcePageChange"
-          @update:pageSize="store.onSourcePageSizeChange"
+          @update:modelValue="onPageChange"
+          @update:pageSize="onPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
-      <div v-if="!sourceFiles.length">
+      <div v-if="!tableRecord.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -234,6 +234,10 @@ const snackbar = useSnackbar()
 const displayRenameDialog = ref(false)
 const selectedIndex = ref<number | null>(null)
 const uploadedDataCollectionFilesReportDialogState = ref(false)
+const tableRecord = ref<UploadSnmpDataCollectionFileType[]>([])
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
 const emptyListContent = {
   msg: 'No files selected for upload.'
 }
@@ -248,6 +252,8 @@ const shouldUploadDisabled = computed(() => {
 
 const removeFile = (index: number) => {
   sourceFiles.value.splice(index, 1)
+  total.value = sourceFiles.value.length
+  tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 
 const openFileDialog = () => {
@@ -256,6 +262,17 @@ const openFileDialog = () => {
 
 const openFolderDialog = () => {
   sourceFolderInput.value?.click()
+}
+
+const onPageChange = (newPage: number) => {
+  page.value = newPage
+  tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+}
+
+const onPageSizeChange = (newPageSize: number) => {
+  pageSize.value = newPageSize
+  page.value = 1
+  tableRecord.value = sourceFiles.value.slice(0, pageSize.value)
 }
 
 const handleSourceFileUpload = async (event: Event) => {
@@ -288,6 +305,8 @@ const handleSourceFileUpload = async (event: Event) => {
         })
       }
     }
+    total.value = sourceFiles.value.length
+    tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
     input.files = null
@@ -337,6 +356,8 @@ const handleSourceFolderUpload = async (event: Event) => {
         })
       }
     }
+    total.value = sourceFiles.value.length
+    tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 
     // Reset the input value to allow re-uploading the same file if needed
     input.value = ''
@@ -364,6 +385,8 @@ const uploadFiles = async () => {
       success: [...response.success]
     }
     sourceFiles.value = []
+    tableRecord.value = []
+    total.value = 0
     sourceFileInput.value!.value = ''
     store.fetchAllSourcesNames()
     store.fetchSnmpCollectionSources()
