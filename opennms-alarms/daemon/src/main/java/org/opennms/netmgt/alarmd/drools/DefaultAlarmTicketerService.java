@@ -38,8 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultAlarmTicketerService implements AlarmTicketerService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmTicketerService.class);
 
-    private static final boolean ALARM_TROUBLE_TICKET_ENABLED = Boolean.getBoolean("opennms.alarmTroubleTicketEnabled");
-
     @Autowired
     private AlarmDao alarmDao;
 
@@ -51,7 +49,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
 
     @Override
     public boolean isTicketingEnabled() {
-        return ALARM_TROUBLE_TICKET_ENABLED;
+        return Boolean.getBoolean("opennms.alarmTroubleTicketEnabled");
     }
 
     @Override

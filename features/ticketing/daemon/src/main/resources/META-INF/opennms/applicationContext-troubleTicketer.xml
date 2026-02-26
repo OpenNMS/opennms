@@ -22,7 +22,7 @@
 		<property name="properties">
 			<props>
 			<prop key="opennms.ticketer.servicelayer">org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer</prop>
-			<prop key="opennms.ticketer.plugin">org.opennms.netmgt.ticketd.NullTicketerPlugin</prop>
+			<prop key="opennms.ticketer.plugin">org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin</prop>
 			</props>
 		</property>
 		<property name="order" value="0" />
@@ -39,10 +39,10 @@
 
     <onmsgi:service interface="org.opennms.netmgt.ticketd.TicketerServiceLayer" ref="ticketerServiceLayer" />
 
-    <!-- If the OSGi ticketer plugin is enabled, this will pull in an additional context that will
-         register the plugin for service reference updates.
-    -->
-    <bean class="org.opennms.netmgt.ticketd.ConditionalOSGiTicketerPluginContext"/>
+    <!-- Register for OSGi ticketer plugin service updates -->
+    <onmsgi:list id="ticketerPlugins" interface="org.opennms.api.integration.ticketing.Plugin">
+        <onmsgi:listener ref="ticketerPlugin" bind-method="registerTicketerPlugin" unbind-method="unregisterTicketerPlugin" />
+    </onmsgi:list>
 
 	<bean name="daemon" class="org.opennms.netmgt.ticketd.TroubleTicketer">
 	  <property name="eventIpcManager" ref="eventIpcManager"/>

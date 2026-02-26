@@ -614,38 +614,33 @@ const handleSaveEvent = async () => {
     return
   }
 
+  const sourceId = selectedSource.value?._value as number
+  if (!sourceId) {
+    snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
+    return
+  }
+
   try {
-    const sourceId = selectedSource.value?._value as number
-    if (!sourceId) {
-      snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
-      return
+    let response = null
+    const isEditMode = store.eventModificationState.isEditMode === CreateEditMode.Edit
+
+    if (isEditMode && store.eventModificationState.eventConfigEvent) {
+      response = await updateEventConfigEventById(
+        xmlContent.value,
+        sourceId,
+        store.eventModificationState.eventConfigEvent.id,
+        store.eventModificationState.eventConfigEvent.enabled
+      )
+    }
+    if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
+      response = await createEventConfigEvent(xmlContent.value, sourceId)
     }
 
-    try {
-      let response = null
-      const isEditMode = store.eventModificationState.isEditMode === CreateEditMode.Edit
-
-      if (isEditMode && store.eventModificationState.eventConfigEvent) {
-        response = await updateEventConfigEventById(
-          xmlContent.value,
-          sourceId,
-          store.eventModificationState.eventConfigEvent.id,
-          store.eventModificationState.eventConfigEvent.enabled
-        )
-      }
-      if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-        response = await createEventConfigEvent(xmlContent.value, sourceId)
-      }
-
-      if (response) {
-        const msg = isEditMode ? 'Event updated successfully' : 'Event created successfully'
-        snackbar.showSnackBar({ msg, error: false })
-        handleCancel(sourceId)
-      } else {
-        snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
-      }
-    } catch (error) {
-      console.error(error)
+    if (response) {
+      const msg = isEditMode ? 'Event updated successfully' : 'Event created successfully'
+      snackbar.showSnackBar({ msg, error: false })
+      handleCancel(sourceId)
+    } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
   } catch (error) {
