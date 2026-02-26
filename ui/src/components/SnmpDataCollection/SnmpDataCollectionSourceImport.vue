@@ -251,7 +251,8 @@ const shouldUploadDisabled = computed(() => {
 })
 
 const removeFile = (index: number) => {
-  sourceFiles.value.splice(index, 1)
+  const sourceIndex = (page.value - 1) * pageSize.value + index
+  sourceFiles.value.splice(sourceIndex, 1)
   total.value = sourceFiles.value.length
   tableRecord.value = sourceFiles.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
