@@ -9,7 +9,7 @@ import { FeatherTextarea } from '@featherds/textarea'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createMemoryHistory } from 'vue-router'
 
 vi.mock('./AlarmDataInfo.vue', () => ({
   default: {
@@ -127,8 +127,13 @@ const mockEvent = {
 }
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createMemoryHistory(),
   routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: { template: '<div></div>' }
+    },
     {
       path: '/event-config',
       name: 'Event Configuration',
@@ -396,6 +401,7 @@ describe('BasicInformation Component', () => {
   })
 
   it('should handle save event failure', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(updateEventConfigEventById).mockRejectedValue(new Error('API Error'))
     wrapper.vm.isValid = true
     await wrapper.vm.$nextTick()
@@ -405,6 +411,7 @@ describe('BasicInformation Component', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(updateEventConfigEventById).toHaveBeenCalled()
+    consoleSpy.mockRestore()
   })
 
   describe('XML Content Generation', () => {
@@ -1677,4 +1684,3 @@ describe('BasicInformation Component', () => {
     })
   })
 })
-

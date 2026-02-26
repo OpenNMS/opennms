@@ -178,19 +178,13 @@ describe('CreateEventConfigurationDialog.vue', () => {
     expect(vm.vendor).toBe('')
   })
 
-  it('whitespace-only treated invalid', async () => {
+  it('whitespace-only configName and vendor treated as invalid', async () => {
     await setWrapperRefs('   ', '   ', '')
-    const inputComp = wrapper.findAllComponents(FeatherInput)[0]
-    expect(inputComp.props('error')).toBe('Configuration name is required.')
-  })
-
-  it('multiple successful submissions show success state', async () => {
-    const func = addEventConfigSource as any
-    func.mockResolvedValue(mockSuccessResponse(1, 'TestConfig', 0))
-    await setWrapperRefs('One', 'One', '')
-    await clickCreateButton()
-    const vm = wrapper.vm as any
-    expect(vm.successMessage).toBe(true)
+    const inputs = wrapper.findAllComponents(FeatherInput)
+    expect(inputs[0].props('error')).toBe('Configuration name is required.')
+    expect(inputs[1].props('error')).toBe('Vendor is required.')
+    const createBtn = wrapper.findAllComponents(FeatherButton)[1]
+    expect(createBtn.attributes('aria-disabled') === 'true' || createBtn.attributes('disabled')).toBeTruthy()
   })
 
   it('modal-body has expected structure', () => {
@@ -199,6 +193,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
     const divs = body!.querySelectorAll('div')
     expect(divs.length).toBeGreaterThanOrEqual(1)
     expect(body!.querySelector('p')).not.toBeNull()
+    expect(body!.querySelector('p')!.textContent).toContain('will be created with 0 event configurations')
+    expect(body!.querySelector('p')!.textContent).toContain('You can add event configurations after creation')
   })
 
   it('maintains form state before save', async () => {
@@ -504,24 +500,6 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe('Informational Note', () => {
-    it('displays note about initial event configurations count', () => {
-      const p = document.body.querySelector('.modal-body-form p')
-      expect(p).not.toBeNull()
-      expect(p!.textContent).toContain('will be created with 0 event configurations')
-    })
-
-    it('note is visible on initial load', () => {
-      const note = document.body.querySelector('.modal-body-form p')
-      expect(note).not.toBeNull()
-    })
-
-    it('note mentions post-creation option', () => {
-      const note = document.body.querySelector('.modal-body-form p')
-      expect(note!.textContent).toContain('You can add event configurations after creation')
-    })
-  })
-
   describe('HTTP Status Code 409 (Duplicate Name)', () => {
     it('shows snackbar error on 409 duplicate source name', async () => {
       await setWrapperRefs('ExistingSource', 'Vendor', '')
@@ -695,15 +673,18 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
 
     it('does not show success on exception', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       await setWrapperRefs('TestSource', 'Vendor', '')
       const func = addEventConfigSource as any
       func.mockRejectedValue(new Error('Service unavailable'))
       const vm = wrapper.vm as any
       await clickCreateButton()
       expect(vm.successMessage).toBe(false)
+      consoleErrorSpy.mockRestore()
     })
 
     it('does not call store methods on exception', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       await setWrapperRefs('TestSource', 'Vendor', '')
       const func = addEventConfigSource as any
       func.mockRejectedValue(new Error('Service error'))
@@ -712,6 +693,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       await clickCreateButton()
       expect(store.fetchEventConfigs).not.toHaveBeenCalled()
       expect(store.refreshSourcesFilters).not.toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
   })
 
@@ -914,6 +896,99 @@ describe('CreateEventConfigurationDialog.vue', () => {
       // After success, should show View Source button
       buttons = wrapper.findAllComponents(FeatherButton)
       expect(buttons[1].text()).toContain('View Source')
+    })
+
+    it('handles special characters in input fields', async () => {
+      await setWrapperRefs('Test!@#$%^&*()', 'Vendor<>/?', 'Description with "quotes" and \\backslash')
+      const vm = wrapper.vm as any
+      expect(vm.configName).toBe('Test!@#$%^&*()')
+      expect(vm.vendor).toBe('Vendor<>/?')
+      expect(vm.description).toBe('Description with "quotes" and \\backslash')
+      // No validation errors for special characters (server-side validation handles this)
+      expect(vm.error).toBeNull()
+    })
+
+    it('handles very long input strings', async () => {
+      const longName = 'A'.repeat(500)
+      const longVendor = 'B'.repeat(500)
+      const longDesc = 'C'.repeat(2000)
+      await setWrapperRefs(longName, longVendor, longDesc)
+      const vm = wrapper.vm as any
+      expect(vm.configName).toBe(longName)
+      expect(vm.vendor).toBe(longVendor)
+      expect(vm.description).toBe(longDesc)
+      expect(vm.error).toBeNull()
+    })
+
+    it('resets form state after cancel', async () => {
+      await setWrapperRefs('SomeConfig', 'SomeVendor', 'SomeDescription')
+      store.hideCreateEventConfigSourceDialog = vi.fn()
+      const cancelBtn = wrapper.findAllComponents(FeatherButton)[0]
+      await cancelBtn.trigger('click')
+      const vm = wrapper.vm as any
+      expect(vm.configName).toBe('')
+      expect(vm.vendor).toBe('')
+      expect(vm.description).toBe('')
+    })
+
+    it('handles response with null id', async () => {
+      await setWrapperRefs('Test', 'Vendor', '')
+      const func = addEventConfigSource as any
+      func.mockResolvedValue({ id: null, name: 'Test', fileOrder: 0, status: 201 })
+      const vm = wrapper.vm as any
+      await clickCreateButton()
+      // Should still show success but newId will be null
+      expect(vm.successMessage).toBe(true)
+      expect(vm.newId).toBeNull()
+    })
+
+    it('handles response with id 0', async () => {
+      await setWrapperRefs('Test', 'Vendor', '')
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const func = addEventConfigSource as any
+      func.mockResolvedValue({ id: 0, name: 'Test', fileOrder: 0, status: 201 })
+      store.hideCreateEventConfigSourceDialog = vi.fn()
+      const vm = wrapper.vm as any
+      await clickCreateButton()
+      expect(vm.successMessage).toBe(true)
+      expect(vm.newId).toBe(0)
+      // Clicking View Source with id 0 should log error and redirect to Event Configuration
+      const viewSourceBtn = wrapper.findAllComponents(FeatherButton)[1]
+      await viewSourceBtn.trigger('click')
+      expect(consoleErrorSpy).toHaveBeenCalledWith('No new event configuration source ID available.')
+      expect(mockPush).toHaveBeenCalledWith({ name: 'Event Configuration' })
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('handles undefined response from service', async () => {
+      await setWrapperRefs('Test', 'Vendor', '')
+      const func = addEventConfigSource as any
+      func.mockResolvedValue(undefined)
+      const vm = wrapper.vm as any
+      await clickCreateButton()
+      // Should show generic error
+      expect(vm.successMessage).toBe(false)
+      expect(vm.snackbar.showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: 'Failed to create event configuration source. Please try again.',
+          error: true
+        })
+      )
+    })
+
+    it('handles null response from service', async () => {
+      await setWrapperRefs('Test', 'Vendor', '')
+      const func = addEventConfigSource as any
+      func.mockResolvedValue(null)
+      const vm = wrapper.vm as any
+      await clickCreateButton()
+      expect(vm.successMessage).toBe(false)
+      expect(vm.snackbar.showSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: 'Failed to create event configuration source. Please try again.',
+          error: true
+        })
+      )
     })
   })
 })
