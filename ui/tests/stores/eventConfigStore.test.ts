@@ -6,7 +6,7 @@ import {
   filterEventConfigSources,
   getAllSourceNames
 } from '@/services/eventConfigService'
-import { EventConfigSource } from '@/types/eventConfig'
+import { EventConfigSource, UploadedSourceNamesResponse } from '@/types/eventConfig'
 
 vi.mock('@/services/eventConfigService', () => ({
   changeEventConfigSourceStatus: vi.fn(),
@@ -17,7 +17,11 @@ vi.mock('@/services/eventConfigService', () => ({
 describe('useEventConfigStore', () => {
   let store: ReturnType<typeof useEventConfigStore>
 
-  const mockSourceNames = ['Source1', 'Source2', 'Source3']
+  const mockSourceNames: UploadedSourceNamesResponse[] = [
+    { id: 1, name: 'Source 1' },
+    { id: 2, name: 'Source 2' },
+    { id: 3, name: 'Source 3' }
+  ]
 
   const mockSources: EventConfigSource[] = [
     {
@@ -75,7 +79,7 @@ describe('useEventConfigStore', () => {
     })
     expect(store.isLoading).toBe(false)
     expect(store.activeTab).toBe(0)
-    expect(store.uploadedSourceNames).toEqual([])
+    expect(store.uploadedSources).toEqual([])
     expect(store.uploadedEventConfigFilesReportDialogState.visible).toBe(false)
     expect(store.deleteEventConfigSourceDialogState).toEqual({
       visible: false,
@@ -93,7 +97,7 @@ describe('useEventConfigStore', () => {
     await store.fetchAllSourcesNames()
 
     expect(getAllSourceNames).toHaveBeenCalledTimes(1)
-    expect(store.uploadedSourceNames).toEqual(mockSourceNames)
+    expect(store.uploadedSources).toEqual(mockSourceNames)
     expect(store.isLoading).toBe(false)
   })
 
@@ -132,7 +136,7 @@ describe('useEventConfigStore', () => {
     expect(getAllSourceNames).toHaveBeenCalledTimes(1)
     expect(store.sources).toEqual(mockSources)
     expect(store.sourcesPagination.total).toBe(2)
-    expect(store.uploadedSourceNames).toEqual(mockSourceNames)
+    expect(store.uploadedSources).toEqual(mockSourceNames)
     expect(store.isLoading).toBe(false)
   })
 
@@ -289,12 +293,10 @@ describe('useEventConfigStore', () => {
     expect(store.changeEventConfigSourceStatusDialogState.visible).toBe(false)
     expect(store.changeEventConfigSourceStatusDialogState.eventConfigSource).toBeNull()
   })
-  beforeEach(() => {
-    vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
-    vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
-  })
 
   it('should disable event config source successfully', async () => {
+    vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+    vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
     vi.mocked(changeEventConfigSourceStatus).mockResolvedValue(true)
 
     await store.disableEventConfigSource(1)
@@ -344,7 +346,7 @@ describe('useEventConfigStore', () => {
   it('should log error when enabling with no source id', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await expect(store.disableEventConfigSource(0)).rejects.toThrow('No source selected')
+    await expect(store.enableEventConfigSource(0)).rejects.toThrow('No source selected')
 
     expect(changeEventConfigSourceStatus).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith('No source selected')
@@ -406,5 +408,71 @@ describe('useEventConfigStore', () => {
     expect(store.sourcesPagination).toEqual(initialPagination)
     expect(store.isLoading).toBe(false)
   })
-})
 
+  it('should show create event config source dialog', () => {
+    store.showCreateEventConfigSourceDialog()
+
+    expect(store.createEventConfigSourceDialogState.visible).toBe(true)
+  })
+
+  it('should hide create event config source dialog', () => {
+    store.createEventConfigSourceDialogState.visible = true
+
+    store.hideCreateEventConfigSourceDialog()
+
+    expect(store.createEventConfigSourceDialogState.visible).toBe(false)
+  })
+
+  it('should handle empty search term string', async () => {
+    vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+    vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
+
+    await store.onChangeSourcesSearchTerm('')
+
+    expect(store.sourcesSearchTerm).toBe('')
+    expect(store.sourcesPagination.page).toBe(1)
+  })
+
+  it('should update uploadedSources correctly', async () => {
+    const newNames = [
+      { id: 4, name: 'New Source 1' },
+      { id: 5, name: 'New Source 2' }
+    ]
+    vi.mocked(getAllSourceNames).mockResolvedValue(newNames)
+
+    await store.fetchAllSourcesNames()
+
+    expect(store.uploadedSources).toEqual(newNames)
+    expect(store.uploadedSources.length).toBe(2)
+  })
+
+  it('should keep correct state when sort order changes', async () => {
+    vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+    vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
+
+    await store.onSourcesSortChange('name', 'asc')
+    expect(store.sourcesSorting).toEqual({ sortKey: 'name', sortOrder: 'asc' })
+
+    await store.onSourcesSortChange('createdTime', 'desc')
+    expect(store.sourcesSorting).toEqual({ sortKey: 'createdTime', sortOrder: 'desc' })
+  })
+
+  it('should reset active tab to 0', () => {
+    store.activeTab = 10
+
+    store.resetActiveTab()
+
+    expect(store.activeTab).toBe(0)
+  })
+
+  it('should clear search term when refreshing filters', async () => {
+    vi.mocked(filterEventConfigSources).mockResolvedValue(mockFilterResponse)
+    vi.mocked(getAllSourceNames).mockResolvedValue(mockSourceNames)
+
+    store.sourcesSearchTerm = 'test query'
+
+    await store.refreshSourcesFilters()
+
+    expect(store.sourcesSearchTerm).toBe('')
+  })
+})

@@ -289,64 +289,6 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe('Description Field', () => {
-    it('renders description textarea field', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.exists()).toBe(true)
-    })
-
-    it('description field has correct hint text', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.props('hint')).toContain('Provide a detailed description')
-      expect(textarea.props('hint')).toContain('optional')
-    })
-
-    it('description field has correct number of rows', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.attributes('rows')).toBe('10')
-    })
-
-    it('description field is optional (empty allowed)', async () => {
-      await setWrapperRefs('Valid', 'Valid', '')
-      // Should not show error for empty description
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.props('error')).toBeUndefined()
-    })
-
-    it('description field trims whitespace on input', async () => {
-      await setWrapperRefs('Valid', 'Valid', '  trimmed text  ')
-      const vm = wrapper.vm as any
-      // v-model.trim should trim the value
-      expect(vm.description).toBe('trimmed text')
-    })
-
-    it('description field has auto height feature', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      // Check if auto prop or attribute is set
-      expect(textarea.props('auto') || textarea.attributes('auto')).toBeTruthy()
-    })
-
-    it('description field has clear button', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      // Check if clear prop is set on the component
-      const clearProp = textarea.props('clear')
-      // The clear prop should be set to indicate the clear button is enabled
-      expect(clearProp || textarea.attributes('clear')).toBeTruthy()
-    })
-
-    it('description accepts long text', async () => {
-      const longText = 'A'.repeat(500)
-      await setWrapperRefs('Valid', 'Valid', longText)
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.props('modelValue')).toHaveLength(500)
-    })
-
-    it('description field has data-test attribute', () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-      expect(textarea.attributes('data-test')).toBe('event-description')
-    })
-  })
-
   describe('Form Validation', () => {
     it('requires both configName and vendor to enable Create button', async () => {
       await setWrapperRefs('Test', '', '')
@@ -868,24 +810,6 @@ describe('CreateEventConfigurationDialog.vue', () => {
       await vm.$nextTick()
 
       expect(vm.vendor).toBe('NewVendor')
-    })
-
-    it('updates description on textarea input', async () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-
-      const vm = wrapper.vm as any
-      await textarea.vm.$emit('update:modelValue', 'New description')
-      await vm.$nextTick()
-      expect(vm.description).toBe('New description')
-    })
-
-    it('description gets trimmed automatically with v-model.trim', async () => {
-      const textarea = wrapper.findComponent(FeatherTextarea)
-
-      await textarea.vm.$emit('update:modelValue', '  spaced text  ')
-      await wrapper.vm.$nextTick()
-
-      expect((wrapper.vm as any).description).toBe('spaced text')
     })
   })
 

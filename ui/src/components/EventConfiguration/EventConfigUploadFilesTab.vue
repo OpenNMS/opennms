@@ -127,7 +127,7 @@
       <div class="info-section">
         <h3>Instructions:</h3>
         <ul>
-          <li>Event configuration files must be in XML format with a .events.xml extension.</li>
+          <li>Event configuration files must be in XML format with a .xml extension.</li>
           <li>Each event configuration file should contain a single event configuration.</li>
           <li>When uploading using "Choose files to upload", a maximum of <strong>{{ MAX_FILES_UPLOAD }}</strong> files can be uploaded at once.</li>
           <li>When uploading using "Choose folder to upload", all files in the folder will be uploaded.</li>
@@ -140,7 +140,7 @@
             />.
           </li>
           <li>
-            Files with duplicate names (excluding the .events.xml extension) will be flagged with icon
+            Files with duplicate names (excluding the .xml extension) will be flagged with icon
             <FeatherIcon
               :icon="Warning"
               class="warning-icon-text"
@@ -163,7 +163,7 @@
       :visible="displayRenameDialog"
       :fileBucket="eventFiles"
       :index="eventFiles.findIndex(f => f.isDuplicate)"
-      :alreadyExistsNames="store.uploadedSourceNames"
+      :alreadyExistsNames="store.uploadedSources"
       @close="closeRenameDialog"
       @rename="renameFile"
       @overwrite="overwriteFile"
@@ -222,12 +222,12 @@ const handleFolderUpload = async (e: Event) => {
   }
 
   const files = Array.from(input.files).filter(f =>
-    f.name.endsWith('.events.xml')
+    f.name.endsWith('.xml')
   )
 
   if (files.length === 0) {
     snackbar.showSnackBar({
-      msg: 'Folder contains no .events.xml files',
+      msg: 'Folder contains no .xml files',
       error: true
     })
     return
@@ -239,8 +239,8 @@ const handleFolderUpload = async (e: Event) => {
         continue
       }
 
-      const isAlreadyUploaded = store.uploadedSourceNames
-        .map(name => name.replace('.xml', '').toLowerCase())
+      const isAlreadyUploaded = store.uploadedSources
+        .map(source => source.name.replace('.xml', '').toLowerCase())
         .includes(file.name.replace('.xml', '').toLowerCase())
 
       if (isAlreadyUploaded) {
@@ -271,14 +271,23 @@ const handleFolderUpload = async (e: Event) => {
     }
   }
 
+  // Reset the input value to allow re-uploading the same file if needed
   input.value = ''
+  input.files = null
 }
 
 
 const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
-  if (input.files && input.files.length > 0) {
-    const files = Array.from(input.files)
+  if (!input.files || input.files.length === 0) {
+    console.warn('No folder selected')
+    return
+  }
+
+  const files = Array.from(input.files).filter(f =>
+    f.name.endsWith('.xml')
+  )
+  if (files && files.length > 0) {
     for (const file of files) {
       try {
         if (isDuplicateFile(file.name, eventFiles.value)) {
@@ -296,7 +305,7 @@ const handleEventConfUpload = async (e: Event) => {
             file,
             isValid: isValid,
             errors: errors,
-            isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
+            isDuplicate: store.uploadedSources.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
           })
           if (!isValid) {
             snackbar.showSnackBar({
@@ -344,7 +353,7 @@ const renameFile = async (newFileName: string) => {
       file: newFile,
       isValid: validationResult.isValid,
       errors: validationResult.errors,
-      isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
+      isDuplicate: store.uploadedSources.map(source => source.name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
     }
     closeRenameDialog()
   } else {
@@ -370,9 +379,9 @@ const uploadFiles = async () => {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(f => f.file.name.endsWith('.events.xml'))) {
+  if (!eventFiles.value.every(f => f.file.name.endsWith('.xml'))) {
     snackbar.showSnackBar({
-      msg: 'All files must be XML files with .events.xml extension',
+      msg: 'All files must be XML files with .xml extension',
       error: true
     })
     return
@@ -399,11 +408,11 @@ const uploadFiles = async () => {
 }
 
 watch(
-  () => store.uploadedSourceNames,
+  () => store.uploadedSources,
   (newNames) => {
     eventFiles.value = eventFiles.value.map(file => ({
       ...file,
-      isDuplicate: newNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
+      isDuplicate: newNames.map(source => source.name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
     }))
   }, { immediate: true, deep: true }
 )
@@ -411,7 +420,6 @@ watch(
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
-@import "@featherds/styles/themes/variables";
 
 .upload-files-tab {
   background: var(variables.$surface);
@@ -486,7 +494,7 @@ watch(
           }
 
           .invalid-text {
-            color: var($error);
+            color: var(variables.$error);
           }
         }
 

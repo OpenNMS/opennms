@@ -472,7 +472,9 @@ export const updateResourceType = async (
 export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<boolean> => {
   const endpoint = '/datacollectionconf/collectsources'
   try {
-    const response = await v2.delete(endpoint, { data: { ids: sourceIds } })
+    const params = new URLSearchParams()
+    sourceIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -495,7 +497,9 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
 export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mib-groups`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: mibGroupIds } })
+    const params = new URLSearchParams()
+    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -518,7 +522,9 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
 export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/resource-types`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: resourceTypeIds } })
+    const params = new URLSearchParams()
+    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -570,7 +576,9 @@ export const downloadSnmpDataCollectionById = async (collectionSourceId: number,
 export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/system-defs`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: systemDefIds } })
+    const params = new URLSearchParams()
+    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true

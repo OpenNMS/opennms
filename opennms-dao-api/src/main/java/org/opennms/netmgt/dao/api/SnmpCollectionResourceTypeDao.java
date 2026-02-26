@@ -49,8 +49,6 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
 
     void deleteBySourceId(Integer snmpCollectionSourceId);
 
-    List<SnmpCollectionResourceType> filterResourceTypeConf(String name,String label, String vendor, String collectionSourceName, int offset, int limit);
-
     PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
     SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);

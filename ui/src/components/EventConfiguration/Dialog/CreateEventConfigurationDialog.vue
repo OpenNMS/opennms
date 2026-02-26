@@ -3,7 +3,7 @@
     v-model="store.createEventConfigSourceDialogState.visible"
     :labels="labels"
     hide-close
-    @hidden="store.hideCreateEventConfigSourceDialog()"
+    @hidden="handleCancel"
   >
     <div
       v-if="!successMessage"
@@ -24,18 +24,6 @@
         />
       </div>
       <div>
-        <FeatherTextarea
-          v-model.trim="description"
-          data-test="event-description"
-          label="Description"
-          hint="Provide a detailed description for the event configuration source (optional)."
-          rows="10"
-          auto
-          clear="clear"
-        >
-        </FeatherTextarea>
-      </div>
-      <div>
         <p>
           Please note that this source will be created with 0 event configurations. You can add event configurations
           after creation.
@@ -49,7 +37,7 @@
       <p>The event configuration source has been created successfully.</p>
     </div>
     <template v-slot:footer>
-      <FeatherButton @click="store.hideCreateEventConfigSourceDialog()"> Cancel </FeatherButton>
+      <FeatherButton @click="handleCancel"> Cancel </FeatherButton>
       <FeatherButton
         v-if="!successMessage"
         primary
@@ -76,7 +64,6 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherInput } from '@featherds/input'
-import { FeatherTextarea } from '@featherds/textarea'
 
 const router = useRouter()
 const configName = ref('')
@@ -147,17 +134,24 @@ const handleSave = async () => {
   }
 }
 
+const handleCancel = () => {
+  resetForm()
+  successMessage.value = false
+  store.hideCreateEventConfigSourceDialog()
+}
+
 const visitCreatedEventConfigSource = () => {
-  if (newId.value !== 0) {
+  successMessage.value = false
+  store.hideCreateEventConfigSourceDialog()
+  if (newId.value > 0) {
     router.push({
       name: 'Event Configuration Detail',
       params: { id: newId.value }
     })
   } else {
     console.error('No new event configuration source ID available.')
+    router.push({ name: 'Event Configuration' })
   }
-  successMessage.value = false
-  store.hideCreateEventConfigSourceDialog()
 }
 </script>
 
