@@ -472,7 +472,9 @@ export const updateResourceType = async (
 export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<boolean> => {
   const endpoint = '/datacollectionconf/collectsources'
   try {
-    const response = await v2.delete(endpoint, { data: { ids: sourceIds } })
+    const params = new URLSearchParams()
+    sourceIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -495,7 +497,9 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
 export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mib-groups`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: mibGroupIds } })
+    const params = new URLSearchParams()
+    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -518,7 +522,9 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
 export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/resource-types`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: resourceTypeIds } })
+    const params = new URLSearchParams()
+    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true
@@ -527,6 +533,35 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
     }
   } catch (error) {
     console.error('Error deleting SNMP data collection resource types:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a GET request to download all Resource types, MIB groups and System defs
+ * associated with the specified SNMP data collection source ID.
+ *
+ * @param {number} collectionSourceId The ID of the SNMP data collection source to download.
+ * @param {string} format The format of the download (e.g., 'xml' or 'json').
+ * @returns {Promise<any>} A promise that resolves to the full Axios response containing the downloaded file content.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const downloadSnmpDataCollectionById = async (collectionSourceId: number, format: string): Promise<any> => {
+  const endpoint = `/datacollectionconf/collectsources/${collectionSourceId}/download`
+
+  try {
+    const response = await v2.get(endpoint, {
+      params: { format },
+      responseType: 'blob'
+    })
+
+    if (response.status === 200) {
+      return response
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error(`Error downloading SNMP data collection for source ID ${collectionSourceId}:`, error)
     throw error
   }
 }
@@ -541,7 +576,9 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
 export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/system-defs`
   try {
-    const response = await v2.delete(endpoint, { data: { ids: systemDefIds } })
+    const params = new URLSearchParams()
+    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.delete(`${endpoint}?${params.toString()}`)
 
     if (response.status === 200) {
       return true

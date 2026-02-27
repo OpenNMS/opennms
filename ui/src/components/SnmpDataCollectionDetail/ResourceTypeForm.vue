@@ -386,6 +386,15 @@ const openPersistenceSelectorStrategyDrawer = (
 }
 
 const closeResourceTypeDrawer = () => {
+  name.value = ''
+  label.value = ''
+  resourceLabel.value = ''
+  status.value = true
+  storageStrategy.value = undefined as unknown as IAutocompleteItemType
+  storageStrategyParams.value = []
+  persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
+  persistenceSelectorStrategyParams.value = []
+  errors.value = {}
   closeStrategyDrawer()
   store.closeResourceTypeDrawer()
 }

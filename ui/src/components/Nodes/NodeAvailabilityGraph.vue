@@ -12,7 +12,7 @@
         <hr class="divider" />
         <div class="flex-container">
           <div class="service subtitle2">{{ ipinterface.address }}</div>
-          <div class>
+          <div>
             <img
               :src="`${baseUrl}/opennms/rest/timeline/header/${startTime}/${endTime}/${width}`"
               :data-imgsrc="`/opennms/rest/timeline/header/${startTime}/${endTime}/`"

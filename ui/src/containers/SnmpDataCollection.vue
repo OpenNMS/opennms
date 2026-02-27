@@ -47,8 +47,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => ([
 ]))
 
 const goToCreateSource = () => {
-  // router.push({ name: 'Snmp Data Collection Create' })
-  console.log('Create New Data Collection Source clicked')
+  router.push({ name: 'SNMP Data Collection Create' })
 }
 
 const goToImportSource = () => {

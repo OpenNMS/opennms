@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -64,6 +63,11 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
     @Override
     public List<SnmpCollectionSystemDef> findAllBySource(Integer snmpCollectionSourceId) {
         return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ?", snmpCollectionSourceId);
+    }
+
+    @Override
+    public List<SnmpCollectionSystemDef> findAllEnabledBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionSystemDef d where d.collectionSource.id = ? and d.enabled = true", snmpCollectionSourceId);
     }
 
     @Override

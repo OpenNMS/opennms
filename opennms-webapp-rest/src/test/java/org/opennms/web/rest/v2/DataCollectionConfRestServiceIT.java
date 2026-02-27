@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.dao.api.SnmpCollectionMibGroupDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
@@ -48,19 +50,26 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -410,6 +419,7 @@ public class DataCollectionConfRestServiceIT {
 
 
     }
+
     @Test
     @Transactional
     public void testFilterDataCollectionSystemDefByCollectionSourceId() {
@@ -996,8 +1006,322 @@ public class DataCollectionConfRestServiceIT {
         Assert.assertEquals(".1.3.6.1.4.1.9999.1", updated.getSysoid());
 
     }
+    @Test
+    @Transactional
+    public void testDownloadDataCollectionXmlBySourceId() throws Exception {
+        final String format = "xml";
 
-    /** Helper to create a mocked Attachment for a given file */
+        final String xmlResourcePath = RESOURCE_PATH + FILENAME;
+
+        final List<Attachment> attachments = List.of(createMockedAttachment(FILENAME));
+
+        Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("dell");
+        assertNotNull("DataCollectionSource should exist after upload", dataCollectionSource);
+
+        Response response = dataCollectionConfRestApi.downloadSnmpDataCollectionById(
+                dataCollectionSource.getId(), format, securityContext);
+
+        assertNotNull("Response should not be null", response);
+        assertEquals("Expected HTTP 200 OK", 200, response.getStatus());
+        assertNotNull("MediaType should not be null", response.getMediaType());
+        assertTrue("Expected application/xml but was: " + response.getMediaType(),
+                response.getMediaType().isCompatible(MediaType.APPLICATION_XML_TYPE));
+
+        final Object entity = response.getEntity();
+        assertNotNull("Response entity should not be null", entity);
+
+        String downloadedXml = stripUtf8Bom(readEntityAsString(entity)).trim();
+        assertLooksLikeXml("downloadedXml", downloadedXml);
+
+        final String uploadedXml;
+        try (InputStream is2 = getClass().getResourceAsStream(xmlResourcePath)) {
+            assertNotNull("Resource not found: " + xmlResourcePath, is2);
+            uploadedXml = stripUtf8Bom(new String(is2.readAllBytes(), StandardCharsets.UTF_8)).trim();
+        }
+        assertLooksLikeXml("uploadedXml", uploadedXml);
+
+        final DatacollectionGroup uploaded =
+                JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(uploadedXml));
+        final DatacollectionGroup downloaded =
+                JaxbUtils.unmarshal(DatacollectionGroup.class, new StringReader(downloadedXml));
+
+        final var uploadedGroups = new ArrayList<>(uploaded.getGroups());
+        final var downloadedGroups = new ArrayList<>(downloaded.getGroups());
+        assertEquals(uploadedGroups.size(), downloadedGroups.size());
+        for (int i = 0; i < uploadedGroups.size(); i++) {
+            assertEquals(uploadedGroups.get(i), downloadedGroups.get(i));
+        }
+
+        // Validate Resource types
+        final var uploadedResourceTypes = new ArrayList<>(uploaded.getResourceTypes());
+        final var downloadedResourceTypes = new ArrayList<>(downloaded.getResourceTypes());
+        assertEquals(uploadedResourceTypes.size(), downloadedResourceTypes.size());
+        for (int i = 0; i < uploadedResourceTypes.size(); i++) {
+            assertEquals(uploadedResourceTypes.get(i), downloadedResourceTypes.get(i));
+        }
+
+        // Validate System defs
+        final var uploadedSystemDefs = new ArrayList<>(uploaded.getSystemDefs());
+        final var downloadedSystemDefs = new ArrayList<>(downloaded.getSystemDefs());
+        assertEquals(uploadedSystemDefs.size(), downloadedSystemDefs.size());
+        for (int i = 0; i < uploadedSystemDefs.size(); i++) {
+            assertEquals(uploadedSystemDefs.get(i), downloadedSystemDefs.get(i));
+        }
+    }
+
+    private static String readEntityAsString(Object entity) throws Exception {
+        if (entity instanceof StreamingOutput) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ((StreamingOutput) entity).write(baos);
+            return baos.toString(StandardCharsets.UTF_8);
+        }
+        if (entity instanceof InputStream) {
+            return new String(((InputStream) entity).readAllBytes(), StandardCharsets.UTF_8);
+        }
+        if (entity instanceof byte[]) {
+            return new String((byte[]) entity, StandardCharsets.UTF_8);
+        }
+        if (entity instanceof String) {
+            return (String) entity;
+        }
+        throw new AssertionError("Unexpected entity type: " + entity.getClass());
+    }
+
+
+    private static void assertLooksLikeXml(String label, String xml) {
+        assertNotNull(label + " should not be null", xml);
+        /** Helper to create a mocked Attachment for a given file */
+        String normalized = stripUtf8Bom(xml).trim();
+        assertFalse(label + " should not be empty", normalized.isEmpty());
+        assertTrue(label + " should start with '<' but starts with: " +
+                        normalized.substring(0, Math.min(80, normalized.length())),
+                normalized.startsWith("<"));
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteSnmpDataCollectionSources_BadRequest_Success_AndInternalServerError() throws Exception {
+        // --- BAD_REQUEST: null payload
+        Response bad1 = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(null, securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
+        Assert.assertEquals("Snmp Data Collection IDs to delete must not be empty", bad1.getEntity());
+
+        // --- BAD_REQUEST: empty ids
+        Response bad2 = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(Collections.emptyList(), securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
+        Assert.assertEquals("Snmp Data Collection IDs to delete must not be empty", bad2.getEntity());
+
+        // --- SUCCESS
+        SnmpCollectionSource src1 = new SnmpCollectionSource();
+        src1.setName("delete.source.combo.1");
+        src1.setVendor("opennms");
+        src1.setCreatedTime(new Date());
+        src1.setDescription("to be deleted 1");
+        src1.setEnabled(true);
+
+        SnmpCollectionSource src2 = new SnmpCollectionSource();
+        src2.setName("delete.source.combo.2");
+        src2.setVendor("opennms");
+        src2.setCreatedTime(new Date());
+        src2.setDescription("to be deleted 2");
+        src2.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(src1);
+        snmpCollectionSourceDao.saveOrUpdate(src2);
+        snmpCollectionSourceDao.flush();
+
+        Response ok = dataCollectionConfRestApi.deleteSnmpDataCollectionSources(List.of(src1.getId(), src2.getId()), securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
+        Assert.assertEquals("Snmp Data Collection deleted successfully", ok.getEntity());
+
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteMibGroupsForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup source + 2 mib groups
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.mibgroup.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for mib group delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionMibGroup g1 = new SnmpCollectionMibGroup();
+        g1.setCollectionSource(src);
+        g1.setName("delete-me-mibgroup-1");
+        g1.setIfType("Ethernet");
+        g1.setMibGroupNames("IF-MIB::ifEntry");
+        g1.setMibObjects("ifIndex");
+        g1.setMibObjProperties("{\"property\":\"value\"}");
+        g1.setEnabled(true);
+
+        SnmpCollectionMibGroup g2 = new SnmpCollectionMibGroup();
+        g2.setCollectionSource(src);
+        g2.setName("delete-me-mibgroup-2");
+        g2.setIfType("Loopback");
+        g2.setMibGroupNames("IP-MIB::ip");
+        g2.setMibObjects("ipAdEntAddr");
+        g2.setMibObjProperties("{\"property\":\"value\"}");
+        g2.setEnabled(true);
+
+        snmpCollectionMibGroupDao.saveOrUpdate(g1);
+        snmpCollectionMibGroupDao.saveOrUpdate(g2);
+        snmpCollectionMibGroupDao.flush();
+
+        // --- BAD_REQUEST: null ids
+        Response bad1 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), null, securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
+        Assert.assertEquals("MIB Group IDs to delete must not be empty", bad1.getEntity());
+
+        // --- BAD_REQUEST: empty ids
+        Response bad2 = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), Collections.emptyList(), securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
+        Assert.assertEquals("MIB Group IDs to delete must not be empty", bad2.getEntity());
+
+        // --- SUCCESS: delete both
+        Response ok = dataCollectionConfRestApi.deleteMibGroupsForSource(src.getId(), List.of(g1.getId(), g2.getId()), securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
+        Assert.assertEquals("Snmp Data Collection Mib Groups deleted successfully", ok.getEntity());
+
+        // verify via filter endpoint
+        Response filter = dataCollectionConfRestApi.filterDataCollectionMibGroupByCollectionSourceId(
+                src.getId(), "delete-me-mibgroup", "name", "ASC", 0, 0, 10, securityContext);
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), filter.getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteResourceTypesForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup source + 2 resource types
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.resourcetype.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for resource type delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(src);
+        rt1.setName("delete-me-resourcetype-1");
+        rt1.setLabel("Delete Me 1");
+        rt1.setResourceLabel("Delete Me 1 ${ifDescr}");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(src);
+        rt2.setName("delete-me-resourcetype-2");
+        rt2.setLabel("Delete Me 2");
+        rt2.setResourceLabel("Delete Me 2 ${ifDescr}");
+        rt2.setPersistenceSelectorStrategy("default");
+        rt2.setStorageStrategy("db");
+        rt2.setEnabled(true);
+
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        // --- BAD_REQUEST: null ids
+        Response bad1 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), null, securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
+        Assert.assertEquals("Resource Type IDs to delete must not be empty", bad1.getEntity());
+
+        // --- BAD_REQUEST: empty ids
+        Response bad2 = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), Collections.emptyList(), securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
+        Assert.assertEquals("Resource Type IDs to delete must not be empty", bad2.getEntity());
+
+        // --- SUCCESS: delete both
+        Response ok = dataCollectionConfRestApi.deleteResourceTypesForSource(src.getId(), List.of(rt1.getId(), rt2.getId()), securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
+        Assert.assertEquals("Snmp Data Collection Resource Types deleted successfully", ok.getEntity());
+
+        // verify via filter endpoint
+        Response filter = dataCollectionConfRestApi.filterDataCollectionResourceTypeByCollectionSourceId(
+                src.getId(), "delete-me-resourcetype", "name", "ASC", 0, 0, 10, securityContext);
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), filter.getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteSystemDefsForSource_BadRequest_AndSuccess() throws Exception {
+        // --- Setup source + 2 system defs
+        SnmpCollectionSource src = new SnmpCollectionSource();
+        src.setName("delete.systemdef.combo.source");
+        src.setVendor("opennms");
+        src.setDescription("source for system def delete");
+        src.setCreatedTime(new Date());
+        src.setEnabled(true);
+        snmpCollectionSourceDao.saveOrUpdate(src);
+        snmpCollectionSourceDao.flush();
+
+        SnmpCollectionSystemDef d1 = new SnmpCollectionSystemDef();
+        d1.setCollectionSource(src);
+        d1.setName("delete-me-systemdef-1");
+        d1.setSysoid(".1.3.6.1.2.1.1");
+        d1.setSysoidMask("255.255.255.0");
+        d1.setIpAddresses("192.168.1.0");
+        d1.setIpAddressMasks("255.255.255.0");
+        d1.setMibGroupNames("MIB-GROUP-1");
+
+        SnmpCollectionSystemDef d2 = new SnmpCollectionSystemDef();
+        d2.setCollectionSource(src);
+        d2.setName("delete-me-systemdef-2");
+        d2.setSysoid(".1.3.6.1.2.1.2");
+        d2.setSysoidMask("255.255.255.0");
+        d2.setIpAddresses("10.0.0.0");
+        d2.setIpAddressMasks("255.0.0.0");
+        d2.setMibGroupNames("MIB-GROUP-2");
+
+        snmpCollectionSystemDefDao.saveOrUpdate(d1);
+        snmpCollectionSystemDefDao.saveOrUpdate(d2);
+        snmpCollectionSystemDefDao.flush();
+
+        // --- BAD_REQUEST: null ids
+        Response bad1 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), null, securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad1.getStatus());
+        Assert.assertEquals("System Def IDs to delete must not be empty", bad1.getEntity());
+
+        // --- BAD_REQUEST: empty ids
+        Response bad2 = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), Collections.emptyList(), securityContext);
+        Assert.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), bad2.getStatus());
+        Assert.assertEquals("System Def IDs to delete must not be empty", bad2.getEntity());
+
+        // --- SUCCESS: delete both
+        Response ok = dataCollectionConfRestApi.deleteSystemDefsForSource(src.getId(), List.of(d1.getId(), d2.getId()), securityContext);
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), ok.getStatus());
+        Assert.assertEquals("Snmp Data Collection System Def deleted successfully", ok.getEntity());
+
+        // verify via filter endpoint
+        Response filter = dataCollectionConfRestApi.filterDataCollectionSystemDefByCollectionSourceId(
+                src.getId(), "delete-me-systemdef", "name", "ASC", 0, 0, 10, securityContext);
+        Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), filter.getStatus());
+
+    }
+
+
+
+    private static String stripUtf8Bom(String s) {
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+        // UTF-8 BOM char (U+FEFF) sometimes appears as the first char and breaks XML parsing
+        return (s.charAt(0) == '\uFEFF') ? s.substring(1) : s;
+    }
+
+
+    /**
+     * Helper to create a mocked Attachment for a given file
+     */
     private Attachment createMockedAttachment(String name) {
         InputStream is = getClass().getResourceAsStream(RESOURCE_PATH + name);
         assertNotNull("Test resource not found: " + name, is);

@@ -29,8 +29,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Column;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -71,6 +74,18 @@ public class SnmpCollectionSource implements Serializable {
 
     @Column(name = "uploaded_by", length = 256)
     private String uploadedBy;
+
+    @OneToMany(mappedBy = "collectionSource", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SnmpCollectionResourceType> resourceTypes;
+
+    @OneToMany(mappedBy = "collectionSource", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SnmpCollectionMibGroup> mibGroups;
+
+    @OneToMany(mappedBy = "collectionSource", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SnmpCollectionSystemDef> systemDefs;
+
+
+
     public Date getCreatedTime() {
         return createdTime;
     }
@@ -133,6 +148,30 @@ public class SnmpCollectionSource implements Serializable {
 
     public void setVendor(String vendor) {
         this.vendor = vendor;
+    }
+
+    public List<SnmpCollectionMibGroup> getMibGroups() {
+        return mibGroups;
+    }
+
+    public void setMibGroups(List<SnmpCollectionMibGroup> mibGroups) {
+        this.mibGroups = mibGroups;
+    }
+
+    public List<SnmpCollectionResourceType> getResourceTypes() {
+        return resourceTypes;
+    }
+
+    public void setResourceTypes(List<SnmpCollectionResourceType> resourceTypes) {
+        this.resourceTypes = resourceTypes;
+    }
+
+    public List<SnmpCollectionSystemDef> getSystemDefs() {
+        return systemDefs;
+    }
+
+    public void setSystemDefs(List<SnmpCollectionSystemDef> systemDefs) {
+        this.systemDefs = systemDefs;
     }
 
 }

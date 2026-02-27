@@ -26,7 +26,6 @@ import org.opennms.netmgt.model.SnmpCollectionResourceType;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionResourceType, Integer> {
     SnmpCollectionResourceType get(Integer id);
@@ -36,6 +35,8 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
     List<SnmpCollectionResourceType> findAll();
 
     List<SnmpCollectionResourceType> findAllBySource(Integer snmpCollectionSourceId);
+
+    List<SnmpCollectionResourceType> findAllEnabledBySource(Integer snmpCollectionSourceId);
 
     List<SnmpCollectionResourceType> findAllEnabled();
 

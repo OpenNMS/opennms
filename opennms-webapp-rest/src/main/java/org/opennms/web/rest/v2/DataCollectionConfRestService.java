@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -44,10 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -486,6 +493,161 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
     }
 
+    @Override
+    public Response deleteSnmpDataCollectionSources(final List<Integer> ids,
+                                                    final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("Snmp Data Collection IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService.deleteSnmpDataCollectionSources(ids),
+                "Snmp Data Collection deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteMibGroupsForSource(final Integer snmpDataCollectionSourceId,
+                                             final List<Integer> ids,
+                                             final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("MIB Group IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionMibGroups(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection Mib Groups deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteResourceTypesForSource(final Integer snmpDataCollectionSourceId,
+                                                 final List<Integer> ids,
+                                                 final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("Resource Type IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionResourceTypes(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection Resource Types deleted successfully"
+        );
+    }
+
+    @Override
+    public Response deleteSystemDefsForSource(final Integer snmpDataCollectionSourceId,
+                                              final List<Integer> ids,
+                                              final SecurityContext securityContext) {
+
+        if (ids == null || ids.isEmpty()) {
+            return badRequest("System Def IDs to delete must not be empty");
+        }
+
+        return handleDelete(
+                () -> dataCollectionConfPersistenceService
+                        .deleteSnmpDataCollectionSystemDefs(snmpDataCollectionSourceId, ids),
+                "Snmp Data Collection System Def deleted successfully"
+        );
+    }
+
+    private Response handleDelete(final DeleteAction action, final String successMessage) {
+        try {
+            action.run();
+
+            return Response.ok()
+                    .entity(successMessage)
+                    .build();
+
+        } catch (IllegalArgumentException ex) {
+            return badRequest(ex.getMessage());
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(ex.getMessage())
+                    .build();
+
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred")
+                    .build();
+        }
+    }
+
+    private Response badRequest(final String message) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(message)
+                .build();
+    }
+
+    @FunctionalInterface
+    private interface DeleteAction {
+        void run();
+    }
+
+    @Override
+    public Response downloadSnmpDataCollectionById(Integer snmpDataCollectionId, String format, SecurityContext securityContext) throws Exception {
+        if (snmpDataCollectionId == null || snmpDataCollectionId <= 0) {
+            return buildXmlError(Response.Status.BAD_REQUEST, "Invalid snmp data collection ID");
+        }
+
+        SnmpCollectionSource collectionSource = snmpCollectionSourceDao.get(snmpDataCollectionId);
+        if (collectionSource == null) {
+            return buildXmlError(Response.Status.NOT_FOUND,
+                    "No Snmp Collection Source found for ID: " + snmpDataCollectionId);
+        }
+
+        DatacollectionGroup dcg = dataCollectionConfPersistenceService.buildDataCollectionGroupFromDb(collectionSource);
+
+        // Default to XML if format is null/blank
+        String normalizedFormat = (format == null || format.isBlank()) ? "xml" : format.trim();
+
+        if ("json".equalsIgnoreCase(normalizedFormat)) {
+            try {
+                ObjectMapper mapper = new ObjectMapper()
+                        .enable(SerializationFeature.INDENT_OUTPUT);
+
+                byte[] jsonBytes = mapper.writeValueAsBytes(dcg);
+
+                return Response.ok(jsonBytes, MediaType.APPLICATION_JSON)
+                        .header("Content-Disposition",
+                                "attachment; filename=\"%s.json\"".formatted(collectionSource.getName()))
+                        .build();
+            } catch (Exception e) {
+                LOG.error("Failed to serialize datacollection-group as JSON for sourceId={}", snmpDataCollectionId, e);
+                // If you have buildJsonError, prefer that when json requested.
+                return buildXmlError(Response.Status.INTERNAL_SERVER_ERROR, "Failed to generate JSON: " + e.getMessage());
+            }
+        }
+
+        if ("xml".equalsIgnoreCase(normalizedFormat)) {
+            byte[] xmlBytes;
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 OutputStreamWriter osw = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
+                 BufferedWriter writer = new BufferedWriter(osw)) {
+
+                JaxbUtils.marshal(dcg, writer);
+                writer.flush();
+                xmlBytes = baos.toByteArray();
+            } catch (Exception e) {
+                LOG.error("Failed to marshal datacollection-group for sourceId={}", snmpDataCollectionId, e);
+                return buildXmlError(Response.Status.INTERNAL_SERVER_ERROR, "Failed to generate XML: " + e.getMessage());
+            }
+
+            return Response.ok(xmlBytes, MediaType.APPLICATION_XML)
+                    .header("Content-Disposition",
+                            "attachment; filename=\"%s.xml\"".formatted(collectionSource.getName()))
+                    .build();
+        }
+
+        return buildXmlError(Response.Status.BAD_REQUEST,
+                "Invalid format: " + format + ". Supported values: xml, json");
+    }
+
     private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
         return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
     }
@@ -524,4 +686,11 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         entry.put("error", ex.getClass().getSimpleName() + ": " + ex.getMessage());
         return entry;
     }
+    private Response buildXmlError(Response.Status status, String message) {
+        return Response.status(status)
+                .entity("<error>%s</error>".formatted(message))
+                .type(MediaType.APPLICATION_XML)
+                .build();
+    }
+
 }
