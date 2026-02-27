@@ -1,184 +1,151 @@
 
-[[getting-started-core]]
-= Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL 9, Debian/Ubuntu, and Docker.
+[[native-installation-core]]
+= Native Installation
+:description: Install and configure OpenNMS instance including PostgreSQL setup on CentOS/RHEL, Debian/Ubuntu, and Docker.
 
-This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
+This section explains how to install and configure a new {page-component-title} instance on a single node, including the following tasks:
 
-* Install all required OpenNMS {page-component-title} components, including PostgreSQL, on a single node.
-* Run {page-component-title} core and PostgreSQL with the default configuration.
-+
+. Install PostgreSQL and initialize the database directory
+. Install Eclipse Temurin 17 JDK and {page-component-title} Core
+. Configure {page-component-title} Core to access the local PostgreSQL database and initialize the database scheme
+. Sign in to the web UI and change the `admin` account's default password
+
 NOTE: The default configuration is not optimized to run in a production environment or monitor large networks.
 
-** By default, your time series database is RRDtool, which persists RRD files on the local file system.
-* Sign in to the web UI and change the `admin` account's default password.
-
-== DNS considerations
-
-If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
-DNS lookups may be performed by different processes, including while provisioning new nodes and when receiving syslog messages.
-It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
-One way to mitigate DNS performance is to set up your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
-
 ifeval::["{page-component-title}" == "Horizon"]
-== Quick installation
-
-If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick installation scripts].
-This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
-Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
-
-=== Scope
-
-* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
-* Installation follows the best practices from our official docs.
-* Script is only for new installations and does not deal with existing installations or upgrades.
-* Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
-
+TIP: If you want to evaluate or test OpenNMS {page-component-title} in a non-productive environment, you can check out our https://github.com/opennms-forge/opennms-install[quick installation scripts].
+This convenient script installs Horizon on Debian or Red Hat compatible systems on a single node.
+You can use it as a starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
 endif::[]
 
-[[requirements]]
-== Requirements
-
-The following components and settings are required to set up a new {page-component-title} instance:
-
-ifeval::["{page-component-title}" == "Meridian"]
-* Credentials to access the Meridian repositories.
-endif::[]
-* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
-* Internet access to download the installation packages. xref:system-requirements.adoc
-* A working DNS server, and a localhost and server name that resolve properly.
-* A system user with administrative permissions (`sudo`) to perform installation.
-* A SELinux policy that permits binding to the ICMP service, if necessary.
-+
-NOTE: If you do not include the appropriate SELinux policy, {page-component-title} may generate an ICMP permissions error when starting up (see xref:reference:configuration/selinux.adoc[]).
-
-ifeval::["{page-component-title}" == "Horizon"]
-* To run services in Docker, you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
-* On Debian, you must install and configure `sudo` yourself.
-See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
-endif::[]
-
-include::../time-sync.adoc[]
 
 [[setup-postgresql]]
-== Set up PostgreSQL
+== Step 1: Installing PostgreSQL
 
-TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method to `md5` in the `pg_hba.conf` before installing the {page-component-title} core instance.
+include::postgresql.adoc[]
 
-== Pool size and maximum database connections
+== Step 2: Installing Java
 
-You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to allow at least 70 connections.
-The number of connections is defined by the `maxPool` setting for each datasource (opennms 50 + opennms-admin 10 + opennms-monitoring 10).
-The `maxSize` is not used with the `HikariCPConnectionFactory`, which is deprecated and just here for backward compatibility.
-
-If you change the max pool size, make sure you also update the `max_connections`.
-You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
-You must restart the PostgreSQL server to take effect.
-
-NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
-As with all third-party tools, we do not endorse or guarantee it.
-Use it at your own discretion.
-
-[{tabs}]
-====
-CentOS 9::
-+
---
-include::centos9/postgresql.adoc[]
---
-
-CentOS/RHEL 10::
-+
---
-include::centos-rhel10/postgresql.adoc[]
---
-ifeval::["{page-component-title}" == "Horizon"]
-
-Debian/Ubuntu::
-+
---
-include::debian-ubuntu/postgresql.adoc[]
---
-
-Docker::
-+
---
-include::docker/postgresql.adoc[]
---
-endif::[]
-====
+include::../java/temurin.adoc[]
 
 [[install-core-instance]]
-== Install the core instance
-
-IMPORTANT: For security reasons, {page-component-title} is designed to run within an organization's protected intranet.
-Do not expose the web console or sign-in pages directly to the Internet without appropriate isolation controls, (for example, a VPN with multi-factor authentication).
-
-[{tabs}]
-====
-CentOS 9::
-+
---
-include::centos9/install-core.adoc[]
---
-
-CentOS/RHEL 10::
-+
---
-include::centos-rhel10/install-core.adoc[]
---
+== Step 3: Set up {page-component-title} Core
 
 ifeval::["{page-component-title}" == "Horizon"]
-
-Ubuntu::
-+
---
-include::ubuntu/install-core.adoc[]
---
-
-Debian::
-+
---
-include::debian/install-core.adoc[]
---
-
-Docker::
-+
---
-include::docker/core.adoc[]
---
-endif::[]
-====
-
-[[set-up-core-instance]]
-== Set up the core instance
+include::../repos/horizon.adoc[]
 
 [{tabs}]
 ====
 CentOS/RHEL::
 +
 --
-include::centos/initialize-core.adoc[]
+.Install OpenNMS {page-component-title} Core packages
+[source,console]
+[source, console, subs="attributes"]
+----
+sudo dnf -y install {package-prefix}
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
+
+.Disable auto updates for OpenNMS {page-component-title}
+[source, console]
+----
+sudo dnf config-manager --disable opennms-repo-stable-*
+----
 --
 
-ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/initialize-core.adoc[]
---
+.Install OpenNMS {page-component-title} Core packages
+[source, console]
+----
+sudo apt -y install opennms
+----
 
-Docker::
-+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
+
+[source,console]
+----
+sudo apt-mark hold libopennms-java \
+  libopennmsdeps-java \
+  opennms-common \
+  opennms-db \
+  opennms-server \
+  opennms-source \
+  opennms-webapp-jetty
+----
 --
-include::docker/initialize.adoc[]
---
-endif::[]
 ====
+endif::[]
 
-[[ga-data-choices]]
-== First-time sign in
+ifeval::["{page-component-title}" == "Meridian"]
+include::../repos/meridian.adoc
+
+.Install {page-component-title} Core packages
+[source,console]
+[source, console, subs="attributes"]
+----
+sudo dnf -y install {package-prefix}
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
+
+.Disable auto updates for OpenNMS {page-component-title}
+[source, console]
+----
+sudo dnf config-manager --disable meridian
+----
+endif::[]
+
+.Set credentials for the PostgreSQL database connections:
+[source, console]
+----
+sudo -u opennms /opt/opennms/bin/scvcli set postgres opennms <YOUR SECRET PASSWORD> <1>
+sudo -u opennms /opt/opennms/bin/scvcli set postgres-admin postgres <YOUR SECRET PASSWORD>
+----
+<1> Replace both `<YOUR SECRET PASSWORD>` instances with the actual passwords for your `opennms` and `postgres` database accounts.
+
+.Detect Java environment and persist in `/opt/opennms/etc/java.conf`
+[source, console]
+----
+sudo /opt/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in `/opt/opennms/etc/libraries.properties`
+[source, console]
+----
+sudo /opt/opennms/bin/install -dis
+----
+
+.Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
+[source, console]
+----
+echo "JAVA_HEAP_SIZE=12G" | sudo tee /opt/opennms/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee -a /opt/opennms/etc/opennms.conf
+----
+NOTE: These values are provided as examples; ideal values will vary based on your environment and workload.
+It is recommended to not use more than **75% of RAM** for maximum Java heap size.
+Java requires additional space for threads, metaspace, socket buffers, etc.
+
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
+.Configure firewall rules
+include::firewall.adoc[]
+
+[[first-sign-in]]
+== Step 4: First-time Sign In
 
 After you start the {page-component-title} core services, you can access the web application at `\http://core-instance-ip:8980/opennms`.
 The default user credentials are as follows:
@@ -193,7 +160,7 @@ Although you can also skip this action and sign in with default the credentials,
 . Type your new password and confirm it.
 . Click *Change Password*.
 
-== Change password after first sign in
+=== Change Admin Password
 
 To change your account's password after the first time you sign in, follow these steps:
 
@@ -208,7 +175,7 @@ If all users have individual accounts, you can see who is completing tasks, (for
 For information on how to create personalized user accounts, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
 
 [[usage-statistics]]
-=== Usage statistics
+=== Usage Statistics
 
 The first time you sign in, {page-component-title} notifies you that it collects anonymized usage statistics and publishes them to https://stats.opennms.com.
 Consent to share collected usage statistics is assumed by default.
@@ -224,18 +191,18 @@ You can view the usage statistics at any time on the admin page.
 
 NOTE: Admin users can xref:operation:deep-dive/admin/configuration/usage-statistics.adoc#disable-data-collection[opt out of sharing the statistics] at any time.
 
-== First monitored node
+=== First Monitored Node
 
 The default configuration will discover a single node with an interface `127.0.0.1` and detect services exposed on the loopback interface, including the `OpenNMS-JVM` service.
 Nodes with this service have JMX-based data collection performed on Java JVM statistics such as heap memory and open file handles.
 
-== Related topics
+== Related Topics
 
 * xref:operation:deep-dive/admin/configuration/startup.adoc[]
 * xref:reference:configuration/selinux.adoc[]
 * xref:reference:configuration/receive-snmp-traps.adoc[]
 * xref:core/installing-jdbc-driver.adoc[]
 
-== Next steps
+== Next Steps
 
 See the xref:operation:quick-start/introduction.adoc[Quick Start guide] for more information on setting up and configuring your {page-component-title} instance.

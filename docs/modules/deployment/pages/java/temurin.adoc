@@ -1,0 +1,64 @@
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+.Add Adoptium repository. See official https://adoptium.net/installation[docs] for more information.
+[source, console]
+----
+sudo bash -c 'cat <<EOF > /etc/yum.repos.d/adoptium.repo
+[Adoptium]
+name=Adoptium
+baseurl=https://packages.adoptium.net/artifactory/rpm/${DISTRIBUTION_NAME:-$(. /etc/os-release; echo $ID)}/\$releasever/\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public
+EOF'
+----
+
+.Install Temurin Java {compatible-javajdk}
+[source, console, subs="attributes"]
+----
+sudo dnf install temurin-{compatible-javajdk}-jdk
+----
+--
+
+Debian/Ubuntu::
++
+--
+.Ensure apt https transport and gpg are present
+[source, console]
+----
+sudo apt install -y wget apt-transport-https gpg
+----
+
+.Download the Eclipse Adoptium GPG key
+[source, console]
+----
+sudo wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/adoptium.gpg > /dev/null
+----
+
+.Configure the Eclipse Adoptium apt repository
+[source, console]
+----
+CODENAME=$(awk -F= '/^VERSION_CODENAME/{print $2}' /etc/os-release)
+sudo tee /etc/apt/sources.list.d/adoptium.sources > /dev/null << EOF
+Types: deb
+URIs: https://packages.adoptium.net/artifactory/deb/
+Suites: ${CODENAME}
+Components: main
+Signed-By: /etc/apt/trusted.gpg.d/adoptium.gpg
+EOF
+sudo apt update
+----
+
+TIP: You can find the full list of supported versions in the tree at https://packages.adoptium.net/ui/native/deb/dists/.
+
+.Install the Temurin version you require
+[sourcem, console]
+----
+sudo apt install -y temurin-17-jdk
+----
+--
+====

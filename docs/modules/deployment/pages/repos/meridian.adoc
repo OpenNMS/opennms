@@ -1,0 +1,47 @@
+
+[{tabs}]
+====
+CentOS/RHEL 8/9::
++
+--
+.Add a repository and import a GPG key
+[source, console, subs="verbatim,attributes"]
+----
+cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
+[meridian]
+name=Meridian for Red Hat Enterprise Linux and CentOS
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/{latest-meridian-stable}/stable/rhel%\{rhel}<1>
+gpgcheck=1
+gpgkey=https://yum.opennms.org/OPENNMS-GPG-KEY
+EOF
+
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
+--
+
+CentOS/RHEL 10::
++
+--
+.Add a repository and import a GPG key
+[source, console, subs="verbatim,attributes"]
+----
+cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
+[meridian]
+name=Meridian for Red Hat Enterprise Linux and CentOS
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/{latest-meridian-stable}/stable/rhel9<1>
+gpgcheck=1
+gpgkey=https://yum.opennms.org/OPENNMS-GPG-KEY
+EOF
+
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+<1> Replace the `REPO_USER` and `REPO_PASS` with your Meridian subscription credentials.
+
+NOTE: The next command is a workaround until https://opennms.atlassian.net/browse/NMS-19071 is solved.
+[source, console]
+----
+sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /etc/yum.repos.d/opennms-meridian.repo
+----
+--
+====

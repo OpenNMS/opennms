@@ -1,5 +1,5 @@
 [[backup]]
-= Back up OpenNMS {page-component-title}
+= Back up Core
 :description: How to backup OpenNMS Horizon or Meridian components.
 
 This section describes a basic backup process for a default OpenNMS {page-component-title} xref:deployment:core/install.adoc#getting-started-core[installation].
@@ -11,7 +11,7 @@ Please be aware that `/tmp` is not persisted, as most operating systems will del
 [[backup-objectives]]
 == Objectives
 
-* Create a backup of OpenNMS {page-component-title} components.
+* Create a backup of OpenNMS {page-component-title} Core components.
 * Create a PostgreSQL database backup.
 * Run a restore without having OpenNMS installation packages available.
 

@@ -1,0 +1,70 @@
+
+[[requirements-sentinel]]
+= Requirements
+:description: Minimum requirements for OpenNMS Sentinel, including operating systems.
+
+
+[[system-requirements-sentinel]]
+== System requirements
+
+The following hardware specs are the minimum required to run a Sentinel:
+
+[options="autowidth"]
+|===
+|   | Just Testing^1^   | Minimum Server Specification^2^
+
+s| CPU
+| 2GHz dual core x86_64
+| 3GHz quad core x86_64 and above
+
+s| RAM
+| 4GB (physical)
+| 8GB (physical) and above
+
+s| Storage (disk space)
+| 20-GB HDD, SSD
+| 100GB with SSD and above
+|===
+
+. You can install the packages, and the Sentinel services start. +
+. Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
+
+[[operating-systems-sentinel]]
+== Operating systems
+
+OpenNMS {page-component-title} runs on the following operating systems:
+
+[options="autowidth"]
+|===
+| Operating System  | Supported Versions (64-bit)
+
+| RHEL
+| {compatible-rhel}
+
+| CentOS
+| {compatible-centos}
+
+ifeval::["{page-component-title}" == "Horizon"]
+| Debian
+| {compatible-debian}
+
+| Ubuntu
+| {compatible-ubuntu}
+endif::[]
+|===
+
+NOTE: See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
+
+== Before You Begin
+
+* Linux physical server or a virtual machine running a supported Linux operating system
+* Internet access to download the installation packages
+* Ensure DNS is configured so that `localhost` and your server's host name are resolved properly
+* {page-component-title} Core instance runs on latest stable release
+* Java {compatible-javajdk} is installed
+* System user with administrative permissions (`sudo`) to perform the installation tasks
+ifeval::["{page-component-title}" == "Horizon"]
++
+NOTE: If you run Debian, you may have to install and configure `sudo` yourself.
+See https://wiki.debian.org/sudo/[Debian Wiki] for guidance.
+endif::[]

@@ -90,18 +90,18 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/node%5B1%5D"
           <key>loadavg1</key>
           <value name="loadavg1"
                  relativePath="snmp/1"
-                 rrdFile="loadavg1.rrd"/>
+                 rrdFile="loadavg1.jrb"/>
         </entry>
           <key>tcpActiveOpens</key>
           <value name="tcpActiveOpens"
                  relativePath="snmp/1"
-                 rrdFile="tcpActiveOpens.rrd"/>
+                 rrdFile="tcpActiveOpens.jrb"/>
         </entry>
         <entry>
           <key>memTotalFree</key>
           <value name="memTotalFree"
                  relativePath="snmp/1"
-                 rrdFile="memTotalFree.rrd"/>
+                 rrdFile="memTotalFree.jrb"/>
         </entry>
         ...
       </rrdGraphAttributes>
@@ -136,13 +136,13 @@ curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/node%5B1%5D"
           <key>ifHCInOctets</key>
           <value name="ifHCInOctets"
                  relativePath="snmp/1/lo"
-                 rrdFile="ifHCInOctets.rrd"/>
+                 rrdFile="ifHCInOctets.jrb"/>
         </entry>
         <entry>
           <key>ifHCOutOctets</key>
           <value name="ifHCOutOctets"
                  relativePath="snmp/1/lo"
-                 rrdFile="ifHCOutOctets.rrd"/>
+                 rrdFile="ifHCOutOctets.jrb"/>
         </entry>
         ...
       </rrdGraphAttributes>

@@ -1,7 +1,7 @@
 
-[[container-deployment]]
-= Containerized Deployment
-:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment like Kubernetes or Red Hat OpenShift.
+[[helm-deployment]]
+= Helm Charts
+:description: Learn how to install OpenNMS {page-component-title} in a containerized environment like Kubernetes or Red Hat OpenShift.
 
 If your organization uses Kubernetes or Red Hat OpenShift, OpenNMS makes a Helm chart available to simplify {page-component-title} deployment.
 For information on deploying in a Docker environment, see the Docker tabs in https://docs.opennms.com/horizon/latest/deployment/core/getting-started.html[installation and configuration].
@@ -18,7 +18,7 @@ endif::[]
 
 == Before you begin
 
-You must have a deep understanding of containerized environments (https://kubernetes.io/docs/home/[Kubernetes], https://access.redhat.com/documentation/en-us/openshift_container_platform/[Red Hat OpenShift]) and https://helm.sh/docs[Helm], which is the package manager for Kubernetes.
+You must have a deep understanding of containerized environments (https://kubernetes.io/docs/home/[Kubernetes], https://access.redhat.com/documentation/en-us/openshift_container_platform/[Red Hat OpenShift,]) and https://helm.sh/docs[Helm], which is the package manager for Kubernetes.
 
 You should also be familiar with {page-component-title}, its components, and how the environment works.
 

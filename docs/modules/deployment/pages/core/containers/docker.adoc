@@ -1,0 +1,155 @@
+
+:docker-version-tag: latest
+ifeval::["{prerelease}" == "false"]
+:docker-version-tag: {full-display-version}
+endif::[]
+
+[[docker-compose-deployment]]
+= Docker Compose
+:description: Learn how to install OpenNMS {page-component-title} in containerized environment with Docker and Docker Compose.
+
+This section describes how you can deploy a basic application stack for OpenNMS {page-component-title} using link:https://docs.docker.com/engine/[Docker] and link:https://docs.docker.com/compose/[Docker Compose].
+
+== Before you begin
+
+You must have an understanding of Linux and containerized environments.
+Make yourself familiar with {page-component-title}, its components, and how the environment works.
+
+== Requirements
+
+* Installed link:https://docs.docker.com/compose/install/[Docker Engine]
+* Installed link:https://docs.docker.com/compose/install/linux/[Docker Compose plugin]
+* link:https://docs.docker.com/engine/install/[Linux distribution] that supports the latest Docker setup
+* Internet access to download container images from link:https://hub.docker.com/[Docker Hub]
+
+TIP: It is recommended to run Docker as a non-root user, make sure your user is in the group `docker`.
+
+== Create Project Directory
+
+.Create directory that contains the files for the OpenNMS {page-component-title} stack project.
+[source, console]
+----
+mkdir opennms-stack
+cd opennms-stack
+sudo install -o 10001 -g 10001 -d config
+----
+
+.Create a Docker service composition
+[source, console]
+----
+vi compose.yml
+----
+
+.Create the services for PostgreSQL database and OpenNMS {page-component-title} Core
+[,yaml]
+[subs="verbatim,attributes"]
+----
+---
+volumes: <1>
+  data-postgres: {}
+  data-opennms: {}
+
+services:
+  database:
+    image: docker.io/postgres:{postgresql-version}
+    deploy: <2>
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    environment: <3>
+      TZ: UTC
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  core:
+ifeval::["{page-component-title}" == "Horizon"]
+    image: docker.io/opennms/horizon:{docker-version-tag}
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+    image: docker.cloudsmith.io/opennms/meridian-{latest-meridian-stable}/meridian:{docker-version-tag}
+endif::[]
+    depends_on:
+      database:
+        condition: service_healthy
+    deploy: <2>
+      resources:
+        limits:
+          cpus: 2
+          memory: 4G
+    environment:
+      TZ: UTC
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: changeme
+    volumes: <4>
+      - data-opennms:/opennms-data
+      - ./config:/opt/opennms/etc
+    command: ["-s"]
+    ports: <5>
+      - "8101:8101/tcp"
+      - "8980:8980/tcp"
+      - "162:10162/udp"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "-I", "http://localhost:8980/opennms/login.jsp" ]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+----
+<1> Create persistence volumes for the PostgreSQL database and OpenNMS {page-component-title} data
+<2> Set some deployment resource boundaries. The example sets it to minimum values to get it started. Adjust it to your environment.
+<3> Provide credentials for the PostgreSQL database as environment variables. It is recommended to extract credentials into an `.env`. Adjust your timezone accordingly, UTC is just used as an example.
+<4> Bind mount volumes for data files and configuration. For simplicity, the configs are persisted into the hosts local file system.
+<5> Publish ports for the web user interface, Karaf SSH shell and SNMP Trap listener.
+
+.Validate your compose.yaml file
+[source,console]
+----
+docker compose config
+----
+
+.Pull container images from the registry and run the stack in the background
+[source, console]
+----
+docker compose up -d
+----
+
+.Verify service health
+[source, console]
+----
+NAME                       IMAGE                              COMMAND                  SERVICE    CREATED              STATUS                        PORTS
+opennms-stack-core-1       docker.io/opennms/horizon:latest   "/entrypoint.sh -s"      core       About a minute ago   Up About a minute (healthy)   0.0.0.0:8101->8101/tcp, [::]:8101->8101/tcp, 1162/udp, 10514/udp, 0.0.0.0:8980->8980/tcp, [::]:8980->8980/tcp, 0.0.0.0:10162->162/udp, [::]:10162->162/udp
+opennms-stack-database-1   docker.io/postgres:15              "docker-entrypoint.s…"   database   About a minute ago   Up About a minute (healthy)   5432/tcp
+----
+
+.Investigate logs
+[source, console]
+----
+docker compose logs core
+----
+
+.Clean all data and configuration
+[source, console]
+----
+docker compose down -v
+sudo rm -r ./config/*
+----
+
+.Remove all container images, networks and persisted volumes
+[source, console]
+----
+docker system prune --all --volumes
+----

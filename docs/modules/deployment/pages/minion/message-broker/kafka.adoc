@@ -1,7 +1,7 @@
 .Create a file to prevent installing ActiveMQ features on Minion start-up
 [source, console]
 ----
-sudo vi etc/featuresBoot.d/disable-activemq.boot
+sudo vi /opt/minion/etc/featuresBoot.d/disable-activemq.boot
 ----
 
 .Add the following lines to disable ActiveMQ features and save the file
@@ -14,7 +14,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 .Create a file to install Kafka features on Minion startup
 [source, console]
 ----
-sudo vi etc/featuresBoot.d/kafka.boot
+sudo vi /opt/minion/etc/featuresBoot.d/kafka.boot
 ----
 
 .Add the following lines to install the remote producer call (RPC), sink, and twin feature for Kafka on Minion startup and save the file
@@ -52,7 +52,7 @@ config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
 
-<1> Adjust the IPs or FQDNs and the Kafka port (9092) to match your broker configuration.
+<1> Adjust the IPs or FQDNs and Kafka port (9092) to match your broker configuration.
 
 If you set more than one Kafka node as `bootstrap.servers` the driver attempts to connect to the first entry.
 If that is successful, the whole broker topology will be discovered and will be known by the client.
@@ -77,7 +77,7 @@ NOTE: You can configure module-specific values for modules `sink`, `rpc`, and `t
 Exit the Karaf shell with kbd:[Ctrl+d]
 
 By default, the Minion will use a topic prefix of `OpenNMS`.
-If you chose to use a different prefix in core (for example, to use a single Apache Kafka cluster with multiple {page-component-title} instances), change the topic prefix by setting the `org.opennms.instance.id` system property in `$MINION_HOME/etc/custom.system.properties`:
+If you chose to use a different prefix in core (for example, to use a single Apache Kafka cluster with multiple {page-component-title} instances), change the topic prefix by setting the `org.opennms.instance.id` system property in `/opt/minion/etc/custom.system.properties`:
 [source, properties]
 ----
 org.opennms.instance.id=MyNMS<1>

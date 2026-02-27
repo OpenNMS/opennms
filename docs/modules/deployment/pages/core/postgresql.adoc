@@ -1,0 +1,92 @@
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+.Install official PostgreSQL repository
+[source, console]
+----
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-$(rpm -E %{rhel})-$(rpm --eval %{_arch})/pgdg-redhat-repo-latest.noarch.rpm
+----
+
+.Disable PostgreSQL packages from Linux distribution repository
+[source, console]
+----
+sudo dnf -qy module disable postgresql
+----
+
+.Install PostgreSQL server and client packages
+[source, console]
+[subs="verbatim,attributes"]
+----
+sudo dnf install -y postgresql{postgresql-version}-server
+----
+
+.Initialize database directory
+[source, console]
+[subs="verbatim,attributes"]
+----
+sudo /usr/pgsql-{postgresql-version}/bin/postgresql-{postgresql-version}-setup initdb
+----
+
+.Start PostgreSQL on system boot
+[source, console]
+[subs="verbatim,attributes"]
+----
+sudo systemctl enable --now postgresql-{postgresql-version}
+----
+--
+
+ifeval::["{page-component-title}" == "Horizon"]
+Debian/Ubuntu::
++
+--
+.Ensure apt https transport and gpg are present
+[source, console]
+----
+sudo apt install -y wget apt-transport-https gpg lsb-release
+----
+
+.Configure the PostgreSQL apt repository
+[source, console]
+----
+sudo apt install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+----
+
+.Install PostgreSQL server and client packages
+[source, console]
+[subs="verbatim,attributes"]
+----
+sudo apt install -y postgresql-{postgresql-version}
+----
+--
+endif::[]
+====
+
+TIP: Set at least `max_connections = 100`.
+OpenNMS {page-component-title} uses by default 50 connections for the operational tasks and 50 for administrative tasks.
+See https://www.postgresql.org/docs/15/runtime-config-connection.html[PostgreSQL documentation for max_connections].
+
+TIP: You can use https://pgtune.leopard.in.ua/[PGTune] to get a good estimation to configure PostgreSQL system settings.
+As with all third-party tools, we do not endorse or guarantee it.
+Use it at your own discretion.
+
+.Create an opennms database user with a secure password
+[source, console]
+----
+sudo -i -u postgres createuser -P opennms
+----
+
+.Create an empty database and set the owner to the opennms user
+[source, console]
+----
+sudo -i -u postgres createdb -O opennms opennms
+----
+
+.Set a secure password for ´the PostgreSQL superuser
+[source, console]
+----
+sudo -i -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-SECRET-PASSWORD';"
+----

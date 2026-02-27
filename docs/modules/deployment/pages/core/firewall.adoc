@@ -1,0 +1,63 @@
+
+[{tabs}]
+====
+Firewalld::
++
+--
+.Allow access to the web user interface
+[souce, console]
+----
+sudo firewall-cmd --permanent --add-port=8980/tcp
+sudo systemctl reload firewalld
+----
+
+.Optional: Enable Masquerade to allow port forwarding
+[source, console]
+----
+sudo firewall-cmd --permanent --add-masquerade
+----
+
+.Optional: Forward SNMP Trap UDP port 162 to 10162
+[source, console]
+----
+sudo firewall-cmd --permanent --add-port=162/udp
+sudo firewall-cmd --permanent --add-port=10162/udp
+sudo firewall-cmd --permanent --add-forward-port=port=162:proto=udp:toport=10162
+sudo systemctl reload firewalld
+----
+--
+
+UFW::
++
+--
+.Allow access to the web user interface
+[source, console]
+----
+sudo ufw allow in 8980/tcp
+sudo ufw reload
+----
+
+.Optional: Enable Masquerade to allow port forwarding
+[source, console]
+----
+sudo vi /etc/ufw/before.rules
+----
+
+.Optional: For SNMP Trap forwarding, add the following lines at the top before the `*filter` section
+[source, console]
+----
+*nat
+:PREROUTING ACCEPT [0:0]
+-A PREROUTING -p udp --dport 162 -j REDIRECT --to-port 10162
+COMMIT
+----
+
+.Optional: Apply the firewall changes
+[source, console]
+----
+sudo ufw allow in 162/udp
+sudo ufw allow in 10162/udp
+sudo ufw reload
+----
+--
+====

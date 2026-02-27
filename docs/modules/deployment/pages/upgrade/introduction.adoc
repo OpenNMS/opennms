@@ -1,6 +1,6 @@
 
 [[upgrade]]
-= Upgrade {page-component-title}
+= Upgrade Core
 :description: Overview of OpenNMS Horizon or Meridian upgrade including before you begin and assessing events table size.
 
 This section outlines the basic steps that you should follow to upgrade to a newer version of {page-component-title}.
