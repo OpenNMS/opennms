@@ -45,30 +45,30 @@ public abstract class JavaMailerConfig {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailerConfig.class);
 
-    private static Scope secureCredentialsVaultScope;
+    private static ScopeProvider secureCredentialsVaultScopeProvider;
 
-    private static synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
+    private static synchronized ScopeProvider getSecureCredentialsScopeProvider() {
+        if (secureCredentialsVaultScopeProvider == null) {
             try {
                 final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
 
                 if (entityScopeProvider != null) {
-                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
+                    secureCredentialsVaultScopeProvider = () -> entityScopeProvider.getScopeForScv();
                 } else {
                     LOG.warn("JavaMailConfig: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
                 }
             } catch (FatalBeanException e) {
                 e.printStackTrace();
                 LOG.warn("JavaMailConfig: Error retrieving EntityScopeProvider bean");
-                secureCredentialsVaultScope = EmptyScope.EMPTY;
+                secureCredentialsVaultScopeProvider = () -> EmptyScope.EMPTY;
             }
         }
 
-        return secureCredentialsVaultScope;
+        return secureCredentialsVaultScopeProvider;
     }
 
     public static void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
-        JavaMailerConfig.secureCredentialsVaultScope = secureCredentialsVaultScope;
+        JavaMailerConfig.secureCredentialsVaultScopeProvider = () -> secureCredentialsVaultScope;
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class JavaMailerConfig {
     }
 
     public static synchronized Properties getProperties() throws IOException {
-        return getProperties(() -> getSecureCredentialsScope());
+        return getProperties(getSecureCredentialsScopeProvider());
     }
 
     private static Properties interpolate(final Properties properties, final String key, final ScopeProvider scopeProvider) {
@@ -114,13 +114,13 @@ public abstract class JavaMailerConfig {
     }
 
     public static String interpolate(final String string) {
-        final Scope scope = getSecureCredentialsScope();
+        final ScopeProvider scopeProvider = getSecureCredentialsScopeProvider();
 
-        if (scope == null) {
+        if (scopeProvider == null) {
             LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of string");
             return string;
         }
 
-        return Interpolator.interpolate(string, () -> scope).output;
+        return Interpolator.interpolate(string, scopeProvider).output;
     }
 }

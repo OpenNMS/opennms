@@ -227,15 +227,15 @@
     <constructor-arg ref="jrTemplateResource"/>
   </bean>
 
-  <bean id="emptyScope" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-    <property name="staticField" value="org.opennms.core.mate.api.EmptyScope.EMPTY"/>
+  <bean id="emptyScopeProvider" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+    <property name="staticField" value="org.opennms.core.mate.api.EmptyScopeProvider.EMPTY"/>
   </bean>
 
   <bean id="javaMailerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.javamail.JavaMailerConfig.getProperties</value></property>
     <property name="arguments">
       <list>
-        <ref bean="emptyScope"/>
+        <ref bean="emptyScopeProvider"/>
       </list>
     </property>
   </bean>
