@@ -97,7 +97,7 @@ describe('EventConfigTabContainer', () => {
     expect(panels[1].attributes('aria-expanded')).toBe('true')
   })
 
-  it('renders with activeTab set to 1 initially (second tab active)', async () => {
+  it('renders with activeTab set to 0 initially (first tab active)', async () => {
     store.activeTab = 0
     await wrapper.vm.$nextTick()
 
@@ -122,7 +122,10 @@ describe('EventConfigTabContainer', () => {
         global: {
           plugins: [createTestingPinia({ createSpy: vi.fn })],
           stubs: {
-            /* ... same as before */
+            FeatherButton,
+            FeatherTab,
+            FeatherTabContainer,
+            FeatherTabPanel
           }
         }
       })
@@ -135,7 +138,10 @@ describe('EventConfigTabContainer', () => {
       global: {
         // No plugins: [pinia] provided
         stubs: {
-          /* ... same as before */
+          FeatherButton,
+          FeatherTab,
+          FeatherTabContainer,
+          FeatherTabPanel
         }
       }
     })

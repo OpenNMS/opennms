@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-import { useEventConfigStore } from '@/stores/eventConfigStore'
+import DeleteEventConfigSourceDialog from '@/components/EventConfiguration/Dialog/DeleteEventConfigSourceDialog.vue'
 import * as eventConfigService from '@/services/eventConfigService'
+import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
-import DeleteEventConfigSourceDialog from '@/components/EventConfiguration/Dialog/DeleteEventConfigSourceDialog.vue'
+import { createTestingPinia } from '@pinia/testing'
+import { flushPromises, mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@featherds/dialog', () => ({
   FeatherDialog: {
@@ -92,6 +92,11 @@ describe('DeleteEventConfigSourceDialog', () => {
 
   it('calls deleteEventConfigSourceById and handles success when Delete button is clicked', async () => {
     vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
+    vi.spyOn(eventConfigService, 'filterEventConfigSources').mockResolvedValue({
+      sources: [],
+      totalRecords: 0
+    })
+    vi.spyOn(eventConfigService, 'getAllSourceNames').mockResolvedValue([])
     const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
     expect(deleteButton.exists()).toBe(true)
     await deleteButton.trigger('click')
@@ -107,7 +112,7 @@ describe('DeleteEventConfigSourceDialog', () => {
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
-      stubActions: false
+      stubActions: true
     })
 
     const localStore = useEventConfigStore()
