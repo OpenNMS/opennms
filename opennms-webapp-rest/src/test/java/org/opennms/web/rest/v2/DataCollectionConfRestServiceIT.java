@@ -1091,6 +1091,13 @@ public class DataCollectionConfRestServiceIT {
 
     private static void assertLooksLikeXml(String label, String xml) {
         assertNotNull(label + " should not be null", xml);
+        /** Helper to create a mocked Attachment for a given file */
+        String normalized = stripUtf8Bom(xml).trim();
+        assertFalse(label + " should not be empty", normalized.isEmpty());
+        assertTrue(label + " should start with '<' but starts with: " +
+                        normalized.substring(0, Math.min(80, normalized.length())),
+                normalized.startsWith("<"));
+    }
 
     @Test
     @Transactional
@@ -1299,14 +1306,7 @@ public class DataCollectionConfRestServiceIT {
 
     }
 
-    /** Helper to create a mocked Attachment for a given file */
-        String normalized = stripUtf8Bom(xml).trim();
 
-        assertFalse(label + " should not be empty", normalized.isEmpty());
-        assertTrue(label + " should start with '<' but starts with: " +
-                        normalized.substring(0, Math.min(80, normalized.length())),
-                normalized.startsWith("<"));
-    }
 
     private static String stripUtf8Bom(String s) {
         if (s == null || s.isEmpty()) {
