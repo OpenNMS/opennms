@@ -52,25 +52,13 @@ export const MIB_OBJECT_DATA_TYPE_OPTIONS: ISelectItemType[] = [
   ...VALID_MIB_OBJ_TYPES.map((type) => ({ _text: type, _value: type }))
 ]
 
-export const PERSISTENCE_SELECTOR_STRATEGY_OPTIONS: ISelectItemType[] = [
-  {
-    _text: 'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy',
-    _value: 'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy'
-  },
-  {
-    _text: 'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy',
-    _value: 'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy'
-  }
+export const PERSISTENCE_SELECTOR_STRATEGY_OPTIONS: string[] = [
+  'org.opennms.netmgt.collection.support.PersistAllSelectorStrategy',
+  'org.opennms.netmgt.collectd.PersistRegexSelectorStrategy'
 ]
 
-export const STORAGE_STRATEGY_OPTIONS: ISelectItemType[] = [
-  {
-    _text: 'org.opennms.netmgt.collection.support.IndexStorageStrategy',
-    _value: 'org.opennms.netmgt.collection.support.IndexStorageStrategy'
-  },
-  {
-    _text: 'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy',
-    _value: 'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy'
-  }
+export const STORAGE_STRATEGY_OPTIONS: string[] = [
+  'org.opennms.netmgt.collection.support.IndexStorageStrategy',
+  'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy'
 ]
 

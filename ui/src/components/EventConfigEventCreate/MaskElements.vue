@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="mask-elements"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
-  >
+  <div class="mask-elements">
     <div class="section-content">
       <div class="mask-elements-header">
         <h3>Mask Elements</h3>
@@ -54,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -73,7 +69,6 @@ const props = defineProps<{
   errors: EventFormErrors
 }>()
 
-const store = useEventModificationStore()
 const elements = ref<Array<{ name: ISelectItemType; value: string }>>([
   { name: { _text: '', _value: '' }, value: '' }
 ])

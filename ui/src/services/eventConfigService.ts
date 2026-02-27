@@ -3,13 +3,15 @@ import {
   mapEventConfigEventsResponseFromServer,
   mapEventConfigSourceFromServer,
   mapEventConfSourceResponseFromServer,
-  mapUploadedEventConfigFilesResponseFromServer
+  mapUploadedEventConfigFilesResponseFromServer,
+  mapUploadedSourceNamesFromServer
 } from '@/mappers/eventConfig.mapper'
 import {
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
-  EventConfigSourcesResponse
+  EventConfigSourcesResponse,
+  UploadedSourceNamesResponse
 } from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
 
@@ -239,12 +241,12 @@ export const filterEventConfigEvents = async (
  *
  * @returns A promise that resolves to an array of strings containing all source names.
  */
-export const getAllSourceNames = async (): Promise<string[]> => {
-  const endpoint = '/eventconf/sources/names'
+export const getAllSourceNames = async (): Promise<Array<UploadedSourceNamesResponse>> => {
+  const endpoint = '/eventconf/sources/names-and-ids'
   try {
     const response = await v2.get(endpoint)
     if (response.status === 200) {
-      return response.data as string[]
+      return mapUploadedSourceNamesFromServer(response.data)
     } else {
       throw new Error(`Unexpected response status: ${response.status}`)
     }

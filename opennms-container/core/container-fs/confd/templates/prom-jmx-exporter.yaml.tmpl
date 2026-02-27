@@ -42,6 +42,14 @@ excludeObjectNameAttributes:
 rules:
   - pattern: "java.lang.*"
   - pattern: "OpenNMS.*"
+  # Per-device trapd metrics (must be before generic org.opennms.* pattern)
+  - pattern: 'org\.opennms\.netmgt\.trapd\.device<location="([^"]+)", ip="([^"]+)", type=([^>]+)><>(\w+)'
+    name: trapd_device_$4
+    type: COUNTER
+    labels:
+      location: "$1"
+      ip: "$2"
+      type: "$3"
   - pattern: "org.opennms.*"
   - pattern: "com.zaxxer.hikari.*"
   - pattern: "org.opennms.core.ipc.rpc<name=([^.,]*).([^.,]*).([^.,]*).*Count*"

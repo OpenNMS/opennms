@@ -74,10 +74,10 @@
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherButton
-                  icon="Download XML"
-                  data-test="download-button"
+                  icon="Edit Source"
+                  data-test="edit-button"
                 >
-                  <FeatherIcon :icon="Download"> </FeatherIcon>
+                  <FeatherIcon :icon="Edit"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
@@ -91,8 +91,24 @@
                       <FeatherIcon :icon="MenuIcon" />
                     </FeatherButton>
                   </template>
-                  <FeatherDropdownItem data-test="edit-source-button"> Edit Source </FeatherDropdownItem>
-                  <FeatherDropdownItem data-test="delete-source-button"> Delete Source </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    data-test="download-xml-dropdown-button"
+                    @click="downloadCollectionSource(source, 'xml')"
+                  >
+                    Download XML
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    data-test="download-json-dropdown-button"
+                    @click="downloadCollectionSource(source, 'json')"
+                  >
+                    Download JSON
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    data-test="delete-source-button"
+                    @click="openDeleteCollectionSourceDialog(source)"
+                  >
+                    Delete Source
+                  </FeatherDropdownItem>
                 </FeatherDropdown>
               </div>
             </td>
@@ -120,15 +136,24 @@
         />
       </div>
     </div>
+    <DeleteConfirmationDialog
+      :visible="isDeleteDialogVisible"
+      :selected="selectedCollectionSource"
+      type="source"
+      @close="closeDeleteCollectionSourceDialog"
+      @confirm="deleteCollectionSource"
+    />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import Download from '@featherds/icon/action/DownloadFile'
+import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
@@ -139,9 +164,13 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import DeleteConfirmationDialog from '../SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
 
 const router = useRouter()
 const store = useSnmpDataCollectionStore()
+const isDeleteDialogVisible = ref(false)
+const selectedCollectionSource = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
 const emptyListContent = {
   msg: 'No results found.'
 }
@@ -183,6 +212,61 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeSourcesSearchTerm(value)
 }, 500)
+
+const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string } | null) => {
+  selectedCollectionSource.value = collectionSource
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteCollectionSourceDialog = () => {
+  selectedCollectionSource.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteCollectionSource = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'source' &&
+    selected?.id &&
+    selected?.id === selectedCollectionSource.value?.id &&
+    selected?.name === selectedCollectionSource.value?.name
+  ) {
+    const success = await deleteSnmpCollectionSources([selectedCollectionSource.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
+      })
+      router.push({ name: 'SNMP Data Collection' })
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete Collection Source '${selectedCollectionSource.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete Collection Source '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
+
+const downloadCollectionSource = async (source: any, format: string) => {
+  const response = await downloadSnmpDataCollectionById(source.id, format)
+
+  if (response) {
+    const blob = new Blob([response.data], { type: response.headers['content-type'] })
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = `${source.name}.${format}`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to download Collection Source '${source.name}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   await store.fetchSnmpCollectionSources()

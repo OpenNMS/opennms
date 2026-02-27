@@ -29,6 +29,7 @@ import org.graylog2.syslog4j.SyslogIF;
 import org.graylog2.syslog4j.SyslogRuntimeException;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogFilter;
@@ -121,7 +122,7 @@ public class SyslogEventForwarder {
      */
     public void forward(Event event, OnmsNode node) {
         if (initialized) {
-            LOG.info("Forwarding event {} to destination:{}", event.getUei(), destination.getName());
+            LOG.info("Forwarding event {} to destination:{}, instanceId={}, eventId={}", event.getUei(), destination.getName(), SystemInfoUtils.getInstanceId(), event.getDbid());
             SyslogIF instance;
             try {
                 instance = Syslog.getInstance(destination.getName());
@@ -151,7 +152,7 @@ public class SyslogEventForwarder {
             }
 
         } else {
-            LOG.error("Can't forward event {} because the facility has not been initialized.", event.getUei());
+            LOG.error("Can't forward event {} because the facility has not been initialized, instanceId={}, eventId={}", event.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
         }
     }
 

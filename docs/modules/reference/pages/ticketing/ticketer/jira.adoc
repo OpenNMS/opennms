@@ -19,15 +19,6 @@ To install the `{package-prefix}-plugin-ticketer-jira` package, use one of the f
 ** `apt-get install {package-prefix}-plugin-ticketer-jira`
 ****
 
-. Once the package has been installed, set the ticketer plugin property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties` to enable the plugin:
-+
-[source, properties]
-----
-opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
-----
-+
-If the ticketer properties file does not exist, create it manually.
-
 . Configure the plugin by enabling and disabling options in `$\{OPENNMS_HOME}/etc/jira.properties`.
 +
 [options="header"]

@@ -127,8 +127,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Metrics Menu
         clickMenuItem("metricsMenu", "Resource Graphs");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Resource Graphs')]")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource Performance Reports')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='router-link-active router-link-exact-active'][contains(text()[normalize-space()], 'Resource Graphs')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[@class='feather-list-header'][contains(text()[normalize-space()], 'Resources')]")));
 
         // Distributed Monitoring
         clickMenuItem("distributedMonitoringMenu", "Manage Minions");

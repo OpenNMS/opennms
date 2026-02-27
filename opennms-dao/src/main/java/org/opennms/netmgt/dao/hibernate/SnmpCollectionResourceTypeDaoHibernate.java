@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -98,38 +97,6 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     @Override
     public void deleteBySourceId(Integer snmpCollectionSourceId) {
         getHibernateTemplate().bulkUpdate("delete from SnmpCollectionResourceType t where t.collectionSource.id = ?", snmpCollectionSourceId);
-    }
-
-    @Override
-    public List<SnmpCollectionResourceType> filterResourceTypeConf(String name, String label, String vendor, String collectionSourceName, int offset, int limit) {
-        List<Object> queryParamList = new ArrayList<>();
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("from SnmpCollectionResourceType t where 1=1 ");
-
-
-        if (name != null && !name.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.name) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
-        }
-
-        if (label != null && !label.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.label) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(label.trim().toLowerCase()) + "%"); // contains match
-        }
-
-        if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
-        }
-
-        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(t.collectionSource.name) like ? escape '\\' ");
-            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
-        }
-
-        queryBuilder.append(" order by t.createdTime desc ");
-
-        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
 
     @Override

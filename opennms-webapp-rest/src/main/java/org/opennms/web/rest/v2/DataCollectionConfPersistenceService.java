@@ -57,6 +57,8 @@ import java.util.Map;
 import java.util.Date;
 import java.util.Optional;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -226,6 +228,97 @@ public class DataCollectionConfPersistenceService {
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
     }
 
+    @Transactional
+    public void deleteSnmpDataCollectionSources(final List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+
+            final var source = snmpCollectionSourceDao.get(id);
+            if (source == null) {
+                continue;
+            }
+            snmpCollectionSourceDao.delete(source);
+        }
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionMibGroups(final Integer snmpDataCollectionSourceId,
+                                                  final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionMibGroupDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionMibGroupDao::delete,
+                "MibGroup"
+        );
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionResourceTypes(final Integer snmpDataCollectionSourceId,
+                                                      final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionResourceTypeDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionResourceTypeDao::delete,
+                "ResourceType"
+        );
+    }
+
+    @Transactional
+    public void deleteSnmpDataCollectionSystemDefs(final Integer snmpDataCollectionSourceId,
+                                                   final List<Integer> ids) {
+        final var source = requireSource(snmpDataCollectionSourceId);
+        deleteChildren(
+                source.getId(),
+                ids,
+                snmpCollectionSystemDefDao::findBySnmpSourceCollectionIdAndId,
+                snmpCollectionSystemDefDao::delete,
+                "SystemDef"
+        );
+    }
+
+    private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
+        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
+            throw new IllegalArgumentException("snmpDataCollectionSourceId must be a positive integer");
+        }
+
+        final var source = snmpCollectionSourceDao.get(snmpDataCollectionSourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("SnmpDataCollectionSource not found for id: " + snmpDataCollectionSourceId);
+        }
+        return source;
+    }
+
+    private <T> void deleteChildren(final Integer sourceId,
+                                    final List<Integer> ids,
+                                    final BiFunction<Integer, Integer, T> finder,
+                                    final Consumer<T> deleter,
+                                    final String entityLabel) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        for (final Integer id : ids) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+
+            final T entity = finder.apply(sourceId, id);
+            if (entity == null) {
+                continue;
+            }
+            deleter.accept(entity);
+        }
+    }
     public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource source) {
         DatacollectionGroup group = new DatacollectionGroup();
         group.setName(source.getName());

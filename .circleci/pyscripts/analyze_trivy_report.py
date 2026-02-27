@@ -1,5 +1,6 @@
 import json
 import argparse
+import logging
 import os
 
 # Set up command-line argument parsing
@@ -13,6 +14,8 @@ with open(args.json_file) as f:
 
 # List to store filtered vulnerabilities
 filtered_vulnerabilities = []
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Mapping of classes
 class_mapping = {
@@ -99,4 +102,5 @@ with open(f'{base_name}.csv', 'w') as outfile:
         ]
         outfile.write(','.join(line) + '\n')
 
-print(f"Output saved to '{base_name}.txt' and '{base_name}.csv'")
+logging.info(f"Output saved to '{base_name}.txt' and '{base_name}.csv'")
+

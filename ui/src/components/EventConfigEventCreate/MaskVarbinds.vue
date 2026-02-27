@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="mask-varbinds"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
-  >
+  <div class="mask-varbinds">
     <div class="section-content">
       <div class="mask-varbinds-header">
         <h3>Mask Varbinds</h3>
@@ -26,14 +23,17 @@
             label="Varbind Type"
             :options="MaskVarbindsTypeOptions"
             :modelValue="MaskVarbindsTypeOptions.find(
-              (o: ISelectItemType) => o._value === row.type._value
-            )"
+            (o: ISelectItemType) => o._value === row.type._value
+          )"
             @update:modelValue="$emit('setVarbinds', 'setVarbindType', $event, index)"
             :error="errors.varbinds?.[index]?.type"
             data-test="varbind-type-select"
           />
         </div>
-        <div v-if="row.type._value === MaskVarbindsTypeValue.vbNumber" class="dropdown">
+        <div
+          v-if="row.type._value === MaskVarbindsTypeValue.vbNumber"
+          class="dropdown"
+        >
           <FeatherInput
             type="number"
             label="Varbind Number"
@@ -44,7 +44,10 @@
             :error="errors.varbinds?.[index]?.index"
           />
         </div>
-        <div v-if="row.type._value === MaskVarbindsTypeValue.vbOid" class="dropdown">
+        <div
+          v-if="row.type._value === MaskVarbindsTypeValue.vbOid"
+          class="dropdown"
+        >
           <FeatherInput
             label="Varbind OID"
             :model-value="row.index"
@@ -75,7 +78,6 @@
 </template>
 
 <script setup lang="ts">
-import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { EventFormErrors } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
@@ -95,7 +97,6 @@ const props = defineProps<{
   errors: EventFormErrors
 }>()
 
-const store = useEventModificationStore()
 const { varbinds, maskElements, errors } = toRefs(props)
 const maskVarbinds = ref<Array<{ index: string; value: string, type: ISelectItemType }>>([])
 const hasMaskElements = computed(() => maskElements.value.length > 0)

@@ -30,7 +30,7 @@ vi.mock('@/components/SnmpDataCollectionDetail/Drawer/MibObjectCreationDrawer.vu
   default: {
     name: 'MibObjectCreationDrawer',
     template: '<div data-test="mib-object-creation-drawer"></div>',
-    props: ['state'],
+    props: ['state', 'names'],
     emits: ['cancel', 'save']
   }
 }))
@@ -1206,6 +1206,383 @@ describe('MibGroupForm.vue', () => {
         }),
         mockCollectionSource.id
       )
+    })
+
+    it('should pass mibGroupNames from store.selectedMibGroup in Edit mode', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = { ...mockMibGroup, mibGroupNames: ['group-a', 'group-b'] }
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(updateMibGroup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mibGroupNames: JSON.stringify(['group-a', 'group-b'])
+        }),
+        mockCollectionSource.id
+      )
+    })
+
+    it('should pass id from store.selectedMibGroup in Edit mode', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = { ...mockMibGroup, id: 42 }
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(updateMibGroup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 42
+        }),
+        mockCollectionSource.id
+      )
+    })
+
+    it('should not include id in payload in Create mode', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      store.selectedMibGroup = null
+      wrapper.vm.name = 'New Group'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      const payload = vi.mocked(createMibGroup).mock.calls[0][0]
+      expect(payload).not.toHaveProperty('id')
+    })
+
+    it('should set mibGroupNames to JSON of [name] when selectedMibGroup is null', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      store.selectedMibGroup = null
+      wrapper.vm.name = 'New Group'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(createMibGroup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mibGroupNames: JSON.stringify(['New Group'])
+        }),
+        mockCollectionSource.id
+      )
+    })
+  })
+
+  describe('Save MIB Object in None Mode', () => {
+    it('should not add or update mibObject when mode is None', async () => {
+      await createWrapper()
+      const original = { ...mockMibObject, alias: 'original' }
+      wrapper.vm.mibObjects = [original]
+      wrapper.vm.mibObjectDrawerState = {
+        visible: true,
+        isEditMode: CreateEditMode.None,
+        mibObjectIndex: 0,
+        mibObject: original
+      }
+      await nextTick()
+
+      wrapper.vm.saveMibObject({ ...mockMibObject, alias: 'new' })
+      await nextTick()
+
+      expect(wrapper.vm.mibObjects).toHaveLength(1)
+      expect(wrapper.vm.mibObjects[0].alias).toBe('original')
+      expect(wrapper.vm.mibObjectDrawerState.visible).toBe(false)
+    })
+  })
+
+  describe('Save MIB Group in None Mode', () => {
+    it('should show error snackbar when mode is None (response undefined)', async () => {
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.None })
+      wrapper.vm.name = 'Test Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(createMibGroup).not.toHaveBeenCalled()
+      expect(updateMibGroup).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'An error occurred while saving the MIB Group.',
+        error: true
+      })
+    })
+  })
+
+  describe('Load Initial Data in None Mode', () => {
+    it('should not modify form fields when mode is None', async () => {
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = 'Existing Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[1]
+      wrapper.vm.status = false
+      wrapper.vm.mibObjects = [mockMibObject]
+      await nextTick()
+
+      // Switch to None mode and re-trigger by toggling visibility
+      store.mibGroupDrawerState.isEditMode = CreateEditMode.None
+      store.mibGroupDrawerState.visible = false
+      await nextTick()
+      store.mibGroupDrawerState.visible = true
+      await nextTick()
+
+      // In None mode, neither Create nor Edit branch runs, so form keeps reset state from close
+      expect(wrapper.vm.name).toBe('')
+    })
+  })
+
+  describe('Edit Mode Save Error Paths', () => {
+    it('should show error snackbar when update API returns false', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(false)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'An error occurred while saving the MIB Group.',
+        error: true
+      })
+    })
+
+    it('should show error snackbar when update API throws', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      vi.mocked(updateMibGroup).mockRejectedValue(new Error('Network error'))
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'An error occurred while saving the MIB Group.',
+        error: true
+      })
+      consoleErrorSpy.mockRestore()
+    })
+
+    it('should close drawer after successful update', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.closeMibGroupDrawer).toHaveBeenCalled()
+    })
+
+    it('should not close drawer when update API returns false', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(false)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.closeMibGroupDrawer).not.toHaveBeenCalled()
+    })
+
+    it('should not fetch MIB groups when update API returns false', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(false)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.fetchMibGroups).not.toHaveBeenCalled()
+    })
+
+    it('should show error when no collection source in Edit mode', async () => {
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Edit })
+      store.selectedMibGroup = mockMibGroup
+      wrapper.vm.name = 'Updated Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      store.selectedCollectionSource = null
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Please select a Collection Source first.',
+        error: true
+      })
+      expect(updateMibGroup).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Simultaneous Validation Errors', () => {
+    it('should show both name and ifType errors at the same time', async () => {
+      await createWrapper()
+      wrapper.vm.name = ''
+      wrapper.vm.ifType = { _text: '', _value: '' }
+      await nextTick()
+
+      expect(wrapper.vm.errors.name).toBe('Name is required.')
+      expect(wrapper.vm.errors.ifType).toBe('Interface Type is required.')
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should not call API when both validations fail', async () => {
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = ''
+      wrapper.vm.ifType = { _text: '', _value: '' }
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(createMibGroup).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('MibObjectCreationDrawer Names Prop', () => {
+    it('should pass store.resourceTypeNames to MibObjectCreationDrawer as names prop', async () => {
+      await createWrapper()
+      store.resourceTypeNames = ['name1', 'name2', 'name3']
+      await nextTick()
+
+      const drawer = wrapper.findComponent({ name: 'MibObjectCreationDrawer' })
+      expect(drawer.props('names')).toEqual(['name1', 'name2', 'name3'])
+    })
+
+    it('should pass empty array when store.resourceTypeNames is empty', async () => {
+      await createWrapper()
+      store.resourceTypeNames = []
+      await nextTick()
+
+      const drawer = wrapper.findComponent({ name: 'MibObjectCreationDrawer' })
+      expect(drawer.props('names')).toEqual([])
+    })
+  })
+
+  describe('closeMibGroupDrawer Combined Behavior', () => {
+    it('should close both mibObject drawer and mibGroup drawer', async () => {
+      await createWrapper()
+      wrapper.vm.mibObjectDrawerState = {
+        visible: true,
+        isEditMode: CreateEditMode.Create,
+        mibObjectIndex: -1,
+        mibObject: null
+      }
+      await nextTick()
+
+      wrapper.vm.closeMibGroupDrawer()
+      await nextTick()
+
+      expect(wrapper.vm.mibObjectDrawerState.visible).toBe(false)
+      expect(wrapper.vm.mibObjectDrawerState.isEditMode).toBe(CreateEditMode.None)
+      expect(store.closeMibGroupDrawer).toHaveBeenCalled()
+    })
+
+    it('should call store.closeMibGroupDrawer even when mibObject drawer is already closed', async () => {
+      await createWrapper()
+      wrapper.vm.mibObjectDrawerState = {
+        visible: false,
+        isEditMode: CreateEditMode.None,
+        mibObjectIndex: -1,
+        mibObject: null
+      }
+      await nextTick()
+
+      wrapper.vm.closeMibGroupDrawer()
+      await nextTick()
+
+      expect(store.closeMibGroupDrawer).toHaveBeenCalled()
+    })
+  })
+
+  describe('Save with Disabled Status', () => {
+    it('should pass enabled: false in payload when status is disabled', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(true)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = 'Disabled Group'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      wrapper.vm.status = false
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(createMibGroup).toHaveBeenCalledWith(
+        expect.objectContaining({
+          enabled: false
+        }),
+        mockCollectionSource.id
+      )
+    })
+  })
+
+  describe('Create Mode Save Does Not Close on Failure', () => {
+    it('should not close drawer when create API returns false', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(false)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = 'Test Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.closeMibGroupDrawer).not.toHaveBeenCalled()
+    })
+
+    it('should not fetch MIB groups when create API returns false', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(false)
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = 'Test Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.fetchMibGroups).not.toHaveBeenCalled()
+    })
+
+    it('should not close drawer when create API throws', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      vi.mocked(createMibGroup).mockRejectedValue(new Error('Network error'))
+      await createWrapper({ visible: true, isEditMode: CreateEditMode.Create })
+      wrapper.vm.name = 'Test Name'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      expect(store.closeMibGroupDrawer).not.toHaveBeenCalled()
+      consoleErrorSpy.mockRestore()
     })
   })
 })

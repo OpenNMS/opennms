@@ -99,7 +99,12 @@
                     <FeatherDropdownItem data-test="change-status-button">
                       {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
                     </FeatherDropdownItem>
-                    <FeatherDropdownItem data-test="delete-definition-button"> Delete Definition </FeatherDropdownItem>
+                    <FeatherDropdownItem
+                      data-test="delete-definition-button"
+                      @click="openDeleteSystemDefDialog(systemDefinition)"
+                    >
+                      Delete Definition
+                    </FeatherDropdownItem>
                   </FeatherDropdown>
                   <FeatherButton
                     primary
@@ -152,15 +157,22 @@
       </div>
     </div>
     <div v-if="!store.systemDefinitions.length">
-      <EmptyList
-        :content="{ msg: 'No System Definitions found.' }"
-      />
+      <EmptyList :content="{ msg: 'No System Definitions found.' }" />
     </div>
     <SystemDefinitionCreationDrawer />
+    <DeleteConfirmationDialog
+      :visible="isDeleteDialogVisible"
+      :selected="selectedSystemDef"
+      type="system-def"
+      @close="closeDeleteSystemDefDialog"
+      @confirm="deleteSystemDef"
+    />
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteSystemDefinitions } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
@@ -179,11 +191,14 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
-
+const isDeleteDialogVisible = ref(false)
+const selectedSystemDef = ref<{ id: number; name: string } | null>(null)
+const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
   { id: 'sysoid', label: 'SysOID' },
@@ -227,6 +242,46 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeSystemDefsSearchTerm(value)
 }, 500)
+
+const openDeleteSystemDefDialog = (systemDef: { id: number; name: string } | null) => {
+  selectedSystemDef.value = systemDef
+  isDeleteDialogVisible.value = true
+}
+
+const closeDeleteSystemDefDialog = () => {
+  selectedSystemDef.value = null
+  isDeleteDialogVisible.value = false
+}
+
+const deleteSystemDef = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'system-def' &&
+    selected?.id &&
+    selected?.id === selectedSystemDef.value?.id &&
+    selected?.name === selectedSystemDef.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const success = await deleteSystemDefinitions(store.selectedCollectionSource.id, [selected.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `System Definition '${selected.name}' deleted successfully.`
+      })
+      await store.fetchSystemDefinitions()
+      selectedSystemDef.value = null
+      isDeleteDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to delete System Definition '${selected.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to delete System Definition '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
 
 onMounted(async () => {
   await store.fetchSystemDefinitions()
