@@ -457,4 +457,26 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext
     );
 
+
+    @GET
+    @Path("/collectsources/{collectionSourceId}/download")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Download Snmp Data Collection XML for a Source",
+            description = """
+            Downloads all Resource types, Mib groups and System defs associated with the specified snmpDataCollection ID.
+        """,
+            operationId = "downloadSnmpDataCollectionById"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Snmp Data Collection XML downloaded successfully",
+                    content = @Content(mediaType = "application/xml")),
+            @ApiResponse(responseCode = "400", description = "Invalid or missing source ID"),
+            @ApiResponse(responseCode = "404", description = "No snmpDataCollection found for the specified snmpDataCollection ID")
+    })
+    Response downloadSnmpDataCollectionById(
+            @PathParam("collectionSourceId") Integer snmpDataCollectionId, @QueryParam("format") String format,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
 }
