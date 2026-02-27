@@ -15,18 +15,24 @@ includeObjectNames:
 
 rules:
   - pattern: "java.lang.*"
+    cache: true
   - pattern: "kafka.producer.*"
+    cache: true
   - pattern: "org.apache.camel.*"
+    cache: true
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
     name: sentinel_$1_$2
     type: GAUGE
+    cache: true
 
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
     name: sentinel_$1_$2_count
     type: COUNTER
+    cache: true
 
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
     name: sentinel_$1_$2
     type: GAUGE
+    cache: true
     labels:
       quantile: "0.$3"
