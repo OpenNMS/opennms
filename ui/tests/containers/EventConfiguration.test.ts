@@ -64,7 +64,15 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders BreadCrumbs component', () => {
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
   })
@@ -72,7 +80,15 @@ describe('EventConfig.vue', () => {
   it('renders BreadCrumbs with correct items', () => {
     menuStore.mainMenu = { homeUrl: '/home' } as any
 
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -83,7 +99,15 @@ describe('EventConfig.vue', () => {
   })
 
   it('renders BreadCrumbs with undefined homeUrl when mainMenu is not set', () => {
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -155,7 +179,15 @@ describe('EventConfig.vue', () => {
   it('updates breadcrumbs when homeUrl changes', async () => {
     menuStore.mainMenu = { homeUrl: '/initial' } as any
 
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     let breadcrumbs = wrapper.findComponent(BreadCrumbs)
     let items = breadcrumbs.props('items')
@@ -202,7 +234,15 @@ describe('EventConfig.vue', () => {
   it('renders with null homeUrl', () => {
     menuStore.mainMenu = { homeUrl: null } as any
 
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
@@ -213,7 +253,15 @@ describe('EventConfig.vue', () => {
   it('renders with empty string homeUrl', () => {
     menuStore.mainMenu = { homeUrl: '' } as any
 
-    const wrapper = mount(EventConfiguration, globalConfigWithoutBreadcrumbs)
+    const wrapper = mount(EventConfiguration, {
+      global: {
+        stubs: {
+          EventConfigTabContainer: true,
+          CreateEventConfigurationDialog: true,
+          RouterLink: true
+        }
+      }
+    })
 
     const breadcrumbs = wrapper.findComponent(BreadCrumbs)
     const items = breadcrumbs.props('items')
