@@ -102,10 +102,7 @@ systemctl restart minion
 In many situations it can be beneficial to change the log level to be more or less verbose.
 Follow these steps to change it.
 
-. Edit `$MINION_HOME/etc/org.ops4j.pax.logging.cfg`
-+
-NOTE: `$MINION_HOME` is `/opt/minion` on RHEL, and `/etc/minion` on Debian.
-
+. Edit `/opt/minion/etc/org.ops4j.pax.logging.cfg`
 . Find and modify the `logger.opennms` section
 +
 [source, console]

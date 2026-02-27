@@ -1,7 +1,7 @@
 .Create a file to prevent installing ActiveMQ features on Minion start-up
 [source, console]
 ----
-sudo vi etc/featuresBoot.d/disable-activemq.boot
+sudo vi /opt/minion/etc/featuresBoot.d/disable-activemq.boot
 ----
 
 .Add the following lines to disable ActiveMQ features and save the file
@@ -14,7 +14,7 @@ sudo vi etc/featuresBoot.d/disable-activemq.boot
 .Create a file to install gRPC features on startup
 [source, shell]
 ----
-sudo vi etc/featuresBoot.d/grpc.boot
+sudo vi /opt/minion/etc/featuresBoot.d/grpc.boot
 ----
 
 .Add the gRPC client features

@@ -18,8 +18,6 @@
 
 * xref:graph/graph.adoc[]
 
-* xref:menu/menu-templates.adoc[]
-
 * xref:rest/CORS.adoc[]
 
 * xref:rest/rest-api.adoc[]

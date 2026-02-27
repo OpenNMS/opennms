@@ -1,0 +1,154 @@
+[[install-sentinel]]
+= Native Installation
+:description: Set up OpenNMS {page-component-title} Sentinel (for scaling and streaming telemetry) on RHEL, CentOS, Debian, and Ubuntu.
+
+* Setting up a {page-component-title} Sentinel running on one of the following <<./requirements.adoc#operating-systems-sentinel,Operating Systems>>
+* Secure access with encrypted passwords to the Karaf shell
+* Sentinel can be configured with the Karaf Shell from the server via `ssh admin@localhost -p 8301`
+* Sentinel is running as user `sentinel` without root permissions
+
+include::../time-sync.adoc[]
+
+== Step 1: Installing Java
+
+include::../java/temurin.adoc[]
+
+== Step 2: Set up {page-component-title} Sentinel
+
+ifeval::["{page-component-title}" == "Horizon"]
+include::../repos/horizon.adoc[]
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+.Install the {page-component-title} Sentinel package
+[source, console]
+----
+sudo dnf -y install opennms-sentinel
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+
+.Disable auto updates for {page-component-title} Sentinel
+[source, console]
+----
+sudo dnf config-manager --disable opennms-repo-stable-*
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----
+--
+
+Debian/Ubuntu::
++
+--
+.Install the {page-component-title} Sentinel package
+[source, console]
+----
+sudo apt -y install opennms-sentinel
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+
+.Disable auto updates for {page-component-title} Sentinel
+[source, console]
+----
+sudo apt-mark hold opennms-sentinel
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----
+
+--
+====
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+include::../repos/meridian.adoc[]
+
+[{tabs}]
+====
+CentOS/RHEL::
++
+--
+.Install the {page-component-title} Sentinel package
+[source, console]
+----
+sudo dnf -y install meridian-sentinel
+----
+
+TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
+After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+
+.Disable auto updates for {page-component-title} Sentinel
+[source, console]
+----
+sudo dnf config-manager --disable meridian
+----
+
+.Enable {page-component-title} Sentinel on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now sentinel
+----
+--
+====
+endif::[]
+
+== Step 3: Secure Access to Karaf Shell
+
+Change the default username and password (_admin/admin_) for the Karaf shell and encrypt it.
+
+.Log in to the Karaf shell
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Enable password encryption using SHA-512
+[source, karaf]
+----
+config:edit org.apache.karaf.jaas
+config:property-set encryption.enabled true
+config:property-set encryption.algorithm SHA-512
+config:property-set encryption.name jasypt
+config:update
+----
+
+WARNING: If you set the `encryption.name` option, you will need to reset any existing passwords that were created while `encryption.enabled` was set to `true`.
+
+.Set a new secure admin password
+[source, karaf]
+----
+jaas:realm-manage --index 1 --realm karaf
+jaas:user-add admin my-secure-password<1>
+jaas:update
+----
+<1> Replace `my-secure-password` with a strong password.
+
+Log out and log back in to verify that your new password is set.
+
+Changes to the password and encryption algorithm are applied immediately.
+You do not need to restart the Sentinel.
+
+TIP: By default, the Karaf Shell is restricted to `127.0.0.1`.
+To enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
+The change is applied immediately, and you do not need to restart the Sentinel.
+If you have a firewall running on your host, allow `8301/tcp` to grant access to the Karaf shell.
+
+== Step 4: Set up flow processing
+
+Once you have Sentinel installed, see xref:operation:deep-dive/flows/sentinel/sentinel.adoc#flows-scaling[scale flows data] to set up flow processing.

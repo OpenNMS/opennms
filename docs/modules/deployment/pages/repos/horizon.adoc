@@ -1,0 +1,55 @@
+
+// TODO: We don't have rhel10 repository yet and need to use the rhel9 repository instead.
+[{tabs}]
+====
+CentOS/RHEL 8/9::
++
+--
+.Add a repository and import a GPG key
+[source, console, subs="verbatim,attributes"]
+----
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel$(rpm -E %\{rhel}).noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+--
+
+CentOS/RHEL 10::
++
+--
+.Add a repository and import a GPG key
+[source, console]
+----
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel9.noarch.rpm
+----
+
+NOTE: The next command is a workaround until https://opennms.atlassian.net/browse/NMS-19071[NMS-19071] is solved.
+[source, console]
+----
+sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /etc/yum.repos.d/opennms-repo-stable-rhel9.repo
+----
+--
+
+Debian/Ubuntu::
++
+--
+.Download and import GPG key
+[source, console]
+----
+sudo apt -y install gnupg ca-certificates
+sudo wget -qO - https://debian.opennms.org/OPENNMS-GPG-KEY | sudo gpg --dearmor -o /usr/share/keyrings/opennms.gpg
+----
+
+.Add and update apt repository
+[source, console]
+----
+sudo tee /etc/apt/sources.list.d/opennms.sources > /dev/null << "EOF"
+Types: deb
+URIs: https://debian.opennms.org/
+Suites: stable
+Components: main
+Signed-By: /usr/share/keyrings/opennms.gpg
+EOF
+sudo apt update
+----
+--
+====

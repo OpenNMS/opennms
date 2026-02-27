@@ -1,7 +1,11 @@
 
-[[system-requirements-minion]]
-= Minimum System Requirements
+[[requirements-minion]]
+= Requirements
 :description: Minimum requirements for OpenNMS Minion, including operating systems.
+
+
+[[system-requirements-minion]]
+== System requirements
 
 The following hardware specs are the minimum required to run a Minion:
 
@@ -50,3 +54,17 @@ endif::[]
 |===
 
 NOTE: See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
+
+== Before You Begin
+
+* A {page-component-title} core instance running and configured with a <<../core/setup-message-broker.adoc#setup-message-broker,message broker>>.
+* A Linux physical server or a virtual machine running a supported Linux operating system.
+* Internet access to download the installation packages.
+* Java installed {compatible-javajdk}.
+* DNS configured so that `localhost` and your server's host name resolve properly.
+* A {page-component-title} core instance runs on the latest stable release.
+* A Minion server can access desired message broker nodes, (for example, ActiveMQ `61616/tcp`, Apache Kafka `9092/tcp`).
+* A system user with administrative permissions (sudo) to perform the installation tasks.
+ifeval::["{page-component-title}" == "Horizon"]
+NOTE: If you run Debian, you must install and configure `sudo` yourself (see the link:https://wiki.debian.org/sudo/[Debian Wiki]).
+endif::[]
