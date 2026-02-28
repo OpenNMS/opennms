@@ -1,4 +1,4 @@
-import UploadedFileRenameDialog from '@/components/SnmpDataCollectionSourceImport/Dialog/UploadedFileRenameDialog.vue'
+import UploadedFileRenameDialog from '@/components/SnmpDataCollection/Dialog/UploadedFileRenameDialog.vue'
 import { SnmpDataCollectionSourceNamesAndIds, UploadSnmpDataCollectionFileType } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
 import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'

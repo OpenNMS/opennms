@@ -1,4 +1,4 @@
-import DeleteSnmpDataCollectionSource from '@/components/SnmpDataCollection/DIalog/DeleteSnmpDataCollectionSource.vue'
+import DeleteSnmpDataCollectionSource from '@/components/SnmpDataCollection/Dialog/DeleteSnmpDataCollectionSource.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
