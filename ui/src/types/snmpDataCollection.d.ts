@@ -62,6 +62,7 @@ export interface SnmpCollectionDetailStoreState {
   selectedSystemDef: SnmpCollectionSystemDef | null
   selectedMibGroup: SnmpCollectionMibGroup | null
   selectedResourceType: SnmpCollectionResourceType | null
+  activeTab: number
   systemDefDrawerState: {
     visible: boolean
     isEditMode: CreateEditMode

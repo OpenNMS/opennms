@@ -1,19 +1,7 @@
 <template>
-  <TableCard class="mib-groups-table-container">
+  <div class="mib-groups-table-container">
     <div class="header">
-      <div class="title-container">
-        <h2 class="title">MIB Groups</h2>
-      </div>
-      <div class="action-container">
-        <div class="add">
-          <FeatherButton
-            primary
-            data-test="add-mib-group-button"
-            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
-          >
-            Add MIB Group
-          </FeatherButton>
-        </div>
+      <div class="section-left">
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -30,12 +18,22 @@
         </div>
         <div class="refresh">
           <FeatherButton
-            primary
             icon="Refresh"
             data-test="refresh-button"
             @click="store.resetMibGroupsFilters"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
+          </FeatherButton>
+        </div>
+      </div>
+      <div class="section-right">
+        <div class="add">
+          <FeatherButton
+            secondary
+            data-test="add-mib-group-button"
+            @click="store.openMibGroupCreationDrawer(null, CreateEditMode.Create)"
+          >
+            Add MIB Group
           </FeatherButton>
         </div>
       </div>
@@ -72,7 +70,16 @@
             <tr>
               <td>{{ mibGroup.name }}</td>
               <td>{{ mibGroup.ifType }}</td>
-              <td>{{ mibGroup.enabled ? 'Enabled' : 'Disabled' }}</td>
+              <td>
+                <div class="tag">
+                  <FeatherChip
+                    :class="mibGroup.enabled ? 'enabled-tag' : 'disabled-tag'"
+                    data-test="status-tag"
+                  >
+                    {{ mibGroup.enabled ? 'Enabled' : 'Disabled' }}
+                  </FeatherChip>
+                </div>
+              </td>
               <td>
                 <div class="action-container">
                   <FeatherButton
@@ -177,7 +184,7 @@
       @close="closeDeleteMibGroupDialog"
       @confirm="deleteMibGroup"
     />
-  </TableCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -200,8 +207,8 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
-import TableCard from '../Common/TableCard.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
+import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
@@ -303,35 +310,25 @@ onMounted(async () => {
 
 .mib-groups-table-container {
   margin-top: 10px;
-  padding: 25px;
 
   .header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
 
-    .title-container {
+    .section-left {
       display: flex;
-      align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
-    }
-
-    .action-container {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-end;
-      gap: 5px;
-      width: 30%;
+      gap: 10px;
 
       .search-container {
-        width: 80%;
+        width: 400px;
+
+        :deep(.feather-input-sub-text) {
+          display: none !important;
+        }
       }
     }
   }
-
 
   .container {
     table {
@@ -364,6 +361,28 @@ onMounted(async () => {
                   padding: 8px 16px !important;
                 }
               }
+            }
+          }
+        }
+
+        .tag {
+          .enabled-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+            background-color: #0B720C1F;
+
+            :deep(span) {
+              color: #0B720C !important;
+            }
+          }
+
+          .disabled-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+            background-color: #7575751F;
+
+            :deep(span) {
+              color: #757575 !important;
             }
           }
         }

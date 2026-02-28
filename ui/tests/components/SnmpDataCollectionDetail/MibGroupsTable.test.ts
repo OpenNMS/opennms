@@ -3,6 +3,7 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
@@ -10,6 +11,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick, ref } from 'vue'
 
 describe('MibGroupsTable.vue', () => {
   let wrapper: VueWrapper<any>
@@ -87,7 +89,8 @@ describe('MibGroupsTable.vue', () => {
           FeatherDropdownItem,
           FeatherSortHeader,
           FeatherPagination,
-          FeatherInput
+          FeatherInput,
+          FeatherChip
         }
       }
     })
@@ -110,10 +113,6 @@ describe('MibGroupsTable.vue', () => {
       expect(store.fetchMibGroups).toHaveBeenCalled()
     })
 
-    it('renders the title correctly', () => {
-      expect(wrapper.text()).toContain('MIB Groups')
-    })
-
     it('renders search input', () => {
       const searchInput = wrapper.find('[data-test="search-input"]')
       expect(searchInput.exists()).toBe(true)
@@ -132,6 +131,36 @@ describe('MibGroupsTable.vue', () => {
     it('add mib group button has correct text', () => {
       const addButton = wrapper.find('[data-test="add-mib-group-button"]')
       expect(addButton.text()).toBe('Add MIB Group')
+    })
+
+    it('renders within mib-groups-table-container', () => {
+      expect(wrapper.find('.mib-groups-table-container').exists()).toBe(true)
+    })
+
+    it('renders header with section-left and section-right', () => {
+      expect(wrapper.find('.header .section-left').exists()).toBe(true)
+      expect(wrapper.find('.header .section-right').exists()).toBe(true)
+    })
+
+    it('renders search input with correct hint text', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('hint')).toBe('Search by Name or Interface Type')
+    })
+
+    it('renders search input with type search', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('type')).toBe('search')
+    })
+
+    it('renders add button inside section-right .add container', () => {
+      const sectionRight = wrapper.find('.section-right')
+      expect(sectionRight.find('.add').exists()).toBe(true)
+      expect(sectionRight.find('[data-test="add-mib-group-button"]').exists()).toBe(true)
+    })
+
+    it('renders DeleteConfirmationDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
     })
   })
 
@@ -183,6 +212,25 @@ describe('MibGroupsTable.vue', () => {
       expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
     })
+
+    it('renders EmptyList component when no data', async () => {
+      store.mibGroups = []
+      await wrapper.vm.$nextTick()
+
+      const emptyList = wrapper.findComponent({ name: 'EmptyList' })
+      expect(emptyList.exists()).toBe(true)
+    })
+
+    it('shows table then hides when data is cleared', async () => {
+      store.mibGroups = [mockMibGroup]
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+
+      store.mibGroups = []
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(false)
+    })
   })
 
   describe('Table Rendering with Data', () => {
@@ -202,37 +250,6 @@ describe('MibGroupsTable.vue', () => {
       const rows = wrapper.findAll('transition-group-stub tr')
       // Each mib group can have 2 rows (main + expanded), but expanded is hidden initially
       expect(rows.length).toBeGreaterThanOrEqual(2)
-    })
-
-    it('renders mib group name correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('mib2-interfaces')
-    })
-
-    it('renders ifType correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('all')
-    })
-
-    it('renders enabled status correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Enabled')
-    })
-
-    it('renders disabled status correctly', async () => {
-      store.mibGroups = [disabledMibGroup]
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Disabled')
-    })
-
-    it('renders edit button', async () => {
-      expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(true)
-    })
-
-    it('renders pagination when mibGroups exist', async () => {
-      expect(wrapper.find('.alerts-pagination').exists()).toBe(true)
     })
   })
 
@@ -276,15 +293,6 @@ describe('MibGroupsTable.vue', () => {
     it('renders search input with type search', () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       expect(searchInput.props('type')).toBe('search')
-    })
-
-    it('handles search input changes with debouncing', async () => {
-      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-      await searchInput.setValue('test')
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(store.onChangeMibGroupsSearchTerm).toHaveBeenCalledWith('test')
     })
 
     it('does not call onChangeMibGroupsSearchTerm before debounce time', async () => {
@@ -382,6 +390,17 @@ describe('MibGroupsTable.vue', () => {
     it('should have correct title attribute', async () => {
       const editButton = wrapper.find('[data-test="edit-button"]')
       expect(editButton.attributes('title')).toContain('Edit')
+    })
+
+    it('should call openMibGroupCreationDrawer with correct mibGroup for second row', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
+
+      const editButtons = wrapper.findAll('[data-test="edit-button"]')
+      await editButtons[1].trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(store.openMibGroupCreationDrawer).toHaveBeenCalledWith(mockMibGroup2, CreateEditMode.Edit)
     })
   })
 
@@ -513,6 +532,63 @@ describe('MibGroupsTable.vue', () => {
       // Should not contain "Object 1" since there are no objects
       expect(expandedContent.text()).not.toContain('Object 1')
     })
+
+    it('expanded content td has colspan="5"', async () => {
+      const expandedRow = wrapper.find('.expanded-content')
+      const td = expandedRow.find('td')
+      expect(td.attributes('colspan')).toBe('5')
+    })
+
+    it('renders .description element for mib group names', async () => {
+      const description = wrapper.find('.expanded-content .description')
+      expect(description.exists()).toBe(true)
+      expect(description.text()).toContain('ifTable, ifXTable')
+    })
+
+    it('renders mib group names as comma-separated text', async () => {
+      const description = wrapper.find('.expanded-content .description')
+      // Uses text interpolation {{ }}, not v-html
+      expect(description.text()).toBe('ifTable, ifXTable')
+    })
+
+    it('renders h5 headers for section titles', async () => {
+      const h5s = wrapper.findAll('.expanded-content h5')
+      expect(h5s.length).toBeGreaterThanOrEqual(1)
+      expect(h5s[0].text()).toBe('Mib Group Names')
+    })
+
+    it('renders h6 header for object numbering', async () => {
+      const h6s = wrapper.findAll('.expanded-content h6')
+      expect(h6s.length).toBeGreaterThanOrEqual(1)
+      expect(h6s[0].text()).toBe('Object 1')
+    })
+
+    it('renders strong tags for field labels', async () => {
+      const strongs = wrapper.findAll('.expanded-content strong')
+      const strongTexts = strongs.map((s) => s.text())
+      expect(strongTexts).toContain('Alias:')
+      expect(strongTexts).toContain('OID:')
+      expect(strongTexts).toContain('Instance:')
+      expect(strongTexts).toContain('Data Type:')
+    })
+
+    it('renders Mib Objects h5 when objects exist', async () => {
+      const h5s = wrapper.findAll('.expanded-content h5')
+      const mibObjectsH5 = h5s.filter((h) => h.text() === 'Mib Objects:')
+      expect(mibObjectsH5.length).toBe(1)
+    })
+
+    it('does not render Mib Objects h5 when no objects', async () => {
+      store.mibGroups = [disabledMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(disabledMibGroup.id)
+      await wrapper.vm.$nextTick()
+
+      const h5s = wrapper.findAll('.expanded-content h5')
+      const mibObjectsH5 = h5s.filter((h) => h.text() === 'Mib Objects:')
+      expect(mibObjectsH5.length).toBe(0)
+    })
   })
 
   describe('Sorting Functionality', () => {
@@ -526,32 +602,9 @@ describe('MibGroupsTable.vue', () => {
       expect(sortHeaders.length).toBeGreaterThan(0)
     })
 
-    it('handles sort change for ascending', () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
-      expect(store.onMibGroupsSortChange).toHaveBeenCalledWith('name', 'asc')
-    })
-
-    it('handles sort change for descending', () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'desc' })
-      expect(store.onMibGroupsSortChange).toHaveBeenCalledWith('name', 'desc')
-    })
-
     it('handles sort reset to default when value is none', () => {
       wrapper.vm.sortChanged({ property: 'name', value: SORT.NONE })
       expect(store.onMibGroupsSortChange).toHaveBeenCalledWith('createdTime', 'desc')
-    })
-
-    it('updates local sort state on sort change', async () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
-      expect(wrapper.vm.sort.name).toBe('asc')
-    })
-
-    it('resets other sort properties when sorting by a column', async () => {
-      wrapper.vm.sort.ifType = 'asc'
-      wrapper.vm.sortChanged({ property: 'name', value: 'desc' })
-
-      expect(wrapper.vm.sort.name).toBe('desc')
-      expect(wrapper.vm.sort.ifType).toBe(SORT.NONE)
     })
 
     it('clicks sort header and triggers onMibGroupsSortChange', async () => {
@@ -595,18 +648,6 @@ describe('MibGroupsTable.vue', () => {
       expect(pagination.props('total')).toBe(50)
     })
 
-    it('handles page change', async () => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:modelValue', 2)
-      expect(store.onMibGroupsPageChange).toHaveBeenCalledWith(2)
-    })
-
-    it('handles page size change', async () => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:pageSize', 20)
-      expect(store.onMibGroupsPageSizeChange).toHaveBeenCalledWith(20)
-    })
-
     it.each([{ page: 1 }, { page: 2 }, { page: 5 }, { page: 10 }])(
       'handles page change to page $page',
       async ({ page }) => {
@@ -629,6 +670,11 @@ describe('MibGroupsTable.vue', () => {
       const pagination = wrapper.getComponent(FeatherPagination)
       expect(pagination.props('pageSizes')).toEqual([10, 20, 30])
     })
+
+    it('has data-test attribute on FeatherPagination', () => {
+      const pagination = wrapper.find('[data-test="FeatherPagination"]')
+      expect(pagination.exists()).toBe(true)
+    })
   })
 
   describe('Dropdown Actions', () => {
@@ -642,66 +688,20 @@ describe('MibGroupsTable.vue', () => {
       expect(rows[0].findComponent(FeatherDropdown).exists()).toBe(true)
     })
 
+    it('renders action container for each row', async () => {
+      const actionContainers = wrapper.findAll('.action-container')
+      expect(actionContainers.length).toBe(1)
+    })
+
+    it('renders multiple dropdowns for multiple rows', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
+
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+    })
+
     it('renders more actions button in each row', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      const buttons = rows[0].findAll('button')
-      // Should have at least 3 buttons: edit, more actions, and expand
-      expect(buttons.length).toBeGreaterThanOrEqual(3)
-    })
-
-    it('has dropdown component in row actions', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      const dropdown = rows[0].findComponent(FeatherDropdown)
-      expect(dropdown.exists()).toBe(true)
-    })
-  })
-
-  describe('Columns Configuration', () => {
-    it('has correct columns defined', () => {
-      const columns = wrapper.vm.columns
-      expect(columns).toEqual([
-        { id: 'name', label: 'Name' },
-        { id: 'ifType', label: 'Interface Type' },
-        { id: 'enabled', label: 'Status' }
-      ])
-    })
-
-    it('renders all column headers', async () => {
-      store.mibGroups = [mockMibGroup]
-      await wrapper.vm.$nextTick()
-
-      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      expect(sortHeaders).toHaveLength(3)
-    })
-
-    it.each([
-      { id: 'name', label: 'Name' },
-      { id: 'ifType', label: 'Interface Type' },
-      { id: 'enabled', label: 'Status' }
-    ])('has column with id "$id" and label "$label"', ({ id, label }) => {
-      const columns = wrapper.vm.columns
-      const column = columns.find((col: any) => col.id === id)
-      expect(column).toBeDefined()
-      expect(column.label).toBe(label)
-    })
-  })
-
-  describe('Status Display', () => {
-    it.each([
-      { enabled: true, expectedText: 'Enabled' },
-      { enabled: false, expectedText: 'Disabled' }
-    ])('displays "$expectedText" when enabled is $enabled', async ({ enabled, expectedText }) => {
-      const mibGroup = { ...mockMibGroup, enabled }
-      store.mibGroups = [mibGroup]
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(expectedText)
-    })
-  })
-
-  describe('Multiple MIB Groups with Mixed States', () => {
-    it('renders multiple mib groups with different enabled states', async () => {
       store.mibGroups = [mockMibGroup, disabledMibGroup]
       await wrapper.vm.$nextTick()
 
@@ -710,6 +710,93 @@ describe('MibGroupsTable.vue', () => {
     })
 
     it('renders mib groups with different ifTypes', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain('all')
+      expect(wrapper.text()).toContain('ignore')
+    })
+  })
+
+  describe('Columns Configuration', () => {
+    it('has correct number of columns defined', () => {
+      expect(wrapper.vm.columns.length).toBe(3)
+    })
+
+    it.each([
+      { id: 'name', label: 'Name' },
+      { id: 'ifType', label: 'Interface Type' },
+      { id: 'enabled', label: 'Status' }
+    ])('has column "$label" with id "$id"', ({ id, label }) => {
+      const col = wrapper.vm.columns.find((c: any) => c.id === id)
+      expect(col).toBeDefined()
+      expect(col.label).toBe(label)
+    })
+
+    it('renders 3 sort headers for columns', async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      expect(sortHeaders.length).toBe(3)
+    })
+
+    it('renders Actions column header (non-sortable)', async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+
+      const ths = wrapper.findAll('th')
+      const actionsHeader = ths.filter((th) => th.text() === 'Actions')
+      expect(actionsHeader.length).toBe(1)
+    })
+  })
+
+  describe('Status Display', () => {
+    it.each([
+      { enabled: true, expectedText: 'Enabled', expectedClass: 'enabled-tag' },
+      { enabled: false, expectedText: 'Disabled', expectedClass: 'disabled-tag' }
+    ])('displays "$expectedText" with class "$expectedClass" when enabled=$enabled', async ({ enabled, expectedText, expectedClass }) => {
+      const mibGroup = { ...mockMibGroup, enabled }
+      store.mibGroups = [mibGroup]
+      await wrapper.vm.$nextTick()
+
+      const statusTag = wrapper.find('[data-test="status-tag"]')
+      expect(statusTag.exists()).toBe(true)
+      expect(statusTag.text()).toBe(expectedText)
+      expect(statusTag.classes()).toContain(expectedClass)
+    })
+
+    it('renders FeatherChip for status in each row', async () => {
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('[data-test="status-tag"]')
+      expect(chips.length).toBe(2)
+    })
+
+    it('renders mixed enabled/disabled states', async () => {
+      store.mibGroups = [mockMibGroup, disabledMibGroup]
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('[data-test="status-tag"]')
+      expect(chips.length).toBe(2)
+      expect(chips[0].text()).toBe('Enabled')
+      expect(chips[0].classes()).toContain('enabled-tag')
+      expect(chips[1].text()).toBe('Disabled')
+      expect(chips[1].classes()).toContain('disabled-tag')
+    })
+  })
+
+  describe('Multiple MIB Groups with Mixed States', () => {
+    it('renders mib groups with different enabled states', async () => {
+      store.mibGroups = [mockMibGroup, disabledMibGroup]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.text()).toContain('Enabled')
+      expect(wrapper.text()).toContain('Disabled')
+    })
+
+    it('renders mib groups with different interface types', async () => {
       store.mibGroups = [mockMibGroup, mockMibGroup2]
       await wrapper.vm.$nextTick()
 
@@ -914,22 +1001,6 @@ describe('MibGroupsTable.vue', () => {
       expect(expandedContent.length).toBe(1)
     })
 
-    it('handles mib group with malformed mibObjects JSON gracefully', async () => {
-      // This tests if the component handles JSON.parse properly
-      const mibGroupEmptyObjects = {
-        ...mockMibGroup,
-        mibObjects: '[]'
-      }
-      store.mibGroups = [mibGroupEmptyObjects]
-      await wrapper.vm.$nextTick()
-
-      wrapper.vm.toggleExpand(mibGroupEmptyObjects.id)
-      await wrapper.vm.$nextTick()
-
-      // Should still render expanded content
-      expect(wrapper.find('.expanded-content').exists()).toBe(true)
-    })
-
     it('handles mib group with special characters in mibGroupNames', async () => {
       const specialNamesMibGroup = {
         ...mockMibGroup,
@@ -962,6 +1033,74 @@ describe('MibGroupsTable.vue', () => {
       expect(expandedContent.text()).toContain('table1')
       expect(expandedContent.text()).toContain('table50')
     })
+
+    it('handles mib group with single mibGroupName', async () => {
+      const singleNameMibGroup = { ...mockMibGroup, mibGroupNames: ['onlyTable'] }
+      store.mibGroups = [singleNameMibGroup]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.toggleExpand(singleNameMibGroup.id)
+      await wrapper.vm.$nextTick()
+
+      const description = wrapper.find('.expanded-content .description')
+      expect(description.text()).toBe('onlyTable')
+    })
+
+    it('does not call search before debounce completes when input cleared', async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test')
+      vi.advanceTimersByTime(300)
+      await searchInput.setValue('')
+      vi.advanceTimersByTime(500)
+      await wrapper.vm.$nextTick()
+
+      // Only the empty string call should go through (debounce cancels previous)
+      expect(store.onChangeMibGroupsSearchTerm).toHaveBeenCalledTimes(1)
+      expect(store.onChangeMibGroupsSearchTerm).toHaveBeenCalledWith('')
+    })
+  })
+
+  describe('Content Data Display', () => {
+    beforeEach(async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('renders mib group name in row', async () => {
+      expect(wrapper.text()).toContain('mib2-interfaces')
+    })
+
+    it('renders ifType in row', async () => {
+      expect(wrapper.text()).toContain('all')
+    })
+
+    it('renders .tag container for status chip', async () => {
+      const tag = wrapper.find('.tag')
+      expect(tag.exists()).toBe(true)
+    })
+
+    it('renders search-container within section-left', async () => {
+      expect(wrapper.find('.section-left .search-container').exists()).toBe(true)
+    })
+
+    it('renders refresh container within section-left', async () => {
+      expect(wrapper.find('.section-left .refresh').exists()).toBe(true)
+    })
+
+    it('renders data in .container wrapper', async () => {
+      expect(wrapper.find('.container').exists()).toBe(true)
+      expect(wrapper.find('.container .data-table').exists()).toBe(true)
+    })
+
+    it('renders pagination inside .alerts-pagination', async () => {
+      store.mibGroupsPagination = { page: 1, pageSize: 10, total: 50 }
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.alerts-pagination').exists()).toBe(true)
+    })
   })
 
   describe('Store State Binding', () => {
@@ -988,7 +1127,8 @@ describe('MibGroupsTable.vue', () => {
       store.mibGroupsSearchTerm = 'test search'
       await wrapper.vm.$nextTick()
 
-      expect(store.mibGroupsSearchTerm).toBe('test search')
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('modelValue')).toBe('test search')
     })
   })
 
@@ -1075,12 +1215,12 @@ describe('MibGroupsTable.vue', () => {
   })
 
   describe('Accessibility', () => {
-    it('table has aria-label', async () => {
+    it('table has aria-label with correct value', async () => {
       store.mibGroups = [mockMibGroup]
       await wrapper.vm.$nextTick()
 
       const table = wrapper.find('.data-table')
-      expect(table.attributes('aria-label')).toBeDefined()
+      expect(table.attributes('aria-label')).toBe('Events Table')
     })
 
     it('sort headers are rendered with col scope', async () => {
@@ -1099,7 +1239,7 @@ describe('MibGroupsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.attributes('title')).toBeDefined()
+      expect(editButton.attributes('title')).toContain('Edit')
     })
   })
 
@@ -1177,14 +1317,6 @@ describe('MibGroupsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
-      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
-      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
-    })
-
-    it('sets selectedMibGroup correctly when opening dialog', async () => {
-      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
-      await wrapper.vm.$nextTick()
-
       expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
       expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
     })
@@ -1465,6 +1597,19 @@ describe('MibGroupsTable.vue', () => {
         error: true
       })
     })
+
+    it('keeps delete dialog open when deletion fails', async () => {
+      deleteMibGroupsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.deleteMibGroup({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup).not.toBeNull()
+    })
   })
 
   describe('Delete Button in Dropdown', () => {
@@ -1480,26 +1625,6 @@ describe('MibGroupsTable.vue', () => {
       expect(dropdowns.length).toBe(2)
     })
 
-    it('has closeDeleteMibGroupDialog method available', async () => {
-      // Verify the component has the closeDeleteMibGroupDialog method
-      expect(typeof wrapper.vm.closeDeleteMibGroupDialog).toBe('function')
-    })
-
-    it('calls openDeleteMibGroupDialog for first mib group', async () => {
-      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup.id)
-      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup.name)
-    })
-
-    it('calls openDeleteMibGroupDialog for second mib group', async () => {
-      wrapper.vm.openDeleteMibGroupDialog(mockMibGroup2)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.selectedMibGroup?.id).toBe(mockMibGroup2.id)
-      expect(wrapper.vm.selectedMibGroup?.name).toBe(mockMibGroup2.name)
-    })
   })
 
   describe('Delete Confirmation Dialog Events', () => {

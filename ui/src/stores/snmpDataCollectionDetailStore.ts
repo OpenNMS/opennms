@@ -52,6 +52,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
     selectedSystemDef: null,
     selectedMibGroup: null,
     selectedResourceType: null,
+    activeTab: 0,
     systemDefDrawerState: {
       visible: false,
       isEditMode: CreateEditMode.None
