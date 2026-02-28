@@ -1,10 +1,7 @@
 <template>
   <TableCard class="snmp-data-collection-source-table">
     <div class="header">
-      <div class="title-container">
-        <h2 class="title">Data Collection Sources</h2>
-      </div>
-      <div class="action-container">
+      <div class="section-left">
         <div class="search-container">
           <FeatherInput
             label="Search"
@@ -27,6 +24,16 @@
             @click="store.refreshSourcesfilters()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
+          </FeatherButton>
+        </div>
+      </div>
+      <div class="section-right">
+        <div class="add">
+          <FeatherButton
+            secondary
+            @click="goToCreateSource"
+          >
+            Create New Data Collection Source
           </FeatherButton>
         </div>
       </div>
@@ -189,6 +196,10 @@ const sort = reactive({
   enabled: SORT.NONE
 }) as any
 
+const goToCreateSource = () => {
+  router.push({ name: 'SNMP Data Collection Create' })
+}
+
 const onSourceClick = (source: any) => {
   router.push({
     name: 'SNMP Data Collection Detail',
@@ -282,30 +293,23 @@ onMounted(async () => {
 .snmp-data-collection-source-table {
   margin-top: 10px;
   padding: 25px;
+  border: 1px solid var(--feather-border-on-surface);
 
   .header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
 
-    .title-container {
+    .section-left {
       display: flex;
-      align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
-    }
-
-    .action-container {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-end;
-      gap: 5px;
-      width: 30%;
+      gap: 10px;
 
       .search-container {
-        width: 80%;
+        width: 400px;
+
+        :deep(.feather-input-sub-text) {
+          display: none !important;
+        }
       }
     }
   }
@@ -354,11 +358,8 @@ onMounted(async () => {
 
     .alerts-pagination {
       display: flex;
-      justify-content: flex-end;
-      padding: var(variables.$spacing-xxs);
-      border-bottom: 1px solid var(--feather-border-on-surface);
-      border-left: 1px solid var(--feather-border-on-surface);
-      border-right: 1px solid var(--feather-border-on-surface);
+      justify-content: center;
+      padding: 30px 0px 0px 0px;
     }
 
     .feather-pagination {

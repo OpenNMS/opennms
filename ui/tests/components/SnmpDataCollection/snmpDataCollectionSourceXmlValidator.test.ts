@@ -8,7 +8,7 @@ import {
   validateResourceTypeElement,
   validateSnmpDataCollectionSourceFile,
   validateSystemDefElement
-} from '@/components/SnmpDataCollectionSourceImport/snmpDataCollectionSourceXmlValidator'
+} from '@/components/SnmpDataCollection/snmpDataCollectionSourceXmlValidator'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('snmpDataCollectionSourceXmlValidator', () => {

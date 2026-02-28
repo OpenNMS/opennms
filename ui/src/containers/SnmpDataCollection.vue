@@ -9,50 +9,41 @@
       <div class="heading">
         <h1>Manage SNMP Data Collection Sources</h1>
       </div>
-      <div class="action">
-        <FeatherButton
-          primary
-          @click="goToCreateSource"
-        >
-          Create New Data Collection Source
-        </FeatherButton>
-        <FeatherButton
-          secondary
-          @click="goToImportSource"
-        >
-          Import Data Collection Source
-        </FeatherButton>
-      </div>
     </div>
-    <div class="container">
-      <SnmpDataCollectionSourcesTable />
+    <div class="tab-container">
+      <FeatherTabContainer v-model="store.activeTab">
+        <template v-slot:tabs>
+          <FeatherTab>Data Collection Sources</FeatherTab>
+          <FeatherTab>Import Data Collection Sources</FeatherTab>
+        </template>
+        <FeatherTabPanel>
+          <SnmpDataCollectionSourcesTable />
+        </FeatherTabPanel>
+        <FeatherTabPanel>
+          <SnmpDataCollectionSourceImport />
+        </FeatherTabPanel>
+      </FeatherTabContainer>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import SnmpDataCollectionSourceImport from '@/components/SnmpDataCollection/SnmpDataCollectionSourceImport.vue'
 import SnmpDataCollectionSourcesTable from '@/components/SnmpDataCollection/SnmpDataCollectionSourcesTable.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { BreadCrumb } from '@/types'
-import { FeatherButton } from '@featherds/button'
+import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 
 const menuStore = useMenuStore()
+const store = useSnmpDataCollectionStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
-const router = useRouter()
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
   { label: 'SNMP Data Collection', to: '#', position: 'last' }
 ]))
-
-const goToCreateSource = () => {
-  router.push({ name: 'SNMP Data Collection Create' })
-}
-
-const goToImportSource = () => {
-  router.push({ name: 'SNMP Data Collection Import' })
-}
 </script>
 
 <style lang="scss" scoped>
@@ -64,6 +55,11 @@ const goToImportSource = () => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding: 60px 40px 25px 40px;
+  }
+
+  .tab-container {
+    padding: 0px 40px 0px 40px;
   }
 }
 </style>

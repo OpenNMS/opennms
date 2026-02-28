@@ -60,6 +60,11 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
+    public List<SnmpCollectionResourceType> findAllEnabledBySource(Integer snmpCollectionSourceId) {
+        return find("from SnmpCollectionResourceType t where t.collectionSource.id = ? and t.enabled = true", snmpCollectionSourceId);
+    }
+
+    @Override
     public List<SnmpCollectionResourceType> findAllEnabled() {
         return find("from SnmpCollectionResourceType t where t.enabled = true");
     }
