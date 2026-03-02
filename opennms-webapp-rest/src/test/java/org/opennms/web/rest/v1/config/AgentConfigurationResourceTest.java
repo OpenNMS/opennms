@@ -43,6 +43,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -203,6 +204,11 @@ public class AgentConfigurationResourceTest {
 
         @Override
         public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
+
+        }
+
+        @Override
+        public void saveDefaultOverrides(Configuration config) {
 
         }
 

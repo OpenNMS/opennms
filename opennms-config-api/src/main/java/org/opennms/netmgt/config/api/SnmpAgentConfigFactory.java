@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -101,6 +102,13 @@ public interface SnmpAgentConfigFactory {
      * @param module   module from which the definition is getting saved.
      */
     void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module);
+
+    /**
+     * Save default configuration overrides into current SNMP config.
+     * *NOTE*: Null values will NOT be ignored, they will replace values in the current config, meaning that
+     * default values will be used for any parameters that are set to null in the given config.
+     */
+    void saveDefaultOverrides(Configuration config);
 
     /**
      * Save an SnmpProfile. The given profile must include a label.

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 
@@ -65,6 +66,24 @@ public interface SnmpConfigRestApi {
     Response getConfigForIp(
             @QueryParam("ipAddress") String ipAddress,
             @QueryParam("location") String location);
+
+    @POST
+    @Path("/defaults")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Save SNMP default override configuration",
+            description = "Save SNMP default override configuration",
+            operationId = "saveDefaultOverrides"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "SNMP configuration default overrides saved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Server Error or Bad Request – invalid or missing input parameters",
+                    content = @Content)
+    })
+    Response saveDefaultOverrides(Configuration config);
 
     @PUT
     @Path("/definition")

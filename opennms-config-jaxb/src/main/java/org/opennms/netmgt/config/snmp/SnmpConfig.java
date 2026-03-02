@@ -92,6 +92,33 @@ public class SnmpConfig extends Configuration implements Serializable {
         setDefinitions(definitions);
     }
 
+    public SnmpConfig(Configuration baseConfig, List<Definition> definitions) {
+        super(
+            baseConfig.getPort(),
+            baseConfig.getRetry(),
+            baseConfig.getTimeout(),
+            baseConfig.getReadCommunity(),
+            baseConfig.getWriteCommunity(),
+            baseConfig.getProxyHost(),
+            baseConfig.getVersion(),
+            baseConfig.getMaxVarsPerPdu(),
+            baseConfig.getMaxRepetitions(),
+            baseConfig.getMaxRequestSize(),
+            baseConfig.getSecurityName(),
+            baseConfig.getSecurityLevel(),
+            baseConfig.getAuthPassphrase(),
+            baseConfig.getAuthProtocol(),
+            baseConfig.getEngineId(),
+            baseConfig.getContextEngineId(),
+            baseConfig.getContextName(),
+            baseConfig.getPrivacyPassphrase(),
+            baseConfig.getPrivacyProtocol(),
+            baseConfig.getEnterpriseId()
+        );
+
+        setDefinitions(definitions);
+    }
+
     @JsonIgnore
     public List<Definition> getDefinitions() {
         if (definition == null) {

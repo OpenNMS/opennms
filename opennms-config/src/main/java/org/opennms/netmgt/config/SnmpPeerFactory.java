@@ -35,6 +35,7 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.config.exception.ValidationException;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
 import org.opennms.netmgt.config.snmp.Configuration;
@@ -280,12 +281,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address, final boolean metaDataInterpolation) {
         final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
+
         AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(address);
         // Need to populate default snmp config.
         visitor.visitSnmpConfig(getSnmpConfig());
         snmpProfile.visit(visitor);
+
         Definition definition = visitor.getDefinition();
         setSnmpAgentConfig(agentConfig, definition, VERSION_UNSPECIFIED);
+
         // config is derived from profile
         agentConfig.setDefault(false);
         agentConfig.setProfileLabel(snmpProfile.getLabel());
@@ -334,11 +338,14 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             // Set the values from best matching definition
             final AddressSnmpConfigVisitor visitor = new AddressSnmpConfigVisitor(agentInetAddress, location);
             getSnmpConfig().visit(visitor);
+
             final Definition matchingDef = visitor.getDefinition();
+
             // Is agent config matching specific definition or coming from default config
             if (!visitor.isMatchingDefaultConfig()) {
                 agentConfig.setDefault(false);
             }
+
             if (matchingDef != null) {
                 setSnmpAgentConfig(agentConfig, matchingDef, requestedSnmpVersion);
             }
@@ -401,7 +408,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private void setDefinitionFromAgentConfig(Definition definition, SnmpAgentConfig snmpAgentConfig) {
-
         definition.setVersion(SnmpConfiguration.versionToString(snmpAgentConfig.getVersion()));
         definition.setPort(snmpAgentConfig.getPort());
         definition.setRetry(snmpAgentConfig.getRetries());
@@ -715,12 +721,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
-
         boolean matchingIpAddress = definition.getSpecifics().stream()
                 .anyMatch(saddr -> saddr.equals(inetAddress.getHostAddress()));
+
         if (!matchingIpAddress) {
             return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
         }
+
         return true;
     }
 
@@ -731,32 +738,67 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
         final boolean inRange;
         final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
+
         if (BYTE_ARRAY_COMPARATOR.compare(begin, end) <= 0) {
             inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
         } else {
             inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
         }
+
         return inRange;
     }
 
     @Override
     public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
         Definition definition = new Definition();
-        //agent config always have one ip-address.
+
+        // agent config always have one ip-address.
         String ipAddress = snmpAgentConfig.getAddress().getHostAddress();
         definition.setLocation(location);
+
         setDefinitionFromAgentConfig(definition, snmpAgentConfig);
         saveDefinition(definition);
         LOG.info("Definition saved for {} by module {}", ipAddress, module);
+
         saveCurrent();
+    }
+
+    @Override
+    public void saveDefaultOverrides(Configuration config) {
+        if (config == null) {
+            return;
+        }
+
+        getWriteLock().lock();
+
+        try {
+            // clone the current in-memory config so we do not override the current
+            // in-memory config with invalid values if the new config fails validation
+            SnmpConfig clonedConfig = SnmpPeerFactory.cloneConfig(getSnmpConfig());
+            setConfigurationParams(clonedConfig, config);
+
+            // call these directly since we are already in a write lock
+
+            try {
+                getSnmpConfigDao().updateConfig(clonedConfig);
+                m_config = clonedConfig;
+            } catch (ValidationException e) {
+                LOG.error("Failed to save default overrides to config, failed schema validation.", e);
+                // m_config remains untouched
+            }
+        } finally {
+            getWriteLock().unlock();
+        }
     }
 
     @Override
     public List<SnmpProfile> getProfiles() {
         SnmpConfig snmpConfig = getSnmpConfig();
+
         if (snmpConfig != null && snmpConfig.getSnmpProfiles() != null) {
             return snmpConfig.getSnmpProfiles().getSnmpProfiles();
         }
+
         return new ArrayList<>();
     }
 
@@ -893,6 +935,29 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 LOG.warn("Exception while trying to get textEncryptor", e);
             }
         }
+    }
+
+    private void setConfigurationParams(SnmpConfig snmpConfig, Configuration config) {
+        snmpConfig.setPort(config.getPort());
+        snmpConfig.setRetry(config.getRetry());
+        snmpConfig.setTimeout(config.getTimeout());
+        snmpConfig.setReadCommunity(config.getReadCommunity());
+        snmpConfig.setWriteCommunity(config.getWriteCommunity());
+        snmpConfig.setProxyHost(config.getProxyHost());
+        snmpConfig.setVersion(config.getVersion());
+        snmpConfig.setMaxVarsPerPdu(config.getMaxVarsPerPdu());
+        snmpConfig.setMaxRepetitions(config.getMaxRepetitions());
+        snmpConfig.setMaxRequestSize(config.getMaxRequestSize());
+        snmpConfig.setSecurityName(config.getSecurityName());
+        snmpConfig.setSecurityLevel(config.getSecurityLevel());
+        snmpConfig.setAuthPassphrase(config.getAuthPassphrase());
+        snmpConfig.setAuthProtocol(config.getAuthProtocol());
+        snmpConfig.setEngineId(config.getEngineId());
+        snmpConfig.setContextEngineId(config.getContextEngineId());
+        snmpConfig.setContextName(config.getContextName());
+        snmpConfig.setPrivacyPassphrase(config.getPrivacyPassphrase());
+        snmpConfig.setPrivacyProtocol(config.getPrivacyProtocol());
+        snmpConfig.setEnterpriseId(config.getEnterpriseId());
     }
 
     @VisibleForTesting

@@ -39,6 +39,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -116,6 +117,31 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             LOG.error("Error looking up SNMP Config: {}", e.getMessage(), e);
             throw createServerException("Error looking up SNMP config.");
         }
+    }
+
+    @Override
+    public Response saveDefaultOverrides(Configuration config) {
+        if (config == null) {
+            return createBadRequestResponse("Missing or invalid request body.");
+        }
+
+        try {
+            // Validate the config
+            // JaxbUtils.unmarshal validates via 'snmp-config.xsd', so we use this for validation
+            SnmpConfig validationConfig = new SnmpConfig(config, new ArrayList<>());
+            String configXml = JaxbUtils.marshal(validationConfig);
+            SnmpConfig validatedConfig = JaxbUtils.unmarshal(SnmpConfig.class, configXml);
+
+            SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
+        } catch (DataAccessException dae) {
+            LOG.error("Data access error saving SNMP default overrides, failed schema validation: {}", dae.getMessage(), dae);
+            throw createServerException("Error saving SNMP default overrides, failed schema validation.");
+        } catch (Exception e) {
+            LOG.error("Error saving SNMP default overrides: {}", e.getMessage(), e);
+            throw createServerException("Error saving SNMP default overrides.");
+        }
+
+        return Response.noContent().build();
     }
 
     @Override
