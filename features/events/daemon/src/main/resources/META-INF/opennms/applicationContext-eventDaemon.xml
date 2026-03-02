@@ -75,20 +75,48 @@
     <constructor-arg ref="eventdMetricRegistry"/>
     <property name="eventProcessors">
       <list>
-        <!-- 
-          This EventProcessor can be used to perform regex replacements on incoming parm values.
-          It was added in 1.11 and because of performance concerns, it is commented-out for now.
-        -->
         <!-- <ref bean="eventParmRegexFilter"/> -->
         <ref bean="eventExpander"/>
-        <ref bean="eventWriter"/>
-        <ref bean="eventIpcBroadcastProcessor"/>
+        <ref bean="tsidAssigner"/>
+        <ref bean="eventRouter"/>
       </list>
     </property>
     <property name="logEventSummaries" ref="shouldLogEventSummaries" />
     <property name="nodeDao" ref="nodeDao" />
   </bean>
 
+  <!-- TSID generation (replaces PostgreSQL sequence for event identity) -->
+  <bean id="tsidFactory" class="org.opennms.core.tsid.TsidFactory">
+    <constructor-arg value="${org.opennms.tsid.node-id:0}"/>
+  </bean>
+
+  <bean id="tsidAssigner" class="org.opennms.netmgt.eventd.processor.TsidAssigner">
+    <constructor-arg ref="tsidFactory"/>
+  </bean>
+
+  <!-- Event classification and routing -->
+  <bean id="eventClassifier" class="org.opennms.netmgt.eventd.router.EventClassifier"/>
+
+  <bean id="ipcMessageConverter" class="org.opennms.netmgt.eventd.router.IpcMessageConverter"/>
+
+  <!-- Local-mode MessageBus: in-JVM pub/sub for IPC events -->
+  <bean id="messageBus" class="org.opennms.core.messagebus.local.LocalMessageBus"/>
+
+  <onmsgi:service ref="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
+
+  <!-- Local-mode fault event publisher (logs instead of sending to Kafka).
+       When Kafka is enabled, a Karaf feature will replace this with FaultEventPublisher. -->
+  <bean id="faultEventPublisher" class="org.opennms.netmgt.eventd.processor.LocalFaultEventPublisher"/>
+
+  <bean id="eventRouter" class="org.opennms.netmgt.eventd.router.EventRouter">
+    <constructor-arg ref="eventClassifier"/>
+    <constructor-arg ref="faultEventPublisher"/>
+    <constructor-arg ref="messageBus"/>
+    <constructor-arg ref="eventIpcManagerImpl"/>
+    <constructor-arg ref="ipcMessageConverter"/>
+  </bean>
+
+  <!-- Legacy beans kept for backward compatibility (referenced by other modules) -->
   <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
     <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
