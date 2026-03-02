@@ -477,7 +477,7 @@ public abstract class SearchProperties {
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
-		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix("lastEvent", "Last Event", EVENT_PROPERTIES));
+		// lastEvent association removed — event data is denormalized on alarm
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
 		ALARM_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));

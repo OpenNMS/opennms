@@ -423,8 +423,9 @@ public class AckdIT implements InitializingBean {
         alarm.setDistPoller(event.getDistPoller());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setIpAddr(event.getIpAddr());
-        alarm.setLastEvent(event);
         alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setLogMsg("Some Log Message");
         alarm.setNode(event.getNode());
         alarm.setReductionKey("xyz");

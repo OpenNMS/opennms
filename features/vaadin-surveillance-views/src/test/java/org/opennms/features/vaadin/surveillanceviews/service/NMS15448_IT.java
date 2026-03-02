@@ -94,7 +94,9 @@ public class NMS15448_IT implements InitializingBean {
         alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setServiceType(databasePopulator.getServiceTypeDao().findByName("ICMP"));
         if (acknowledged) {
             alarm.setAlarmAckUser("foobar");

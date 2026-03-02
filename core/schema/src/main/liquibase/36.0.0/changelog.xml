@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="36.0.0-add-alarm-event-denormalization" author="opennms">
+        <comment>Denormalize event data onto alarms for Kafka-backed event pipeline</comment>
+
+        <addColumn tableName="alarms">
+            <column name="event_tsid" type="BIGINT"/>
+            <column name="event_uei" type="VARCHAR(256)"/>
+            <column name="event_source" type="VARCHAR(256)"/>
+            <column name="event_severity" type="INTEGER"/>
+            <column name="event_timestamp" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="event_node_id" type="BIGINT"/>
+            <column name="event_log_msg" type="TEXT"/>
+            <column name="last_event_data" type="TEXT"/>
+        </addColumn>
+
+        <createIndex tableName="alarms" indexName="idx_alarms_event_tsid">
+            <column name="event_tsid"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="36.0.0-backfill-alarm-event-data" author="opennms">
+        <comment>Backfill denormalized event data from existing events table</comment>
+        <sql>
+            UPDATE alarms a SET
+                event_tsid = e.eventid,
+                event_uei = e.eventuei,
+                event_source = e.eventsource,
+                event_severity = e.eventseverity,
+                event_timestamp = e.eventtime,
+                event_node_id = e.nodeid,
+                event_log_msg = e.eventlogmsg
+            FROM events e
+            WHERE a.lasteventid = e.eventid
+              AND a.event_tsid IS NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="36.0.0-drop-alarm-event-fk" author="opennms">
+        <comment>Drop FK and index from alarms to events table — events move to Kafka</comment>
+        <dropForeignKeyConstraint baseTableName="alarms"
+                                  constraintName="fk_eventidak2"/>
+        <dropIndex tableName="alarms" indexName="alarm_eventid_idx"/>
+        <dropColumn tableName="alarms" columnName="lasteventid"/>
+    </changeSet>
+
+    <changeSet id="36.0.0-drop-events-table" author="opennms">
+        <comment>Remove events table — events are now stored in Kafka</comment>
+        <dropTable tableName="events" cascadeConstraints="true"/>
+        <sql>DROP SEQUENCE IF EXISTS eventsnxtid;</sql>
+    </changeSet>
+
+</databaseChangeLog>

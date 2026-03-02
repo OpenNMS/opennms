@@ -39,9 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
@@ -175,11 +173,9 @@ public class NaggingNotificationsIT extends DroolsExampleIT {
         alarm.setReductionKey("uei.opennms.org/nag/alarm:" + id);
         alarm.setFirstEventTime(new Date(15 * 1000));
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventParametersFromEvent(new EventBuilder("test", "test")
-                .addParam("nagUei", nagUei).getEvent());
-        event.setEventTime(new Date(16 * 1000));
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(new Date(16 * 1000));
+        alarm.setEventUei("test");
+        alarm.setLastEventData("nagUei=" + nagUei);
 
         when(alarmDao.get(alarm.getId())).thenReturn(alarm);
         return alarm;

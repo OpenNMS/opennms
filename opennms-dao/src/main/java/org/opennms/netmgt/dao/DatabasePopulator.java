@@ -686,7 +686,9 @@ public class DatabasePopulator {
         alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid((long) event.getId());
+        alarm.setEventUei(event.getEventUei());
         alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }

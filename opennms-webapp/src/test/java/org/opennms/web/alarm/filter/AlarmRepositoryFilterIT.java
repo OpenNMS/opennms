@@ -410,27 +410,29 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm.setLastEvent(event1);
+        alarm.setLastEventTime(event1.getEventTime());
+        alarm.setEventTsid(event1.getId() != null ? (long) event1.getId() : null);
+        alarm.setEventUei(event1.getEventUei());
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setLastEvent(event1);
-        
+
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
         alarmDao.flush();
-        
+
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEvent(event2);
+        alarm2.setLastEventTime(event2.getEventTime());
+        alarm2.setEventTsid(event2.getId() != null ? (long) event2.getId() : null);
+        alarm2.setEventUei(event2.getEventUei());
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setLastEvent(event2);
-        
+
         alarmDao.save(alarm2);
         alarmDao.flush();
-        
+
         EventParmLikeFilter eventParmFilter = new EventParmLikeFilter("user=rtc");
         assertEquals("user=\"rtc\"", eventParmFilter.getTextDescription());
         AlarmCriteria criteria = new AlarmCriteria(eventParmFilter);
@@ -498,27 +500,29 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm.setLastEvent(event1);
+        alarm.setLastEventTime(event1.getEventTime());
+        alarm.setEventTsid(event1.getId() != null ? (long) event1.getId() : null);
+        alarm.setEventUei(event1.getEventUei());
         alarm.setSeverityId(3);
         alarm.setDistPoller(poller);
         alarm.setCounter(100);
-        alarm.setLastEvent(event1);
-        
+
         AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
         alarmDao.save(alarm);
         alarmDao.flush();
-        
+
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEvent(event2);
+        alarm2.setLastEventTime(event2.getEventTime());
+        alarm2.setEventTsid(event2.getId() != null ? (long) event2.getId() : null);
+        alarm2.setEventUei(event2.getEventUei());
         alarm2.setSeverityId(3);
         alarm2.setDistPoller(poller);
         alarm2.setCounter(100);
-        alarm2.setLastEvent(event2);
-        
+
         alarmDao.save(alarm2);
         alarmDao.flush();
-        
+
         NegativeEventParmLikeFilter parmFilter = new NegativeEventParmLikeFilter("user=rtc");
         assertEquals("user is not \"rtc\"", parmFilter.getTextDescription());
         
@@ -554,7 +558,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm1.setUei(event.getEventUei());
         alarm1.setSeverityId(event.getEventSeverity());
         alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEvent(event);
+        alarm1.setLastEventTime(event.getEventTime());
+        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm1.setEventUei(event.getEventUei());
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -565,7 +571,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm2.setUei(event.getEventUei());
         alarm2.setSeverityId(event.getEventSeverity());
         alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEvent(event);
+        alarm2.setLastEventTime(event.getEventTime());
+        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm2.setEventUei(event.getEventUei());
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -635,7 +643,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm1.setUei(event.getEventUei());
         alarm1.setSeverityId(event.getEventSeverity());
         alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEvent(event);
+        alarm1.setLastEventTime(event.getEventTime());
+        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm1.setEventUei(event.getEventUei());
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -646,7 +656,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm2.setUei(event.getEventUei());
         alarm2.setSeverityId(event.getEventSeverity());
         alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEvent(event);
+        alarm2.setLastEventTime(event.getEventTime());
+        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm2.setEventUei(event.getEventUei());
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm2);
@@ -658,7 +670,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         alarm3.setUei(event.getEventUei());
         alarm3.setSeverityId(event.getEventSeverity());
         alarm3.setFirstEventTime(event.getEventTime());
-        alarm3.setLastEvent(event);
+        alarm3.setLastEventTime(event.getEventTime());
+        alarm3.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm3.setEventUei(event.getEventUei());
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
@@ -672,7 +686,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
             alarm.setUei(event.getEventUei());
             alarm.setSeverityId(event.getEventSeverity());
             alarm.setFirstEventTime(event.getEventTime());
-            alarm.setLastEvent(event);
+            alarm.setLastEventTime(event.getEventTime());
+            alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+            alarm.setEventUei(event.getEventUei());
             alarm.setCounter(1);
             alarm.setDistPoller(poller);
             m_dbPopulator.getAlarmDao().save(alarm);

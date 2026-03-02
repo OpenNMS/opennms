@@ -66,7 +66,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -390,18 +389,14 @@ public class DroolsAlarmContextIT {
 
     @Test
     public void canUnclearAlarm() {
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventTime(new Date(101));
-        event.setEventSeverity(OnmsSeverity.WARNING.getId());
-
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(1);
         alarm.setAlarmType(1);
         alarm.setSeverity(OnmsSeverity.CLEARED);
         alarm.setReductionKey("n1:oops");
-        alarm.setLastAutomationTime(new Date(event.getEventTime().getTime() - 1));
-        alarm.setLastEvent(event);
-        alarm.setLastEventTime(event.getEventTime());
+        alarm.setLastAutomationTime(new Date(100));
+        alarm.setLastEventTime(new Date(101));
+        alarm.setEventSeverity(OnmsSeverity.WARNING.getId());
         when(alarmDao.get(alarm.getId())).thenReturn(alarm);
         dac.getClock().advanceTime( 101, TimeUnit.MILLISECONDS );
         dac.handleNewOrUpdatedAlarm(alarm);

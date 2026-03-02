@@ -117,7 +117,9 @@ public class MemoDaoIT implements InitializingBean {
         alarm.setUei(event.getEventUei());
         alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setCounter(1);
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey("fristReductionKey");
@@ -127,7 +129,7 @@ public class MemoDaoIT implements InitializingBean {
 
         OnmsAlarm newAlarm = m_alarmDao.load(alarm.getId());
         assertEquals("uei://org/opennms/test/EventDaoTest", newAlarm.getUei());
-        assertEquals(alarm.getLastEvent().getId(), newAlarm.getLastEvent().getId());
+        assertEquals(alarm.getEventTsid(), newAlarm.getEventTsid());
 
         final OnmsMemo memo = new OnmsMemo();
         memo.setBody("Call me Ishmael...");

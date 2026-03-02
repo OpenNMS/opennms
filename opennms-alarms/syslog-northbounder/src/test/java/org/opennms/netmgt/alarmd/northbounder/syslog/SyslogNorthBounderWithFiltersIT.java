@@ -37,15 +37,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.springframework.core.io.FileSystemResource;
 
-import com.google.common.collect.Lists;
 
 /**
  * Tests the Syslog North Bound Interface with filters.
@@ -111,10 +108,7 @@ public class SyslogNorthBounderWithFiltersIT extends SyslogNorthBounderIT {
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setCounter(1);
         onmsAlarm.setLogMsg("Interface Down");
-        onmsAlarm.setLastEvent(new OnmsEvent() {{
-            this.setEventParameters(Lists.newArrayList(
-                    new OnmsEventParameter(this, "owner", "agalue", "String")));
-        }});
+        onmsAlarm.setEventUei("uei.opennms.org/nodes/interfaceDown");
         String pattern = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         Date firstOccurence = simpleDateFormat.parse("2017-3-1 11:59:59");

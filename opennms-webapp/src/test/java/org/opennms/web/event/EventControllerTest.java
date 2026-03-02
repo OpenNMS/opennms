@@ -228,20 +228,26 @@ public class EventControllerTest  {
     }
 
     private OnmsAlarm[] getAlarms() {
+        List<OnmsEvent> events = getOnmsEvents();
+
         OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm1.setLastEvent(getOnmsEvents().get(0));
+        OnmsEvent event0 = events.get(0);
+        alarm1.setLastEventTime(event0.getEventTime());
+        alarm1.setEventTsid(event0.getId() != null ? (long) event0.getId() : null);
+        alarm1.setEventUei(event0.getEventUei());
         alarm1.setSeverityId(3);
         alarm1.setCounter(100);
-        alarm1.setLastEvent(getOnmsEvents().get(0));
         alarm1.setLogMsg("testalarm1");
 
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/xyz");
-        alarm2.setLastEvent(getOnmsEvents().get(1));
+        OnmsEvent event1 = events.get(1);
+        alarm2.setLastEventTime(event1.getEventTime());
+        alarm2.setEventTsid(event1.getId() != null ? (long) event1.getId() : null);
+        alarm2.setEventUei(event1.getEventUei());
         alarm2.setSeverityId(2);
         alarm2.setCounter(101);
-        alarm2.setLastEvent(getOnmsEvents().get(1));
         alarm2.setLogMsg("testalarm2");
         OnmsAlarm[] alarms = {alarm1, alarm2};
         return alarms;

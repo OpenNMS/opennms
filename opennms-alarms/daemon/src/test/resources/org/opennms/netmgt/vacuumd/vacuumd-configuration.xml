@@ -226,10 +226,8 @@
     <!-- This finds problems that have reoccurred since the previoius clear -->
     <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
+        SELECT a.alarmid AS _id, a.event_severity AS _sev, now() AS _ts
           FROM alarms a
-          JOIN events e 
-            ON e.eventid = a.lasteventid
          WHERE severity = 2
            AND alarmtype = 1
            AND a.lasteventtime > a.lastautomationtime

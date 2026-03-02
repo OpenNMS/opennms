@@ -262,9 +262,8 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("situationAlarmCount", situationAlarmCount);
 
 
-        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "name"));
-        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "value"));
-        ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("type", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "type"));
+        // lastEvent association removed — event parameters are now denormalized on alarm
+        // TODO: Re-enable filtering by event parameters once they are stored in a queryable way
 
         ASSET_RECORD_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         ASSET_RECORD_BEHAVIORS.put("lastModifiedDate", new CriteriaBehavior<Date>(DATE_CONVERTER));

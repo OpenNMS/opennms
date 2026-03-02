@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
@@ -60,7 +59,6 @@ public class ElasticAlarmIndexerTest {
         updateAndTestPositive(onmsAlarm, () -> onmsAlarm.setSituation(false));
 
         // Check to make sure a few fields we don't care about don't cause a re-index
-        updateAndTestNegative(onmsAlarm, () -> onmsAlarm.setLastEvent(new OnmsEvent()));
         updateAndTestNegative(onmsAlarm, () -> onmsAlarm.setDistPoller(new OnmsMonitoringSystem()));
     }
 

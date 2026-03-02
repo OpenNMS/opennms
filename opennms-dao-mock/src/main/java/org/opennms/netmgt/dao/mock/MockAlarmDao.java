@@ -60,7 +60,6 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
         // Assume that the system ID is the ID of an OpenNMS system
         // instead of a Minion or Remote Poller
         getDistPollerDao().save((OnmsDistPoller)alarm.getDistPoller());
-        getEventDao().save(alarm.getLastEvent());
         getNodeDao().save(alarm.getNode());
         getServiceTypeDao().save(alarm.getServiceType());
         alarm.getAssociatedAlarms().forEach(a -> getAlarmAssociationDao().saveOrUpdate(a));

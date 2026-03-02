@@ -175,7 +175,6 @@ public class AlarmStatsRestService extends AlarmRestServiceBase {
         }
 
         builder.fetch("firstEvent", FetchType.EAGER);
-        builder.fetch("lastEvent", FetchType.EAGER);
         
         builder.alias("node", "node", JoinType.LEFT_JOIN);
         builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);

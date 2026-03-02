@@ -220,7 +220,9 @@ public class JmsNorthBounderIT {
                             new OnmsEventParameter(event, "foreignId", "space-0256012012000038", "string"),
                             new OnmsEventParameter(event, "reason", "Aborting node scan : Agent timed out while scanning the system table", "string"),
                             new OnmsEventParameter(event, ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732", "207795895", "TimeTicks")));
-                    onmsAlarm.setLastEvent(event);
+                    onmsAlarm.setLastEventTime(event.getEventTime());
+                    onmsAlarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+                    onmsAlarm.setEventUei(event.getEventUei());
                 }
                 NorthboundAlarm a = new NorthboundAlarm(onmsAlarm);
 
@@ -335,7 +337,7 @@ public class JmsNorthBounderIT {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date());
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");
@@ -351,6 +353,9 @@ public class JmsNorthBounderIT {
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(new Date(0));
             alarm.setIpAddr(ia);
+            alarm.setLastEventTime(event.getEventTime());
+            alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+            alarm.setEventUei(event.getEventUei());
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
@@ -454,7 +459,7 @@ public class JmsNorthBounderIT {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date(), event);
+            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, new Date());
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");
@@ -470,7 +475,9 @@ public class JmsNorthBounderIT {
             alarm.setFirstEventTime(new Date(0));
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setIpAddr(ia);
-            alarm.setLastEvent(event);
+            alarm.setLastEventTime(event.getEventTime());
+            alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+            alarm.setEventUei(event.getEventUei());
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);
@@ -578,7 +585,7 @@ public class JmsNorthBounderIT {
             event.setAssociatedServiceRegainedOutages(null);
             event.setAssociatedServiceLostOutages(null);
 
-            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, date2, event);
+            OnmsAlarm alarm = new OnmsAlarm(9, event.getEventUei(), null, 1, 4, date2);
             alarm.setNode(node);
             alarm.setDescription(event.getEventDescr());
             alarm.setApplicationDN("applicationDN");
@@ -594,7 +601,9 @@ public class JmsNorthBounderIT {
             alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
             alarm.setFirstEventTime(date1);
             alarm.setIpAddr(ia);
-            alarm.setLastEvent(event);
+            alarm.setLastEventTime(event.getEventTime());
+            alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+            alarm.setEventUei(event.getEventUei());
             alarm.setX733AlarmType(NorthboundAlarm.x733AlarmType.get(1).name());
             alarm.setX733ProbableCause(NorthboundAlarm.x733ProbableCause.get(1).getId());
             NorthboundAlarm a = new NorthboundAlarm(alarm);

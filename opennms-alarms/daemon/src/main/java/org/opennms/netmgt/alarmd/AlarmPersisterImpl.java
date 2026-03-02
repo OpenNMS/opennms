@@ -22,6 +22,7 @@
 package org.opennms.netmgt.alarmd;
 
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -34,14 +35,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.utils.SystemInfoUtils;
+
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
-import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -75,7 +80,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
 
     @Autowired
-    private EventDao m_eventDao;
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private ServiceTypeDao m_serviceTypeDao;
 
     @Autowired
     private EventUtil m_eventUtil;
@@ -128,18 +139,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
-        
-        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
-        if (persistedEvent == null) {
-            throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
-        }
-
         final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
-        
+
         String key = reductionKey;
         String clearKey = event.getAlarmData().getClearKey();
-        
+
         boolean didSwapReductionKeyWithClearKey = false;
         if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
             key = clearKey;
@@ -149,7 +154,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(key);
 
         if (alarm == null && didSwapReductionKeyWithClearKey) {
-            // if the clearKey returns null, still need to check the reductionKey
             alarm = m_alarmDao.findByReductionKey(reductionKey);
         }
 
@@ -168,60 +172,53 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 m_alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
             }
 
-            alarm = createNewAlarm(persistedEvent, event);
+            alarm = createNewAlarm(event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, persistedEvent));
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, null));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
             }
 
             m_alarmDao.save(alarm);
-            m_eventDao.saveOrUpdate(persistedEvent);
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
                 reductionKey, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
-            reduceEvent(persistedEvent, alarm, event);
+            reduceEvent(alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmUpdated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, persistedEvent));
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, null));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
             }
 
             m_alarmDao.update(alarm);
-            m_eventDao.update(persistedEvent);
-
-            if (event.getAlarmData().isAutoClean()) {
-                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), persistedEvent);
-            }
 
             m_alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
         }
         return alarm;
     }
 
-    private void reduceEvent(OnmsEvent persistedEvent, OnmsAlarm alarm, Event event) {
-        // Always set these
-        alarm.setLastEvent(persistedEvent);
-        alarm.setLastEventTime(persistedEvent.getEventTime());
-        
+    private void reduceEvent(OnmsAlarm alarm, Event event) {
+        // Populate denormalized event fields
+        populateAlarmFromEvent(alarm, event);
+
         if (!isResolutionEvent(event)) {
             incrementCounter(alarm);
-            
+
             if (isResolvedAlarm(alarm)) {
-                resetAlarmSeverity(persistedEvent, alarm);
+                resetAlarmSeverity(event, alarm);
             }
         } else {
-            
+
             if (isResolvedAlarm(alarm)) {
                 incrementCounter(alarm);
             } else {
@@ -230,47 +227,44 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
 
-        if (!event.getAlarmData().hasUpdateFields()) {
+        String eventLogMsg = event.getLogmsg() != null ? event.getLogmsg().getContent() : null;
 
-            //We always set these even if there are not update fields specified
-            alarm.setLogMsg(persistedEvent.getEventLogMsg());
+        if (!event.getAlarmData().hasUpdateFields()) {
+            alarm.setLogMsg(eventLogMsg);
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
 
-                //Always set these, unless specified not to, in order to maintain current behavior
                 if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
                     continue;
                 } else {
-                    alarm.setLogMsg(persistedEvent.getEventLogMsg());
+                    alarm.setLogMsg(eventLogMsg);
                 }
 
-                //Set these others
                 if (field.isUpdateOnReduction()) {
 
                     if (fieldName.toLowerCase().startsWith("distpoller")) {
-                        alarm.setDistPoller(persistedEvent.getDistPoller());
+                        alarm.setDistPoller(resolveDistPoller(event));
                     } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
-                        alarm.setIpAddr(persistedEvent.getIpAddr());
+                        alarm.setIpAddr(resolveIpAddr(event));
                     } else if (fieldName.toLowerCase().startsWith("mouseover")) {
-                        alarm.setMouseOverText(persistedEvent.getEventMouseOverText());
+                        alarm.setMouseOverText(event.getMouseovertext());
                     } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
-                        alarm.setOperInstruct(persistedEvent.getEventOperInstruct());
+                        alarm.setOperInstruct(event.getOperinstruct());
                     } else if (fieldName.equalsIgnoreCase("severity")) {
-                        resetAlarmSeverity(persistedEvent, alarm);
+                        resetAlarmSeverity(event, alarm);
                     } else if (fieldName.toLowerCase().contains("descr")) {
-                        alarm.setDescription(persistedEvent.getEventDescr());
+                        alarm.setDescription(event.getDescr());
                     } else if (fieldName.toLowerCase().startsWith("acktime")) {
                         final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
                         if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
                             alarm.unacknowledge("admin");
-                        } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) { 
+                        } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) {
                             alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                         } else if (expandedAckTime.matches("^\\d+$")) {
                             final long ackTimeLong;
                             try {
                                 ackTimeLong = Long.valueOf(expandedAckTime);
-                                // Heuristic: values < 2**31 * 1000 (10 Jan 2004) are probably whole seconds, otherwise milliseconds
                                 if (ackTimeLong < 1073741824000L) {
                                     alarm.setAlarmAckTime(new java.util.Date(ackTimeLong * 1000));
                                 } else {
@@ -302,8 +296,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
 
         updateRelatedAlarms(alarm, event);
-
-        persistedEvent.setAlarm(alarm);
     }
     
     private void updateRelatedAlarms(OnmsAlarm alarm, Event event) {
@@ -337,8 +329,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 });
     }
 
-    private void resetAlarmSeverity(OnmsEvent persistedEvent, OnmsAlarm alarm) {
-        alarm.setSeverity(OnmsSeverity.valueOf(persistedEvent.getSeverityLabel()));
+    private void resetAlarmSeverity(Event event, OnmsAlarm alarm) {
+        if (event.getSeverity() != null) {
+            alarm.setSeverity(OnmsSeverity.get(event.getSeverity()));
+        }
     }
 
     private void incrementCounter(OnmsAlarm alarm) {
@@ -353,35 +347,96 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE));
     }
 
-    private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
+    private OnmsAlarm createNewAlarm(Event event) {
         OnmsAlarm alarm = new OnmsAlarm();
         // Situations are denoted by the existance of related-reductionKeys
         alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
-        alarm.setDescription(e.getEventDescr());
-        alarm.setDistPoller(e.getDistPoller());
-        alarm.setFirstEventTime(e.getEventTime());
-        alarm.setIfIndex(e.getIfIndex());
-        alarm.setIpAddr(e.getIpAddr());
-        alarm.setLastEventTime(e.getEventTime());
-        alarm.setLastEvent(e);
-        alarm.setLogMsg(e.getEventLogMsg());
-        alarm.setMouseOverText(e.getEventMouseOverText());
-        alarm.setNode(e.getNode());
-        alarm.setOperInstruct(e.getEventOperInstruct());
+        alarm.setDescription(event.getDescr());
+        alarm.setDistPoller(resolveDistPoller(event));
+        alarm.setFirstEventTime(event.getTime());
+        alarm.setIfIndex(event.getIfIndex());
+        alarm.setIpAddr(resolveIpAddr(event));
+        alarm.setLogMsg(event.getLogmsg() != null ? event.getLogmsg().getContent() : null);
+        alarm.setMouseOverText(event.getMouseovertext());
+        alarm.setNode(resolveNode(event));
+        alarm.setOperInstruct(event.getOperinstruct());
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
-        alarm.setServiceType(e.getServiceType());
-        alarm.setSeverity(OnmsSeverity.get(e.getEventSeverity()));
-        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
-        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
-        alarm.setUei(e.getEventUei());
+        alarm.setServiceType(resolveServiceType(event));
+        if (event.getSeverity() != null) {
+            alarm.setSeverity(OnmsSeverity.get(event.getSeverity()));
+        }
+        alarm.setSuppressedUntil(event.getTime());
+        alarm.setSuppressedTime(event.getTime());
+        alarm.setUei(event.getUei());
         if (event.getAlarmData().getManagedObject() != null) {
             alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
         }
-        e.setAlarm(alarm);
+
+        // Populate denormalized event fields
+        populateAlarmFromEvent(alarm, event);
+
         return alarm;
+    }
+
+    private void populateAlarmFromEvent(OnmsAlarm alarm, Event event) {
+        alarm.setEventTsid(event.getDbid());
+        alarm.setEventUei(event.getUei());
+        alarm.setEventSource(event.getSource());
+        if (event.getSeverity() != null) {
+            alarm.setEventSeverity(OnmsSeverity.get(event.getSeverity()).getId());
+        }
+        alarm.setEventTimestamp(event.getTime());
+        alarm.setEventNodeId(event.getNodeid());
+        if (event.getLogmsg() != null) {
+            alarm.setEventLogMsg(event.getLogmsg().getContent());
+        }
+        alarm.setLastEventData(serializeEventToXml(event));
+        alarm.setLastEventTime(event.getTime());
+    }
+
+    private String serializeEventToXml(Event event) {
+        try {
+            return JaxbUtils.marshal(event);
+        } catch (Exception e) {
+            LOG.warn("Failed to serialize event to XML", e);
+            return null;
+        }
+    }
+
+    private OnmsNode resolveNode(Event event) {
+        if (event.getNodeid() == null || event.getNodeid() == 0) {
+            return null;
+        }
+        return m_nodeDao.get(event.getNodeid().intValue());
+    }
+
+    private org.opennms.netmgt.model.OnmsMonitoringSystem resolveDistPoller(Event event) {
+        if (event.getDistPoller() == null) {
+            return m_distPollerDao.whoami();
+        }
+        return m_distPollerDao.get(event.getDistPoller());
+    }
+
+    private InetAddress resolveIpAddr(Event event) {
+        if (event.getInterface() == null) {
+            return null;
+        }
+        try {
+            return InetAddress.getByName(event.getInterface());
+        } catch (Exception e) {
+            LOG.warn("Failed to resolve IP address: {}", event.getInterface(), e);
+            return null;
+        }
+    }
+
+    private org.opennms.netmgt.model.OnmsServiceType resolveServiceType(Event event) {
+        if (event.getService() == null) {
+            return null;
+        }
+        return m_serviceTypeDao.findByName(event.getService());
     }
 
     private boolean formingCyclicGraph(OnmsAlarm situation, OnmsAlarm relatedAlarm) {
@@ -463,24 +518,19 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return m_alarmDao;
     }
 
-    /**
-     * <p>setEventDao</p>
-     *
-     * @param eventDao a {@link org.opennms.netmgt.dao.api.EventDao} object.
-     */
-    public void setEventDao(EventDao eventDao) {
-        m_eventDao = eventDao;
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
     }
 
-    /**
-     * <p>getEventDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.EventDao} object.
-     */
-    public EventDao getEventDao() {
-        return m_eventDao;
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
     }
-    
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
+
+
     /**
      * <p>setEventUtil</p>
      * 

@@ -64,7 +64,7 @@ public class ListAlarms implements Action {
     }
 
     private void printAlarm(String reductionKey, OpennmsModelProtos.Alarm alarm) {
-        System.out.printf("%s\n\t%s\n", reductionKey, alarm != null ? alarm.getLastEvent().getLabel() : "(No alarm)");
+        System.out.printf("%s\n\t%s\n", reductionKey, alarm != null ? alarm.getLastEvent().getUei() : "(No alarm)");
     }
 
 }

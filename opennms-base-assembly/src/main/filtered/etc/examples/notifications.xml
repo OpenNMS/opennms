@@ -19,7 +19,7 @@
       <parameter name="post-event" value="%eventid%" />
       <parameter name="post-message" value="-tm" />
       <parameter name="result-match" value="(?s).*OK\\s+([0-9]+).*" />
-      <parameter name="sql" value="UPDATE alarms SET tticketID=${1} WHERE lastEventID = %eventid%" />
+      <parameter name="sql" value="UPDATE alarms SET tticketID=${1} WHERE event_tsid = %eventid%" />
     </notification>
     <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier") -->
     <notification name="snmpTrap" status="on">

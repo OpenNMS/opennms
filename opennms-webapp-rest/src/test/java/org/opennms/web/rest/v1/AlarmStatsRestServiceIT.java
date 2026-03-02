@@ -255,7 +255,9 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setServiceType(event.getServiceType());
         
         if (ackUser != null) {
