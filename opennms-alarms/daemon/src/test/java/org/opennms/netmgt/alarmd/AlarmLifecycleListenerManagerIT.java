@@ -213,7 +213,6 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
             Date then = Date.from(tenMinutesAgo.toInstant(ZoneOffset.UTC));
             alarm.setLastAutomationTime(then);
             alarm.setLastEventTime(then);
-            alarm.setLastEvent(null);
             m_alarmDao.save(alarm);
             m_alarmDao.flush();
             return null;

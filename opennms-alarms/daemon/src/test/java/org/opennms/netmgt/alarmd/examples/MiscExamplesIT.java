@@ -39,7 +39,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -109,10 +108,8 @@ public class MiscExamplesIT extends DroolsExampleIT {
         node.addCategory(new OnmsCategory(nodeCategory, ""));
         alarm.setNode(node);
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
-        event.setEventTime(new Date(16 * 1000));
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(new Date(16 * 1000));
+        alarm.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
 
         when(alarmDao.get(alarm.getId())).thenReturn(alarm);
         return alarm;
