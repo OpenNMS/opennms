@@ -18,5 +18,6 @@
     <module>shell-commands</module>
     <module>sink</module>
     <module>collector</module>
+    <module>kafka-consumer</module>
   </modules>
 </project>
