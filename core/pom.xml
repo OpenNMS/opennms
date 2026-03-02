@@ -62,5 +62,6 @@
     <module>grpc</module>
     <module>encrypt-util</module>
       <module>fileutils</module>
+    <module>tsid</module>
   </modules>
 </project>
