@@ -63,5 +63,6 @@
     <module>encrypt-util</module>
       <module>fileutils</module>
     <module>tsid</module>
+    <module>messagebus-api</module>
   </modules>
 </project>
