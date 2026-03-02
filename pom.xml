@@ -1740,6 +1740,7 @@
     <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
     <activemqVersion>5.16.8</activemqVersion>
+    <assertjVersion>3.24.2</assertjVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
     <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
@@ -4908,6 +4909,12 @@
         <groupId>com.github.mwiede</groupId>
         <artifactId>jsch</artifactId>
         <version>${jschVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertjVersion}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
