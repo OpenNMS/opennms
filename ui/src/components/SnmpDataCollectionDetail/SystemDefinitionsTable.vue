@@ -132,10 +132,7 @@
             >
               <td :colspan="5">
                 <h6>Mib Group Names:</h6>
-                <p
-                  class="description"
-                  v-html="systemDefinition.mibGroupNames.join(', ')"
-                ></p>
+                <p class="description">{{ systemDefinition.mibGroupNames.join(', ') }}</p>
               </td>
             </tr>
           </template>

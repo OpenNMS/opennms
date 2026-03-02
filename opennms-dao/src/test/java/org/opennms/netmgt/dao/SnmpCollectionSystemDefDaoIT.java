@@ -180,7 +180,7 @@ public class SnmpCollectionSystemDefDaoIT {
 
     @Test
     @Transactional
-    public void testFindByDataCollectionGroupId_ReturnsValidSystemDefs() {
+    public void testFindByCollectionSourceId_ReturnsValidSystemDefs() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("core-snmp");
@@ -214,40 +214,40 @@ public class SnmpCollectionSystemDefDaoIT {
         systemDefDao.flush();
 
         // 1. Exact filter by name ASC
-        PageResponse<SnmpCollectionSystemDef> result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionSystemDef> result = systemDefDao.findByCollectionSourceId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("System"), ascending by name
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), "System", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 3. Partial filter, descending by name
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "DESC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), "System", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 4. Case-insensitive filter
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 5. Pagination - only second returned
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 1, 1);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), "System", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("WindowsSystem", (result.getRecords().get(0)).getName());
 
         // 6. Filter with no match
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 
         // 7. Null filter - should return all for group, ascending
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "name", "ASC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), null, "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
 
         // 8. Invalid sortBy field defaults to name ascending
-        result = systemDefDao.findByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        result = systemDefDao.findByCollectionSourceId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
