@@ -29,10 +29,11 @@ import {
   saveSnmpProfile,
   deleteSnmpProfile,
   downloadSnmpConfig,
-  uploadSnmpConfig
+  uploadSnmpConfig,
+  saveSnmpConfigDefaultOverrides
 } from '@/services/snmpConfigService'
 import { v2 } from '@/services/axiosInstances'
-import { SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
+import { SnmpDefinition, SnmpProfile, SnmpBaseConfiguration } from '@/types/snmpConfig'
 
 vi.mock('@/services/axiosInstances', () => ({
   v2: {
@@ -262,6 +263,128 @@ describe('snmpConfigService', () => {
 
       const formData = vi.mocked(v2.post).mock.calls[0][1] as FormData
       expect(formData.get('upload')).toBe(file)
+    })
+  })
+
+  describe('saveSnmpConfigDefaultOverrides', () => {
+    it('should call POST /snmp-config/defaults with config data and return success on 204 status', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 204 })
+
+      const config: SnmpBaseConfiguration = {
+        readCommunity: 'public',
+        writeCommunity: 'private',
+        version: 'v2c',
+        timeout: 3000,
+        retry: 3,
+        port: 161
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(true)
+      expect(result.message).toBe('')
+    })
+
+    it('should return failure result with "Invalid SNMP configuration data" message on 400 status', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 400 })
+
+      const config: SnmpBaseConfiguration = {
+        readCommunity: 'public',
+        version: 'invalid'
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(false)
+      expect(result.message).toBe('Invalid SNMP configuration data')
+    })
+
+    it('should return failure result with generic message on non-204/400 status', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 500 })
+
+      const config: SnmpBaseConfiguration = {
+        readCommunity: 'public',
+        version: 'v2c'
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(false)
+      expect(result.message).toBe('Failed to save SNMP configuration defaults')
+    })
+
+    it('should handle exceptions and return failure result', async () => {
+      vi.mocked(v2.post).mockRejectedValue(new Error('Network error'))
+
+      const config: SnmpBaseConfiguration = {
+        readCommunity: 'public',
+        version: 'v3',
+        securityName: 'admin'
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(false)
+      expect(result.message).toBe('Failed to save SNMP configuration defaults')
+    })
+
+    it('should work with SNMPv3 configuration', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 204 })
+
+      const config: SnmpBaseConfiguration = {
+        version: 'v3',
+        securityName: 'snmpuser',
+        securityLevel: 3,
+        authPassphrase: 'authpass',
+        authProtocol: 'SHA',
+        privacyPassphrase: 'privpass',
+        privacyProtocol: 'AES128',
+        timeout: 5000,
+        retry: 2
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(true)
+    })
+
+    it('should work with minimal config', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 204 })
+
+      const config: SnmpBaseConfiguration = {
+        version: 'v1',
+        readCommunity: 'public'
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(true)
+    })
+
+    it('should work with advanced options', async () => {
+      vi.mocked(v2.post).mockResolvedValue({ status: 204 })
+
+      const config: SnmpBaseConfiguration = {
+        version: 'v2c',
+        readCommunity: 'public',
+        proxyHost: 'proxy.example.com',
+        maxVarsPerPdu: 10,
+        maxRepetitions: 2,
+        maxRequestSize: 65535,
+        port: 1161,
+        ttl: 60000
+      }
+
+      const result = await saveSnmpConfigDefaultOverrides(config)
+
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+      expect(result.success).toBe(true)
     })
   })
 })

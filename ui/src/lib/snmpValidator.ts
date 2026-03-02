@@ -53,6 +53,62 @@ export const SnmpPrivacyProtocols = [
   'AES256'
 ]
 
+export const validateSnmpConfiguration = (config: SnmpBaseConfiguration, snmpVersion: string): SnmpConfigFormErrors => {
+  const errors: SnmpConfigFormErrors = {}
+
+  if (config.port !== undefined) {
+    if (isNaN(config.port) || config.port < MIN_PORT || config.port > MAX_PORT) {
+      errors.port = `Port must be a number between ${MIN_PORT} and ${MAX_PORT}`
+    }
+  }
+
+  if (config.maxRequestSize !== undefined) {
+    if (isNaN(config.maxRequestSize) || config.maxRequestSize < MAX_REQUEST_SIZE_MINIMUM) {
+      errors.maxRequestSize = `If provided, Max Request Size must be a number greater than or equal to ${MAX_REQUEST_SIZE_MINIMUM}`
+    }
+  }
+
+  // only check security level for SNMPv3
+  if (snmpVersion === 'v3' && config.securityLevel !== undefined) {
+    if (isNaN(config.securityLevel) || !VALID_SECURITY_LEVELS.includes(config.securityLevel)) {
+      errors.securityLevel = 'Security Level must be one of: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)'
+    }
+  }
+
+  if (config.authProtocol !== undefined && config.authProtocol !== '' && !SnmpAuthProtocols.includes(config.authProtocol)) {
+    errors.authProtocol = 'Auth Protocol must be one of: ' + SnmpAuthProtocols.join(', ')
+  }
+
+  if (config.privacyProtocol !== undefined && config.privacyProtocol !== '' && !SnmpPrivacyProtocols.includes(config.privacyProtocol)) {
+    errors.privacyProtocol = 'Privacy Protocol must be one of: ' + SnmpPrivacyProtocols.join(', ')
+  }
+
+  // Validate that remaining numeric fields are integers
+  const numericFields: string[] = ['timeout', 'retry', 'maxVarsPerPdu', 'maxRepetitions', 'ttl']
+
+  const fieldDisplayNames: Record<string, string> = {
+    timeout: 'Timeout',
+    retry: 'Retries',
+    maxVarsPerPdu: 'Max Vars Per PDU',
+    maxRepetitions: 'Max Repetitions',
+    ttl: 'TTL'
+  }
+
+  numericFields.forEach(field => {
+    const value = (config as any)[field]
+
+    if (value !== undefined) {
+      const numericValue = Number(value)
+
+      if (isNaN(numericValue) || !Number.isInteger(numericValue) || numericValue < 0) {
+        (errors as any)[field] = `${fieldDisplayNames[field]} must be an integer greater than or equal to 0`
+      }
+    }
+  })
+
+  return errors
+}
+
 // See opennms-config-jaxb/src/main/resources/xsds/snmp-config.xsd for field definitions
 export const validateDefinition = (
   config: SnmpBaseConfiguration,
@@ -99,53 +155,9 @@ export const validateDefinition = (
     }
   }
 
-  if (config.port !== undefined) {
-    if (isNaN(config.port) || config.port < MIN_PORT || config.port > MAX_PORT) {
-      errors.port = `Port must be a number between ${MIN_PORT} and ${MAX_PORT}`
-    }
-  }
+  const snmpConfigErrors = validateSnmpConfiguration(config, snmpVersion)
 
-  if (config.maxRequestSize !== undefined) {
-    if (isNaN(config.maxRequestSize) || config.maxRequestSize < MAX_REQUEST_SIZE_MINIMUM) {
-      errors.maxRequestSize = `If provided, Max Request Size must be a number greater than or equal to ${MAX_REQUEST_SIZE_MINIMUM}`
-    }
-  }
-
-  // only check security level for SNMPv3
-  if (snmpVersion === 'v3' && config.securityLevel !== undefined) {
-    if (isNaN(config.securityLevel) || !VALID_SECURITY_LEVELS.includes(config.securityLevel)) {
-      errors.securityLevel = 'Security Level must be one of: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)'
-    }
-  }
-
-  if (config.authProtocol !== undefined && config.authProtocol !== '' && !SnmpAuthProtocols.includes(config.authProtocol)) {
-    errors.authProtocol = 'Auth Protocol must be one of: ' + SnmpAuthProtocols.join(', ')
-  }
-
-  if (config.privacyProtocol !== undefined && config.privacyProtocol !== '' && !SnmpPrivacyProtocols.includes(config.privacyProtocol)) {
-    errors.privacyProtocol = 'Privacy Protocol must be one of: ' + SnmpPrivacyProtocols.join(', ')
-  }
-
-  // Validate that remaining numeric fields are integers
-  const numericFields: string[] = ['timeout', 'retry', 'maxVarsPerPdu', 'maxRepetitions', 'ttl']
-
-  const fieldDisplayNames: Record<string, string> = {
-    timeout: 'Timeout',
-    retry: 'Retries',
-    maxVarsPerPdu: 'Max Vars Per PDU',
-    maxRepetitions: 'Max Repetitions',
-    ttl: 'TTL'
-  }
-
-  numericFields.forEach(field => {
-    const value = (config as any)[field]
-
-    if (value !== undefined && (isNaN(value as number) || !Number.isInteger(value as number) || (value as number) < 0)) {
-      (errors as any)[field] = `${fieldDisplayNames[field]} must be an integer greater than or equal to 0`
-    }
-  })
-
-  return errors
+  return { ...errors, ...snmpConfigErrors }
 }
 
 export const validateProfile = (

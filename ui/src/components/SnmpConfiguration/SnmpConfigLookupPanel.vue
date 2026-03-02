@@ -4,7 +4,7 @@
       <h3>Lookup by IP</h3>
     </div>
     <div>
-      <p>Find the SNMP configuration that exists for a particular IP.</p>
+      <p>Find the SNMP configuration that exists for a particular IP address.</p>
     </div>
     <div class="large-spacer"></div>
 

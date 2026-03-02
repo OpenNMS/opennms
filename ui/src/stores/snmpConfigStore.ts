@@ -44,7 +44,8 @@ export enum ActiveTabs {
   Lookup = 0,
   Definitions = 1,
   Profiles = 2,
-  UploadDownload = 3
+  ConfigDefaults = 3,
+  UploadDownload = 4
 }
 
 export const getDefaultSnmpBaseConfiguration = () => {
