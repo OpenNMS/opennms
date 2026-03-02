@@ -101,7 +101,10 @@ public class AlarmMapperTest {
         alarm.setLastEventTime(new Date(1503412443118L));
         alarm.setX733ProbableCause(0);
 
-        alarm.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm)));
+        OnmsEvent lastEvent = getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm));
+        alarm.setLastEventTime(lastEvent.getEventTime());
+        alarm.setEventTsid(lastEvent.getId() != null ? (long) lastEvent.getId() : null);
+        alarm.setEventUei(lastEvent.getEventUei());
 
         alarm.setTTicketId("NMS-9587");
         alarm.setTTicketState(TroubleTicketState.OPEN);
@@ -137,7 +140,10 @@ public class AlarmMapperTest {
         alarm.setX733ProbableCause(0);
         alarm.setRelatedAlarms(getRelatedAlarms());
 
-        alarm.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm)));
+        OnmsEvent situationEvent = getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm));
+        alarm.setLastEventTime(situationEvent.getEventTime());
+        alarm.setEventTsid(situationEvent.getId() != null ? (long) situationEvent.getId() : null);
+        alarm.setEventUei(situationEvent.getEventUei());
 
         AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
         mapAndMarshalToFromXmlAndJson(alarmDTO, "situation.16.dto.xml", "situation.16.dto.json");
@@ -226,7 +232,10 @@ public class AlarmMapperTest {
         OnmsNode node1 = getNode(1, "n1");
         alarm1.setNode(node1);
         alarm1.setLogMsg("logit");
-        alarm1.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm1), node1, getOnmsServiceType(alarm1)));
+        OnmsEvent alarm1Event = getOnmsEvent(getOnmsMonitoringSystem(alarm1), node1, getOnmsServiceType(alarm1));
+        alarm1.setLastEventTime(alarm1Event.getEventTime());
+        alarm1.setEventTsid(alarm1Event.getId() != null ? (long) alarm1Event.getId() : null);
+        alarm1.setEventUei(alarm1Event.getEventUei());
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setId(32);
         alarm2.setUei("uei.opennms.org/nodes/interfaceDown");
@@ -235,7 +244,10 @@ public class AlarmMapperTest {
         OnmsNode node2 = getNode(2, "n2");
         alarm2.setNode(node2);
         alarm2.setLogMsg("logit again");
-        alarm2.setLastEvent(getOnmsEvent(getOnmsMonitoringSystem(alarm2), node2, getOnmsServiceType(alarm2)));
+        OnmsEvent alarm2Event = getOnmsEvent(getOnmsMonitoringSystem(alarm2), node2, getOnmsServiceType(alarm2));
+        alarm2.setLastEventTime(alarm2Event.getEventTime());
+        alarm2.setEventTsid(alarm2Event.getId() != null ? (long) alarm2Event.getId() : null);
+        alarm2.setEventUei(alarm2Event.getEventUei());
         Set<OnmsAlarm> alarms = new HashSet<>();
         alarms.add(alarm1);
         alarms.add(alarm2);

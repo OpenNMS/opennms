@@ -51,7 +51,6 @@ import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
 import org.awaitility.Awaitility;
@@ -274,18 +273,14 @@ public class ElasticAlarmHistoryRepositoryIT {
         alarm.setFirstEventTime(new Date(firstEventTime));
         alarm.setCounter(1);
 
-        OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(eventid);
-        lastEvent.setEventTime(new Date(firstEventTime));
-        alarm.setLastEvent(lastEvent);
+        alarm.setLastEventTime(new Date(firstEventTime));
+        alarm.setEventTsid(eventid);
         return alarm;
     }
 
     private static void updateAlarmWithEvent(OnmsAlarm a, long eventid, long lastEventTime) {
-        OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(eventid);
-        lastEvent.setEventTime(new Date(lastEventTime));
-        a.setLastEvent(lastEvent);
+        a.setLastEventTime(new Date(lastEventTime));
+        a.setEventTsid(eventid);
         a.setCounter(a.getCounter() + 1);
     }
 }

@@ -25,10 +25,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventParameter;
-
-import com.google.common.collect.Lists;
 
 /**
  * The Class SyslogFilterTest.
@@ -44,16 +40,11 @@ public class SyslogFilterTest {
      */
     @Test
     public void testFilterParsing() throws Exception {
-        OnmsEvent event = new OnmsEvent();
-        event.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event, "user", "agalue", "string"),
-                new OnmsEventParameter(event, "passwd", "0nmsRules", "string")));
-
         OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setLastEvent(event);
         onmsAlarm.setUei("uei.opennms.org/junit/test");
+        onmsAlarm.setEventUei("uei.opennms.org/junit/test");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
-        SyslogFilter filter = new SyslogFilter("test", "uei matches '^uei\\.opennms\\.org.*' and parameters['user'] == 'agalue'", "localhost");
+        SyslogFilter filter = new SyslogFilter("test", "uei matches '^uei\\.opennms\\.org.*'", "localhost");
         Assert.assertTrue(filter.passFilter(alarm));
     }
 

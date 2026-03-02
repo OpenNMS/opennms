@@ -120,8 +120,9 @@ public class DefaultAckServiceIT implements InitializingBean {
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setIfIndex(event.getIfIndex());
         alarm.setIpAddr(event.getIpAddr());
-        alarm.setLastEvent(event);
         alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setLogMsg(event.getEventLogMsg());
         alarm.setMouseOverText(event.getEventMouseOverText());
         alarm.setNode(dbNode);

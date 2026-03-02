@@ -503,17 +503,7 @@ public class SituationsRestService extends AlarmRestService {
     }
 
     private Optional<String> getSituationParamFromAlarm(OnmsAlarm alarm, String name) {
-        final OnmsEvent databaseEvent = alarm.getLastEvent();
-        if (databaseEvent == null) {
-            return Optional.empty();
-        }
-        final List<OnmsEventParameter> parms = databaseEvent.getEventParameters().stream().filter((x) -> x.getName().equals(name)).toList();
-        if (parms == null) {
-            return Optional.empty();
-        }
-
-        return parms.stream()
-                .map(OnmsEventParameter::getValue)
-                .findFirst();
+        return alarm.findEventParameter(name)
+                .map(OnmsEventParameter::getValue);
     }
 }

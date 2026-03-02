@@ -22,6 +22,7 @@
 package org.opennms.features.kafka.producer;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -328,6 +329,80 @@ public class ProtobufMapper {
         }
     }
 
+    /**
+     * Build a protobuf Event from the denormalized event fields on OnmsAlarm.
+     * This replaces the previous pattern of calling {@code toEvent(alarm.getLastEvent())}
+     * now that OnmsAlarm no longer holds a reference to OnmsEvent.
+     */
+    private OpennmsModelProtos.Event.Builder toEventFromAlarm(OnmsAlarm alarm) {
+        if (alarm.getEventTsid() == null && alarm.getEventUei() == null) {
+            return null;
+        }
+        final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder();
+        if (alarm.getEventTsid() != null) {
+            builder.setId(alarm.getEventTsid());
+        }
+        if (alarm.getEventUei() != null) {
+            builder.setUei(alarm.getEventUei());
+        } else if (alarm.getUei() != null) {
+            builder.setUei(alarm.getUei());
+        }
+        if (alarm.getEventSource() != null) {
+            builder.setSource(alarm.getEventSource());
+        }
+        if (alarm.getEventSeverity() != null) {
+            builder.setSeverity(toSeverity(OnmsSeverity.get(alarm.getEventSeverity())));
+        }
+        getString(eventConfDao.getEventLabel(alarm.getEventUei() != null ? alarm.getEventUei() : alarm.getUei()))
+                .ifPresent(builder::setLabel);
+        if (alarm.getEventLogMsg() != null) {
+            builder.setLogMessage(alarm.getEventLogMsg());
+        }
+        if (alarm.getDescription() != null) {
+            builder.setDescription(alarm.getDescription());
+        }
+        if (alarm.getEventNodeId() != null) {
+            try {
+                builder.setNodeCriteria(nodeIdToCriteriaCache.get(alarm.getEventNodeId()));
+            } catch (ExecutionException e) {
+                LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                        " The node foreign source and foreign id (if set) will be missing from the alarm event with alarm id: {}.",
+                        alarm.getEventNodeId(), alarm.getId(), e);
+                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                        .setId(alarm.getEventNodeId()));
+            }
+        } else if (alarm.getNodeId() != null) {
+            try {
+                builder.setNodeCriteria(nodeIdToCriteriaCache.get(alarm.getNodeId().longValue()));
+            } catch (ExecutionException e) {
+                LOG.warn("An error occurred when building node criteria for node with id: {}." +
+                        " The node foreign source and foreign id (if set) will be missing from the alarm event with alarm id: {}.",
+                        alarm.getNodeId(), alarm.getId(), e);
+                builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
+                        .setId(alarm.getNodeId().longValue()));
+            }
+        }
+        if (alarm.getIpAddr() != null) {
+            builder.setIpAddress(InetAddressUtils.toIpAddrString(alarm.getIpAddr()));
+        }
+        final List<OnmsEventParameter> eventParameters = alarm.getEventParameters();
+        if (eventParameters != null) {
+            for (OnmsEventParameter param : eventParameters) {
+                if (param.getName() == null || param.getValue() == null) {
+                    continue;
+                }
+                builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
+                        .setName(param.getName())
+                        .setValue(param.getValue()));
+            }
+        }
+        setTimeIfNotNull(alarm.getEventTimestamp(), builder::setTime);
+        if (alarm.getDistPoller() != null) {
+            getString(alarm.getDistPoller().getId()).ifPresent(builder::setDistPoller);
+        }
+        return builder;
+    }
+
     public OpennmsModelProtos.Alarm.Builder toAlarm(OnmsAlarm alarm) {
         final OpennmsModelProtos.Alarm.Builder builder = OpennmsModelProtos.Alarm.newBuilder()
                 .setId(alarm.getId())
@@ -338,7 +413,7 @@ public class ProtobufMapper {
         if (alarm.getReductionKey() != null) {
             builder.setReductionKey(alarm.getReductionKey());
         }
-        final OpennmsModelProtos.Event.Builder event = toEvent(alarm.getLastEvent());
+        final OpennmsModelProtos.Event.Builder event = toEventFromAlarm(alarm);
         if (event != null) {
             builder.setLastEvent(event);
         }

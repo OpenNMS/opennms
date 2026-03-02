@@ -21,10 +21,10 @@
  */
 package org.opennms.features.apilayer.utils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.hibernate.ObjectNotFoundException;
 import org.mapstruct.factory.Mappers;
 import org.opennms.features.apilayer.model.mappers.AlarmFeedbackMapper;
 import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
@@ -42,9 +42,12 @@ import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.integration.api.v1.model.TopologyProtocol;
 import org.opennms.integration.api.v1.model.immutables.ImmutableAlarm;
+import org.opennms.integration.api.v1.model.immutables.ImmutableDatabaseEvent;
+import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
 import org.opennms.integration.api.v1.ticketing.Ticket.State;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -117,20 +120,7 @@ public class ModelMappers {
             LOG.warn("Failed to load node for alarm with id: {}", alarm.getId(), e);
         }
 
-        try {
-            builder.setLastEvent(toEvent(alarm.getLastEvent()));
-        } catch (RuntimeException e) {
-            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
-            // which has a different class for this loaded then what is being thrown
-            // Resort to comparing the name instead
-            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
-                LOG.debug("The last event for alarm with id {} was deleted before we could perform the mapping." +
-                        " Last event will be null.", alarm.getId());
-            } else {
-                // Rethrow
-                throw e;
-            }
-        }
+        builder.setLastEvent(toEventFromAlarm(alarm));
         return builder.build();
     }
 
@@ -163,6 +153,27 @@ public class ModelMappers {
 
     public static DatabaseEvent toEvent(OnmsEvent event) {
         return event == null ? null : databaseEventMapper.map(event);
+    }
+
+    /**
+     * Build a {@link DatabaseEvent} from the denormalized event fields on {@link OnmsAlarm}.
+     * Replaces the previous pattern of {@code toEvent(alarm.getLastEvent())} now that
+     * OnmsAlarm no longer holds a reference to OnmsEvent.
+     */
+    public static DatabaseEvent toEventFromAlarm(OnmsAlarm alarm) {
+        if (alarm == null) {
+            return null;
+        }
+        final ImmutableDatabaseEvent.Builder eventBuilder = ImmutableDatabaseEvent.newBuilder()
+                .setId(alarm.getEventTsid())
+                .setUei(alarm.getEventUei() != null ? alarm.getEventUei() : alarm.getUei());
+        final List<OnmsEventParameter> params = alarm.getEventParameters();
+        if (params != null) {
+            eventBuilder.setParameters(params.stream()
+                    .map(p -> ImmutableEventParameter.newInstance(p.getName(), p.getValue()))
+                    .collect(Collectors.toList()));
+        }
+        return eventBuilder.build();
     }
 
     public static Node toNode(OnmsNode node) {

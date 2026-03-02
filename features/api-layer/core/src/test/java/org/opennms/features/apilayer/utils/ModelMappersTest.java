@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -413,12 +412,5 @@ public class ModelMappersTest {
         OnmsAlarm alarm = new OnmsAlarm();
         Alarm apiAlarm = ModelMappers.toAlarm(alarm);
         assertThat(apiAlarm.getReductionKey(), equalTo(alarm.getReductionKey()));
-
-        // Now let's throw an exception when calling getLastEvent()
-        alarm = mock(OnmsAlarm.class);
-        when(alarm.getLastEvent()).thenThrow(new ObjectNotFoundException(1, OnmsEvent.class.getCanonicalName()));
-        apiAlarm = ModelMappers.toAlarm(alarm);
-        // No last event should be set
-        assertThat(apiAlarm.getLastEvent(), nullValue());
     }
 }

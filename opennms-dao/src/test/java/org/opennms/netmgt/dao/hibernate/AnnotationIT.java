@@ -296,8 +296,8 @@ public class AnnotationIT implements InitializingBean {
 
 			@Override
 			public void check(OnmsAlarm entity) {
-				assertNotNull("last event should not be null: " + entity.toString(), entity.getLastEvent());
-				assertEquals("alarm UEI should match the last event UEI", entity.getUei(), entity.getLastEvent().getEventUei());
+				assertNotNull("event tsid should not be null: " + entity.toString(), entity.getEventTsid());
+				assertEquals("alarm UEI should match the event UEI", entity.getUei(), entity.getEventUei());
 				assertNotNull("dist poller should not be null: " + entity.toString(), entity.getDistPoller());
 				assertNotNull("dist poller ID should not be null: " + entity.toString(), entity.getDistPoller().getId());
 			}

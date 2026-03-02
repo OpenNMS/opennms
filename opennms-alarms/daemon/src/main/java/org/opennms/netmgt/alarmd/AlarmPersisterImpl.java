@@ -35,6 +35,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.utils.SystemInfoUtils;
 
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
@@ -398,7 +399,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private String serializeEventToXml(Event event) {
         try {
-            return event.marshal();
+            return JaxbUtils.marshal(event);
         } catch (Exception e) {
             LOG.warn("Failed to serialize event to XML", e);
             return null;

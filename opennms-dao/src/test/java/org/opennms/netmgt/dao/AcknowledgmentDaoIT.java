@@ -163,7 +163,9 @@ public class AcknowledgmentDaoIT implements InitializingBean {
         alarm.setUei(event.getEventUei());
         alarm.setSeverityId(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setCounter(new Integer(1));
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setAlarmAckTime(new Date());

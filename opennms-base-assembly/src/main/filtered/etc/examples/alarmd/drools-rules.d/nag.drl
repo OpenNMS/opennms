@@ -31,7 +31,6 @@ package org.opennms.netmgt.alarmd.usecases;
 import java.util.Date;
 import org.kie.api.time.SessionClock;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState
@@ -99,11 +98,11 @@ function Date getLastNagTime(Date now, Nag nag) {
    return getLastNagTimeWith(now, nag.getAlarm().getFirstEventTime(), nag.getInterval());
 }
 
-function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEventBuilder) {
-    if (sourceEvent == null) {
+function void copyEventParametersFromAlarm(OnmsAlarm sourceAlarm, EventBuilder targetEventBuilder) {
+    if (sourceAlarm == null || sourceAlarm.getEventParameters() == null) {
         return;
     }
-    for (OnmsEventParameter p : sourceEvent.getEventParameters()) {
+    for (OnmsEventParameter p : sourceAlarm.getEventParameters()) {
         targetEventBuilder.setParam(p.getName(), p.getValue());
     }
 }
@@ -115,9 +114,9 @@ function void copyEventParameters(OnmsEvent sourceEvent, EventBuilder targetEven
 rule "schedule nag"
   when
     $alarm : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE,
-                       lastEvent != null,
+                       eventTsid != null,
                        severity.isGreaterThan(OnmsSeverity.CLEARED))
-    $nagUeiParm : OnmsEventParameter( name == "nagUei", value != null ) from $alarm.getLastEvent().getEventParameters()
+    $nagUeiParm : OnmsEventParameter( name == "nagUei", value != null ) from $alarm.getEventParameters()
     not(Nag( alarm == $alarm ))
   then
       long nagIntervalInMs = 30 * 1000;
@@ -165,8 +164,8 @@ rule "trigger nag"
     if ($nag.getAlarm().getNodeId() != null) {
         eb.setNodeid($nag.getAlarm().getNodeId());
     }
-    // Copy all of the parameters from the last event on the alarm to the nag
-    copyEventParameters($nag.getAlarm().getLastEvent(), eb);
+    // Copy all of the parameters from the alarm to the nag
+    copyEventParametersFromAlarm($nag.getAlarm(), eb);
     // Include the reduction key of the alarm that we're nagging for
     eb.setParam("nagReductionKey", $nag.getAlarm().getReductionKey());
     // Asynchronously send the event
