@@ -55,4 +55,6 @@ public interface SnmpCollectionResourceTypeDao extends OnmsDao<SnmpCollectionRes
     SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);
 
     List<String> findAllResourceTypeNames();
+
+    void updateResourceTypeEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled);
 }
