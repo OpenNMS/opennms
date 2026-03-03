@@ -178,12 +178,12 @@ export interface Event {
   description: string
   display: string
   id: number
-  label: string
-  location: string
+  label: string | null
+  location: string | null
   log: string
   logMessage: string
-  nodeId: number
-  nodeLabel: string
+  nodeId: number | null
+  nodeLabel: string | null
   parameters: Array<any>
   severity: string
   source: string
