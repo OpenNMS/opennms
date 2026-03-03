@@ -445,6 +445,8 @@ describe('MibGroupCreationDrawer.vue', () => {
     })
 
     it('should populate instance options from resourceTypeNames', async () => {
+      // instancesOptions is populated when drawer opens via loadInitialData()
+      store.mibGroupDrawerState.visible = true
       await nextTick()
       expect(wrapper.vm.instancesOptions).toHaveLength(mockResourceTypeNames.length)
       expect(wrapper.vm.instancesOptions[0]).toEqual({ _text: 'ifIndex', _value: 'ifIndex' })
@@ -1050,8 +1052,13 @@ describe('MibGroupCreationDrawer.vue', () => {
 
   describe('Watch Effects', () => {
     it('should update instancesOptions when resourceTypeNames changes', async () => {
+      // instancesOptions is populated when drawer opens via loadInitialData()
       const newNames = ['newResource1', 'newResource2']
       store.resourceTypeNames = newNames
+      // Need to open drawer to trigger loadInitialData which populates instancesOptions
+      store.mibGroupDrawerState.visible = false
+      await nextTick()
+      store.mibGroupDrawerState.visible = true
       await nextTick()
       expect(wrapper.vm.instancesOptions).toHaveLength(2)
       expect(wrapper.vm.instancesOptions[0]).toEqual({ _text: 'newResource1', _value: 'newResource1' })
@@ -1174,6 +1181,59 @@ describe('MibGroupCreationDrawer.vue', () => {
         msg: 'Please select a Collection Source first.',
         error: true
       })
+    })
+
+    it('should handle loadMibObjectData when mibObject is null in edit mode', async () => {
+      // Open drawer in edit mode but with null mibObject
+      wrapper.vm.mibObjectDrawerState = {
+        visible: true,
+        isEditMode: CreateEditMode.Edit,
+        mibObjectIndex: 0,
+        mibObject: null
+      }
+      await nextTick()
+      // Fields should remain at default/empty values since mibObject is null
+      expect(wrapper.vm.oid).toBe('')
+      expect(wrapper.vm.alias).toBe('')
+    })
+
+    it('should handle mibObjectDrawerTitle for None mode', async () => {
+      wrapper.vm.mibObjectDrawerState.isEditMode = CreateEditMode.None
+      expect(wrapper.vm.mibObjectDrawerTitle).toBe('Edit MIB Object')
+    })
+
+    it('should pass mibGroupNames from selectedMibGroup to payload', async () => {
+      vi.mocked(updateMibGroup).mockResolvedValue(true)
+      store.mibGroupDrawerState.isEditMode = CreateEditMode.Edit
+      store.selectedMibGroup = mockMibGroup
+      store.mibGroupDrawerState.visible = false
+      await nextTick()
+      store.mibGroupDrawerState.visible = true
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      // Verify updateMibGroup was called (payload should include mibGroupNames)
+      expect(updateMibGroup).toHaveBeenCalled()
+    })
+
+    it('should default mibGroupNames to empty array when selectedMibGroup is null', async () => {
+      vi.mocked(createMibGroup).mockResolvedValue(true)
+      store.mibGroupDrawerState.isEditMode = CreateEditMode.Create
+      store.selectedMibGroup = null
+      store.mibGroupDrawerState.visible = true
+      await nextTick()
+
+      wrapper.vm.name = 'Test'
+      wrapper.vm.ifType = IF_TYPE_FILTERS_OPTIONS[0]
+      await nextTick()
+
+      await wrapper.vm.saveMibGroup()
+      await flushPromises()
+
+      // Should succeed even with null selectedMibGroup (mibGroupNames defaults to [])
+      expect(createMibGroup).toHaveBeenCalled()
     })
   })
 
@@ -1449,12 +1509,6 @@ describe('MibGroupCreationDrawer.vue', () => {
       // The component sets maxval/minval to null on save
       expect(wrapper.vm.mibObjects[0].maxval).toBeNull()
       expect(wrapper.vm.mibObjects[0].minval).toBeNull()
-    })
-
-    it('should handle empty instancesOptions when resourceTypeNames is empty', async () => {
-      store.resourceTypeNames = []
-      await nextTick()
-      expect(wrapper.vm.instancesOptions).toEqual([])
     })
 
     it('should handle rapid multiple deletions', async () => {

@@ -128,6 +128,7 @@ const drawerTitle = computed(() =>
 )
 
 const loadInitialData = () => {
+  mibGroupNames.value = store.mibGroupNames.map((name) => ({ _text: name, _value: name }))
   if (store.systemDefDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     oidType.value = DEFAULT_OID_TYPE

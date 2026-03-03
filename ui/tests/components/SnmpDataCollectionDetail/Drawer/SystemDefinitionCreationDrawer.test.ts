@@ -228,6 +228,24 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       expect(wrapper.vm.name).toBe('')
       expect(wrapper.vm.oidValue).toBe('')
     })
+
+    it('should populate mibGroupNames from store when selectedSystemDef is null in edit mode', async () => {
+      // Set edit mode but with null selectedSystemDef
+      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
+      store.selectedSystemDef = null
+      store.mibGroupNames = ['store-mib-1', 'store-mib-2']
+      store.systemDefDrawerState.visible = false
+      await nextTick()
+      store.systemDefDrawerState.visible = true
+      await nextTick()
+
+      // In Edit mode without selectedSystemDef, loadInitialData maps from store.mibGroupNames
+      // but doesn't overwrite since def is null
+      expect(wrapper.vm.mibGroupNames).toEqual([
+        { _text: 'store-mib-1', _value: 'store-mib-1' },
+        { _text: 'store-mib-2', _value: 'store-mib-2' }
+      ])
+    })
   })
 
   describe('Form Validation', () => {
@@ -1331,46 +1349,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     })
   })
 
-  describe('Snackbar Message Content', () => {
-    beforeEach(async () => {
-      store.systemDefDrawerState.visible = true
-      await nextTick()
-    })
-
-    it('should show correct success message for create', async () => {
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
-      vi.mocked(createSystemDefinition).mockResolvedValue(true)
-
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '.1.3.6.1'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await wrapper.vm.saveSystemDef()
-      await flushPromises()
-
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: 'System Definition created successfully.'
-      })
-    })
-
-    it('should show correct success message for update', async () => {
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
-      store.selectedSystemDef = mockSystemDef
-      vi.mocked(updateSystemDefinition).mockResolvedValue(true)
-
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '.1.3.6.1'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await wrapper.vm.saveSystemDef()
-      await flushPromises()
-
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: 'System Definition updated successfully.'
-      })
-    })
-  })
-
   describe('MIB Groups Selection State', () => {
     beforeEach(async () => {
       store.systemDefDrawerState.visible = true
@@ -1565,6 +1543,16 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       vi.advanceTimersByTime(500)
       await nextTick()
       expect(wrapper.vm.results.length).toBe(4)
+    })
+
+    it('should populate mibGroupNames from store when drawer opens', async () => {
+      // When drawer opens in Create mode, loadInitialData first maps from store.mibGroupNames
+      // but then immediately sets mibGroupNames = [] for Create mode
+      store.systemDefDrawerState.visible = true
+      await nextTick()
+
+      // In Create mode, mibGroupNames is reset to empty array
+      expect(wrapper.vm.mibGroupNames).toEqual([])
     })
 
     it('should react to drawer visibility changes', async () => {

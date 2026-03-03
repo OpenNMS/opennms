@@ -444,6 +444,7 @@ const validateMibGroup = (): MibGroupErrors => {
 }
 
 const loadInitialData = () => {
+  instancesOptions.value = store.resourceTypeNames.map((name) => ({ _text: name, _value: name }))
   if (store.mibGroupDrawerState.isEditMode === CreateEditMode.Create) {
     name.value = ''
     ifType.value = DEFAULT_IF_TYPE_FILTER
@@ -491,10 +492,6 @@ watchEffect(() => {
   errors.value = validateMibGroup()
   isSaveDisabled.value = Object.keys(errors.value).length > 0
 })
-
-watch(() => store.resourceTypeNames, (newVal) => {
-  instancesOptions.value = newVal.map((name) => ({ _text: name, _value: name }))
-}, { immediate: true })
 
 watch(
   () => mibObjectDrawerState.value.visible,
