@@ -21,9 +21,12 @@
  */
 package org.opennms.netmgt.daemon;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -63,6 +66,40 @@ public class DaemonTools {
 
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
             EventIpcManagerFactory.getIpcManager().sendNow(ebldr.getEvent());
+        }
+    }
+
+    /**
+     * MessageBus-based variant of reload handling for daemons that have been migrated
+     * from EventIpcManager to MessageBus for IPC coordination.
+     *
+     * <p>Unlike the IEvent-based variant, this method does not need to extract and validate
+     * the daemon name from the message — the caller has already done that in its
+     * {@link org.opennms.core.messagebus.MessageHandler#onMessage} dispatcher.</p>
+     *
+     * @param messageBus   the MessageBus to publish success/failure notifications
+     * @param daemonName   the name of the daemon being reloaded
+     * @param reloadAction the action to execute for configuration reload
+     */
+    public static void handleReloadEvent(MessageBus messageBus,
+                                          String daemonName,
+                                          Runnable reloadAction) {
+        LOG.info("Reloading {}.", daemonName);
+
+        try {
+            reloadAction.run();
+
+            LOG.info("Reload successful.");
+
+            messageBus.publish(new IpcMessage("reloadDaemonConfigSuccessful", daemonName,
+                    Map.of(EventConstants.PARM_DAEMON_NAME, daemonName)));
+
+        } catch (Exception e) {
+            LOG.error("Reload failed.", e);
+
+            messageBus.publish(new IpcMessage("reloadDaemonConfigFailed", daemonName,
+                    Map.of(EventConstants.PARM_DAEMON_NAME, daemonName,
+                            EventConstants.PARM_REASON, StringUtils.abbreviate(e.getLocalizedMessage(), 128))));
         }
     }
 

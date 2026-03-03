@@ -156,6 +156,9 @@
     <property name="pluginRegistry" ref="pluginRegistry" />
   </bean>
     
+  <!-- MessageBus for IPC events (injected via OSGi, optional) -->
+  <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus" availability="optional"/>
+
   <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner" depends-on="snmpPeerFactory-init">
     <property name="provisionService" ref="provisionService" />
     <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
