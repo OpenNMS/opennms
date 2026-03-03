@@ -43,6 +43,9 @@ import javax.swing.text.html.parser.Entity;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallBackScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
@@ -105,10 +108,15 @@ import com.google.common.annotations.VisibleForTesting;
  * @version $Id: $
  */
 public class Collectd extends AbstractServiceDaemon implements
-        EventListener {
-    
+        EventListener, MessageHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(Collectd.class);
-    
+
+    private static final String MSG_TYPE_CONFIGURE_SNMP = "configureSNMP";
+    private static final String MSG_TYPE_THRESHOLDCONFIG_CHANGED = "thresholdConfigChange";
+    private static final String MSG_TYPE_SCHEDOUTAGES_CHANGED = "schedOutagesChanged";
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
     private static CollectionInstrumentation s_instrumentation = null;
     
     /**
@@ -184,6 +192,9 @@ public class Collectd extends AbstractServiceDaemon implements
     private final SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
 
     private volatile EventIpcManager m_eventIpcManager;
+
+    @Autowired(required = false)
+    private volatile MessageBus m_messageBus;
 
     @Autowired
     private volatile TransactionTemplate m_transTemplate;
@@ -265,18 +276,6 @@ public class Collectd extends AbstractServiceDaemon implements
         // serviceDeleted
         ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
-        // outageConfigurationChanged
-        ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-
-        // configureSNMP
-        ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
-        
-        // thresholds configuration change
-        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
-
-        // daemon configuration change
-        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
-        
         // node category membership changes
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
 
@@ -284,6 +283,19 @@ public class Collectd extends AbstractServiceDaemon implements
         ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
         
         getEventIpcManager().addEventListener(this, ueiList);
+
+        // Subscribe to MessageBus for IPC coordination events
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(List.of(
+                    MSG_TYPE_CONFIGURE_SNMP,
+                    MSG_TYPE_THRESHOLDCONFIG_CHANGED,
+                    MSG_TYPE_SCHEDOUTAGES_CHANGED,
+                    MSG_TYPE_RELOAD_DAEMON_CONFIG
+            ), this);
+            LOG.info("Collectd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Collectd will not receive IPC events via MessageBus");
+        }
     }
 
     /**
@@ -302,6 +314,10 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 
     public ThresholdingService getThresholdingService() {
@@ -661,11 +677,7 @@ public class Collectd extends AbstractServiceDaemon implements
         LOG.debug("received event, uei = {}", event.getUei());
 
         try {
-            if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-                handleScheduledOutagesChanged(event);
-            } else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-                handleConfigureSNMP(event);
-            } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
+            if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
                 handleNodeGainedService(event);
             } else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
                 handlePrimarySnmpInterfaceChanged(event);
@@ -681,8 +693,6 @@ public class Collectd extends AbstractServiceDaemon implements
                 handleInterfaceDeleted(event);
             } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
                 handleServiceDeleted(event);
-            } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
-                handleReloadDaemonConfig(event);
             } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
                 handleNodeCategoryMembershipChanged(event);
             } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
@@ -690,6 +700,87 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         } catch (InsufficientInformationException e) {
             handleInsufficientInfo(e);
+        }
+    }
+
+    // --- MessageHandler interface ---
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Collectd received IPC message, type={}", message.getType());
+        switch (message.getType()) {
+            case MSG_TYPE_CONFIGURE_SNMP:
+                LOG.debug("configureSNMPHandler: processing configure SNMP IPC message");
+                handleConfigureSnmpIpc(message);
+                break;
+            case MSG_TYPE_THRESHOLDCONFIG_CHANGED:
+                LOG.info("Threshold configuration changed notification received via MessageBus");
+                break;
+            case MSG_TYPE_SCHEDOUTAGES_CHANGED:
+                handleScheduledOutagesChanged(null);
+                break;
+            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
+                handleReloadDaemonConfigIpc(message);
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
+        }
+    }
+
+    private void handleConfigureSnmpIpc(IpcMessage message) {
+        String firstIpAddress = message.getParameter("firstIpAddress");
+        if (firstIpAddress == null || firstIpAddress.isBlank()) {
+            LOG.error("configureSNMPHandler: IPC message missing firstIpAddress parameter");
+            return;
+        }
+        try {
+            // SNMP config changes are handled by SnmpPeerFactory directly
+            LOG.debug("configureSNMPHandler: SNMP configuration update for {} via IPC", firstIpAddress);
+            SnmpPeerFactory.getInstance().saveCurrent();
+        } catch (Throwable e) {
+            LOG.error("configureSNMPHandler: error processing configure SNMP IPC message", e);
+        }
+    }
+
+    private void handleReloadDaemonConfigIpc(IpcMessage message) {
+        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+        if (!"Collectd".equalsIgnoreCase(targetDaemon)) {
+            return;
+        }
+        String configFile = message.getParameter(EventConstants.PARM_CONFIG_FILE_NAME);
+        final String dataCollectionTarget = ConfigFileConstants.getFileName(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+        EventBuilder ebldr = null;
+        if (dataCollectionTarget.equalsIgnoreCase(configFile)) {
+            try {
+                DataCollectionConfigFactory.reload();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Collectd");
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, dataCollectionTarget);
+            } catch (Throwable e) {
+                LOG.error("handleReloadDaemonConfigIpc: Error reloading datacollection config: {}", e.getMessage(), e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Collectd");
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, dataCollectionTarget);
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+            }
+        } else {
+            final String cfgFile = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
+            try {
+                m_collectdConfigFactory.reload();
+                rebuildScheduler();
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Collectd");
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
+            } catch (Throwable e) {
+                LOG.error("handleReloadDaemonConfigIpc: Error reloading collectd config: {}", e.getMessage(), e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Collectd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Collectd");
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, cfgFile);
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+            }
+        }
+        if (ebldr != null) {
+            getEventIpcManager().sendNow(ebldr.getEvent());
         }
     }
 
@@ -726,6 +817,9 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     private void deinstallMessageSelectors() {
         getEventIpcManager().removeEventListener(this);
+        if (m_messageBus != null) {
+            m_messageBus.unsubscribe(this);
+        }
     }
 
     /**
