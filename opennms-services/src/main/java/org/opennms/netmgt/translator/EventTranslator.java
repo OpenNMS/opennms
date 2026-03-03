@@ -26,6 +26,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -45,9 +48,12 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class EventTranslator extends AbstractServiceDaemon implements EventListener {
+public class EventTranslator extends AbstractServiceDaemon implements EventListener, MessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventTranslator.class);
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     private static EventTranslator s_instance = new EventTranslator();
 
@@ -56,6 +62,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     private volatile boolean m_initialized = false;
 
     private DataSource m_dataSource;
+    private MessageBus m_messageBus;
 
 
     /**
@@ -104,6 +111,14 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         checkPreRequisites();
         createMessageSelectorAndSubscribe();
 
+        // Subscribe to MessageBus for reload events
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("EventTranslator subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — EventTranslator will not receive IPC events via MessageBus");
+        }
+
         m_initialized = true;
     }
 
@@ -127,9 +142,9 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     }
 
     private void createMessageSelectorAndSubscribe() {
-        // Subscribe to eventd
+        // Subscribe to eventd for translatable events only
+        // (reload is now handled via MessageBus)
         List<String> ueiList = m_config.getUEIList();
-        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
         getEventManager().addEventListener(this, ueiList);
     }
 
@@ -137,10 +152,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     @Override
     public void onEvent(IEvent ie) {
         Event e = Event.copyFrom(ie);
-        if (isReloadConfigEvent(e)) {
-            handleReloadEvent(e);
-            return;
-        }
 
         if (getName().equals(e.getSource())) {
             LOG.debug("onEvent: ignoring event with EventTranslator as source");
@@ -175,29 +186,39 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         }
     }
 
+    // --- MessageHandler interface ---
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if ("Translator".equalsIgnoreCase(targetDaemon)) {
+                handleReload();
+            }
+        }
+    }
+
     /**
      * Re-marshals the translator specs into the factory's config member and
-     * re-registers the UIEs with the eventProxy.
-     *
-     * @param e The reload daemon config event<code>Event</code>
+     * re-registers the UEIs with the eventProxy.
      */
-    protected void handleReloadEvent(Event e) {
-        LOG.info("onEvent: reloading configuration....");
+    private void handleReload() {
+        LOG.info("onMessage: reloading configuration....");
         EventBuilder ebldr = null;
         try {
             List<String> previousUeis = m_config.getUEIList();
             m_config.update();
 
-            //need to re-register the UEIs not including those the daemon
-            //registered separate from the config (i.e. reloadDaemonConfig)
+            // Re-register the UEIs for translatable events
             getEventManager().removeEventListener(this, previousUeis);
             getEventManager().addEventListener(this, m_config.getUEIList());
 
-            LOG.debug("onEvent: configuration reloaded.");
+            LOG.debug("onMessage: configuration reloaded.");
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
         } catch (Throwable exception) {
-            LOG.error("onEvent: reload config failed: {}", e, exception);
+            LOG.error("onMessage: reload config failed", exception);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Translator");
             ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
@@ -206,27 +227,7 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             m_eventMgr.sendNow(ebldr.getEvent());
         }
 
-        LOG.info("onEvent: reload configuration: reload configuration contains {} UEI specs.", m_config.getUEIList().size());
-    }
-
-    private boolean isReloadConfigEvent(Event event) {
-        boolean isTarget = false;
-
-        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-
-            List<Parm> parmCollection = event.getParmCollection();
-
-            for (Parm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && 
-                        "Translator".equalsIgnoreCase(parm.getValue().getContent())) {
-                    isTarget = true;
-                    break;
-                }
-            }
-
-            LOG.debug("isReloadConfigEventTarget: Event Translator was target of reload event: {}", isTarget);
-        }
-        return isTarget;
+        LOG.info("onMessage: reload configuration: reload configuration contains {} UEI specs.", m_config.getUEIList().size());
     }
 
     /**
@@ -283,5 +284,8 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
         m_dataSource = dataSource;
     }
 
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
+    }
 
 }
