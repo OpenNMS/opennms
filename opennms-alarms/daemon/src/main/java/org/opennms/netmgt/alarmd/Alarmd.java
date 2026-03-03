@@ -21,10 +21,13 @@
  */
 package org.opennms.netmgt.alarmd;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -41,13 +44,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @EventListener(name=Alarmd.NAME, logPrefix="alarmd")
-public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventListener {
+public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventListener, MessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
     /** Constant <code>NAME="alarmd"</code> */
     public static final String NAME = "alarmd";
 
     protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     private AlarmPersister m_persister;
 
@@ -59,6 +65,9 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
 
     @Autowired
     private NorthbounderManager m_northbounderManager;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     public Alarmd() {
         super(NAME);
@@ -73,20 +82,28 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(IEvent e) {
-    	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-           handleReloadEvent(e);
-           return;
-    	}
     	m_persister.persist(Event.copyFrom(e));
     }
 
-    private synchronized void handleReloadEvent(IEvent e) {
-        m_northbounderManager.handleReloadEvent(e);
-        DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload());
+    // --- MessageHandler interface ---
+    // getName() already provided by AbstractServiceDaemon
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            handleReload(daemonName);
+        }
     }
 
-    private void onAlarmReload() {
-        m_droolsAlarmContext.reload();
+    private synchronized void handleReload(String daemonName) {
+        // Forward to NorthbounderManager — it matches daemonName against NBI names
+        m_northbounderManager.onReloadDaemonConfig(daemonName);
+        // Also reload Drools context when targeted at alarmd specifically
+        if (NAME.equalsIgnoreCase(daemonName)) {
+            m_droolsAlarmContext.reload();
+        }
     }
 
 	/**
@@ -109,7 +126,12 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
 
     @Override
     protected synchronized void onInit() {
-        // pass
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("Alarmd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Alarmd will not receive IPC events via MessageBus");
+        }
     }
 
     @Override
@@ -129,6 +151,10 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
     @Override
     public int getNumThreads() {
         return THREADS;
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 
 }

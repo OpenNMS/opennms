@@ -111,43 +111,58 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
         onNorthboundersChanged();
     }
 
+    /**
+     * Handle a reload daemon config event by extracting the daemonName parm
+     * and delegating to {@link #onReloadDaemonConfig(String)}.
+     */
     public void handleReloadEvent(IEvent e) {
         List<IParm> parmCollection = e.getParmCollection();
         for (IParm parm : parmCollection) {
-            String parmName = parm.getParmName();
-            if ("daemonName".equals(parmName)) {
+            if ("daemonName".equals(parm.getParmName())) {
                 if (parm.getValue() == null || parm.getValue().getContent() == null) {
                     LOG.warn("The daemonName parameter has no value, ignoring.");
                     return;
                 }
-                final String daemonName = parm.getValue().getContent();
+                onReloadDaemonConfig(parm.getValue().getContent());
+                return;
+            }
+        }
+    }
 
-                List<Northbounder> nbis = getNorthboundInterfaces();
-                for (Northbounder nbi : nbis) {
-                    if (daemonName.contains(nbi.getName())) {
-                        LOG.debug("Handling reload event for NBI: {}", nbi.getName());
-                        LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
-                        EventBuilder ebldr = null;
+    /**
+     * Reload NBI configuration for the northbounder whose name is contained
+     * in the given daemonName. Called from both the legacy IEvent path and the
+     * new MessageBus path.
+     */
+    public void onReloadDaemonConfig(String daemonName) {
+        if (daemonName == null) {
+            LOG.warn("The daemonName parameter has no value, ignoring.");
+            return;
+        }
+        List<Northbounder> nbis = getNorthboundInterfaces();
+        for (Northbounder nbi : nbis) {
+            if (daemonName.contains(nbi.getName())) {
+                LOG.debug("Handling reload for NBI: {}", nbi.getName());
+                EventBuilder ebldr = null;
+                try {
+                    nbi.reloadConfig();
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, Alarmd.NAME);
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
+                } catch (NorthbounderException ex) {
+                    LOG.error("Can't reload the northbound configuration for " + nbi.getName(), ex);
+                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, Alarmd.NAME);
+                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
+                    ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());
+                } finally {
+                    if (ebldr != null) {
                         try {
-                            nbi.reloadConfig();
-                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, Alarmd.NAME);
-                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
-                        } catch (NorthbounderException ex) {
-                            LOG.error("Can't reload the northbound configuration for " + nbi.getName(), ex);
-                            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, Alarmd.NAME);
-                            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, Alarmd.NAME);
-                            ebldr.addParam(EventConstants.PARM_REASON, ex.getMessage());
-                        } finally {
-                            if (ebldr != null)
-                                try {
-                                    m_eventProxy.send(ebldr.getEvent());
-                                } catch (EventProxyException ep) {
-                                    LOG.error("Can't send reload status event", ep);
-                                }
+                            m_eventProxy.send(ebldr.getEvent());
+                        } catch (EventProxyException ep) {
+                            LOG.error("Can't send reload status event", ep);
                         }
-                        return;
                     }
                 }
+                return;
             }
         }
     }
