@@ -25,13 +25,18 @@ import static org.opennms.netmgt.events.api.EventConstants.PARAM_TOPOLOGY_NAMESP
 
 import java.util.List;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
@@ -39,9 +44,20 @@ import org.opennms.netmgt.model.events.EventUtils;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 @EventListener(name="enlinkd")
-public final class EventProcessor {
+public final class EventProcessor implements MessageHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventProcessor.class);
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadTopology */
+    private static final String MSG_TYPE_RELOAD_TOPOLOGY = "reloadTopology";
 
     private EnhancedLinkd m_linkd;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     /**
      * @param linkd the linkd to set
@@ -53,6 +69,60 @@ public final class EventProcessor {
     public EnhancedLinkd getLinkd() {
         return m_linkd;
     }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
+    }
+
+    /**
+     * Subscribe to MessageBus for IPC events. Called after properties are set.
+     */
+    public void init() {
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(List.of(MSG_TYPE_RELOAD_DAEMON_CONFIG, MSG_TYPE_RELOAD_TOPOLOGY), this);
+            LOG.info("Enlinkd EventProcessor subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Enlinkd will not receive IPC events via MessageBus");
+        }
+    }
+
+    // --- MessageHandler interface ---
+
+    @Override
+    public String getName() {
+        return "enlinkd";
+    }
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        switch (message.getType()) {
+            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
+                handleReloadDaemonConfigIpc(message);
+                break;
+            case MSG_TYPE_RELOAD_TOPOLOGY:
+                handleReloadTopologyIpc(message);
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
+        }
+    }
+
+    private void handleReloadDaemonConfigIpc(IpcMessage message) {
+        String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+        if ("Enlinkd".equalsIgnoreCase(daemonName)) {
+            m_linkd.reloadConfig();
+        }
+    }
+
+    private void handleReloadTopologyIpc(IpcMessage message) {
+        String topologyNamespace = message.getParameter(PARAM_TOPOLOGY_NAMESPACE);
+        if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace)) {
+            m_linkd.reloadTopology();
+        }
+    }
+
+    // --- Domain event handlers (kept on @EventHandler) ---
 
     @EventHandler(uei=EventConstants.NODE_ADDED_EVENT_UEI)
     public void handleNodeAdded(IEvent event) throws InsufficientInformationException {
@@ -99,7 +169,7 @@ public final class EventProcessor {
         if (event.getService().equals("SNMP"))
         	m_linkd.wakeUpNodeCollection(event.getNodeid().intValue());
     }
-    
+
     /**
      * <p>handleForceRescan</p>
      *
@@ -108,32 +178,6 @@ public final class EventProcessor {
     @EventHandler(uei = EventConstants.FORCE_RESCAN_EVENT_UEI)
     public void handleForceRescan(IEvent e) {
     	m_linkd.execSingleSnmpCollection(e.getNodeid().intValue());
-    }
-    
-
-    /**
-     * <p>handleRealodDaemonconfig</p>
-     *
-     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
-     */
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadDaemonConfig(IEvent e) {
-        List<IParm> parmCollection = e.getParmCollection();
-
-        for (IParm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Enlinkd".equalsIgnoreCase(parm.getValue().getContent())) {
-                m_linkd.reloadConfig();
-                break;
-            }
-        }
-    }
-    
-    @EventHandler(uei = EventConstants.RELOAD_TOPOLOGY_UEI)
-    public void handleReloadTopology(IEvent e) {
-        final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);
-        if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace)) {
-            m_linkd.reloadTopology();
-        }
     }
 
 } // end class
