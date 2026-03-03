@@ -3,7 +3,11 @@ import { KEY_PATTERN, PERSISTENCE_SELECTOR_STRATEGY_OPTIONS, STORAGE_STRATEGY_OP
 import { createResourceType, updateResourceType } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
-import { PersistSelectorStrategyForm, SnmpCollectionResourceType, StorageStrategyForm } from '@/types/snmpDataCollection'
+import {
+  PersistSelectorStrategyForm,
+  SnmpCollectionResourceType,
+  StorageStrategyForm
+} from '@/types/snmpDataCollection'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
@@ -579,18 +583,16 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       expect(errors.key).toBe('Key can only contain letters, numbers, underscores, and hyphens')
     })
 
-    it.each([
-      { key: 'valid_key' },
-      { key: 'valid-key' },
-      { key: 'validKey123' },
-      { key: 'VALID_KEY' }
-    ])('should accept valid key format: "$key"', async ({ key }) => {
-      wrapper.vm.key = key
-      wrapper.vm.value = 'testValue'
-      await nextTick()
-      const errors = wrapper.vm.validateResourceTypeParameter()
-      expect(errors.key).toBeUndefined()
-    })
+    it.each([{ key: 'valid_key' }, { key: 'valid-key' }, { key: 'validKey123' }, { key: 'VALID_KEY' }])(
+      'should accept valid key format: "$key"',
+      async ({ key }) => {
+        wrapper.vm.key = key
+        wrapper.vm.value = 'testValue'
+        await nextTick()
+        const errors = wrapper.vm.validateResourceTypeParameter()
+        expect(errors.key).toBeUndefined()
+      }
+    )
 
     it('should show error when value is empty', async () => {
       wrapper.vm.value = ''
@@ -729,6 +731,358 @@ describe('ResourceTypeCreationDrawer.vue', () => {
     })
   })
 
+  describe('Pagination - Storage Strategy Params', () => {
+    const manyStorageParams: StorageStrategyForm[] = Array.from({ length: 8 }, (_, i) => ({
+      key: `key${i}`,
+      value: `value${i}`
+    }))
+
+    beforeEach(async () => {
+      wrapper.vm.storageStrategyParams = [...manyStorageParams]
+      wrapper.vm.storageStrategyParamsTotal = manyStorageParams.length
+      wrapper.vm.storageStrategyParamsPageSize = 3
+      wrapper.vm.storageStrategyParamsObjects = manyStorageParams.slice(0, 3)
+      await nextTick()
+    })
+
+    it('should display first page of storage strategy parameters', () => {
+      expect(wrapper.vm.storageStrategyParamsObjects.length).toBe(3)
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key0')
+    })
+
+    it('should change page correctly', async () => {
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsPage).toBe(2)
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key3')
+    })
+
+    it('should change page size correctly', async () => {
+      wrapper.vm.onStorageStrategyParamsPageSizeChange(5)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsPageSize).toBe(5)
+      expect(wrapper.vm.storageStrategyParamsPage).toBe(1)
+      expect(wrapper.vm.storageStrategyParamsObjects.length).toBe(5)
+    })
+
+    it('should handle page change to last page', async () => {
+      wrapper.vm.onStorageStrategyParamsPageChange(3)
+      await nextTick()
+      // Page 3 with pageSize 3 should show 2 items (items 6-7)
+      expect(wrapper.vm.storageStrategyParamsObjects.length).toBe(2)
+    })
+
+    it('should reset to first page when page size changes', async () => {
+      wrapper.vm.storageStrategyParamsPage = 2
+      await nextTick()
+      wrapper.vm.onStorageStrategyParamsPageSizeChange(3)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsPage).toBe(1)
+    })
+
+    it('should edit item on page 2 with correct actualIndex calculation', async () => {
+      // Navigate to page 2 (items 3-5, indices 3-5 in storageStrategyParams array)
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsPage).toBe(2)
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key3')
+
+      // Open edit drawer for first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.openStorageStrategyDrawer(CreateEditMode.Edit, 0, wrapper.vm.storageStrategyParamsObjects[0])
+      await nextTick()
+
+      // Verify drawer opened in edit mode for correct item
+      expect(wrapper.vm.resourceTypeDrawerState.visible).toBe(true)
+      expect(wrapper.vm.resourceTypeDrawerState.isEditMode).toBe(CreateEditMode.Edit)
+      expect(wrapper.vm.resourceTypeDrawerState.storageStrategyIndex).toBe(3)
+    })
+
+    it('should edit item on page 3 with correct actualIndex calculation', async () => {
+      // Navigate to page 3 (items 6-7, indices 6-7 in storageStrategyParams array)
+      wrapper.vm.onStorageStrategyParamsPageChange(3)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsPage).toBe(3)
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key6')
+
+      // Open edit drawer for second item on page 3 (page-relative index 1)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (3-1)*3 + 1 = 7
+      wrapper.vm.openStorageStrategyDrawer(CreateEditMode.Edit, 1, wrapper.vm.storageStrategyParamsObjects[1])
+      await nextTick()
+
+      expect(wrapper.vm.resourceTypeDrawerState.storageStrategyIndex).toBe(7)
+    })
+
+    it('should update item on page 2 correctly via saveParameters', async () => {
+      // Navigate to page 2
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+
+      // Open edit for first item on page 2 (key3)
+      wrapper.vm.openStorageStrategyDrawer(CreateEditMode.Edit, 0, wrapper.vm.storageStrategyParamsObjects[0])
+      await nextTick()
+
+      // Set key and value
+      wrapper.vm.key = 'updatedKey3'
+      wrapper.vm.value = 'updatedValue3'
+      await nextTick()
+
+      // Save the parameter
+      wrapper.vm.saveResourceTypeParameter()
+      await nextTick()
+
+      // Verify the correct item in storageStrategyParams array was updated (index 3)
+      expect(wrapper.vm.storageStrategyParams[3].key).toBe('updatedKey3')
+      expect(wrapper.vm.storageStrategyParams[3].value).toBe('updatedValue3')
+      // Other items should be unchanged
+      expect(wrapper.vm.storageStrategyParams[2].key).toBe('key2')
+      expect(wrapper.vm.storageStrategyParams[4].key).toBe('key4')
+    })
+
+    it('should delete item from page 2 with correct actualIndex', async () => {
+      // Navigate to page 2
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key3')
+
+      const initialLength = wrapper.vm.storageStrategyParams.length
+
+      // Delete first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.deleteStorageStrategy(0)
+      await nextTick()
+
+      expect(wrapper.vm.storageStrategyParams.length).toBe(initialLength - 1)
+      // key3 should be deleted, key4 now at index 3
+      expect(wrapper.vm.storageStrategyParams[3].key).toBe('key4')
+    })
+
+    it('should delete middle item on page 2 correctly', async () => {
+      // Navigate to page 2
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsObjects[1].key).toBe('key4')
+
+      // Delete second item on page 2 (page-relative index 1)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 1 = 4
+      wrapper.vm.deleteStorageStrategy(1)
+      await nextTick()
+
+      // key4 should be deleted
+      expect(wrapper.vm.storageStrategyParams.find((obj: StorageStrategyForm) => obj.key === 'key4')).toBeUndefined()
+      // key5 should now be at where key4 was (index 4)
+      expect(wrapper.vm.storageStrategyParams[4].key).toBe('key5')
+    })
+
+    it('should handle deleting last item on page 2', async () => {
+      // Create params with exactly 4 items (page 1: 3 items, page 2: 1 item)
+      wrapper.vm.storageStrategyParams = Array.from({ length: 4 }, (_, i) => ({
+        key: `key${i}`,
+        value: `value${i}`
+      }))
+      wrapper.vm.storageStrategyParamsTotal = 4
+      await nextTick()
+
+      // Navigate to page 2
+      wrapper.vm.onStorageStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.storageStrategyParamsObjects.length).toBe(1)
+      expect(wrapper.vm.storageStrategyParamsObjects[0].key).toBe('key3')
+
+      // Delete only item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.deleteStorageStrategy(0)
+      await nextTick()
+
+      expect(wrapper.vm.storageStrategyParams.length).toBe(3)
+      expect(wrapper.vm.storageStrategyParams.find((obj: StorageStrategyForm) => obj.key === 'key3')).toBeUndefined()
+    })
+  })
+
+  describe('Pagination - Persistence Selector Strategy Params', () => {
+    const manyPersistenceParams: PersistSelectorStrategyForm[] = Array.from({ length: 8 }, (_, i) => ({
+      key: `pkey${i}`,
+      value: `pvalue${i}`
+    }))
+
+    beforeEach(async () => {
+      wrapper.vm.persistenceSelectorStrategyParams = [...manyPersistenceParams]
+      wrapper.vm.persistenceSelectorStrategyParamsTotal = manyPersistenceParams.length
+      wrapper.vm.persistenceSelectorStrategyParamsPageSize = 3
+      wrapper.vm.persistenceSelectorStrategyParamsObjects = manyPersistenceParams.slice(0, 3)
+      await nextTick()
+    })
+
+    it('should display first page of persistence selector strategy parameters', () => {
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects.length).toBe(3)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey0')
+    })
+
+    it('should change page correctly', async () => {
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPage).toBe(2)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey3')
+    })
+
+    it('should change page size correctly', async () => {
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageSizeChange(5)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPageSize).toBe(5)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPage).toBe(1)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects.length).toBe(5)
+    })
+
+    it('should handle page change to last page', async () => {
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(3)
+      await nextTick()
+      // Page 3 with pageSize 3 should show 2 items (items 6-7)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects.length).toBe(2)
+    })
+
+    it('should reset to first page when page size changes', async () => {
+      wrapper.vm.persistenceSelectorStrategyParamsPage = 2
+      await nextTick()
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageSizeChange(3)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPage).toBe(1)
+    })
+
+    it('should edit item on page 2 with correct actualIndex calculation', async () => {
+      // Navigate to page 2 (items 3-5, indices 3-5 in persistenceSelectorStrategyParams array)
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPage).toBe(2)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey3')
+
+      // Open edit drawer for first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.openPersistenceSelectorStrategyDrawer(
+        CreateEditMode.Edit,
+        0,
+        wrapper.vm.persistenceSelectorStrategyParamsObjects[0]
+      )
+      await nextTick()
+
+      // Verify drawer opened in edit mode for correct item
+      expect(wrapper.vm.resourceTypeDrawerState.visible).toBe(true)
+      expect(wrapper.vm.resourceTypeDrawerState.isEditMode).toBe(CreateEditMode.Edit)
+      expect(wrapper.vm.resourceTypeDrawerState.persistenceSelectorStrategyIndex).toBe(3)
+    })
+
+    it('should edit item on page 3 with correct actualIndex calculation', async () => {
+      // Navigate to page 3 (items 6-7, indices 6-7 in persistenceSelectorStrategyParams array)
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(3)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsPage).toBe(3)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey6')
+
+      // Open edit drawer for second item on page 3 (page-relative index 1)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (3-1)*3 + 1 = 7
+      wrapper.vm.openPersistenceSelectorStrategyDrawer(
+        CreateEditMode.Edit,
+        1,
+        wrapper.vm.persistenceSelectorStrategyParamsObjects[1]
+      )
+      await nextTick()
+
+      expect(wrapper.vm.resourceTypeDrawerState.persistenceSelectorStrategyIndex).toBe(7)
+    })
+
+    it('should update item on page 2 correctly via saveParameters', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+
+      // Open edit for first item on page 2 (pkey3)
+      wrapper.vm.openPersistenceSelectorStrategyDrawer(
+        CreateEditMode.Edit,
+        0,
+        wrapper.vm.persistenceSelectorStrategyParamsObjects[0]
+      )
+      await nextTick()
+
+      // Set key and value
+      wrapper.vm.key = 'updatedPkey3'
+      wrapper.vm.value = 'updatedPvalue3'
+      await nextTick()
+
+      // Save the parameter
+      wrapper.vm.saveResourceTypeParameter()
+      await nextTick()
+
+      // Verify the correct item in persistenceSelectorStrategyParams array was updated (index 3)
+      expect(wrapper.vm.persistenceSelectorStrategyParams[3].key).toBe('updatedPkey3')
+      expect(wrapper.vm.persistenceSelectorStrategyParams[3].value).toBe('updatedPvalue3')
+      // Other items should be unchanged
+      expect(wrapper.vm.persistenceSelectorStrategyParams[2].key).toBe('pkey2')
+      expect(wrapper.vm.persistenceSelectorStrategyParams[4].key).toBe('pkey4')
+    })
+
+    it('should delete item from page 2 with correct actualIndex', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey3')
+
+      const initialLength = wrapper.vm.persistenceSelectorStrategyParams.length
+
+      // Delete first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.deletePersistenceSelectorStrategy(0)
+      await nextTick()
+
+      expect(wrapper.vm.persistenceSelectorStrategyParams.length).toBe(initialLength - 1)
+      // pkey3 should be deleted, pkey4 now at index 3
+      expect(wrapper.vm.persistenceSelectorStrategyParams[3].key).toBe('pkey4')
+    })
+
+    it('should delete middle item on page 2 correctly', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[1].key).toBe('pkey4')
+
+      // Delete second item on page 2 (page-relative index 1)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 1 = 4
+      wrapper.vm.deletePersistenceSelectorStrategy(1)
+      await nextTick()
+
+      // pkey4 should be deleted
+      expect(
+        wrapper.vm.persistenceSelectorStrategyParams.find((obj: PersistSelectorStrategyForm) => obj.key === 'pkey4')
+      ).toBeUndefined()
+      // pkey5 should now be at where pkey4 was (index 4)
+      expect(wrapper.vm.persistenceSelectorStrategyParams[4].key).toBe('pkey5')
+    })
+
+    it('should handle deleting last item on page 2', async () => {
+      // Create params with exactly 4 items (page 1: 3 items, page 2: 1 item)
+      wrapper.vm.persistenceSelectorStrategyParams = Array.from({ length: 4 }, (_, i) => ({
+        key: `pkey${i}`,
+        value: `pvalue${i}`
+      }))
+      wrapper.vm.persistenceSelectorStrategyParamsTotal = 4
+      await nextTick()
+
+      // Navigate to page 2
+      wrapper.vm.onPersistenceSelectorStrategyParamsPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects.length).toBe(1)
+      expect(wrapper.vm.persistenceSelectorStrategyParamsObjects[0].key).toBe('pkey3')
+
+      // Delete only item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*3 + 0 = 3
+      wrapper.vm.deletePersistenceSelectorStrategy(0)
+      await nextTick()
+
+      expect(wrapper.vm.persistenceSelectorStrategyParams.length).toBe(3)
+      expect(
+        wrapper.vm.persistenceSelectorStrategyParams.find((obj: PersistSelectorStrategyForm) => obj.key === 'pkey3')
+      ).toBeUndefined()
+    })
+  })
+
   describe('Close Parameter Drawer', () => {
     beforeEach(async () => {
       wrapper.vm.openStorageStrategyDrawer(CreateEditMode.Create)
@@ -765,7 +1119,10 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       wrapper.vm.label = 'New Label'
       wrapper.vm.resourceLabel = '${newLabel}'
       wrapper.vm.storageStrategy = { _text: STORAGE_STRATEGY_OPTIONS[0], _value: STORAGE_STRATEGY_OPTIONS[0] }
-      wrapper.vm.persistenceSelectorStrategy = { _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0], _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0] }
+      wrapper.vm.persistenceSelectorStrategy = {
+        _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0],
+        _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0]
+      }
       wrapper.vm.status = true
       await nextTick()
     })
@@ -1134,7 +1491,10 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       wrapper.vm.name = 'Test'
       wrapper.vm.label = 'Label'
       wrapper.vm.storageStrategy = { _text: STORAGE_STRATEGY_OPTIONS[0], _value: STORAGE_STRATEGY_OPTIONS[0] }
-      wrapper.vm.persistenceSelectorStrategy = { _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0], _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0] }
+      wrapper.vm.persistenceSelectorStrategy = {
+        _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0],
+        _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0]
+      }
       await nextTick()
 
       await wrapper.vm.saveResourceType()
@@ -1160,7 +1520,10 @@ describe('ResourceTypeCreationDrawer.vue', () => {
       wrapper.vm.resourceLabel = '${integrationTest}'
       wrapper.vm.status = true
       wrapper.vm.storageStrategy = { _text: STORAGE_STRATEGY_OPTIONS[0], _value: STORAGE_STRATEGY_OPTIONS[0] }
-      wrapper.vm.persistenceSelectorStrategy = { _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0], _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0] }
+      wrapper.vm.persistenceSelectorStrategy = {
+        _text: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0],
+        _value: PERSISTENCE_SELECTOR_STRATEGY_OPTIONS[0]
+      }
       await nextTick()
 
       // Add storage strategy parameter
@@ -1471,9 +1834,9 @@ describe('ResourceTypeCreationDrawer.vue', () => {
 
       // Results should contain items matching the search
       expect(wrapper.vm.storageStrategyResults.length).toBeGreaterThan(0)
-      expect(wrapper.vm.storageStrategyResults.every((r: any) =>
-        r._text.toLowerCase().includes('org.opennms')
-      )).toBe(true)
+      expect(wrapper.vm.storageStrategyResults.every((r: any) => r._text.toLowerCase().includes('org.opennms'))).toBe(
+        true
+      )
     })
 
     it('should show CreateEditMode.None after closing parameter drawer', async () => {
@@ -1547,3 +1910,4 @@ describe('ResourceTypeCreationDrawer.vue', () => {
     })
   })
 })
+

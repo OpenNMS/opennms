@@ -102,7 +102,7 @@
               tag="tbody"
             >
               <tr
-                v-for="(param, index) in storageStrategyParams"
+                v-for="(param, index) in storageStrategyParamsObjects"
                 :key="index"
               >
                 <td>{{ param.key }}</td>
@@ -128,7 +128,21 @@
               </tr>
             </TransitionGroup>
           </table>
-          <div v-if="!storageStrategyParams.length">
+          <div
+            class="alerts-pagination"
+            v-if="storageStrategyParamsObjects.length"
+          >
+            <FeatherPagination
+              :modelValue="storageStrategyParamsPage"
+              :pageSize="storageStrategyParamsPageSize"
+              :total="storageStrategyParamsTotal"
+              :pageSizes="[3, 6, 9]"
+              @update:modelValue="onStorageStrategyParamsPageChange"
+              @update:pageSize="onStorageStrategyParamsPageSizeChange"
+              data-test="FeatherPagination"
+            />
+          </div>
+          <div v-if="!storageStrategyParamsObjects.length">
             <EmptyList :content="{ msg: 'No Storage Strategy parameters added yet.' }" />
           </div>
         </div>
@@ -181,7 +195,7 @@
               tag="tbody"
             >
               <tr
-                v-for="(param, index) in persistenceSelectorStrategyParams"
+                v-for="(param, index) in persistenceSelectorStrategyParamsObjects"
                 :key="index"
               >
                 <td>{{ param.key }}</td>
@@ -207,7 +221,21 @@
               </tr>
             </TransitionGroup>
           </table>
-          <div v-if="!persistenceSelectorStrategyParams.length">
+          <div
+            class="alerts-pagination"
+            v-if="persistenceSelectorStrategyParamsObjects.length"
+          >
+            <FeatherPagination
+              :modelValue="persistenceSelectorStrategyParamsPage"
+              :pageSize="persistenceSelectorStrategyParamsPageSize"
+              :total="persistenceSelectorStrategyParamsTotal"
+              :pageSizes="[3, 6, 9]"
+              @update:modelValue="onPersistenceSelectorStrategyParamsPageChange"
+              @update:pageSize="onPersistenceSelectorStrategyParamsPageSizeChange"
+              data-test="FeatherPagination"
+            />
+          </div>
+          <div v-if="!persistenceSelectorStrategyParamsObjects.length">
             <EmptyList :content="{ msg: 'No Persistence Selector Strategy parameters added yet.' }" />
           </div>
         </div>
@@ -293,6 +321,7 @@ import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { SwitchRender } from '@featherds/switch'
 
 const storageStrategyLoading = ref(false)
@@ -308,8 +337,16 @@ const label = ref('')
 const status = ref(true)
 const storageStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const storageStrategyParams = ref<StorageStrategyForm[]>([])
+const storageStrategyParamsPage = ref(1)
+const storageStrategyParamsPageSize = ref(3)
+const storageStrategyParamsTotal = ref(0)
+const storageStrategyParamsObjects = ref<StorageStrategyForm[]>([])
 const persistenceSelectorStrategy = ref(undefined as unknown as IAutocompleteItemType)
 const persistenceSelectorStrategyParams = ref<PersistSelectorStrategyForm[]>([])
+const persistenceSelectorStrategyParamsPage = ref(1)
+const persistenceSelectorStrategyParamsPageSize = ref(3)
+const persistenceSelectorStrategyParamsTotal = ref(0)
+const persistenceSelectorStrategyParamsObjects = ref<PersistSelectorStrategyForm[]>([])
 const errors = ref<ResourceTypeErrors>({})
 const snackbar = useSnackbar()
 const isSaveDisabled = ref(true)
@@ -377,20 +414,46 @@ const onSearchStorageStrategy = async (q: string) => {
   }, 500)
 }
 
+const onStorageStrategyParamsPageChange = (page: number) => {
+  storageStrategyParamsPage.value = page
+  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((page - 1) * storageStrategyParamsPageSize.value, page * storageStrategyParamsPageSize.value)
+}
+
+const onStorageStrategyParamsPageSizeChange = (pageSize: number) => {
+  storageStrategyParamsPageSize.value = pageSize
+  storageStrategyParamsPage.value = 1
+  storageStrategyParamsObjects.value = storageStrategyParams.value.slice(0, pageSize)
+}
+
+const onPersistenceSelectorStrategyParamsPageChange = (page: number) => {
+  persistenceSelectorStrategyParamsPage.value = page
+  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((page - 1) * persistenceSelectorStrategyParamsPageSize.value, page * persistenceSelectorStrategyParamsPageSize.value)
+}
+
+const onPersistenceSelectorStrategyParamsPageSizeChange = (pageSize: number) => {
+  persistenceSelectorStrategyParamsPageSize.value = pageSize
+  persistenceSelectorStrategyParamsPage.value = 1
+  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice(0, pageSize)
+}
+
 const openStorageStrategyDrawer = (
   isEditMode: CreateEditMode,
   storageStrategyIndex = -1,
   storageStrategyObject: StorageStrategyForm | null = null
 ) => {
+  const actualIndex = isEditMode === CreateEditMode.Edit ? (storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value + storageStrategyIndex : storageStrategyIndex
   resourceTypeDrawerState.value.visible = true
   resourceTypeDrawerState.value.type = 'storageStrategy'
   resourceTypeDrawerState.value.isEditMode = isEditMode
-  resourceTypeDrawerState.value.storageStrategyIndex = storageStrategyIndex
+  resourceTypeDrawerState.value.storageStrategyIndex = actualIndex
   resourceTypeDrawerState.value.storageStrategyObject = storageStrategyObject
 }
 
 const deleteStorageStrategy = (index: number) => {
-  storageStrategyParams.value.splice(index, 1)
+  const actualIndex = (storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value + index
+  storageStrategyParams.value.splice(actualIndex, 1)
+  storageStrategyParamsTotal.value = storageStrategyParams.value.length
+  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
 }
 
 const onSearchPersistenceSelectorStrategy = async (q: string) => {
@@ -424,16 +487,20 @@ const openPersistenceSelectorStrategyDrawer = (
   persistenceSelectorStrategyIndex = -1,
   persistenceSelectorStrategyObject: PersistSelectorStrategyForm | null = null
 ) => {
+  const actualIndex = isEditMode === CreateEditMode.Edit ? (persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value + persistenceSelectorStrategyIndex : persistenceSelectorStrategyIndex
   resourceTypeDrawerState.value.visible = true
   resourceTypeDrawerState.value.type = 'persistenceSelectorStrategy'
   resourceTypeDrawerState.value.isEditMode = isEditMode
   resourceTypeDrawerState.value.persistenceSelectorStrategyIndex =
-    persistenceSelectorStrategyIndex
+    actualIndex
   resourceTypeDrawerState.value.persistenceSelectorStrategyObject = persistenceSelectorStrategyObject
 }
 
 const deletePersistenceSelectorStrategy = (index: number) => {
-  persistenceSelectorStrategyParams.value.splice(index, 1)
+  const actualIndex = (persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value + index
+  persistenceSelectorStrategyParams.value.splice(actualIndex, 1)
+  persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
+  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
 }
 
 const closeResourceTypeDrawer = async () => {
@@ -446,6 +513,14 @@ const closeResourceTypeDrawer = async () => {
   persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
   persistenceSelectorStrategyParams.value = []
   errors.value = {}
+  storageStrategyParamsObjects.value = []
+  persistenceSelectorStrategyParamsObjects.value = []
+  storageStrategyParamsPage.value = 1
+  persistenceSelectorStrategyParamsPage.value = 1
+  storageStrategyParamsPageSize.value = 3
+  persistenceSelectorStrategyParamsPageSize.value = 3
+  storageStrategyParamsTotal.value = 0
+  persistenceSelectorStrategyParamsTotal.value = 0
   closeParameterDrawer()
   await store.closeResourceTypeDrawer()
 }
@@ -490,7 +565,6 @@ const saveResourceType = async () => {
     } else {
       snackbar.showSnackBar({ msg: 'An error occurred while saving the Resource Type. Please try again.', error: true })
     }
-
   } catch (e) {
     console.error('Error saving Resource Type:', e)
     snackbar.showSnackBar({ msg: 'An error occurred while saving the Resource Type. Please try again.', error: true })
@@ -531,6 +605,8 @@ const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy',
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
       storageStrategyParams.value.push({ key, value })
     }
+    storageStrategyParamsTotal.value = storageStrategyParams.value.length
+    storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
   }
   if (type === 'persistenceSelectorStrategy') {
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Edit && resourceTypeDrawerState.value.persistenceSelectorStrategyIndex > -1) {
@@ -539,6 +615,8 @@ const saveParameters = (type: 'storageStrategy' | 'persistenceSelectorStrategy',
     if (resourceTypeDrawerState.value.isEditMode === CreateEditMode.Create) {
       persistenceSelectorStrategyParams.value.push({ key, value })
     }
+    persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
+    persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
   }
   closeParameterDrawer()
 }
@@ -600,6 +678,10 @@ const loadResourceTypeData = () => {
       })
     }
   }
+  storageStrategyParamsTotal.value = storageStrategyParams.value.length
+  persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
+  storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
+  persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
 }
 
 const loadResourceTypeParameterData = () => {
@@ -609,7 +691,8 @@ const loadResourceTypeParameterData = () => {
       key.value = parameter.key
       value.value = parameter.value
     }
-  } else if (resourceTypeDrawerState.value.type === 'persistenceSelectorStrategy' && resourceTypeDrawerState.value.persistenceSelectorStrategyObject) {
+  } 
+  if (resourceTypeDrawerState.value.type === 'persistenceSelectorStrategy' && resourceTypeDrawerState.value.persistenceSelectorStrategyObject) {
     const parameter = resourceTypeDrawerState.value.persistenceSelectorStrategyObject
     if (parameter) {
       key.value = parameter.key
@@ -658,6 +741,14 @@ watch(
       persistenceSelectorStrategy.value = undefined as unknown as IAutocompleteItemType
       persistenceSelectorStrategyParams.value = []
       errors.value = {}
+      storageStrategyParamsObjects.value = []
+      persistenceSelectorStrategyParamsObjects.value = []
+      storageStrategyParamsPage.value = 1
+      persistenceSelectorStrategyParamsPage.value = 1
+      storageStrategyParamsPageSize.value = 3
+      persistenceSelectorStrategyParamsPageSize.value = 3
+      storageStrategyParamsTotal.value = 0
+      persistenceSelectorStrategyParamsTotal.value = 0
     }
   },
   { immediate: true }

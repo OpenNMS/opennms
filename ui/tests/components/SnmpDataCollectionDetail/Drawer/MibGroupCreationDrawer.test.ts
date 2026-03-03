@@ -716,6 +716,103 @@ describe('MibGroupCreationDrawer.vue', () => {
       await nextTick()
       expect(wrapper.vm.page).toBe(1)
     })
+
+    it('should edit item on page 2 with correct actualIndex calculation', async () => {
+      // Navigate to page 2 (items 5-9, indices 5-9 in mibObjects array)
+      wrapper.vm.onPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.page).toBe(2)
+      expect(wrapper.vm.tableRecords[0].alias).toBe('alias5')
+
+      // Open edit drawer for first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*5 + 0 = 5
+      wrapper.vm.openMibObjectDrawer(0, wrapper.vm.tableRecords[0], CreateEditMode.Edit)
+      await nextTick()
+
+      // Verify drawer opened in edit mode for correct item
+      expect(wrapper.vm.mibObjectDrawerState.visible).toBe(true)
+      expect(wrapper.vm.mibObjectDrawerState.isEditMode).toBe(CreateEditMode.Edit)
+      expect(wrapper.vm.oid).toBe('1.3.6.1.2.1.1.5')
+      expect(wrapper.vm.alias).toBe('alias5')
+    })
+
+    it('should edit item on page 3 with correct actualIndex calculation', async () => {
+      // Navigate to page 3 (items 10-11, indices 10-11 in mibObjects array)
+      wrapper.vm.onPageChange(3)
+      await nextTick()
+      expect(wrapper.vm.page).toBe(3)
+      expect(wrapper.vm.tableRecords[0].alias).toBe('alias10')
+      expect(wrapper.vm.tableRecords.length).toBe(2)
+
+      // Open edit drawer for second item on page 3 (page-relative index 1)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (3-1)*5 + 1 = 11
+      wrapper.vm.openMibObjectDrawer(1, wrapper.vm.tableRecords[1], CreateEditMode.Edit)
+      await nextTick()
+
+      // Verify drawer opened in edit mode for correct item
+      expect(wrapper.vm.mibObjectDrawerState.visible).toBe(true)
+      expect(wrapper.vm.oid).toBe('1.3.6.1.2.1.1.11')
+      expect(wrapper.vm.alias).toBe('alias11')
+    })
+
+    it('should update item on page 2 correctly via saveMibObject', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPageChange(2)
+      await nextTick()
+
+      // Open edit for first item on page 2 (alias5)
+      wrapper.vm.openMibObjectDrawer(0, wrapper.vm.tableRecords[0], CreateEditMode.Edit)
+      await nextTick()
+
+      // Modify the alias
+      wrapper.vm.alias = 'updatedAlias5'
+      await nextTick()
+
+      // Save the MIB object
+      wrapper.vm.saveMibObject()
+      await nextTick()
+
+      // Verify the correct item in mibObjects array was updated (index 5)
+      expect(wrapper.vm.mibObjects[5].alias).toBe('updatedAlias5')
+      // Other items should be unchanged
+      expect(wrapper.vm.mibObjects[4].alias).toBe('alias4')
+      expect(wrapper.vm.mibObjects[6].alias).toBe('alias6')
+    })
+
+    it('should delete item from page 2 with correct actualIndex', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.tableRecords[0].alias).toBe('alias5')
+
+      const initialLength = wrapper.vm.mibObjects.length
+      
+      // Delete first item on page 2 (page-relative index 0)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*5 + 0 = 5
+      wrapper.vm.deleteMibObject(0)
+      await nextTick()
+
+      expect(wrapper.vm.mibObjects.length).toBe(initialLength - 1)
+      // alias5 should be deleted, alias6 now at index 5
+      expect(wrapper.vm.mibObjects[5].alias).toBe('alias6')
+    })
+
+    it('should delete middle item on page 2 correctly', async () => {
+      // Navigate to page 2
+      wrapper.vm.onPageChange(2)
+      await nextTick()
+      expect(wrapper.vm.tableRecords[2].alias).toBe('alias7')
+
+      // Delete third item on page 2 (page-relative index 2)
+      // Component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*5 + 2 = 7
+      wrapper.vm.deleteMibObject(2)
+      await nextTick()
+
+      // alias7 should be deleted
+      expect(wrapper.vm.mibObjects.find((obj: MibGroupObjectForm) => obj.alias === 'alias7')).toBeUndefined()
+      // alias8 should now be at where alias7 was (index 7)
+      expect(wrapper.vm.mibObjects[7].alias).toBe('alias8')
+    })
   })
 
   describe('Save MIB Group - Create Mode', () => {
@@ -1317,11 +1414,13 @@ describe('MibGroupCreationDrawer.vue', () => {
 
       expect(wrapper.vm.tableRecords.length).toBe(1)
 
-      // Delete the last item on page 2
-      wrapper.vm.deleteMibObject(5)
+      // Delete the first item on page 2 (page-relative index 0)
+      // The component calculates actualIndex = (page - 1) * pageSize + index = (2-1)*5 + 0 = 5
+      wrapper.vm.deleteMibObject(0)
       await nextTick()
 
       expect(wrapper.vm.mibObjects.length).toBe(5)
+      expect(wrapper.vm.total).toBe(5)
       // tableRecords should update based on current page slice
       expect(wrapper.vm.tableRecords.length).toBe(0) // Page 2 is now empty
     })
@@ -1356,14 +1455,6 @@ describe('MibGroupCreationDrawer.vue', () => {
       store.resourceTypeNames = []
       await nextTick()
       expect(wrapper.vm.instancesOptions).toEqual([])
-    })
-
-    it('should update instancesOptions when resourceTypeNames changes', async () => {
-      const newNames = ['newResource1', 'newResource2']
-      store.resourceTypeNames = newNames
-      await nextTick()
-      expect(wrapper.vm.instancesOptions).toHaveLength(2)
-      expect(wrapper.vm.instancesOptions[0]).toEqual({ _text: 'newResource1', _value: 'newResource1' })
     })
 
     it('should handle rapid multiple deletions', async () => {

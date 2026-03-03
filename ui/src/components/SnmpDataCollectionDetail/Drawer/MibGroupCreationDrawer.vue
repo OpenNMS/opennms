@@ -312,15 +312,18 @@ const closeMibGroupDrawer = async () => {
 }
 
 const deleteMibObject = (index: number) => {
-  mibObjects.value.splice(index, 1)
+  const actualIndex = (page.value - 1) * pageSize.value + index
+  mibObjects.value.splice(actualIndex, 1)
+  total.value = mibObjects.value.length
   tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 
 const openMibObjectDrawer = (index: number, mibObject: MibGroupObjectForm | null, isEditMode: CreateEditMode) => {
+  const actualIndex = isEditMode === CreateEditMode.Edit ? (page.value - 1) * pageSize.value + index : index
   mibObjectDrawerState.value = {
     visible: true,
     isEditMode: isEditMode,
-    mibObjectIndex: index,
+    mibObjectIndex: actualIndex,
     mibObject: mibObject
   }
 }
