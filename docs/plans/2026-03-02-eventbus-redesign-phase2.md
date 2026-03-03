@@ -26,7 +26,10 @@ Vacuumd is wired via the legacy JMX singleton wrapper (`Vacuumd.getInstance()`) 
 ### 4. NorthbounderManager dual-path pattern (Window C insight)
 `NorthbounderManager.handleReloadEvent(IEvent)` was refactored to extract an `onReloadDaemonConfig(String)` method. Both the legacy IEvent path and the new MessageBus path share the same NBI reload logic without creating synthetic events. This is the recommended pattern for any component that must support both paths during transition.
 
-### 5. Alarmd forwards ALL reloadDaemonConfig to NorthbounderManager
+### 5. Smoke test runs both core and standalone Alarmd simultaneously
+The AlarmdExtractionIT smoke test intentionally runs both the core's built-in Alarmd and the standalone Alarmd container. This validates the Kafka pipeline works across process boundaries without requiring a core overlay to disable Alarmd. **Follow-up required:** Add a `service-configuration.xml` overlay to the core container that disables Alarmd (`enabled="false"`), proving full independence where only the standalone container handles alarm creation.
+
+### 6. Alarmd forwards ALL reloadDaemonConfig to NorthbounderManager
 Unlike other daemons that filter `reloadDaemonConfig` on their own name, Alarmd forwards all reload messages to `NorthbounderManager`, which matches against individual NBI names internally. Drools reload only triggers when `daemonName` is specifically `"alarmd"`. The MessageBus subscription in Alarmd must NOT filter on daemon name.
 
 ---
