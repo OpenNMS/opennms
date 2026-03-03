@@ -67,18 +67,18 @@ FROM
 			outage_counter
 	FROM
 		(SELECT
-			events.nodeid,
+			events_archive.node_id AS nodeid,
 			outages.iflostservice,
 			outages.ifregainedservice
 		FROM
-			outages, service, events, ifservices
+			outages, service, events_archive, ifservices
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
 			ifservices.id = outages.ifserviceid AND
 			ifservices.serviceid = service.serviceId AND
 			service.servicename = 'ICMP' AND
-			outages.svclosteventid = events.eventid AND
-			events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND
+			outages.svclosteventid = events_archive.event_tsid AND
+			events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown' AND
 			outages.perspective IS NULL)
 		AS
 			outages_scope

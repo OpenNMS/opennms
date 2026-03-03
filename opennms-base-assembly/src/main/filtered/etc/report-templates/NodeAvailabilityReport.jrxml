@@ -118,9 +118,9 @@ FROM
        FROM
         outages
       JOIN
-        events
+        events_archive
       ON
-        events.eventid = outages.svclosteventid
+        events_archive.event_tsid = outages.svclosteventid
       JOIN
 	ifservices
       ON
@@ -130,7 +130,7 @@ FROM
       ON
         ifservices.ipinterfaceid = ipinterface.id
       WHERE
-         events.eventuei = 'uei.opennms.org/nodes/nodeDown'
+         events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown'
          AND greatest('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE,outages.iflostservice) < least(('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL), outages.ifregainedservice)
          AND (iflostservice, COALESCE(ifregainedservice,'$P!{DS_END_TIME_STRING}'::TIMESTAMP WITH TIME ZONE)) OVERLAPS ('$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE, '$P!{DS_START_TIME_STRING}'::TIMESTAMP WITH TIME ZONE + '$P!{DS_TIME_RANGE}'::INTERVAL) AND
          outages.perspective IS NULL)
