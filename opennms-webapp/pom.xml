@@ -975,6 +975,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.event-store</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.daemon</artifactId>
       <scope>test</scope>
     </dependency>
