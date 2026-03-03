@@ -32,6 +32,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -55,10 +58,17 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class PollerEventProcessor implements EventListener {
+final class PollerEventProcessor implements EventListener, MessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(PollerEventProcessor.class);
 
+    private static final String MSG_TYPE_SUSPEND_POLLING = "suspendPollingService";
+    private static final String MSG_TYPE_RESUME_POLLING = "resumePollingService";
+    private static final String MSG_TYPE_SCHEDOUTAGES_CHANGED = "schedOutagesChanged";
+    private static final String MSG_TYPE_THRESHOLDCONFIG_CHANGED = "thresholdConfigChange";
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
     private final Poller m_poller;
+    private final MessageBus m_messageBus;
 
     /**
      * Create message selector to set to the subscription
@@ -140,18 +150,6 @@ final class PollerEventProcessor implements EventListener {
         // interfaceDeleted
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
 
-        // suspendPollingService
-        ueiList.add(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI);
-
-        // resumePollingService
-        ueiList.add(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
-
-        // scheduled outage configuration change
-        ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-
-        // update threshold configuration
-        ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
-
         // asset information updated
         ueiList.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
 
@@ -161,11 +159,22 @@ final class PollerEventProcessor implements EventListener {
         // node location change
         ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
 
-        // for reloading poller configuration and re-scheduling pollers
-        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
-
-        // Subscribe to eventd
+        // Subscribe to eventd for domain events
         getEventManager().addEventListener(this, ueiList);
+
+        // Subscribe to MessageBus for IPC coordination events
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(List.of(
+                    MSG_TYPE_SUSPEND_POLLING,
+                    MSG_TYPE_RESUME_POLLING,
+                    MSG_TYPE_SCHEDOUTAGES_CHANGED,
+                    MSG_TYPE_THRESHOLDCONFIG_CHANGED,
+                    MSG_TYPE_RELOAD_DAEMON_CONFIG
+            ), this);
+            LOG.info("PollerEventProcessor subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — PollerEventProcessor will not receive IPC events via MessageBus");
+        }
     }
 
     /**
@@ -501,8 +510,8 @@ final class PollerEventProcessor implements EventListener {
      * 
      */
     PollerEventProcessor(Poller poller) {
-
         m_poller = poller;
+        m_messageBus = poller.getMessageBus();
 
         createMessageSelectorAndSubscribe();
 
@@ -510,10 +519,13 @@ final class PollerEventProcessor implements EventListener {
     }
 
     /**
-     * Unsubscribe from eventd
+     * Unsubscribe from eventd and MessageBus
      */
     public void close() {
         getEventManager().removeEventListener(this);
+        if (m_messageBus != null) {
+            m_messageBus.unsubscribe(this);
+        }
     }
 
     private EventIpcManager getEventManager() {
@@ -536,16 +548,7 @@ final class PollerEventProcessor implements EventListener {
         // print out the uei
         LOG.debug("PollerEventProcessor: received event, uei = {}", event.getUei());
 
-        if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-            LOG.info("Reloading poller config factory and polloutages config factory");
-
-            scheduledOutagesChangeHandler();
-
-        } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI))  {
-            LOG.info("Reloading poller configuration in pollerd");
-
-            reloadConfigHandler(event);
-        } else if(!event.hasNodeid()) {
+        if(!event.hasNodeid()) {
             // For all other events, if the event doesn't have a nodeId it can't be processed.
 
             LOG.info("PollerEventProcessor: no database node id found, discarding event");
@@ -555,20 +558,6 @@ final class PollerEventProcessor implements EventListener {
                 LOG.info("PollerEventProcessor: no interface found, discarding event");
             } else {
                 nodeGainedServiceHandler(event);
-            }
-        } else if (event.getUei().equals(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI)) {
-            // If there is no interface then it cannot be processed
-            if (event.getInterface() == null) {
-                LOG.info("PollerEventProcessor: no interface found, cannot resume polling service, discarding event");
-            } else {
-                nodeGainedServiceHandler(event);
-            }
-        } else if (event.getUei().equals(EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI)) {
-            // If there is no interface then it cannot be processed
-            if (event.getInterface() == null) {
-                LOG.info("PollerEventProcessor: no interface found, cannot suspend polling service, discarding event");
-            } else {
-                nodeRemovePollableServiceHandler(event);
             }
         } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // If there is no interface then it cannot be processed
@@ -619,6 +608,100 @@ final class PollerEventProcessor implements EventListener {
 
     } // end onEvent()
 
+    // --- MessageHandler interface ---
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("PollerEventProcessor: received IPC message, type={}", message.getType());
+        switch (message.getType()) {
+            case MSG_TYPE_SUSPEND_POLLING:
+                handleSuspendPolling(message);
+                break;
+            case MSG_TYPE_RESUME_POLLING:
+                handleResumePolling(message);
+                break;
+            case MSG_TYPE_SCHEDOUTAGES_CHANGED:
+                LOG.info("Reloading poller config factory and polloutages config factory");
+                scheduledOutagesChangeHandler();
+                break;
+            case MSG_TYPE_THRESHOLDCONFIG_CHANGED:
+                LOG.info("Threshold configuration changed notification received");
+                break;
+            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
+                handleReloadDaemonConfig(message);
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
+        }
+    }
+
+    private void handleSuspendPolling(IpcMessage message) {
+        Long nodeId = message.getNodeId();
+        String ipAddr = message.getInterfaceAddress();
+        String svcName = message.getParameter("service");
+        if (nodeId == null || ipAddr == null || svcName == null) {
+            LOG.warn("suspendPollingService: missing required parameters (nodeId={}, interface={}, service={})",
+                    nodeId, ipAddr, svcName);
+            return;
+        }
+        PollableService svc = getNetwork().getService(nodeId.intValue(), addr(ipAddr), svcName);
+        if (svc != null) {
+            svc.delete();
+        }
+    }
+
+    private void handleResumePolling(IpcMessage message) {
+        Long nodeId = message.getNodeId();
+        String ipAddr = message.getInterfaceAddress();
+        String svcName = message.getParameter("service");
+        if (nodeId == null || ipAddr == null || svcName == null) {
+            LOG.warn("resumePollingService: missing required parameters (nodeId={}, interface={}, service={})",
+                    nodeId, ipAddr, svcName);
+            return;
+        }
+        String nodeLabel = message.getParameter("nodeLabel");
+        try {
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+        }
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName, pnode);
+    }
+
+    private void handleReloadDaemonConfig(IpcMessage message) {
+        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+        if (!"Pollerd".equalsIgnoreCase(targetDaemon)) {
+            return;
+        }
+        LOG.info("handleReloadDaemonConfig: reloading poller configuration");
+        final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+        EventBuilder ebldr = null;
+        try {
+            getPollerConfig().update();
+            rescheduleAllServices();
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Pollerd");
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Pollerd");
+            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+        } catch (Throwable e) {
+            LOG.error("handleReloadDaemonConfig: Error reloading/processing poller configuration: {}", e.getMessage(), e);
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Pollerd");
+            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Pollerd");
+            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+            ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+        } finally {
+            if (ebldr != null) {
+                getEventManager().sendNow(ebldr.getEvent());
+            }
+        }
+    }
+
     private void serviceReschedule(IEvent event, boolean rescheduleExisting)   {
         final Long nodeId = event.getNodeid();
 
@@ -666,6 +749,28 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
+    private void rescheduleAllServices() {
+        LOG.info("Poller configuration has been changed (via IPC), rescheduling services.");
+        getPollerConfig().rebuildPackageIpListMap();
+        for (Long nodeId : getNetwork().getNodeIds()) {
+            String nodeLabel = null;
+            try {
+                nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+            }
+
+            String nodeLocation = null;
+            try {
+                nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+            }
+
+            serviceReschedule(nodeId, nodeLabel, nodeLocation, null, true);
+        }
+    }
+
     private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation,
                                    IEvent sourceEvent, boolean rescheduleExisting) {
         if (nodeId == null || nodeId <= 0) {
@@ -673,7 +778,7 @@ final class PollerEventProcessor implements EventListener {
             return;
         }
 
-        Date closeDate = sourceEvent.getTime();
+        Date closeDate = sourceEvent != null ? sourceEvent.getTime() : new Date();
 
         final Set<Service> databaseServices = new HashSet<>();
 
@@ -767,7 +872,8 @@ final class PollerEventProcessor implements EventListener {
 
     protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate,
                                           final Service polledService) {
-        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
+        int eventId = event != null ? event.getDbid() : 0;
+        getPoller().getQueryManager().closeOutagesForService(closeDate, eventId, nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
     private void scheduledOutagesChangeHandler() {

@@ -22,6 +22,7 @@
   </build>
 
   <modules>
+    <module>alarmd</module>
     <module>minion</module>
     <module>sentinel</module>
     <module>version</module>

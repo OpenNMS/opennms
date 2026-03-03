@@ -1,0 +1,58 @@
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
+  <id>alarmd</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <!-- Karaf runtime from sentinel container (base for alarmd) -->
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/container-alarmd/sentinel-${project.version}</directory>
+      <outputDirectory>alarmd-${project.version}</outputDirectory>
+    </fileSet>
+    <!-- Base assembly scripts -->
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/base-assembly</directory>
+      <outputDirectory>alarmd-${project.version}</outputDirectory>
+      <includes>
+        <include>bin/ensure-user-ping.sh</include>
+        <include>bin/fix-permissions</include>
+        <include>bin/update-package-permissions</include>
+        <include>bin/support_pack.sh</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.service</source>
+      <outputDirectory>alarmd-${project.version}/etc</outputDirectory>
+      <destName>alarmd.service</destName>
+      <fileMode>0644</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.init</source>
+      <outputDirectory>alarmd-${project.version}/etc</outputDirectory>
+      <destName>alarmd.init</destName>
+      <fileMode>0755</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.conf</source>
+      <outputDirectory>alarmd-${project.version}/etc</outputDirectory>
+      <destName>alarmd.conf</destName>
+      <fileMode>0640</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>alarmd-${project.version}/debian</outputDirectory>
+      <destName>copyright</destName>
+    </file>
+  </files>
+</assembly>

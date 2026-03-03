@@ -27,14 +27,13 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +47,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-@EventListener(name=Discovery.DAEMON_NAME, logPrefix=Discovery.LOG4J_CATEGORY)
-public class Discovery extends AbstractServiceDaemon {
+public class Discovery extends AbstractServiceDaemon implements MessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
 
     protected static final String DAEMON_NAME = "Discovery";
 
     protected static final String LOG4J_CATEGORY = "discovery";
+
+    /** MessageBus type derived from uei.opennms.org/internal/discoveryConfigChange */
+    private static final String MSG_TYPE_CONFIG_CHANGED = "discoveryConfigChange";
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_CONFIG = "reloadDaemonConfig";
+
+    /** MessageBus type derived from uei.opennms.org/internal/capsd/discResume */
+    private static final String MSG_TYPE_DISC_RESUME = "capsd/discResume";
+
+    /** MessageBus type derived from uei.opennms.org/internal/capsd/discPause */
+    private static final String MSG_TYPE_DISC_PAUSE = "capsd/discPause";
 
     @Autowired
     private DiscoveryConfigFactory m_discoveryFactory;
@@ -66,6 +76,9 @@ public class Discovery extends AbstractServiceDaemon {
     @Autowired
     @Qualifier("eventIpcManager")
     private EventForwarder m_eventForwarder;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     private Timer discoveryTimer;
 
@@ -93,6 +106,18 @@ public class Discovery extends AbstractServiceDaemon {
         } catch (Throwable e) {
             LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
+        }
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(List.of(
+                    MSG_TYPE_CONFIG_CHANGED,
+                    MSG_TYPE_RELOAD_CONFIG,
+                    MSG_TYPE_DISC_RESUME,
+                    MSG_TYPE_DISC_PAUSE
+            ), this);
+            LOG.info("Discovery subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Discovery will not receive IPC events via MessageBus");
         }
     }
 
@@ -152,82 +177,61 @@ public class Discovery extends AbstractServiceDaemon {
         onStart();
     }
 
-    /**
-     * <p>handleDiscoveryConfigurationChanged</p>
-     *
-     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
-     */
-    @EventHandler(uei = EventConstants.DISCOVERYCONFIG_CHANGED_EVENT_UEI)
-    public void handleDiscoveryConfigurationChanged(IEvent event) {
+    // --- MessageHandler interface ---
+    // getName() is already defined by AbstractServiceDaemon and satisfies MessageHandler
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        switch (message.getType()) {
+            case MSG_TYPE_CONFIG_CHANGED:
+                handleDiscoveryConfigurationChanged();
+                break;
+            case MSG_TYPE_RELOAD_CONFIG:
+                handleReloadDaemonConfig(message);
+                break;
+            case MSG_TYPE_DISC_RESUME:
+                resume();
+                break;
+            case MSG_TYPE_DISC_PAUSE:
+                pause();
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
+        }
+    }
+
+    private void handleDiscoveryConfigurationChanged() {
         LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
         reloadAndReStart();
+    }
+
+    private void handleReloadDaemonConfig(IpcMessage message) {
+        LOG.info("reloadDaemonConfig: processing reload daemon event...");
+        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+        if (DAEMON_NAME.equalsIgnoreCase(targetDaemon)) {
+            reloadAndReStart();
+        }
+        LOG.info("reloadDaemonConfig: reload daemon event processed.");
     }
 
     private void reloadAndReStart() {
         EventBuilder ebldr = null;
         try {
             m_discoveryFactory.reload();
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             this.stop();
             this.start();
         } catch (IOException e) {
             LOG.error("Unable to initialize the discovery configuration factory", e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
+            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, DAEMON_NAME);
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         }
+        // Outgoing success/failure events still go through EventForwarder for full
+        // pipeline processing (TSID assignment, routing, local broadcast to non-migrated daemons)
         m_eventForwarder.sendNow(ebldr.getEvent());
-    }
-
-    /**
-     * <p>reloadDaemonConfig</p>
-     *
-     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
-     */
-    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void reloadDaemonConfig(IEvent e) {
-        LOG.info("reloadDaemonConfig: processing reload daemon event...");
-        if (isReloadConfigEventTarget(e)) {
-            reloadAndReStart();
-        }
-        LOG.info("reloadDaemonConfig: reload daemon event processed.");
-    }
-    
-    private boolean isReloadConfigEventTarget(IEvent event) {
-        boolean isTarget = false;
-        
-        final List<IParm> parmCollection = event.getParmCollection();
-
-        for (final IParm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && DAEMON_NAME.equalsIgnoreCase(parm.getValue().getContent())) {
-                isTarget = true;
-                break;
-            }
-        }
-        
-        LOG.debug("isReloadConfigEventTarget: discovery was target of reload event: {}", isTarget);
-        return isTarget;
-    }
-
-    /**
-     * <p>handleDiscoveryResume</p>
-     *
-     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
-     */
-    @EventHandler(uei=EventConstants.DISC_RESUME_EVENT_UEI)
-    public void handleDiscoveryResume(IEvent event) {
-        resume();
-    }
-
-    /**
-     * <p>handleDiscoveryPause</p>
-     *
-     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
-     */
-    @EventHandler(uei=EventConstants.DISC_PAUSE_EVENT_UEI)
-    public void handleDiscoveryPause(IEvent event) {
-        pause();
     }
 
     public static String getLoggingCategory() {
@@ -244,5 +248,9 @@ public class Discovery extends AbstractServiceDaemon {
 
     public void setDiscoveryTaskExecutor(DiscoveryTaskExecutor discoveryTaskExecutor) {
         m_discoveryTaskExecutor = discoveryTaskExecutor;
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 }

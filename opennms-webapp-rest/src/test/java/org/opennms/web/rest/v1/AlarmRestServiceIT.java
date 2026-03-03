@@ -265,7 +265,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setLastEventTime(event.getEventTime());
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setAlarmAckTime(new Date());
         alarm.setAlarmAckUser("admin");
 

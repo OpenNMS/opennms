@@ -120,10 +120,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         final CriteriaBuilder builder = new CriteriaBuilder(getDaoClass(), Aliases.alarm.toString());
 
-        builder.fetch("lastEvent", FetchType.EAGER);
-
         // 1st level JOINs
-        builder.alias("lastEvent", "lastEvent", JoinType.LEFT_JOIN);
         builder.alias("distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
         builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
         builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
@@ -166,7 +163,7 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
         // 1st level JOINs
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.distPoller, CriteriaBehaviors.DIST_POLLER_BEHAVIORS));
-        map.putAll(CriteriaBehaviors.withAliasPrefix("lastEvent", CriteriaBehaviors.EVENT_BEHAVIORS));
+        // lastEvent association removed — event data is denormalized on alarm
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.node, CriteriaBehaviors.NODE_BEHAVIORS));
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.serviceType, CriteriaBehaviors.SERVICE_TYPE_BEHAVIORS));
 

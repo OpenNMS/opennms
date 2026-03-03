@@ -167,7 +167,7 @@
 
 	<trigger name="selectNewRisingAlarms" operator="&gt;=" row-count="1" >
       <statement>
-          SELECT a.alarmid as _id,e.eventseverity AS _sev,
+          SELECT a.alarmid as _id, a.event_severity AS _sev,
                  a.severity as _severity,
                  a.eventuei as _eventuei,
                  a.nodeid as _nodeid,
@@ -180,8 +180,6 @@
                  n.nodelabel as _nodelabel,
                  now() as _ts
             FROM alarms a
-         JOIN events e
-            ON e.eventid = a.lasteventid
          LEFT OUTER JOIN service s
             ON s.serviceid = a.serviceid
          JOIN node n on n.nodeid = a.nodeid
@@ -318,10 +316,8 @@
     <!-- This finds problems that have reoccurred since the previoius clear -->
     <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
+        SELECT a.alarmid AS _id, a.event_severity AS _sev, now() AS _ts
           FROM alarms a
-          JOIN events e
-            ON e.eventid = a.lasteventid
          WHERE severity = 2
            AND alarmtype = 1
            AND a.lasteventtime > a.lastautomationtime

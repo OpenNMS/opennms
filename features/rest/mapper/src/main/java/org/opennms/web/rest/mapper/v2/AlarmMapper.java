@@ -118,7 +118,7 @@ public abstract class AlarmMapper {
         @Mapping(source = "severity", target = "severity"),
         @Mapping(source = "reductionKey", target = "reductionKey"),
         @Mapping(source = "description", target = "description"),
-        @Mapping(source = "lastEvent.eventUei", target = "uei"),
+        @Mapping(source = "eventUei", target = "uei"),
         @Mapping(source = "nodeLabel", target = "nodeLabel"),
         @Mapping(source = "logMsg", target = "logMessage"),
     })
@@ -137,7 +137,7 @@ public abstract class AlarmMapper {
 
     @AfterMapping
     protected void mapEventLabel(@MappingTarget AlarmSummaryDTO summaryDTO) {
-        //there are cases when lasteventid in alarms is null, making api/v2/alarms throw a null pointer exception
+        //there are cases when eventUei in alarms is null
         if(summaryDTO.getUei() != null) {
             summaryDTO.setLabel(eventConfDao.getEventLabel(summaryDTO.getUei()));
         }

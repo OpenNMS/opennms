@@ -59,7 +59,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.hibernate.ObjectNotFoundException;
+
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
@@ -169,9 +169,16 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /** nullable persistent field */
     private String m_clearKey;
 
-    /** persistent field */
-    private OnmsEvent m_lastEvent;
-    
+    /** denormalized event fields (replacing m_lastEvent FK) */
+    private Long m_eventTsid;
+    private String m_eventUei;
+    private String m_eventSource;
+    private Integer m_eventSeverity;
+    private Date m_eventTimestamp;
+    private Long m_eventNodeId;
+    private String m_eventLogMsg;
+    private String m_lastEventData;
+
     /** persistent field */
     private String m_managedObjectInstance;
     
@@ -220,14 +227,13 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @param firsteventtime a {@link java.util.Date} object.
      * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
      */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
         this.m_counter = counter;
         this.m_severity = OnmsSeverity.get(severity);
         this.m_firstEventTime = firsteventtime;
-        this.m_lastEvent = event;
     }
 
     /**
@@ -764,47 +770,56 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         this.m_clearKey = clearKey;
     }
 
-    /**
-     * <p>getLastEvent</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    @ManyToOne(fetch=FetchType.LAZY, optional=true)
-    @JoinColumn(name="lastEventId")
-    @XmlElement(name="lastEvent")
-    public OnmsEvent getLastEvent() {
-        return this.m_lastEvent;
-    }
+    @Column(name="event_tsid")
+    public Long getEventTsid() { return m_eventTsid; }
+    public void setEventTsid(Long eventTsid) { m_eventTsid = eventTsid; }
 
-    /**
-     * <p>setLastEvent</p>
-     *
-     * @param event a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    public void setLastEvent(OnmsEvent event) {
-        this.m_lastEvent = event;
-        if (event!=null) {
-            try {
-                this.m_lastEventTime = event.getEventTime(); // alarm can be saved with no associated event
-            } catch (final ObjectNotFoundException e) {
-                // ignore errors getting this event from the DB
-            }
-        }
-    }
+    @Column(name="event_uei", length=256)
+    public String getEventUei() { return m_eventUei; }
+    public void setEventUei(String eventUei) { m_eventUei = eventUei; }
+
+    @Column(name="event_source", length=256)
+    public String getEventSource() { return m_eventSource; }
+    public void setEventSource(String eventSource) { m_eventSource = eventSource; }
+
+    @Column(name="event_severity")
+    public Integer getEventSeverity() { return m_eventSeverity; }
+    public void setEventSeverity(Integer eventSeverity) { m_eventSeverity = eventSeverity; }
+
+    @Column(name="event_timestamp")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getEventTimestamp() { return m_eventTimestamp; }
+    public void setEventTimestamp(Date eventTimestamp) { m_eventTimestamp = eventTimestamp; }
+
+    @Column(name="event_node_id")
+    public Long getEventNodeId() { return m_eventNodeId; }
+    public void setEventNodeId(Long eventNodeId) { m_eventNodeId = eventNodeId; }
+
+    @Column(name="event_log_msg")
+    public String getEventLogMsg() { return m_eventLogMsg; }
+    public void setEventLogMsg(String eventLogMsg) { m_eventLogMsg = eventLogMsg; }
+
+    @Column(name="last_event_data", columnDefinition="TEXT")
+    public String getLastEventData() { return m_lastEventData; }
+    public void setLastEventData(String lastEventData) { m_lastEventData = lastEventData; }
 
     @Transient
     @XmlElementWrapper(name="parameters")
     @XmlElement(name="parameter")
     public List<OnmsEventParameter> getEventParameters() {
-        return m_lastEvent != null ? m_lastEvent.getEventParameters() : null;
+        return null;
     }
 
     public Optional<OnmsEventParameter> findEventParameter(final String name) {
-        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny();
+        List<OnmsEventParameter> params = this.getEventParameters();
+        if (params == null) return Optional.empty();
+        return params.stream().filter(p -> Objects.equals(name, p.getName())).findAny();
     }
 
     public String getEventParameter(final String name) {
-        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny().map(OnmsEventParameter::getValue).orElse(null);
+        List<OnmsEventParameter> params = this.getEventParameters();
+        if (params == null) return null;
+        return params.stream().filter(p -> Objects.equals(name, p.getName())).findAny().map(OnmsEventParameter::getValue).orElse(null);
     }
 
     /**

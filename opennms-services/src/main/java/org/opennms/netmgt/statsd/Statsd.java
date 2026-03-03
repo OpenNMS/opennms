@@ -23,18 +23,17 @@ package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -56,12 +55,14 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-@EventListener(name="OpenNMS:Statsd", logPrefix="statsd")
-public class Statsd implements SpringServiceDaemon {
-    
+public class Statsd implements SpringServiceDaemon, MessageHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(Statsd.class);
 
     private static final String LOG4J_CATEGORY = "statsd";
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -81,60 +82,59 @@ public class Statsd implements SpringServiceDaemon {
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
     private volatile EventForwarder m_eventForwarder;
-    
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
+
     private long m_reportsStarted = 0;
     private long m_reportsCompleted = 0;
     private long m_reportsPersisted = 0;
     private long m_reportRunTime = 0;
 
-    /**
-     * <p>handleReloadConfigEvent</p>
-     *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
-     */
-    @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(IEvent e) {
-        
-        if (isReloadConfigEventTarget(e)) {
-            LOG.info("handleReloadConfigEvent: reloading configuration...");
-            EventBuilder ebldr = null;
+    // --- MessageHandler interface ---
 
-            LOG.debug("handleReloadConfigEvent: acquiring lock...");
-            synchronized (m_scheduler) {
-                try {
-                    LOG.debug("handleReloadConfigEvent: lock acquired, unscheduling current reports...");
-                    unscheduleReports();
-                    m_reportDefinitionBuilder.reload();
-                    LOG.debug("handleReloadConfigEvent: config remarshaled, unscheduling current reports...");
-                    LOG.debug("handleReloadConfigEvent: reports unscheduled, rescheduling...");
-                    start();
-                    LOG.debug("handleRelodConfigEvent: reports rescheduled.");
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                } catch (Throwable exception) {
-                    LOG.error("handleReloadConfigurationEvent: Error reloading configuration", exception);
-                    ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
-                    ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-                }
-                if (ebldr != null) {
-                    getEventForwarder().sendNow(ebldr.getEvent());
-                }
-            }
-            LOG.debug("handleReloadConfigEvent: lock released.");
-        }
-        
+    @Override
+    public String getName() {
+        return "Statsd";
     }
-    
-    private boolean isReloadConfigEventTarget(IEvent event) {
-        boolean isTarget = false;
-        
-        if ("Statsd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
-            isTarget = true;
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if ("Statsd".equalsIgnoreCase(daemonName)) {
+                handleReloadConfig();
+            }
         }
-        
-        LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: {}", isTarget);
-        return isTarget;
+    }
+
+    private void handleReloadConfig() {
+        LOG.info("handleReloadConfig: reloading configuration...");
+        EventBuilder ebldr = null;
+
+        LOG.debug("handleReloadConfig: acquiring lock...");
+        synchronized (m_scheduler) {
+            try {
+                LOG.debug("handleReloadConfig: lock acquired, unscheduling current reports...");
+                unscheduleReports();
+                m_reportDefinitionBuilder.reload();
+                LOG.debug("handleReloadConfig: config remarshaled, rescheduling...");
+                start();
+                LOG.debug("handleReloadConfig: reports rescheduled.");
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+            } catch (Throwable exception) {
+                LOG.error("handleReloadConfig: Error reloading configuration", exception);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Statsd");
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Statsd");
+                ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
+            }
+            if (ebldr != null) {
+                getEventForwarder().sendNow(ebldr.getEvent());
+            }
+        }
+        LOG.debug("handleReloadConfig: lock released.");
     }
 
     /*
@@ -177,19 +177,19 @@ public class Statsd implements SpringServiceDaemon {
      * @throws java.lang.Exception if any.
      */
     public void unscheduleReports() throws Exception {
-        
+
         synchronized (m_scheduler) {
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
                 m_scheduler.deleteJob(new JobKey(reportDef.getDescription(), Scheduler.DEFAULT_GROUP));
             }
         }
     }
-    
+
     private void scheduleReport(ReportDefinition reportDef) throws ClassNotFoundException, NoSuchMethodException, ParseException, SchedulerException, Exception {
-        
+
         //this is most likely reentrant since the method is private and called from start via plural version.
         synchronized (m_scheduler) {
-            
+
             MethodInvokingJobDetailFactoryBean jobFactory = new MethodInvokingJobDetailFactoryBean();
             jobFactory.setTargetObject(this);
             jobFactory.setTargetMethod("runReport");
@@ -198,16 +198,16 @@ public class Statsd implements SpringServiceDaemon {
             jobFactory.setBeanName(reportDef.getDescription());
             jobFactory.afterPropertiesSet();
             JobDetail jobDetail = (JobDetail) jobFactory.getObject();
-            
+
             CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
             cronReportTrigger.setBeanName(reportDef.getDescription());
             cronReportTrigger.setJobDetail(jobDetail);
             cronReportTrigger.setCronExpression(reportDef.getCronExpression());
             cronReportTrigger.afterPropertiesSet();
-            
+
             m_scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
             LOG.debug("Schedule report {}", cronReportTrigger);
-            
+
         }
     }
 
@@ -225,8 +225,7 @@ public class Statsd implements SpringServiceDaemon {
             LOG.error("Could not create a report instance for report definition {}", reportDef, t);
             throw t;
         }
-        
-        // FIXME What if the walker or the persister throws an exception ?
+
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
@@ -236,7 +235,7 @@ public class Statsd implements SpringServiceDaemon {
                 report.walk();
                 LOG.debug("Completed report {}", report);
                 accountReportComplete();
-                
+
                 m_reportPersister.persist(report);
                 LOG.debug("Report {} persisted", report);
                 accountReportPersist();
@@ -245,7 +244,7 @@ public class Statsd implements SpringServiceDaemon {
         });
     }
 
-    
+
     /**
      * <p>afterPropertiesSet</p>
      *
@@ -262,6 +261,13 @@ public class Statsd implements SpringServiceDaemon {
         Assert.state(m_scheduler != null, "property scheduler must be set to a non-null value");
         Assert.state(m_reportDefinitionBuilder != null, "property reportDefinitionBuilder must be set to a non-null value");
         Assert.state(m_eventForwarder != null, "eventForwarder property must be set to a non-null value");
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("Statsd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Statsd will not receive IPC events via MessageBus");
+        }
     }
 
     /**
@@ -380,7 +386,7 @@ public class Statsd implements SpringServiceDaemon {
 
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
-    } 
+    }
 
     private synchronized void accountReportStart() {
         m_reportsStarted++;
@@ -412,5 +418,9 @@ public class Statsd implements SpringServiceDaemon {
 
     public long getReportRunTime() {
         return m_reportRunTime;
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 }

@@ -116,7 +116,9 @@ public class DefaultAlarmService implements AlarmService {
             return;
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
-        alarmInTrans.setSeverity(OnmsSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
+        alarmInTrans.setSeverity(alarmInTrans.getEventSeverity() != null
+                ? OnmsSeverity.get(alarmInTrans.getEventSeverity())
+                : OnmsSeverity.INDETERMINATE);
         updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);

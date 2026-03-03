@@ -446,15 +446,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private void eagerlyInitializeAlarm(OnmsAlarm alarm) {
         // Initialize any related objects that are needed for rule execution
         Hibernate.initialize(alarm.getAssociatedAlarms());
-        if (alarm.getLastEvent() != null) {
-            // The last event may be null in unit tests
-            try {
-                Hibernate.initialize(alarm.getLastEvent().getEventParameters());
-            } catch (ObjectNotFoundException ex) {
-                // This may be triggered if the event attached to the alarm entity is already gone
-                alarm.setLastEvent(null);
-            }
-        }
         if (alarm.getNode() != null) {
             // Allow rules to use the categories on the associated node
             Hibernate.initialize(alarm.getNode().getCategories());

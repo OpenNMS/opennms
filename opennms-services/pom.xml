@@ -82,6 +82,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
       <scope>test</scope>
       <classifier>xsds</classifier>
@@ -100,6 +105,11 @@
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

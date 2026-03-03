@@ -318,7 +318,9 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm1.setUei(event.getEventUei());
         alarm1.setSeverityId(event.getEventSeverity());
         alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEvent(event);
+        alarm1.setLastEventTime(event.getEventTime());
+        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm1.setEventUei(event.getEventUei());
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -329,7 +331,9 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm2.setUei(event.getEventUei());
         alarm2.setSeverityId(event.getEventSeverity());
         alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEvent(event);
+        alarm2.setLastEventTime(event.getEventTime());
+        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm2.setEventUei(event.getEventUei());
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -379,7 +383,9 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm1.setUei(event.getEventUei());
         alarm1.setSeverityId(event.getEventSeverity());
         alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEvent(event);
+        alarm1.setLastEventTime(event.getEventTime());
+        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm1.setEventUei(event.getEventUei());
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -390,7 +396,9 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm2.setUei(event.getEventUei());
         alarm2.setSeverityId(event.getEventSeverity());
         alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEvent(event);
+        alarm2.setLastEventTime(event.getEventTime());
+        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm2.setEventUei(event.getEventUei());
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -402,7 +410,9 @@ public class AlarmRepositoryIT implements InitializingBean {
         alarm3.setUei(event.getEventUei());
         alarm3.setSeverityId(event.getEventSeverity());
         alarm3.setFirstEventTime(event.getEventTime());
-        alarm3.setLastEvent(event);
+        alarm3.setLastEventTime(event.getEventTime());
+        alarm3.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm3.setEventUei(event.getEventUei());
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
         alarm3.setRelatedAlarms(Sets.newHashSet(alarm2));

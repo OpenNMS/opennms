@@ -778,7 +778,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEventTime(event.getEventTime());
-        alarm.setLastEvent(event);
+        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
+        alarm.setEventUei(event.getEventUei());
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName(ICMP_SERVICE));
         alarm.setReductionKey(getReductionKey(eventUei, node, alarmNode.getIpAddressAsString(), ICMP_SERVICE));
         alarm.setIfIndex(alarmNode.getIfIndex());

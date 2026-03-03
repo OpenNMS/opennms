@@ -66,7 +66,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
 	private Event getXMLEvent(OnmsAlarm alarm) {
         Event event = new Event();
         
-        event.setDbid(alarm.getLastEvent().getId());
+        event.setDbid(alarm.getEventTsid());
 
         //UEI
         if (alarm.getUei() != null ) {
@@ -76,9 +76,9 @@ public class AlarmEventSynchronization implements EventSynchronization {
         }
 
         // Source
-        if (alarm.getLastEvent().getEventSource() != null ) {
-            event.setSource(alarm.getLastEvent().getEventSource());
-        } 
+        if (alarm.getEventSource() != null ) {
+            event.setSource(alarm.getEventSource());
+        }
 
         //nodeid
         if (alarm.getNode() != null) {
@@ -96,11 +96,6 @@ public class AlarmEventSynchronization implements EventSynchronization {
         // last event timestamp
         if (alarm.getLastEventTime() != null) {
             event.setTime(alarm.getLastEventTime());
-        }
-        
-        // host
-        if (alarm.getLastEvent().getEventHost() != null) {
-            event.setHost(alarm.getLastEvent().getEventHost());
         }
         
         // interface

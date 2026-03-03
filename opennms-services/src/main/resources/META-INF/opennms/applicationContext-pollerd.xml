@@ -34,10 +34,14 @@
         <constructor-arg ref="pollContext" />
     </bean>
 
+    <!-- MessageBus for IPC events (injected via OSGi, optional) -->
+    <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus" availability="optional"/>
+
     <bean name="daemon" class="org.opennms.netmgt.poller.Poller">
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
+      <property name="messageBus" ref="messageBus"/>
     </bean>
     
 </beans>

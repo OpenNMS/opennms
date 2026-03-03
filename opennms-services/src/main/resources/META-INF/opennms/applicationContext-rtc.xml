@@ -38,12 +38,7 @@
 
   <bean id="availabilityServiceHibernateImpl" class="org.opennms.netmgt.rtc.AvailabilityServiceHibernateImpl"/>
 
-  <!-- This EventListener listens for subscribe and unsubscribe events -->
-  <bean id="dataSenderListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener" ref="dataSender" />
-    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
-  </bean>
-
+  <!-- DataSender now uses MessageBus for RTC subscribe/unsubscribe IPC -->
   <bean name="dataSender" class="org.opennms.netmgt.rtc.DataSender">
     <!-- LEGACY IMPLEMENTATION: <constructor-arg ref="dataManager"/> -->
     <constructor-arg ref="availabilityServiceHibernateImpl"/>

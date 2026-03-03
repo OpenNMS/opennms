@@ -31,16 +31,15 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.sysprops.SystemProperties;
-import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.telemetry.api.TelemetryManager;
 import org.opennms.netmgt.telemetry.api.receiver.GracefulShutdownListener;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
-import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -63,13 +62,15 @@ import org.springframework.context.ApplicationContext;
  *
  * @author jwhite
  */
-@EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
-public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
+public class Telemetryd implements SpringServiceDaemon, TelemetryManager, MessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
 
     public static final String NAME = "Telemetryd";
 
     public static final String LOG_PREFIX = "telemetryd";
+
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     @Autowired
     private TelemetrydConfigDao telemetrydConfigDao;
@@ -88,6 +89,9 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
 
     @Autowired
     private ConnectorManager connectorManager;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -265,7 +269,12 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
 
     @Override
     public void afterPropertiesSet() {
-        // pass
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("Telemetryd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Telemetryd will not receive IPC events via MessageBus");
+        }
     }
 
     private synchronized void handleConfigurationChanged() {
@@ -277,9 +286,22 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
         }
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
+    // --- MessageHandler interface ---
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if (NAME.equalsIgnoreCase(daemonName)) {
+                handleConfigurationChanged();
+            }
+        }
     }
 
     @Override

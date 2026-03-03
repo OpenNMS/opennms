@@ -43,8 +43,10 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.bsm.service.model.graph.internal.GraphAlgorithms;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -76,7 +78,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author jwhite
  */
 @EventListener(name=Bsmd.NAME, logPrefix="bsmd")
-public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHandler, AlarmLifecycleListener {
+public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHandler, AlarmLifecycleListener, MessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(Bsmd.class);
 
     protected static final long DEFAULT_POLL_INTERVAL = 30; // seconds
@@ -87,9 +89,15 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     public static final long RELOAD_DELAY = 1000;
 
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
     @Autowired
     @Qualifier("eventIpcManager")
     private EventIpcManager m_eventIpcManager;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     @Autowired
     private EventConfDao m_eventConfDao;
@@ -131,6 +139,13 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
         LOG.info("Initializing bsmd...");
         m_stateMachine.addHandler(this, null);
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("Bsmd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Bsmd will not receive IPC events via MessageBus");
+        }
     }
 
     @Override
@@ -355,9 +370,22 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             });
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, Bsmd.NAME, (event) -> handleConfigurationChanged());
+    // --- MessageHandler interface ---
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if (NAME.equalsIgnoreCase(daemonName)) {
+                handleConfigurationChanged();
+            }
+        }
     }
 
     @Override

@@ -42,15 +42,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.events.api.model.IParm;
-import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
@@ -58,19 +56,24 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The DataSender is responsible to send data out to 'listeners'
- * 
+ *
  * When the RTCManager's timers go off, the DataSender is prompted to send data,
  * which it does by maintaining a 'SendRequest' runnable queue so as to not
  * block the RTCManager.
- * 
+ *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
-@EventListener(name="RTC:DataSender", logPrefix="rtc")
-public class DataSender implements Fiber {
+public class DataSender implements Fiber, MessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSender.class);
+
+    /** MessageBus type derived from uei.opennms.org/internal/rtc/subscribe */
+    private static final String MSG_TYPE_RTC_SUBSCRIBE = "rtc/subscribe";
+
+    /** MessageBus type derived from uei.opennms.org/internal/rtc/unsubscribe */
+    private static final String MSG_TYPE_RTC_UNSUBSCRIBE = "rtc/unsubscribe";
 
     /**
      * The listeners like the WebUI that send a URL to which the data is to be
@@ -100,6 +103,9 @@ public class DataSender implements Fiber {
     private int m_status;
 
 	private final AvailabilityService m_dataMgr;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     /**
      * Inner class to send data to all the categories - this runnable prevents
@@ -140,11 +146,18 @@ public class DataSender implements Fiber {
     }
 
     /**
-     * Start the data sender thread pool
+     * Start the data sender thread pool and subscribe to MessageBus for IPC events
      */
     @Override
     public synchronized void start() {
         m_status = RUNNING;
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(List.of(MSG_TYPE_RTC_SUBSCRIBE, MSG_TYPE_RTC_UNSUBSCRIBE), this);
+            LOG.info("DataSender subscribed to MessageBus for RTC IPC events");
+        } else {
+            LOG.warn("MessageBus not available — DataSender will not receive IPC events via MessageBus");
+        }
     }
 
     /**
@@ -185,6 +198,48 @@ public class DataSender implements Fiber {
     @Override
     public int getStatus() {
         return m_status;
+    }
+
+    // --- MessageHandler interface ---
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        switch (message.getType()) {
+            case MSG_TYPE_RTC_SUBSCRIBE:
+                handleRtcSubscribe(message);
+                break;
+            case MSG_TYPE_RTC_UNSUBSCRIBE:
+                handleRtcUnsubscribe(message);
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
+        }
+    }
+
+    private void handleRtcSubscribe(IpcMessage message) {
+        String url = message.getParameter("url");
+        String clabel = message.getParameter("catLabel");
+        String user = message.getParameter("user");
+        String passwd = message.getParameter("passwd");
+
+        if (url == null || clabel == null || user == null || passwd == null) {
+            LOG.warn("rtc/subscribe did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", url, clabel, user, passwd);
+        } else {
+            subscribe(url, clabel, user, passwd);
+            LOG.debug("rtc/subscribe subscribed {}: {}: {}", url, clabel, user);
+        }
+    }
+
+    private void handleRtcUnsubscribe(IpcMessage message) {
+        String url = message.getParameter("url");
+
+        if (url == null) {
+            LOG.warn("rtc/unsubscribe did not have required information. Value of url: {}", url);
+        } else {
+            unsubscribe(url);
+            LOG.debug("rtc/unsubscribe unsubscribed {}", url);
+        }
     }
 
     /**
@@ -401,104 +456,7 @@ public class DataSender implements Fiber {
         }
     }
 
-    /**
-     * Inform the data sender of the new listener
-     */
-    @EventHandler(uei=EventConstants.RTC_SUBSCRIBE_EVENT_UEI)
-    public void handleRtcSubscribe(IEvent event) {
-
-        List<IParm> list = event.getParmCollection();
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
-            return;
-        }
-
-        String url = null;
-        String clabel = null;
-        String user = null;
-        String passwd = null;
-
-        String parmName = null;
-        IValue parmValue = null;
-        String parmContent = null;
-
-        for (IParm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_CAT_LABEL)) {
-                clabel = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_USER)) {
-                user = parmContent;
-            }
-
-            else if (parmName.equals(EventConstants.PARM_PASSWD)) {
-                passwd = parmContent;
-            }
-
-        }
-
-        // check that we got all required parms
-        if (url == null || clabel == null || user == null || passwd == null) {
-            LOG.warn("{} did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", event.getUei(), url, clabel, user, passwd);
-
-        } else {
-            subscribe(url, clabel, user, passwd);
-
-            LOG.debug("{} subscribed {}: {}: {}", event.getUei(), url, clabel, user);
-
-        }
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
-
-    /**
-     * Inform the data sender of the listener unsubscribing
-     */
-    @EventHandler(uei=EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI)
-    public void handleRtcUnsubscribe(IEvent event) {
-
-        List<IParm> list = event.getParmCollection();
-        if (list == null) {
-            LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
-            return;
-        }
-
-        String url = null;
-
-        String parmName = null;
-        IValue parmValue = null;
-        String parmContent = null;
-
-        for (IParm parm : list) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null)
-                continue;
-            else
-                parmContent = parmValue.getContent();
-
-            if (parmName.equals(EventConstants.PARM_URL)) {
-                url = parmContent;
-            }
-        }
-
-        // check that we got the required parameter
-        if (url == null) {
-            LOG.warn("{} did not have required information.  Value of url: {}", event.getUei(), url);
-        } else {
-            unsubscribe(url);
-
-            LOG.debug("{} unsubscribed {}", event.getUei(), url);
-        }
-    }
-
 }
