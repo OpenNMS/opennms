@@ -21,16 +21,23 @@
  */
 package org.opennms.netmgt.rtc;
 
+import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.poller.DefaultPollContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -38,8 +45,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * BroadcastEventProcessor is responsible for receiving events from eventd and
- * queuing them to the data updaters.
- * 
+ * MessageBus, and queuing them to the data updaters for RTC availability
+ * calculations.
+ *
+ * Outage events (outageCreated/outageResolved) arrive via MessageBus.
+ * All other events arrive via the traditional @EventHandler mechanism.
+ *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  */
@@ -48,9 +59,6 @@ public class BroadcastEventProcessor implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
 
-    /**
-     * The location where incoming events of interest are enqueued
-     */
     private ExecutorService m_updater;
 
     @Autowired
@@ -59,30 +67,44 @@ public class BroadcastEventProcessor implements InitializingBean {
     @Autowired
     private RTCConfigFactory m_configFactory;
 
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         m_updater = Executors.newFixedThreadPool(
             m_configFactory.getUpdaters(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), m_configFactory.getUpdaters())
         );
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(
+                    Arrays.asList(
+                            DefaultPollContext.MESSAGE_TYPE_OUTAGE_CREATED,
+                            DefaultPollContext.MESSAGE_TYPE_OUTAGE_RESOLVED
+                    ),
+                    new MessageHandler() {
+                        @Override
+                        public String getName() {
+                            return "RTC:BroadcastEventProcessor";
+                        }
+
+                        @Override
+                        public void onMessage(IpcMessage message) {
+                            handleOutageMessage(message);
+                        }
+                    }
+            );
+            LOG.info("Subscribed to MessageBus for outage events");
+        }
     }
 
     @EventHandler(ueis={
-        // add the outageCreated event
-        EventConstants.OUTAGE_CREATED_EVENT_UEI,
-        // add the outageResolved event
-        EventConstants.OUTAGE_RESOLVED_EVENT_UEI,
-        // add the nodeGainedService event
         EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
-        // add the nodeCategoryMembershipChanged event
         EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI,
-        // add the interfaceUp event
         EventConstants.SERVICE_DELETED_EVENT_UEI,
-        // add the serviceDeleted event
         EventConstants.SERVICE_UNMANAGED_EVENT_UEI,
-        // add the interfaceReparented event
         EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
-        // add the asset info changed event
         EventConstants.ASSET_INFO_CHANGED_EVENT_UEI
     })
     public void onEvent(IEvent event) {
@@ -93,7 +115,6 @@ public class BroadcastEventProcessor implements InitializingBean {
         LOG.debug("About to start processing recd. event");
 
         try {
-
             String uei = event.getUei();
             if (uei == null) {
                 return;
@@ -105,12 +126,40 @@ public class BroadcastEventProcessor implements InitializingBean {
 
         } catch (RejectedExecutionException ex) {
             LOG.error("Failed to process event", ex);
-            return;
         } catch (Throwable t) {
             LOG.error("Failed to process event", t);
-            return;
         }
+    }
 
-    } // end onEvent()
+    private void handleOutageMessage(IpcMessage message) {
+        try {
+            Long nodeId = message.getNodeId();
+            String ipAddr = message.getInterfaceAddress();
+            String svcName = message.getParameter("service");
+            String eventTimeStr = message.getParameter("eventTime");
 
-} // end class
+            if (nodeId == null || ipAddr == null || svcName == null || eventTimeStr == null) {
+                LOG.warn("Outage message ignored - incomplete info: nodeId={}, ip={}, svc={}, time={}",
+                        nodeId, ipAddr, svcName, eventTimeStr);
+                return;
+            }
+
+            InetAddress ip = InetAddressUtils.addr(ipAddr);
+            long eventTime = Long.parseLong(eventTimeStr);
+            String messageType = message.getType();
+
+            if (DefaultPollContext.MESSAGE_TYPE_OUTAGE_CREATED.equals(messageType)) {
+                m_updater.execute(() -> m_dataManager.outageCreated(nodeId.intValue(), ip, svcName, eventTime));
+                LOG.debug("MessageBus outageCreated added to updater queue for node {}", nodeId);
+            } else if (DefaultPollContext.MESSAGE_TYPE_OUTAGE_RESOLVED.equals(messageType)) {
+                m_updater.execute(() -> m_dataManager.outageResolved(nodeId.intValue(), ip, svcName, eventTime));
+                LOG.debug("MessageBus outageResolved added to updater queue for node {}", nodeId);
+            }
+
+        } catch (RejectedExecutionException ex) {
+            LOG.error("Failed to process outage message", ex);
+        } catch (Throwable t) {
+            LOG.error("Failed to process outage message", t);
+        }
+    }
+}

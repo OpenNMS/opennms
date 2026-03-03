@@ -55,6 +55,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.core.messagebus.IpcMessage;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -528,12 +529,25 @@ public class MinionStatusTrackerTest {
 
     private CurrentOutageDetails generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
         final CurrentOutageDetails outage = createOutage(time, null, node, service);
-        final Event e = new EventBuilder(uei, "MinionStatusTrackerTest")
-                .setNodeid(node.getId())
-                .setService(service)
-                .setTime(time)
-                .getEvent();
-        m_tracker.onOutageEvent(ImmutableMapper.fromMutableEvent(e));
+
+        final String messageType;
+        if (EventConstants.OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
+            messageType = "poller/outageCreated";
+        } else if (EventConstants.OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
+            messageType = "poller/outageResolved";
+        } else {
+            throw new IllegalArgumentException("Unsupported UEI: " + uei);
+        }
+
+        Map<String, String> params = new HashMap<>();
+        params.put("service", service);
+        if (time != null) {
+            params.put("eventTime", String.valueOf(time.getTime()));
+        }
+        IpcMessage message = new IpcMessage(messageType, "MinionStatusTrackerTest",
+                time != null ? time.getTime() : System.currentTimeMillis(),
+                (long) node.getId(), null, params);
+        m_tracker.handleOutageMessage(message);
         return outage;
     }
 
