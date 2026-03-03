@@ -21,19 +21,20 @@
  */
 package org.opennms.web.rest.v1;
 
-import java.text.ParseException;
+import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -42,24 +43,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.opennms.core.criteria.Alias.JoinType;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.features.events.store.EventCriteria;
+import org.opennms.features.events.store.EventStore;
+import org.opennms.features.events.store.StoredEvent;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
-import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.mapper.v2.StoredEventMapper;
+import org.opennms.web.rest.model.v2.EventCollectionDTO;
+import org.opennms.web.rest.model.v2.EventDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component("eventRestService")
 @Path("events")
@@ -69,211 +69,95 @@ public class EventRestService extends OnmsRestService {
     private static final DateTimeFormatter ISO8601_FORMATTER_MILLIS = ISODateTimeFormat.dateTime();
     private static final DateTimeFormatter ISO8601_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final int DEFAULT_LIMIT = 10;
 
     @Autowired
-    private EventDao m_eventDao;
+    private EventStore m_eventStore;
+
+    @Autowired
+    private EventConfDao m_eventConfDao;
 
     @Autowired
     private EventIpcManager m_eventForwarder;
 
-    /**
-     * <p>
-     * getEvent
-     * </p>
-     * 
-     * @param eventId
-     *            a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
-    @Transactional
-    public OnmsEvent getEvent(@PathParam("eventId") final Long eventId) {
-        final OnmsEvent e = m_eventDao.get(eventId);
-        if (e == null) {
+    public EventDTO getEvent(@PathParam("eventId") final Long eventId) {
+        Optional<StoredEvent> event = m_eventStore.getByTsid(eventId);
+        if (event.isEmpty()) {
             throw getException(Status.NOT_FOUND, "Event object {} was not found.", Long.toString(eventId));
         }
-        return e;
+        return getMapper().toEventDTO(event.get());
     }
 
-    /**
-     * returns a plaintext string being the number of events
-     * 
-     * @return a {@link java.lang.String} object.
-     */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
-    @Transactional
     public String getCount() {
-        return Integer.toString(m_eventDao.countAll());
+        return Long.toString(m_eventStore.count(EventCriteria.builder().build()));
     }
 
-    /**
-     * Returns all the events which match the filter/query in the query
-     * parameters
-     * 
-     * @return Collection of OnmsEventCollection (ready to be XML-ified)
-     * @throws java.text.ParseException
-     *             if any.
-     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
-    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) throws ParseException {
-        final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
-        builder.orderBy("eventTime").asc();
+    public EventCollectionDTO getEvents(@Context final UriInfo uriInfo) {
+        EventCriteria criteria = buildCriteria(uriInfo.getQueryParameters(), EventCriteria.SortOrder.ASC);
 
-        final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-        coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
+        List<StoredEvent> events = m_eventStore.findByCriteria(criteria);
+        long totalCount = m_eventStore.count(criteria);
 
-        return coll;
+        StoredEventMapper mapper = getMapper();
+        List<EventDTO> dtos = events.stream()
+                .map(mapper::toEventDTO)
+                .collect(Collectors.toList());
+
+        EventCollectionDTO collection = new EventCollectionDTO(dtos);
+        collection.setTotalCount((int) totalCount);
+        return collection;
     }
 
-    /**
-     * Returns all the events which match the filter/query in the query
-     * parameters
-     * 
-     * @return Collection of OnmsEventCollection (ready to be XML-ified)
-     * @throws java.text.ParseException
-     *             if any.
-     */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
-    @Transactional
-    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) throws ParseException {
-        final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
+    public EventCollectionDTO getEventsBetween(@Context final UriInfo uriInfo) {
+        MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
-        final String column;
-        if (params.containsKey("column")) {
-            column = params.getFirst("column");
-            params.remove("column");
-        } else {
-            column = "eventTime";
-        }
-        Date begin;
+        Instant begin;
         if (params.containsKey("begin")) {
-            try {
-                begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
-            } catch (final Throwable t1) {
-                try {
-                    begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
-                } catch (final Throwable t2) {
-                    throw getException(Status.BAD_REQUEST, "Can't parse start date");
-                }
-            }
-            params.remove("begin");
+            begin = parseDate(params.getFirst("begin")).toInstant();
         } else {
-            begin = new Date(0);
+            begin = Instant.EPOCH;
         }
-        Date end;
+
+        Instant end;
         if (params.containsKey("end")) {
-            try {
-                end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
-            } catch (final Throwable t1) {
-                try {
-                    end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
-                } catch (final Throwable t2) {
-                    throw getException(Status.BAD_REQUEST, "Can't parse end date");
-                }
-            }
-            params.remove("end");
+            end = parseDate(params.getFirst("end")).toInstant();
         } else {
-            end = new Date();
+            end = Instant.now();
         }
 
-        final CriteriaBuilder builder = getCriteriaBuilder(params);
-        builder.match("all");
-        try {
-            builder.between(column, begin, end);
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, "Unable to parse " + begin + " and " + end + " as dates!");
-        }
+        EventCriteria.Builder builder = EventCriteria.builder()
+                .afterTime(begin)
+                .beforeTime(end);
 
-        final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
-        coll.setTotalCount(m_eventDao.countMatching(builder.count().toCriteria()));
+        applyCommonParams(builder, params);
 
-        return coll;
-    }
+        EventCriteria criteria = builder.build();
+        List<StoredEvent> events = m_eventStore.findByCriteria(criteria);
+        long totalCount = m_eventStore.count(criteria);
 
-    /**
-     * Updates the event with id "eventid" If the "ack" parameter is "true",
-     * then acks the events as the current logged in user, otherwise unacks
-     * the events
-     * 
-     * @param eventId
-     *            a {@link java.lang.Integer} object.
-     * @param ack
-     *            a {@link java.lang.Boolean} object.
-     */
-    @PUT
-    @Path("{eventId}")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
-    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Long eventId, @FormParam("ack") final Boolean ack) {
-        writeLock();
+        StoredEventMapper mapper = getMapper();
+        List<EventDTO> dtos = events.stream()
+                .map(mapper::toEventDTO)
+                .collect(Collectors.toList());
 
-        try {
-            final OnmsEvent event = getEvent(eventId);
-            if (ack == null) {
-                throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
-            }
-            processEventAck(securityContext, event, ack);
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    /**
-     * Updates all the events that match any filter/query supplied in the
-     * form. If the "ack" parameter is "true", then acks the events as the
-     * current logged in user, otherwise unacks the events
-     * 
-     * @param formProperties
-     *            Map of the parameters passed in by form encoding
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Transactional
-    public Response updateEvents(@Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
-        writeLock();
-
-        try {
-            Boolean ack = false;
-            if (formProperties.containsKey("ack")) {
-                ack = "true".equals(formProperties.getFirst("ack"));
-                formProperties.remove("ack");
-            }
-
-            final CriteriaBuilder builder = getCriteriaBuilder(formProperties);
-            builder.orderBy("eventTime").desc();
-
-            for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
-                processEventAck(securityContext, event, ack);
-            }
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    private void processEventAck(final SecurityContext securityContext, final OnmsEvent event, final Boolean ack) {
-        if (ack) {
-            event.setEventAckTime(new Date());
-            event.setEventAckUser(securityContext.getUserPrincipal().getName());
-        } else {
-            event.setEventAckTime(null);
-            event.setEventAckUser(null);
-        }
-        m_eventDao.save(event);
+        EventCollectionDTO collection = new EventCollectionDTO(dtos);
+        collection.setTotalCount((int) totalCount);
+        return collection;
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @Transactional
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
         if (event.getSource() == null) {
             event.setSource("ReST");
@@ -300,17 +184,51 @@ public class EventRestService extends OnmsRestService {
         }
     }
 
-    private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsEvent.class);
-        builder.alias("node", "node", JoinType.LEFT_JOIN);
-        builder.alias("node.snmpInterfaces", "snmpInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.ipInterfaces", "ipInterface", JoinType.LEFT_JOIN);
-        builder.alias("node.location", "location", JoinType.LEFT_JOIN);
-        builder.alias("serviceType", "serviceType", JoinType.LEFT_JOIN);
+    private EventCriteria buildCriteria(MultivaluedMap<String, String> params, EventCriteria.SortOrder defaultSort) {
+        EventCriteria.Builder builder = EventCriteria.builder()
+                .sortOrder(defaultSort);
 
-        applyQueryFilters(params, builder);
-        return builder;
+        applyCommonParams(builder, params);
+
+        return builder.build();
     }
 
-}
+    private void applyCommonParams(EventCriteria.Builder builder, MultivaluedMap<String, String> params) {
+        if (params.containsKey("limit")) {
+            builder.limit(Integer.parseInt(params.getFirst("limit")));
+        } else {
+            builder.limit(DEFAULT_LIMIT);
+        }
+        if (params.containsKey("offset")) {
+            builder.offset(Integer.parseInt(params.getFirst("offset")));
+        }
+        if (params.containsKey("eventUei")) {
+            builder.uei(params.getFirst("eventUei"));
+        }
+        if (params.containsKey("node.id")) {
+            builder.nodeId(Long.parseLong(params.getFirst("node.id")));
+        }
+        if (params.containsKey("ipAddr")) {
+            builder.ipAddress(params.getFirst("ipAddr"));
+        }
+        if (params.containsKey("eventDisplay")) {
+            builder.eventDisplayFilter(params.getFirst("eventDisplay"));
+        }
+    }
 
+    private Date parseDate(String dateStr) {
+        try {
+            return ISO8601_FORMATTER.parseLocalDateTime(dateStr).toDate();
+        } catch (final Throwable t1) {
+            try {
+                return ISO8601_FORMATTER_MILLIS.parseDateTime(dateStr).toDate();
+            } catch (final Throwable t2) {
+                throw getException(Status.BAD_REQUEST, "Can't parse date: " + dateStr);
+            }
+        }
+    }
+
+    private StoredEventMapper getMapper() {
+        return new StoredEventMapper(m_eventConfDao);
+    }
+}
