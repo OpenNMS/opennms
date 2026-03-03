@@ -39,12 +39,12 @@ import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -60,10 +60,13 @@ import org.slf4j.LoggerFactory;
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  * @author <a href=mailto:dj@opennms.org>DJ Gregor</a>
  */
-public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventListener {
-    
+public class Vacuumd extends AbstractServiceDaemon implements Runnable, MessageHandler {
+
     private static final Logger LOG = LoggerFactory.getLogger(Vacuumd.class);
-    
+
+    private static final String MSG_TYPE_RELOAD_VACUUMD_CONFIG = "reloadVacuumdConfig";
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
     private static volatile Vacuumd m_singleton;
 
     private volatile Thread m_thread;
@@ -75,6 +78,8 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     private volatile LegacyScheduler m_scheduler;
 
     private volatile EventIpcManager m_eventMgr;
+
+    private volatile MessageBus m_messageBus;
 
     /**
      * <p>getSingleton</p>
@@ -115,8 +120,17 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         try {
             LOG.info("Loading the configuration file.");
             VacuumdConfigFactory.init();
-            getEventManager().addEventListener(this, EventConstants.RELOAD_VACUUMD_CONFIG_UEI);
-            getEventManager().addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+
+            // Subscribe to MessageBus for IPC coordination events
+            if (m_messageBus != null) {
+                m_messageBus.subscribe(List.of(
+                        MSG_TYPE_RELOAD_VACUUMD_CONFIG,
+                        MSG_TYPE_RELOAD_DAEMON_CONFIG
+                ), this);
+                LOG.info("Vacuumd subscribed to MessageBus for IPC events");
+            } else {
+                LOG.warn("MessageBus not available — Vacuumd will not receive IPC events via MessageBus");
+            }
 
             initializeDataSources();
         } catch (Throwable ex) {
@@ -157,6 +171,9 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
     @Override
     protected void onStop() {
         m_stopped = true;
+        if (m_messageBus != null) {
+            m_messageBus.unsubscribe(this);
+        }
         if (m_scheduler != null && m_scheduler.getStatus() == RUNNING) {
             m_scheduler.stop();
         }
@@ -344,81 +361,78 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
         m_eventMgr = eventMgr;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onEvent(IEvent event) {
+    public MessageBus getMessageBus() {
+        return m_messageBus;
+    }
 
-        if (isReloadConfigEvent(event)) {
-            handleReloadConifgEvent();
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
+    }
+
+    // --- MessageHandler interface ---
+    // getName() is provided by AbstractServiceDaemon
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Vacuumd received IPC message, type={}", message.getType());
+        switch (message.getType()) {
+            case MSG_TYPE_RELOAD_VACUUMD_CONFIG:
+                handleReloadConfig();
+                break;
+            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
+                String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+                if ("Vacuumd".equalsIgnoreCase(targetDaemon)) {
+                    handleReloadConfig();
+                }
+                break;
+            default:
+                LOG.warn("Unexpected IPC message type: {}", message.getType());
         }
     }
 
-    private void handleReloadConifgEvent() {
-        LOG.info("onEvent: reloading configuration...");
-        
+    private void handleReloadConfig() {
+        LOG.info("handleReloadConfig: reloading configuration...");
+
         EventBuilder ebldr = null;
-        
+
         try {
-            LOG.debug("onEvent: Number of elements in schedule:{}; calling stop on scheduler...", m_scheduler.getScheduled());
+            LOG.debug("handleReloadConfig: Number of elements in schedule:{}; calling stop on scheduler...", m_scheduler.getScheduled());
             stop();
             ExecutorService runner = m_scheduler.getRunner();
             while (!runner.isShutdown() || m_scheduler.getStatus() != STOPPED) {
-                LOG.debug("onEvent: waiting for scheduler to stop. Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
+                LOG.debug("handleReloadConfig: waiting for scheduler to stop. Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
                 Thread.sleep(500);
             }
-            LOG.debug("onEvent: Current status of scheduler: {}; Current status of runner: {}", m_scheduler.getStatus(), (runner.isTerminated() ? "TERMINATED" : (runner.isShutdown() ? "SHUTDOWN" : "RUNNING")));
-            LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
-            LOG.debug("onEvent: reloading vacuumd configuration.");
+            LOG.debug("handleReloadConfig: reloading vacuumd configuration.");
 
             VacuumdConfigFactory.reload();
-            LOG.debug("onEvent: creating new schedule and rescheduling automations.");
+            LOG.debug("handleReloadConfig: creating new schedule and rescheduling automations.");
 
             init();
-            LOG.debug("onEvent: restarting vacuumd and scheduler.");
+            LOG.debug("handleReloadConfig: restarting vacuumd and scheduler.");
 
             start();
-            LOG.debug("onEvent: Number of elements in schedule: {}", m_scheduler.getScheduled());
-            
+            LOG.debug("handleReloadConfig: Number of elements in schedule: {}", m_scheduler.getScheduled());
+
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
         } catch (IOException e) {
-            LOG.error("onEvent: IO problem reading vacuumd configuration", e);
+            LOG.error("handleReloadConfig: IO problem reading vacuumd configuration", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
         } catch (InterruptedException e) {
-            LOG.error("onEvent: Problem interrupting current Vacuumd Thread", e);
+            LOG.error("handleReloadConfig: Problem interrupting current Vacuumd Thread", e);
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Vacuumd");
             ebldr.addParam(EventConstants.PARM_REASON, e.getLocalizedMessage().substring(0, 128));
-		}
-        
-        LOG.info("onEvent: completed configuration reload.");
-        
+        }
+
+        LOG.info("handleReloadConfig: completed configuration reload.");
+
         if (ebldr != null) {
             m_eventMgr.sendNow(ebldr.getEvent());
         }
-    }
-
-    private boolean isReloadConfigEvent(IEvent event) {
-        boolean isTarget = false;
-        
-        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<IParm> parmCollection = event.getParmCollection();
-            
-            for (IParm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Vacuumd".equalsIgnoreCase(parm.getValue().getContent())) {
-                    isTarget = true;
-                    break;
-                }
-            }
-        
-        //Depreciating this one...
-        } else if (EventConstants.RELOAD_VACUUMD_CONFIG_UEI.equals(event.getUei())) {
-            isTarget = true;
-        }
-        
-        return isTarget;
     }
 
     /**
