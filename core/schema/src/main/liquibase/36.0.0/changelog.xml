@@ -55,4 +55,41 @@
         <sql>DROP SEQUENCE IF EXISTS eventsnxtid;</sql>
     </changeSet>
 
+    <changeSet id="36.0.0-create-events-archive" author="opennms">
+        <comment>Create events_archive table — materialized view of Kafka fault events for REST, UI, and reporting queries</comment>
+
+        <createTable tableName="events_archive">
+            <column name="event_tsid" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="event_uei" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_source" type="VARCHAR(256)"/>
+            <column name="event_severity" type="INTEGER"/>
+            <column name="event_time" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_id" type="BIGINT"/>
+            <column name="ip_addr" type="VARCHAR(64)"/>
+            <column name="service_name" type="VARCHAR(256)"/>
+            <column name="event_log_msg" type="TEXT"/>
+            <column name="event_descr" type="TEXT"/>
+            <column name="event_display" type="VARCHAR(1)" defaultValue="Y"/>
+            <column name="event_log" type="VARCHAR(1)" defaultValue="Y"/>
+            <column name="event_data" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()"/>
+        </createTable>
+
+        <createIndex tableName="events_archive" indexName="idx_events_archive_time">
+            <column name="event_time" descending="true"/>
+        </createIndex>
+        <createIndex tableName="events_archive" indexName="idx_events_archive_uei">
+            <column name="event_uei"/>
+        </createIndex>
+        <createIndex tableName="events_archive" indexName="idx_events_archive_node">
+            <column name="node_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
