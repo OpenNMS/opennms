@@ -12,6 +12,19 @@
 
 ---
 
+## Known Deviations (from execution)
+
+### 1. DefaultPollContext — OUTAGE_CREATED/OUTAGE_RESOLVED not migrated
+Pollerd's `DefaultPollContext` publishes `OUTAGE_CREATED` and `OUTAGE_RESOLVED` events that are consumed by a self-referential event correlation pattern for outage tracking. These events cannot simply move to the MessageBus without breaking outage state management. **Follow-up required:** Redesign the outage tracking correlation to work with MessageBus, or keep these two specific events on the EventIpcManager as a controlled exception.
+
+### 2. PerspectiveServiceTracker — uses @EventListener annotations
+The plan assumed `PerspectiveServiceTracker` uses direct `addEventListener()` calls, but it uses Spring `@EventListener` annotations instead. These are wired differently and cannot be mechanically replaced with `messageBus.subscribe()`. **Follow-up required:** Either migrate the `@EventListener` annotation handler to delegate to MessageBus, or create a MessageBus-to-Spring bridge that republishes IPC messages as Spring application events.
+
+### 3. Vacuumd — JMX singleton prevents MessageBus injection
+Vacuumd is wired via the legacy JMX singleton wrapper (`Vacuumd.getInstance()`) which has no Spring/OSGi context for dependency injection. The MessageBus field is null-guarded so Vacuumd falls back gracefully. **Follow-up required:** Either create a `MessageBusFactory` static accessor (similar to existing `EventIpcManagerFactory`), or refactor Vacuumd to be fully Spring-managed like the `SimpleSpringContextJmxServiceDaemon` pattern used by Alarmd and Bsmd.
+
+---
+
 ## Priority Order
 
 1. **Task 1:** ProtobufMapper integration (unblocks efficient Kafka serialization)
