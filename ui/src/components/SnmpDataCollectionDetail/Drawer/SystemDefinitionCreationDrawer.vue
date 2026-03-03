@@ -16,6 +16,17 @@
       <div class="drawer-content">
         <div class="spacer"></div>
         <div class="spacer"></div>
+        <div class="switch-row">
+          <SwitchRender
+            :checked="status"
+            @click="onChangeStatus"
+            data-test="system-def-status-input"
+          />
+          <label class="switch-label">{{ status ? 'Enabled' : 'Disabled' }}</label>
+        </div>
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <div class="label">General Details</div>
         <FeatherInput
           label="Name"
           v-model.trim="name"
@@ -48,6 +59,7 @@
         />
         <div class="spacer"></div>
         <div class="spacer"></div>
+        <div class="label">Mib Groups</div>
         <FeatherAutocomplete
           class="my-autocomplete"
           label="Mib Groups"
@@ -59,22 +71,6 @@
           data-test="system-def-mib-groups-input"
           :error="errors.mibGroupNames"
         ></FeatherAutocomplete>
-        <div class="spacer"></div>
-        <div class="spacer"></div>
-        <FeatherRadioGroup
-          :label="'Status'"
-          v-model="status"
-          data-test="system-def-status-input"
-          :error="errors.status"
-        >
-          <FeatherRadio
-            v-for="item in STATUS_OPTIONS"
-            :value="item.value"
-            :key="item.name"
-          >
-            {{ item.name }}
-          </FeatherRadio>
-        </FeatherRadioGroup>
       </div>
       <div class="spacer"></div>
       <div class="drawer-footer">
@@ -110,7 +106,8 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '../../../lib/constants'
+import { SwitchRender } from '@featherds/switch'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS } from '../../../lib/constants'
 
 const store = useSnmpDataCollectionDetailStore()
 const oidType = ref<string>(DEFAULT_OID_TYPE)
@@ -168,6 +165,10 @@ const validateDefinition = (): SystemDefErrors => {
     validationErrors['mibGroupNames'] = 'At least one MIB Group must be selected.'
   }
   return validationErrors
+}
+
+const onChangeStatus = () => {
+  status.value = !status.value
 }
 
 const search = (q: string) => {
@@ -256,6 +257,8 @@ watch(
 </script>
 
 <style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+
 .system-definition-drawer {
   .container {
     .drawer-header {
@@ -268,6 +271,22 @@ watch(
 
     .drawer-content {
       padding: 0 20px;
+
+      .label {
+        @include headline4;
+        margin-bottom: 0.5em;
+      }
+
+      .switch-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .switch-label {
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
     }
 
     .drawer-footer {

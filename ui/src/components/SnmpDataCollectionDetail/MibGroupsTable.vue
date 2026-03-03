@@ -184,6 +184,7 @@
       @close="closeDeleteMibGroupDialog"
       @confirm="deleteMibGroup"
     />
+    <MibGroupCreationDrawer />
   </div>
 </template>
 
@@ -209,6 +210,7 @@ import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 import { FeatherChip } from '@featherds/chips'
+import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
@@ -296,10 +298,6 @@ const deleteMibGroup = async (selected: { id: number; name: string } | null, typ
     })
   }
 }
-
-onMounted(async () => {
-  await store.fetchMibGroups()
-})
 </script>
 
 <style scoped lang="scss">

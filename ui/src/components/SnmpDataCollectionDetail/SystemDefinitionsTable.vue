@@ -289,10 +289,6 @@ const deleteSystemDef = async (selected: { id: number; name: string } | null, ty
     })
   }
 }
-
-onMounted(async () => {
-  await store.fetchSystemDefinitions()
-})
 </script>
 
 <style scoped lang="scss">

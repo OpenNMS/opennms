@@ -97,6 +97,11 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       try {
         const response = await getSnmpDataCollectionSourceById(Number(id))
         this.selectedCollectionSource = response
+        await this.fetchResourceTypes()
+        await this.fetchMibGroups()
+        await this.fetchSystemDefinitions()
+        await this.fetchResourceTypeNames()
+        await this.fetchMibGroupNames()
         this.isLoading = false
       } catch (error) {
         console.error('Error fetching SNMP collection source by ID:', id, error)
@@ -115,8 +120,6 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
             this.systemDefsSorting.sortKey,
             this.systemDefsSorting.sortOrder
           )
-          await this.fetchResourceTypeNames()
-          await this.fetchMibGroupNames()
           this.systemDefinitions = response.systemDefinitions
           this.systemDefsPagination.total = response.totalRecords
           this.isLoading = false
