@@ -51,6 +51,7 @@
               org.opennms.features.activemq.broker.api;resolution:=optional,
               org.opennms.features.activemq.broker.impl;resolution:=optional,
               org.opennms.features.scv.jceks;resolution:=optional,
+              org.opennms.core.messagebus;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
@@ -75,6 +76,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
