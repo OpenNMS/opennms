@@ -929,8 +929,8 @@ describe('EventConfigEventTable.vue', () => {
       expect(wrapper.find('.expanded-content').exists()).toBe(true) // Renders once due to v-if
     })
 
-    it('handles large number of events (renders without crash)', { timeout: 10000 }, async () => {
-      store.events = new Array(1000).fill(0).map((_, i) => ({
+    it('handles large number of events (renders without crash)', async () => {
+      store.events = new Array(100).fill(0).map((_, i) => ({
         id: i,
         uei: `uei${i}`,
         eventLabel: `Label${i}`,

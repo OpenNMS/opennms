@@ -5,7 +5,7 @@
   >
     <div class="header">
       <div class="title-container">
-        <div>
+        <div class="back">
           <FeatherBackButton
             data-test="back-button"
             @click="router.push({ name: 'SNMP Data Collection' })"
@@ -13,19 +13,43 @@
             Go Back
           </FeatherBackButton>
         </div>
-        <div>
-          <h1>Data Collection Source Details</h1>
+        <div class="title">
+          <h1>{{ capitalize(store.selectedCollectionSource.name) }} Source Details</h1>
+        </div>
+        <div class="tag">
+          <FeatherChip
+            v-if="store.selectedCollectionSource.enabled"
+            class="enabled-tag"
+            data-test="vendor-tag"
+          >
+            Enabled
+          </FeatherChip>
+          <FeatherChip
+            v-if="!store.selectedCollectionSource.enabled"
+            class="disabled-tag"
+            data-test="vendor-tag"
+          >
+            Disabled
+          </FeatherChip>
         </div>
       </div>
       <div class="action-container">
         <FeatherButton
+          v-if="!store.selectedCollectionSource.enabled"
           primary
-          data-test="enable-disable-source"
+          data-test="enable-source"
         >
-          {{ store.selectedCollectionSource.enabled ? 'Disable Source' : 'Enable Source' }}
+          Enable Source
         </FeatherButton>
         <FeatherButton
-          primary
+          v-if="store.selectedCollectionSource.enabled"
+          secondary
+          data-test="disable-source"
+        >
+          Disable Source
+        </FeatherButton>
+        <FeatherButton
+          secondary
           data-test="delete-source"
           @click="openDeleteCollectionSourceDialog(store.selectedCollectionSource)"
         >
@@ -33,66 +57,62 @@
         </FeatherButton>
       </div>
     </div>
-    <div
-      class="config-details-box"
-      data-test="config-box"
-    >
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">Source:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.name }}</span>
+    <TableCard class="content">
+      <div
+        class="config-details-box"
+        data-test="config-box"
+      >
+        <div class="header">Source Details</div>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="field-label">Source:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.name }}</span>
+          </div>
+          <div class="config-field">
+            <span class="field-label">Uploaded By:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.uploadedBy }}</span>
+          </div>
+          <div class="config-field">
+            <span class="field-label">Creation Date:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.createdTime &&
+              format(store.selectedCollectionSource.createdTime, 'MM/dd/yyyy') }}</span>
+          </div>
         </div>
-        <div class="config-field">
-          <span class="field-label">Uploaded By:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.uploadedBy }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Creation Date:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.createdTime &&
-            format(store.selectedCollectionSource.createdTime, 'MM/dd/yyyy') }}</span>
-        </div>
-      </div>
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">Vendor:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.vendor }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Status:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.enabled ? 'Enabled' : 'Disabled' }}</span>
-        </div>
-        <div class="config-field">
-          <span class="field-label">Last Modified Date:</span>
-          <span class="field-value">{{ store.selectedCollectionSource.lastModified &&
-            format(store.selectedCollectionSource.lastModified, 'MM/dd/yyyy') }}</span>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="field-label">Vendor:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.vendor }}</span>
+          </div>
+          <div class="config-field">
+            <span class="field-label">Status:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.enabled ? 'Enabled' : 'Disabled' }}</span>
+          </div>
+          <div class="config-field">
+            <span class="field-label">Last Modified Date:</span>
+            <span class="field-value">{{ store.selectedCollectionSource.lastModified &&
+              format(store.selectedCollectionSource.lastModified, 'MM/dd/yyyy') }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
-        <SystemDefinitionsTable />
+      <div class="tab-container">
+        <FeatherTabContainer v-model="store.activeTab">
+          <template v-slot:tabs>
+            <FeatherTab>Resource Types</FeatherTab>
+            <FeatherTab>MIB Groups</FeatherTab>
+            <FeatherTab>System Definitions</FeatherTab>
+          </template>
+          <FeatherTabPanel>
+            <ResourceTypesTable />
+          </FeatherTabPanel>
+          <FeatherTabPanel>
+            <MibGroupsTable />
+          </FeatherTabPanel>
+          <FeatherTabPanel>
+            <SystemDefinitionsTable />
+          </FeatherTabPanel>
+        </FeatherTabContainer>
       </div>
-    </Transition>
-    <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
-        <MibGroupsTable />
-      </div>
-    </Transition>
-    <Transition name="fade">
-      <div v-if="!store.mibGroupDrawerState.visible && !store.resourceTypeDrawerState.visible">
-        <ResourceTypesTable />
-      </div>
-    </Transition>
-    <Transition name="fade">
-      <div v-if="store.mibGroupDrawerState.visible">
-        <MibGroupForm />
-      </div>
-    </Transition>
-    <Transition name="fade">
-      <div v-if="store.resourceTypeDrawerState.visible">
-        <ResourceTypeForm />
-      </div>
-    </Transition>
+    </TableCard>
   </div>
   <div
     v-else
@@ -116,10 +136,9 @@
 </template>
 
 <script setup lang="ts">
+import TableCard from '@/components/Common/TableCard.vue'
 import DeleteConfirmationDialog from '@/components/SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
-import MibGroupForm from '@/components/SnmpDataCollectionDetail/MibGroupForm.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
-import ResourceTypeForm from '@/components/SnmpDataCollectionDetail/ResourceTypeForm.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import useSnackbar from '@/composables/useSnackbar'
@@ -127,7 +146,10 @@ import { deleteSnmpCollectionSources } from '@/services/snmpDataCollectionServic
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
+import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import { format } from 'date-fns-tz'
+import { capitalize } from 'lodash'
 
 const router = useRouter()
 const route = useRoute()
@@ -187,18 +209,47 @@ onMounted(async () => {
 
 .snmp-data-collection-detail-container {
   margin: 0 auto;
-  padding: 20px;
+  padding: 45px;
 
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin: 20px 0px;
 
     .title-container {
       display: flex;
       align-items: center;
       gap: 20px;
+
+      .title {
+        h1 {
+          @include headline1;
+          margin: 0;
+        }
+      }
+
+      .tag {
+        .enabled-tag {
+          margin: 0 !important;
+          border-radius: 4px;
+          background-color: #0B720C1F;
+
+          :deep(span) {
+            color: #0B720C !important;
+          }
+        }
+
+        .disabled-tag {
+          margin: 0 !important;
+          border-radius: 4px;
+          background-color: #7575751F;
+
+          :deep(span) {
+            color: #757575 !important;
+          }
+        }
+      }
     }
 
     .action-container {
@@ -212,46 +263,55 @@ onMounted(async () => {
     }
   }
 
-  .config-details-box {
-    border: 1px solid var($primary);
-    border-radius: 4px;
-    padding: 20px;
-    background: white;
-    margin-bottom: 30px;
+  .content {
+    margin-top: 10px;
+    padding: 25px;
+    border: 1px solid var(--feather-border-on-surface);
 
-    .config-row {
-      display: flex;
-      margin-bottom: 15px;
+    .config-details-box {
+      .header {
+        @include headline3;
+        margin-bottom: 20px;
+      }
 
-      .config-field {
+      .config-row {
         display: flex;
-        align-items: center;
-        flex: 1;
-        margin-right: 40px;
 
-        .field-label {
-          font-weight: bold;
-          margin-right: 10px;
-          color: #555;
-          min-width: 80px;
+        .config-field {
+          display: flex;
+          align-items: center;
+          flex: 1;
+          margin-right: 40px;
+
+          .field-label {
+            @include headline4;
+            margin-right: 10px;
+            color: #1E1E1E;
+            min-width: 80px;
+          }
+
+          .field-value {
+            @include body-large;
+          }
         }
 
-        .field-value {
-          color: #333;
+        .name-field {
+          min-width: 500px;
+        }
+
+        .description-field {
+          min-width: 300px;
+        }
+
+        .vendor-field {
+          min-width: 500px;
         }
       }
+    }
 
-      .name-field {
-        min-width: 500px;
-      }
-
-      .description-field {
-        min-width: 300px;
-      }
-
-      .vendor-field {
-        min-width: 500px;
-      }
+    .tab-container {
+      margin-top: 25px;
+      padding: 10px;
     }
   }
 }

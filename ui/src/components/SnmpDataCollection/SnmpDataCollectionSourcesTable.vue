@@ -70,7 +70,16 @@
             <td>{{ source.name }}</td>
             <td>{{ source.vendor }}</td>
             <td>{{ source.uploadedBy }}</td>
-            <td>{{ source.enabled ? 'Enabled' : 'Disabled' }}</td>
+            <td>
+              <div class="tag">
+                <FeatherChip
+                  :class="source.enabled ? 'enabled-tag' : 'disabled-tag'"
+                  data-test="status-tag"
+                >
+                  {{ source.enabled ? 'Enabled' : 'Disabled' }}
+                </FeatherChip>
+              </div>
+            </td>
             <td>
               <div class="action-container">
                 <FeatherButton
@@ -158,6 +167,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
@@ -332,6 +342,28 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .tag {
+          .enabled-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+            background-color: #0B720C1F;
+
+            :deep(span) {
+              color: #0B720C !important;
+            }
+          }
+
+          .disabled-tag {
+            margin: 0 !important;
+            border-radius: 4px;
+            background-color: #7575751F;
+
+            :deep(span) {
+              color: #757575 !important;
+            }
+          }
         }
 
         .action-container {

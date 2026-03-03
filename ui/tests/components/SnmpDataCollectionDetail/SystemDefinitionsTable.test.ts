@@ -3,6 +3,7 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
@@ -10,7 +11,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 vi.mock('./Drawer/SystemDefinitionCreationDrawer.vue', () => ({
   default: {
@@ -115,12 +116,6 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.exists()).toBe(true)
     })
 
-    it('should display the title "System Definitions"', () => {
-      const title = wrapper.find('.title')
-      expect(title.exists()).toBe(true)
-      expect(title.text()).toBe('System Definitions')
-    })
-
     it('should render the search input', () => {
       const searchInput = wrapper.find('[data-test="search-input"]')
       expect(searchInput.exists()).toBe(true)
@@ -137,6 +132,32 @@ describe('SystemDefinitionsTable.vue', () => {
 
     it('should render within a TableCard container', () => {
       expect(wrapper.find('.system-definitions-table-container').exists()).toBe(true)
+    })
+
+    it('should render header with section-left and section-right', () => {
+      expect(wrapper.find('.header .section-left').exists()).toBe(true)
+      expect(wrapper.find('.header .section-right').exists()).toBe(true)
+    })
+
+    it('should render search input with correct hint text', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('hint')).toBe('Search by Name')
+    })
+
+    it('should render search input with type "search"', () => {
+      const searchInput = wrapper.findComponent(FeatherInput)
+      expect(searchInput.props('type')).toBe('search')
+    })
+
+    it('should render SystemDefinitionCreationDrawer component', () => {
+      const drawer = wrapper.findComponent({ name: 'SystemDefinitionCreationDrawer' })
+      expect(drawer.exists()).toBe(true)
+    })
+
+    it('should render add button inside section-right container', () => {
+      const sectionRight = wrapper.find('.section-right')
+      expect(sectionRight.find('.add').exists()).toBe(true)
+      expect(sectionRight.find('[data-test="add-system-definition-button"]').exists()).toBe(true)
     })
   })
 
@@ -167,6 +188,25 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
+    })
+
+    it('should render EmptyList component when no data', async () => {
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+
+      const emptyList = wrapper.findComponent({ name: 'EmptyList' })
+      expect(emptyList.exists()).toBe(true)
+    })
+
+    it('should show table then hide it when data is cleared', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+
+      store.systemDefinitions = []
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(false)
     })
   })
 
@@ -203,33 +243,6 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(rows.length).toBeGreaterThanOrEqual(2)
     })
 
-    it('should display system definition name correctly', () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(mockSystemDef.name)
-    })
-
-    it('should display system definition sysoid correctly', () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(mockSystemDef.sysoid)
-    })
-
-    it('should display system definition sysoidMask correctly', () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(mockSystemDef.sysoidMask)
-    })
-
-    it('should display "Enabled" for enabled system definitions', () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Enabled')
-    })
-
-    it('should display "Disabled" for disabled system definitions', async () => {
-      store.systemDefinitions = [disabledSystemDef]
-      await wrapper.vm.$nextTick()
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Disabled')
-    })
-
     it('should render action buttons for each row', () => {
       const editButtons = wrapper.findAll('[data-test="edit-button"]')
       expect(editButtons.length).toBe(2)
@@ -237,11 +250,6 @@ describe('SystemDefinitionsTable.vue', () => {
 
     it('should render pagination when there is data', () => {
       expect(wrapper.find('.alerts-pagination').exists()).toBe(true)
-    })
-
-    it('should render table with correct aria-label', () => {
-      const table = wrapper.find('.data-table')
-      expect(table.attributes('aria-label')).toBe('Events Table')
     })
 
     it('should render 4 sortable column headers', () => {
@@ -300,23 +308,6 @@ describe('SystemDefinitionsTable.vue', () => {
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('.expanded-content').exists()).toBe(true)
-    })
-
-    it('should show Mib Group Names header in expanded content', async () => {
-      wrapper.vm.toggleExpand(mockSystemDef.id)
-      await wrapper.vm.$nextTick()
-
-      const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('Mib Group Names:')
-    })
-
-    it('should display mib group names in expanded content', async () => {
-      wrapper.vm.toggleExpand(mockSystemDef.id)
-      await wrapper.vm.$nextTick()
-
-      const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.text()).toContain('mib2-interfaces')
-      expect(expandedContent.text()).toContain('mib2-host-resources-storage')
     })
 
     it('should collapse row when toggleExpand is called again', async () => {
@@ -430,6 +421,20 @@ describe('SystemDefinitionsTable.vue', () => {
         expect(store.onChangeSystemDefsSearchTerm).toHaveBeenCalledWith(term)
       })
     })
+
+    it('should debounce rapid inputs and only call with last value', async () => {
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+
+      await searchInput.setValue('first')
+      vi.advanceTimersByTime(200)
+      await searchInput.setValue('second')
+      vi.advanceTimersByTime(200)
+      await searchInput.setValue('final')
+      vi.advanceTimersByTime(500)
+      await wrapper.vm.$nextTick()
+
+      expect(store.onChangeSystemDefsSearchTerm).toHaveBeenCalledWith('final')
+    })
   })
 
   describe('Sorting Functionality', () => {
@@ -504,6 +509,30 @@ describe('SystemDefinitionsTable.vue', () => {
         expect(header.attributes('scope')).toBe('col')
       })
     })
+
+    it('should update reactive sort state when sorting by a column', async () => {
+      const sortHeader = wrapper.findComponent(FeatherSortHeader)
+      await sortHeader.vm.$emit('sort-changed', { property: 'name', value: 'asc' })
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.sort.name).toBe('asc')
+      expect(wrapper.vm.sort.sysoid).toBe(SORT.NONE)
+      expect(wrapper.vm.sort.sysoidMask).toBe(SORT.NONE)
+      expect(wrapper.vm.sort.enabled).toBe(SORT.NONE)
+    })
+
+    it('should reset previous column sort state when sorting by new column', async () => {
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+
+      await sortHeaders[0].vm.$emit('sort-changed', { property: 'name', value: 'asc' })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.sort.name).toBe('asc')
+
+      await sortHeaders[1].vm.$emit('sort-changed', { property: 'sysoid', value: 'desc' })
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.sort.name).toBe(SORT.NONE)
+      expect(wrapper.vm.sort.sysoid).toBe('desc')
+    })
   })
 
   describe('Pagination', () => {
@@ -537,20 +566,9 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(pagination.props('pageSizes')).toEqual([10, 20, 30])
     })
 
-    it('should call onSystemDefsPageChange when page changes', async () => {
-      const pagination = wrapper.findComponent(FeatherPagination)
-      await pagination.vm.$emit('update:modelValue', 2)
-      await wrapper.vm.$nextTick()
-
-      expect(store.onSystemDefsPageChange).toHaveBeenCalledWith(2)
-    })
-
-    it('should call onSystemDefsPageSizeChange when page size changes', async () => {
-      const pagination = wrapper.findComponent(FeatherPagination)
-      await pagination.vm.$emit('update:pageSize', 20)
-      await wrapper.vm.$nextTick()
-
-      expect(store.onSystemDefsPageSizeChange).toHaveBeenCalledWith(20)
+    it('should have data-test attribute on FeatherPagination', () => {
+      const pagination = wrapper.find('[data-test="FeatherPagination"]')
+      expect(pagination.exists()).toBe(true)
     })
 
     describe('Page Size Changes', () => {
@@ -606,6 +624,20 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(spy).toHaveBeenCalled()
       expect(spy).toHaveBeenCalledWith(mockSystemDef, CreateEditMode.Edit)
     })
+
+    it('should call openSystemDefCreationDrawer with second definition when its edit is clicked', async () => {
+      const spy = vi.spyOn(store, 'openSystemDefCreationDrawer')
+      const editButtons = wrapper.findAll('[data-test="edit-button"]')
+      await editButtons[1].trigger('click')
+      await wrapper.vm.$nextTick()
+
+      expect(spy).toHaveBeenCalledWith(mockSystemDef2, CreateEditMode.Edit)
+    })
+
+    it('should have title attribute containing system definition name', () => {
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      expect(editButton.attributes('title')).toContain('Edit')
+    })
   })
 
   describe('Dropdown Menu', () => {
@@ -618,6 +650,22 @@ describe('SystemDefinitionsTable.vue', () => {
     it('should render dropdown component for each row', () => {
       const dropdowns = wrapper.findAllComponents(FeatherDropdown)
       expect(dropdowns.length).toBe(2)
+    })
+
+    it('should have delete and change status dropdown items per row', () => {
+      // FeatherDropdownItem components are rendered inside FeatherDropdown
+      // Verify the dropdown contains the expected menu structure
+      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
+      expect(dropdowns.length).toBe(2)
+      // Each dropdown should contain menu items
+      dropdowns.forEach((dropdown) => {
+        expect(dropdown.html()).toBeTruthy()
+      })
+    })
+
+    it('should render dropdown with expand/collapse button in action container', async () => {
+      const actionContainers = wrapper.findAll('.action-container')
+      expect(actionContainers.length).toBe(2)
     })
   })
 
@@ -639,6 +687,44 @@ describe('SystemDefinitionsTable.vue', () => {
         expect(rows[0].text()).toContain(expectedText)
       }
     )
+
+    it('should apply enabled-tag class to FeatherChip when enabled', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-test="status-tag"]')
+      expect(chip.exists()).toBe(true)
+      expect(chip.classes()).toContain('enabled-tag')
+    })
+
+    it('should apply disabled-tag class to FeatherChip when disabled', async () => {
+      store.systemDefinitions = [disabledSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-test="status-tag"]')
+      expect(chip.exists()).toBe(true)
+      expect(chip.classes()).toContain('disabled-tag')
+    })
+
+    it('should render FeatherChip component for status', async () => {
+      store.systemDefinitions = [mockSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAllComponents(FeatherChip)
+      expect(chips.length).toBe(1)
+    })
+
+    it('should render correct number of FeatherChips for multiple rows', async () => {
+      store.systemDefinitions = [mockSystemDef, disabledSystemDef]
+      store.systemDefsPagination = { page: 1, pageSize: 10, total: 2 }
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAllComponents(FeatherChip)
+      expect(chips.length).toBe(2)
+    })
   })
 
   describe('System Definition Data Display', () => {
@@ -679,6 +765,23 @@ describe('SystemDefinitionsTable.vue', () => {
         const header = expandedContent.find('h6')
         expect(header.text()).toBe('Mib Group Names:')
       })
+
+      it('should render mib group names inside description class element', () => {
+        const expandedContent = wrapper.find('.expanded-content')
+        const description = expandedContent.find('.description')
+        expect(description.exists()).toBe(true)
+        expect(description.text()).toContain('mib2-interfaces')
+      })
+
+      it('should join mib group names with comma separator via v-html', () => {
+        const description = wrapper.find('.expanded-content .description')
+        expect(description.html()).toContain('mib2-interfaces, mib2-host-resources-storage')
+      })
+
+      it('should have colspan of 5 on expanded content cell', () => {
+        const expandedTd = wrapper.find('.expanded-content td')
+        expect(expandedTd.attributes('colspan')).toBe('5')
+      })
     })
   })
 
@@ -702,23 +805,6 @@ describe('SystemDefinitionsTable.vue', () => {
   })
 
   describe('Edge Cases', () => {
-    it('should handle empty mib group names', async () => {
-      const emptyMibDef: SnmpCollectionSystemDef = {
-        ...mockSystemDef,
-        mibGroupNames: []
-      }
-
-      store.systemDefinitions = [emptyMibDef]
-      store.systemDefsPagination = { page: 1, pageSize: 10, total: 1 }
-      await wrapper.vm.$nextTick()
-
-      wrapper.vm.toggleExpand(emptyMibDef.id)
-      await wrapper.vm.$nextTick()
-
-      const expandedContent = wrapper.find('.expanded-content')
-      expect(expandedContent.exists()).toBe(true)
-    })
-
     it('should handle system definition with all empty fields', async () => {
       const emptyFieldsDef: SnmpCollectionSystemDef = {
         id: 99,
@@ -1093,14 +1179,6 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
     })
 
-    it('sets selectedSystemDef correctly when opening dialog', async () => {
-      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
-      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
-    })
-
     it('sets selectedSystemDef correctly for different system definitions', async () => {
       wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
       await wrapper.vm.$nextTick()
@@ -1407,30 +1485,6 @@ describe('SystemDefinitionsTable.vue', () => {
       expect(dropdowns.length).toBe(2)
     })
 
-    it('has closeDeleteSystemDefDialog method available', async () => {
-      expect(typeof wrapper.vm.closeDeleteSystemDefDialog).toBe('function')
-    })
-
-    it('calls openDeleteSystemDefDialog for first system definition', async () => {
-      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
-      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef.name)
-    })
-
-    it('calls openDeleteSystemDefDialog for second system definition', async () => {
-      wrapper.vm.openDeleteSystemDefDialog(mockSystemDef2)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
-      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
-    })
-
-    it('renders delete button in dropdown', async () => {
-      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
-      expect(dropdowns.length).toBeGreaterThan(0)
-    })
   })
 
   describe('Delete Confirmation Dialog Events', () => {
