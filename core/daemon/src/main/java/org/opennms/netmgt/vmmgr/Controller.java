@@ -184,11 +184,11 @@ public class Controller {
                     Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
                     final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
                     final Constructor constructor = clazz.getConstructor(String.class, String.class, String.class);
-                    final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
                     final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
                     secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
                             Paths.get(opennmsHome, "etc", "scv.jce").toString(),
-                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey), scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY)
+                            scvProps.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY, defaultKeyStoreKey),
+                            scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY)
                     );
                 }
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |

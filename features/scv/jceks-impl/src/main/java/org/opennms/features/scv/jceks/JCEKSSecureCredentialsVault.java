@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -134,6 +135,9 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
             if (useWatcher) {
                 createFileUpdateWatcher();
             }
+
+            // Clear the key from system properties to prevent other code in the JVM from reading it
+            ScvUtils.clearKeyFromSystemProperties();
 
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
@@ -253,6 +257,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         if (m_fileUpdateWatcher != null) {
             m_fileUpdateWatcher.destroy();
         }
+        // Zero out the password char array to prevent memory-based extraction
+        if (m_password != null) {
+            Arrays.fill(m_password, '\0');
+        }
     }
 
     private void writeKeystoreToDisk() {
@@ -294,7 +302,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private static String getKeystoreFilename() {
-        String opennmsHome = System.getProperty("opennms.home");
+        String opennmsHome = ScvUtils.resolveOpennmsHome();
 
         if (opennmsHome == null) {
             try {
@@ -307,18 +315,87 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         return Paths.get(opennmsHome, "etc", "scv.jce").toString();
     }
 
-    private static String getKeystorePassword() {
-        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
-        return properties.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
-    }
-
     /*
        This instantiates scv indirectly, not from spring/karaf container.
        Should be mostly used for read-only access, short-lived and instantiate for each access.
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
-        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
-        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY));
+        Properties properties = ScvUtils.loadScvProperties(ScvUtils.resolveOpennmsHome());
+        String keyStoreType = properties.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY, KeyStoreType.JCEKS.toString());
+        return create(getKeystoreFilename(), "", false, keyStoreType);
+    }
+
+    /**
+     * Factory method for Spring/Blueprint use. Resolves the password through ScvUtils
+     * (checking scv.key file first) and resolves or generates a salt.
+     * For new keystores, a random salt is generated and saved to scv.salt.
+     *
+     * @param keystoreFile    keystore file path
+     * @param passwordOverride password from Spring/ConfigAdmin (empty means resolve via ScvUtils)
+     * @param useWatcher       whether to enable file watcher
+     * @param keyStoreType     JCEKS or PKCS12
+     * @return a configured vault instance
+     */
+    public static JCEKSSecureCredentialsVault create(
+            String keystoreFile, String passwordOverride,
+            boolean useWatcher, String keyStoreType) {
+        String opennmsHome = ScvUtils.resolveOpennmsHome();
+        Properties props = ScvUtils.loadScvProperties(opennmsHome);
+        boolean hasKeyFile = ScvUtils.readKeyFromFile(opennmsHome) != null;
+
+        // Resolve password: use override if non-empty and non-default, otherwise resolve via ScvUtils
+        String resolvedPassword;
+        if (passwordOverride != null && !passwordOverride.isEmpty()
+                && !passwordOverride.equals(DEFAULT_KEYSTORE_KEY)) {
+            resolvedPassword = passwordOverride;
+        } else {
+            resolvedPassword = props.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY);
+            if (resolvedPassword == null || resolvedPassword.isEmpty()) {
+                resolvedPassword = DEFAULT_KEYSTORE_KEY;
+            }
+        }
+
+        // Resolve the actual keystore filename (PKCS12 uses .pk12 instead of .jce)
+        String resolvedKeystoreFile = keystoreFile;
+        if (KeyStoreType.PKCS12.toString().equalsIgnoreCase(keyStoreType)) {
+            resolvedKeystoreFile = keystoreFile.replaceAll(".jce", ".pk12");
+        }
+        File ksFile = new File(resolvedKeystoreFile);
+        byte[] salt;
+
+        if (!ksFile.isFile()) {
+            // Fresh install — no keystore exists yet
+            if (!hasKeyFile && resolvedPassword.equals(DEFAULT_KEYSTORE_KEY)) {
+                // No explicit password was provided — auto-generate a random one
+                try {
+                    resolvedPassword = ScvUtils.generateRandomPassword();
+                    ScvUtils.writeKeyToFile(opennmsHome, resolvedPassword);
+                    LOG.info("Generated random SCV password for new installation and saved to {}/etc/{}",
+                            opennmsHome, ScvUtils.SCV_KEY_FILENAME);
+                } catch (IOException e) {
+                    LOG.warn("Failed to generate/save random SCV password, using default", e);
+                    resolvedPassword = DEFAULT_KEYSTORE_KEY;
+                }
+            }
+            // Generate random salt for new keystore
+            try {
+                salt = ScvUtils.generateAndSaveSalt(opennmsHome);
+                LOG.info("Generated new random salt for new keystore");
+            } catch (IOException e) {
+                LOG.warn("Failed to generate/save random salt, using default", e);
+                salt = ScvUtils.DEFAULT_SALT.clone();
+            }
+        } else {
+            // Existing keystore
+            if (!hasKeyFile && resolvedPassword.equals(DEFAULT_KEYSTORE_KEY)) {
+                LOG.warn("SCV keystore is using the default password. "
+                        + "This is insecure. Run 'scvcli rotate-key --new-password <new-password>' "
+                        + "to generate a unique password and salt.");
+            }
+            salt = ScvUtils.resolveSalt(opennmsHome);
+        }
+
+        return new JCEKSSecureCredentialsVault(keystoreFile, resolvedPassword, useWatcher, salt, keyStoreType);
     }
 
     @Override

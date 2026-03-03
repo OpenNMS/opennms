@@ -37,6 +37,7 @@ import org.opennms.features.scv.cli.commands.GetAllCommand;
 import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
+import org.opennms.features.scv.cli.commands.RotateKeyCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
@@ -55,7 +56,8 @@ public class ScvCli {
             @SubCommand(name = "set", impl = SetCommand.class),
             @SubCommand(name = "get", impl = GetCommand.class),
             @SubCommand(name = "get-all", impl = GetAllCommand.class),
-            @SubCommand(name = "delete", impl = DeleteCommand.class)})
+            @SubCommand(name = "delete", impl = DeleteCommand.class),
+            @SubCommand(name = "rotate-key", impl = RotateKeyCommand.class)})
     private Function<ScvCli, Integer> command;
 
     @Option(name = "--keystore",
@@ -75,10 +77,25 @@ public class ScvCli {
     private ScvCli() {
     }
 
+    public String getKeystorePath() {
+        return this.keystore;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public String getKeyStoreType() {
+        return lookupKeyStoreType();
+    }
+
     public SecureCredentialsVault getSecureCredentialsVault() {
         if (secureCredentialsVault == null) {
             String keystoreType = lookupKeyStoreType();
-            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password, keystoreType);
+            // Use the factory method so scvcli also gets key file auto-generation,
+            // random salt, and the full password resolution chain
+            secureCredentialsVault = JCEKSSecureCredentialsVault.create(
+                    this.keystore, this.password, false, keystoreType);
         }
 
         return secureCredentialsVault;
@@ -169,6 +186,7 @@ public class ScvCli {
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get-all");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] list");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] delete ALIAS");
+            System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] rotate-key --new-password NEW_PASSWORD");
 
             System.exit(1);
         }

@@ -26,10 +26,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStoreException;
@@ -208,5 +210,82 @@ public class JCEKSSecureCredentialsVaultTest {
         // watcher is asynchronous, so wait for few secs to validate loading of valid credentials
         await().atMost(5, TimeUnit.SECONDS)
                 .until(() -> scv2.getCredentials("http"), Matchers.is(credentials2));
+    }
+
+    @Test
+    public void testSystemPropertyClearedAfterInit() {
+        System.setProperty(KEYSTORE_KEY_PROPERTY, "clearMe");
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+
+        new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "clearMe");
+
+        // System property should be cleared after vault initialization
+        assertNull("System property should be cleared after vault init",
+                System.getProperty(KEYSTORE_KEY_PROPERTY));
+    }
+
+    @Test
+    public void testPasswordZeroedOnDestroy() throws Exception {
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        JCEKSSecureCredentialsVault vault = new JCEKSSecureCredentialsVault(
+                keystoreFile.getAbsolutePath(), "testPassword");
+
+        // Access m_password via reflection
+        Field passwordField = JCEKSSecureCredentialsVault.class.getDeclaredField("m_password");
+        passwordField.setAccessible(true);
+        char[] password = (char[]) passwordField.get(vault);
+
+        // Before destroy, password should not be zeroed
+        assertFalse("Password should not be zeroed before destroy", allZeros(password));
+
+        vault.destroy();
+
+        // After destroy, password should be zeroed
+        assertTrue("Password should be zeroed after destroy", allZeros(password));
+    }
+
+    @Test
+    public void testKeyRotation() {
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+        byte[] newSalt = new byte[]{0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8,
+                0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10};
+
+        // Create vault with old password and store credentials
+        JCEKSSecureCredentialsVault oldVault = new JCEKSSecureCredentialsVault(
+                keystoreFile.getAbsolutePath(), oldPassword);
+        Credentials creds1 = new Credentials("user1", "pass1");
+        Credentials creds2 = new Credentials("user2", "pass2", Map.of("attr1", "val1"));
+        oldVault.setCredentials("alias1", creds1);
+        oldVault.setCredentials("alias2", creds2);
+
+        // Read all credentials
+        Map<String, Credentials> allCreds = oldVault.getAllCredentials();
+        assertEquals(2, allCreds.size());
+
+        // Delete old keystore and create new vault with new password + new salt
+        keystoreFile.delete();
+        JCEKSSecureCredentialsVault newVault = new JCEKSSecureCredentialsVault(
+                keystoreFile.getAbsolutePath(), newPassword, false, newSalt);
+
+        // Re-encrypt credentials
+        for (Map.Entry<String, Credentials> entry : allCreds.entrySet()) {
+            newVault.setCredentials(entry.getKey(), entry.getValue());
+        }
+
+        // Verify credentials are accessible with new password + new salt
+        JCEKSSecureCredentialsVault verifyVault = new JCEKSSecureCredentialsVault(
+                keystoreFile.getAbsolutePath(), newPassword, false, newSalt);
+        assertEquals(creds1, verifyVault.getCredentials("alias1"));
+        assertEquals(creds2, verifyVault.getCredentials("alias2"));
+        assertEquals("val1", verifyVault.getCredentials("alias2").getAttribute("attr1"));
+    }
+
+    private static boolean allZeros(char[] arr) {
+        for (char c : arr) {
+            if (c != '\0') return false;
+        }
+        return true;
     }
 }
