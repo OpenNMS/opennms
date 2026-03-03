@@ -19,5 +19,6 @@
     <module>sink</module>
     <module>collector</module>
     <module>kafka-consumer</module>
+    <module>event-store</module>
   </modules>
 </project>

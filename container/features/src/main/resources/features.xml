@@ -2153,5 +2153,11 @@
         <feature>opennms-events-api</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.kafka-consumer/${project.version}</bundle>
     </feature>
+    <feature name="opennms-events-store" version="${project.version}" description="OpenNMS :: Events :: Event Store">
+        <feature>opennms-events-api</feature>
+        <feature>opennms-events-kafka-consumer</feature>
+        <feature>spring</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.event-store/${project.version}</bundle>
+    </feature>
 
 </features>
