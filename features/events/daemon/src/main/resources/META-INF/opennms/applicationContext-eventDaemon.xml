@@ -104,6 +104,15 @@
 
   <onmsgi:service ref="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
 
+  <bean id="messageBusFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="messageBus">
+    <property name="staticMethod"><value>org.opennms.core.messagebus.MessageBusFactory.setMessageBus</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="messageBus"/>
+      </list>
+    </property>
+  </bean>
+
   <!-- Local-mode fault event publisher (logs instead of sending to Kafka).
        When Kafka is enabled, a Karaf feature will replace this with FaultEventPublisher. -->
   <bean id="faultEventPublisher" class="org.opennms.netmgt.eventd.processor.LocalFaultEventPublisher"/>
