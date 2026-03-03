@@ -1,0 +1,143 @@
+#
+# Licensed to The OpenNMS Group, Inc (TOG) under one or more
+# contributor license agreements.  See the LICENSE.md file
+# distributed with this work for additional information
+# regarding copyright ownership.
+#
+# TOG licenses this file to You under the GNU Affero General
+# Public License Version 3 (the "License") or (at your option)
+# any later version.  You may not use this file except in
+# compliance with the License.  You may obtain a copy of the
+# License at:
+#
+#      https://www.gnu.org/licenses/agpl-3.0.txt
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.  See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+
+##
+# Use Java base image and setup required RPMs as cacheable image.
+##
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.3.b335-jre-17"
+
+FROM ${BASE_IMAGE} AS alarmd-tarball
+
+ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/alarmd/
+RUN chmod -R g-w /opt/usr-share/alarmd && \
+    chmod -R g=u \
+        /opt/usr-share/alarmd/etc \
+        /opt/usr-share/alarmd/data \
+        && \
+    chmod -R a+x /opt/usr-share/alarmd/bin && \
+    chmod g=u /opt/usr-share/alarmd && \
+    find \
+        /opt/usr-share/alarmd/data \
+        /opt/usr-share/alarmd/deploy \
+        /opt/usr-share/alarmd/system \
+        /opt/usr-share/alarmd/repositories \
+        -type d -print0 | xargs -0 chmod 2775
+
+FROM ${BASE_IMAGE} AS alarmd-base
+
+ARG REQUIRED_RPMS="hostname uuid"
+
+SHELL ["/bin/bash", "-c"]
+
+# Collect generic steps in a layer for caching
+
+# install required RPMs
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
+
+
+##
+# Install and setup OpenNMS Alarmd
+##
+FROM alarmd-base
+
+# If you copy from /opt/alarmd to /opt/alarmd the permissions are not preserved
+# We would have 755 for alarmd:root instead of 775 and prevents writing lock files in /opt/alarmd
+COPY --chown=10001:0 --from=alarmd-tarball /opt/usr-share /opt/
+
+SHELL ["/bin/bash", "-c"]
+
+# Create Alarmd user with a specific group ID
+RUN groupadd \
+        --gid 10001 \
+        alarmd && \
+    useradd \
+        --system \
+        --uid 10001 \
+        --gid 10001 \
+        --home-dir /opt/alarmd \
+        --no-create-home \
+        --shell /usr/bin/bash \
+        alarmd
+
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG REVISION
+
+# Install any spare packages and create some compatibility links
+RUN install -d -o 10001 -g 0 -m 775 \
+        /var/lib/alarmd \
+        /opt/alarmd/data/{log,tmp}
+
+VOLUME [ "/opt/alarmd/deploy", "/opt/alarmd/etc", "/opt/alarmd/data" ]
+
+WORKDIR /opt/alarmd
+
+### Containers should NOT run as root as a good practice
+USER 10001
+
+ENTRYPOINT [ "/opt/alarmd/bin/karaf", "server" ]
+
+STOPSIGNAL SIGTERM
+
+# Arguments for labels should not invalidate caches
+ARG VERSION
+ARG SOURCE
+ARG BUILD_JOB_ID
+ARG BUILD_NUMBER
+ARG BUILD_URL
+ARG BUILD_BRANCH
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="OpenNMS Alarmd ${VERSION}" \
+      org.opencontainers.image.source="${SOURCE}" \
+      org.opencontainers.image.revision="${REVISION}" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.vendor="The OpenNMS Group, Inc." \
+      org.opencontainers.image.authors="OpenNMS Community" \
+      org.opencontainers.image.licenses="AGPL-3.0" \
+      org.opennms.image.base="${BASE_IMAGE}" \
+      org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
+      org.opennms.cicd.buildnumber="${BUILD_NUMBER}" \
+      org.opennms.cicd.buildurl="${BUILD_URL}" \
+      org.opennms.cicd.branch="${BUILD_BRANCH}"
+
+### Runtime information and not relevant at build time
+
+ENV OPENNMS_HOME="/opt/alarmd" \
+    OPENNMS_BROKER_URL="tcp://127.0.0.1:61616" \
+    OPENNMS_HTTP_USER="minion" \
+    OPENNMS_HTTP_PASS="minion" \
+    OPENNMS_BROKER_USER="minion" \
+    OPENNMS_BROKER_PASS="minion" \
+    POSTGRES_HOST="localhost" \
+    POSTGRES_PORT="5432" \
+    POSTGRES_USER="postgres" \
+    POSTGRES_PASSWORD="" \
+    POSTGRES_DB="opennms" \
+    JAVA_OPTS=""
+
+##------------------------------------------------------------------------------
+## EXPOSED PORTS
+##------------------------------------------------------------------------------
+## -- Alarmd Karaf SSH   8201/TCP
+
+EXPOSE 8201
