@@ -45,6 +45,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.messagebus.local.LocalMessageBus;
 import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
@@ -238,7 +239,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                 this.eventDao,
                 this.outageDao,
                 new MockTracerRegistry(),
-                tracker
+                tracker,
+                new LocalMessageBus()
         );
         new AnnotationBasedEventListenerAdapter(this.perspectivePollerd, eventIpcManager);
     }
