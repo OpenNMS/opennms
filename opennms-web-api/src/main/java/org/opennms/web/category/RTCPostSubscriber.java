@@ -22,9 +22,12 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
@@ -49,7 +52,11 @@ public class RTCPostSubscriber {
     /** Constant <code>LOG</code> */
     private static final Logger LOG = LoggerFactory.getLogger(RTCPostSubscriber.class);
 
+    private static final String SOURCE = "RTCPostSubscriber";
+
     protected final EventProxy m_proxy;
+
+    private static volatile MessageBus s_messageBus;
 
     /**
      * <p>Constructor for RTCPostSubscriber.</p>
@@ -58,6 +65,14 @@ public class RTCPostSubscriber {
      */
     public RTCPostSubscriber() throws IOException {
         m_proxy = Util.createEventProxy();
+    }
+
+    /**
+     * Set the MessageBus for IPC-based subscribe/unsubscribe.
+     * Called by Spring/OSGi to inject the bus when available.
+     */
+    public static void setMessageBus(MessageBus messageBus) {
+        s_messageBus = messageBus;
     }
 
     /**
@@ -76,10 +91,18 @@ public class RTCPostSubscriber {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        final MessageBus messageBus = s_messageBus;
+        if (messageBus != null) {
+            messageBus.publish(new IpcMessage("rtc/subscribe", SOURCE,
+                    Map.of("url", url, "user", username, "passwd", password, "catLabel", categoryName)));
+            LOG.info("Subscription requested for {} to {} via MessageBus", username, url);
+            return;
+        }
+
         try {
             Logging.withPrefix(LOGGING_PREFIX, new Callable<Void>() {
                 @Override public Void call() throws Exception {
-                    final EventBuilder bldr = new EventBuilder(EventConstants.RTC_SUBSCRIBE_EVENT_UEI, "RTCPostSubscriber");
+                    final EventBuilder bldr = new EventBuilder(EventConstants.RTC_SUBSCRIBE_EVENT_UEI, SOURCE);
                     bldr.setHost("host");
                     bldr.addParam(EventConstants.PARM_URL, url);
                     bldr.addParam(EventConstants.PARM_USER, username);
@@ -111,10 +134,18 @@ public class RTCPostSubscriber {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        final MessageBus messageBus = s_messageBus;
+        if (messageBus != null) {
+            messageBus.publish(new IpcMessage("rtc/unsubscribe", SOURCE,
+                    Map.of("url", url)));
+            LOG.info("Unsubscription sent for {} via MessageBus", url);
+            return;
+        }
+
         try {
             Logging.withPrefix(LOGGING_PREFIX, new Callable<Void>() {
                 @Override public Void call() throws Exception {
-                    final EventBuilder bldr = new EventBuilder(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI, "RTCPostSubscriber");
+                    final EventBuilder bldr = new EventBuilder(EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI, SOURCE);
                     bldr.setHost("host");
                     bldr.addParam(EventConstants.PARM_URL, url);
                     proxy.send(bldr.getEvent());
@@ -168,9 +199,9 @@ public class RTCPostSubscriber {
         }
 
         final String logUrl = url;
-        final String logUsername = username; 
+        final String logUsername = username;
         Logging.withPrefix(LOGGING_PREFIX, new Runnable() {
-            @Override 
+            @Override
             public void run() {
                 LOG.debug("RTCPostSubscriber initialized: url={}, user={}", logUrl, logUsername);
             }
@@ -180,8 +211,6 @@ public class RTCPostSubscriber {
 
     /**
      * <p>unsubscribe</p>
-     * 
-     * TODO: Call this during a destroy() or close() method
      *
      * @throws java.lang.IllegalArgumentException if any.
      * @throws org.opennms.netmgt.events.api.EventProxyException if any.
