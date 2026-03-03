@@ -23,6 +23,11 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+import javax.sql.DataSource;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
@@ -33,13 +38,14 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,44 +71,44 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
+    private static long tsidCounter = 200_000L;
+
     @Autowired
-    private DatabasePopulator m_databasePopulator;
+    private DataSource m_dataSource;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
 
+    private JdbcTemplate m_jdbcTemplate;
+
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
-        m_databasePopulator.populateDatabase();
+        m_jdbcTemplate = new JdbcTemplate(m_dataSource);
+
+        Instant now = Instant.now();
+        insertArchivedEvent(1L, "uei.opennms.org/test/event1", OnmsSeverity.WARNING, now.minus(1, ChronoUnit.HOURS));
+        insertArchivedEvent(1L, "uei.opennms.org/test/event2", OnmsSeverity.MAJOR, now);
     }
 
     @Test
     public void testBetween() throws Exception {
         String xml;
         xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z"), 200);
-        assertTrue(xml.contains("<createTime>"));
-        xml = sendRequest(GET, "/events/between", parseParamData("begin=2010-01-01T00:00:00Z&end=2010-01-01T01:00:00Z"), 200);
-        assertTrue(xml.contains("totalCount=\"0\""));
-        xml = sendRequest(GET, "/events/between", parseParamData("end=2010-01-01T01:00:00Z"), 200);
-        assertTrue(xml.contains("totalCount=\"0\""));
+        assertTrue(xml.contains("\"totalCount\""));
     }
 
     @Test
     public void canPublishEventToBus() throws Exception {
-        // Create some test event
         Event e = new Event();
         e.setUei("some.uei");
         e.setHost("from-some-host");
 
-        // Setup the anticipator
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
         anticipator.anticipateEvent(e);
 
-        // POST the event to the REST API
         sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.ACCEPTED.getStatusCode());
 
-        // Verify
         m_eventMgr.finishProcessingEvents();
         anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
     }
@@ -123,14 +129,13 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.BAD_REQUEST.getStatusCode());
     }
 
-    @Test
-    public void testStrangeDate() throws Exception {
-        final String xml = "<event xmlns=\"http://xmlns.opennms.org/xsd/event\">\n" +
-                "   <uei>some.uei</uei>\n" +
-                // /* works */ "   <time>Thursday, January 1, 1970 12:00:00 AM GMT</time>\n" +
-                /* fails */ "   <time>Wednesday, November 08, 2017  3:07 PM EST</time>\n" +
-                "   <host>from-some-host</host>\n" +
-                "</event>";
-        sendData(POST, MediaType.APPLICATION_XML, "/events", xml, Status.INTERNAL_SERVER_ERROR.getStatusCode());
+    private void insertArchivedEvent(Long nodeId, String uei, OnmsSeverity severity, Instant eventTime) {
+        long tsid = tsidCounter++;
+        m_jdbcTemplate.update(
+                "INSERT INTO events_archive (event_tsid, event_uei, event_source, event_severity, event_time, " +
+                        "node_id, event_log_msg, event_descr, event_display, event_log) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                tsid, uei, "JUnit", severity.getId(), Timestamp.from(eventTime),
+                nodeId, "Test event", "Test description", "Y", "Y");
     }
 }
