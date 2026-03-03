@@ -171,6 +171,13 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     }
 
     @Override
+    public List<OnmsMonitoredService> findAllServicesForScheduling() {
+        return findAll().stream()
+                .filter(svc -> "A".equals(svc.getStatus()) || "N".equals(svc.getStatus()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<OnmsMonitoredService> findByNode(final int nodeId) {
         return findAll().stream()
                  .filter(svc -> svc.getNodeId() == nodeId)

@@ -67,7 +67,7 @@ public class EventMapperTest {
 
         EventDTO eventDTO = eventMapper.eventToEventDTO(event);
 
-        assertThat(eventDTO.getId(), equalTo(1));
+        assertThat(eventDTO.getId(), equalTo(1L));
         assertThat(eventDTO.getLabel(), equalTo("some-label"));
     }
 }

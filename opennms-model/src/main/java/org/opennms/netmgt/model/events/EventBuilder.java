@@ -403,6 +403,10 @@ public class EventBuilder {
         return setParam(parmName, Integer.toString(val));
     }
 
+    public EventBuilder setParam(final String parmName, final long val) {
+        return setParam(parmName, Long.toString(val));
+    }
+
     /**
      * <p>addParam</p>
      *

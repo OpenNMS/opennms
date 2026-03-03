@@ -330,7 +330,7 @@
                 <feature>war</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
-                <feature>pax-http</feature>
+                <feature>pax-web-http-jetty</feature>
                 <feature>atomikos</feature>
                 <feature>batik</feature>
                 <feature>c3p0</feature>
