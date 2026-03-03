@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Statement;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageBusFactory;
 import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -78,8 +78,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, MessageH
     private volatile LegacyScheduler m_scheduler;
 
     private volatile EventIpcManager m_eventMgr;
-
-    private volatile MessageBus m_messageBus;
 
     /**
      * <p>getSingleton</p>
@@ -122,15 +120,11 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, MessageH
             VacuumdConfigFactory.init();
 
             // Subscribe to MessageBus for IPC coordination events
-            if (m_messageBus != null) {
-                m_messageBus.subscribe(List.of(
-                        MSG_TYPE_RELOAD_VACUUMD_CONFIG,
-                        MSG_TYPE_RELOAD_DAEMON_CONFIG
-                ), this);
-                LOG.info("Vacuumd subscribed to MessageBus for IPC events");
-            } else {
-                LOG.warn("MessageBus not available — Vacuumd will not receive IPC events via MessageBus");
-            }
+            MessageBusFactory.getMessageBus().subscribe(List.of(
+                    MSG_TYPE_RELOAD_VACUUMD_CONFIG,
+                    MSG_TYPE_RELOAD_DAEMON_CONFIG
+            ), this);
+            LOG.info("Vacuumd subscribed to MessageBus for IPC events");
 
             initializeDataSources();
         } catch (Throwable ex) {
@@ -171,9 +165,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, MessageH
     @Override
     protected void onStop() {
         m_stopped = true;
-        if (m_messageBus != null) {
-            m_messageBus.unsubscribe(this);
-        }
+        MessageBusFactory.getMessageBus().unsubscribe(this);
         if (m_scheduler != null && m_scheduler.getStatus() == RUNNING) {
             m_scheduler.stop();
         }
@@ -359,14 +351,6 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, MessageH
      */
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
-    }
-
-    public MessageBus getMessageBus() {
-        return m_messageBus;
-    }
-
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
     }
 
     // --- MessageHandler interface ---
