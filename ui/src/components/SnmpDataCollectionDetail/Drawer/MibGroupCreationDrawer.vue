@@ -548,6 +548,8 @@ watch(
 .container {
   margin-top: 10px;
   padding: 25px;
+  height: 100vh;
+  overflow-y: scroll;
 
   .header {
     display: flex;

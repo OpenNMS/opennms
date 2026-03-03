@@ -674,7 +674,7 @@ watch(
   margin-top: 10px;
   padding: 25px;
   height: 100vh;
-  // overflow-y: ;
+  overflow-y: scroll;
 
   .header {
     display: flex;
@@ -736,19 +736,24 @@ watch(
   }
 
   .sub-container {
-    header {
-      padding: 40px 20px;
+    .header {
+      padding: 20px;
+      margin: 0;
+
+      h4 {
+        @include headline4;
+      }
     }
 
     .spacer {
       min-height: 0.5em;
     }
 
-    content {
+    .content {
       padding: 0 20px;
     }
 
-    footer {
+    .footer {
       padding: 20px;
       display: flex;
       justify-content: flex-end;
