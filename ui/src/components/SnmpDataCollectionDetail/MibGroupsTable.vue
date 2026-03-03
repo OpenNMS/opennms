@@ -1,8 +1,6 @@
 <template>
   <div class="mib-groups-table-container">
-  <div class="mib-groups-table-container">
     <div class="header">
-      <div class="section-left">
       <div class="section-left">
         <div class="search-container">
           <FeatherInput
@@ -197,6 +195,7 @@ import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDet
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
@@ -211,9 +210,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
-import { FeatherChip } from '@featherds/chips'
 import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
-import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
