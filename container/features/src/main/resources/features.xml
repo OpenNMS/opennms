@@ -595,6 +595,7 @@
         <feature>jaxb</feature>
         <feature>javax.validation</feature>
         <feature>opennms-core</feature>
+        <feature>opennms-core-tsid</feature>
         <feature>opennms-snmp</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/${project.version}</bundle>
@@ -2133,6 +2134,24 @@
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
+    </feature>
+
+    <!-- EventBus redesign: TSID, MessageBus, Kafka fault event consumer -->
+    <feature name="opennms-core-tsid" version="${project.version}" description="OpenNMS :: Core :: TSID">
+        <bundle>mvn:org.opennms/org.opennms.core.tsid/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-core-messagebus-api" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: API">
+        <bundle>mvn:org.opennms/org.opennms.core.messagebus.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-core-messagebus-jms" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: JMS">
+        <feature>opennms-core-messagebus-api</feature>
+        <feature>activemq-client</feature>
+        <bundle>mvn:org.opennms/org.opennms.core.messagebus.jms/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-events-kafka-consumer" version="${project.version}" description="OpenNMS :: Events :: Kafka Consumer">
+        <feature>opennms-kafka</feature>
+        <feature>opennms-events-api</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.kafka-consumer/${project.version}</bundle>
     </feature>
 
 </features>
