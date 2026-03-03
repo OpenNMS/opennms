@@ -18,10 +18,6 @@ export KARAF_HOME="${SENTINEL_HOME}"
 
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
-CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
-CONFD_CONFIG_DIR="${SENTINEL_HOME}/confd"
-CONFD_BIN="/usr/bin/confd"
-CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 
 # Prometheus JMX Exporter Configuration
 #
@@ -31,10 +27,6 @@ CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 # Requirements:
 # - PROM_JMX_EXPORTER_ENABLED=true
 # - All other settings are optional and have sensible defaults
-#
-# Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
@@ -152,12 +144,29 @@ applyOverlayConfig() {
   fi 
 }
 
-applyConfd() {
-  if [ -f "${CONFD_KEY_STORE}" ]; then
-    echo "Found a configuration key store, applying configuration via confd."
-    runConfd
-  else
-    echo "No configuration key store present, skipping confd configuration."
+parseEnvironmentVariables() {
+  # Apply Kafka IPC configuration if bootstrap.servers is set
+  if [ -n "${KAFKA_IPC_BOOTSTRAP_SERVERS}" ]; then
+    KAFKA_CONFIG="${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg"
+    echo "# Kafka IPC Configuration" > "${KAFKA_CONFIG}"
+    echo "bootstrap.servers = ${KAFKA_IPC_BOOTSTRAP_SERVERS}" >> "${KAFKA_CONFIG}"
+    
+    # Add any other KAFKA_IPC_* variables
+    for var in "${!KAFKA_IPC_@}"; do
+      if [ "$var" != "KAFKA_IPC_BOOTSTRAP_SERVERS" ]; then
+        key=$(echo "$var" | sed 's/KAFKA_IPC_//' | tr '[:upper:]' '[:lower:]' | tr '_' '.')
+        echo "$key = ${!var}" >> "${KAFKA_CONFIG}"
+      fi
+    done
+    
+    # Update feature boot file for Kafka strategy
+    echo "!sentinel-jms" > "${SENTINEL_HOME}/etc/featuresBoot.d/ipc-strategy.boot"
+    echo "sentinel-kafka" >> "${SENTINEL_HOME}/etc/featuresBoot.d/ipc-strategy.boot"
+  fi
+  
+  # Apply instance ID if provided
+  if [ -n "${INSTANCE_ID}" ]; then
+    echo "org.opennms.instance.id = ${INSTANCE_ID}" >> "${SENTINEL_HOME}/etc/custom.system.properties"
   fi
 }
 
@@ -181,16 +190,7 @@ start() {
     exec ./karaf server ${SENTINEL_DEBUG}
 }
 
-runConfd() {
-  # Create any directories that confd might write to
-  while IFS= read -r dir; do
-    local dirToCreate="$SENTINEL_HOME"/"$dir"
-    echo "Creating $dirToCreate so confd can write to it"
-    mkdir -p "$dirToCreate"
-  done < "$CONFD_CONFIG_DIR"/directories
 
-  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
-}
 
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
@@ -204,7 +204,7 @@ while getopts csdfh flag; do
         c)
             useEnvCredentials
             initConfig
-            applyConfd
+            parseEnvironmentVariables
             applyOverlayConfig
             applyKarafDebugLogging
             start
@@ -215,14 +215,14 @@ while getopts csdfh flag; do
         d)
             SENTINEL_DEBUG="debug"
             initConfig
-            applyConfd
+            parseEnvironmentVariables
             applyOverlayConfig
             applyKarafDebugLogging
             start
             ;;
         f)
             initConfig
-            applyConfd
+            parseEnvironmentVariables
             applyOverlayConfig
             applyKarafDebugLogging
             start
