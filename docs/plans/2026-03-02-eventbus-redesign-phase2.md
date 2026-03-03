@@ -23,6 +23,12 @@ The plan assumed `PerspectiveServiceTracker` uses direct `addEventListener()` ca
 ### 3. Vacuumd — JMX singleton prevents MessageBus injection
 Vacuumd is wired via the legacy JMX singleton wrapper (`Vacuumd.getInstance()`) which has no Spring/OSGi context for dependency injection. The MessageBus field is null-guarded so Vacuumd falls back gracefully. **Follow-up required:** Either create a `MessageBusFactory` static accessor (similar to existing `EventIpcManagerFactory`), or refactor Vacuumd to be fully Spring-managed like the `SimpleSpringContextJmxServiceDaemon` pattern used by Alarmd and Bsmd.
 
+### 4. NorthbounderManager dual-path pattern (Window C insight)
+`NorthbounderManager.handleReloadEvent(IEvent)` was refactored to extract an `onReloadDaemonConfig(String)` method. Both the legacy IEvent path and the new MessageBus path share the same NBI reload logic without creating synthetic events. This is the recommended pattern for any component that must support both paths during transition.
+
+### 5. Alarmd forwards ALL reloadDaemonConfig to NorthbounderManager
+Unlike other daemons that filter `reloadDaemonConfig` on their own name, Alarmd forwards all reload messages to `NorthbounderManager`, which matches against individual NBI names internally. Drools reload only triggers when `daemonName` is specifically `"alarmd"`. The MessageBus subscription in Alarmd must NOT filter on daemon name.
+
 ---
 
 ## Priority Order
