@@ -1,11 +1,10 @@
 package org.opennms.netmgt.eventd.processor;
 
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.xml.event.Event;
@@ -13,16 +12,28 @@ import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Publishes fault events (events with alarm data) to a Kafka topic using
+ * Protobuf serialization.
+ *
+ * <p>The serializer function is injected at construction time, allowing the
+ * Karaf blueprint to wire in {@code ProtobufMapper} without creating a
+ * compile-time dependency cycle between events-daemon and kafka-producer.</p>
+ */
 public class FaultEventPublisher implements EventProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(FaultEventPublisher.class);
 
     private final KafkaProducer<Long, byte[]> producer;
     private final String topicName;
+    private final Function<Event, byte[]> eventSerializer;
 
-    public FaultEventPublisher(KafkaProducer<Long, byte[]> producer, String topicName) {
-        this.producer = producer;
-        this.topicName = topicName;
+    public FaultEventPublisher(KafkaProducer<Long, byte[]> producer,
+                               String topicName,
+                               Function<Event, byte[]> eventSerializer) {
+        this.producer = Objects.requireNonNull(producer);
+        this.topicName = Objects.requireNonNull(topicName);
+        this.eventSerializer = Objects.requireNonNull(eventSerializer);
     }
 
     @Override
@@ -53,12 +64,6 @@ public class FaultEventPublisher implements EventProcessor {
     }
 
     private byte[] serializeEvent(Event event) {
-        try {
-            StringWriter writer = new StringWriter();
-            JaxbUtils.marshal(event, writer);
-            return writer.toString().getBytes(StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize event: " + event.getUei(), e);
-        }
+        return eventSerializer.apply(event);
     }
 }
