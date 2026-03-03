@@ -872,7 +872,7 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
 
     protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate,
                                           final Service polledService) {
-        int eventId = event != null ? event.getDbid() : 0;
+        long eventId = event != null ? event.getDbid() : 0;
         getPoller().getQueryManager().closeOutagesForService(closeDate, eventId, nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
