@@ -56,16 +56,16 @@
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
-	eventuei,
-	eventdisplay,
-	eventsource,
+	event_uei AS eventuei,
+	event_display AS eventdisplay,
+	event_source AS eventsource,
 	COUNT(*) AS tally
 FROM
-	events
+	events_archive
 GROUP BY
-	eventuei,
-	eventsource,
-	eventdisplay
+	event_uei,
+	event_source,
+	event_display
 ORDER BY
 	tally DESC
 LIMIT
@@ -85,17 +85,17 @@ LIMIT
 		</parameter>
 		<queryString>
 			<![CDATA[SELECT
-	eventuei,
-	eventdisplay,
-	DATE_TRUNC('hour', eventtime) AS hour,
+	event_uei AS eventuei,
+	event_display AS eventdisplay,
+	DATE_TRUNC('hour', event_time) AS hour,
 	count(*) AS count
 FROM
-	events
+	events_archive
 WHERE
-	EXTRACT(epoch FROM eventtime) > EXTRACT(epoch FROM eventtime - INTERVAL '24 hours')
+	EXTRACT(epoch FROM event_time) > EXTRACT(epoch FROM event_time - INTERVAL '24 hours')
 GROUP BY
-	eventuei,
-	eventdisplay,
+	event_uei,
+	event_display,
 	hour
 ORDER BY
 	count DESC
@@ -121,19 +121,19 @@ FROM
 	(SELECT
 		CASE
 			WHEN
-				eventsource = 'syslogd' OR
-				eventsource = 'trapd' OR
-				eventsource = 'perl_send_event'
+				event_source = 'syslogd' OR
+				event_source = 'trapd' OR
+				event_source = 'perl_send_event'
 			THEN
-				events.eventsource
+				events_archive.event_source
 			ELSE
 				'other'
 		END AS eventsource,
 		count(*) AS tally
 	FROM
-		events
+		events_archive
 	GROUP BY
-		eventsource)
+		event_source)
 	AS event_source
 GROUP BY
 	eventsource
@@ -163,15 +163,15 @@ ORDER BY
 FROM
 	(SELECT
 		COUNT(*) AS tally,
-		events.eventuei,
-		events.eventdisplay,
-		events.nodeid
+		events_archive.event_uei AS eventuei,
+		events_archive.event_display AS eventdisplay,
+		events_archive.node_id AS nodeid
 	FROM
-		events
+		events_archive
 	GROUP BY
-		events.eventuei,
-		events.nodeid,
-		events.eventdisplay
+		events_archive.event_uei,
+		events_archive.node_id,
+		events_archive.event_display
 	ORDER BY
 		tally DESC
 	LIMIT
@@ -205,11 +205,11 @@ ORDER BY
 FROM
 	(SELECT
 		COUNT(*) AS tally,
-		events.nodeid
+		events_archive.node_id AS nodeid
 	FROM
-		events
+		events_archive
 	GROUP BY
-		events.nodeid
+		events_archive.node_id
 	ORDER BY
 		tally DESC
 	LIMIT
@@ -276,12 +276,12 @@ FROM
 			) AS day_hours
 		LEFT JOIN
 			(SELECT
-				DATE_TRUNC('hours', eventtime) AS hours_time,
+				DATE_TRUNC('hours', event_time) AS hours_time,
 				*
 			FROM
-				events
+				events_archive
 			WHERE
-				eventtime > NOW() - INTERVAL '30 days')
+				event_time > NOW() - INTERVAL '30 days')
 			AS
 				events_week
 		ON
@@ -336,24 +336,24 @@ LEFT JOIN
 		eventsource
 	FROM
 		(SELECT
-			DATE_TRUNC('day', eventtime) AS day_time,
+			DATE_TRUNC('day', event_time) AS day_time,
 			CASE
 				WHEN
-					eventsource = 'syslogd' OR
-					eventsource = 'trapd' OR
-					eventsource = 'perl_send_event'
+					event_source = 'syslogd' OR
+					event_source = 'trapd' OR
+					event_source = 'perl_send_event'
 				THEN
-					events.eventsource
+					events_archive.event_source
 				ELSE
 					'other'
 			END AS eventsource
 		FROM
-			events
+			events_archive
 		WHERE
-			eventtime > NOW() - INTERVAL '30 days'
+			event_time > NOW() - INTERVAL '30 days'
 		GROUP BY
-			events.eventtime,
-			events.eventsource)
+			events_archive.event_time,
+			events_archive.event_source)
 		AS events_day
 	GROUP BY
 		day_time,
@@ -388,17 +388,17 @@ ORDER BY
 FROM
 	(SELECT
 		COUNT(*) AS tally,
-		nodeid,
-		ipaddr,
-		eventuei
+		node_id AS nodeid,
+		ip_addr AS ipaddr,
+		event_uei AS eventuei
 	FROM
-		events
+		events_archive
 	WHERE
-		events.eventuei = 'uei.opennms.org/generic/traps/EnterpriseDefault'
+		events_archive.event_uei = 'uei.opennms.org/generic/traps/EnterpriseDefault'
 	GROUP BY
-		nodeid,
-		ipaddr,
-		eventuei
+		node_id,
+		ip_addr,
+		event_uei
 	ORDER BY
 		tally DESC
 	LIMIT

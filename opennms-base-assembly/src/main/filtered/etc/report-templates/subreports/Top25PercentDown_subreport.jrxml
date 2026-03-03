@@ -90,15 +90,15 @@ FROM
 			least(('$P!{END_TIME_STRING}'::TIMESTAMP), outages.ifregainedservice) as gained_service_timestamp,
 			greatest('$P!{START_TIME_STRING}'::TIMESTAMP,outages.iflostservice) as lost_service_timestamp
 		FROM
-			outages, ifservices, ipinterface, service, events
+			outages, ifservices, ipinterface, service, events_archive
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{END_TIME}'::TIMESTAMP) AND
 			outages.ifserviceid = ifservices.id AND
 			ifservices.ipinterfaceid = ipinterface.id AND
 			ifservices.serviceid = service.serviceid AND
 			service.servicename = 'ICMP' AND
-			outages.svclosteventid = events.eventid AND
-			events.eventuei = 'uei.opennms.org/nodes/nodeDown' AND
+			outages.svclosteventid = events_archive.event_tsid AND
+			events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown' AND
 			outages.perspective IS NULL)
 		AS
 			outages_scope
