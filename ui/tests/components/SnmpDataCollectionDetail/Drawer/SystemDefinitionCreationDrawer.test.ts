@@ -9,8 +9,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 vi.mock('@/services/snmpDataCollectionService', () => ({
   createSystemDefinition: vi.fn(),
@@ -137,13 +137,13 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       await flushPromises()
       const drawer = wrapper.findComponent({ name: 'FeatherDrawer' })
       expect(drawer.exists()).toBe(true)
-      
+
       // Verify Feather components are registered
       const inputComponents = wrapper.findAllComponents({ name: 'FeatherInput' })
       const buttonComponents = wrapper.findAllComponents({ name: 'FeatherButton' })
       const radioGroupComponents = wrapper.findAllComponents({ name: 'FeatherRadioGroup' })
       const autocompleteComponents = wrapper.findAllComponents({ name: 'FeatherAutocomplete' })
-      
+
       // Component counts should be correct
       expect(inputComponents.length).toBeGreaterThanOrEqual(0)
       expect(buttonComponents.length).toBeGreaterThanOrEqual(0)
@@ -231,26 +231,21 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
   })
 
   describe('Form Validation', () => {
-    it('should show error when name is empty', async () => {
-      wrapper.vm.name = ''
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.name).toBe('Name is required.')
-    })
-
-    it('should show error when oidType is not selected', async () => {
-      wrapper.vm.oidType = ''
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidType).toBe('OID Type is required.')
-    })
-
-    it('should show error when oidValue is empty', async () => {
-      wrapper.vm.oidValue = ''
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value is required.')
-    })
+    it.each([
+      { field: 'name', value: '', errorKey: 'name', expectedError: 'Name is required.' },
+      { field: 'name', value: '   ', errorKey: 'name', expectedError: 'Name is required.' },
+      { field: 'oidType', value: '', errorKey: 'oidType', expectedError: 'OID Type is required.' },
+      { field: 'oidValue', value: '', errorKey: 'oidValue', expectedError: 'OID Value is required.' },
+      { field: 'oidValue', value: '   ', errorKey: 'oidValue', expectedError: 'OID Value format is invalid.' }
+    ])(
+      'should show error "$expectedError" when $field is "$value"',
+      async ({ field, value, errorKey, expectedError }) => {
+        ;(wrapper.vm as any)[field] = value
+        await nextTick()
+        const errors = wrapper.vm.validateDefinition()
+        expect(errors[errorKey as keyof typeof errors]).toBe(expectedError)
+      }
+    )
 
     it('should show error when no MIB groups are selected', async () => {
       wrapper.vm.mibGroupNames = []
@@ -268,6 +263,21 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       const errors = wrapper.vm.validateDefinition()
       expect(Object.keys(errors).length).toBe(0)
       expect(wrapper.vm.isSaveDisabled).toBe(false)
+    })
+
+    it('should maintain multiple errors simultaneously', async () => {
+      wrapper.vm.name = ''
+      wrapper.vm.oidType = ''
+      wrapper.vm.oidValue = ''
+      wrapper.vm.mibGroupNames = []
+      await nextTick()
+
+      const errors = wrapper.vm.validateDefinition()
+      expect(Object.keys(errors).length).toBe(4)
+      expect(errors.name).toBeDefined()
+      expect(errors.oidType).toBeDefined()
+      expect(errors.oidValue).toBeDefined()
+      expect(errors.mibGroupNames).toBeDefined()
     })
   })
 
@@ -294,9 +304,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       wrapper.vm.search('group-2')
       vi.advanceTimersByTime(500)
       await nextTick()
-      expect(wrapper.vm.results).toEqual([
-        { _text: 'mib-group-2', _value: 'mib-group-2' }
-      ])
+      expect(wrapper.vm.results).toEqual([{ _text: 'mib-group-2', _value: 'mib-group-2' }])
     })
 
     it('should be case-insensitive', async () => {
@@ -481,7 +489,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Create
       await nextTick()
       await flushPromises()
-      
+
       // Cancel button calls store.closeSystemDefDrawer directly
       // Verify the method is callable and works as expected
       store.closeSystemDefDrawer()
@@ -493,7 +501,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Create
       await nextTick()
       await flushPromises()
-      
+
       wrapper.vm.name = 'Test'
       // Cancel just closes drawer, doesn't trigger save
       store.closeSystemDefDrawer()
@@ -510,32 +518,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
       expect(wrapper.vm.mibGroupNames).toEqual([])
-    })
-
-    it('should handle whitespace-only name input', async () => {
-      wrapper.vm.name = '   '
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.name).toBe('Name is required.')
-    })
-
-    it('should handle whitespace-only oidValue input', async () => {
-      wrapper.vm.oidValue = '   '
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      // Whitespace fails the OID pattern validation after trim
-      expect(errors.oidValue).toBe('OID Value format is invalid.')
-    })
-
-    it('should handle multiple MIB groups selection', async () => {
-      wrapper.vm.mibGroupNames = [
-        { _text: 'mib-1', _value: 'mib-1' },
-        { _text: 'mib-2', _value: 'mib-2' },
-        { _text: 'mib-3', _value: 'mib-3' }
-      ]
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.mibGroupNames).toBeUndefined()
     })
 
     it('should handle null response from create API', async () => {
@@ -576,14 +558,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       expect(wrapper.vm.oidType).toBe('')
     })
 
-    it('should handle status toggle from true to false', async () => {
-      wrapper.vm.status = true
-      await nextTick()
-      wrapper.vm.status = false
-      await nextTick()
-      expect(wrapper.vm.status).toBe(false)
-    })
-
     it('should handle empty search query', async () => {
       wrapper.vm.search('')
       vi.advanceTimersByTime(500)
@@ -598,17 +572,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       vi.advanceTimersByTime(500)
       await nextTick()
       expect(wrapper.vm.results).toEqual([])
-    })
-
-    it('should accept OID with wildcard in mask mode', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'mask'
-      wrapper.vm.oidValue = '.1.3.6.1.4.1.*'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      // Note: The OID_PATTERN doesn't allow wildcards, but mask mode sends it anyway
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value format is invalid.')
     })
 
     it('should handle non-Error rejection', async () => {
@@ -628,19 +591,19 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should handle collection source changing during form fill', async () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      
+
       // Change collection source mid-form
       const newCollectionSource = { ...mockCollectionSource, id: 999 }
       store.selectedCollectionSource = newCollectionSource
-      
+
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
       await wrapper.vm.saveSystemDef()
-      
+
       const call = vi.mocked(createSystemDefinition).mock.calls[0]
       expect(call[1]).toBe(999) // Should use the new collection source id
     })
@@ -650,36 +613,36 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
         _text: `mib-${i}`,
         _value: `mib-${i}`
       }))
-      
+
       wrapper.vm.mibGroupNames = largeMibArray
       await nextTick()
-      
+
       const errors = wrapper.vm.validateDefinition()
       expect(errors.mibGroupNames).toBeUndefined()
       expect(wrapper.vm.mibGroupNames.length).toBe(150)
     })
 
     it('should handle concurrent save operations (double-click)', async () => {
-      vi.mocked(createSystemDefinition).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve(true), 100))
+      vi.mocked(createSystemDefinition).mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve(true), 100))
       )
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await nextTick()
-      
+
       // Trigger two saves rapidly
       const save1 = wrapper.vm.saveSystemDef()
       const save2 = wrapper.vm.saveSystemDef()
-      
+
       // Advance timers to resolve the setTimeout in the mock
       vi.advanceTimersByTime(100)
-      
+
       await Promise.all([save1, save2])
       await flushPromises()
-      
+
       // Should be called twice
       expect(createSystemDefinition).toHaveBeenCalledTimes(2)
     })
@@ -709,13 +672,13 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.selectedSystemDef = mockSystemDef
       store.systemDefDrawerState.visible = false
       await nextTick()
-      
+
       wrapper.vm.name = ''
       wrapper.vm.oidValue = ''
-      
+
       store.systemDefDrawerState.visible = true
       await nextTick()
-      
+
       expect(wrapper.vm.name).toBe('Test System')
       expect(wrapper.vm.oidValue).toBe('.1.3.6.1.4.1.8072')
     })
@@ -729,19 +692,19 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
       await flushPromises()
-      
+
       // Values should be loaded from mockSystemDef
       expect(wrapper.vm.name).toBe('Test System')
-      
+
       // Modify values before closing
       wrapper.vm.status = false
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await nextTick()
-      
+
       // Now close drawer - this should reset the form
       store.systemDefDrawerState.visible = false
       await nextTick()
-      
+
       // When visibility changes to false, the watch resets all form fields
       expect(wrapper.vm.name).toBe('')
       expect(wrapper.vm.oidType).toBe('single')
@@ -759,150 +722,125 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       wrapper.vm.name = ''
       wrapper.vm.oidType = ''
       await nextTick()
-      
+
       expect(wrapper.vm.errors.name).toBe('Name is required.')
       expect(wrapper.vm.errors.oidType).toBe('OID Type is required.')
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       await nextTick()
-      
+
       expect(wrapper.vm.errors.name).toBeUndefined()
       expect(wrapper.vm.errors.oidType).toBeUndefined()
     })
   })
 
   describe('OID Pattern Validation', () => {
-    it('should accept valid OID starting with dot', async () => {
+    it.each([
+      { oid: '.1.3.6.1.4.1.8072', description: 'with leading dot' },
+      { oid: '1.3.6.1.4.1.8072', description: 'without leading dot' },
+      { oid: '1', description: 'single number' },
+      { oid: '.1', description: 'leading dot with single number' },
+      { oid: '.0.0.0.0', description: 'with zeros' },
+      { oid: '.1.3.6.1.4.1.999999999999', description: 'with large numbers' }
+    ])('should accept valid OID $description: "$oid"', async ({ oid }) => {
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '.1.3.6.1.4.1.8072'
+      wrapper.vm.oidValue = oid
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await nextTick()
       const errors = wrapper.vm.validateDefinition()
       expect(errors.oidValue).toBeUndefined()
     })
 
-    it('should accept valid OID without leading dot', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '1.3.6.1.4.1.8072'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBeUndefined()
-    })
-
-    it('should reject OID with invalid characters', async () => {
-      wrapper.vm.oidValue = '.1.3.6.1.4.abc'
+    it.each([
+      { oid: '.1.3.6.1.4.abc', description: 'invalid characters (letters)' },
+      { oid: '.1.3.6.1.4.*', description: 'special characters (wildcard)' },
+      { oid: '.1.3..6.1', description: 'double dots' },
+      { oid: '.1.3.6.1.', description: 'trailing dot' },
+      { oid: 'invalid', description: 'non-numeric string' },
+      { oid: '  .1.3.6.1  ', description: 'leading/trailing spaces' }
+    ])('should reject OID with $description: "$oid"', async ({ oid }) => {
+      wrapper.vm.oidValue = oid
       await nextTick()
       const errors = wrapper.vm.validateDefinition()
       expect(errors.oidValue).toBe('OID Value format is invalid.')
-    })
-
-    it('should reject OID with special characters', async () => {
-      wrapper.vm.oidValue = '.1.3.6.1.4.*'
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value format is invalid.')
-    })
-
-    it('should reject OID with double dots', async () => {
-      wrapper.vm.oidValue = '.1.3..6.1'
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value format is invalid.')
-    })
-
-    it('should reject OID with trailing dot', async () => {
-      wrapper.vm.oidValue = '.1.3.6.1.'
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value format is invalid.')
-    })
-
-    it('should accept single number OID', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '1'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBeUndefined()
-    })
-
-    it('should accept OID with leading dot and single number', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '.1'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBeUndefined()
     })
   })
 
   describe('isSaveDisabled State', () => {
-    it('should disable save when name is empty', async () => {
-      wrapper.vm.name = ''
+    it.each([
+      {
+        description: 'name is empty',
+        name: '',
+        oidType: 'single',
+        oidValue: '.1.3.6.1',
+        mibGroups: [{ _text: 'mib-1', _value: 'mib-1' }]
+      },
+      {
+        description: 'oidType is empty',
+        name: 'Test',
+        oidType: '',
+        oidValue: '.1.3.6.1',
+        mibGroups: [{ _text: 'mib-1', _value: 'mib-1' }]
+      },
+      {
+        description: 'oidValue is empty',
+        name: 'Test',
+        oidType: 'single',
+        oidValue: '',
+        mibGroups: [{ _text: 'mib-1', _value: 'mib-1' }]
+      },
+      { description: 'mibGroupNames is empty', name: 'Test', oidType: 'single', oidValue: '.1.3.6.1', mibGroups: [] },
+      {
+        description: 'OID format is invalid',
+        name: 'Test',
+        oidType: 'single',
+        oidValue: 'invalid',
+        mibGroups: [{ _text: 'mib-1', _value: 'mib-1' }]
+      }
+    ])('should disable save when $description', async ({ name, oidType, oidValue, mibGroups }) => {
+      wrapper.vm.name = name
+      wrapper.vm.oidType = oidType
+      wrapper.vm.oidValue = oidValue
+      wrapper.vm.mibGroupNames = mibGroups
+      await nextTick()
+      expect(wrapper.vm.isSaveDisabled).toBe(true)
+    })
+
+    it('should enable save when all fields are valid', async () => {
+      wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await nextTick()
-      expect(wrapper.vm.isSaveDisabled).toBe(true)
+      expect(wrapper.vm.isSaveDisabled).toBe(false)
     })
-
-    it('should disable save when oidType is empty', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = ''
-      wrapper.vm.oidValue = '.1.3.6.1'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      expect(wrapper.vm.isSaveDisabled).toBe(true)
-    })
-
-    it('should disable save when oidValue is empty', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = ''
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      expect(wrapper.vm.isSaveDisabled).toBe(true)
-    })
-
-    it('should disable save when mibGroupNames is empty', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = '.1.3.6.1'
-      wrapper.vm.mibGroupNames = []
-      await nextTick()
-      expect(wrapper.vm.isSaveDisabled).toBe(true)
-    })
-
-    it('should disable save when OID format is invalid', async () => {
-      wrapper.vm.name = 'Test'
-      wrapper.vm.oidType = 'single'
-      wrapper.vm.oidValue = 'invalid'
-      wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      await nextTick()
-      expect(wrapper.vm.isSaveDisabled).toBe(true)
-    })
-
   })
 
   describe('Drawer Title', () => {
-    it('should return "Create System Definition" for create mode', () => {
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
-      expect(wrapper.vm.drawerTitle).toBe('Create System Definition')
-    })
-
-    it('should return "Edit System Definition" for edit mode', () => {
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
-      expect(wrapper.vm.drawerTitle).toBe('Edit System Definition')
+    it.each([
+      { mode: CreateEditMode.Create, expected: 'Create System Definition' },
+      { mode: CreateEditMode.Edit, expected: 'Edit System Definition' }
+    ])('should return "$expected" for $mode mode', ({ mode, expected }) => {
+      store.systemDefDrawerState.isEditMode = mode
+      expect(wrapper.vm.drawerTitle).toBe(expected)
     })
   })
 
-  describe('Edit Mode - Status Field', () => {
+  describe('Status Toggle', () => {
+    it('should toggle status when onChangeStatus is called', async () => {
+      wrapper.vm.status = true
+      await nextTick()
+      wrapper.vm.onChangeStatus()
+      await nextTick()
+      expect(wrapper.vm.status).toBe(false)
+
+      wrapper.vm.onChangeStatus()
+      await nextTick()
+      expect(wrapper.vm.status).toBe(true)
+    })
+
     it('should populate status as false when system def is disabled', async () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
       store.selectedSystemDef = { ...mockSystemDef, enabled: false }
@@ -911,14 +849,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
       expect(wrapper.vm.status).toBe(false)
-    })
-
-    it('should correctly toggle status from false to true', async () => {
-      wrapper.vm.status = false
-      await nextTick()
-      wrapper.vm.status = true
-      await nextTick()
-      expect(wrapper.vm.status).toBe(true)
     })
   })
 
@@ -989,7 +919,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       // Start with invalid state (empty fields from Create mode reset)
       const initialErrors = wrapper.vm.validateDefinition()
       expect(initialErrors.name).toBe('Name is required.')
-      
+
       // Make it valid
       wrapper.vm.name = 'Valid Name'
       wrapper.vm.oidType = 'single'
@@ -1000,33 +930,18 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       expect(updatedErrors.name).toBeUndefined()
     })
 
-    it('should maintain multiple errors simultaneously', async () => {
-      wrapper.vm.name = ''
-      wrapper.vm.oidType = ''
-      wrapper.vm.oidValue = ''
-      wrapper.vm.mibGroupNames = []
-      await nextTick()
-      
-      const errors = wrapper.vm.validateDefinition()
-      expect(Object.keys(errors).length).toBe(4)
-      expect(errors.name).toBeDefined()
-      expect(errors.oidType).toBeDefined()
-      expect(errors.oidValue).toBeDefined()
-      expect(errors.mibGroupNames).toBeDefined()
-    })
-
     it('should clear individual errors independently', async () => {
       wrapper.vm.name = ''
       wrapper.vm.oidValue = 'invalid'
       wrapper.vm.oidType = 'single'
       wrapper.vm.mibGroupNames = []
       await nextTick()
-      
+
       let errors = wrapper.vm.validateDefinition()
       expect(errors.name).toBeDefined()
       expect(errors.oidValue).toBeDefined()
       expect(errors.mibGroupNames).toBeDefined()
-      
+
       wrapper.vm.name = 'Valid'
       await nextTick()
       errors = wrapper.vm.validateDefinition()
@@ -1159,39 +1074,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       const drawer = wrapper.find('[data-test="system-definition-drawer"]')
       expect(drawer.exists()).toBe(true)
     })
-
-    it('should have data-test attribute on name input', () => {
-      // Note: With FeatherDrawer stubbed as `true`, slots are not rendered.
-      // This test verifies the drawer's data-test attribute exists.
-      // The actual input data-test attributes are verified by the fact that
-      // the component template contains them (static analysis).
-      const drawer = wrapper.find('[data-test="system-definition-drawer"]')
-      expect(drawer.exists()).toBe(true)
-    })
-
-    it('should have data-test attribute on oid type input', () => {
-      // Verified through component template - stubbed components don't render slots
-      const drawer = wrapper.find('[data-test="system-definition-drawer"]')
-      expect(drawer.exists()).toBe(true)
-    })
-
-    it('should have data-test attribute on oid value input', () => {
-      // Verified through component template - stubbed components don't render slots
-      const drawer = wrapper.find('[data-test="system-definition-drawer"]')
-      expect(drawer.exists()).toBe(true)
-    })
-
-    it('should have data-test attribute on mib groups input', () => {
-      // Verified through component template - stubbed components don't render slots
-      const drawer = wrapper.find('[data-test="system-definition-drawer"]')
-      expect(drawer.exists()).toBe(true)
-    })
-
-    it('should have data-test attribute on status input', () => {
-      // Verified through component template - stubbed components don't render slots
-      const drawer = wrapper.find('[data-test="system-definition-drawer"]')
-      expect(drawer.exists()).toBe(true)
-    })
   })
 
   describe('Collection Source Edge Cases', () => {
@@ -1251,7 +1133,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.visible = false
       await nextTick()
       await flushPromises()
-      
+
       // Update selectedSystemDef with both sysoid and sysoidMask
       store.selectedSystemDef = {
         ...mockSystemDef,
@@ -1259,12 +1141,12 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
         sysoidMask: '.1.3.6.1.4.1.*'
       }
       await nextTick()
-      
+
       // Now open the drawer to trigger loadInitialData
       store.systemDefDrawerState.visible = true
       await nextTick()
       await flushPromises()
-      
+
       // The component's oidType prioritizes sysoidMask (mask > sysoid)
       // However, oidValue uses: def.sysoid || def.sysoidMask || ''
       // This means when both are set, oidType='mask' but oidValue takes sysoid first
@@ -1304,8 +1186,6 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       expect(wrapper.vm.oidValue).toBe('')
     })
   })
-
-
 
   describe('Rapid Form Changes', () => {
     beforeEach(async () => {
@@ -1386,16 +1266,16 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.selectedSystemDef = { ...mockSystemDef, id: 0 }
       store.systemDefDrawerState.visible = true
       await nextTick()
-      
+
       vi.mocked(updateSystemDefinition).mockResolvedValue(true)
-      
+
       wrapper.vm.name = 'Updated Name'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await wrapper.vm.saveSystemDef()
       await flushPromises()
-      
+
       const payload = vi.mocked(updateSystemDefinition).mock.calls[0][0]
       expect(payload.id).toBe(0)
     })
@@ -1460,14 +1340,14 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should show correct success message for create', async () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Create
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await wrapper.vm.saveSystemDef()
       await flushPromises()
-      
+
       expect(mockShowSnackBar).toHaveBeenCalledWith({
         msg: 'System Definition created successfully.'
       })
@@ -1477,14 +1357,14 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
       store.selectedSystemDef = mockSystemDef
       vi.mocked(updateSystemDefinition).mockResolvedValue(true)
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await wrapper.vm.saveSystemDef()
       await flushPromises()
-      
+
       expect(mockShowSnackBar).toHaveBeenCalledWith({
         msg: 'System Definition updated successfully.'
       })
@@ -1500,11 +1380,11 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
 
     it('should preserve selected MIB groups across searches', async () => {
       wrapper.vm.mibGroupNames = [{ _text: 'mib-group-1', _value: 'mib-group-1' }]
-      
+
       wrapper.vm.search('group-2')
       vi.advanceTimersByTime(500)
       await nextTick()
-      
+
       // Selection should be preserved while results change
       expect(wrapper.vm.mibGroupNames).toEqual([{ _text: 'mib-group-1', _value: 'mib-group-1' }])
       expect(wrapper.vm.results.length).toBe(1)
@@ -1518,7 +1398,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
         { _text: 'mib-group-3', _value: 'mib-group-3' }
       ]
       await nextTick()
-      
+
       const errors = wrapper.vm.validateDefinition()
       expect(errors.mibGroupNames).toBeUndefined()
     })
@@ -1529,7 +1409,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
         { _text: 'mib-group-1', _value: 'mib-group-1' }
       ]
       await nextTick()
-      
+
       // Component accepts duplicates (filter handles it on save)
       expect(wrapper.vm.mibGroupNames.length).toBe(2)
     })
@@ -1557,15 +1437,15 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should keep loading true during rapid consecutive searches', async () => {
       wrapper.vm.search('a')
       expect(wrapper.vm.loading).toBe(true)
-      
+
       vi.advanceTimersByTime(100)
       wrapper.vm.search('ab')
       expect(wrapper.vm.loading).toBe(true)
-      
+
       vi.advanceTimersByTime(100)
       wrapper.vm.search('abc')
       expect(wrapper.vm.loading).toBe(true)
-      
+
       vi.advanceTimersByTime(500)
       await nextTick()
       expect(wrapper.vm.loading).toBe(false)
@@ -1574,14 +1454,14 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should not set loading false if new search started before completion', async () => {
       wrapper.vm.search('first')
       vi.advanceTimersByTime(400)
-      
+
       // Start new search before first completes
       wrapper.vm.search('second')
       vi.advanceTimersByTime(300)
-      
+
       // Loading should still be true as second search hasn't completed
       expect(wrapper.vm.loading).toBe(true)
-      
+
       vi.advanceTimersByTime(200)
       await nextTick()
       expect(wrapper.vm.loading).toBe(false)
@@ -1632,64 +1512,27 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     })
   })
 
-  describe('Computed Properties', () => {
-    it('should update drawerTitle when mode changes', async () => {
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Create
-      await nextTick()
-      expect(wrapper.vm.drawerTitle).toBe('Create System Definition')
-      
-      store.systemDefDrawerState.isEditMode = CreateEditMode.Edit
-      await nextTick()
-      expect(wrapper.vm.drawerTitle).toBe('Edit System Definition')
-    })
-  })
-
-  describe('WatchEffect Cleanup', () => {
-    it('should stop watching when component is unmounted', async () => {
+  describe('Component Cleanup', () => {
+    it('should handle unmount while watching', async () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
       await nextTick()
-      
-      expect(wrapper.vm.isSaveDisabled).toBe(false)
-      
-      // Unmount component
-      wrapper.unmount()
-      
-      // No errors should be thrown
-      expect(true).toBe(true)
-    })
-  })
 
-  describe('Search Timeout Cleanup', () => {
-    it('should clear timeout when component unmounts', async () => {
+      expect(wrapper.vm.isSaveDisabled).toBe(false)
+      wrapper.unmount()
+      // No errors should be thrown - test passes if no exception
+    })
+
+    it('should handle unmount with pending search timeout', async () => {
       wrapper.vm.search('test')
       expect(wrapper.vm.timeout).not.toBeNull()
-      
-      // Unmount before timeout completes
       wrapper.unmount()
-      
-      // Should not throw errors
-      expect(true).toBe(true)
-    })
-
-    it('should handle rapid mount/unmount cycles', async () => {
-      store.systemDefDrawerState.visible = true
-      await nextTick()
-      
-      wrapper.vm.search('test')
-      
-      store.systemDefDrawerState.visible = false
-      await nextTick()
-      
-      store.systemDefDrawerState.visible = true
-      await nextTick()
-      
-      expect(true).toBe(true)
+      // No errors should be thrown - test passes if no exception
     })
   })
 
@@ -1697,16 +1540,16 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
     it('should react to selectedCollectionSource changes', async () => {
       store.systemDefDrawerState.visible = true
       await nextTick()
-      
+
       expect(store.selectedCollectionSource?.id).toBe(1)
-      
+
       store.selectedCollectionSource = {
         ...mockCollectionSource,
         id: 999,
         name: 'New Source'
       }
       await nextTick()
-      
+
       expect(store.selectedCollectionSource.id).toBe(999)
     })
 
@@ -1716,7 +1559,7 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
       vi.advanceTimersByTime(500)
       await nextTick()
       expect(wrapper.vm.results.length).toBe(2)
-      
+
       store.mibGroupNames = ['mib-1', 'mib-2', 'mib-3', 'mib-4']
       wrapper.vm.search('mib')
       vi.advanceTimersByTime(500)
@@ -1726,11 +1569,11 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
 
     it('should react to drawer visibility changes', async () => {
       expect(store.systemDefDrawerState.visible).toBe(false)
-      
+
       store.systemDefDrawerState.visible = true
       await nextTick()
       expect(wrapper.vm.name).toBe('') // Create mode resets
-      
+
       store.systemDefDrawerState.visible = false
       await nextTick()
       expect(wrapper.vm.name).toBe('') // Close resets
@@ -1738,31 +1581,9 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
   })
 
   describe('OID Value Edge Cases', () => {
-    it('should handle OID with large numbers', async () => {
-      wrapper.vm.oidValue = '.1.3.6.1.4.1.999999999999'
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBeUndefined()
-    })
-
     it('should handle very deep OID hierarchy', async () => {
       const deepOid = '.1' + '.2'.repeat(100)
       wrapper.vm.oidValue = deepOid
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBeUndefined()
-    })
-
-    it('should reject OID with leading/trailing spaces after trim', async () => {
-      // v-model.trim should handle this, but test validation
-      wrapper.vm.oidValue = ''
-      await nextTick()
-      const errors = wrapper.vm.validateDefinition()
-      expect(errors.oidValue).toBe('OID Value is required.')
-    })
-
-    it('should handle OID with zeros', async () => {
-      wrapper.vm.oidValue = '.0.0.0.0'
       await nextTick()
       const errors = wrapper.vm.validateDefinition()
       expect(errors.oidValue).toBeUndefined()
@@ -1802,16 +1623,12 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
         { _text: 'm-group', _value: 'm-group' }
       ]
       await nextTick()
-      
+
       expect(wrapper.vm.mibGroupNames[0]._text).toBe('z-group')
       expect(wrapper.vm.mibGroupNames[1]._text).toBe('a-group')
       expect(wrapper.vm.mibGroupNames[2]._text).toBe('m-group')
     })
   })
-
-
-
-
 
   describe('Payload Mapping Edge Cases', () => {
     beforeEach(async () => {
@@ -1822,30 +1639,30 @@ describe('SystemDefinitionCreationDrawer.vue', () => {
 
     it('should handle empty string OID correctly based on type', async () => {
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      
+
       await wrapper.vm.saveSystemDef()
       const call = vi.mocked(createSystemDefinition).mock.calls[0]
-      
+
       expect(call[0].sysoid).toBe('.1.3.6.1')
       expect(call[0].sysoidMask).toBe('')
     })
 
     it('should map ipAddresses as empty string', async () => {
       vi.mocked(createSystemDefinition).mockResolvedValue(true)
-      
+
       wrapper.vm.name = 'Test'
       wrapper.vm.oidType = 'single'
       wrapper.vm.oidValue = '.1.3.6.1'
       wrapper.vm.mibGroupNames = [{ _text: 'mib-1', _value: 'mib-1' }]
-      
+
       await wrapper.vm.saveSystemDef()
       const call = vi.mocked(createSystemDefinition).mock.calls[0]
-      
+
       expect(call[0].ipAddresses).toBe('')
       expect(call[0].ipAddressMasks).toBe('')
     })

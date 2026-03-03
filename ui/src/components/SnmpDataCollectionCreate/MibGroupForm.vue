@@ -160,7 +160,7 @@ import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import MibObjectCreationDrawer from '../SnmpDataCollectionDetail/Drawer/MibObjectCreationDrawer.vue'
+import MibObjectCreationDrawer from './Drawer/MibObjectCreationDrawer.vue'
 
 const store = useSnmpDataCollectionCreationStore()
 const name = ref('')

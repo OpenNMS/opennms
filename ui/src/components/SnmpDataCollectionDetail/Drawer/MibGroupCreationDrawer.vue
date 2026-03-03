@@ -291,7 +291,7 @@ const onChangeStatus = () => {
   status.value = !status.value
 }
 
-const closeMibGroupDrawer = () => {
+const closeMibGroupDrawer = async () => {
   oid.value = ''
   dataType.value = DEFAULT_MIB_OBJ_TYPE
   instance.value = { _text: '0', _value: '0' }
@@ -308,7 +308,7 @@ const closeMibGroupDrawer = () => {
   isSaveDisabled.value = true
   isMibObjectSaveDisabled.value = true
   closeMibObjectDrawer()
-  store.closeMibGroupDrawer()
+  await store.closeMibGroupDrawer()
 }
 
 const deleteMibObject = (index: number) => {

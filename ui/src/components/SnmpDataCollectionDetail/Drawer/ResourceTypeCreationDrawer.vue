@@ -436,7 +436,7 @@ const deletePersistenceSelectorStrategy = (index: number) => {
   persistenceSelectorStrategyParams.value.splice(index, 1)
 }
 
-const closeResourceTypeDrawer = () => {
+const closeResourceTypeDrawer = async () => {
   name.value = ''
   label.value = ''
   resourceLabel.value = ''
@@ -447,7 +447,7 @@ const closeResourceTypeDrawer = () => {
   persistenceSelectorStrategyParams.value = []
   errors.value = {}
   closeParameterDrawer()
-  store.closeResourceTypeDrawer()
+  await store.closeResourceTypeDrawer()
 }
 
 const saveResourceType = async () => {
