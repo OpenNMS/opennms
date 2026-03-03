@@ -176,6 +176,7 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
     },
     async onMibGroupsPageSizeChange(pageSize: number) {
       this.mibGroupsPagination.pageSize = pageSize
+      this.mibGroupsPagination.page = 1
       await this.fetchMibGroups()
     },
     async onChangeMibGroupsSearchTerm(value: string) {

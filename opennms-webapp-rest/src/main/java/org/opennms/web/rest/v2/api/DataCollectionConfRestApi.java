@@ -93,7 +93,7 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext );
 
     @GET
-    @Path("/filter/{dataCollectionGroupId}/mibgroups")
+    @Path("/filter/{collectionSourceId}/mibgroups")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
             summary = "Get DataCollectionMibGroup by Collection Source ID with filtering and sorting",
@@ -114,7 +114,7 @@ public interface DataCollectionConfRestApi {
                     content = @Content)
     })
     Response filterDataCollectionMibGroupByCollectionSourceId(
-            @PathParam("dataCollectionGroupId") Integer dataCollectionGroupId,
+            @PathParam("collectionSourceId") Integer collectionSourceId,
             @QueryParam("mibGroupFilter") String mibGroupFilter,
             @QueryParam("sortBy") String sortBy,
             @QueryParam("order") String order,
@@ -124,7 +124,7 @@ public interface DataCollectionConfRestApi {
             @Context SecurityContext securityContext );
 
     @GET
-    @Path("/filter/{dataCollectionGroupId}/resourcetypes")
+    @Path("/filter/{collectionSourceId}/resourcetypes")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
             summary = "Get DataCollectionResourceType by Collection Source ID with filtering and sorting",
@@ -155,7 +155,7 @@ public interface DataCollectionConfRestApi {
             )
     })
     Response filterDataCollectionResourceTypeByCollectionSourceId(
-            @PathParam("dataCollectionGroupId") Integer dataCollectionGroupId,
+            @PathParam("collectionSourceId") Integer collectionSourceId,
             @QueryParam("resourceTypeFilter") String resourceTypeFilter,
             @QueryParam("sortBy") String sortBy,
             @QueryParam("order") String order,
@@ -166,7 +166,7 @@ public interface DataCollectionConfRestApi {
     );
 
     @GET
-    @Path("/filter/{dataCollectionGroupId}/systemdefs")
+    @Path("/filter/{collectionSourceId}/systemdefs")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
             summary = "Get DataCollectionSystemDef by Collection Source ID with filtering and sorting",
@@ -197,7 +197,7 @@ public interface DataCollectionConfRestApi {
             )
     })
     Response filterDataCollectionSystemDefByCollectionSourceId(
-            @PathParam("dataCollectionGroupId") Integer dataCollectionGroupId,
+            @PathParam("collectionSourceId") Integer collectionSourceId,
             @QueryParam("systemDefsFilter") String systemDefFilter,
             @QueryParam("sortBy") String sortBy,
             @QueryParam("order") String order,

@@ -37,9 +37,11 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         name = "snmp_collection_systemdefs",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"datacollection_group_id", "name"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"collection_source_id", "name"})
 )
 public class SnmpCollectionSystemDef  implements  Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "snmp_collection_systemdefs_seq")
@@ -51,7 +53,7 @@ public class SnmpCollectionSystemDef  implements  Serializable{
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "datacollection_group_id", nullable = false)
+    @JoinColumn(name = "collection_source_id", nullable = false)
     private SnmpCollectionSource collectionSource;
 
     @Column(nullable = false, length = 256)

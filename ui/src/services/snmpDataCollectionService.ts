@@ -181,7 +181,7 @@ export const getSnmpDataCollectionSystemDefinitions = async (
  * @param {number} collectionSourceId The ID of the collection source to filter MIB groups for.
  * @param {number} offset The offset of the page of results to return.
  * @param {number} limit The maximum number of results to return in a page.
- * @param {string} mibGroupsFilter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
+ * @param {string} mibGroupFilter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
  * @param {string} sortBy The field to sort the results by.
  * @param {string} order The order in which to sort the results (either "asc" or "desc").
  * @returns {Promise<SnmpCollectionMibGroupResponse>} A promise that resolves to an object containing the filtered SNMP data collection MIB groups.
@@ -190,7 +190,7 @@ export const getSnmpDataCollectionMibGroups = async (
   collectionSourceId: number,
   offset: number,
   limit: number,
-  mibGroupsFilter: string,
+  mibGroupFilter: string,
   sortBy: string,
   order: string
 ): Promise<SnmpCollectionMibGroupResponse> => {
@@ -200,7 +200,7 @@ export const getSnmpDataCollectionMibGroups = async (
       params: {
         offset,
         limit,
-        mibGroupsFilter,
+        mibGroupFilter,
         sortBy,
         order
       }
@@ -222,7 +222,7 @@ export const getSnmpDataCollectionMibGroups = async (
 /**
  * Makes a GET request to the REST endpoint to filter SNMP data collection resource types.
  *
- * @param {number} dataCollectionGroupId The ID of the SNMP data collection to filter resource types for.
+ * @param {number} collectionSourceId The ID of the SNMP data collection to filter resource types for.
  * @param {number} offset The offset of the page of results to return.
  * @param {number} limit The maximum number of results to return in a page.
  * @param {string} resourceTypeFilter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
@@ -231,14 +231,14 @@ export const getSnmpDataCollectionMibGroups = async (
  * @returns {Promise<SnmpCollectionResourceTypeResponse>} A promise that resolves to an object containing the filtered SNMP data collection resource types.
  */
 export const getSnmpDataCollectionResourceTypes = async (
-  dataCollectionGroupId: number,
+  collectionSourceId: number,
   offset: number,
   limit: number,
   resourceTypeFilter: string,
   sortBy: string,
   order: string
 ): Promise<SnmpCollectionResourceTypeResponse> => {
-  const endpoint = `/datacollectionconf/filter/${dataCollectionGroupId}/resourcetypes`
+  const endpoint = `/datacollectionconf/filter/${collectionSourceId}/resourcetypes`
   try {
     const response = await v2.get(endpoint, {
       params: {

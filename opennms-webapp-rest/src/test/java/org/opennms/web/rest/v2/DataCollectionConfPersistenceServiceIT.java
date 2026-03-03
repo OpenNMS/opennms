@@ -309,7 +309,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
     @Test
     @Transactional
-    public void testFilterMibGroupByDataCollectionGroupId() {
+    public void testFilterMibGroupByCollectionSourceId() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.snmp.source");
@@ -341,38 +341,38 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionMibGroupDao.flush();
 
         // 1. Exact filter by name ASC
-        PageResponse<SnmpCollectionMibGroup> result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionMibGroup> result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "if-mib-interfaces", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("mib"), ascending by name
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "mib", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         // asc: if-mib-interfaces comes first
 
         // 3. Partial filter, descending by name
-         result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
+         result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "mib", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 4. Filter by ifType substring, ascending
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "Ethernet", "ifType", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 5. Filter by ifType substring, descending
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "Loopback", "ifType", "DESC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 6. Case-insensitive filter (should match "ip-MIB")
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "IP-MIB", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 7. Pagination - only second result returned
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "mib", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("ip-mib", result.getRecords().get(0).getName());
 
         // 8. Filter with no match
-        result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(src.getId(), "not-found", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 
@@ -380,7 +380,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
     @Test
     @Transactional
-    public void testFilterResourceTypeByDataCollectionGroupId() {
+    public void testFilterResourceTypeByCollectionSourceId() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("group.source.name");
@@ -413,47 +413,47 @@ public class DataCollectionConfPersistenceServiceIT {
         snmpCollectionResourceTypeDao.flush();
 
         // 1. Exact filter by name, ascending by name
-        PageResponse<SnmpCollectionResourceType> result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionResourceType> result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "cpu-resource", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 2. Partial filter ("resource"), ascending by name
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "resource", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 3. Partial filter, descending by name
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "resource", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
 
         // 4. Filter by label substring, ascending
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "Disk", "label", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
         // 5. Filter by label substring (case-insensitive), descending
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "cpu utilization", "label", "DESC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
 
         // 6. Pagination: only second returned
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "resource", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("disk-resource", (result.getRecords().get(0)).getName());
 
         // 7. Filter with no match
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), "notfound", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 
         // 8. Null filter (should return all for group), ascending by label
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), null, "label", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), null, "label", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals(2, result.getRecords().size());
         assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
         assertEquals("disk-resource", (result.getRecords().get(1)).getName());
 
         // 9. Invalid sortBy field defaults to name ascending
-        result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("cpu-resource", (result.getRecords().get(0)).getName());
         assertEquals("disk-resource", (result.getRecords().get(1)).getName());
@@ -461,7 +461,7 @@ public class DataCollectionConfPersistenceServiceIT {
 
     @Test
     @Transactional
-    public void testFilterSystemDefByDataCollectionGroupId() {
+    public void testFilterSystemDefByCollectionSourceId() {
         // Setup source entity
         SnmpCollectionSource src = new SnmpCollectionSource();
         src.setName("core-snmp");
@@ -496,42 +496,42 @@ public class DataCollectionConfPersistenceServiceIT {
 
 
         // 1. Exact filter by name ASC
-        PageResponse<SnmpCollectionSystemDef> result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
+        PageResponse<SnmpCollectionSystemDef> result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "LinuxSystem", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
 
         // 2. Partial filter ("System"), ascending by name
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "System", "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 3. Partial filter, descending by name
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "DESC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "System", "name", "DESC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
 
         // 4. Case-insensitive filter
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "LINUXSYSTEM", "name", "ASC", 0, 0, 10);
         assertEquals(1, result.getTotalRecords());
 
 
         // 5. Pagination - only second returned
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "System", "name", "ASC", 0, 1, 1);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "System", "name", "ASC", 0, 1, 1);
         assertEquals(2, result.getTotalRecords());
         assertEquals(1, result.getRecords().size());
         assertEquals("WindowsSystem", (result.getRecords().get(0)).getName());
 
         // 6. Filter with no match
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), "Solaris", "name", "ASC", 0, 0, 10);
         assertEquals(0, result.getTotalRecords());
         assertTrue(result.getRecords().isEmpty());
 
         // 7. Null filter - should return all for group, ascending
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), null, "name", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), null, "name", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());
 
         // 8. Invalid sortBy field defaults to name ascending
-        result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
+        result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(src.getId(), null, "invalidSort", "ASC", 0, 0, 10);
         assertEquals(2, result.getTotalRecords());
         assertEquals("LinuxSystem", (result.getRecords().get(0)).getName());
         assertEquals("WindowsSystem", (result.getRecords().get(1)).getName());

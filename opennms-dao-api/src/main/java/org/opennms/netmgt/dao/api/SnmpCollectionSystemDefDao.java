@@ -50,7 +50,9 @@ public interface SnmpCollectionSystemDefDao extends OnmsDao<SnmpCollectionSystem
 
     void deleteBySourceId(Integer snmpCollectionSourceId);
 
-    PageResponse<SnmpCollectionSystemDef> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String systemDefsFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+    List<SnmpCollectionSystemDef> filterSystemDefsConf(String name,String vendor, String collectionSourceName, int offset, int limit);
+
+    PageResponse<SnmpCollectionSystemDef> findByCollectionSourceId(Integer snmpCollectionSourceId, String systemDefsFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
     SnmpCollectionSystemDef findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer  id);
 

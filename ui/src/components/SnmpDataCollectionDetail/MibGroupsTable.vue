@@ -1,6 +1,8 @@
 <template>
   <div class="mib-groups-table-container">
+  <div class="mib-groups-table-container">
     <div class="header">
+      <div class="section-left">
       <div class="section-left">
         <div class="search-container">
           <FeatherInput
@@ -211,6 +213,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
 import { FeatherChip } from '@featherds/chips'
 import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
+import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
