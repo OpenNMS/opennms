@@ -24,12 +24,11 @@ package org.opennms.netmgt.syslogd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +48,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-@EventListener(name=Syslogd.LOG4J_CATEGORY, logPrefix=Syslogd.LOG4J_CATEGORY)
-public class Syslogd extends AbstractServiceDaemon {
+public class Syslogd extends AbstractServiceDaemon implements MessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
 
@@ -59,8 +57,14 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     public static final String LOG4J_CATEGORY = "syslogd";
 
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
     @Autowired
     private SyslogReceiver m_udpEventReceiver;
+
+    @Autowired(required = false)
+    private MessageBus m_messageBus;
 
     /**
      * <p>Constructor for Syslogd.</p>
@@ -82,7 +86,12 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     @Override
     protected void onInit() {
-        // Nothing to do
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("Syslogd subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — Syslogd will not receive IPC events via MessageBus");
+        }
     }
 
     /**
@@ -130,8 +139,21 @@ public class Syslogd extends AbstractServiceDaemon {
         start();
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, Syslogd.LOG4J_CATEGORY, (event) -> handleConfigurationChanged());
+    // --- MessageHandler interface ---
+    // getName() is already defined by AbstractServiceDaemon and satisfies MessageHandler
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if (LOG4J_CATEGORY.equalsIgnoreCase(daemonName)) {
+                handleConfigurationChanged();
+            }
+        }
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 }

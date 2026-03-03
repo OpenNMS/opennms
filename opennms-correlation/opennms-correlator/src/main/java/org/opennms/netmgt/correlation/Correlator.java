@@ -28,11 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.xml.event.Event;
@@ -46,12 +48,17 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
+public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar, MessageHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(Correlator.class);
 
 	// when reloading daemon, set this event param to "false" to not to reload state ( default, it reloads previous state.)
 	public static final String EVENT_PARM_PERSIST_STATE = "persistState";
+
+	/** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+	private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
 	private EventIpcManager m_eventIpcManager;
+	private MessageBus m_messageBus;
 	private Map<String,CorrelationEngine> m_engines = new HashMap<>();
 	private final List<EngineAdapter> m_adapters = new LinkedList<>();
 	private boolean m_initialized = false;
@@ -150,7 +157,14 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		}
         
         m_initialized = true;
-		
+
+		if (m_messageBus != null) {
+			m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+			LOG.info("Correlator subscribed to MessageBus for IPC events");
+		} else {
+			LOG.warn("MessageBus not available — Correlator will not receive IPC events via MessageBus");
+		}
+
 	}
 
 	/** {@inheritDoc} */
@@ -226,5 +240,31 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
     @Override
     public Collection<CorrelationEngine> getEngines() {
         return m_engines.values();
+    }
+
+    // --- MessageHandler interface ---
+    // getName() already provided by AbstractServiceDaemon
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            // Correlator reload targets engine name, not daemon name
+            if (daemonName != null) {
+                for (EngineAdapter adapter : m_adapters) {
+                    if (daemonName.contains(adapter.getName())) {
+                        boolean persistState = !"false".equals(message.getParameter(EVENT_PARM_PERSIST_STATE));
+                        m_eventIpcManager.removeEventListener(adapter);
+                        adapter.m_engine.reloadConfig(persistState);
+                        adapter.registerEventListeners();
+                    }
+                }
+            }
+        }
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 }

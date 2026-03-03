@@ -32,6 +32,11 @@
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <!-- Required for the DefaultCollectionAgentFactory implementation -->
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>

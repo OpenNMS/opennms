@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -45,7 +48,7 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-public class TroubleTicketer implements SpringServiceDaemon, EventListener {
+public class TroubleTicketer implements SpringServiceDaemon, EventListener, MessageHandler {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TroubleTicketer.class);
 
@@ -57,8 +60,12 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
      * Typically wired in by Spring (applicationContext-troubleTicketer.xml)
      * @param eventIpcManager
      */
+    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
+    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
+
 	private volatile EventIpcManager m_eventIpcManager;
     private volatile TicketerServiceLayer m_ticketerServiceLayer;
+    private volatile MessageBus m_messageBus;
 
 	/**
 	 * <p>setEventIpcManager</p>
@@ -96,11 +103,17 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
     			EventConstants.TROUBLETICKET_CANCEL_UEI,
     			EventConstants.TROUBLETICKET_CLOSE_UEI,
     			EventConstants.TROUBLETICKET_CREATE_UEI,
-    			EventConstants.TROUBLETICKET_UPDATE_UEI,
-                EventConstants.RELOAD_DAEMON_CONFIG_UEI
+    			EventConstants.TROUBLETICKET_UPDATE_UEI
     	};
     	m_eventIpcManager.addEventListener(this, Arrays.asList(ueis));
-        
+
+        if (m_messageBus != null) {
+            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
+            LOG.info("TroubleTicketer subscribed to MessageBus for IPC events");
+        } else {
+            LOG.warn("MessageBus not available — TroubleTicketer will not receive IPC events via MessageBus");
+        }
+
         m_initialized = true;
     }
 
@@ -151,8 +164,6 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
 			handleCreateTicket(e);
 		} else if (EventConstants.TROUBLETICKET_UPDATE_UEI.equals(e.getUei())) {
 			handleUpdateTicket(e);
-		} else if (isReloadConfigEvent(e)) {
-            handleTicketerReload(e);
  		}
         } catch (InsufficientInformationException ex) {
             LOG.warn("Unable to create trouble ticket due to lack of information: {}", ex.getMessage());
@@ -231,22 +242,21 @@ public class TroubleTicketer implements SpringServiceDaemon, EventListener {
         m_ticketerServiceLayer.cancelTicketForAlarm(alarmId, ticketId);
 	}
 
-    private boolean isReloadConfigEvent(IEvent event) {
-        boolean isTarget = false;
-        if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<IParm> parmCollection = event.getParmCollection();
-            for (IParm parm : parmCollection) {
-                if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Ticketd".equalsIgnoreCase(parm.getValue().getContent())) {
-                    isTarget = true;
-                    break;
-                }
+    // --- MessageHandler interface ---
+
+    @Override
+    public void onMessage(IpcMessage message) {
+        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
+        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
+            String daemonName = message.getParameter(EventConstants.PARM_DAEMON_NAME);
+            if ("Ticketd".equalsIgnoreCase(daemonName)) {
+                m_ticketerServiceLayer.reloadTicketer();
             }
         }
-        return isTarget;
     }
-    
-    private void handleTicketerReload(IEvent e) {
-        m_ticketerServiceLayer.reloadTicketer();
+
+    public void setMessageBus(MessageBus messageBus) {
+        m_messageBus = messageBus;
     }
 
     public static String getLoggingCategory() {

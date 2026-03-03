@@ -164,5 +164,10 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
