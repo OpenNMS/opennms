@@ -171,6 +171,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         Files.createDirectories(etc);
 
         writeTrapdConfig(etc);
+        writeKarafShellConfig(etc);
         writeTelemetryListenerConfigs(etc);
 
         if (!profile.isLegacy()) {
@@ -193,7 +194,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             Map.of(
                 "location", profile.getLocation(),
                 "id", profile.getId(),
-                "broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616"
+                "broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616",
+                "http-url", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms"
             ));
     }
 
@@ -202,6 +204,13 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             Map.of(
                 "trapd.listen.interface", "0.0.0.0",
                 "trapd.useAddressFromVarbind", "true"
+            ));
+    }
+
+    private void writeKarafShellConfig(Path etc) {
+        OverlayUtils.writeProps(etc.resolve("org.apache.karaf.shell.cfg"),
+            Map.of(
+                "sshHost", "0.0.0.0"
             ));
     }
 
@@ -250,6 +259,11 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     private void writeKafkaConfigs(Path etc) {
         String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
         String compressionType = model.getKafkaCompressionStrategy().getCodec();
+
+        Map<String, String> commonProps = new LinkedHashMap<>();
+        commonProps.put("bootstrap.servers", bootstrapServers);
+        commonProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.kafka.cfg"), commonProps);
 
         Map<String, String> rpcProps = new LinkedHashMap<>();
         rpcProps.put("bootstrap.servers", bootstrapServers);
