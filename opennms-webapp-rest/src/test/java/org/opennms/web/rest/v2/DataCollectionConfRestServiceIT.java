@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +65,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -105,6 +107,9 @@ public class DataCollectionConfRestServiceIT {
 
     @Autowired
     private SnmpCollectionSystemDefDao snmpCollectionSystemDefDao;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Before
     public void setUp() {
@@ -1304,6 +1309,398 @@ public class DataCollectionConfRestServiceIT {
                 src.getId(), "delete-me-systemdef", "name", "ASC", 0, 0, 10, securityContext);
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), filter.getStatus());
 
+    }
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpDataCollectionSources_success_enable() throws Exception {
+        SnmpCollectionSource s1 = new SnmpCollectionSource();
+        s1.setName("enable.test.snmp.1");
+        s1.setVendor("v1");
+        s1.setDescription("desc1");
+        s1.setCreatedTime(new Date());
+        s1.setEnabled(false);
+
+        SnmpCollectionSource s2 = new SnmpCollectionSource();
+        s2.setName("enable.test.snmp.2");
+        s2.setVendor("v2");
+        s2.setDescription("desc2");
+        s2.setCreatedTime(new Date());
+        s2.setEnabled(false);
+
+        snmpCollectionSourceDao.saveOrUpdate(s1);
+        snmpCollectionSourceDao.saveOrUpdate(s2);
+        snmpCollectionSourceDao.flush();
+
+        List<Integer> ids = Arrays.asList(s1.getId(), s2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpDataCollectionSources(true, ids, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP data collection sources updated successfully.", resp.getEntity());
+
+        SnmpCollectionSource r1 = snmpCollectionSourceDao.get(s1.getId());
+        SnmpCollectionSource r2 = snmpCollectionSourceDao.get(s2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpDataCollectionSources_success_disable() throws Exception {
+        SnmpCollectionSource s1 = new SnmpCollectionSource();
+        s1.setName("disable.test.snmp.1");
+        s1.setVendor("v1");
+        s1.setDescription("desc1");
+        s1.setCreatedTime(new Date());
+        s1.setEnabled(true);
+
+        SnmpCollectionSource s2 = new SnmpCollectionSource();
+        s2.setName("disable.test.snmp.2");
+        s2.setVendor("v2");
+        s2.setDescription("desc2");
+        s2.setCreatedTime(new Date());
+        s2.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(s1);
+        snmpCollectionSourceDao.saveOrUpdate(s2);
+        snmpCollectionSourceDao.flush();
+
+        List<Integer> ids = Arrays.asList(s1.getId(), s2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpDataCollectionSources(false, ids, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP data collection sources updated successfully.", resp.getEntity());
+
+        SnmpCollectionSource r1 = snmpCollectionSourceDao.get(s1.getId());
+        SnmpCollectionSource r2 = snmpCollectionSourceDao.get(s2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpMibGroups_success_enable() throws Exception {
+        final var now = new Date();
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("mibgroups.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for mib group enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+
+        SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(source);
+        group1.setName("if-mib-interfaces");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+        snmpCollectionMibGroupDao.flush();
+
+        SnmpCollectionMibGroup group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(source);
+        group2.setName("ip-mib");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(group1.getId(), group2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpMibGroups(sourceId, true, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP MIB groups updated successfully.", resp.getEntity());
+
+        SnmpCollectionMibGroup r1 = snmpCollectionMibGroupDao.get(group1.getId());
+        SnmpCollectionMibGroup r2 = snmpCollectionMibGroupDao.get(group2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpMibGroups_success_disable() throws Exception {
+        final var now = new Date();
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("mibgroups.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for mib group enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+
+        SnmpCollectionMibGroup group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(source);
+        group1.setName("if-mib-interfaces");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+        snmpCollectionMibGroupDao.flush();
+
+        SnmpCollectionMibGroup group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(source);
+        group2.setName("ip-mib");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(group1.getId(), group2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpMibGroups(sourceId, false, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP MIB groups updated successfully.", resp.getEntity());
+
+        SnmpCollectionMibGroup r1 = snmpCollectionMibGroupDao.get(group1.getId());
+        SnmpCollectionMibGroup r2 = snmpCollectionMibGroupDao.get(group2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpResourceTypes_success_enable() throws Exception {
+        // Arrange
+        final var now = new Date();
+
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("resourcetypes.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for resourceTypes enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // Resource type 1, matches filter "cpu"
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(source);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(source);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(rt1.getId(), rt2.getId());
+
+        // Act
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpResourceTypes(sourceId, true, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        // Assert
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP resource types updated successfully.", resp.getEntity());
+
+        SnmpCollectionResourceType r1 = snmpCollectionResourceTypeDao.get(rt1.getId());
+        SnmpCollectionResourceType r2 = snmpCollectionResourceTypeDao.get(rt2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpResourceTypes_success_disable() throws Exception {
+        // Arrange
+        final var now = new Date();
+
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("resourcetypes.disable.source");
+        source.setVendor("v1");
+        source.setDescription("source for resourceTypes disable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // Resource type 1, matches filter "cpu"
+        SnmpCollectionResourceType rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(source);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        SnmpCollectionResourceType rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(source);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(rt1.getId(), rt2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpResourceTypes(sourceId, false, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP resource types updated successfully.", resp.getEntity());
+
+        SnmpCollectionResourceType r1 = snmpCollectionResourceTypeDao.get(rt1.getId());
+        SnmpCollectionResourceType r2 = snmpCollectionResourceTypeDao.get(rt2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpSystemDefs_success_enable() throws Exception {
+        final var now = new Date();
+
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("systemdefs.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for systemDefs enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        SnmpCollectionSystemDef def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(source);
+        def1.setName("LinuxSystem");
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        SnmpCollectionSystemDef def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(source);
+        def2.setName("WindowsSystem");
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def2);
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(def1.getId(), def2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpSystemDefs(sourceId, true, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP system defs updated successfully.", resp.getEntity());
+
+        SnmpCollectionSystemDef r1 = snmpCollectionSystemDefDao.get(def1.getId());
+        SnmpCollectionSystemDef r2 = snmpCollectionSystemDefDao.get(def2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpSystemDefs_success_disable() throws Exception {
+        final var now = new Date();
+
+        SnmpCollectionSource source = new SnmpCollectionSource();
+        source.setName("systemdefs.disable.source");
+        source.setVendor("v1");
+        source.setDescription("source for systemDefs disable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        SnmpCollectionSystemDef def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(source);
+        def1.setName("LinuxSystem");
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        SnmpCollectionSystemDef def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(source);
+        def2.setName("WindowsSystem");
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def2);
+
+        Integer sourceId = source.getId();
+        List<Integer> ids = Arrays.asList(def1.getId(), def2.getId());
+
+        Response resp = dataCollectionConfRestApi.enableDisableSnmpSystemDefs(sourceId, false, ids, securityContext);
+
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        Assert.assertEquals("SNMP system defs updated successfully.", resp.getEntity());
+
+        SnmpCollectionSystemDef r1 = snmpCollectionSystemDefDao.get(def1.getId());
+        SnmpCollectionSystemDef r2 = snmpCollectionSystemDefDao.get(def2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
     }
 
 

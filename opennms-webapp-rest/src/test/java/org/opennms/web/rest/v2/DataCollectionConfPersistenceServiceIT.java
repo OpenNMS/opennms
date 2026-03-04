@@ -1085,7 +1085,372 @@ public class DataCollectionConfPersistenceServiceIT {
         assertNull(snmpCollectionSystemDefDao.get(d2.getId()));
     }
 
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpDataCollectionSources_success_enable() throws Exception {
+        final var s1 = new SnmpCollectionSource();
+        s1.setName("disable.test.snmp.1");
+        s1.setVendor("v1");
+        s1.setDescription("desc1");
+        s1.setCreatedTime(new Date());
+        s1.setEnabled(false);
 
+        final var  s2 = new SnmpCollectionSource();
+        s2.setName("disable.test.snmp.2");
+        s2.setVendor("v2");
+        s2.setDescription("desc2");
+        s2.setCreatedTime(new Date());
+        s2.setEnabled(false);
+
+        snmpCollectionSourceDao.saveOrUpdate(s1);
+        snmpCollectionSourceDao.saveOrUpdate(s2);
+        snmpCollectionSourceDao.flush();
+
+        final var ids = Arrays.asList(s1.getId(), s2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableSnmpDataCollectionSources(true, ids);
+
+        snmpCollectionSourceDao.flush();
+        snmpCollectionSourceDao.clear();
+
+        final var r1 = snmpCollectionSourceDao.get(s1.getId());
+        final var r2 = snmpCollectionSourceDao.get(s2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpDataCollectionSources_success_disable() throws Exception {
+        final var  s1 = new SnmpCollectionSource();
+        s1.setName("disable.test.snmp.1");
+        s1.setVendor("v1");
+        s1.setDescription("desc1");
+        s1.setCreatedTime(new Date());
+        s1.setEnabled(true);
+
+        final var s2 = new SnmpCollectionSource();
+        s2.setName("disable.test.snmp.2");
+        s2.setVendor("v2");
+        s2.setDescription("desc2");
+        s2.setCreatedTime(new Date());
+        s2.setEnabled(true);
+
+        snmpCollectionSourceDao.saveOrUpdate(s1);
+        snmpCollectionSourceDao.saveOrUpdate(s2);
+        snmpCollectionSourceDao.flush();
+
+        final var ids = Arrays.asList(s1.getId(), s2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableSnmpDataCollectionSources(false, ids);
+
+        snmpCollectionSourceDao.flush();
+        snmpCollectionSourceDao.clear();
+
+        final var  r1 = snmpCollectionSourceDao.get(s1.getId());
+        final var  r2 = snmpCollectionSourceDao.get(s2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpMibGroups_success_enable() throws Exception {
+        final var now = new Date();
+        final var  source = new SnmpCollectionSource();
+        source.setName("mibgroups.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for mib group enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        final var group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(source);
+        group1.setName("if-mib-interfaces");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+        snmpCollectionMibGroupDao.flush();
+
+        final var group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(source);
+        group2.setName("ip-mib");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+        final var  sourceId = source.getId();
+        final var  ids = Arrays.asList(group1.getId(), group2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableMibGroups(sourceId,true,ids);
+
+        snmpCollectionMibGroupDao.flush();
+        snmpCollectionMibGroupDao.clear();
+
+        final var r1 = snmpCollectionMibGroupDao.get(group1.getId());
+        final var r2 = snmpCollectionMibGroupDao.get(group2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpMibGroups_success_disable() throws Exception {
+        final var now = new Date();
+        final var source = new SnmpCollectionSource();
+        source.setName("mibgroups.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for mib group enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+
+        final var group1 = new SnmpCollectionMibGroup();
+        group1.setCollectionSource(source);
+        group1.setName("if-mib-interfaces");
+        group1.setIfType("Ethernet");
+        group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group1.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group1);
+        snmpCollectionMibGroupDao.flush();
+
+        final var group2 = new SnmpCollectionMibGroup();
+        group2.setCollectionSource(source);
+        group2.setName("ip-mib");
+        group2.setIfType("Loopback");
+        group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
+        group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
+        group2.setMibObjProperties("{\"property\":\"value\"}");
+        snmpCollectionMibGroupDao.saveOrUpdate(group2);
+        snmpCollectionMibGroupDao.flush();
+
+
+        final var sourceId = source.getId();
+        final var ids = Arrays.asList(group1.getId(), group2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableMibGroups(sourceId,false,ids);
+
+        snmpCollectionMibGroupDao.flush();
+        snmpCollectionMibGroupDao.clear();
+
+        final var r1 = snmpCollectionMibGroupDao.get(group1.getId());
+        final var  r2 = snmpCollectionMibGroupDao.get(group2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpResourceTypes_success_enable() throws Exception {
+        final var now = new Date();
+
+        final var source = new SnmpCollectionSource();
+        source.setName("resourcetypes.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for resourceTypes enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // Resource type 1, matches filter "cpu"
+        final var rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(source);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(false);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        final var rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(source);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(false);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        final var  sourceId = source.getId();
+        final var  ids = Arrays.asList(rt1.getId(), rt2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableResourceTypes(sourceId, true, ids);
+
+        snmpCollectionResourceTypeDao.flush();
+        snmpCollectionResourceTypeDao.clear();
+
+        final var r1 = snmpCollectionResourceTypeDao.get(rt1.getId());
+        final var  r2 = snmpCollectionResourceTypeDao.get(rt2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpResourceTypes_success_disable() throws Exception {
+        final var now = new Date();
+
+        final var source = new SnmpCollectionSource();
+        source.setName("resourcetypes.disable.source");
+        source.setVendor("v1");
+        source.setDescription("source for resourceTypes disable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // Resource type 1, matches filter "cpu"
+        final var rt1 = new SnmpCollectionResourceType();
+        rt1.setCollectionSource(source);
+        rt1.setName("cpu-resource");
+        rt1.setLabel("CPU Utilization");
+        rt1.setResourceLabel("CPU Resource Label");
+        rt1.setPersistenceSelectorStrategy("default");
+        rt1.setStorageStrategy("db");
+        rt1.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
+
+        // Resource type 2, matches filter "disk"
+        final var rt2 = new SnmpCollectionResourceType();
+        rt2.setCollectionSource(source);
+        rt2.setName("disk-resource");
+        rt2.setLabel("Disk Usage");
+        rt2.setResourceLabel("Disk Resource Label");
+        rt2.setPersistenceSelectorStrategy("custom");
+        rt2.setStorageStrategy("fs");
+        rt2.setEnabled(true);
+        snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
+        snmpCollectionResourceTypeDao.flush();
+
+        final var sourceId = source.getId();
+        final var ids = Arrays.asList(rt1.getId(), rt2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableResourceTypes(sourceId, false, ids);
+
+        snmpCollectionResourceTypeDao.flush();
+        snmpCollectionResourceTypeDao.clear();
+
+        final var r1 = snmpCollectionResourceTypeDao.get(rt1.getId());
+        final var r2 = snmpCollectionResourceTypeDao.get(rt2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpSystemDefs_success_enable() throws Exception {
+        final var now = new Date();
+
+        final var source = new SnmpCollectionSource();
+        source.setName("systemdefs.enable.source");
+        source.setVendor("v1");
+        source.setDescription("source for systemDefs enable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        final var def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(source);
+        def1.setName("LinuxSystem");
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        final var def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(source);
+        def2.setName("WindowsSystem");
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def2);
+
+        final var sourceId = source.getId();
+        final var ids = Arrays.asList(def1.getId(), def2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableSystemDefs(sourceId, true, ids);
+
+        snmpCollectionSystemDefDao.flush();
+        snmpCollectionSystemDefDao.clear();
+
+
+        final var r1 = snmpCollectionSystemDefDao.get(def1.getId());
+        final var r2 = snmpCollectionSystemDefDao.get(def2.getId());
+        Assert.assertTrue(r1.getEnabled());
+        Assert.assertTrue(r2.getEnabled());
+    }
+
+    @Test
+    @Transactional
+    public void testEnableDisableSnmpSystemDefs_success_disable() throws Exception {
+        final var now = new Date();
+
+        final var source = new SnmpCollectionSource();
+        source.setName("systemdefs.disable.source");
+        source.setVendor("v1");
+        source.setDescription("source for systemDefs disable test");
+        source.setEnabled(true);
+        source.setCreatedTime(now);
+        snmpCollectionSourceDao.saveOrUpdate(source);
+        snmpCollectionSourceDao.flush();
+
+        // SystemDef 1, matches filter "LinuxSystem"
+        final var def1 = new SnmpCollectionSystemDef();
+        def1.setCollectionSource(source);
+        def1.setName("LinuxSystem");
+        def1.setSysoid(".1.3.6.1.2.1.1");
+        def1.setSysoidMask("255.255.255.0");
+        def1.setIpAddresses("192.168.1.0,10.0.0.1");
+        def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def1);
+
+        // SystemDef 2, matches filter "WindowsSystem"
+        final var def2 = new SnmpCollectionSystemDef();
+        def2.setCollectionSource(source);
+        def2.setName("WindowsSystem");
+        def2.setSysoid(".1.3.6.1.2.1.2");
+        def2.setSysoidMask("255.255.255.0");
+        def2.setIpAddresses("192.168.1.0,10.0.0.1");
+        def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
+        def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        snmpCollectionSystemDefDao.saveOrUpdate(def2);
+
+        final var sourceId = source.getId();
+        final var ids = Arrays.asList(def1.getId(), def2.getId());
+
+        dataCollectionConfPersistenceService.enableDisableSystemDefs(sourceId, false, ids);
+
+        snmpCollectionSystemDefDao.flush();
+        snmpCollectionSystemDefDao.clear();
+
+        final var r1 = snmpCollectionSystemDefDao.get(def1.getId());
+        final var r2 = snmpCollectionSystemDefDao.get(def2.getId());
+        Assert.assertFalse(r1.getEnabled());
+        Assert.assertFalse(r2.getEnabled());
+    }
 
     private static MibObj createMibObj(String oid, String instance, String alias, String type) {
         MibObj m = new MibObj();
