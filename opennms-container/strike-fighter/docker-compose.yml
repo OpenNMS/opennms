@@ -1,0 +1,137 @@
+---
+# Strike Fighter: OpenNMS microservice-mode deployment
+# Core (all daemons except Alarmd) + standalone Alarmd consuming from Kafka
+#
+# Usage:
+#   docker compose up -d
+#   docker compose ps        # wait for all services to be healthy
+#   open http://localhost:8980/opennms  (admin/admin)
+
+services:
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: opennms
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_INITDB_ARGS: --auth=md5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opennms -d opennms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: bitnami/kafka:3.6
+    environment:
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_NUM_PARTITIONS: "16"
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+    volumes:
+      - kafkadata:/bitnami/kafka
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  core:
+    image: opennms/horizon:${VERSION}
+    command: ["-s"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      # Disable Alarmd — it runs as a separate container
+      CORE_SERVICE_ALARMD_ENABLED: "false"
+      # Database
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      # JVM
+      JAVA_OPTS: >-
+        -Xms1g -Xmx2g
+        -XX:MaxMetaspaceSize=512m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=1
+    volumes:
+      - opennms-etc:/opt/opennms/etc
+      - opennms-data:/opennms-data
+      - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
+      - ./core-overlay/etc/opennms.properties.d/strike-fighter.properties:/opt/opennms-etc-overlay/opennms.properties.d/strike-fighter.properties:ro
+      - ./core-overlay/etc/featuresBoot.d/strike-fighter.boot:/opt/opennms-etc-overlay/featuresBoot.d/strike-fighter.boot:ro
+      - ./core-overlay/etc/org.opennms.features.kafka.producer.client.cfg:/opt/opennms-etc-overlay/org.opennms.features.kafka.producer.client.cfg:ro
+    ports:
+      - "8980:8980"
+      - "8101:8101"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8980/opennms/login.jsp || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
+  alarmd:
+    image: opennms/alarmd:${VERSION}
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - "cp -a /opt/alarmd-overlay/* /opt/alarmd/ 2>/dev/null; exec /opt/alarmd/bin/karaf server"
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      OPENNMS_BROKER_URL: failover:tcp://core:61616
+      OPENNMS_HTTP_USER: admin
+      OPENNMS_HTTP_PASS: admin
+      OPENNMS_BROKER_USER: admin
+      OPENNMS_BROKER_PASS: admin
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=2
+    volumes:
+      - alarmd-data:/opt/alarmd/data
+      - ./alarmd-overlay:/opt/alarmd-overlay:ro
+    ports:
+      - "8201:8201"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8181/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+volumes:
+  pgdata:
+  kafkadata:
+  opennms-etc:
+  opennms-data:
+  alarmd-data:
