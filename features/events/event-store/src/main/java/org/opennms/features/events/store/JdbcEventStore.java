@@ -55,7 +55,7 @@ public class JdbcEventStore implements EventStore {
 
     private static final String BASE_SELECT =
             "SELECT event_tsid, event_uei, event_source, event_severity, event_time, " +
-            "node_id, ip_addr, service_name, event_log_msg, event_descr, " +
+            "node_id, ip_addr, service_name, ifindex, event_log_msg, event_descr, " +
             "event_display, event_log, event_data, created_at " +
             "FROM events_archive";
 
@@ -165,6 +165,7 @@ public class JdbcEventStore implements EventStore {
                 .nodeId(nodeId)
                 .ipAddress(rs.getString("ip_addr"))
                 .serviceName(rs.getString("service_name"))
+                .ifIndex(rs.getObject("ifindex", Integer.class))
                 .eventLogMsg(rs.getString("event_log_msg"))
                 .eventDescr(rs.getString("event_descr"))
                 .eventDisplay(rs.getString("event_display"))

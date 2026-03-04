@@ -55,9 +55,9 @@ public class EventArchiveWriter implements EventListener {
     private static final String INSERT_SQL =
             "INSERT INTO events_archive " +
             "(event_tsid, event_uei, event_source, event_severity, event_time, " +
-            " node_id, ip_addr, service_name, event_log_msg, event_descr, " +
+            " node_id, ip_addr, service_name, ifindex, event_log_msg, event_descr, " +
             " event_display, event_log, event_data) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
             "ON CONFLICT (event_tsid) DO NOTHING";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -109,6 +109,7 @@ public class EventArchiveWriter implements EventListener {
                     event.getNodeid(),
                     formatIpAddress(event.getInterfaceAddress()),
                     event.getService(),
+                    event.getIfIndex(),
                     event.getLogmsg() != null ? event.getLogmsg().getContent() : null,
                     event.getDescr(),
                     getEventDisplay(event),

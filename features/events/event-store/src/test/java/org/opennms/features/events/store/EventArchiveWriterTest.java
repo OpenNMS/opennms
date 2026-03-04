@@ -84,7 +84,7 @@ public class EventArchiveWriterTest {
             captured.set(queryParams);
             return 1;
         }).when(jdbcTemplate).update(any(String.class), any(), any(), any(), any(), any(),
-                any(), any(), any(), any(), any(), any(), any(), any());
+                any(), any(), any(), any(), any(), any(), any(), any(), any());
 
         writer.onEvent(event);
 
@@ -98,8 +98,9 @@ public class EventArchiveWriterTest {
         assertThat(args[5]).isEqualTo(7L); // nodeId
         assertThat(args[6]).isEqualTo("192.168.1.1"); // ip
         assertThat(args[7]).isEqualTo("ICMP"); // service
-        assertThat(args[8]).isEqualTo("Node 7 is down"); // log msg
-        assertThat(args[9]).isEqualTo("The node has stopped responding to ICMP polls"); // descr
+        assertThat(args[8]).isEqualTo(0); // ifIndex (mock default)
+        assertThat(args[9]).isEqualTo("Node 7 is down"); // log msg
+        assertThat(args[10]).isEqualTo("The node has stopped responding to ICMP polls"); // descr
     }
 
     @Test

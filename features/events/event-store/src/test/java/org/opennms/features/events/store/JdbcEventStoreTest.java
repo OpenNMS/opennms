@@ -46,6 +46,7 @@ public class JdbcEventStoreTest {
             "  node_id BIGINT," +
             "  ip_addr VARCHAR(64)," +
             "  service_name VARCHAR(256)," +
+            "  ifindex INTEGER," +
             "  event_log_msg TEXT," +
             "  event_descr TEXT," +
             "  event_display VARCHAR(1) DEFAULT 'Y'," +
@@ -57,9 +58,9 @@ public class JdbcEventStoreTest {
     private static final String INSERT_SQL =
             "INSERT INTO events_archive " +
             "(event_tsid, event_uei, event_source, event_severity, event_time, " +
-            " node_id, ip_addr, service_name, event_log_msg, event_descr, " +
+            " node_id, ip_addr, service_name, ifindex, event_log_msg, event_descr, " +
             " event_display, event_log, event_data) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private JdbcTemplate jdbcTemplate;
     private JdbcEventStore store;
@@ -222,10 +223,18 @@ public class JdbcEventStoreTest {
                                   Instant time, Long nodeId, String ipAddr,
                                   String service, String logMsg, String descr,
                                   String display, String log, String eventData) {
+        insertTestEvent(tsid, uei, source, severity, time, nodeId, ipAddr,
+                service, null, logMsg, descr, display, log, eventData);
+    }
+
+    private void insertTestEvent(long tsid, String uei, String source, int severity,
+                                  Instant time, Long nodeId, String ipAddr,
+                                  String service, Integer ifIndex, String logMsg, String descr,
+                                  String display, String log, String eventData) {
         jdbcTemplate.update(INSERT_SQL,
                 tsid, uei, source, severity,
                 java.sql.Timestamp.from(time),
-                nodeId, ipAddr, service, logMsg, descr,
+                nodeId, ipAddr, service, ifIndex, logMsg, descr,
                 display, log, eventData);
     }
 }

@@ -41,6 +41,7 @@ public class StoredEvent {
     private final Long nodeId;
     private final String ipAddress;
     private final String serviceName;
+    private final Integer ifIndex;
     private final String eventLogMsg;
     private final String eventDescr;
     private final String eventDisplay;
@@ -57,6 +58,7 @@ public class StoredEvent {
         this.nodeId = builder.nodeId;
         this.ipAddress = builder.ipAddress;
         this.serviceName = builder.serviceName;
+        this.ifIndex = builder.ifIndex;
         this.eventLogMsg = builder.eventLogMsg;
         this.eventDescr = builder.eventDescr;
         this.eventDisplay = builder.eventDisplay;
@@ -97,6 +99,10 @@ public class StoredEvent {
         return serviceName;
     }
 
+    public Integer getIfIndex() {
+        return ifIndex;
+    }
+
     public String getEventLogMsg() {
         return eventLogMsg;
     }
@@ -134,6 +140,7 @@ public class StoredEvent {
         private Long nodeId;
         private String ipAddress;
         private String serviceName;
+        private Integer ifIndex;
         private String eventLogMsg;
         private String eventDescr;
         private String eventDisplay = "Y";
@@ -178,6 +185,11 @@ public class StoredEvent {
 
         public Builder serviceName(String serviceName) {
             this.serviceName = serviceName;
+            return this;
+        }
+
+        public Builder ifIndex(Integer ifIndex) {
+            this.ifIndex = ifIndex;
             return this;
         }
 

@@ -77,6 +77,7 @@
             <column name="event_descr" type="TEXT"/>
             <column name="event_display" type="VARCHAR(1)" defaultValue="Y"/>
             <column name="event_log" type="VARCHAR(1)" defaultValue="Y"/>
+            <column name="ifindex" type="INTEGER"/>
             <column name="event_data" type="TEXT"/>
             <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()"/>
         </createTable>
@@ -89,6 +90,10 @@
         </createIndex>
         <createIndex tableName="events_archive" indexName="idx_events_archive_node">
             <column name="node_id"/>
+        </createIndex>
+        <createIndex tableName="events_archive" indexName="idx_events_archive_node_ifindex">
+            <column name="node_id"/>
+            <column name="ifindex"/>
         </createIndex>
     </changeSet>
 
