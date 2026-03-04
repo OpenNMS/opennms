@@ -19,9 +19,11 @@ vi.mock('vue-router', () => ({
 
 const mockDownloadSnmpDataCollectionById = vi.fn()
 const mockDeleteSnmpCollectionSources = vi.fn()
+const mockEnableDisableSnmpDataCollectionSources = vi.fn()
 vi.mock('@/services/snmpDataCollectionService', () => ({
   downloadSnmpDataCollectionById: (...args: any[]) => mockDownloadSnmpDataCollectionById(...args),
-  deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args)
+  deleteSnmpCollectionSources: (...args: any[]) => mockDeleteSnmpCollectionSources(...args),
+  enableDisableSnmpDataCollectionSources: (...args: any[]) => mockEnableDisableSnmpDataCollectionSources(...args)
 }))
 
 const mockShowSnackBar = vi.fn()
@@ -1083,13 +1085,14 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.vm.selectedCollectionSource).not.toBeNull()
     })
 
-    it('does not reset dialog state on successful delete (navigates away instead)', async () => {
+    it('resets dialog state and navigates on successful delete', async () => {
       mockDeleteSnmpCollectionSources.mockResolvedValue(true)
 
       await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
 
-      // Component navigates away rather than explicitly closing dialog
-      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      // Component resets dialog state before navigating
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
       expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
     })
 
@@ -1782,6 +1785,460 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       const viewButtons = wrapper.findAll('[data-test="view-button"]')
       expect(viewButtons).toHaveLength(3)
+    })
+  })
+
+  describe('Change Status Dialog - State Management', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('change status dialog is initially hidden', () => {
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+    })
+
+    it('selected collection source is initially null', () => {
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
+    })
+
+    it('opens change status dialog and sets selected source', () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource)
+    })
+
+    it('closes change status dialog and clears selected source', () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      wrapper.vm.closeChangeStatusDialog()
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
+    })
+
+    it('opens and closes change status dialog multiple times', () => {
+      for (let i = 0; i < 3; i++) {
+        wrapper.vm.openChangeStatusDialog(mockSource)
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+        wrapper.vm.closeChangeStatusDialog()
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      }
+    })
+
+    it('opens change status dialog with null source', () => {
+      wrapper.vm.openChangeStatusDialog(null)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
+    })
+
+    it('renders SnmpDataCollectionChangeStatusDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('type')).toBe('source')
+    })
+
+    it('passes correct status prop based on enabled state - enabled source', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+    })
+
+    it('passes correct status prop based on enabled state - disabled source', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('passes visible=false when change status dialog is closed', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(false)
+    })
+  })
+
+  describe('Change Status Dialog - Dropdown Item', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('openChangeStatusDialog sets correct source for enabled source', () => {
+      const enabledSource = { ...mockSource, enabled: true }
+      wrapper.vm.openChangeStatusDialog(enabledSource)
+      
+      expect(wrapper.vm.selectedCollectionSource).toEqual(enabledSource)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+    })
+
+    it('openChangeStatusDialog sets correct source for disabled source', () => {
+      const disabledSource = { ...mockSource, enabled: false }
+      wrapper.vm.openChangeStatusDialog(disabledSource)
+      
+      expect(wrapper.vm.selectedCollectionSource).toEqual(disabledSource)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+    })
+
+    it('dialog shows Disable status for enabled source', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+    })
+
+    it('dialog shows Enable status for disabled source', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+  })
+
+  describe('Change Status Functionality - Successful Status Change', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+    })
+
+    it('successfully disables a collection source', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [mockSource.id])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${mockSource.name}' disabled successfully.`
+      })
+    })
+
+    it('successfully enables a collection source', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: false })
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [mockSource.id])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${mockSource.name}' enabled successfully.`
+      })
+    })
+
+    it('refreshes sources after successful status change', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(store.fetchSnmpCollectionSources).toHaveBeenCalled()
+    })
+
+    it('closes dialog and resets selected source on successful status change', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
+    })
+
+    it('uses correct source id for status change service call', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      const customSource = { ...mockSource, id: 99 }
+      wrapper.vm.openChangeStatusDialog(customSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: 99, name: customSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [99])
+    })
+  })
+
+  describe('Change Status Functionality - Failed Status Change', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+    })
+
+    it('shows error snackbar when service returns false', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Failed to disable Collection Source '${mockSource.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows correct error message for enable failure', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: false })
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Failed to enable Collection Source '${mockSource.name}'.`,
+        error: true
+      })
+    })
+
+    it('does not refresh sources when status change fails', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      store.fetchSnmpCollectionSources = vi.fn()
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(store.fetchSnmpCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it('keeps dialog open when status change fails', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource)
+    })
+  })
+
+  describe('Change Status Functionality - Validation Failures', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+    })
+
+    it('shows error when type is not source', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'mib-group')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Failed to change status for Collection Source '${mockSource.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows error when selected id does not match', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: 999, name: mockSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Failed to change status for Collection Source '${mockSource.name}'.`,
+        error: true
+      })
+    })
+
+    it('shows error when selected name does not match', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: 'Wrong Name' }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to change status for Collection Source \'Wrong Name\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selected is null', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus(null, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to change status for Collection Source \'undefined\'.',
+        error: true
+      })
+    })
+
+    it('shows error when selectedCollectionSource is null (dialog not opened)', async () => {
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      { type: 'mib-group' },
+      { type: 'system-def' },
+      { type: 'resource-type' },
+      { type: 'unknown' },
+      { type: '' }
+    ])('rejects status change when type is "$type" instead of "source"', async ({ type }) => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, type)
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Change Status Dialog Events', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles close event from SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('close')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedCollectionSource).toBe(null)
+    })
+
+    it('handles confirm event from SnmpDataCollectionChangeStatusDialog', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      wrapper.vm.openChangeStatusDialog(mockSource)
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('confirm', { id: mockSource.id, name: mockSource.name }, 'source')
+      await flushPromises()
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalled()
+    })
+  })
+
+  describe('Change Status Edge Cases', () => {
+    beforeEach(async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+      mockShowSnackBar.mockClear()
+    })
+
+    it('handles status change when selected source id is 0 (falsy)', async () => {
+      const sourceWithZeroId = { ...mockSource, id: 0 }
+      wrapper.vm.openChangeStatusDialog(sourceWithZeroId)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: 0, name: mockSource.name }, 'source')
+
+      expect(mockEnableDisableSnmpDataCollectionSources).not.toHaveBeenCalled()
+      expect(mockShowSnackBar).toHaveBeenCalledWith(
+        expect.objectContaining({ error: true })
+      )
+    })
+
+    it('switches selected source in dialog updates correctly', () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource)
+
+      wrapper.vm.openChangeStatusDialog(mockSource2)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
+    })
+
+    it('close then reopen dialog resets selected source correctly', () => {
+      wrapper.vm.openChangeStatusDialog(mockSource)
+      wrapper.vm.closeChangeStatusDialog()
+      wrapper.vm.openChangeStatusDialog(mockSource2)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
+    })
+
+    it('handles sequential status change operations correctly', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+
+      // First operation
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [mockSource.id])
+
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+
+      // Second operation
+      wrapper.vm.openChangeStatusDialog({ ...mockSource2, enabled: false })
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource2.id, name: mockSource2.name }, 'source')
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [mockSource2.id])
+    })
+
+    it('opens change status dialog for correct source when multiple sources exist', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openChangeStatusDialog(mockSource2)
+      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
+    })
+
+    it('handles source with special characters in name for status change', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      const specialSource = { ...mockSource, name: 'Test <Source> & "Quotes"' }
+      wrapper.vm.openChangeStatusDialog(specialSource)
+
+      await wrapper.vm.changeCollectionSourceStatus({ id: specialSource.id, name: specialSource.name }, 'source')
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test <Source> & "Quotes"\' disabled successfully.'
+      })
+    })
+  })
+
+  describe('Multiple Sources with Mixed States - Change Status', () => {
+    it('passes correct status prop for each source based on enabled state', async () => {
+      store.sources = [
+        { ...mockSource, enabled: true },
+        { ...mockSource2, enabled: false },
+        { ...disabledMockSource, enabled: false }
+      ]
+      await wrapper.vm.$nextTick()
+
+      // Test enabled source shows Disable
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+      await wrapper.vm.$nextTick()
+      let dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+
+      // Test disabled source shows Enable
+      wrapper.vm.openChangeStatusDialog({ ...mockSource2, enabled: false })
+      await wrapper.vm.$nextTick()
+      dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('handles mixed sources status changes correctly', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.sources = [
+        { ...mockSource, enabled: true },
+        { ...mockSource2, enabled: false }
+      ]
+      await wrapper.vm.$nextTick()
+
+      // Disable an enabled source
+      wrapper.vm.openChangeStatusDialog({ ...mockSource, enabled: true })
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource.id, name: mockSource.name }, 'source')
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [mockSource.id])
+
+      mockEnableDisableSnmpDataCollectionSources.mockClear()
+
+      // Enable a disabled source
+      wrapper.vm.openChangeStatusDialog({ ...mockSource2, enabled: false })
+      await wrapper.vm.changeCollectionSourceStatus({ id: mockSource2.id, name: mockSource2.name }, 'source')
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [mockSource2.id])
     })
   })
 })

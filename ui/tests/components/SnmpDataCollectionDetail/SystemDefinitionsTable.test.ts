@@ -1189,6 +1189,413 @@ describe('SystemDefinitionsTable.vue', () => {
     })
   })
 
+  describe('Change Status Dialog - State Management', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('change status dialog is initially hidden', () => {
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+    })
+
+    it('selected system def is initially null', () => {
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('opens change status dialog and sets selected system def', () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef).toEqual(mockSystemDef)
+    })
+
+    it('closes change status dialog and clears selection', () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      wrapper.vm.closeChangeStatusDialog()
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('opens and closes change status dialog multiple times', () => {
+      for (let i = 0; i < 3; i++) {
+        wrapper.vm.openChangeStatusDialog(mockSystemDef)
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+        wrapper.vm.closeChangeStatusDialog()
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      }
+    })
+
+    it('opens change status dialog with null', () => {
+      wrapper.vm.openChangeStatusDialog(null)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+
+    it('renders SnmpDataCollectionChangeStatusDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('type')).toBe('system-def')
+      expect(dialog.props('selected')).toEqual(mockSystemDef)
+    })
+
+    it('passes correct status prop based on enabled state - enabled system def shows Disable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+    })
+
+    it('passes correct status prop based on enabled state - disabled system def shows Enable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('passes visible=false when change status dialog is closed', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(false)
+    })
+
+    it('handles close event from SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('close')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+    })
+  })
+
+  describe('Change System Def Status - Successful Status Change', () => {
+    let enableDisableSnmpSystemDefsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpSystemDefsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpSystemDefs')
+
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls enableDisableSnmpSystemDefs service when disabling', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(1, false, [mockSystemDef.id])
+    })
+
+    it('calls enableDisableSnmpSystemDefs service when enabling', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(1, true, [mockSystemDef.id])
+    })
+
+    it('closes dialog and fetches data after successful status change', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedSystemDef).toBeNull()
+      expect(store.fetchSystemDefinitions).toHaveBeenCalled()
+    })
+
+    it('uses correct collection source id for status change service call', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = { id: 99, name: 'Custom Source' } as any
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(99, false, [mockSystemDef.id])
+    })
+
+    it('handles confirm event from SnmpDataCollectionChangeStatusDialog', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('confirm', { id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(1, false, [mockSystemDef.id])
+    })
+  })
+
+  describe('Change System Def Status - Failed Status Change', () => {
+    let enableDisableSnmpSystemDefsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpSystemDefsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpSystemDefs')
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('keeps dialog open when status change fails', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef).not.toBeNull()
+    })
+
+    it('does not fetch data when status change fails', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(false)
+      store.fetchSystemDefinitions = vi.fn()
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      const initialCallCount = (store.fetchSystemDefinitions as any).mock.calls.length
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect((store.fetchSystemDefinitions as any).mock.calls.length).toBe(initialCallCount)
+    })
+  })
+
+  describe('Change System Def Status - Validation Failures', () => {
+    let enableDisableSnmpSystemDefsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpSystemDefsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpSystemDefs')
+
+      store.systemDefinitions = [mockSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('does not call service when type does not match', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected id does not match', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: 999, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected name does not match', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: 'wrong-name' }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected is null', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus(null, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selectedCollectionSource is missing', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected has no id', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ name: mockSystemDef.name } as any, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selectedSystemDef id is missing', async () => {
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ name: mockSystemDef.name } as any)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Change Status Edge Cases', () => {
+    beforeEach(async () => {
+      store.systemDefinitions = [mockSystemDef, mockSystemDef2, disabledSystemDef]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles opening change status dialog for disabled system def', () => {
+      wrapper.vm.openChangeStatusDialog(disabledSystemDef)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.enabled).toBe(false)
+    })
+
+    it('handles opening change status dialog for enabled system def', () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.enabled).toBe(true)
+    })
+
+    it('handles rapid open/close of change status dialog', () => {
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.openChangeStatusDialog(mockSystemDef)
+        wrapper.vm.closeChangeStatusDialog()
+      }
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef.id)
+    })
+
+    it('handles switching selected system def in change status dialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openChangeStatusDialog(mockSystemDef2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.id).toBe(mockSystemDef2.id)
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(mockSystemDef2.name)
+    })
+
+    it('handles system def with special characters in name for status change', async () => {
+      const specialSystemDef = {
+        ...mockSystemDef,
+        id: 20,
+        name: 'System<>Def&"Special\'Chars'
+      }
+
+      wrapper.vm.openChangeStatusDialog(specialSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.name).toBe('System<>Def&"Special\'Chars')
+    })
+
+    it('handles system def with very long name for status change', async () => {
+      const longName = 'A'.repeat(200)
+      const longNameSystemDef = { ...mockSystemDef, id: 21, name: longName }
+
+      wrapper.vm.openChangeStatusDialog(longNameSystemDef)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedSystemDef?.name).toBe(longName)
+    })
+
+    it('handles mixed enabled/disabled system defs', async () => {
+      wrapper.vm.openChangeStatusDialog(mockSystemDef)
+      expect(wrapper.vm.selectedSystemDef?.enabled).toBe(true)
+      wrapper.vm.closeChangeStatusDialog()
+
+      wrapper.vm.openChangeStatusDialog(disabledSystemDef)
+      expect(wrapper.vm.selectedSystemDef?.enabled).toBe(false)
+    })
+
+    it('correctly toggles status from enabled to disabled', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const enableDisableSnmpSystemDefsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpSystemDefs')
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(1, false, [mockSystemDef.id])
+    })
+
+    it('correctly toggles status from disabled to enabled', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const enableDisableSnmpSystemDefsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpSystemDefs')
+      enableDisableSnmpSystemDefsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockSystemDef, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeSystemDefStatus({ id: mockSystemDef.id, name: mockSystemDef.name }, 'system-def')
+      await flushPromises()
+
+      expect(enableDisableSnmpSystemDefsSpy).toHaveBeenCalledWith(1, true, [mockSystemDef.id])
+    })
+  })
+
   describe('Integration Tests', () => {
     it('complete workflow: search, sort, paginate', async () => {
       store.systemDefinitions = [mockSystemDef, mockSystemDef2]

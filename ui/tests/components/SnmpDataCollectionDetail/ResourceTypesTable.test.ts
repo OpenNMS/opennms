@@ -840,7 +840,7 @@ describe('ResourceTypesTable.vue', () => {
     })
 
     it('opens delete dialog and sets selectedResourceType correctly', async () => {
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
@@ -849,7 +849,7 @@ describe('ResourceTypesTable.vue', () => {
     })
 
     it('closes delete dialog and clears selection', async () => {
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
@@ -862,7 +862,7 @@ describe('ResourceTypesTable.vue', () => {
     })
 
     it('passes correct props to DeleteConfirmationDialog', async () => {
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
@@ -873,7 +873,7 @@ describe('ResourceTypesTable.vue', () => {
     })
 
     it('handles close event from DeleteConfirmationDialog', async () => {
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
@@ -900,7 +900,7 @@ describe('ResourceTypesTable.vue', () => {
     it('calls deleteResourceTypes service on successful delete', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
@@ -912,7 +912,7 @@ describe('ResourceTypesTable.vue', () => {
     it('closes dialog and fetches data after successful deletion', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       const fetchSpy = vi.spyOn(store, 'fetchResourceTypes')
@@ -932,7 +932,7 @@ describe('ResourceTypesTable.vue', () => {
     ])('does not call deleteResourceTypes when $desc', async ({ params, type }) => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType(params, type)
@@ -945,7 +945,7 @@ describe('ResourceTypesTable.vue', () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
       store.selectedCollectionSource = null as any
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
@@ -957,7 +957,7 @@ describe('ResourceTypesTable.vue', () => {
     it('does not call deleteResourceTypes when selected is null or missing id', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType(null, 'resource-type')
@@ -972,7 +972,7 @@ describe('ResourceTypesTable.vue', () => {
     it('handles confirm event from DeleteConfirmationDialog', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
@@ -1032,7 +1032,7 @@ describe('ResourceTypesTable.vue', () => {
     it('shows success snackbar when deletion succeeds', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
@@ -1046,7 +1046,7 @@ describe('ResourceTypesTable.vue', () => {
     it('shows error snackbar when deletion fails', async () => {
       deleteResourceTypesSpy.mockResolvedValue(false)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
@@ -1061,7 +1061,7 @@ describe('ResourceTypesTable.vue', () => {
     it('shows error snackbar when validation fails', async () => {
       deleteResourceTypesSpy.mockResolvedValue(true)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: 999, name: 'wrong-name' }, 'resource-type')
@@ -1076,7 +1076,7 @@ describe('ResourceTypesTable.vue', () => {
     it('keeps delete dialog open when deletion fails', async () => {
       deleteResourceTypesSpy.mockResolvedValue(false)
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       await wrapper.vm.deleteResourceType({ id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
@@ -1096,7 +1096,7 @@ describe('ResourceTypesTable.vue', () => {
       store.resourceTypes = [disabledResourceType]
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(disabledResourceType.id, disabledResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(disabledResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.selectedResourceType?.id).toBe(disabledResourceType.id)
@@ -1112,7 +1112,7 @@ describe('ResourceTypesTable.vue', () => {
       store.resourceTypes = [specialResourceType]
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(specialResourceType.id, specialResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(specialResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.selectedResourceType?.name).toBe('Resource<>Type&"Special\'Chars')
@@ -1124,7 +1124,7 @@ describe('ResourceTypesTable.vue', () => {
       store.resourceTypes = [longNameResourceType]
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(longNameResourceType.id, longNameResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(longNameResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.selectedResourceType?.name).toBe(longName)
@@ -1134,11 +1134,11 @@ describe('ResourceTypesTable.vue', () => {
       store.resourceTypes = [mockResourceType]
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       wrapper.vm.closeDeleteResourceTypeDialog()
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       wrapper.vm.closeDeleteResourceTypeDialog()
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
@@ -1149,14 +1149,451 @@ describe('ResourceTypesTable.vue', () => {
       store.resourceTypes = [mockResourceType, mockResourceType2]
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType.id, mockResourceType.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType)
       await wrapper.vm.$nextTick()
 
-      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType2.id, mockResourceType2.name)
+      wrapper.vm.openResourceTypeDeleteDialog(mockResourceType2)
       await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType2.id)
       expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType2.name)
+    })
+  })
+
+  describe('Change Status Dialog - State Management', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('change status dialog is initially hidden', () => {
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+    })
+
+    it('selected resource type is initially null', () => {
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('opens change status dialog and sets selected resource type', () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType).toEqual(mockResourceType)
+    })
+
+    it('closes change status dialog and clears selection', () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      wrapper.vm.closeChangeStatusDialog()
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('opens and closes change status dialog multiple times', () => {
+      for (let i = 0; i < 3; i++) {
+        wrapper.vm.openChangeStatusDialog(mockResourceType)
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+        wrapper.vm.closeChangeStatusDialog()
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      }
+    })
+
+    it('opens change status dialog with null', () => {
+      wrapper.vm.openChangeStatusDialog(null)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+
+    it('renders SnmpDataCollectionChangeStatusDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('type')).toBe('resource-type')
+      expect(dialog.props('selected')).toEqual(mockResourceType)
+    })
+
+    it('passes correct status prop based on enabled state - enabled resource type shows Disable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+    })
+
+    it('passes correct status prop based on enabled state - disabled resource type shows Enable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('passes visible=false when change status dialog is closed', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(false)
+    })
+
+    it('handles close event from SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('close')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+    })
+  })
+
+  describe('Change Resource Type Status - Successful Status Change', () => {
+    let enableDisableSnmpResourceTypesSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpResourceTypes')
+
+      store.resourceTypes = [mockResourceType, mockResourceType2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls enableDisableSnmpResourceTypes service when disabling', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(1, false, [mockResourceType.id])
+    })
+
+    it('calls enableDisableSnmpResourceTypes service when enabling', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(1, true, [mockResourceType.id])
+    })
+
+    it('closes dialog and fetches data after successful status change', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedResourceType).toBeNull()
+      expect(store.fetchResourceTypes).toHaveBeenCalled()
+    })
+
+    it('uses correct collection source id for status change service call', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = { id: 99, name: 'Custom Source' } as any
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(99, false, [mockResourceType.id])
+    })
+
+    it('handles confirm event from SnmpDataCollectionChangeStatusDialog', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('confirm', { id: mockResourceType.id, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(1, false, [mockResourceType.id])
+    })
+  })
+
+  describe('Change Resource Type Status - Failed Status Change', () => {
+    let enableDisableSnmpResourceTypesSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpResourceTypes')
+
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('keeps dialog open when status change fails', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(false)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType).not.toBeNull()
+    })
+
+    it('does not fetch data when status change fails', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(false)
+      store.fetchResourceTypes = vi.fn()
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      const initialCallCount = (store.fetchResourceTypes as any).mock.calls.length
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect((store.fetchResourceTypes as any).mock.calls.length).toBe(initialCallCount)
+    })
+  })
+
+  describe('Change Resource Type Status - Validation Failures', () => {
+    let enableDisableSnmpResourceTypesSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpResourceTypes')
+
+      store.resourceTypes = [mockResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('does not call service when type does not match', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus({ id: mockResourceType.id, name: mockResourceType.name }, 'wrong-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected id does not match', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus({ id: 999, name: mockResourceType.name }, 'resource-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected name does not match', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus({ id: mockResourceType.id, name: 'wrong-name' }, 'resource-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected is null', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(null, 'resource-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selectedCollectionSource is missing', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null as any
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selected has no id', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus({ name: mockResourceType.name } as any, 'resource-type')
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call service when selectedResourceType id is missing', async () => {
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ name: mockResourceType.name } as any)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Change Status Edge Cases', () => {
+    beforeEach(async () => {
+      store.resourceTypes = [mockResourceType, mockResourceType2, disabledResourceType]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles opening change status dialog for disabled resource type', () => {
+      wrapper.vm.openChangeStatusDialog(disabledResourceType)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.enabled).toBe(false)
+    })
+
+    it('handles opening change status dialog for enabled resource type', () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.enabled).toBe(true)
+    })
+
+    it('handles rapid open/close of change status dialog', () => {
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.openChangeStatusDialog(mockResourceType)
+        wrapper.vm.closeChangeStatusDialog()
+      }
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType.id)
+    })
+
+    it('handles switching selected resource type in change status dialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      await wrapper.vm.$nextTick()
+
+      wrapper.vm.openChangeStatusDialog(mockResourceType2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.id).toBe(mockResourceType2.id)
+      expect(wrapper.vm.selectedResourceType?.name).toBe(mockResourceType2.name)
+    })
+
+    it('handles resource type with special characters in name for status change', async () => {
+      const specialResourceType = {
+        ...mockResourceType,
+        id: 20,
+        name: 'Resource<>Type&"Special\'Chars'
+      }
+
+      wrapper.vm.openChangeStatusDialog(specialResourceType)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.name).toBe('Resource<>Type&"Special\'Chars')
+    })
+
+    it('handles resource type with very long name for status change', async () => {
+      const longName = 'A'.repeat(200)
+      const longNameResourceType = { ...mockResourceType, id: 21, name: longName }
+
+      wrapper.vm.openChangeStatusDialog(longNameResourceType)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.selectedResourceType?.name).toBe(longName)
+    })
+
+    it('handles mixed enabled/disabled resource types', async () => {
+      wrapper.vm.openChangeStatusDialog(mockResourceType)
+      expect(wrapper.vm.selectedResourceType?.enabled).toBe(true)
+      wrapper.vm.closeChangeStatusDialog()
+
+      wrapper.vm.openChangeStatusDialog(disabledResourceType)
+      expect(wrapper.vm.selectedResourceType?.enabled).toBe(false)
+    })
+
+    it('correctly toggles status from enabled to disabled', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const enableDisableSnmpResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpResourceTypes')
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(1, false, [mockResourceType.id])
+    })
+
+    it('correctly toggles status from disabled to enabled', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const enableDisableSnmpResourceTypesSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpResourceTypes')
+      enableDisableSnmpResourceTypesSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockResourceType, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeResourceTypeStatus(
+        { id: mockResourceType.id, name: mockResourceType.name },
+        'resource-type'
+      )
+      await flushPromises()
+
+      expect(enableDisableSnmpResourceTypesSpy).toHaveBeenCalledWith(1, true, [mockResourceType.id])
     })
   })
 
