@@ -133,7 +133,7 @@
         "tempusdominus-core": "^5.19.3",
         "ui-bootstrap4": "^3.0.7",
         "ui-select-bs4": "https://github.com/bmontgomery/ui-select#300af1b2b5c8aa94faa3c6d3bb1df4e543d097ae",
-        "underscore": "^1.13.1"
+        "underscore": "^1.13.8"
     },
     "jest": {
         "moduleFileExtensions": [
