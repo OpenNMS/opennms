@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -166,15 +167,101 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
 
-        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
-            Path etc = home.resolve("etc");
-            Files.createDirectories(etc);
-            OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.grpc.client.cfg"),
-                Map.of(
-                    "host", OpenNMSContainer.ALIAS,
-                    "port", "8990"
-                ));
+        Path etc = home.resolve("etc");
+        Files.createDirectories(etc);
+
+        writeTrapdConfig(etc);
+        writeTelemetryListenerConfigs(etc);
+
+        if (!profile.isLegacy()) {
+            writeMinionControllerConfig(etc, profile);
+
+            if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
+                writeKafkaConfigs(etc);
+            } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.grpc.client.cfg"),
+                    Map.of(
+                        "host", OpenNMSContainer.ALIAS,
+                        "port", "8990"
+                    ));
+            }
         }
+    }
+
+    private void writeMinionControllerConfig(Path etc, MinionProfile profile) {
+        OverlayUtils.writeProps(etc.resolve("org.opennms.minion.controller.cfg"),
+            Map.of(
+                "location", profile.getLocation(),
+                "id", profile.getId(),
+                "broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616"
+            ));
+    }
+
+    private void writeTrapdConfig(Path etc) {
+        OverlayUtils.writeProps(etc.resolve("org.opennms.netmgt.trapd.cfg"),
+            Map.of(
+                "trapd.listen.interface", "0.0.0.0",
+                "trapd.useAddressFromVarbind", "true"
+            ));
+    }
+
+    private void writeTelemetryListenerConfigs(Path etc) {
+        writeSinglePortFlowsConfig(etc);
+        writeFlowListenerConfig(
+            etc.resolve("org.opennms.features.telemetry.listeners-JTI-Listener.cfg"),
+            "JTI-Listener",
+            MINION_TELEMETRY_JTI_PORT,
+            "JTI"
+        );
+        writeFlowListenerConfig(
+            etc.resolve("org.opennms.features.telemetry.listeners-NXOS-Listener.cfg"),
+            "NXOS-Listener",
+            MINION_TELEMETRY_NXOS_PORT,
+            "NXOS"
+        );
+    }
+
+    private void writeSinglePortFlowsConfig(Path etc) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("name", "Flows");
+        props.put("class-name", "org.opennms.netmgt.telemetry.listeners.UdpListener");
+        props.put("parameters.port", String.valueOf(MINION_TELEMETRY_FLOW_PORT));
+        props.put("parsers.0.name", "Netflow-5");
+        props.put("parsers.0.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser");
+        props.put("parsers.1.name", "Netflow-9");
+        props.put("parsers.1.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser");
+        props.put("parsers.2.name", "IPFIX");
+        props.put("parsers.2.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser");
+        props.put("parsers.3.name", "SFlow");
+        props.put("parsers.3.class-name", "org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser");
+        OverlayUtils.writeProps(etc.resolve("org.opennms.features.telemetry.listeners-udp-single-port-flows.cfg"), props);
+    }
+
+    private void writeFlowListenerConfig(Path dest, String name, int port, String parserName) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("name", name);
+        props.put("class-name", "org.opennms.netmgt.telemetry.listeners.UdpListener");
+        props.put("parameters.port", String.valueOf(port));
+        props.put("parsers.0.name", parserName);
+        props.put("parsers.0.class-name", "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
+        OverlayUtils.writeProps(dest, props);
+    }
+
+    private void writeKafkaConfigs(Path etc) {
+        String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
+        String compressionType = model.getKafkaCompressionStrategy().getCodec();
+
+        Map<String, String> rpcProps = new LinkedHashMap<>();
+        rpcProps.put("bootstrap.servers", bootstrapServers);
+        rpcProps.put("acks", "1");
+        rpcProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.rpc.kafka.cfg"), rpcProps);
+
+        Map<String, String> sinkProps = new LinkedHashMap<>();
+        sinkProps.put("bootstrap.servers", bootstrapServers);
+        sinkProps.put("acks", "1");
+        sinkProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"), sinkProps);
     }
 
     public InetSocketAddress getSyslogAddress() {
