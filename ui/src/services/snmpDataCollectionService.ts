@@ -591,3 +591,121 @@ export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: nu
   }
 }
 
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP data collection sources.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the SNMP data collection sources.
+ * @param {number[]} sourceIds The IDs of the SNMP data collection sources to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const enableDisableSnmpDataCollectionSources = async (
+  enabled: boolean,
+  sourceIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    sourceIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP data collection sources:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP MIB groups.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the MIB groups.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the MIB groups.
+ * @param {number[]} mibGroupIds The IDs of the MIB groups to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const enableDisableSnmpMibGroups = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  mibGroupIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/mib-groups/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP MIB groups:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP resource types.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the resource types.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the resource types.
+ * @param {number[]} resourceTypeIds The IDs of the resource types to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const enableDisableSnmpResourceTypes = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  resourceTypeIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/resource-types/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP resource types:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP system definitions.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the system definitions.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the system definitions.
+ * @param {number[]} systemDefIds The IDs of the system definitions to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
+ */
+export const enableDisableSnmpSystemDefs = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  systemDefIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/system-defs/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP system definitions:', error)
+    throw error
+  }
+}
+

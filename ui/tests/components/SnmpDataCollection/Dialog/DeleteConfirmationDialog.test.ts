@@ -1,4 +1,4 @@
-import DeleteConfirmationDialog from '@/components/SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from '@/components/SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'

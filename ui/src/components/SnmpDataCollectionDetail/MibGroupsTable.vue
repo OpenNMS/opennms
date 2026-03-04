@@ -102,7 +102,10 @@
                         <FeatherIcon :icon="MenuIcon" />
                       </FeatherButton>
                     </template>
-                    <FeatherDropdownItem data-test="change-status-button">
+                    <FeatherDropdownItem
+                      data-test="change-status-button"
+                      @click="openChangeStatusDialog(mibGroup)"
+                    >
                       {{ mibGroup.enabled ? 'Disable MIB Group' : 'Enable MIB Group' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
@@ -184,13 +187,21 @@
       @close="closeDeleteMibGroupDialog"
       @confirm="deleteMibGroup"
     />
+    <SnmpDataCollectionChangeStatusDialog
+      :visible="isChangeStatusDialogVisible"
+      :selected="selectedMibGroup"
+      type="mib-group"
+      :status="selectedMibGroup?.enabled ? 'Disable' : 'Enable'"
+      @close="closeChangeStatusDialog"
+      @confirm="changeMibGroupStatus"
+    />
     <MibGroupCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteMibGroups } from '@/services/snmpDataCollectionService'
+import { deleteMibGroups, enableDisableSnmpMibGroups } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionMibGroup } from '@/types/snmpDataCollection'
@@ -209,13 +220,15 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 import MibGroupCreationDrawer from './Drawer/MibGroupCreationDrawer.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
-const selectedMibGroup = ref<{ id: number; name: string } | null>(null)
+const isChangeStatusDialogVisible = ref(false)
+const selectedMibGroup = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
@@ -259,7 +272,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeMibGroupsSearchTerm(value)
 }, 500)
 
-const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string } | null) => {
+const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
   selectedMibGroup.value = mibGroup
   isDeleteDialogVisible.value = true
 }
@@ -267,6 +280,16 @@ const openDeleteMibGroupDialog = (mibGroup: { id: number; name: string } | null)
 const closeDeleteMibGroupDialog = () => {
   selectedMibGroup.value = null
   isDeleteDialogVisible.value = false
+}
+
+const openChangeStatusDialog = (mibGroup: { id: number; name: string, enabled: boolean } | null) => {
+  selectedMibGroup.value = mibGroup
+  isChangeStatusDialogVisible.value = true
+}
+
+const closeChangeStatusDialog = () => {
+  selectedMibGroup.value = null
+  isChangeStatusDialogVisible.value = false
 }
 
 const deleteMibGroup = async (selected: { id: number; name: string } | null, type: string) => {
@@ -294,6 +317,37 @@ const deleteMibGroup = async (selected: { id: number; name: string } | null, typ
   } else {
     snackbar.showSnackBar({
       msg: `Failed to delete MIB Group '${selected?.name ?? ''}'.`,
+      error: true
+    })
+  }
+}
+
+const changeMibGroupStatus = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'mib-group' &&
+    selected?.id &&
+    selected?.id === selectedMibGroup.value?.id &&
+    selected?.name === selectedMibGroup.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const updatedStatus = !selectedMibGroup.value?.enabled
+    const success = await enableDisableSnmpMibGroups(store.selectedCollectionSource.id, updatedStatus, [selectedMibGroup.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `MIB Group '${selectedMibGroup.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+      })
+      await store.fetchMibGroups()
+      selectedMibGroup.value = null
+      isChangeStatusDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} MIB Group '${selectedMibGroup.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to change status for MIB Group '${selected?.name}'.`,
       error: true
     })
   }

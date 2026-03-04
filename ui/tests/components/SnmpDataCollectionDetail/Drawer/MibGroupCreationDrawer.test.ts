@@ -1481,8 +1481,74 @@ describe('MibGroupCreationDrawer.vue', () => {
 
       expect(wrapper.vm.mibObjects.length).toBe(5)
       expect(wrapper.vm.total).toBe(5)
-      // tableRecords should update based on current page slice
-      expect(wrapper.vm.tableRecords.length).toBe(0) // Page 2 is now empty
+      // Component should automatically go back to page 1 when current page is empty
+      expect(wrapper.vm.page).toBe(1)
+      expect(wrapper.vm.tableRecords.length).toBe(5) // Page 1 shows all 5 items
+    })
+
+    it('should go back to previous page when page becomes empty after deletion', async () => {
+      // Create 7 items (page 1: 5 items, page 2: 2 items)
+      const manyMibObjects: MibGroupObjectForm[] = Array.from({ length: 7 }, (_, i) => ({
+        oid: `1.3.6.1.2.1.1.${i}`,
+        alias: `alias${i}`,
+        instance: 'ifIndex',
+        type: 'gauge',
+        maxval: null,
+        minval: null
+      }))
+      wrapper.vm.mibObjects = [...manyMibObjects]
+      wrapper.vm.total = 7
+      wrapper.vm.pageSize = 5
+      wrapper.vm.page = 2
+      wrapper.vm.tableRecords = manyMibObjects.slice(5, 7)
+      await nextTick()
+
+      expect(wrapper.vm.tableRecords.length).toBe(2)
+      expect(wrapper.vm.page).toBe(2)
+
+      // Delete first item on page 2 (alias5)
+      wrapper.vm.deleteMibObject(0)
+      await nextTick()
+
+      // Still on page 2 because there's still 1 item
+      expect(wrapper.vm.mibObjects.length).toBe(6)
+      expect(wrapper.vm.page).toBe(2)
+      expect(wrapper.vm.tableRecords.length).toBe(1)
+      expect(wrapper.vm.tableRecords[0].alias).toBe('alias6')
+
+      // Delete the last remaining item on page 2
+      wrapper.vm.deleteMibObject(0)
+      await nextTick()
+
+      // Should go back to page 1
+      expect(wrapper.vm.mibObjects.length).toBe(5)
+      expect(wrapper.vm.page).toBe(1)
+      expect(wrapper.vm.tableRecords.length).toBe(5)
+    })
+
+    it('should stay on page 1 when items are deleted from page 1', async () => {
+      // Create 5 items on page 1
+      const manyMibObjects: MibGroupObjectForm[] = Array.from({ length: 5 }, (_, i) => ({
+        oid: `1.3.6.1.2.1.1.${i}`,
+        alias: `alias${i}`,
+        instance: 'ifIndex',
+        type: 'gauge',
+        maxval: null,
+        minval: null
+      }))
+      wrapper.vm.mibObjects = [...manyMibObjects]
+      wrapper.vm.total = 5
+      wrapper.vm.pageSize = 5
+      wrapper.vm.page = 1
+      wrapper.vm.tableRecords = [...manyMibObjects]
+      await nextTick()
+
+      // Delete all items one by one
+      wrapper.vm.deleteMibObject(0) // Delete first item
+      await nextTick()
+
+      expect(wrapper.vm.page).toBe(1) // Should stay on page 1
+      expect(wrapper.vm.mibObjects.length).toBe(4)
     })
 
     it('should preserve maxval and minval when editing MIB object', async () => {

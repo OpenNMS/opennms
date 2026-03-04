@@ -453,6 +453,13 @@ const deleteStorageStrategy = (index: number) => {
   const actualIndex = (storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value + index
   storageStrategyParams.value.splice(actualIndex, 1)
   storageStrategyParamsTotal.value = storageStrategyParams.value.length
+
+  // If current page is now empty and we're not on the first page, go back one page
+  const maxPage = Math.max(1, Math.ceil(storageStrategyParamsTotal.value / storageStrategyParamsPageSize.value))
+  if (storageStrategyParamsPage.value > maxPage) {
+    storageStrategyParamsPage.value = maxPage
+  }
+
   storageStrategyParamsObjects.value = storageStrategyParams.value.slice((storageStrategyParamsPage.value - 1) * storageStrategyParamsPageSize.value, storageStrategyParamsPage.value * storageStrategyParamsPageSize.value)
 }
 
@@ -500,6 +507,13 @@ const deletePersistenceSelectorStrategy = (index: number) => {
   const actualIndex = (persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value + index
   persistenceSelectorStrategyParams.value.splice(actualIndex, 1)
   persistenceSelectorStrategyParamsTotal.value = persistenceSelectorStrategyParams.value.length
+
+  // If current page is now empty and we're not on the first page, go back one page
+  const maxPage = Math.max(1, Math.ceil(persistenceSelectorStrategyParamsTotal.value / persistenceSelectorStrategyParamsPageSize.value))
+  if (persistenceSelectorStrategyParamsPage.value > maxPage) {
+    persistenceSelectorStrategyParamsPage.value = maxPage
+  }
+
   persistenceSelectorStrategyParamsObjects.value = persistenceSelectorStrategyParams.value.slice((persistenceSelectorStrategyParamsPage.value - 1) * persistenceSelectorStrategyParamsPageSize.value, persistenceSelectorStrategyParamsPage.value * persistenceSelectorStrategyParamsPageSize.value)
 }
 

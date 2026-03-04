@@ -120,6 +120,12 @@
                     Download JSON
                   </FeatherDropdownItem>
                   <FeatherDropdownItem
+                    data-test="change-status-source-button"
+                    @click="openChangeStatusDialog(source)"
+                  >
+                    {{ source.enabled ? 'Disable' : 'Enable' }} Source
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
                     data-test="delete-source-button"
                     @click="openDeleteCollectionSourceDialog(source)"
                   >
@@ -159,12 +165,20 @@
       @close="closeDeleteCollectionSourceDialog"
       @confirm="deleteCollectionSource"
     />
+    <SnmpDataCollectionChangeStatusDialog
+      :visible="isChangeStatusDialogVisible"
+      :selected="selectedCollectionSource"
+      type="source"
+      :status="selectedCollectionSource?.enabled ? 'Disable' : 'Enable'"
+      @close="closeChangeStatusDialog"
+      @confirm="changeCollectionSourceStatus"
+    />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById } from '@/services/snmpDataCollectionService'
+import { deleteSnmpCollectionSources, downloadSnmpDataCollectionById, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionStore } from '@/stores/snmpDataCollectionStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
@@ -181,12 +195,14 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import DeleteConfirmationDialog from '../SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from './Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 
 const router = useRouter()
 const store = useSnmpDataCollectionStore()
 const isDeleteDialogVisible = ref(false)
-const selectedCollectionSource = ref<{ id: number; name: string } | null>(null)
+const isChangeStatusDialogVisible = ref(false)
+const selectedCollectionSource = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const emptyListContent = {
   msg: 'No results found.'
@@ -234,14 +250,24 @@ const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeSourcesSearchTerm(value)
 }, 500)
 
-const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string } | null) => {
+const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string, enabled: boolean } | null) => {
   selectedCollectionSource.value = collectionSource
   isDeleteDialogVisible.value = true
+}
+
+const openChangeStatusDialog = (collectionSource: { id: number; name: string, enabled: boolean } | null) => {
+  selectedCollectionSource.value = collectionSource
+  isChangeStatusDialogVisible.value = true
 }
 
 const closeDeleteCollectionSourceDialog = () => {
   selectedCollectionSource.value = null
   isDeleteDialogVisible.value = false
+}
+
+const closeChangeStatusDialog = () => {
+  selectedCollectionSource.value = null
+  isChangeStatusDialogVisible.value = false
 }
 
 const deleteCollectionSource = async (selected: { id: number; name: string } | null, type: string) => {
@@ -256,6 +282,9 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
       snackbar.showSnackBar({
         msg: `Collection Source '${selectedCollectionSource.value?.name}' deleted successfully.`
       })
+      await store.fetchSnmpCollectionSources()
+      selectedCollectionSource.value = null
+      isDeleteDialogVisible.value = false
       router.push({ name: 'SNMP Data Collection' })
     } else {
       snackbar.showSnackBar({
@@ -266,6 +295,36 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
   } else {
     snackbar.showSnackBar({
       msg: `Failed to delete Collection Source '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
+
+const changeCollectionSourceStatus = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'source' &&
+    selected?.id &&
+    selected?.id === selectedCollectionSource.value?.id &&
+    selected?.name === selectedCollectionSource.value?.name
+  ) {
+    const updatedStatus = !selectedCollectionSource.value?.enabled
+    const success = await enableDisableSnmpDataCollectionSources(updatedStatus, [selectedCollectionSource.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Collection Source '${selectedCollectionSource.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+      })
+      await store.fetchSnmpCollectionSources()
+      selectedCollectionSource.value = null
+      isChangeStatusDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} Collection Source '${selectedCollectionSource.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to change status for Collection Source '${selected?.name}'.`,
       error: true
     })
   }
