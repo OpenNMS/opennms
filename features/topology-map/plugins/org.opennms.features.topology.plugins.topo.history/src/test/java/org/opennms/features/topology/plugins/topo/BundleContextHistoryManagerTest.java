@@ -89,7 +89,6 @@ import org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.framework.BundleContext;
@@ -336,8 +335,7 @@ public class BundleContextHistoryManagerTest  {
             public List<OnmsAlarm> findMatchingAlarms(org.opennms.core.criteria.Criteria criteria) {
                 Date eventTime = new Date();
                 OnmsDistPoller distPoller = new OnmsDistPoller("pollerID");
-                OnmsEvent event = new OnmsEvent();
-                OnmsAlarm alarm = new OnmsAlarm(Integer.valueOf(idAlarm), "eventUI", distPoller, 2, 3, eventTime, event);
+                OnmsAlarm alarm = new OnmsAlarm(Integer.valueOf(idAlarm), "eventUI", distPoller, 2, 3, eventTime);
                 return Lists.newArrayList(alarm);
             }
         };

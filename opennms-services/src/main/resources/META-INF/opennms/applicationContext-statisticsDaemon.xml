@@ -40,13 +40,6 @@
         </property>
     </bean>
 
-    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-      <property name="annotatedListener" ref="daemon" />
-      <property name="eventSubscriptionService">
-        <onmsgi:reference interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
-      </property>
-    </bean>
-
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="schedulerName" value="Statsd" />
     </bean>

@@ -22,7 +22,7 @@
     <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
 
     <!-- MessageBus for IPC events (injected via OSGi, optional) -->
-    <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus" availability="optional"/>
+    <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
 
     <bean name="tsidFactory" class="org.opennms.core.tsid.TsidFactory">
       <constructor-arg value="0"/>

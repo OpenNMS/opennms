@@ -59,7 +59,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
@@ -135,7 +134,7 @@ public class IfTttDaemonTest {
     }
 
     private void addAlarm(final Integer id, final Integer nodeId, final String reductionKey, final OnmsSeverity onmsSeverity, final boolean acknowledged) {
-        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, "dummy.uei", null, null, onmsSeverity.getId(), new Date(), new OnmsEvent()) {
+        final OnmsAlarm onmsAlarm = new OnmsAlarm(id, "dummy.uei", null, null, onmsSeverity.getId(), new Date()) {
             @Override
             public boolean isAcknowledged() {
                 return acknowledged;

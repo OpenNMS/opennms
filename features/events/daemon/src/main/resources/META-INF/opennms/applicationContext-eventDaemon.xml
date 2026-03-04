@@ -18,6 +18,12 @@
 
   <context:annotation-config />
   <tx:annotation-driven/>
+
+  <!-- Resolve ${...} placeholders from system properties (e.g. -Dorg.opennms.tsid.node-id) -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+  </bean>
   <aop:aspectj-autoproxy proxy-target-class="true" />
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">

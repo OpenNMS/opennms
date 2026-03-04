@@ -42,11 +42,96 @@
     </changeSet>
 
     <changeSet id="36.0.0-drop-alarm-event-fk" author="opennms">
-        <comment>Drop FK and index from alarms to events table — events move to Kafka</comment>
+        <comment>Drop FK, index, and lasteventid column from alarms — events move to Kafka.
+            Must drop node_alarms view first since it depends on lasteventid.</comment>
+        <dropView viewName="node_alarms"/>
         <dropForeignKeyConstraint baseTableName="alarms"
                                   constraintName="fk_eventidak2"/>
         <dropIndex tableName="alarms" indexName="alarm_eventid_idx"/>
         <dropColumn tableName="alarms" columnName="lasteventid"/>
+
+        <createView replaceIfExists="true" viewName="node_alarms">
+                SELECT
+                n.nodeid,
+                n.nodecreatetime,
+                n.nodeparentid,
+                n.nodetype,
+                n.nodesysoid,
+                n.nodesysname,
+                n.nodesysdescription,
+                n.nodesyslocation,
+                n.nodesyscontact,
+                n.nodelabel,
+                n.nodelabelsource,
+                n.nodenetbiosname,
+                n.nodedomainname,
+                n.operatingsystem,
+                n.lastcapsdpoll,
+                n.foreignsource,
+                n.foreignid,
+                n.location,
+                a.alarmid,
+                a.eventuei,
+                a.ipaddr,
+                a.reductionkey,
+                a.alarmtype,
+                a.counter,
+                a.severity,
+                a.firsteventtime,
+                a.lasteventtime,
+                a.firstautomationtime,
+                a.lastautomationtime,
+                a.description,
+                a.logmsg,
+                a.operinstruct,
+                a.tticketid,
+                a.tticketstate,
+                a.suppresseduntil,
+                a.suppresseduser,
+                a.suppressedtime,
+                a.alarmackuser,
+                a.alarmacktime,
+                a.managedobjectinstance,
+                a.managedobjecttype,
+                a.applicationdn,
+                a.ossprimarykey,
+                a.x733alarmtype,
+                a.qosalarmstate,
+                a.clearkey,
+                a.ifindex,
+                a.stickymemo,
+                a.systemid,
+                (a.alarmacktime NOTNULL) AS acknowledged,
+                COALESCE(s_cat.categoryname, 'no category') AS categoryname,
+                s_cat.categorydescription,
+                s.servicename,
+                nas.max_alarm_severity,
+                nas.max_alarm_severity_unack,
+                nas.alarm_count_unack,
+                nas.alarm_count
+                FROM
+                node n
+                JOIN
+                alarms a
+                ON
+                n.nodeid = a.nodeid
+                JOIN
+                node_alarm_status nas
+                ON
+                a.nodeid = nas.nodeid
+                LEFT JOIN
+                service s
+                ON
+                a.serviceid = s.serviceid
+                LEFT JOIN
+                category_node cat
+                ON
+                n.nodeid = cat.nodeid
+                LEFT JOIN
+                categories s_cat
+                ON
+                cat.categoryid = s_cat.categoryid
+        </createView>
     </changeSet>
 
     <changeSet id="36.0.0-drop-events-table" author="opennms">
@@ -82,9 +167,7 @@
             <column name="created_at" type="TIMESTAMP WITH TIME ZONE" defaultValueComputed="NOW()"/>
         </createTable>
 
-        <createIndex tableName="events_archive" indexName="idx_events_archive_time">
-            <column name="event_time" descending="true"/>
-        </createIndex>
+        <sql>CREATE INDEX idx_events_archive_time ON events_archive (event_time DESC)</sql>
         <createIndex tableName="events_archive" indexName="idx_events_archive_uei">
             <column name="event_uei"/>
         </createIndex>
