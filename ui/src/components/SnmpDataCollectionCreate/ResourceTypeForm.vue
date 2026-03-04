@@ -256,7 +256,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherRadio, FeatherRadioGroup } from '@featherds/radio'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
-import ResourceTypeParameterDrawer from '../SnmpDataCollectionDetail/Drawer/ResourceTypeParameterDrawer.vue'
+import ResourceTypeParameterDrawer from './Drawer/ResourceTypeParameterDrawer.vue'
 
 const store = useSnmpDataCollectionCreationStore()
 const name = ref('')

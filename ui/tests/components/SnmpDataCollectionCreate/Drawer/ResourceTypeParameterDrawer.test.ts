@@ -1,4 +1,4 @@
-import ResourceTypeParameterDrawer from '@/components/SnmpDataCollectionDetail/Drawer/ResourceTypeParameterDrawer.vue'
+import ResourceTypeParameterDrawer from '@/components/SnmpDataCollectionCreate/Drawer/ResourceTypeParameterDrawer.vue'
 import { CreateEditMode } from '@/types'
 import { PersistSelectorStrategyForm, StorageStrategyForm } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'

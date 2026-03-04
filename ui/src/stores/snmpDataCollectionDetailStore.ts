@@ -97,6 +97,11 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       try {
         const response = await getSnmpDataCollectionSourceById(Number(id))
         this.selectedCollectionSource = response
+        await this.fetchResourceTypes()
+        await this.fetchMibGroups()
+        await this.fetchSystemDefinitions()
+        await this.fetchResourceTypeNames()
+        await this.fetchMibGroupNames()
         this.isLoading = false
       } catch (error) {
         console.error('Error fetching SNMP collection source by ID:', id, error)
@@ -115,8 +120,6 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
             this.systemDefsSorting.sortKey,
             this.systemDefsSorting.sortOrder
           )
-          await this.fetchResourceTypeNames()
-          await this.fetchMibGroupNames()
           this.systemDefinitions = response.systemDefinitions
           this.systemDefsPagination.total = response.totalRecords
           this.isLoading = false
@@ -269,20 +272,22 @@ export const useSnmpDataCollectionDetailStore = defineStore('useSnmpDataCollecti
       this.mibGroupDrawerState.visible = true
       this.mibGroupDrawerState.isEditMode = isEditMode
     },
-    closeMibGroupDrawer() {
+    async closeMibGroupDrawer() {
       this.selectedMibGroup = null
       this.mibGroupDrawerState.visible = false
       this.mibGroupDrawerState.isEditMode = CreateEditMode.None
+      await this.fetchMibGroupNames()
     },
     openResourceTypeCreationDrawer(resourceType: SnmpCollectionResourceType | null = null, isEditMode: CreateEditMode) {
       this.selectedResourceType = resourceType
       this.resourceTypeDrawerState.visible = true
       this.resourceTypeDrawerState.isEditMode = isEditMode
     },
-    closeResourceTypeDrawer() {
+    async closeResourceTypeDrawer() {
       this.selectedResourceType = null
       this.resourceTypeDrawerState.visible = false
       this.resourceTypeDrawerState.isEditMode = CreateEditMode.None
+      await this.fetchResourceTypeNames()
     }
   }
 })
