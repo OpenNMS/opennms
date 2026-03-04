@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -46,6 +47,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.net.URL;
@@ -57,6 +59,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -914,6 +917,283 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(400, response.getStatus());
         String message = (String) response.getEntity();
         assertTrue(message.contains("Invalid IP match expression: 'invalid-pattern!'."));
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_Success() {
+        // Get initial config
+        Response response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig initialConfig = (SnmpConfig) response.getEntity();
+
+        assertEquals("public", initialConfig.getReadCommunity());
+        assertEquals("private", initialConfig.getWriteCommunity());
+        assertEquals(Integer.valueOf(800), initialConfig.getTimeout());
+        assertEquals(Integer.valueOf(3), initialConfig.getRetry());
+
+        // Create new default overrides
+        org.opennms.netmgt.config.snmp.Configuration newDefaults =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                9999,                // port
+                5,                   // retry
+                5000,                // timeout
+                "newPublic",         // readCommunity
+                "newPrivate",        // writeCommunity
+                "proxy.example.com", // proxyHost
+                "v2c",               // version
+                20,                  // maxVarsPerPdu
+                3,                   // maxRepetitions
+                2000,                // maxRequestSize
+                "secName",           // securityName
+                2,                   // securityLevel
+                "authPass",          // authPassphrase
+                "SHA",               // authProtocol
+                "engineId",          // engineId
+                "ctxEngineId",       // contextEngineId
+                "ctxName",           // contextName
+                "privPass",          // privacyPassphrase
+                "DES",               // privacyProtocol
+                "entId"              // enterpriseId
+            );
+
+        // Save the overrides
+        response = snmpConfigRestApi.saveDefaultOverrides(newDefaults);
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Verify the config was updated
+        response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig updatedConfig = (SnmpConfig) response.getEntity();
+
+        assertEquals(Integer.valueOf(9999), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(5), updatedConfig.getRetry());
+        assertEquals(Integer.valueOf(5000), updatedConfig.getTimeout());
+        assertEquals("newPublic", updatedConfig.getReadCommunity());
+        assertEquals("newPrivate", updatedConfig.getWriteCommunity());
+        assertEquals("proxy.example.com", updatedConfig.getProxyHost());
+        assertEquals("v2c", updatedConfig.getVersion());
+        assertEquals(Integer.valueOf(20), updatedConfig.getMaxVarsPerPdu());
+        assertEquals(Integer.valueOf(3), updatedConfig.getMaxRepetitions());
+        assertEquals(Integer.valueOf(2000), updatedConfig.getMaxRequestSize());
+        assertEquals("secName", updatedConfig.getSecurityName());
+        assertEquals(Integer.valueOf(2), updatedConfig.getSecurityLevel());
+        assertEquals("authPass", updatedConfig.getAuthPassphrase());
+        assertEquals("SHA", updatedConfig.getAuthProtocol());
+        assertEquals("engineId", updatedConfig.getEngineId());
+        assertEquals("ctxEngineId", updatedConfig.getContextEngineId());
+        assertEquals("ctxName", updatedConfig.getContextName());
+        assertEquals("privPass", updatedConfig.getPrivacyPassphrase());
+        assertEquals("DES", updatedConfig.getPrivacyProtocol());
+        assertEquals("entId", updatedConfig.getEnterpriseId());
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_SetValuesToNull() {
+        // Get initial config with non-null values
+        Response response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig initialConfig = (SnmpConfig) response.getEntity();
+
+        // Verify initial state has non-null values
+        assertNotNull(initialConfig);
+        assertNotNull(initialConfig.getReadCommunity());
+        assertNotNull(initialConfig.getWriteCommunity());
+
+        // Create config with null values
+        org.opennms.netmgt.config.snmp.Configuration nullDefaults =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null
+            );
+
+        // Save the overrides
+        response = snmpConfigRestApi.saveDefaultOverrides(nullDefaults);
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Verify nullable values are now null
+        response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig updatedConfig = (SnmpConfig) response.getEntity();
+
+        assertNull(updatedConfig.getReadCommunity());
+        assertNull(updatedConfig.getWriteCommunity());
+        assertNull(updatedConfig.getProxyHost());
+        assertNull(updatedConfig.getVersion());
+        assertNull(updatedConfig.getSecurityName());
+        assertNull(updatedConfig.getAuthPassphrase());
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_PartialUpdate() {
+        // Get initial config
+        Response response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig initialConfig = (SnmpConfig) response.getEntity();
+
+        // Create config with mix of null and non-null values
+        org.opennms.netmgt.config.snmp.Configuration partialDefaults =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                8888,          // port - non-null
+                null,          // retry - null
+                4000,          // timeout - non-null
+                "updatedRead", // readCommunity - non-null
+                null,          // writeCommunity - null
+                null,          // proxyHost - null
+                "v3",          // version - non-null
+                null,          // maxVarsPerPdu - null
+                5,             // maxRepetitions - non-null
+                null,          // maxRequestSize - null
+                null, null, null, null, null, null, null, null, null, null
+            );
+
+        // Save the overrides
+        response = snmpConfigRestApi.saveDefaultOverrides(partialDefaults);
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Verify mixed values
+        response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig updatedConfig = (SnmpConfig) response.getEntity();
+
+        assertEquals(Integer.valueOf(8888), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(0), updatedConfig.getRetry()); // getRetry() returns 0 when null
+        assertEquals(Integer.valueOf(4000), updatedConfig.getTimeout());
+        assertEquals("updatedRead", updatedConfig.getReadCommunity());
+        assertNull(updatedConfig.getWriteCommunity());
+        assertEquals("v3", updatedConfig.getVersion());
+        assertEquals(Integer.valueOf(5), updatedConfig.getMaxRepetitions());
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_PreservesDefinitionsAndProfiles() {
+        // Get initial config and count definitions and profiles
+        Response response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig initialConfig = (SnmpConfig) response.getEntity();
+        int initialDefinitionCount = initialConfig.getDefinitions().size();
+        assertTrue(initialDefinitionCount > 0);
+        int initialProfileCount = initialConfig.getSnmpProfiles().getSnmpProfiles().size();
+        assertTrue(initialProfileCount > 0);
+
+        // Create new defaults
+        org.opennms.netmgt.config.snmp.Configuration newDefaults =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                7777, 7, 7000, "testRead", "testWrite",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            );
+
+        // Save the overrides
+        response = snmpConfigRestApi.saveDefaultOverrides(newDefaults);
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Verify defaults were updated but definitions remain
+        response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig updatedConfig = (SnmpConfig) response.getEntity();
+
+        assertEquals(Integer.valueOf(7777), updatedConfig.getPort());
+        assertEquals("testRead", updatedConfig.getReadCommunity());
+
+        // Definitions should be preserved
+        assertEquals(initialDefinitionCount, updatedConfig.getDefinitions().size());
+
+        // Profiles should be preserved
+        assertEquals(initialProfileCount, updatedConfig.getSnmpProfiles().getSnmpProfiles().size());
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_MultipleUpdates() {
+        // First update
+        org.opennms.netmgt.config.snmp.Configuration config1 =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                100, 1, 1000, "read1", "write1",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            );
+        Response response = snmpConfigRestApi.saveDefaultOverrides(config1);
+        assertEquals(204, response.getStatus());
+
+        response = snmpConfigRestApi.getSnmpConfig();
+        SnmpConfig updatedConfig1 = (SnmpConfig) response.getEntity();
+        assertEquals("read1", updatedConfig1.getReadCommunity());
+        assertEquals(Integer.valueOf(100), updatedConfig1.getPort());
+
+        // Second update
+        org.opennms.netmgt.config.snmp.Configuration config2 =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                200, 2, 2000, "read2", "write2",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            );
+        response = snmpConfigRestApi.saveDefaultOverrides(config2);
+        assertEquals(204, response.getStatus());
+
+        response = snmpConfigRestApi.getSnmpConfig();
+        SnmpConfig updatedConfig2 = (SnmpConfig) response.getEntity();
+        assertEquals("read2", updatedConfig2.getReadCommunity());
+        assertEquals(Integer.valueOf(200), updatedConfig2.getPort());
+
+        // Third update - set some to null
+        org.opennms.netmgt.config.snmp.Configuration config3 =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                300, null, 3000, null, "write3",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            );
+        response = snmpConfigRestApi.saveDefaultOverrides(config3);
+        assertEquals(204, response.getStatus());
+
+        response = snmpConfigRestApi.getSnmpConfig();
+        SnmpConfig updatedConfig3 = (SnmpConfig) response.getEntity();
+        assertNull(updatedConfig3.getReadCommunity());
+        assertEquals(Integer.valueOf(0), updatedConfig3.getRetry()); // getRetry() returns 0 when null
+        assertEquals("write3", updatedConfig3.getWriteCommunity());
+        assertEquals(Integer.valueOf(300), updatedConfig3.getPort());
+    }
+
+
+    @Test
+    public void testSaveDefaultOverrides_ValidationFailure() {
+        // Create a Configuration with invalid port value (greater than 65535) to trigger schema validation failure
+        org.opennms.netmgt.config.snmp.Configuration edgeCaseConfig =
+            new org.opennms.netmgt.config.snmp.Configuration(
+                99999,               // invalid port value - outside maximum
+                null,
+                null,
+                "",
+                "",
+                null, null, null, null, null, null,
+                null,
+                null, null, null, null, null, null, null, null
+            );
+
+        // This should fail since the port is out of range
+        assertThrows(WebApplicationException.class, () -> snmpConfigRestApi.saveDefaultOverrides(edgeCaseConfig));
+
+        // assert that the expected error was logged, specifically the schema validation failure for the port field
+        MockLogAppender.assertLogMatched(Level.ERROR, "Data access error saving SNMP default overrides, failed schema validation: ");
+        MockLogAppender.assertLogMatched(Level.ERROR,
+                "ValidatingMarshalRecord$MarshalSAXParseException; cvc-maxInclusive-valid: Value '99999' is not facet-valid with respect to maxInclusive '65535' for type '#AnonType_portconfiguration'");
+
+        // Verify that the config was NOT saved
+        Response response = snmpConfigRestApi.getSnmpConfig();
+        assertEquals(200, response.getStatus());
+        SnmpConfig updatedConfig = (SnmpConfig) response.getEntity();
+        assertEquals(Integer.valueOf(161), updatedConfig.getPort());
+    }
+
+    @Test
+    public void testSaveDefaultOverrides_NullConfig() {
+        // Attempt to save null config - should fail
+        Response response = snmpConfigRestApi.saveDefaultOverrides(null);
+
+        assertNotNull(response);
+        // Status should indicate error
+        assertEquals(400, response.getStatus());
+
+        String message = (String) response.getEntity();
+        assertEquals("Missing or invalid request body.", message);
     }
 
     /**

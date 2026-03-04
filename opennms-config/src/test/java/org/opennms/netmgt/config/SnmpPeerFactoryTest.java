@@ -44,6 +44,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -1042,4 +1043,329 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals(1, profiles.stream().filter(p -> p.getLabel().equals("profile1")).count());
         assertEquals(0, profiles.stream().filter(p -> p.getLabel().equals("profile2")).count());
     }
+
+    public void testSaveDefaultOverrides_ReplaceExistingValues() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // Get initial config values
+        SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals("public", initialConfig.getReadCommunity());
+        assertEquals("private", initialConfig.getWriteCommunity());
+        assertEquals(Integer.valueOf(3), initialConfig.getRetry());
+        assertEquals(Integer.valueOf(3000), initialConfig.getTimeout());
+        assertEquals(Integer.valueOf(161), initialConfig.getPort());
+        assertEquals("v1", initialConfig.getVersion());
+
+        // Create new configuration with different values
+        Configuration newConfig = new Configuration(
+                9161,          // port
+                5,             // retry
+                5000,          // timeout
+                "newPublic",   // readCommunity
+                "newPrivate",  // writeCommunity
+                "proxy.example.com", // proxyHost
+                "v2c",         // version
+                15,            // maxVarsPerPdu
+                3,             // maxRepetitions
+                1000,          // maxRequestSize
+                "newSecName",  // securityName
+                3,             // securityLevel
+                "newAuthPass", // authPassphrase
+                "SHA",         // authProtocol
+                "newEngineId", // engineId
+                "newContextEngineId", // contextEngineId
+                "newContext",  // contextName
+                "newPrivPass", // privacyPassphrase
+                "AES",         // privacyProtocol
+                "newEntId"     // enterpriseId
+        );
+
+        // Save the overrides
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(newConfig);
+
+        // Verify all values were updated
+        SnmpConfig updatedConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals(Integer.valueOf(9161), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(5), updatedConfig.getRetry());
+        assertEquals(Integer.valueOf(5000), updatedConfig.getTimeout());
+        assertEquals("newPublic", updatedConfig.getReadCommunity());
+        assertEquals("newPrivate", updatedConfig.getWriteCommunity());
+        assertEquals("proxy.example.com", updatedConfig.getProxyHost());
+        assertEquals("v2c", updatedConfig.getVersion());
+        assertEquals(Integer.valueOf(15), updatedConfig.getMaxVarsPerPdu());
+        assertEquals(Integer.valueOf(3), updatedConfig.getMaxRepetitions());
+        assertEquals(Integer.valueOf(1000), updatedConfig.getMaxRequestSize());
+        assertEquals("newSecName", updatedConfig.getSecurityName());
+        assertEquals(Integer.valueOf(3), updatedConfig.getSecurityLevel());
+        assertEquals("newAuthPass", updatedConfig.getAuthPassphrase());
+        assertEquals("SHA", updatedConfig.getAuthProtocol());
+        assertEquals("newEngineId", updatedConfig.getEngineId());
+        assertEquals("newContextEngineId", updatedConfig.getContextEngineId());
+        assertEquals("newContext", updatedConfig.getContextName());
+        assertEquals("newPrivPass", updatedConfig.getPrivacyPassphrase());
+        assertEquals("AES", updatedConfig.getPrivacyProtocol());
+        assertEquals("newEntId", updatedConfig.getEnterpriseId());
+    }
+
+    public void testSaveDefaultOverrides_SetExistingValuesToNull() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // Get initial config values - verify they're not null
+        SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertNotNull(initialConfig.getReadCommunity());
+        assertNotNull(initialConfig.getWriteCommunity());
+        assertNotNull(initialConfig.getRetry());
+        assertNotNull(initialConfig.getTimeout());
+
+        // Create new configuration with null values
+        Configuration newConfig = new Configuration(
+                null,  // port
+                null,  // retry
+                null,  // timeout
+                null,  // readCommunity
+                null,  // writeCommunity
+                null,  // proxyHost
+                null,  // version
+                null,  // maxVarsPerPdu
+                null,  // maxRepetitions
+                null,  // maxRequestSize
+                null,  // securityName
+                null,  // securityLevel
+                null,  // authPassphrase
+                null,  // authProtocol
+                null,  // engineId
+                null,  // contextEngineId
+                null,  // contextName
+                null,  // privacyPassphrase
+                null,  // privacyProtocol
+                null   // enterpriseId
+        );
+
+        // Save the overrides
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(newConfig);
+
+        // Verify all nullable values were set to null
+        SnmpConfig updatedConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertNull(updatedConfig.getReadCommunity());
+        assertNull(updatedConfig.getWriteCommunity());
+        assertNull(updatedConfig.getProxyHost());
+        assertNull(updatedConfig.getVersion());
+        assertNull(updatedConfig.getSecurityName());
+        assertNull(updatedConfig.getAuthPassphrase());
+        assertNull(updatedConfig.getAuthProtocol());
+        assertNull(updatedConfig.getEngineId());
+        assertNull(updatedConfig.getContextEngineId());
+        assertNull(updatedConfig.getContextName());
+        assertNull(updatedConfig.getPrivacyPassphrase());
+        assertNull(updatedConfig.getPrivacyProtocol());
+        assertNull(updatedConfig.getEnterpriseId());
+    }
+
+    public void testSaveDefaultOverrides_MixNullAndNonNull() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // Get initial config values
+        SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals("public", initialConfig.getReadCommunity());
+        assertEquals("private", initialConfig.getWriteCommunity());
+        assertEquals(Integer.valueOf(3), initialConfig.getRetry());
+
+        // Create configuration with mix of null and non-null values
+        Configuration newConfig = new Configuration(
+                8161,          // port - non-null
+                null,          // retry - null
+                4000,          // timeout - non-null
+                "updatedRead", // readCommunity - non-null
+                null,          // writeCommunity - null
+                null,          // proxyHost - null
+                "v3",          // version - non-null
+                null,          // maxVarsPerPdu - null
+                5,             // maxRepetitions - non-null
+                null,          // maxRequestSize - null
+                "someSecName", // securityName - non-null
+                null,          // securityLevel - null
+                null,          // authPassphrase - null
+                "MD5",         // authProtocol - non-null
+                null,          // engineId - null
+                null,          // contextEngineId - null
+                "ctx1",        // contextName - non-null
+                null,          // privacyPassphrase - null
+                null,          // privacyProtocol - null
+                null           // enterpriseId - null
+        );
+
+        // Save the overrides
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(newConfig);
+
+        // Verify mixed values
+        SnmpConfig updatedConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals(Integer.valueOf(8161), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(0), updatedConfig.getRetry()); // getRetry() returns 0 when null
+        assertEquals(Integer.valueOf(4000), updatedConfig.getTimeout());
+        assertEquals("updatedRead", updatedConfig.getReadCommunity());
+        assertNull(updatedConfig.getWriteCommunity());
+        assertNull(updatedConfig.getProxyHost());
+        assertEquals("v3", updatedConfig.getVersion());
+        assertEquals(Integer.valueOf(5), updatedConfig.getMaxRepetitions());
+        assertEquals("someSecName", updatedConfig.getSecurityName());
+        assertNull(updatedConfig.getSecurityLevel());
+        assertNull(updatedConfig.getAuthPassphrase());
+        assertEquals("MD5", updatedConfig.getAuthProtocol());
+        assertNull(updatedConfig.getEngineId());
+        assertNull(updatedConfig.getContextEngineId());
+        assertEquals("ctx1", updatedConfig.getContextName());
+        assertNull(updatedConfig.getPrivacyPassphrase());
+        assertNull(updatedConfig.getPrivacyProtocol());
+        assertNull(updatedConfig.getEnterpriseId());
+    }
+
+    public void testSaveDefaultOverrides_ReplaceNullWithNonNull() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // First set everything to null
+        Configuration nullConfig = new Configuration(
+                null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(nullConfig);
+
+        // Verify nulls
+        SnmpConfig configWithNulls = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertNull(configWithNulls.getReadCommunity());
+        assertNull(configWithNulls.getVersion());
+        assertNull(configWithNulls.getSecurityName());
+
+        // Now replace null values with non-null values
+        Configuration nonNullConfig = new Configuration(
+                162,           // port
+                4,             // retry
+                4000,          // timeout
+                "newRead",     // readCommunity
+                "newWrite",    // writeCommunity
+                "newProxy",    // proxyHost
+                "v2c",         // version
+                20,            // maxVarsPerPdu
+                4,             // maxRepetitions
+                2000,          // maxRequestSize
+                "secName",     // securityName
+                2,             // securityLevel
+                "authPass",    // authPassphrase
+                "SHA",         // authProtocol
+                "engineId",    // engineId
+                "ctxEngineId", // contextEngineId
+                "ctxName",     // contextName
+                "privPass",    // privacyPassphrase
+                "DES",         // privacyProtocol
+                "entId"        // enterpriseId
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(nonNullConfig);
+
+        // Verify all values are now set
+        SnmpConfig updatedConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals(Integer.valueOf(162), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(4), updatedConfig.getRetry());
+        assertEquals(Integer.valueOf(4000), updatedConfig.getTimeout());
+        assertEquals("newRead", updatedConfig.getReadCommunity());
+        assertEquals("newWrite", updatedConfig.getWriteCommunity());
+        assertEquals("newProxy", updatedConfig.getProxyHost());
+        assertEquals("v2c", updatedConfig.getVersion());
+        assertEquals(Integer.valueOf(20), updatedConfig.getMaxVarsPerPdu());
+        assertEquals(Integer.valueOf(4), updatedConfig.getMaxRepetitions());
+        assertEquals(Integer.valueOf(2000), updatedConfig.getMaxRequestSize());
+        assertEquals("secName", updatedConfig.getSecurityName());
+        assertEquals(Integer.valueOf(2), updatedConfig.getSecurityLevel());
+        assertEquals("authPass", updatedConfig.getAuthPassphrase());
+        assertEquals("SHA", updatedConfig.getAuthProtocol());
+        assertEquals("engineId", updatedConfig.getEngineId());
+        assertEquals("ctxEngineId", updatedConfig.getContextEngineId());
+        assertEquals("ctxName", updatedConfig.getContextName());
+        assertEquals("privPass", updatedConfig.getPrivacyPassphrase());
+        assertEquals("DES", updatedConfig.getPrivacyProtocol());
+        assertEquals("entId", updatedConfig.getEnterpriseId());
+    }
+
+    public void testSaveDefaultOverrides_PreservesDefinitions() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // Get initial config and count definitions
+        SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        int initialDefinitionCount = initialConfig.getDefinitions().size();
+        assertTrue(initialDefinitionCount > 0);
+
+        // Save new default overrides
+        Configuration newConfig = new Configuration(
+                9999,        // port
+                10,          // retry
+                10000,       // timeout
+                "testRead",  // readCommunity
+                "testWrite", // writeCommunity
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(newConfig);
+
+        // Verify defaults were updated but definitions remain
+        SnmpConfig updatedConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals(Integer.valueOf(9999), updatedConfig.getPort());
+        assertEquals(Integer.valueOf(10), updatedConfig.getRetry());
+        assertEquals(Integer.valueOf(10000), updatedConfig.getTimeout());
+        assertEquals("testRead", updatedConfig.getReadCommunity());
+        assertEquals("testWrite", updatedConfig.getWriteCommunity());
+
+        // Definitions should be preserved
+        assertEquals(initialDefinitionCount, updatedConfig.getDefinitions().size());
+    }
+
+    public void testSaveDefaultOverrides_MultipleUpdates() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+
+        // First update
+        Configuration config1 = new Configuration(
+                100, 1, 1000, "read1", "write1",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(config1);
+        SnmpConfig updatedConfig1 = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals("read1", updatedConfig1.getReadCommunity());
+        assertEquals(Integer.valueOf(100), updatedConfig1.getPort());
+
+        // Second update
+        Configuration config2 = new Configuration(
+                200, 2, 2000, "read2", "write2",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(config2);
+        SnmpConfig updatedConfig2 = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals("read2", updatedConfig2.getReadCommunity());
+        assertEquals(Integer.valueOf(200), updatedConfig2.getPort());
+        assertEquals(Integer.valueOf(2), updatedConfig2.getRetry());
+
+        // Third update - set some to null
+        Configuration config3 = new Configuration(
+                300, null, 3000, null, "write3",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(config3);
+        SnmpConfig updatedConfig3 = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertNull(updatedConfig3.getReadCommunity());
+        assertEquals(Integer.valueOf(0), updatedConfig3.getRetry()); // getRetry() returns 0 when null
+        assertEquals("write3", updatedConfig3.getWriteCommunity());
+        assertEquals(Integer.valueOf(300), updatedConfig3.getPort());
+        assertEquals(Integer.valueOf(3000), updatedConfig3.getTimeout());
+    }
+
+    public void testSaveDefaultOverrides_NullConfig() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
+
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(null);
+
+        SnmpConfig updatedConfig1 = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertEquals(originalConfig, updatedConfig1); // config should not have changed
+    }
+
+    // NOTE: There is no test for saveDefaultOverrides when it receives a configuration that does not pass
+    // schema validation because it is overly complex to mock SnmpPeerFactory.snmpConfigDao just for testing,
+    // since we would have to add additional logic to SnmpPeerFactory.setResource() to allow injecting a mock dao that
+    // throws a fake ValidationException.
+    // However, this functionality *is* covered by the SnmpPeerFactoryTest.testSaveDefaultOverrides_InvalidConfig test.
 }

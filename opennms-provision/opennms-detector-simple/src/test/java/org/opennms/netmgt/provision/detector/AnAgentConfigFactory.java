@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -82,6 +83,11 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
 
     @Override
     public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
+
+    }
+
+    @Override
+    public void saveDefaultOverrides(Configuration config) {
 
     }
 
