@@ -36,8 +36,9 @@
       <div class="action-container">
         <FeatherButton
           v-if="!store.selectedCollectionSource.enabled"
-          primary
+          secondary
           data-test="enable-source"
+          @click="openChangeStatusDialog(store.selectedCollectionSource)"
         >
           Enable Source
         </FeatherButton>

@@ -904,6 +904,30 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
       expect(dialog.exists()).toBe(true)
     })
+
+    it('opens change status dialog when Enable Source button is clicked', async () => {
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.attributes('visible')).toBe('true')
+    })
+
+    it('passes correct props to change status dialog when enabling', async () => {
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.attributes('type')).toBe('source')
+      expect(dialog.attributes('status')).toBe('Enable')
+      expect(dialog.attributes('selected')).toBeDefined()
+    })
   })
 
   describe('Change Collection Source Status - Successful Status Change', () => {
@@ -997,6 +1021,92 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
       expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [99])
     })
+
+    it('calls service with correct params when enabling source', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      // When source is disabled, enabling it sends true
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [1])
+    })
+
+    it('shows success snackbar when enable succeeds', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Collection Source \'Test Collection\' enabled successfully.'
+      })
+    })
+
+    it('refreshes collection source data after successful enable', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(store.fetchCollectionSourceById).toHaveBeenCalledWith('1')
+    })
+
+    it('closes dialog after successful enable', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(dialog.attributes('visible')).toBe('false')
+    })
+
+    it('uses correct source id when enabling', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+      const customSource: SnmpCollectionSource = { ...mockCollectionSource, id: 77, enabled: false }
+      wrapper = await createWrapper(customSource)
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 77, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [77])
+    })
   })
 
   describe('Change Collection Source Status - Failed Status Change', () => {
@@ -1055,6 +1165,57 @@ describe('SnmpDataCollectionDetail.vue', () => {
       await flushPromises()
 
       // Dialog should remain visible on failure
+      expect(dialog.attributes('visible')).toBe('true')
+    })
+
+    it('shows error snackbar when enable service returns false', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: 'Failed to enable Collection Source \'Test Collection\'.',
+        error: true
+      })
+    })
+
+    it('does not refresh source data when enable fails', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      store.fetchCollectionSourceById = vi.fn()
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
+      expect(store.fetchCollectionSourceById).not.toHaveBeenCalled()
+    })
+
+    it('keeps dialog visible when enable fails', async () => {
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(false)
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      await enableButton.trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.attributes('visible')).toBe('true')
+
+      dialog.vm.$emit('confirm', { id: 1, name: 'Test Collection' }, 'source')
+      await flushPromises()
+
       expect(dialog.attributes('visible')).toBe('true')
     })
   })
@@ -1239,6 +1400,64 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(mockShowSnackBar).toHaveBeenCalledWith({
         msg: `Collection Source '${specialName}' deleted successfully.`
       })
+    })
+
+    it('handles enabling source with special characters in name', async () => {
+      const specialName = 'Test <Source> & "Quotes"'
+      const specialSource: SnmpCollectionSource = { ...mockCollectionSource, name: specialName, enabled: false }
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = await createWrapper(specialSource)
+
+      await wrapper.find('[data-test="enable-source"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: specialName }, 'source')
+      await flushPromises()
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(true, [1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${specialName}' enabled successfully.`
+      })
+    })
+
+    it('handles disabling source with special characters in name', async () => {
+      const specialName = 'Test <Source> & "Quotes"'
+      const specialSource: SnmpCollectionSource = { ...mockCollectionSource, name: specialName, enabled: true }
+      mockEnableDisableSnmpDataCollectionSources.mockResolvedValue(true)
+      store.fetchCollectionSourceById = vi.fn().mockResolvedValue(undefined)
+
+      wrapper = await createWrapper(specialSource)
+
+      await wrapper.find('[data-test="disable-source"]').trigger('click')
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      dialog.vm.$emit('confirm', { id: 1, name: specialName }, 'source')
+      await flushPromises()
+
+      expect(mockEnableDisableSnmpDataCollectionSources).toHaveBeenCalledWith(false, [1])
+      expect(mockShowSnackBar).toHaveBeenCalledWith({
+        msg: `Collection Source '${specialName}' disabled successfully.`
+      })
+    })
+
+    it('can open and close change status dialog multiple times with Enable button', async () => {
+      wrapper = await createWrapper({ ...mockCollectionSource, enabled: false })
+      const enableButton = wrapper.find('[data-test="enable-source"]')
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+
+      for (let i = 0; i < 3; i++) {
+        await enableButton.trigger('click')
+        await wrapper.vm.$nextTick()
+        expect(dialog.attributes('visible')).toBe('true')
+
+        dialog.vm.$emit('close')
+        await wrapper.vm.$nextTick()
+        expect(dialog.attributes('visible')).toBe('false')
+      }
     })
 
     it('handles future dates', async () => {

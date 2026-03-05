@@ -107,5 +107,9 @@ watch(() => props.visible, (visible) => {
 }, { immediate: true })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.modal-body {
+  min-width: 40rem;
+}
+</style>
 
