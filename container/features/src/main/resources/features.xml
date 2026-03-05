@@ -2159,5 +2159,16 @@
         <feature>spring</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.event-store/${project.version}</bundle>
     </feature>
+    <feature name="opennms-event-forwarder-kafka" version="${project.version}"
+             description="OpenNMS :: Event Forwarder :: Kafka">
+        <feature>opennms-events-api</feature>
+        <feature>opennms-events-kafka-consumer</feature>
+        <feature>opennms-core-messagebus-api</feature>
+        <feature>opennms-core-tsid</feature>
+        <feature>opennms-kafka</feature>
+        <feature>dropwizard-metrics</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.event-forwarder-kafka/${project.version}</bundle>
+    </feature>
 
 </features>
