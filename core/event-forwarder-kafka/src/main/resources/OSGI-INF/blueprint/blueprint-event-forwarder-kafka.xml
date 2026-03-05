@@ -1,0 +1,132 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd">
+
+    <!-- ================================================================ -->
+    <!-- Configuration from org.opennms.core.event.forwarder.kafka.cfg    -->
+    <!-- ================================================================ -->
+    <cm:property-placeholder id="eventForwarderKafkaProperties"
+                             persistent-id="org.opennms.core.event.forwarder.kafka"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="bootstrap.servers" value="localhost:9092"/>
+            <cm:property name="topic.name" value="opennms-fault-events"/>
+            <cm:property name="consumer.group.id" value="opennms-core"/>
+            <cm:property name="poll.timeout.ms" value="100"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- ================================================================ -->
+    <!-- OSGi service references                                          -->
+    <!-- ================================================================ -->
+    <reference id="eventConfDao"
+               interface="org.opennms.netmgt.config.api.EventConfDao"/>
+
+    <reference id="messageBus"
+               interface="org.opennms.core.messagebus.MessageBus"
+               availability="optional"/>
+
+    <reference id="eventDeserializer"
+               interface="org.opennms.features.events.kafka.consumer.EventDeserializer"/>
+
+    <reference id="eventUtil"
+               interface="org.opennms.netmgt.eventd.EventUtil"/>
+
+    <!-- ================================================================ -->
+    <!-- Locally-constructed beans                                        -->
+    <!-- ================================================================ -->
+
+    <!-- Metrics registry for EventExpander -->
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <!-- EventExpander: enriches events with eventconf data -->
+    <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander"
+          init-method="afterPropertiesSet">
+        <argument ref="metricRegistry"/>
+        <property name="eventConfDao" ref="eventConfDao"/>
+        <property name="eventUtil" ref="eventUtil"/>
+    </bean>
+
+    <!-- TSID factory and assigner for generating time-sorted IDs -->
+    <bean id="tsidFactory" class="org.opennms.core.tsid.TsidFactory">
+        <argument value="0" type="long"/>
+    </bean>
+
+    <bean id="tsidAssigner" class="org.opennms.netmgt.eventd.processor.TsidAssigner">
+        <argument ref="tsidFactory"/>
+    </bean>
+
+    <!-- Event routing helpers -->
+    <bean id="eventClassifier" class="org.opennms.netmgt.eventd.router.EventClassifier"/>
+
+    <bean id="ipcMessageConverter" class="org.opennms.netmgt.eventd.router.IpcMessageConverter"/>
+
+    <!-- Kafka producer (factory-method; closed on teardown) -->
+    <bean id="kafkaProducer"
+          class="org.opennms.core.event.forwarder.kafka.KafkaProducerFactory"
+          factory-method="create"
+          destroy-method="close">
+        <argument value="${bootstrap.servers}"/>
+    </bean>
+
+    <!-- Kafka consumer (factory-method) -->
+    <bean id="kafkaConsumer"
+          class="org.opennms.core.event.forwarder.kafka.KafkaConsumerFactory"
+          factory-method="create">
+        <argument value="${bootstrap.servers}"/>
+        <argument value="${consumer.group.id}"/>
+    </bean>
+
+    <!-- KafkaEventForwarder: enriches + routes events to Kafka/MessageBus -->
+    <bean id="kafkaEventForwarder"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarder">
+        <argument ref="eventExpander"/>
+        <argument ref="tsidAssigner"/>
+        <argument ref="eventClassifier"/>
+        <argument ref="ipcMessageConverter"/>
+        <argument ref="messageBus"/>
+        <argument ref="kafkaProducer"/>
+        <argument value="${topic.name}"/>
+    </bean>
+
+    <!-- KafkaEventSubscriptionService: consumes events from Kafka topic -->
+    <bean id="kafkaEventSubscriptionService"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventSubscriptionService"
+          init-method="start"
+          destroy-method="stop">
+        <argument ref="kafkaConsumer"/>
+        <argument value="${topic.name}"/>
+        <argument ref="eventDeserializer"/>
+        <argument>
+            <bean class="java.time.Duration" factory-method="ofMillis">
+                <argument value="${poll.timeout.ms}" type="long"/>
+            </bean>
+        </argument>
+    </bean>
+
+    <!-- Adapter: composes forwarder + subscription into EventIpcManager -->
+    <bean id="kafkaEventIpcManagerAdapter"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventIpcManagerAdapter">
+        <argument ref="kafkaEventForwarder"/>
+        <argument ref="kafkaEventSubscriptionService"/>
+    </bean>
+
+    <!-- ================================================================ -->
+    <!-- OSGi service registration                                        -->
+    <!-- ================================================================ -->
+    <service ref="kafkaEventIpcManagerAdapter">
+        <interfaces>
+            <value>org.opennms.netmgt.events.api.EventForwarder</value>
+            <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+            <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+            <value>org.opennms.netmgt.events.api.EventProxy</value>
+            <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+        </interfaces>
+    </service>
+
+</blueprint>
