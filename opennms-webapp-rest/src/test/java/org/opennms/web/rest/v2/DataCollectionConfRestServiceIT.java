@@ -1437,9 +1437,9 @@ public class DataCollectionConfRestServiceIT {
     public void testEnableDisableSnmpMibGroups_success_disable() throws Exception {
         final var now = new Date();
         SnmpCollectionSource source = new SnmpCollectionSource();
-        source.setName("mibgroups.enable.source");
+        source.setName("mibgroups.disable.source");
         source.setVendor("v1");
-        source.setDescription("source for mib group enable test");
+        source.setDescription("source for mib group disable test");
         source.setEnabled(true);
         source.setCreatedTime(now);
         snmpCollectionSourceDao.saveOrUpdate(source);
@@ -1508,7 +1508,7 @@ public class DataCollectionConfRestServiceIT {
         rt1.setResourceLabel("CPU Resource Label");
         rt1.setPersistenceSelectorStrategy("default");
         rt1.setStorageStrategy("db");
-        rt1.setEnabled(true);
+        rt1.setEnabled(false);
         snmpCollectionResourceTypeDao.saveOrUpdate(rt1);
 
         // Resource type 2, matches filter "disk"
@@ -1519,7 +1519,7 @@ public class DataCollectionConfRestServiceIT {
         rt2.setResourceLabel("Disk Resource Label");
         rt2.setPersistenceSelectorStrategy("custom");
         rt2.setStorageStrategy("fs");
-        rt2.setEnabled(true);
+        rt2.setEnabled(false);
         snmpCollectionResourceTypeDao.saveOrUpdate(rt2);
         snmpCollectionResourceTypeDao.flush();
 
@@ -1620,6 +1620,7 @@ public class DataCollectionConfRestServiceIT {
         def1.setIpAddresses("192.168.1.0,10.0.0.1");
         def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def1.setEnabled(false);
         snmpCollectionSystemDefDao.saveOrUpdate(def1);
 
         // SystemDef 2, matches filter "WindowsSystem"
@@ -1631,6 +1632,7 @@ public class DataCollectionConfRestServiceIT {
         def2.setIpAddresses("192.168.1.0,10.0.0.1");
         def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def2.setEnabled(false);
         snmpCollectionSystemDefDao.saveOrUpdate(def2);
 
         Integer sourceId = source.getId();
@@ -1673,6 +1675,7 @@ public class DataCollectionConfRestServiceIT {
         def1.setIpAddresses("192.168.1.0,10.0.0.1");
         def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def1.setEnabled(true);
         snmpCollectionSystemDefDao.saveOrUpdate(def1);
 
         // SystemDef 2, matches filter "WindowsSystem"
@@ -1684,6 +1687,7 @@ public class DataCollectionConfRestServiceIT {
         def2.setIpAddresses("192.168.1.0,10.0.0.1");
         def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def2.setEnabled(true);
         snmpCollectionSystemDefDao.saveOrUpdate(def2);
 
         Integer sourceId = source.getId();

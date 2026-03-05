@@ -46,6 +46,6 @@ public interface SnmpCollectionSourceDao extends OnmsDao<SnmpCollectionSource, I
 
     PageResponse<SnmpCollectionSource> filterDataCollectionSource(final String filter, final String sortBy, final String order, Integer totalRecords,
                                             Integer offset, Integer limit);
-    void updateEnabledFlag(final Collection<Integer> snmpDataCollectionSourceId, boolean enabled);
+    void updateEnabledFlag(final Collection<Integer> snmpDataCollectionSourceIds, boolean enabled);
 
 }

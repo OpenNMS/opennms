@@ -577,10 +577,6 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             dataCollectionConfPersistenceService.enableDisableSnmpDataCollectionSources(enabled, ids);
             return Response.ok().entity("SNMP data collection sources updated successfully.").build();
 
-        } catch (EntityNotFoundException ex) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("One or more ids were not found: " + ex.getMessage())
-                    .build();
         } catch (IllegalArgumentException ex) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid request: " + ex.getMessage())

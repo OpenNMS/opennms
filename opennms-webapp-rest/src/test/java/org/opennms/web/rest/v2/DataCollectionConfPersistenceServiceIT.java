@@ -1089,14 +1089,14 @@ public class DataCollectionConfPersistenceServiceIT {
     @Transactional
     public void testEnableDisableSnmpDataCollectionSources_success_enable() throws Exception {
         final var s1 = new SnmpCollectionSource();
-        s1.setName("disable.test.snmp.1");
+        s1.setName("enable.test.snmp.1");
         s1.setVendor("v1");
         s1.setDescription("desc1");
         s1.setCreatedTime(new Date());
         s1.setEnabled(false);
 
-        final var  s2 = new SnmpCollectionSource();
-        s2.setName("disable.test.snmp.2");
+        final var s2 = new SnmpCollectionSource();
+        s2.setName("enable.test.snmp.2");
         s2.setVendor("v2");
         s2.setDescription("desc2");
         s2.setCreatedTime(new Date());
@@ -1173,6 +1173,7 @@ public class DataCollectionConfPersistenceServiceIT {
         group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         group1.setMibObjProperties("{\"property\":\"value\"}");
+        group1.setEnabled(false);
         snmpCollectionMibGroupDao.saveOrUpdate(group1);
         snmpCollectionMibGroupDao.flush();
 
@@ -1183,6 +1184,8 @@ public class DataCollectionConfPersistenceServiceIT {
         group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         group2.setMibObjProperties("{\"property\":\"value\"}");
+        group2.setEnabled(false);
+
         snmpCollectionMibGroupDao.saveOrUpdate(group2);
         snmpCollectionMibGroupDao.flush();
 
@@ -1221,6 +1224,7 @@ public class DataCollectionConfPersistenceServiceIT {
         group1.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         group1.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         group1.setMibObjProperties("{\"property\":\"value\"}");
+        group1.setEnabled(true);
         snmpCollectionMibGroupDao.saveOrUpdate(group1);
         snmpCollectionMibGroupDao.flush();
 
@@ -1231,6 +1235,7 @@ public class DataCollectionConfPersistenceServiceIT {
         group2.setMibGroupNames("IF-MIB::ifEntry,IF-MIB::ifXEntry");
         group2.setMibObjects("ifIndex,ifDescr,ifOperStatus");
         group2.setMibObjProperties("{\"property\":\"value\"}");
+        group2.setEnabled(true);
         snmpCollectionMibGroupDao.saveOrUpdate(group2);
         snmpCollectionMibGroupDao.flush();
 
@@ -1374,6 +1379,7 @@ public class DataCollectionConfPersistenceServiceIT {
         def1.setIpAddresses("192.168.1.0,10.0.0.1");
         def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def1.setEnabled(false);
         snmpCollectionSystemDefDao.saveOrUpdate(def1);
 
         // SystemDef 2, matches filter "WindowsSystem"
@@ -1385,6 +1391,7 @@ public class DataCollectionConfPersistenceServiceIT {
         def2.setIpAddresses("192.168.1.0,10.0.0.1");
         def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def2.setEnabled(false);
         snmpCollectionSystemDefDao.saveOrUpdate(def2);
 
         final var sourceId = source.getId();
@@ -1425,6 +1432,7 @@ public class DataCollectionConfPersistenceServiceIT {
         def1.setIpAddresses("192.168.1.0,10.0.0.1");
         def1.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def1.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def1.setEnabled(true);
         snmpCollectionSystemDefDao.saveOrUpdate(def1);
 
         // SystemDef 2, matches filter "WindowsSystem"
@@ -1436,6 +1444,8 @@ public class DataCollectionConfPersistenceServiceIT {
         def2.setIpAddresses("192.168.1.0,10.0.0.1");
         def2.setIpAddressMasks("255.255.255.0,255.0.0.0");
         def2.setMibGroupNames("MIB-GROUP-1,MIB-GROUP-2");
+        def2.setEnabled(true);
+
         snmpCollectionSystemDefDao.saveOrUpdate(def2);
 
         final var sourceId = source.getId();
