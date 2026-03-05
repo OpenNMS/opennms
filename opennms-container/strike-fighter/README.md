@@ -1,23 +1,30 @@
 # Strike Fighter: OpenNMS Microservice Mode
 
-Run OpenNMS in split-architecture mode with **Core** (remaining daemons), **Webapp** (JettyServer only), **standalone Alarmd** consuming fault events from Kafka, and **standalone Pollerd** polling services independently.
+Run OpenNMS in split-architecture mode with **Core** (remaining daemons), **Webapp** (JettyServer only), **standalone Alarmd** consuming fault events from Kafka, **standalone Pollerd** polling services, and **standalone Collectd** collecting performance data independently.
 
 ```
 ┌──────────┐  ┌──────────┐  ┌──────────────────────────────────┐  ┌───────────────┐
 │ postgres │  │  kafka   │  │  core (opennms/horizon)          │  │    alarmd      │
 │          │  │  (KRaft) │  │  Daemons: Eventd, Provisiond,    │  │               │
-│  events  │◄─┤          │◄─┤  Collectd, etc.                  │  │  Consumes     │
-│  alarms  │  │  fault   │  │  Alarmd: DISABLED                │  │  Kafka topic  │
-│  nodes   │  │  events  │  │  Pollerd: DISABLED               │  │  Creates      │
-│          │  │  topic   │  │  JettyServer: DISABLED            │  │  alarms       │
-│          │  │          │  │  ActiveMQ TCP: :61616             │  │               │
-│          │  │          │  └──────────────────────────────────┘  └───────────────┘
+│  events  │◄─┤          │◄─┤  Daemons: Eventd, Provisiond,    │  │  Consumes     │
+│  alarms  │  │  fault   │  │  etc.                             │  │  Kafka topic  │
+│  nodes   │  │  events  │  │  Alarmd: DISABLED                │  │  Creates      │
+│          │  │  topic   │  │  Pollerd: DISABLED               │  │  alarms       │
+│          │  │          │  │  Collectd: DISABLED              │  │               │
+│          │  │          │  │  JettyServer: DISABLED            │  └───────────────┘
+│          │  │          │  │  ActiveMQ TCP: :61616             │
+│          │  │          │  └──────────────────────────────────┘
 │          │  │          │                    ▲ ActiveMQ
 │          │  │          │                    │
 │          │  │          │  ┌─────────────────┴─────────────────┐
 │          │  │          │◄─┤  pollerd (opennms/horizon)        │
 │          │  │          │  │  Daemons: Pollerd ONLY            │
-│          │  └──────────┘  │  All other daemons: DISABLED      │
+│          │  │          │  │  Publishes fault events to Kafka   │
+│          │  │          │  └───────────────────────────────────┘
+│          │  │          │
+│          │  │          │  ┌───────────────────────────────────┐
+│          │  │          │◄─┤  collectd (opennms/horizon)       │
+│          │  └──────────┘  │  Daemons: Collectd ONLY           │
 │          │                │  Publishes fault events to Kafka   │
 │          │                └───────────────────────────────────┘
 │          │
@@ -73,15 +80,16 @@ Access the Web UI at **http://localhost:8980/opennms** (admin / admin).
 |----------|-------------------------------|--------------|--------------------------------------------------------|
 | postgres | postgres:15                   | 5432         | Shared database                                        |
 | kafka    | apache/kafka:latest (KRaft)   | —            | Event bus (fault events topic)                         |
-| core     | opennms/horizon:${VERSION}    | 8101, 61616  | OpenNMS daemons (Alarmd + Pollerd + Jetty disabled)    |
+| core     | opennms/horizon:${VERSION}    | 8101, 61616  | OpenNMS daemons (Alarmd + Pollerd + Collectd + Jetty disabled) |
 | webapp   | opennms/horizon:${VERSION}    | 8980, 8102   | JettyServer (Web UI only)                              |
 | pollerd  | opennms/horizon:${VERSION}    | 8103         | Standalone Pollerd (polls services, publishes to Kafka) |
+| collectd | opennms/horizon:${VERSION}    | 8104         | Standalone Collectd (collects data, publishes to Kafka) |
 | alarmd   | opennms/alarmd:${VERSION}     | 8201         | Standalone Alarmd (consumes Kafka, creates alarms)     |
 
 ## Verification
 
 ```bash
-# 1. All 6 services healthy
+# 1. All 7 services healthy
 docker compose ps
 
 # 2. Verify Pollerd is disabled in Core
@@ -106,6 +114,13 @@ docker compose exec postgres psql -U opennms -d opennms \
 
 # 7. Check Pollerd container logs
 docker compose logs pollerd --tail=50
+
+# 8. Verify Collectd is disabled in Core
+docker compose exec core grep -i "collectd" /opt/opennms/etc/service-configuration.xml
+# Should show: enabled="false"
+
+# 9. Check Collectd container logs
+docker compose logs collectd --tail=50
 ```
 
 ## Karaf Shell Access
@@ -119,6 +134,9 @@ ssh -p 8102 -o StrictHostKeyChecking=no admin@localhost
 
 # Pollerd Karaf (port 8103)
 ssh -p 8103 -o StrictHostKeyChecking=no admin@localhost
+
+# Collectd Karaf (port 8104)
+ssh -p 8104 -o StrictHostKeyChecking=no admin@localhost
 
 # Alarmd Karaf (port 8201)
 ssh -p 8201 -o StrictHostKeyChecking=no admin@localhost
@@ -138,7 +156,7 @@ docker compose down -v
 
 ## Known Limitations
 
-**Pollerd event subscription:** The standalone Pollerd container does not receive real-time events (e.g., `nodeGainedService` from Provisiond) from the core container. Pollerd reads its service schedule from the database at startup. To pick up newly provisioned services, restart the Pollerd container. A future iteration will use `KafkaEventSubscriptionService` as a dedicated Karaf assembly to enable cross-container event delivery.
+**Event subscription:** The standalone Pollerd and Collectd containers do not receive real-time events (e.g., `nodeGainedService` from Provisiond) from the core container. Both read their schedules from the database at startup. To pick up newly provisioned services, restart the Pollerd/Collectd container. A future iteration will use `KafkaEventSubscriptionService` as a dedicated Karaf assembly to enable cross-container event delivery.
 
 ## Troubleshooting
 
@@ -151,6 +169,8 @@ docker compose down -v
 **Webapp not starting:** Check `docker compose logs webapp --tail=100`. The webapp depends on Core being healthy (DB schema must be initialized). Look for Spring context errors or OSGi resolution failures in the log output.
 
 **Pollerd not starting:** Check `docker compose logs pollerd --tail=100`. The pollerd container depends on Core being healthy (DB schema + provisioned services). Look for Spring context errors in the log output. Verify Kafka connectivity.
+
+**Collectd not starting:** Check `docker compose logs collectd --tail=100`. Same pattern as Pollerd — depends on Core being healthy. Verify Kafka connectivity.
 
 **Alarmd not connecting:** Check `docker compose logs alarmd --tail=100`. Verify that Core's ActiveMQ TCP transport is up by looking for "openwire" in Core logs. The `failover:` protocol will retry automatically.
 
