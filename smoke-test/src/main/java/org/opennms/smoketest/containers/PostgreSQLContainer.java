@@ -59,7 +59,7 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
     private HibernateDaoFactory daoFactory;
 
     public PostgreSQLContainer() {
-        super("postgres:15-alpine");
+        super("postgres:10.7-alpine");
         withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.DB_ALIAS)
                 .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
