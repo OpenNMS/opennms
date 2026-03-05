@@ -134,8 +134,11 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             }
         } else {
             withEnv("MINION_LOCATION", profile.getLocation())
-                    .withEnv("MINION_ID", profile.getId())
-                    .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
+                    .withEnv("MINION_ID", profile.getId());
+
+            if (!IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
+            }
 
             if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
                 withEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092")
@@ -175,7 +178,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         writeTelemetryListenerConfigs(etc);
 
         if (!profile.isLegacy()) {
-            writeMinionControllerConfig(etc, profile);
+            writeMinionControllerConfig(etc, profile, !IpcStrategy.GRPC.equals(model.getIpcStrategy()));
 
             if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
                 writeKafkaConfigs(etc);
@@ -192,6 +195,11 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 "port", "8990"
             ));
 
+        final Path propsD = etc.resolve("opennms.properties.d");
+        Files.createDirectories(propsD);
+        OverlayUtils.writeProps(propsD.resolve("ipc.properties"),
+                Map.of("org.opennms.core.ipc.strategy", "osgi"));
+
         // Match legacy/conf.d behavior by explicitly selecting GRPC IPC features and disabling JMS IPC features.
         final Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
@@ -199,14 +207,15 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         Files.writeString(bootD.resolve("disable-activemq.boot"), "!minion-jms\n!opennms-core-ipc-jms\n");
     }
 
-    private void writeMinionControllerConfig(Path etc, MinionProfile profile) {
-        OverlayUtils.writeProps(etc.resolve("org.opennms.minion.controller.cfg"),
-            Map.of(
-                "location", profile.getLocation(),
-                "id", profile.getId(),
-                "broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616",
-                "http-url", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms" // do we need this??
-            ));
+    private void writeMinionControllerConfig(Path etc, MinionProfile profile, boolean includeBrokerUrl) {
+        final Map<String, String> props = new LinkedHashMap<>();
+        props.put("location", profile.getLocation());
+        props.put("id", profile.getId());
+        if (includeBrokerUrl) {
+            props.put("broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
+        }
+        props.put("http-url", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms");
+        OverlayUtils.writeProps(etc.resolve("org.opennms.minion.controller.cfg"), props);
     }
 
     private void writeTrapdConfig(Path etc) {
@@ -366,33 +375,33 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
 
-                    if (IpcStrategy.GRPC.equals(container.model.getIpcStrategy())) {
-                    LOG.info("Verifying Minion GRPC IPC bootstrap configuration...");
-                    await("waiting for GRPC client config")
+            if (IpcStrategy.GRPC.equals(container.model.getIpcStrategy())) {
+                LOG.info("Verifying Minion GRPC IPC bootstrap configuration...");
+                await("waiting for GRPC client config")
                         .atMost(1, MINUTES)
                         .pollInterval(2, SECONDS)
                         .failFast("container is no longer running", () -> !container.isRunning())
                         .until(() -> {
                             final var grpcCfg = TestContainerUtils.getFileFromContainerAsString(container,
-                                Paths.get("/opt", "minion", "etc", "org.opennms.core.ipc.grpc.client.cfg"));
+                                    Paths.get("/opt", "minion", "etc", "org.opennms.core.ipc.grpc.client.cfg"));
                             return grpcCfg.contains("host=opennms") && grpcCfg.contains("port=8990");
                         });
 
-                    await("waiting for GRPC feature boot overrides")
+                await("waiting for GRPC feature boot overrides")
                         .atMost(1, MINUTES)
                         .pollInterval(2, SECONDS)
                         .failFast("container is no longer running", () -> !container.isRunning())
                         .until(() -> {
                             final var grpcBoot = TestContainerUtils.getFileFromContainerAsString(container,
-                                Paths.get("/opt", "minion", "etc", "featuresBoot.d", "grpc.boot"));
+                                    Paths.get("/opt", "minion", "etc", "featuresBoot.d", "grpc.boot"));
                             final var disableJmsBoot = TestContainerUtils.getFileFromContainerAsString(container,
-                                Paths.get("/opt", "minion", "etc", "featuresBoot.d", "disable-activemq.boot"));
+                                    Paths.get("/opt", "minion", "etc", "featuresBoot.d", "disable-activemq.boot"));
                             return grpcBoot.contains("opennms-core-ipc-grpc-client")
-                                && disableJmsBoot.contains("!minion-jms")
-                                && disableJmsBoot.contains("!opennms-core-ipc-jms");
+                                    && disableJmsBoot.contains("!minion-jms")
+                                    && disableJmsBoot.contains("!opennms-core-ipc-jms");
                         });
-                    LOG.info("Minion GRPC IPC bootstrap configuration verified.");
-                    }
+                LOG.info("Minion GRPC IPC bootstrap configuration verified.");
+            }
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
