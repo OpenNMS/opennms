@@ -2171,4 +2171,26 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.event-forwarder-kafka/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Pollerd: loads Poller daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-pollerd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Pollerd">
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Poller config -->
+        <feature>opennms-config</feature>
+        <!-- Thresholding -->
+        <feature>sentinel-thresholding-service</feature>
+        <!-- Collection persistence -->
+        <feature>opennms-collection-persistence-rrd</feature>
+        <!-- Poller RPC client -->
+        <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+        <!-- Poller daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Poller, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
+    </feature>
+
 </features>
