@@ -92,6 +92,9 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
 
         this.overlay = writeOverlay();
 
+        final Path grpcCoreFeaturesBootOverride = overlay.resolve("grpc-features-boot").resolve("core.features.boot");
+        final Path grpcDefaultFeaturesBootOverride = overlay.resolve("grpc-features-boot").resolve("default.features.boot");
+
         Integer[] tcpPorts = {
                 MINION_DEBUG_PORT,
                 MINION_SSH_PORT,
@@ -124,6 +127,13 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
                 .addFileSystemBind(overlay.toString(),
                 "/opt/minion-etc-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+            if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                addFileSystemBind(grpcCoreFeaturesBootOverride.toString(),
+                    "/opt/minion/repositories/core/features.boot", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+                addFileSystemBind(grpcDefaultFeaturesBootOverride.toString(),
+                    "/opt/minion/repositories/default/features.boot", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/opt/minion/.m2");
@@ -186,6 +196,57 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 writeGrpcConfigs(etc);
             }
         }
+
+        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            writeGrpcFeaturesBootOverrides(home);
+        }
+    }
+
+    private void writeGrpcFeaturesBootOverrides(Path home) throws IOException {
+        final Path overrides = home.resolve("grpc-features-boot");
+        Files.createDirectories(overrides);
+
+        // Remove minion-jms from core boot features for GRPC stacks.
+        Files.writeString(overrides.resolve("core.features.boot"), String.join("\n",
+                "# make sure Guava gets pulled in early or things go weird",
+                "guava",
+                "",
+                "# Minion Core Features (GRPC override)",
+                "minion-core",
+                "minion-core-shell",
+                ""));
+
+        // Remove opennms-core-ipc-jms from default features and install the GRPC IPC client explicitly.
+        Files.writeString(overrides.resolve("default.features.boot"), String.join("\n",
+                "# Minion Default Features (GRPC override)",
+                "pax-web-war",
+                "# Keep spring but skip spring-jms and JMS IPC features",
+                "spring/4.2.9.RELEASE_1",
+                "opennms-core-ipc-grpc-client",
+                "opennms-core-ipc-twin-shell",
+                "opennms-syslogd-listener-camel-netty",
+                "opennms-trapd-listener",
+                "opennms-events-sink-dispatcher",
+                "opennms-send-event-command",
+                "opennms-dnsresolver-netty",
+                "opennms-deviceconfig-monitor",
+                "minion-shell",
+                "minion-heartbeat-producer",
+                "minion-snmp-proxy",
+                "minion-provisiond-detectors",
+                "minion-provisiond-requisitions",
+                "minion-poller",
+                "minion-collection",
+                "minion-icmp-proxy",
+                "minion-telemetryd-receivers",
+                "opennms-core-ipc-sink-offheap",
+                "# Default SCV implementation",
+                "scv-jceks-impl",
+                "scv-shell",
+                "opennms-health-rest-service",
+                "minion-health-check",
+                "minion-api-layer",
+                ""));
     }
 
     private void writeGrpcConfigs(Path etc) throws IOException {
