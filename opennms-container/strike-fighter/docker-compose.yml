@@ -1,6 +1,6 @@
 ---
 # Strike Fighter: OpenNMS microservice-mode deployment
-# Core (all daemons except Alarmd) + standalone Alarmd consuming from Kafka
+# Core (daemons) + Webapp (JettyServer) + standalone Alarmd consuming from Kafka
 #
 # Usage:
 #   docker compose up -d
@@ -61,6 +61,8 @@ services:
     environment:
       # Disable Alarmd — it runs as a separate container
       CORE_SERVICE_ALARMD_ENABLED: "false"
+      # Disable JettyServer — it runs in the webapp container
+      CORE_SERVICE_JETTYSERVER_ENABLED: "false"
       # Database
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
@@ -82,14 +84,75 @@ services:
       - ./core-overlay/etc/opennms.properties.d/strike-fighter.properties:/opt/opennms-etc-overlay/opennms.properties.d/strike-fighter.properties:ro
       - ./core-overlay/etc/featuresBoot.d/strike-fighter.boot:/opt/opennms-etc-overlay/featuresBoot.d/strike-fighter.boot:ro
       - ./core-overlay/etc/org.opennms.features.kafka.producer.client.cfg:/opt/opennms-etc-overlay/org.opennms.features.kafka.producer.client.cfg:ro
+      - ./core-overlay/etc/org.opennms.core.event.forwarder.kafka.cfg:/opt/opennms-etc-overlay/org.opennms.core.event.forwarder.kafka.cfg:ro
     ports:
-      - "8980:8980"
       - "8101:8101"
+      - "61616:61616"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8980/opennms/login.jsp || exit 1"]
+      test: ["CMD-SHELL", "/opt/opennms/bin/opennms -v status | grep -q 'is running'"]
       interval: 30s
       timeout: 10s
       retries: 20
+      start_period: 120s
+
+  webapp:
+    image: opennms/horizon:${VERSION}
+    container_name: strike-fighter-webapp
+    hostname: webapp
+    command: ["-f"]
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      TZ: America/New_York
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      JAVA_OPTS: >-
+        -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=3
+      # Disable ALL daemons except JettyServer (Manager + Eventd are always on)
+      CORE_SERVICE_ALARMD_ENABLED: "false"
+      CORE_SERVICE_BSMD_ENABLED: "false"
+      CORE_SERVICE_TICKETER_ENABLED: "false"
+      CORE_SERVICE_QUEUED_ENABLED: "false"
+      CORE_SERVICE_ACTIOND_ENABLED: "false"
+      CORE_SERVICE_NOTIFD_ENABLED: "false"
+      CORE_SERVICE_SCRIPTD_ENABLED: "false"
+      CORE_SERVICE_RTCD_ENABLED: "false"
+      CORE_SERVICE_POLLERD_ENABLED: "false"
+      CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
+      CORE_SERVICE_COLLECTD_ENABLED: "false"
+      CORE_SERVICE_DISCOVERY_ENABLED: "false"
+      CORE_SERVICE_VACUUMD_ENABLED: "false"
+      CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
+      CORE_SERVICE_PASSIVESTATUSD_ENABLED: "false"
+      CORE_SERVICE_STATSD_ENABLED: "false"
+      CORE_SERVICE_PROVISIOND_ENABLED: "false"
+      CORE_SERVICE_ACKD_ENABLED: "false"
+      CORE_SERVICE_SYSLOGD_ENABLED: "false"
+      CORE_SERVICE_TELEMETRYD_ENABLED: "false"
+      CORE_SERVICE_TRAPD_ENABLED: "false"
+      CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED: "false"
+      # JettyServer + KarafStartupMonitor stay enabled (defaults)
+    volumes:
+      - webapp-etc:/opt/opennms/etc
+      - webapp-data:/opennms-data
+      - ./webapp-overlay/etc/opennms.properties.d/:/opt/opennms-etc-overlay/opennms.properties.d/
+    ports:
+      - "8980:8980"
+      - "8102:8101"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-I", "http://localhost:8980/opennms/login.jsp"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
       start_period: 120s
 
   alarmd:
@@ -135,4 +198,6 @@ volumes:
   kafkadata:
   opennms-etc:
   opennms-data:
+  webapp-etc:
+  webapp-data:
   alarmd-data:
