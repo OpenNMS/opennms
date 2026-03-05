@@ -43,6 +43,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Strings;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -60,6 +61,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
+
+import org.opennms.smoketest.containers.JaegerContainer;
 
 public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
     private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
@@ -153,6 +156,21 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
                 withEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092")
                         .withEnv("KAFKA_IPC_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
+            } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                // Configure GRPC IPC endpoint
+                withEnv("OPENNMS_IPC_GRPC_HOST", OpenNMSContainer.ALIAS)
+                        .withEnv("OPENNMS_IPC_GRPC_PORT", "8990");
+            }
+
+            // Configure Dominion GRPC credentials if present
+            if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+                withEnv("OPENNMS_SCV_PROVIDER", "dominion")
+                        .withEnv("OPENNMS_DOMINION_GRPC_CLIENT_SECRET", profile.getDominionGrpcScvClientSecret());
+            }
+
+            // Configure Jaeger tracing if enabled
+            if (model.isJaegerEnabled()) {
+                withEnv("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
             }
         }
 
