@@ -6,10 +6,11 @@
 <service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
   <!-- It is strongly recommended to maintain the order of all services as listed to ensure proper startup sequence.
   Note that omitting the enabled attribute will default to enabled = true -->
-  <!-- WARNING: The first 2 services (Manager and Eventd) must never be disabled. -->
+  <!-- WARNING: Manager must never be disabled. Eventd can be disabled when
+       KafkaEventForwarder is used as the event transport (microservice mode). -->
 
   <service enabled="true"><name>OpenNMS:Name=Manager</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Eventd</name></service>
+  <service enabled="{{getv (print $servicesPath "/eventd/enabled") "true"}}"><name>OpenNMS:Name=Eventd</name></service>
   <service enabled="{{getv (print $servicesPath "/alarmd/enabled") "true"}}"><name>OpenNMS:Name=Alarmd</name></service>
   <service enabled="{{getv (print $servicesPath "/bsmd/enabled") "true"}}"><name>OpenNMS:Name=Bsmd</name></service>
   <service enabled="{{getv (print $servicesPath "/ticketer/enabled") "true"}}"><name>OpenNMS:Name=Ticketer</name></service>
