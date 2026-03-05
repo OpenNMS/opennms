@@ -394,6 +394,9 @@
                         <feature>sentinel-timeseries-api</feature>
                         <feature>sentinel-plugin-sample</feature>
 
+                        <!-- Daemon loader features (for opennms/daemon container) -->
+                        <feature>opennms-daemon-pollerd</feature>
+
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
                     </installedFeatures>

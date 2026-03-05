@@ -157,66 +157,34 @@ services:
       start_period: 120s
 
   pollerd:
-    image: opennms/horizon:${VERSION}
+    image: opennms/daemon:${VERSION}
     container_name: strike-fighter-pollerd
     hostname: pollerd
-    command: ["-f"]
     depends_on:
       core:
         condition: service_healthy
     environment:
-      TZ: America/New_York
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
       POSTGRES_USER: opennms
       POSTGRES_PASSWORD: opennms
-      OPENNMS_DBNAME: opennms
-      OPENNMS_DBUSER: opennms
-      OPENNMS_DBPASS: opennms
+      POSTGRES_DB: opennms
       JAVA_OPTS: >-
         -Xms512m -Xmx1g
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
-      # Disable ALL daemons except Pollerd (Manager + Eventd are always on)
-      CORE_SERVICE_ALARMD_ENABLED: "false"
-      CORE_SERVICE_BSMD_ENABLED: "false"
-      CORE_SERVICE_TICKETER_ENABLED: "false"
-      CORE_SERVICE_QUEUED_ENABLED: "false"
-      CORE_SERVICE_ACTIOND_ENABLED: "false"
-      CORE_SERVICE_NOTIFD_ENABLED: "false"
-      CORE_SERVICE_SCRIPTD_ENABLED: "false"
-      CORE_SERVICE_RTCD_ENABLED: "false"
-      # CORE_SERVICE_POLLERD_ENABLED defaults to "true"
-      CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
-      CORE_SERVICE_COLLECTD_ENABLED: "false"
-      CORE_SERVICE_DISCOVERY_ENABLED: "false"
-      CORE_SERVICE_VACUUMD_ENABLED: "false"
-      CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
-      CORE_SERVICE_PASSIVESTATUSD_ENABLED: "false"
-      CORE_SERVICE_STATSD_ENABLED: "false"
-      CORE_SERVICE_PROVISIOND_ENABLED: "false"
-      CORE_SERVICE_ACKD_ENABLED: "false"
-      CORE_SERVICE_JETTYSERVER_ENABLED: "false"
-      CORE_SERVICE_SYSLOGD_ENABLED: "false"
-      CORE_SERVICE_TELEMETRYD_ENABLED: "false"
-      CORE_SERVICE_TRAPD_ENABLED: "false"
-      CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED: "false"
     volumes:
-      - pollerd-etc:/opt/opennms/etc
-      - pollerd-data:/opennms-data
-      - ./pollerd-overlay/etc/opennms.properties.d/:/opt/opennms-etc-overlay/opennms.properties.d/
-      - ./pollerd-overlay/etc/featuresBoot.d/strike-fighter.boot:/opt/opennms-etc-overlay/featuresBoot.d/strike-fighter.boot:ro
-      - ./pollerd-overlay/etc/org.opennms.features.kafka.producer.client.cfg:/opt/opennms-etc-overlay/org.opennms.features.kafka.producer.client.cfg:ro
-      - ./pollerd-overlay/etc/org.opennms.core.event.forwarder.kafka.cfg:/opt/opennms-etc-overlay/org.opennms.core.event.forwarder.kafka.cfg:ro
+      - pollerd-data:/opt/daemon/data
+      - ./pollerd-daemon-overlay:/opt/daemon-overlay:ro
     ports:
-      - "8103:8101"
+      - "8103:8201"
     healthcheck:
-      test: ["CMD-SHELL", "/opt/opennms/bin/opennms -v status | grep -q 'is running'"]
-      interval: 30s
+      test: ["CMD-SHELL", "curl -sf http://localhost:8181/health/probe || exit 1"]
+      interval: 15s
       timeout: 10s
       retries: 20
-      start_period: 120s
+      start_period: 60s
 
   collectd:
     image: opennms/horizon:${VERSION}
@@ -325,7 +293,6 @@ volumes:
   opennms-data:
   webapp-etc:
   webapp-data:
-  pollerd-etc:
   pollerd-data:
   collectd-etc:
   collectd-data:

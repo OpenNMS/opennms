@@ -17,9 +17,9 @@ Run OpenNMS in split-architecture mode with **Core** (remaining daemons), **Weba
 │          │  │          │                    ▲ ActiveMQ
 │          │  │          │                    │
 │          │  │          │  ┌─────────────────┴─────────────────┐
-│          │  │          │◄─┤  pollerd (opennms/horizon)        │
-│          │  │          │  │  Daemons: Pollerd ONLY            │
-│          │  │          │  │  Publishes fault events to Kafka   │
+│          │  │          │◄─┤  pollerd (opennms/daemon)         │
+│          │  │          │  │  Karaf-only: Pollerd via OSGi     │
+│          │  │          │  │  No Manager/Eventd overhead       │
 │          │  │          │  └───────────────────────────────────┘
 │          │  │          │
 │          │  │          │  ┌───────────────────────────────────┐
@@ -57,6 +57,9 @@ cd opennms-container/core && make image
 
 # 4. Build Alarmd image
 cd ../alarmd && make image
+
+# 5. Build Daemon image (for Pollerd)
+cd ../daemon && make image
 ```
 
 ## Quick Start
@@ -82,7 +85,7 @@ Access the Web UI at **http://localhost:8980/opennms** (admin / admin).
 | kafka    | apache/kafka:latest (KRaft)   | —            | Event bus (fault events topic)                         |
 | core     | opennms/horizon:${VERSION}    | 8101, 61616  | OpenNMS daemons (Alarmd + Pollerd + Collectd + Jetty disabled) |
 | webapp   | opennms/horizon:${VERSION}    | 8980, 8102   | JettyServer (Web UI only)                              |
-| pollerd  | opennms/horizon:${VERSION}    | 8103         | Standalone Pollerd (polls services, publishes to Kafka) |
+| pollerd  | opennms/daemon:${VERSION}     | 8103         | Karaf-only Pollerd (OSGi wiring, no Manager/Eventd)    |
 | collectd | opennms/horizon:${VERSION}    | 8104         | Standalone Collectd (collects data, publishes to Kafka) |
 | alarmd   | opennms/alarmd:${VERSION}     | 8201         | Standalone Alarmd (consumes Kafka, creates alarms)     |
 
@@ -96,9 +99,9 @@ docker compose ps
 docker compose exec core grep -i "pollerd" /opt/opennms/etc/service-configuration.xml
 # Should show: enabled="false"
 
-# 3. Verify Pollerd is enabled in pollerd container
-docker compose exec pollerd grep -i "pollerd" /opt/opennms/etc/service-configuration.xml
-# Should show: enabled="true"
+# 3. Verify Pollerd daemon feature is installed (Karaf-only container)
+docker compose exec pollerd /opt/daemon/bin/client "feature:list -i | grep pollerd"
+# Should show: opennms-daemon-pollerd
 
 # 4. Access Web UI (served by webapp container)
 curl -u admin:admin http://localhost:8980/opennms/rest/info
@@ -132,7 +135,7 @@ ssh -p 8101 -o StrictHostKeyChecking=no admin@localhost
 # Webapp Karaf (port 8102)
 ssh -p 8102 -o StrictHostKeyChecking=no admin@localhost
 
-# Pollerd Karaf (port 8103)
+# Pollerd Karaf (port 8103, daemon container SSH port 8201 mapped to 8103)
 ssh -p 8103 -o StrictHostKeyChecking=no admin@localhost
 
 # Collectd Karaf (port 8104)
@@ -156,7 +159,9 @@ docker compose down -v
 
 ## Known Limitations
 
-**Event subscription:** The standalone Pollerd and Collectd containers do not receive real-time events (e.g., `nodeGainedService` from Provisiond) from the core container. Both read their schedules from the database at startup. To pick up newly provisioned services, restart the Pollerd/Collectd container. A future iteration will use `KafkaEventSubscriptionService` as a dedicated Karaf assembly to enable cross-container event delivery.
+**Event subscription (Pollerd):** The daemon-based Pollerd uses `KafkaEventForwarder` which enables cross-container event delivery via Kafka. It can receive events from Core (e.g., `nodeGainedService`) and send events back (e.g., `nodeLostService`). The `opennms-daemon-pollerd` feature installs the full event forwarding stack.
+
+**Event subscription (Collectd):** The Collectd container still uses `opennms/horizon` and does not receive real-time events from Core. It reads schedules from the database at startup. To pick up newly provisioned services, restart the Collectd container. A future iteration will migrate Collectd to the daemon image as well.
 
 ## Troubleshooting
 
@@ -168,7 +173,7 @@ docker compose down -v
 
 **Webapp not starting:** Check `docker compose logs webapp --tail=100`. The webapp depends on Core being healthy (DB schema must be initialized). Look for Spring context errors or OSGi resolution failures in the log output.
 
-**Pollerd not starting:** Check `docker compose logs pollerd --tail=100`. The pollerd container depends on Core being healthy (DB schema + provisioned services). Look for Spring context errors in the log output. Verify Kafka connectivity.
+**Pollerd not starting:** Check `docker compose logs pollerd --tail=100`. The pollerd container uses the Karaf-only `opennms/daemon` image. Look for OSGi feature resolution errors (read backwards from "Unable to resolve root"). Verify Kafka connectivity and database access. Check that `opennms-daemon-pollerd` feature is installed via `feature:list -i`.
 
 **Collectd not starting:** Check `docker compose logs collectd --tail=100`. Same pattern as Pollerd — depends on Core being healthy. Verify Kafka connectivity.
 

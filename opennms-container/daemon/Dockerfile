@@ -62,6 +62,10 @@ FROM daemon-base
 # If you copy from /opt/daemon to /opt/daemon the permissions are not preserved
 COPY --chown=10001:0 --from=daemon-tarball /opt/usr-share /opt/
 
+# Add entrypoint script
+COPY --chown=10001:0 container-fs/entrypoint.sh /opt/daemon/bin/entrypoint.sh
+RUN chmod 755 /opt/daemon/bin/entrypoint.sh
+
 SHELL ["/bin/bash", "-c"]
 
 # Create daemon user with a specific group ID
@@ -82,7 +86,9 @@ ARG REVISION
 
 RUN install -d -o 10001 -g 0 -m 775 \
         /var/lib/daemon \
-        /opt/daemon/data/{log,tmp}
+        /opt/daemon/data/{log,tmp} \
+        /opt/daemon-etc-overlay \
+        /opt/daemon-overlay
 
 VOLUME [ "/opt/daemon/deploy", "/opt/daemon/etc", "/opt/daemon/data" ]
 
@@ -91,7 +97,7 @@ WORKDIR /opt/daemon
 ### Containers should NOT run as root as a good practice
 USER 10001
 
-ENTRYPOINT [ "/opt/daemon/bin/karaf", "server" ]
+ENTRYPOINT [ "/opt/daemon/bin/entrypoint.sh" ]
 
 STOPSIGNAL SIGTERM
 
