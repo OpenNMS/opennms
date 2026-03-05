@@ -25,6 +25,7 @@ import { v2 } from './axiosInstances'
 import {
   IpAddressRange,
   SnmpAgentConfig,
+  SnmpBaseConfiguration,
   SnmpConfig,
   SnmpDefinition,
   SnmpProfile
@@ -115,6 +116,25 @@ const lookupSnmpConfig = async (ipAddress: string, location: string): Promise<Sn
     return data
   } catch (err) {
     return false
+  }
+}
+
+const saveSnmpConfigDefaultOverrides = async (config: SnmpBaseConfiguration): Promise<ValidationResult> => {
+  const fullEndpoint = `${endpoint}/defaults`
+
+  try {
+    const resp = await v2.post(fullEndpoint, config)
+
+    if (resp.status === 204) {
+      return createSuccessResponse()
+    } else if (resp.status === 400) {
+      return createFailureResult('Invalid SNMP configuration data')
+    } else {
+      return createFailureResult('Failed to save SNMP configuration defaults')
+    }
+  } catch (err) {
+    console.error('Error saving SNMP config defaults:', err)
+    return createFailureResult('Failed to save SNMP configuration defaults')
   }
 }
 
@@ -261,6 +281,7 @@ export {
   downloadSnmpConfig,
   getSnmpConfig,
   lookupSnmpConfig,
+  saveSnmpConfigDefaultOverrides,
   saveSnmpDefinition,
   saveSnmpProfile,
   uploadSnmpConfig

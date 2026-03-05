@@ -8,6 +8,7 @@
         <FeatherTab>Lookup by IP</FeatherTab>
         <FeatherTab>Browse Definitions</FeatherTab>
         <FeatherTab>Browse Profiles</FeatherTab>
+        <FeatherTab>Default Configuration</FeatherTab>
         <FeatherTab>Upload/Download</FeatherTab>
       </template>
       <FeatherTabPanel>
@@ -18,6 +19,9 @@
       </FeatherTabPanel>
       <FeatherTabPanel>
         <SnmpConfigProfilesTab />
+      </FeatherTabPanel>
+      <FeatherTabPanel>
+        <SnmpConfigDefaultsTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
         <SnmpConfigUploadDownloadTab />
@@ -33,6 +37,7 @@ import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
 import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
 import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
 import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
+import SnmpConfigDefaultsTab from './SnmpConfigDefaultsTab.vue'
 
 const store = useSnmpConfigStore()
 
