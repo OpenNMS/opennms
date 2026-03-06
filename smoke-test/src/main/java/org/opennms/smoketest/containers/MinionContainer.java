@@ -289,6 +289,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         props.put("parameters.port", String.valueOf(port));
         props.put("parsers.0.name", parserName);
         props.put("parsers.0.class-name", "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
+        props.put("parsers.0.queue", parserName);
         OverlayUtils.writeProps(dest, props);
     }
 
