@@ -118,6 +118,9 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
+                .withEnv("MINION_LOCATION", profile.getLocation())
+                .withEnv("MINION_ID", profile.getId())
+                .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
@@ -139,8 +142,26 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 addEnv(entry.getKey(), entry.getValue());
             }
         } else {
-            addFileSystemBind(writeMinionConfig(profile).toString(),
-                    "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+                withEnv("OPENNMS_SCV_PROVIDER", "dominion")
+                        .withEnv("OPENNMS_DOMINION_GRPC_CLIENT_SECRET", profile.getDominionGrpcScvClientSecret());
+            }
+
+            if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
+                withEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092")
+                        .withEnv("KAFKA_IPC_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
+            } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                // Configure GRPC IPC endpoint
+                withEnv("OPENNMS_IPC_GRPC_HOST", OpenNMSContainer.ALIAS)
+                        .withEnv("OPENNMS_IPC_GRPC_PORT", "8990");
+            }
+
+            // Configure Jaeger tracing if enabled
+            if (model.isJaegerEnabled()) {
+                withEnv("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
+            }
+            /*addFileSystemBind(writeMinionConfig(profile).toString(),
+                    "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);*/
         }
 
         if (profile.isJvmDebuggingEnabled()) {
@@ -177,8 +198,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             final String scvConfig = "{\"scv\": {\"provider\": \"dominion\"}}";
             OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvConfig, Map.class));
 
-            final String gprcConfig = "{\"dominion\": { \"grpc\": { \"client-secret\":\"" + profile.getDominionGrpcScvClientSecret() + "\"}}}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(gprcConfig, Map.class));
+            final String grpcConfig = "{\"dominion\": { \"x\": { \"client-secret\":\"" + profile.getDominionGrpcScvClientSecret() + "\"}}}";
+            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpcConfig, Map.class));
         }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
@@ -232,6 +253,28 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // Copy the files from the profile *first*
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
+
+        // Write configuration files based on IPC strategy
+        if (!profile.isLegacy() && IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            writeGrpcBootConfigs(home);
+        }
+    }
+
+    private void writeGrpcBootConfigs(Path home) throws IOException {
+        // Create featuresBoot.d directory
+        final Path bootD = home.resolve("etc").resolve("featuresBoot.d");
+        Files.createDirectories(bootD);
+
+        // Enable GRPC IPC features
+        Files.writeString(bootD.resolve("grpc.boot"), "opennms-core-ipc-grpc-client\n");
+
+        // Disable JMS/ActiveMQ features to prevent conflicts with GRPC
+        Files.writeString(bootD.resolve("disable-activemq.boot"), "!minion-jms\n!opennms-core-ipc-jms\n");
+
+        // Set proper permissions
+        OverlayUtils.setOverlayPermissions(bootD);
+        OverlayUtils.setOverlayPermissions(bootD.resolve("grpc.boot"));
+        OverlayUtils.setOverlayPermissions(bootD.resolve("disable-activemq.boot"));
     }
 
     public InetSocketAddress getSyslogAddress() {
