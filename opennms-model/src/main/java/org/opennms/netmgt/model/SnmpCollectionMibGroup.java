@@ -37,6 +37,8 @@ import javax.persistence.Table;
 @Table(name = "snmp_collection_mib_groups")
 public class SnmpCollectionMibGroup  implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "snmp_collection_mib_groups_seq")
     @SequenceGenerator(
@@ -47,7 +49,7 @@ public class SnmpCollectionMibGroup  implements Serializable {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "datacollection_group_id", nullable = false)
+    @JoinColumn(name = "collection_source_id", nullable = false)
     private SnmpCollectionSource collectionSource;
 
     @Column(nullable = false, length = 256)

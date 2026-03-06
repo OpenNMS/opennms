@@ -100,7 +100,39 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
-    public PageResponse<SnmpCollectionResourceType> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+    public List<SnmpCollectionResourceType> filterResourceTypeConf(String name, String label, String vendor, String collectionSourceName, int offset, int limit) {
+        List<Object> queryParamList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from SnmpCollectionResourceType t where 1=1 ");
+
+
+        if (name != null && !name.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.name) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(name.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (label != null && !label.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.label) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(label.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (vendor != null && !vendor.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.collectionSource.vendor) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(vendor.trim().toLowerCase()) + "%");
+        }
+
+        if (collectionSourceName != null && !collectionSourceName.trim().isEmpty()) {
+            queryBuilder.append(" and lower(t.collectionSource.name) like ? escape '\\' ");
+            queryParamList.add("%" + DaoUtil.escapeLike(collectionSourceName.trim().toLowerCase()) + "%");
+        }
+
+        queryBuilder.append(" order by t.name desc ");
+
+        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    @Override
+    public PageResponse<SnmpCollectionResourceType> findByCollectionSourceId(Integer snmpCollectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
         List<Object> queryParams = new ArrayList<>();
         List<String> conditions = new ArrayList<>();

@@ -1,4 +1,4 @@
-import MibObjectCreationDrawer from '@/components/SnmpDataCollectionDetail/Drawer/MibObjectCreationDrawer.vue'
+import MibObjectCreationDrawer from '@/components/SnmpDataCollectionCreate/Drawer/MibObjectCreationDrawer.vue'
 import { DEFAULT_MIB_OBJ_TYPE, MIB_OBJECT_DATA_TYPE_OPTIONS } from '@/lib/constants'
 import { CreateEditMode } from '@/types'
 import { MibGroupObjectForm } from '@/types/snmpDataCollection'

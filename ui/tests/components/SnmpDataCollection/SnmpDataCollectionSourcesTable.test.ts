@@ -138,6 +138,37 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const refreshButton = wrapper.find('[data-test="refresh-button"]')
       expect(refreshButton.exists()).toBe(true)
     })
+
+    it('renders within snmp-data-collection-source-table container', () => {
+      expect(wrapper.find('.snmp-data-collection-source-table').exists()).toBe(true)
+    })
+
+    it('renders header with section-left and section-right', () => {
+      expect(wrapper.find('.header .section-left').exists()).toBe(true)
+      expect(wrapper.find('.header .section-right').exists()).toBe(true)
+    })
+
+    it('renders search-container within section-left', () => {
+      expect(wrapper.find('.section-left .search-container').exists()).toBe(true)
+    })
+
+    it('renders refresh container within section-left', () => {
+      expect(wrapper.find('.section-left .refresh').exists()).toBe(true)
+    })
+
+    it('renders add button inside section-right .add container', () => {
+      const sectionRight = wrapper.find('.section-right')
+      expect(sectionRight.find('.add').exists()).toBe(true)
+    })
+
+    it('renders DeleteConfirmationDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('renders .container wrapper for table area', () => {
+      expect(wrapper.find('.container').exists()).toBe(true)
+    })
   })
 
   describe('Empty State', () => {
@@ -162,6 +193,24 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
+
+    it('should still show header with create button, search and refresh when empty', () => {
+      expect(wrapper.find('.header').exists()).toBe(true)
+      expect(wrapper.find('[data-test="search-input"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="refresh-button"]').exists()).toBe(true)
+      expect(wrapper.text()).toContain('Create New Data Collection Source')
+    })
+
+    it('shows table then hides when data is cleared', async () => {
+      store.sources = [mockSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+
+      store.sources = []
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find('.data-table').exists()).toBe(false)
+    })
   })
 
   describe('Table Rendering with Data', () => {
@@ -174,60 +223,20 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(wrapper.find('.data-table').exists()).toBe(true)
     })
 
-    it('renders correct number of rows', async () => {
-      store.sources = [mockSource, mockSource2]
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows).toHaveLength(2)
+    it('renders .action-container in each row', async () => {
+      const actionContainers = wrapper.findAll('.action-container')
+      expect(actionContainers).toHaveLength(1)
     })
 
-    it('renders source name correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Test Source')
-    })
-
-    it('renders vendor correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Cisco')
-    })
-
-    it('renders uploadedBy correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('TestUser')
-    })
-
-    it('renders enabled status correctly', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Enabled')
-    })
-
-    it('renders disabled status correctly', async () => {
-      store.sources = [disabledMockSource]
-      await wrapper.vm.$nextTick()
-
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain('Disabled')
-    })
-
-    it('renders action buttons for each row', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      const buttons = rows[0].findAll('button')
-      expect(buttons.length).toBeGreaterThanOrEqual(2)
-    })
-
-    it('renders view button', async () => {
-      expect(wrapper.find('[data-test="view-button"]').exists()).toBe(true)
-    })
-
-    it('renders dropdown menu with actions', async () => {
+    it('renders action-container with view, edit, dropdown and nothing else', async () => {
+      const viewBtn = wrapper.find('[data-test="view-button"]')
+      const editBtn = wrapper.find('[data-test="edit-button"]')
       const dropdown = wrapper.findComponent(FeatherDropdown)
+      expect(viewBtn.exists()).toBe(true)
+      expect(editBtn.exists()).toBe(true)
       expect(dropdown.exists()).toBe(true)
     })
 
-    it('renders pagination when sources exist', async () => {
-      expect(wrapper.find('.alerts-pagination').exists()).toBe(true)
-    })
   })
 
   describe('Table with Multiple Sources', () => {
@@ -254,20 +263,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     beforeEach(async () => {
       store.sources = [mockSource]
       await wrapper.vm.$nextTick()
-    })
-
-    it('renders search input with correct placeholder hint', () => {
-      const searchInput = wrapper.find('[data-test="search-input"]')
-      expect(searchInput.exists()).toBe(true)
-    })
-
-    it('handles search input changes with debouncing', async () => {
-      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-      await searchInput.setValue('test')
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
     })
 
     it('does not call onChangeSourcesSearchTerm before debounce time', async () => {
@@ -383,6 +378,19 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
         params: { id }
       })
     })
+
+    it('navigates to correct source when clicking second row view button', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      const viewButtons = wrapper.findAll('[data-test="view-button"]')
+      await viewButtons[1].trigger('click')
+
+      expect(mockPush).toHaveBeenCalledWith({
+        name: 'SNMP Data Collection Detail',
+        params: { id: mockSource2.id }
+      })
+    })
   })
 
   describe('Sorting Functionality', () => {
@@ -396,24 +404,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(sortHeaders.length).toBeGreaterThan(0)
     })
 
-    it('handles sort change for ascending', () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
-      expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'asc')
-    })
-
-    it('handles sort change for descending', () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'desc' })
-      expect(store.onSourcesSortChange).toHaveBeenCalledWith('name', 'desc')
-    })
-
     it('handles sort reset to default when value is none', () => {
       wrapper.vm.sortChanged({ property: 'name', value: SORT.NONE })
       expect(store.onSourcesSortChange).toHaveBeenCalledWith('createdTime', 'desc')
-    })
-
-    it('updates local sort state on sort change', async () => {
-      wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
-      expect(wrapper.vm.sort.name).toBe('asc')
     })
 
     it('resets other sort properties when sorting by a column', async () => {
@@ -467,18 +460,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(pagination.props('total')).toBe(50)
     })
 
-    it('handles page change', async () => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:modelValue', 2)
-      expect(store.onSourcePageChange).toHaveBeenCalledWith(2)
-    })
-
-    it('handles page size change', async () => {
-      const pagination = wrapper.getComponent(FeatherPagination)
-      await pagination.vm.$emit('update:pageSize', 20)
-      expect(store.onSourcePageSizeChange).toHaveBeenCalledWith(20)
-    })
-
     it.each([{ page: 1 }, { page: 2 }, { page: 5 }, { page: 10 }])(
       'handles page change to page $page',
       async ({ page }) => {
@@ -503,31 +484,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
   })
 
-  describe('Dropdown Actions', () => {
-    beforeEach(async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-    })
-
-    it('renders dropdown for each row', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].findComponent(FeatherDropdown).exists()).toBe(true)
-    })
-
-    it('renders more actions button in each row', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      const buttons = rows[0].findAll('button')
-      // Should have at least 3 buttons: view, download, and more actions
-      expect(buttons.length).toBeGreaterThanOrEqual(3)
-    })
-
-    it('has dropdown menu in row actions', async () => {
-      const rows = wrapper.findAll('transition-group-stub tr')
-      const dropdown = rows[0].findComponent(FeatherDropdown)
-      expect(dropdown.exists()).toBe(true)
-    })
-  })
-
   describe('Columns Configuration', () => {
     it('has correct columns defined', () => {
       const columns = wrapper.vm.columns
@@ -537,14 +493,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
         { id: 'uploadedBy', label: 'Uploaded By' },
         { id: 'enabled', label: 'Status' }
       ])
-    })
-
-    it('renders all column headers', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      expect(sortHeaders).toHaveLength(4)
     })
 
     it.each([
@@ -558,19 +506,72 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(column).toBeDefined()
       expect(column.label).toBe(label)
     })
+
+    it('each sort header has correct property prop', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      expect(sortHeaders[0].props('property')).toBe('name')
+      expect(sortHeaders[1].props('property')).toBe('vendor')
+      expect(sortHeaders[2].props('property')).toBe('uploadedBy')
+      expect(sortHeaders[3].props('property')).toBe('enabled')
+    })
+
+    it('sort headers display correct label text', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
+      expect(sortHeaders[0].text()).toContain('Source')
+      expect(sortHeaders[1].text()).toContain('Vendor')
+      expect(sortHeaders[2].text()).toContain('Uploaded By')
+      expect(sortHeaders[3].text()).toContain('Status')
+    })
   })
 
   describe('Status Display', () => {
     it.each([
-      { enabled: true, expectedText: 'Enabled' },
-      { enabled: false, expectedText: 'Disabled' }
-    ])('displays "$expectedText" when enabled is $enabled', async ({ enabled, expectedText }) => {
+      { enabled: true, expectedText: 'Enabled', expectedClass: 'enabled-tag' },
+      { enabled: false, expectedText: 'Disabled', expectedClass: 'disabled-tag' }
+    ])('displays "$expectedText" with class "$expectedClass" when enabled=$enabled', async ({ enabled, expectedText, expectedClass }) => {
       const source = { ...mockSource, enabled }
       store.sources = [source]
       await wrapper.vm.$nextTick()
 
-      const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows[0].text()).toContain(expectedText)
+      const statusTag = wrapper.find('[data-test="status-tag"]')
+      expect(statusTag.exists()).toBe(true)
+      expect(statusTag.text()).toBe(expectedText)
+      expect(statusTag.classes()).toContain(expectedClass)
+    })
+
+    it('renders FeatherChip for status in each row', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('[data-test="status-tag"]')
+      expect(chips).toHaveLength(2)
+    })
+
+    it('renders mixed enabled/disabled status chips', async () => {
+      store.sources = [mockSource, disabledMockSource]
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('[data-test="status-tag"]')
+      expect(chips).toHaveLength(2)
+      expect(chips[0].text()).toBe('Enabled')
+      expect(chips[0].classes()).toContain('enabled-tag')
+      expect(chips[1].text()).toBe('Disabled')
+      expect(chips[1].classes()).toContain('disabled-tag')
+    })
+
+    it('renders .tag container around status chip', async () => {
+      store.sources = [mockSource]
+      await wrapper.vm.$nextTick()
+
+      const tag = wrapper.find('.tag')
+      expect(tag.exists()).toBe(true)
+      expect(tag.find('[data-test="status-tag"]').exists()).toBe(true)
     })
   })
 
@@ -671,34 +672,64 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       expect(wrapper.find('.alerts-pagination').exists()).toBe(false)
     })
-  })
 
-  describe('Store State Binding', () => {
-    it('reflects store sources in table', async () => {
-      store.sources = [mockSource, mockSource2]
+    it('handles unicode characters in source fields', async () => {
+      const unicodeSource: SnmpCollectionSource = {
+        ...mockSource,
+        name: 'ソース-テスト',
+        vendor: 'Étiquette-日本語',
+        uploadedBy: 'Ùser_名前'
+      }
+      store.sources = [unicodeSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 1 }
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
-      expect(rows).toHaveLength(2)
+      expect(rows[0].text()).toContain('ソース-テスト')
+      expect(rows[0].text()).toContain('Étiquette-日本語')
+      expect(rows[0].text()).toContain('Ùser_名前')
     })
 
-    it('reflects store pagination in component', async () => {
+    it('handles large pagination total counts', async () => {
       store.sources = [mockSource]
-      store.sourcesPagination = { page: 3, pageSize: 25, total: 100 }
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 100000 }
       await wrapper.vm.$nextTick()
 
-      const pagination = wrapper.getComponent(FeatherPagination)
-      expect(pagination.props('modelValue')).toBe(3)
-      expect(pagination.props('pageSize')).toBe(25)
-      expect(pagination.props('total')).toBe(100)
+      const pagination = wrapper.findComponent(FeatherPagination)
+      expect(pagination.props('total')).toBe(100000)
     })
 
-    it('reflects store search term in input', async () => {
-      store.sourcesSearchTerm = 'test search'
+    it('does not call search before debounce completes when input cleared', async () => {
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test')
+      vi.advanceTimersByTime(300)
+      await searchInput.setValue('')
+      vi.advanceTimersByTime(500)
       await wrapper.vm.$nextTick()
 
-      // The v-model binding should reflect the store value
-      expect(store.sourcesSearchTerm).toBe('test search')
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledTimes(1)
+      expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('')
+    })
+
+    it('handles source with very long name', async () => {
+      const longName = 'A'.repeat(500)
+      const longNameSource = { ...mockSource, name: longName }
+      store.sources = [longNameSource]
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('.data-table').exists()).toBe(true)
+      expect(wrapper.text()).toContain(longName)
+    })
+
+    it('handles negative id value', async () => {
+      const negativeIdSource = { ...mockSource, id: -1, name: 'negativeIdSource' }
+      store.sources = [negativeIdSource]
+      store.sourcesPagination = { page: 1, pageSize: 10, total: 1 }
+      await wrapper.vm.$nextTick()
+
+      const rows = wrapper.findAll('transition-group-stub tr')
+      expect(rows.length).toBeGreaterThanOrEqual(1)
+      expect(rows[0].text()).toContain('negativeIdSource')
     })
   })
 
@@ -723,31 +754,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await pagination.vm.$emit('update:modelValue', 2)
       expect(store.onSourcePageChange).toHaveBeenCalledWith(2)
     })
-
-    it('navigates to different sources', async () => {
-      store.sources = [mockSource, mockSource2]
-      await wrapper.vm.$nextTick()
-
-      wrapper.vm.onSourceClick(mockSource)
-      expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
-        params: { id: mockSource.id }
-      })
-
-      wrapper.vm.onSourceClick(mockSource2)
-      expect(mockPush).toHaveBeenCalledWith({
-        name: 'SNMP Data Collection Detail',
-        params: { id: mockSource2.id }
-      })
-    })
-
-    it('refresh clears filters and fetches data', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      await wrapper.get('[data-test="refresh-button"]').trigger('click')
-      expect(store.refreshSourcesfilters).toHaveBeenCalled()
-    })
   })
 
   describe('Parametrized Tests - Source Data Variations', () => {
@@ -766,14 +772,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Accessibility', () => {
-    it('table has aria-label', async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-
-      const table = wrapper.find('.data-table')
-      expect(table.attributes('aria-label')).toBeDefined()
-    })
-
     it('sort headers are rendered with col scope', async () => {
       store.sources = [mockSource]
       await wrapper.vm.$nextTick()
@@ -946,6 +944,30 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       expect(mockLink.download).toBe('Source (v2) [test].xml')
     })
+
+    it('creates anchor element for download link', async () => {
+      const createElementSpy = vi.spyOn(document, 'createElement')
+      mockDownloadSnmpDataCollectionById.mockResolvedValue({
+        data: '<xml/>',
+        headers: { 'content-type': 'application/xml' }
+      })
+
+      await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
+
+      expect(createElementSpy).toHaveBeenCalledWith('a')
+    })
+
+    it('downloads file for different source with correct id', async () => {
+      mockDownloadSnmpDataCollectionById.mockResolvedValue({
+        data: '<xml>test</xml>',
+        headers: { 'content-type': 'application/xml' }
+      })
+
+      await wrapper.vm.downloadCollectionSource(mockSource2, 'xml')
+
+      expect(mockDownloadSnmpDataCollectionById).toHaveBeenCalledWith(mockSource2.id, 'xml')
+      expect(mockLink.download).toBe('Another Source.xml')
+    })
   })
 
   describe('Delete Dialog', () => {
@@ -994,11 +1016,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
       expect(wrapper.vm.selectedCollectionSource).toBeNull()
-    })
-
-    it('renders DeleteConfirmationDialog component', () => {
-      const dialog = wrapper.findComponent({ name: 'DeleteConfirmationDialog' })
-      expect(dialog.exists()).toBe(true)
     })
 
     it('passes correct props to DeleteConfirmationDialog', async () => {
@@ -1055,6 +1072,27 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(mockPush).not.toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
     })
 
+    it('keeps delete dialog state unchanged on service failure', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
+
+      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      // The component uses selectedCollectionSource.value?.name in the error message,
+      // but should not clear the dialog state on failure
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedCollectionSource).not.toBeNull()
+    })
+
+    it('does not reset dialog state on successful delete (navigates away instead)', async () => {
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+
+      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+
+      // Component navigates away rather than explicitly closing dialog
+      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
+      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
+    })
+
     it('shows error when type is not source', async () => {
       await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'mib-group')
 
@@ -1093,14 +1131,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
         msg: 'Failed to delete Collection Source \'undefined\'.',
         error: true
       })
-    })
-
-    it('navigates to SNMP Data Collection page after successful delete', async () => {
-      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
-
-      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
-
-      expect(mockPush).toHaveBeenCalledWith({ name: 'SNMP Data Collection' })
     })
 
     it.each([
@@ -1144,67 +1174,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await flushPromises()
 
       expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([mockSource.id])
-    })
-  })
-
-  describe('Dropdown Item Click Handlers', () => {
-    beforeEach(async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-    })
-
-    it('renders a dropdown component for the source row', () => {
-      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
-      expect(dropdowns).toHaveLength(1)
-    })
-
-    it('renders a dropdown per row when multiple sources exist', async () => {
-      store.sources = [mockSource, mockSource2]
-      await wrapper.vm.$nextTick()
-
-      const dropdowns = wrapper.findAllComponents(FeatherDropdown)
-      expect(dropdowns).toHaveLength(2)
-    })
-
-    it('downloadCollectionSource calls service with xml format', async () => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '<xml/>',
-        headers: { 'content-type': 'application/xml' }
-      })
-
-      vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click: vi.fn() } as any)
-      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (
-        obj: Blob | MediaSource
-      ) => string
-      window.URL.revokeObjectURL = vi.fn() as unknown as (url: string) => void
-
-      await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
-
-      expect(mockDownloadSnmpDataCollectionById).toHaveBeenCalledWith(mockSource.id, 'xml')
-    })
-
-    it('downloadCollectionSource calls service with json format', async () => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '{}',
-        headers: { 'content-type': 'application/json' }
-      })
-
-      vi.spyOn(document, 'createElement').mockReturnValue({ href: '', download: '', click: vi.fn() } as any)
-      window.URL.createObjectURL = vi.fn().mockReturnValue('blob:test') as unknown as (
-        obj: Blob | MediaSource
-      ) => string
-      window.URL.revokeObjectURL = vi.fn() as unknown as (url: string) => void
-
-      await wrapper.vm.downloadCollectionSource(mockSource, 'json')
-
-      expect(mockDownloadSnmpDataCollectionById).toHaveBeenCalledWith(mockSource.id, 'json')
-    })
-
-    it('openDeleteCollectionSourceDialog sets dialog state', () => {
-      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
-
-      expect(wrapper.vm.isDeleteDialogVisible).toBe(true)
-      expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource)
     })
   })
 
@@ -1375,13 +1344,29 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       wrapper.vm.openDeleteCollectionSourceDialog(mockSource2)
       expect(wrapper.vm.selectedCollectionSource).toEqual(mockSource2)
     })
+
+    it('handles sequential delete operations correctly', async () => {
+      store.sources = [mockSource, mockSource2]
+      await wrapper.vm.$nextTick()
+
+      // First delete
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
+      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
+      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([mockSource.id])
+
+      // Reset dialog
+      wrapper.vm.closeDeleteCollectionSourceDialog()
+      expect(wrapper.vm.selectedCollectionSource).toBeNull()
+
+      // Second delete
+      wrapper.vm.openDeleteCollectionSourceDialog(mockSource2)
+      await wrapper.vm.deleteCollectionSource({ id: mockSource2.id, name: mockSource2.name }, 'source')
+      expect(mockDeleteSnmpCollectionSources).toHaveBeenCalledWith([mockSource2.id])
+    })
   })
 
   describe('Create Source Button', () => {
-    it('renders Create New Data Collection Source button', () => {
-      expect(wrapper.text()).toContain('Create New Data Collection Source')
-    })
-
     it('navigates to SNMP Data Collection Create when clicked', async () => {
       const createButton = wrapper
         .findAllComponents(FeatherButton)
@@ -1428,6 +1413,13 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(editButton.exists()).toBe(true)
       // The button itself wraps a FeatherIcon
       expect(editButton.html()).toContain('feather-icon')
+    })
+
+    it('edit button does not trigger navigation on click', async () => {
+      const editButton = wrapper.find('[data-test="edit-button"]')
+      await editButton.trigger('click')
+
+      expect(mockPush).not.toHaveBeenCalled()
     })
   })
 
@@ -1700,68 +1692,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
   })
 
-  describe('Dropdown Trigger Button', () => {
-    beforeEach(async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-    })
-
-    it('dropdown trigger button has correct icon label with source name', () => {
-      const dropdownButtons = wrapper.findAllComponents(FeatherButton)
-      const moreActionsBtn = dropdownButtons.find(
-        (btn: any) => btn.props('icon') === `More actions for ${mockSource.name}`
-      )
-      expect(moreActionsBtn).toBeDefined()
-    })
-
-    it('dropdown trigger button is a FeatherButton with correct icon text', () => {
-      const dropdownButtons = wrapper.findAllComponents(FeatherButton)
-      const moreActionsBtn = dropdownButtons.find(
-        (btn: any) => btn.props('icon') === `More actions for ${mockSource.name}`
-      )
-      expect(moreActionsBtn).toBeDefined()
-      expect(moreActionsBtn!.exists()).toBe(true)
-    })
-  })
-
-  describe('Delete Success Messages', () => {
-    beforeEach(async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
-    })
-
-    it('shows success message with correct source name', async () => {
-      mockDeleteSnmpCollectionSources.mockResolvedValue(true)
-
-      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
-
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: 'Collection Source \'Test Source\' deleted successfully.'
-      })
-    })
-
-    it('shows failure message with correct source name on service failure', async () => {
-      mockDeleteSnmpCollectionSources.mockResolvedValue(false)
-
-      await wrapper.vm.deleteCollectionSource({ id: mockSource.id, name: mockSource.name }, 'source')
-
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: 'Failed to delete Collection Source \'Test Source\'.',
-        error: true
-      })
-    })
-
-    it('shows failure message with selected name when validation fails', async () => {
-      await wrapper.vm.deleteCollectionSource({ id: 999, name: 'Other Source' }, 'source')
-
-      expect(mockShowSnackBar).toHaveBeenCalledWith({
-        msg: 'Failed to delete Collection Source \'Other Source\'.',
-        error: true
-      })
-    })
-  })
-
   describe('Row Data Correctness', () => {
     it('renders all 4 data columns per row', async () => {
       store.sources = [mockSource]
@@ -1852,27 +1782,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       const viewButtons = wrapper.findAll('[data-test="view-button"]')
       expect(viewButtons).toHaveLength(3)
-    })
-  })
-
-  describe('Parametrized Delete Validation Tests', () => {
-    beforeEach(async () => {
-      store.sources = [mockSource]
-      await wrapper.vm.$nextTick()
-      wrapper.vm.openDeleteCollectionSourceDialog(mockSource)
-    })
-
-    it.each([
-      { selected: null, type: 'source', desc: 'null selected' },
-      { selected: { id: 1, name: 'Test Source' }, type: '', desc: 'empty type' },
-      { selected: { id: 0, name: 'Test Source' }, type: 'source', desc: 'zero id' },
-      { selected: { id: 999, name: 'Test Source' }, type: 'source', desc: 'mismatched id' },
-      { selected: { id: 1, name: 'Wrong' }, type: 'source', desc: 'mismatched name' }
-    ])('rejects delete with $desc', async ({ selected, type }) => {
-      await wrapper.vm.deleteCollectionSource(selected, type)
-
-      expect(mockDeleteSnmpCollectionSources).not.toHaveBeenCalled()
-      expect(mockShowSnackBar).toHaveBeenCalledWith(expect.objectContaining({ error: true }))
     })
   })
 })

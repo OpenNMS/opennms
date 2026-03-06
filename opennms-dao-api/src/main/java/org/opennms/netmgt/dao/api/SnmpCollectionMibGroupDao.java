@@ -50,7 +50,9 @@ public interface SnmpCollectionMibGroupDao extends OnmsDao<SnmpCollectionMibGrou
 
     void deleteBySourceId(Integer snmpCollectionSourceId);
 
-    PageResponse<SnmpCollectionMibGroup> findByDataCollectionGroupId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
+    List<SnmpCollectionMibGroup> filterMibGroupConf(String name,String ifType, String vendor, String collectionSourceName, int offset, int limit);
+
+    PageResponse<SnmpCollectionMibGroup> findByCollectionSourceId(Integer snmpCollectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit);
 
     SnmpCollectionMibGroup findBySnmpSourceCollectionIdAndId(Integer sourceId, Integer  id);
 

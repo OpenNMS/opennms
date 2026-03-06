@@ -122,6 +122,9 @@ importers:
       '@featherds/textarea':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
+      '@featherds/toggle-button':
+        specifier: ^0.12.43
+        version: 0.12.43(typescript@5.4.5)
       '@featherds/tooltip':
         specifier: 0.12.43
         version: 0.12.43(typescript@5.4.5)
@@ -639,6 +642,9 @@ packages:
 
   '@featherds/textarea@0.12.43':
     resolution: {integrity: sha512-ixULwGXLqZ6f5YGgEB0xQcO0xvUw7aWigi4NdtVwjIPF4/A4wlPtkS14uEQlq5ddQvFH8Z8HjO727Vr8ZBIztQ==}
+
+  '@featherds/toggle-button@0.12.43':
+    resolution: {integrity: sha512-WG7tfMi/GBDPMFxw2ZN4qMP4fHlcyHlBuQSMP6eA2M3EnBVdA/0q0oR3aiANyLnr3zpsDpZVHQgcBXnr22q6Sw==}
 
   '@featherds/tooltip@0.12.43':
     resolution: {integrity: sha512-a/Ua/wlOmpmLlNJ6kRMIJZRxxmZRPwonTSj94mQByK0z1GXlZhAqYuC6nbzojlMmzSZeV/mYxMoB0/vAyMUDZg==}
@@ -3487,6 +3493,14 @@ snapshots:
       '@featherds/input-helper': 0.12.43(typescript@5.4.5)
       '@featherds/styles': 0.12.43
       '@featherds/utils': 0.12.43
+      vue: 3.5.25(typescript@5.4.5)
+    transitivePeerDependencies:
+      - typescript
+
+  '@featherds/toggle-button@0.12.43(typescript@5.4.5)':
+    dependencies:
+      '@featherds/ripple': 0.12.43(typescript@5.4.5)
+      '@featherds/styles': 0.12.43
       vue: 3.5.25(typescript@5.4.5)
     transitivePeerDependencies:
       - typescript

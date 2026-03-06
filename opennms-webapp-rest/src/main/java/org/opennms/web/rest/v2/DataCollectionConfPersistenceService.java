@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.v2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -66,8 +65,6 @@ import java.util.stream.Collectors;
 public class DataCollectionConfPersistenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataCollectionConfPersistenceService.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     @Autowired
     private  SnmpCollectionSourceDao snmpCollectionSourceDao;
     @Autowired
@@ -112,22 +109,22 @@ public class DataCollectionConfPersistenceService {
         return snmpCollectionSourceDao.filterDataCollectionSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 
-    public PageResponse<SnmpCollectionMibGroup> filterMibGroupByDataCollectionGroupId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy,
+    public PageResponse<SnmpCollectionMibGroup> filterMibGroupByCollectionSourceId(Integer collectionSourceId, String mibGroupFilter, String sortBy,
                                                                                       String order, Integer totalRecords, Integer offset,
                                                                                       Integer limit) {
-        return snmpCollectionMibGroupDao.findByDataCollectionGroupId(dataCollectionGroupId,mibGroupFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionMibGroupDao.findByCollectionSourceId(collectionSourceId,mibGroupFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public PageResponse<SnmpCollectionResourceType> filterResourceTypeByDataCollectionGroupId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy,
+    public PageResponse<SnmpCollectionResourceType> filterResourceTypeByCollectionSourceId(Integer collectionSourceId, String resourceTypeFilter, String sortBy,
                                                                                               String order, Integer totalRecords, Integer offset,
                                                                                               Integer limit) {
-        return snmpCollectionResourceTypeDao.findByDataCollectionGroupId(dataCollectionGroupId,resourceTypeFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionResourceTypeDao.findByCollectionSourceId(collectionSourceId,resourceTypeFilter,sortBy,order,totalRecords,offset,limit);
     }
 
-    public PageResponse<SnmpCollectionSystemDef> filterSystemDefByDataCollectionGroupId(Integer dataCollectionGroupId, String systemDefFilter, String sortBy,
+    public PageResponse<SnmpCollectionSystemDef> filterSystemDefByCollectionSourceId(Integer collectionSourceId, String systemDefFilter, String sortBy,
                                                                                         String order, Integer totalRecords, Integer offset,
                                                                                         Integer limit) {
-        return snmpCollectionSystemDefDao.findByDataCollectionGroupId(dataCollectionGroupId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
+        return snmpCollectionSystemDefDao.findByCollectionSourceId(collectionSourceId,systemDefFilter,sortBy,order,totalRecords,offset,limit);
     }
 
     public Map<Integer,String> getSnmpCollectionSourceNamesAndIds(){
@@ -487,11 +484,6 @@ public class DataCollectionConfPersistenceService {
             return;
         }
 
-        List<String> groupNames = dataCollectionGroup.getGroups()
-                .stream()
-                .map(Group::getName)
-                .collect(Collectors.toList());
-
         List<SnmpCollectionMibGroup> entities =
                 dataCollectionGroup.getGroups().stream()
                         .map(mibGroup -> {
@@ -504,7 +496,9 @@ public class DataCollectionConfPersistenceService {
                             entity.setIfType(mibGroup.getIfType());
                             entity.setMibObjects(DatacollectionJsonHelper.toJson(mibGroup.getMibObjs()));
                             entity.setMibObjProperties(DatacollectionJsonHelper.toJson(mibGroup.getProperties()));
-                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(groupNames));
+                            // Store only this group's nested includeGroup references, not all groups
+                            List<String> nestedGroupNames = mibGroup.getIncludeGroups();
+                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(nestedGroupNames));
 
                             return entity;
                         })
@@ -541,15 +535,11 @@ public class DataCollectionConfPersistenceService {
                                             .map(DatacollectionJsonHelper::toJson)
                                             .orElse(null)
                             );
-                            List<String> mibGroupNames =
-                                    Optional.ofNullable(systemDef.getCollect())
-                                            .map(Collect::getIncludeGroups)
-                                            .filter(list -> !list.isEmpty())
-                                            .orElseGet(() ->
-                                                    Optional.ofNullable(dataCollectionGroup.getGroups()).orElse(List.of())
-                                                            .stream().map(Group::getName).toList()
-                                            );
-                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(mibGroupNames));
+                            // Store this systemDef's own includeGroup references
+                            List<String> groupNames = Optional.ofNullable(systemDef.getCollect())
+                                    .map(Collect::getIncludeGroups)
+                                    .orElse(List.of());
+                            entity.setMibGroupNames(DatacollectionJsonHelper.toJson(groupNames));
                             return entity;
                         })
                         .collect(Collectors.toList());

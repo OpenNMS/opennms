@@ -1,5 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import {
+  getAllMibGroupNames,
+  getAllResourceTypeNames,
   getSnmpDataCollectionMibGroups,
   getSnmpDataCollectionResourceTypes,
   getSnmpDataCollectionSourceById,
@@ -174,6 +176,9 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.selectedMibGroup).toBeNull()
       expect(store.selectedResourceType).toBeNull()
 
+      // Active tab
+      expect(store.activeTab).toBe(0)
+
       // Drawer states
       expect(store.systemDefDrawerState).toEqual({
         visible: false,
@@ -232,8 +237,17 @@ describe('useSnmpDataCollectionDetailStore', () => {
   })
 
   describe('fetchCollectionSourceById', () => {
-    it('should fetch collection source by ID successfully', async () => {
+    const setupFetchMocks = () => {
       vi.mocked(getSnmpDataCollectionSourceById).mockResolvedValue(mockCollectionSource)
+      vi.mocked(getSnmpDataCollectionResourceTypes).mockResolvedValue(mockResourceTypesResponse)
+      vi.mocked(getSnmpDataCollectionMibGroups).mockResolvedValue(mockMibGroupsResponse)
+      vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue([])
+      vi.mocked(getAllMibGroupNames).mockResolvedValue([])
+    }
+
+    it('should fetch collection source by ID successfully', async () => {
+      setupFetchMocks()
 
       await store.fetchCollectionSourceById('1')
 
@@ -263,6 +277,11 @@ describe('useSnmpDataCollectionDetailStore', () => {
             resolve(mockCollectionSource)
           })
       )
+      vi.mocked(getSnmpDataCollectionResourceTypes).mockResolvedValue(mockResourceTypesResponse)
+      vi.mocked(getSnmpDataCollectionMibGroups).mockResolvedValue(mockMibGroupsResponse)
+      vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue([])
+      vi.mocked(getAllMibGroupNames).mockResolvedValue([])
 
       await store.fetchCollectionSourceById('1')
       expect(loadingDuringFetch).toBe(true)
@@ -270,7 +289,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
     })
 
     it('should convert string ID to number', async () => {
-      vi.mocked(getSnmpDataCollectionSourceById).mockResolvedValue(mockCollectionSource)
+      setupFetchMocks()
 
       await store.fetchCollectionSourceById('123')
 
@@ -283,7 +302,7 @@ describe('useSnmpDataCollectionDetailStore', () => {
       { input: '999999', expected: 999999 },
       { input: '42', expected: 42 }
     ])('should convert string ID "$input" to number $expected', async ({ input, expected }) => {
-      vi.mocked(getSnmpDataCollectionSourceById).mockResolvedValue(mockCollectionSource)
+      setupFetchMocks()
 
       await store.fetchCollectionSourceById(input)
 
@@ -309,6 +328,23 @@ describe('useSnmpDataCollectionDetailStore', () => {
 
       expect(store.isLoading).toBe(false)
     })
+
+    it('should also fetch resource types, mib groups, system definitions, and their names', async () => {
+      vi.mocked(getSnmpDataCollectionSourceById).mockResolvedValue(mockCollectionSource)
+      vi.mocked(getSnmpDataCollectionResourceTypes).mockResolvedValue(mockResourceTypesResponse)
+      vi.mocked(getSnmpDataCollectionMibGroups).mockResolvedValue(mockMibGroupsResponse)
+      vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue(['nodeSnmp', 'hrStorageIndex'])
+      vi.mocked(getAllMibGroupNames).mockResolvedValue(['mib2-interfaces', 'cisco-memory-pool'])
+
+      await store.fetchCollectionSourceById('1')
+
+      expect(getSnmpDataCollectionResourceTypes).toHaveBeenCalled()
+      expect(getSnmpDataCollectionMibGroups).toHaveBeenCalled()
+      expect(getSnmpDataCollectionSystemDefinitions).toHaveBeenCalled()
+      expect(getAllResourceTypeNames).toHaveBeenCalled()
+      expect(getAllMibGroupNames).toHaveBeenCalled()
+    })
   })
 
   describe('System Definitions - fetchSystemDefinitions', () => {
@@ -325,20 +361,6 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.systemDefinitions).toEqual(mockSystemDefinitions)
       expect(store.systemDefsPagination.total).toBe(2)
       expect(store.isLoading).toBe(false)
-    })
-
-    it('should also fetch resource type names and mib group names', async () => {
-      const { getAllResourceTypeNames, getAllMibGroupNames } = await import('@/services/snmpDataCollectionService')
-      vi.mocked(getSnmpDataCollectionSystemDefinitions).mockResolvedValue(mockSystemDefsResponse)
-      vi.mocked(getAllResourceTypeNames).mockResolvedValue(['nodeSnmp'])
-      vi.mocked(getAllMibGroupNames).mockResolvedValue(['mib2-interfaces'])
-
-      await store.fetchSystemDefinitions()
-
-      expect(getAllResourceTypeNames).toHaveBeenCalled()
-      expect(getAllMibGroupNames).toHaveBeenCalled()
-      expect(store.resourceTypeNames).toEqual(['nodeSnmp'])
-      expect(store.mibGroupNames).toEqual(['mib2-interfaces'])
     })
 
     it('should not fetch if selectedCollectionSource is null', async () => {
@@ -1108,16 +1130,26 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.selectedMibGroup).toEqual(mibGroup)
     })
 
-    it('should close MIB group drawer and reset state', () => {
+    it('should close MIB group drawer and reset state', async () => {
       store.mibGroupDrawerState.visible = true
       store.mibGroupDrawerState.isEditMode = 2
       store.selectedMibGroup = mockMibGroups[0]
 
-      store.closeMibGroupDrawer()
+      await store.closeMibGroupDrawer()
 
       expect(store.mibGroupDrawerState.visible).toBe(false)
       expect(store.mibGroupDrawerState.isEditMode).toBe(0)
       expect(store.selectedMibGroup).toBeNull()
+    })
+
+    it('should call fetchMibGroupNames when closing MIB group drawer', async () => {
+      vi.mocked(getAllMibGroupNames).mockResolvedValue(['mib-group-1', 'mib-group-2'])
+      store.mibGroupDrawerState.visible = true
+      store.selectedMibGroup = mockMibGroups[0]
+
+      await store.closeMibGroupDrawer()
+
+      expect(getAllMibGroupNames).toHaveBeenCalled()
     })
 
     it('should handle opening system def drawer multiple times', () => {
@@ -1147,35 +1179,35 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.selectedSystemDef).toBeNull()
     })
 
-    it('should close mib group drawer when already closed', () => {
+    it('should close mib group drawer when already closed', async () => {
       store.mibGroupDrawerState.visible = false
-      store.closeMibGroupDrawer()
+      await store.closeMibGroupDrawer()
       expect(store.mibGroupDrawerState.visible).toBe(false)
       expect(store.selectedMibGroup).toBeNull()
     })
 
-    it('should not affect system def drawer when opening/closing mib group drawer', () => {
+    it('should not affect system def drawer when opening/closing mib group drawer', async () => {
       // Open system def drawer first
       store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 2)
       expect(store.systemDefDrawerState.visible).toBe(true)
 
       // Open and close mib group drawer
       store.openMibGroupCreationDrawer(mockMibGroups[0], 1)
-      store.closeMibGroupDrawer()
+      await store.closeMibGroupDrawer()
 
       // System def drawer should be unchanged
       expect(store.systemDefDrawerState.visible).toBe(true)
       expect(store.selectedSystemDef).toEqual(mockSystemDefinitions[0])
     })
 
-    it('should not affect mib group drawer when opening/closing system def drawer', () => {
+    it('should not affect mib group drawer when opening/closing system def drawer', async () => {
       // Open mib group drawer first
       store.openMibGroupCreationDrawer(mockMibGroups[0], 2)
       expect(store.mibGroupDrawerState.visible).toBe(true)
 
       // Open and close system def drawer
       store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 1)
-      store.closeSystemDefDrawer()
+      await store.closeSystemDefDrawer()
 
       // Mib group drawer should be unchanged
       expect(store.mibGroupDrawerState.visible).toBe(true)
@@ -1215,16 +1247,26 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.selectedResourceType).toEqual(resourceType)
     })
 
-    it('should close resource type drawer and reset state', () => {
+    it('should close resource type drawer and reset state', async () => {
       store.resourceTypeDrawerState.visible = true
       store.resourceTypeDrawerState.isEditMode = 2
       store.selectedResourceType = mockResourceTypes[0]
 
-      store.closeResourceTypeDrawer()
+      await store.closeResourceTypeDrawer()
 
       expect(store.resourceTypeDrawerState.visible).toBe(false)
       expect(store.resourceTypeDrawerState.isEditMode).toBe(0)
       expect(store.selectedResourceType).toBeNull()
+    })
+
+    it('should call fetchResourceTypeNames when closing resource type drawer', async () => {
+      vi.mocked(getAllResourceTypeNames).mockResolvedValue(['resource-type-1', 'resource-type-2'])
+      store.resourceTypeDrawerState.visible = true
+      store.selectedResourceType = mockResourceTypes[0]
+
+      await store.closeResourceTypeDrawer()
+
+      expect(getAllResourceTypeNames).toHaveBeenCalled()
     })
 
     it('should handle opening resource type drawer multiple times', () => {
@@ -1237,9 +1279,9 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.resourceTypeDrawerState.isEditMode).toBe(2)
     })
 
-    it('should close resource type drawer when already closed', () => {
+    it('should close resource type drawer when already closed', async () => {
       store.resourceTypeDrawerState.visible = false
-      store.closeResourceTypeDrawer()
+      await store.closeResourceTypeDrawer()
       expect(store.resourceTypeDrawerState.visible).toBe(false)
       expect(store.selectedResourceType).toBeNull()
     })
@@ -1258,42 +1300,42 @@ describe('useSnmpDataCollectionDetailStore', () => {
       expect(store.selectedResourceType).toEqual(mockResourceTypes[0])
     })
 
-    it('should not affect resource type drawer when opening/closing mib group drawer', () => {
+    it('should not affect resource type drawer when opening/closing mib group drawer', async () => {
       // Open resource type drawer first
       store.openResourceTypeCreationDrawer(mockResourceTypes[0], 2)
       expect(store.resourceTypeDrawerState.visible).toBe(true)
 
       // Open and close mib group drawer
       store.openMibGroupCreationDrawer(mockMibGroups[0], 1)
-      store.closeMibGroupDrawer()
+      await store.closeMibGroupDrawer()
 
       // Resource type drawer should be unchanged
       expect(store.resourceTypeDrawerState.visible).toBe(true)
       expect(store.selectedResourceType).toEqual(mockResourceTypes[0])
     })
 
-    it('should not affect system def drawer when opening/closing resource type drawer', () => {
+    it('should not affect system def drawer when opening/closing resource type drawer', async () => {
       // Open system def drawer first
       store.openSystemDefCreationDrawer(mockSystemDefinitions[0], 2)
       expect(store.systemDefDrawerState.visible).toBe(true)
 
       // Open and close resource type drawer
       store.openResourceTypeCreationDrawer(mockResourceTypes[0], 1)
-      store.closeResourceTypeDrawer()
+      await store.closeResourceTypeDrawer()
 
       // System def drawer should be unchanged
       expect(store.systemDefDrawerState.visible).toBe(true)
       expect(store.selectedSystemDef).toEqual(mockSystemDefinitions[0])
     })
 
-    it('should not affect mib group drawer when opening/closing resource type drawer', () => {
+    it('should not affect mib group drawer when opening/closing resource type drawer', async () => {
       // Open mib group drawer first
       store.openMibGroupCreationDrawer(mockMibGroups[0], 2)
       expect(store.mibGroupDrawerState.visible).toBe(true)
 
       // Open and close resource type drawer
       store.openResourceTypeCreationDrawer(mockResourceTypes[0], 1)
-      store.closeResourceTypeDrawer()
+      await store.closeResourceTypeDrawer()
 
       // Mib group drawer should be unchanged
       expect(store.mibGroupDrawerState.visible).toBe(true)

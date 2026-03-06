@@ -157,17 +157,17 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     }
 
     @Override
-    public Response filterDataCollectionMibGroupByCollectionSourceId(Integer dataCollectionGroupId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
+    public Response filterDataCollectionMibGroupByCollectionSourceId(Integer collectionSourceId, String mibGroupFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
         // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(dataCollectionGroupId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
                 || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid dataCollectionGroupId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        PageResponse<SnmpCollectionMibGroup> result = dataCollectionConfPersistenceService.filterMibGroupByDataCollectionGroupId(dataCollectionGroupId, mibGroupFilter,
+        PageResponse<SnmpCollectionMibGroup> result = dataCollectionConfPersistenceService.filterMibGroupByCollectionSourceId(collectionSourceId, mibGroupFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
@@ -186,17 +186,17 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     }
 
     @Override
-    public Response filterDataCollectionResourceTypeByCollectionSourceId(Integer dataCollectionGroupId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
+    public Response filterDataCollectionResourceTypeByCollectionSourceId(Integer collectionSourceId, String resourceTypeFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
         // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(dataCollectionGroupId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
                 || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid dataCollectionGroupId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        PageResponse<SnmpCollectionResourceType> result = dataCollectionConfPersistenceService.filterResourceTypeByDataCollectionGroupId(dataCollectionGroupId, resourceTypeFilter,
+        PageResponse<SnmpCollectionResourceType> result = dataCollectionConfPersistenceService.filterResourceTypeByCollectionSourceId(collectionSourceId, resourceTypeFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
@@ -215,17 +215,17 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     }
 
     @Override
-    public Response filterDataCollectionSystemDefByCollectionSourceId(Integer dataCollectionGroupId, String systemDefFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
+    public Response filterDataCollectionSystemDefByCollectionSourceId(Integer collectionSourceId, String systemDefFilter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit, SecurityContext securityContext) {
         // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(dataCollectionGroupId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
+        if (Objects.requireNonNullElse(collectionSourceId, 0) <= 0 || Objects.requireNonNullElse(offset, 0) < 0
                 || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid dataCollectionGroupId/offset/limit values"))
+                    .entity(Map.of("error", "Invalid collectionSourceId/offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        PageResponse<SnmpCollectionSystemDef> result = dataCollectionConfPersistenceService.filterSystemDefByDataCollectionGroupId(dataCollectionGroupId, systemDefFilter,
+        PageResponse<SnmpCollectionSystemDef> result = dataCollectionConfPersistenceService.filterSystemDefByCollectionSourceId(collectionSourceId, systemDefFilter,
                 sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
