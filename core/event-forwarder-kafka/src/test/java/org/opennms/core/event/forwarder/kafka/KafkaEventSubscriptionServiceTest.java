@@ -73,7 +73,7 @@ public class KafkaEventSubscriptionServiceTest {
 
     @Before
     public void setUp() {
-        service = new KafkaEventSubscriptionService(mockConsumer, TOPIC, deserializer, POLL_TIMEOUT);
+        service = new KafkaEventSubscriptionService(mockConsumer, TOPIC, deserializer, POLL_TIMEOUT, new org.opennms.core.tsid.TsidFactory(0));
     }
 
     @After

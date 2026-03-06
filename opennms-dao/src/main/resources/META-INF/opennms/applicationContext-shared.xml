@@ -191,6 +191,11 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoringSystemDao" ref="monitoringSystemDao" />
 
+    <bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
+
     <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>

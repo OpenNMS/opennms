@@ -400,6 +400,7 @@
                         <!-- Daemon loader features (for opennms/daemon container) -->
                         <feature>opennms-daemon-pollerd</feature>
                         <feature>opennms-daemon-collectd</feature>
+                        <feature>opennms-daemon-alarmd</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>

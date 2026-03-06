@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Alarmd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  7-level Spring hierarchy with a flat context that wires Alarmd beans directly
+  to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - DAOs from distributed DAO feature (opennms-persistence)
+  - AlarmEntityNotifier from DAO feature
+  - TransactionOperations from persistence feature
+  - SessionUtils from persistence feature
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for Alarmd and collaborators -->
+    <context:annotation-config />
+
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint)
+         Uses osgi:reference (not onmsgi:reference) because the event-forwarder-kafka
+         registers services via Aries Blueprint <service> in the OSGi framework registry,
+         not in the OpenNMS ServiceRegistry used by onmsgi namespace. -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+    <osgi:reference id="eventProxy"
+                    interface="org.opennms.netmgt.events.api.EventProxy"/>
+
+    <!-- DAOs (from opennms-persistence / opennms-distributed-core-impl) -->
+    <onmsgi:reference id="alarmDao"
+                      interface="org.opennms.netmgt.dao.api.AlarmDao"/>
+    <onmsgi:reference id="nodeDao"
+                      interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <onmsgi:reference id="serviceTypeDao"
+                      interface="org.opennms.netmgt.dao.api.ServiceTypeDao"/>
+    <onmsgi:reference id="acknowledgmentDao"
+                      interface="org.opennms.netmgt.dao.api.AcknowledgmentDao"/>
+
+    <!-- DAOs required by EventUtilDaoImpl (@Autowired) -->
+    <onmsgi:reference id="assetRecordDao"
+                      interface="org.opennms.netmgt.dao.api.AssetRecordDao"/>
+    <onmsgi:reference id="ipInterfaceDao"
+                      interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <onmsgi:reference id="hwEntityDao"
+                      interface="org.opennms.netmgt.dao.api.HwEntityDao"/>
+
+    <!-- Transaction management (from opennms-persistence) -->
+    <onmsgi:reference id="transactionOperations"
+                      interface="org.springframework.transaction.support.TransactionOperations"/>
+
+    <!-- Session utilities (from opennms-persistence) -->
+    <onmsgi:reference id="sessionUtils"
+                      interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+
+    <!-- AlarmEntityNotifier: dispatches alarm change events to listeners
+         (from opennms-dao / applicationContext-shared.xml) -->
+    <onmsgi:reference id="alarmEntityNotifier"
+                      interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier"/>
+
+    <!-- ============================================================== -->
+    <!-- Local Beans: EventUtil (from eventd context, not OSGi service) -->
+    <!-- ============================================================== -->
+
+    <bean id="alarmdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl">
+        <constructor-arg ref="alarmdMetricRegistry"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Alarmd Support Beans                                           -->
+    <!-- ============================================================== -->
+
+    <!-- NOTE: DroolsAlarmContext is NOT wired here because Drools 8.x jars
+         are not OSGi bundles. Alarmd will persist alarms without the rules
+         engine. To add Drools support later, wrap Drools jars and add
+         DroolsAlarmContext + DefaultAlarmService + DefaultAlarmTicketerService
+         beans here. -->
+
+    <!-- Alarm persister: creates/updates alarms from events -->
+    <bean id="alarmPersister"
+          class="org.opennms.netmgt.alarmd.AlarmPersisterImpl"/>
+    <!-- AlarmPersisterExtension OSGi service listeners -->
+    <onmsgi:list id="alarmPersisterExtensions"
+                 interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
+        <onmsgi:listener ref="alarmPersister"
+                         bind-method="onExtensionRegistered"
+                         unbind-method="onExtensionUnregistered"/>
+    </onmsgi:list>
+
+    <!-- Alarm lifecycle listener manager -->
+    <bean id="alarmLifecycleListenerManager"
+          class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager"/>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener"
+                    ref="alarmLifecycleListenerManager">
+        <onmsgi:service-properties>
+            <entry key="registration.export" value="true"/>
+        </onmsgi:service-properties>
+    </onmsgi:service>
+    <onmsgi:list id="alarmLifecycleListeners"
+                 interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+        <onmsgi:listener ref="alarmLifecycleListenerManager"
+                         bind-method="onListenerRegistered"
+                         unbind-method="onListenerUnregistered"/>
+    </onmsgi:list>
+
+    <!-- Northbounder manager -->
+    <bean id="northbounderManager"
+          class="org.opennms.netmgt.alarmd.NorthbounderManager"/>
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener"
+                    ref="northbounderManager"/>
+    <onmsgi:list id="northbounders"
+                 interface="org.opennms.netmgt.alarmd.api.Northbounder">
+        <onmsgi:listener ref="northbounderManager"
+                         bind-method="onNorthbounderRegistered"
+                         unbind-method="onNorthbounderUnregistered"/>
+    </onmsgi:list>
+
+    <!-- ============================================================== -->
+    <!-- Alarmd Daemon                                                  -->
+    <!-- ============================================================== -->
+
+    <!-- Event listener adapter: subscribes daemon to EventSubscriptionService -->
+    <bean id="daemonListener"
+          class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="daemon"/>
+        <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+
+    <!-- The daemon itself -->
+    <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd">
+        <property name="persister" ref="alarmPersister"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

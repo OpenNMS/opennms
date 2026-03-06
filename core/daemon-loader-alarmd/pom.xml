@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>org.opennms.core</groupId>
-    <artifactId>org.opennms.core.daemon-loader-pollerd</artifactId>
+    <artifactId>org.opennms.core.daemon-loader-alarmd</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Core :: Daemon Loader :: Pollerd</name>
+    <name>OpenNMS :: Core :: Daemon Loader :: Alarmd</name>
     <description>
-        Karaf-only Pollerd loader. Creates and starts the Poller daemon in a
+        Karaf-only Alarmd loader. Creates and starts the Alarmd daemon in a
         Karaf container without the Manager/Eventd, wiring all dependencies
         directly from the OSGi service registry.
     </description>
@@ -32,7 +32,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Spring-Context>
-                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=false
+                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
                         </Spring-Context>
                     </instructions>
                 </configuration>
@@ -41,7 +41,7 @@
     </build>
 
     <dependencies>
-        <!-- Daemon base (AbstractServiceDaemon) -->
+        <!-- Daemon base (AbstractServiceDaemon, DaemonLifecycleManager) -->
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.daemon</artifactId>
@@ -49,26 +49,34 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Poller classes (Poller, DefaultPollContext, QueryManagerDaoImpl, etc.) -->
+        <!-- Alarmd classes (Alarmd, AlarmPersisterImpl, DroolsAlarmContext, etc.) -->
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
+            <artifactId>opennms-alarmd</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Poller RPC client -->
+        <!-- Alarm API (AlarmPersister interface, AlarmLifecycleListener, etc.) -->
         <dependency>
-            <groupId>org.opennms.features.poller</groupId>
-            <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-alarm-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Event API (EventIpcManager interface) -->
+        <!-- Event API (EventIpcManager, EventSubscriptionService) -->
         <dependency>
             <groupId>org.opennms.features.events</groupId>
             <artifactId>org.opennms.features.events.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Event daemon (EventUtilDaoImpl) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.daemon</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -89,66 +97,18 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Poller config -->
+        <!-- DAO implementation (AlarmEntityNotifierImpl) -->
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-config</artifactId>
+            <artifactId>opennms-dao</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Poll outages DAO -->
+        <!-- Model -->
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>org.opennms.config-dao.poll-outages.impl</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- ICMP proxy API (LocationAwarePingClient interface) -->
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-icmp-api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Collection API (PersisterFactory) -->
-        <dependency>
-            <groupId>org.opennms.features.collection</groupId>
-            <artifactId>org.opennms.features.collection.api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Thresholding API -->
-        <dependency>
-            <groupId>org.opennms.features.collection</groupId>
-            <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- TSID -->
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>org.opennms.core.tsid</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- KV Store API (JsonStore for PollOutagesDao) -->
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Poller API (ServiceMonitorAdaptor) -->
-        <dependency>
-            <groupId>org.opennms.features.poller</groupId>
-            <artifactId>org.opennms.features.poller.api</artifactId>
+            <artifactId>opennms-model</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -160,18 +120,17 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Metrics (for EventUtilDaoImpl) -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <!-- InetAddressUtils -->
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-util</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

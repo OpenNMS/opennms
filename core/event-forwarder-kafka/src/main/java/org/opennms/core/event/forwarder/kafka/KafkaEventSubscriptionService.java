@@ -35,7 +35,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.errors.WakeupException;
+import org.opennms.core.tsid.TsidFactory;
 import org.opennms.features.events.kafka.consumer.EventDeserializer;
 import org.opennms.features.events.kafka.consumer.XmlEventDeserializer;
 import org.opennms.netmgt.events.api.EventListener;
@@ -62,6 +64,7 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
     private final String topicName;
     private final EventDeserializer deserializer;
     private final Duration pollTimeout;
+    private final TsidFactory tsidFactory;
 
     /** Listeners interested in all events (no UEI filter). */
     private final CopyOnWriteArrayList<EventListener> allEventsListeners = new CopyOnWriteArrayList<>();
@@ -76,11 +79,13 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
             KafkaConsumer<Long, byte[]> consumer,
             String topicName,
             EventDeserializer deserializer,
-            Duration pollTimeout) {
+            Duration pollTimeout,
+            TsidFactory tsidFactory) {
         this.consumer = Objects.requireNonNull(consumer, "consumer must not be null");
         this.topicName = Objects.requireNonNull(topicName, "topicName must not be null");
         this.deserializer = Objects.requireNonNull(deserializer, "deserializer must not be null");
         this.pollTimeout = Objects.requireNonNull(pollTimeout, "pollTimeout must not be null");
+        this.tsidFactory = Objects.requireNonNull(tsidFactory, "tsidFactory must not be null");
     }
 
     /**
@@ -95,7 +100,10 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
             long pollTimeoutMs) {
         KafkaConsumer<Long, byte[]> consumer = KafkaConsumerFactory.create(bootstrapServers, consumerGroupId);
         EventDeserializer deserializer = new XmlEventDeserializer();
-        return new KafkaEventSubscriptionService(consumer, topicName, deserializer, Duration.ofMillis(pollTimeoutMs));
+        long nodeId = Long.parseLong(System.getProperty("org.opennms.tsid.node-id", "0"));
+        TsidFactory tsidFactory = new TsidFactory(nodeId);
+        LOG.info("Created TsidFactory with node-id={}", nodeId);
+        return new KafkaEventSubscriptionService(consumer, topicName, deserializer, Duration.ofMillis(pollTimeoutMs), tsidFactory);
     }
 
     /**
@@ -217,10 +225,31 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
     private void pollLoop() {
         try {
             while (running.get()) {
-                ConsumerRecords<Long, byte[]> records = consumer.poll(pollTimeout);
+                ConsumerRecords<Long, byte[]> records;
+                try {
+                    records = consumer.poll(pollTimeout);
+                } catch (RecordDeserializationException e) {
+                    // Kafka throws this when the key or value can't be deserialized
+                    // (e.g., a string key when LongDeserializer is configured).
+                    // Seek past the bad record and continue polling.
+                    LOG.warn("Skipping undeserializable record at {}: {}",
+                            e.topicPartition(), e.getMessage());
+                    consumer.seek(e.topicPartition(), e.offset() + 1);
+                    continue;
+                }
                 for (ConsumerRecord<Long, byte[]> record : records) {
                     try {
                         Event mutableEvent = deserializer.deserialize(record.value());
+                        // Assign a TSID if the event doesn't already have one.
+                        // In the standard flow, Eventd's TsidAssigner sets dbid before
+                        // publishing to Kafka. For events produced directly to Kafka
+                        // (e.g., in microservice mode), we assign one here.
+                        if (mutableEvent.getDbid() <= 0) {
+                            long tsid = tsidFactory.create();
+                            mutableEvent.setDbid(tsid);
+                            LOG.debug("Assigned TSID {} to event {} from Kafka offset {}",
+                                    tsid, mutableEvent.getUei(), record.offset());
+                        }
                         IEvent immutableEvent = ImmutableMapper.fromMutableEvent(mutableEvent);
                         dispatch(immutableEvent);
                     } catch (Exception e) {
