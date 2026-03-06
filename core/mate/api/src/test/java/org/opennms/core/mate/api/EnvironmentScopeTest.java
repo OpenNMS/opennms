@@ -95,7 +95,7 @@ public class EnvironmentScopeTest {
 
         Interpolator.Result result = Interpolator.interpolate(
                 "The path is: ${env:PATH}",
-                envScope
+                () -> envScope
         );
         assertEquals("Should interpolate PATH variable", "The path is: " + pathValue, result.output);
     }
@@ -104,7 +104,7 @@ public class EnvironmentScopeTest {
     public void testInterpolationWithNonExistentVariableAndDefault() {
         Interpolator.Result result = Interpolator.interpolate(
                 "Value: ${env:NONEXISTENT_VAR_12345|default_value}",
-                envScope
+                () -> envScope
         );
         assertEquals("Should use default value", "Value: default_value", result.output);
     }
@@ -113,7 +113,7 @@ public class EnvironmentScopeTest {
     public void testInterpolationWithNonExistentVariableNoDefault() {
         Interpolator.Result result = Interpolator.interpolate(
                 "Value: ${env:NONEXISTENT_VAR_12345}",
-                envScope
+                () -> envScope
         );
         assertEquals("Should result in empty string", "Value: ", result.output);
     }
@@ -125,7 +125,7 @@ public class EnvironmentScopeTest {
 
         Interpolator.Result result = Interpolator.interpolate(
                 "Path: ${env:PATH}, Missing: ${env:MISSING_VAR|fallback}",
-                envScope
+                () -> envScope
         );
         assertEquals("Should interpolate both variables",
                 "Path: " + pathValue + ", Missing: fallback",

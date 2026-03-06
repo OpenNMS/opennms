@@ -146,7 +146,7 @@ public class MetaDataUtilsTest {
 
     @Test
     public void testParts() {
-        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
+        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
         assertEquals(2, result.parts.size());
         assertEquals("val1", result.parts.get(0).value.value);
         assertEquals("${ctx1:key1|down}", result.parts.get(0).input);
@@ -184,7 +184,7 @@ public class MetaDataUtilsTest {
     }
 
     private void assertResultOutput(final String expression, final String expected) {
-        final Interpolator.Result result = Interpolator.interpolate(expression, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        final Interpolator.Result result = Interpolator.interpolate(expression, () -> new MapScope(Scope.ScopeName.NODE, this.metaData));
         assertEquals(expected, result.output);
     }
 }

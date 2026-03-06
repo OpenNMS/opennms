@@ -153,7 +153,7 @@ public class ConnectionPool implements java.io.Serializable {
             return null;
         }
         final Interpolator.Result result = Interpolator.interpolate(value,
-            new FallbackScope(
+                () -> new FallbackScope(
                 new SecureCredentialsVaultScope(secureCredentialsVault),
                 new EnvironmentScope()
             ));
