@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Collectd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  multi-level Spring hierarchy with a flat context that wires Collectd beans
+  directly to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - DAOs from distributed DAO feature
+  - CollectdConfigFactory from opennms-config feature
+  - ServiceCollectorRegistry / LocationAwareCollectorClient from collection client-rpc
+  - PersisterFactory / ThresholdingService optional (not in minimal container)
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for Collectd -->
+    <context:annotation-config />
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventIpcManager"
+                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- MessageBus for IPC events (optional — may not be installed) -->
+    <onmsgi:reference id="messageBus"
+                      interface="org.opennms.core.messagebus.MessageBus"
+                      availability="optional"/>
+
+    <!-- Collectd configuration (from opennms-config feature) -->
+    <onmsgi:reference id="collectdConfigFactory"
+                      interface="org.opennms.netmgt.config.CollectdConfigFactory"/>
+
+    <!-- Service collector registry (from collection client-rpc feature) -->
+    <onmsgi:reference id="serviceCollectorRegistry"
+                      interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry"/>
+
+    <!-- Location-aware collector client (from collection client-rpc feature) -->
+    <onmsgi:reference id="locationAwareCollectorClient"
+                      interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"/>
+
+    <!-- Collection persistence (optional — not in minimal daemon) -->
+    <onmsgi:reference id="persisterFactory"
+                      interface="org.opennms.netmgt.collection.api.PersisterFactory"
+                      availability="optional"/>
+
+    <!-- Thresholding (optional — not in minimal daemon) -->
+    <onmsgi:reference id="thresholdingService"
+                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"
+                      availability="optional"/>
+
+    <!-- Entity scope provider (optional — MATE engine) -->
+    <onmsgi:reference id="entityScopeProvider"
+                      interface="org.opennms.core.mate.api.EntityScopeProvider"
+                      availability="optional"/>
+
+    <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence) -->
+    <onmsgi:reference id="nodeDao"
+                      interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <onmsgi:reference id="ipInterfaceDao"
+                      interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <onmsgi:reference id="transactionTemplate"
+                      interface="org.springframework.transaction.support.TransactionOperations"/>
+
+    <!-- Filter DAO (from opennms-config feature) -->
+    <onmsgi:reference id="filterDao"
+                      interface="org.opennms.netmgt.filter.api.FilterDao"/>
+
+    <!-- Poll outages DAO (optional — not in minimal daemon) -->
+    <onmsgi:reference id="pollOutagesDao"
+                      interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"
+                      availability="optional"/>
+
+    <!-- KV store (optional — not in minimal daemon) -->
+    <onmsgi:reference id="jsonStore"
+                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"
+                      availability="optional"/>
+
+    <!-- ============================================================== -->
+    <!-- Local Beans                                                    -->
+    <!-- ============================================================== -->
+
+    <bean id="collectionAgentFactory"
+          class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory"/>
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"
+                    ref="collectionAgentFactory"/>
+
+    <bean id="defaultResourceTypeMapper"
+          class="org.opennms.netmgt.collectd.DefaultResourceTypeMapper"/>
+
+    <!-- ============================================================== -->
+    <!-- Collectd Daemon                                                -->
+    <!-- ============================================================== -->
+
+    <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
+        <property name="eventIpcManager" ref="eventIpcManager"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean id="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

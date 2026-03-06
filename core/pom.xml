@@ -62,6 +62,7 @@
     <module>grpc</module>
     <module>encrypt-util</module>
     <module>daemon-loader-pollerd</module>
+    <module>daemon-loader-collectd</module>
     <module>event-forwarder-kafka</module>
     <module>fileutils</module>
     <module>tsid</module>

@@ -2193,4 +2193,22 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Collectd: loads Collectd daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-collectd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Collectd">
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Collectd config -->
+        <feature>opennms-config</feature>
+        <!-- Collection client RPC (ServiceCollectorRegistry, LocationAwareCollectorClient) -->
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.client-rpc/${project.version}</bundle>
+        <!-- Collectd daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Collectd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-collectd/${project.version}</bundle>
+    </feature>
+
 </features>
