@@ -37,6 +37,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.opennms.features.events.kafka.consumer.EventDeserializer;
+import org.opennms.features.events.kafka.consumer.XmlEventDeserializer;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
@@ -80,6 +81,21 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
         this.topicName = Objects.requireNonNull(topicName, "topicName must not be null");
         this.deserializer = Objects.requireNonNull(deserializer, "deserializer must not be null");
         this.pollTimeout = Objects.requireNonNull(pollTimeout, "pollTimeout must not be null");
+    }
+
+    /**
+     * Factory method for Blueprint. Takes only String/long primitives,
+     * creating the KafkaConsumer and EventDeserializer internally to avoid
+     * Aries Blueprint constructor type-matching issues with cross-bundle types.
+     */
+    public static KafkaEventSubscriptionService create(
+            String bootstrapServers,
+            String consumerGroupId,
+            String topicName,
+            long pollTimeoutMs) {
+        KafkaConsumer<Long, byte[]> consumer = KafkaConsumerFactory.create(bootstrapServers, consumerGroupId);
+        EventDeserializer deserializer = new XmlEventDeserializer();
+        return new KafkaEventSubscriptionService(consumer, topicName, deserializer, Duration.ofMillis(pollTimeoutMs));
     }
 
     /**

@@ -58,11 +58,16 @@ public class KafkaProducerFactory {
 
     /**
      * Creates a new {@link KafkaProducer} connected to the given bootstrap servers.
+     * Uses direct serializer instances instead of class names to avoid OSGi
+     * classloading issues with {@code Class.forName()} in Karaf.
      *
      * @param bootstrapServers comma-separated list of Kafka broker addresses
      * @return a new {@link KafkaProducer} instance; caller is responsible for closing it
      */
     public static KafkaProducer<Long, byte[]> create(String bootstrapServers) {
-        return new KafkaProducer<>(buildProperties(bootstrapServers));
+        Properties props = new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        return new KafkaProducer<>(props, new LongSerializer(), new ByteArraySerializer());
     }
 }

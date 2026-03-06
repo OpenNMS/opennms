@@ -72,10 +72,10 @@ public class KafkaEventForwarderTest {
                 tsidAssigner,
                 eventClassifier,
                 ipcMessageConverter,
-                messageBus,
                 kafkaProducer,
                 TOPIC
         );
+        forwarder.setMessageBus(messageBus);
     }
 
     @Test

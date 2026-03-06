@@ -61,12 +61,19 @@ public class KafkaConsumerFactory {
 
     /**
      * Creates a new {@link KafkaConsumer} connected to the given bootstrap servers.
+     * Uses direct deserializer instances instead of class names to avoid OSGi
+     * classloading issues with {@code Class.forName()} in Karaf.
      *
      * @param bootstrapServers comma-separated list of Kafka broker addresses
      * @param groupId          the consumer group ID
      * @return a new {@link KafkaConsumer} instance; caller is responsible for closing it
      */
     public static KafkaConsumer<Long, byte[]> create(String bootstrapServers, String groupId) {
-        return new KafkaConsumer<>(buildProperties(bootstrapServers, groupId));
+        Properties props = new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        return new KafkaConsumer<>(props, new LongDeserializer(), new ByteArrayDeserializer());
     }
 }

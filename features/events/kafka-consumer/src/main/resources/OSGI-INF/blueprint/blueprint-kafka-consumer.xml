@@ -1,0 +1,9 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <bean id="xmlEventDeserializer"
+          class="org.opennms.features.events.kafka.consumer.XmlEventDeserializer"/>
+
+    <service ref="xmlEventDeserializer"
+             interface="org.opennms.features.events.kafka.consumer.EventDeserializer"/>
+
+</blueprint>

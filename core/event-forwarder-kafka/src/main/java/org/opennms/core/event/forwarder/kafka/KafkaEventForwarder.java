@@ -61,24 +61,45 @@ public class KafkaEventForwarder implements EventForwarder {
     private final EventProcessor tsidAssigner;
     private final EventClassifier eventClassifier;
     private final IpcMessageConverter ipcMessageConverter;
-    private final MessageBus messageBus;
     private final KafkaProducer<Long, byte[]> kafkaProducer;
     private final String topicName;
+    private volatile MessageBus messageBus; // injected via setter; optional in daemon containers
 
+    /**
+     * @param eventExpander expands events using eventconf; use {@link NoOpEventProcessor}
+     *                      in daemon containers where eventconf is unavailable
+     */
     public KafkaEventForwarder(EventProcessor eventExpander,
                                EventProcessor tsidAssigner,
                                EventClassifier eventClassifier,
                                IpcMessageConverter ipcMessageConverter,
-                               MessageBus messageBus,
                                KafkaProducer<Long, byte[]> kafkaProducer,
                                String topicName) {
         this.eventExpander = Objects.requireNonNull(eventExpander, "eventExpander");
         this.tsidAssigner = Objects.requireNonNull(tsidAssigner, "tsidAssigner");
         this.eventClassifier = Objects.requireNonNull(eventClassifier, "eventClassifier");
         this.ipcMessageConverter = Objects.requireNonNull(ipcMessageConverter, "ipcMessageConverter");
-        this.messageBus = Objects.requireNonNull(messageBus, "messageBus");
         this.kafkaProducer = Objects.requireNonNull(kafkaProducer, "kafkaProducer");
         this.topicName = Objects.requireNonNull(topicName, "topicName");
+    }
+
+    /**
+     * Factory method for Blueprint. Aries Blueprint 1.10.3 can't match constructor
+     * args when multiple params share the same interface type (EventProcessor) and
+     * a generic type (KafkaProducer). Factory methods bypass constructor matching.
+     */
+    public static KafkaEventForwarder create(EventProcessor eventExpander,
+                                              EventProcessor tsidAssigner,
+                                              EventClassifier eventClassifier,
+                                              IpcMessageConverter ipcMessageConverter,
+                                              KafkaProducer<Long, byte[]> kafkaProducer,
+                                              String topicName) {
+        return new KafkaEventForwarder(eventExpander, tsidAssigner, eventClassifier,
+                ipcMessageConverter, kafkaProducer, topicName);
+    }
+
+    public void setMessageBus(MessageBus messageBus) {
+        this.messageBus = messageBus;
     }
 
     @Override
@@ -162,6 +183,10 @@ public class KafkaEventForwarder implements EventForwarder {
     }
 
     private void publishToMessageBus(Event event) {
+        if (messageBus == null) {
+            LOG.debug("MessageBus not available, skipping event {}", event.getUei());
+            return;
+        }
         try {
             IpcMessage ipcMessage = ipcMessageConverter.convert(event);
             messageBus.publish(ipcMessage);

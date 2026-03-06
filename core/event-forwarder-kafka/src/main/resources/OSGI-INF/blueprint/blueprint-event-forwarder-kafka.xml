@@ -24,89 +24,38 @@
     <!-- ================================================================ -->
     <!-- OSGi service references                                          -->
     <!-- ================================================================ -->
-    <reference id="eventConfDao"
-               interface="org.opennms.netmgt.config.api.EventConfDao"/>
-
     <reference id="messageBus"
                interface="org.opennms.core.messagebus.MessageBus"
                availability="optional"/>
 
-    <reference id="eventDeserializer"
-               interface="org.opennms.features.events.kafka.consumer.EventDeserializer"/>
-
-    <reference id="eventUtil"
-               interface="org.opennms.netmgt.eventd.EventUtil"/>
-
     <!-- ================================================================ -->
-    <!-- Locally-constructed beans                                        -->
+    <!-- Beans                                                            -->
     <!-- ================================================================ -->
 
-    <!-- Metrics registry for EventExpander -->
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-
-    <!-- EventExpander: enriches events with eventconf data -->
-    <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander"
-          init-method="afterPropertiesSet">
-        <argument ref="metricRegistry"/>
-        <property name="eventConfDao" ref="eventConfDao"/>
-        <property name="eventUtil" ref="eventUtil"/>
-    </bean>
-
-    <!-- TSID factory and assigner for generating time-sorted IDs -->
-    <bean id="tsidFactory" class="org.opennms.core.tsid.TsidFactory">
-        <argument value="0" type="long"/>
-    </bean>
-
-    <bean id="tsidAssigner" class="org.opennms.netmgt.eventd.processor.TsidAssigner">
-        <argument ref="tsidFactory"/>
-    </bean>
-
-    <!-- Event routing helpers -->
-    <bean id="eventClassifier" class="org.opennms.netmgt.eventd.router.EventClassifier"/>
-
-    <bean id="ipcMessageConverter" class="org.opennms.netmgt.eventd.router.IpcMessageConverter"/>
-
-    <!-- Kafka producer (factory-method; closed on teardown) -->
-    <bean id="kafkaProducer"
-          class="org.opennms.core.event.forwarder.kafka.KafkaProducerFactory"
-          factory-method="create"
-          destroy-method="close">
-        <argument value="${bootstrap.servers}"/>
-    </bean>
-
-    <!-- Kafka consumer (factory-method) -->
-    <bean id="kafkaConsumer"
-          class="org.opennms.core.event.forwarder.kafka.KafkaConsumerFactory"
+    <!-- KafkaEventForwarder: routes events to Kafka/MessageBus.
+         Uses KafkaEventForwarderFactory to avoid Aries Blueprint constructor/factory
+         matching issues with cross-bundle interface types and generics.
+         MessageBus injected via setter (optional in daemon containers). -->
+    <bean id="kafkaEventForwarder"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarderFactory"
           factory-method="create">
         <argument value="${bootstrap.servers}"/>
-        <argument value="${consumer.group.id}"/>
-    </bean>
-
-    <!-- KafkaEventForwarder: enriches + routes events to Kafka/MessageBus -->
-    <bean id="kafkaEventForwarder"
-          class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarder">
-        <argument ref="eventExpander"/>
-        <argument ref="tsidAssigner"/>
-        <argument ref="eventClassifier"/>
-        <argument ref="ipcMessageConverter"/>
-        <argument ref="messageBus"/>
-        <argument ref="kafkaProducer"/>
         <argument value="${topic.name}"/>
+        <property name="messageBus" ref="messageBus"/>
     </bean>
 
-    <!-- KafkaEventSubscriptionService: consumes events from Kafka topic -->
+    <!-- KafkaEventSubscriptionService: consumes events from Kafka topic.
+         Factory method takes only String/long primitives, creating KafkaConsumer
+         and XmlEventDeserializer internally to avoid Blueprint type-matching. -->
     <bean id="kafkaEventSubscriptionService"
           class="org.opennms.core.event.forwarder.kafka.KafkaEventSubscriptionService"
+          factory-method="create"
           init-method="start"
           destroy-method="stop">
-        <argument ref="kafkaConsumer"/>
+        <argument value="${bootstrap.servers}"/>
+        <argument value="${consumer.group.id}"/>
         <argument value="${topic.name}"/>
-        <argument ref="eventDeserializer"/>
-        <argument>
-            <bean class="java.time.Duration" factory-method="ofMillis">
-                <argument value="${poll.timeout.ms}" type="long"/>
-            </bean>
-        </argument>
+        <argument value="${poll.timeout.ms}" type="long"/>
     </bean>
 
     <!-- Adapter: composes forwarder + subscription into EventIpcManager -->
