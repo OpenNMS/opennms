@@ -68,10 +68,10 @@ RUN chmod 755 /opt/daemon/bin/entrypoint.sh
 
 SHELL ["/bin/bash", "-c"]
 
-# Create daemon user with a specific group ID
+# Create onmsd user with a specific group ID
 RUN groupadd \
         --gid 10001 \
-        daemon && \
+        onmsd && \
     useradd \
         --system \
         --uid 10001 \
@@ -79,7 +79,7 @@ RUN groupadd \
         --home-dir /opt/daemon \
         --no-create-home \
         --shell /usr/bin/bash \
-        daemon
+        onmsd
 
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
