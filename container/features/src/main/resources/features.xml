@@ -2163,6 +2163,7 @@
              description="OpenNMS :: Event Forwarder :: Kafka">
         <feature>opennms-events-api</feature>
         <feature>opennms-events-kafka-consumer</feature>
+        <feature>opennms-events-sink-dispatcher</feature>
         <feature>opennms-core-messagebus-api</feature>
         <feature>opennms-core-tsid</feature>
         <feature>opennms-kafka</feature>
@@ -2181,10 +2182,9 @@
         <feature>opennms-persistence</feature>
         <!-- Poller config -->
         <feature>opennms-config</feature>
-        <!-- Thresholding -->
-        <feature>sentinel-thresholding-service</feature>
-        <!-- Collection persistence -->
-        <feature>opennms-collection-persistence-rrd</feature>
+        <!-- NOTE: sentinel-thresholding-service and opennms-collection-persistence-rrd
+             removed — deep transitive deps (mate.model, jrobin, etc.) fail in
+             minimal Karaf. Poller doesn't need them for basic poll+event flow. -->
         <!-- Poller RPC client -->
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
         <!-- Poller daemon classes -->

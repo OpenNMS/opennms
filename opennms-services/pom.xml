@@ -20,6 +20,12 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!-- All imports optional: opennms-services is a monolithic bundle
+                 containing ALL daemon classes. When loaded in a standalone
+                 Karaf daemon container, only a subset of services is active.
+                 The packages actually needed are provided by feature deps;
+                 optional resolution prevents OSGi from failing on the rest. -->
+            <Import-Package>*;resolution:=optional</Import-Package>
           </instructions>
         </configuration>
       </plugin>

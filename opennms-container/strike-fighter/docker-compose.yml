@@ -61,9 +61,14 @@ services:
     environment:
       # Disable daemons that run as separate containers
       CORE_SERVICE_ALARMD_ENABLED: "false"
-      CORE_SERVICE_JETTYSERVER_ENABLED: "false"
       CORE_SERVICE_POLLERD_ENABLED: "false"
       CORE_SERVICE_COLLECTD_ENABLED: "false"
+      # JettyServer disabled — triggers Spring classloader conflict on this branch.
+      # Without JettyServer, Karaf never starts (bootstrapped via WebAppListener),
+      # so disable KarafStartupMonitor to prevent it from killing the JVM.
+      # Core runs legacy daemons only (Eventd, ActiveMQ, Provisiond, etc.)
+      CORE_SERVICE_JETTYSERVER_ENABLED: "false"
+      CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED: "false"
       # Database
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
@@ -83,16 +88,15 @@ services:
       - opennms-data:/opennms-data
       - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
       - ./core-overlay/etc/opennms.properties.d/strike-fighter.properties:/opt/opennms-etc-overlay/opennms.properties.d/strike-fighter.properties:ro
-      - ./core-overlay/etc/featuresBoot.d/strike-fighter.boot:/opt/opennms-etc-overlay/featuresBoot.d/strike-fighter.boot:ro
-      - ./core-overlay/etc/org.opennms.features.kafka.producer.client.cfg:/opt/opennms-etc-overlay/org.opennms.features.kafka.producer.client.cfg:ro
-      - ./core-overlay/etc/org.opennms.core.event.forwarder.kafka.cfg:/opt/opennms-etc-overlay/org.opennms.core.event.forwarder.kafka.cfg:ro
     ports:
       - "8101:8101"
       - "61616:61616"
     healthcheck:
-      test: ["CMD-SHELL", "/opt/opennms/bin/opennms -v status | grep -q 'is running'"]
-      interval: 30s
-      timeout: 10s
+      # Without Karaf, 'opennms status' won't report running.
+      # Check ActiveMQ TCP port instead (needed by daemon containers).
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/61616' 2>/dev/null"]
+      interval: 15s
+      timeout: 5s
       retries: 20
       start_period: 120s
 
@@ -180,7 +184,8 @@ services:
     ports:
       - "8103:8201"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8181/health/probe || exit 1"]
+      # CXF servlet context is /sentinel (inherited from sentinel base)
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 20
@@ -238,7 +243,6 @@ services:
       - ./collectd-overlay/etc/opennms.properties.d/:/opt/opennms-etc-overlay/opennms.properties.d/
       - ./collectd-overlay/etc/featuresBoot.d/strike-fighter.boot:/opt/opennms-etc-overlay/featuresBoot.d/strike-fighter.boot:ro
       - ./collectd-overlay/etc/org.opennms.features.kafka.producer.client.cfg:/opt/opennms-etc-overlay/org.opennms.features.kafka.producer.client.cfg:ro
-      - ./collectd-overlay/etc/org.opennms.core.event.forwarder.kafka.cfg:/opt/opennms-etc-overlay/org.opennms.core.event.forwarder.kafka.cfg:ro
     ports:
       - "8104:8101"
     healthcheck:

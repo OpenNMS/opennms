@@ -40,7 +40,6 @@ RUN chmod -R g-w /opt/usr-share/daemon && \
         /opt/usr-share/daemon/data \
         /opt/usr-share/daemon/deploy \
         /opt/usr-share/daemon/system \
-        /opt/usr-share/daemon/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
 FROM ${BASE_IMAGE} AS daemon-base
