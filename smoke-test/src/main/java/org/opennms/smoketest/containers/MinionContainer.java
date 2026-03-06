@@ -21,14 +21,11 @@
  */
 package org.opennms.smoketest.containers;
 
-import static java.nio.file.Files.createTempDirectory;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.opennms.smoketest.utils.OverlayUtils.jsonMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -39,13 +36,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.io.FileUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -63,7 +60,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.SelinuxContext;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
-import org.testcontainers.utility.MountableFile;
 
 import com.google.common.base.Strings;
 
@@ -118,9 +114,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);
                     TestContainerUtils.exposePortsAsUdp(createCmd, udpPorts);
                 })
-                .withEnv("MINION_LOCATION", profile.getLocation())
-                .withEnv("MINION_ID", profile.getId())
-                .withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
                 .withEnv("OPENNMS_HTTP_USER", "admin")
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
@@ -142,9 +135,11 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 addEnv(entry.getKey(), entry.getValue());
             }
         } else {
-            if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
-                withEnv("OPENNMS_SCV_PROVIDER", "dominion")
-                        .withEnv("OPENNMS_DOMINION_GRPC_CLIENT_SECRET", profile.getDominionGrpcScvClientSecret());
+            withEnv("MINION_LOCATION", profile.getLocation())
+                    .withEnv("MINION_ID", profile.getId());
+
+            if (!IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
             }
 
             if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
@@ -156,83 +151,21 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                         .withEnv("OPENNMS_IPC_GRPC_PORT", "8990");
             }
 
+            // Configure Dominion GRPC credentials if present
+            if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+                withEnv("OPENNMS_SCV_PROVIDER", "dominion")
+                        .withEnv("OPENNMS_DOMINION_GRPC_CLIENT_SECRET", profile.getDominionGrpcScvClientSecret());
+            }
+
             // Configure Jaeger tracing if enabled
             if (model.isJaegerEnabled()) {
                 withEnv("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
             }
-            /*addFileSystemBind(writeMinionConfig(profile).toString(),
-                    "/opt/minion/minion-config.yaml", BindMode.READ_ONLY, SelinuxContext.SINGLE);*/
         }
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "" + MINION_DEBUG_PORT);
-        }
-    }
-
-    private Path writeMinionConfig(MinionProfile profile) {
-        try {
-            final Path minionConfig = createTempDirectory(ALIAS).toAbsolutePath().resolve("minion-config.yaml");
-            writeMinionConfigYaml(minionConfig, profile);
-            return minionConfig;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
-    private void writeMinionConfigYaml(Path minionConfigYaml, MinionProfile profile) throws IOException {
-        // Copy over the default configuration from the class-path
-        FileUtils.copyFile(new File(MountableFile.forClasspathResource("minion-config/minion-config.yaml").getFilesystemPath()), minionConfigYaml.toFile());
-        
-        // Allow other users to read the file
-        OverlayUtils.setOverlayPermissions(minionConfigYaml);
-
-        String config = "{\n" +
-                "\t\"location\": \"" + profile.getLocation() + "\",\n" +
-                "\t\"id\": \"" + profile.getId() + "\",\n" +
-                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
-                "}";
-        OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
-
-        if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
-            final String scvConfig = "{\"scv\": {\"provider\": \"dominion\"}}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(scvConfig, Map.class));
-
-            final String grpcConfig = "{\"dominion\": { \"x\": { \"client-secret\":\"" + profile.getDominionGrpcScvClientSecret() + "\"}}}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpcConfig, Map.class));
-        }
-
-        if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
-            String kafkaIpc = "{\n" +
-                    "\t\"ipc\": {\n" +
-                    "\t\t\"kafka\": {\n" +
-                    "\t\t\t\"bootstrap.servers\": \""+ OpenNMSContainer.KAFKA_ALIAS +":9092\",\n" +
-                    "\t\t\t\"compression.type\": \""+ model.getKafkaCompressionStrategy().getCodec() +"\"\n" +
-                    "\t\t}\n" +
-                    "\t}\n" +
-                    "}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(kafkaIpc, Map.class));
-        } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
-            String grpc = "{\n" +
-                    "\t\"ipc\": {\n" +
-                    "\t\t\"grpc\": {\n" +
-                    "\t\t\t\"host\": \"" + OpenNMSContainer.ALIAS + "\",\n" +
-                    "\t\t\t\"port\": 8990\n" +
-                    "\t\t}\n" +
-                    "\t}\n" +
-                    "}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(grpc, Map.class));
-        }
-
-        if (model.isJaegerEnabled()) {
-            String jaeger = "{\n" +
-                    "\t\"system\": {\n" +
-                    "\t\t\"properties\": {\n" +
-                    "\t\t\t\"JAEGER_ENDPOINT\": \"" + JaegerContainer.getThriftHttpURL() + "\"\n" +
-                    "\t\t}\n" +
-                    "\t}\n" +
-                    "}";
-            OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(jaeger, Map.class));
         }
     }
 
@@ -254,27 +187,131 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
 
-        // Write configuration files based on IPC strategy
-        if (!profile.isLegacy() && IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
-            writeGrpcBootConfigs(home);
+        Path etc = home.resolve("etc");
+        Files.createDirectories(etc);
+
+        writeTrapdConfig(etc);
+        writeKarafShellConfig(etc);
+        writeTelemetryListenerConfigs(etc);
+
+        if (!profile.isLegacy()) {
+            writeMinionControllerConfig(etc, profile, !IpcStrategy.GRPC.equals(model.getIpcStrategy()));
+
+            if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
+                writeKafkaConfigs(etc);
+            } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+                writeGrpcConfigs(etc);
+            }
         }
     }
 
-    private void writeGrpcBootConfigs(Path home) throws IOException {
-        // Create featuresBoot.d directory
-        final Path bootD = home.resolve("etc").resolve("featuresBoot.d");
+    private void writeGrpcConfigs(Path etc) throws IOException {
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.grpc.client.cfg"),
+            Map.of(
+                "host", OpenNMSContainer.ALIAS,
+                "port", "8990"
+            ));
+
+        final Path propsD = etc.resolve("opennms.properties.d");
+        Files.createDirectories(propsD);
+        OverlayUtils.writeProps(propsD.resolve("ipc.properties"),
+                Map.of("org.opennms.core.ipc.strategy", "osgi"));
+
+        // Match legacy/conf.d behavior by explicitly selecting GRPC IPC features and disabling JMS IPC features.
+        final Path bootD = etc.resolve("featuresBoot.d");
         Files.createDirectories(bootD);
-
-        // Enable GRPC IPC features
         Files.writeString(bootD.resolve("grpc.boot"), "opennms-core-ipc-grpc-client\n");
-
-        // Disable JMS/ActiveMQ features to prevent conflicts with GRPC
         Files.writeString(bootD.resolve("disable-activemq.boot"), "!minion-jms\n!opennms-core-ipc-jms\n");
+    }
 
-        // Set proper permissions
-        OverlayUtils.setOverlayPermissions(bootD);
-        OverlayUtils.setOverlayPermissions(bootD.resolve("grpc.boot"));
-        OverlayUtils.setOverlayPermissions(bootD.resolve("disable-activemq.boot"));
+    private void writeMinionControllerConfig(Path etc, MinionProfile profile, boolean includeBrokerUrl) {
+        final Map<String, String> props = new LinkedHashMap<>();
+        props.put("location", profile.getLocation());
+        props.put("id", profile.getId());
+        if (includeBrokerUrl) {
+            props.put("broker-url", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
+        }
+        props.put("http-url", "http://" + OpenNMSContainer.ALIAS + ":8980/opennms");
+        OverlayUtils.writeProps(etc.resolve("org.opennms.minion.controller.cfg"), props);
+    }
+
+    private void writeTrapdConfig(Path etc) {
+        OverlayUtils.writeProps(etc.resolve("org.opennms.netmgt.trapd.cfg"),
+            Map.of(
+                "trapd.listen.interface", "0.0.0.0",
+                "trapd.useAddressFromVarbind", "true"
+            ));
+    }
+
+    private void writeKarafShellConfig(Path etc) {
+        OverlayUtils.writeProps(etc.resolve("org.apache.karaf.shell.cfg"),
+            Map.of(
+                "sshHost", "0.0.0.0"
+            ));
+    }
+
+    private void writeTelemetryListenerConfigs(Path etc) {
+        writeSinglePortFlowsConfig(etc);
+        writeFlowListenerConfig(
+            etc.resolve("org.opennms.features.telemetry.listeners-JTI-Listener.cfg"),
+            "JTI-Listener",
+            MINION_TELEMETRY_JTI_PORT,
+            "JTI"
+        );
+        writeFlowListenerConfig(
+            etc.resolve("org.opennms.features.telemetry.listeners-NXOS-Listener.cfg"),
+            "NXOS-Listener",
+            MINION_TELEMETRY_NXOS_PORT,
+            "NXOS"
+        );
+    }
+
+    private void writeSinglePortFlowsConfig(Path etc) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("name", "Flows");
+        props.put("class-name", "org.opennms.netmgt.telemetry.listeners.UdpListener");
+        props.put("parameters.port", String.valueOf(MINION_TELEMETRY_FLOW_PORT));
+        props.put("parsers.0.name", "Netflow-5");
+        props.put("parsers.0.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser");
+        props.put("parsers.1.name", "Netflow-9");
+        props.put("parsers.1.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser");
+        props.put("parsers.2.name", "IPFIX");
+        props.put("parsers.2.class-name", "org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser");
+        props.put("parsers.3.name", "SFlow");
+        props.put("parsers.3.class-name", "org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser");
+        OverlayUtils.writeProps(etc.resolve("org.opennms.features.telemetry.listeners-udp-single-port-flows.cfg"), props);
+    }
+
+    private void writeFlowListenerConfig(Path dest, String name, int port, String parserName) {
+        Map<String, String> props = new LinkedHashMap<>();
+        props.put("name", name);
+        props.put("class-name", "org.opennms.netmgt.telemetry.listeners.UdpListener");
+        props.put("parameters.port", String.valueOf(port));
+        props.put("parsers.0.name", parserName);
+        props.put("parsers.0.class-name", "org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser");
+        OverlayUtils.writeProps(dest, props);
+    }
+
+    private void writeKafkaConfigs(Path etc) {
+        String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
+        String compressionType = model.getKafkaCompressionStrategy().getCodec();
+
+        Map<String, String> commonProps = new LinkedHashMap<>();
+        commonProps.put("bootstrap.servers", bootstrapServers);
+        commonProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.kafka.cfg"), commonProps);
+
+        Map<String, String> rpcProps = new LinkedHashMap<>();
+        rpcProps.put("bootstrap.servers", bootstrapServers);
+        rpcProps.put("acks", "1");
+        rpcProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.rpc.kafka.cfg"), rpcProps);
+
+        Map<String, String> sinkProps = new LinkedHashMap<>();
+        sinkProps.put("bootstrap.servers", bootstrapServers);
+        sinkProps.put("acks", "1");
+        sinkProps.put("compression.type", compressionType);
+        OverlayUtils.writeProps(etc.resolve("org.opennms.core.ipc.sink.kafka.cfg"), sinkProps);
     }
 
     public InetSocketAddress getSyslogAddress() {
@@ -354,6 +391,34 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            if (IpcStrategy.GRPC.equals(container.model.getIpcStrategy())) {
+                LOG.info("Verifying Minion GRPC IPC bootstrap configuration...");
+                await("waiting for GRPC client config")
+                        .atMost(1, MINUTES)
+                        .pollInterval(2, SECONDS)
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .until(() -> {
+                            final var grpcCfg = TestContainerUtils.getFileFromContainerAsString(container,
+                                    Paths.get("/opt", "minion", "etc", "org.opennms.core.ipc.grpc.client.cfg"));
+                            return grpcCfg.contains("host=opennms") && grpcCfg.contains("port=8990");
+                        });
+
+                await("waiting for GRPC feature boot overrides")
+                        .atMost(1, MINUTES)
+                        .pollInterval(2, SECONDS)
+                        .failFast("container is no longer running", () -> !container.isRunning())
+                        .until(() -> {
+                            final var grpcBoot = TestContainerUtils.getFileFromContainerAsString(container,
+                                    Paths.get("/opt", "minion", "etc", "featuresBoot.d", "grpc.boot"));
+                            final var disableJmsBoot = TestContainerUtils.getFileFromContainerAsString(container,
+                                    Paths.get("/opt", "minion", "etc", "featuresBoot.d", "disable-activemq.boot"));
+                            return grpcBoot.contains("opennms-core-ipc-grpc-client")
+                                    && disableJmsBoot.contains("!minion-jms")
+                                    && disableJmsBoot.contains("!opennms-core-ipc-jms");
+                        });
+                LOG.info("Minion GRPC IPC bootstrap configuration verified.");
+            }
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
