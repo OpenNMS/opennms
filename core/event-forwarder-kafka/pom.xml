@@ -9,6 +9,7 @@
         <version>36.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.event-forwarder-kafka</artifactId>
     <packaging>bundle</packaging>
     <name>OpenNMS :: Core :: Event Forwarder Kafka</name>
