@@ -11,6 +11,7 @@ services:
 
   postgres:
     image: postgres:15
+    command: ["-c", "max_connections=300"]
     environment:
       POSTGRES_DB: opennms
       POSTGRES_USER: opennms

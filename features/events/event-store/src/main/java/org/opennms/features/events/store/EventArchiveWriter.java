@@ -31,6 +31,7 @@ import java.util.Objects;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.slf4j.Logger;
@@ -73,6 +74,7 @@ public class EventArchiveWriter implements EventListener {
     );
 
     private final JdbcTemplate jdbcTemplate;
+    private volatile EventSubscriptionService eventSubscriptionService;
 
     public EventArchiveWriter(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(Objects.requireNonNull(dataSource));
@@ -80,6 +82,32 @@ public class EventArchiveWriter implements EventListener {
 
     EventArchiveWriter(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate);
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        this.eventSubscriptionService = eventSubscriptionService;
+    }
+
+    /**
+     * Registers this writer as an all-events listener on the subscription service.
+     * Called by Blueprint init-method.
+     */
+    public void register() {
+        if (eventSubscriptionService != null) {
+            eventSubscriptionService.addEventListener(this);
+            LOG.info("EventArchiveWriter registered as event listener");
+        }
+    }
+
+    /**
+     * Unregisters this writer from the subscription service.
+     * Called by Blueprint destroy-method.
+     */
+    public void unregister() {
+        if (eventSubscriptionService != null) {
+            eventSubscriptionService.removeEventListener(this);
+            LOG.info("EventArchiveWriter unregistered from event listener");
+        }
     }
 
     @Override
