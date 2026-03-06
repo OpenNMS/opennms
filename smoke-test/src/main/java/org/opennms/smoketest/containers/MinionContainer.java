@@ -253,7 +253,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     private void writeTelemetryListenerConfigs(Path etc) {
         writeSinglePortFlowsConfig(etc);
         writeFlowListenerConfig(
-            etc.resolve("org.opennms.features.telemetry.listeners-JTI-Listener.cfg"),
+                etc.resolve("org.opennms.features.telemetry.listeners-JTI-Listener.cfg"),
             "JTI-Listener",
             MINION_TELEMETRY_JTI_PORT,
             "JTI"
@@ -296,6 +296,12 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     private void writeKafkaConfigs(Path etc) {
         String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
         String compressionType = model.getKafkaCompressionStrategy().getCodec();
+
+        // Do we really need to do this?
+        final Path propsD = etc.resolve("opennms.properties.d");
+        Files.createDirectories(propsD);
+        OverlayUtils.writeProps(propsD.resolve("ipc.properties"),
+            Map.of("org.opennms.core.ipc.strategy", "kafka"));
 
         Map<String, String> commonProps = new LinkedHashMap<>();
         commonProps.put("bootstrap.servers", bootstrapServers);
