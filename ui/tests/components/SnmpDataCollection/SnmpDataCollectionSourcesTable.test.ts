@@ -808,11 +808,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('downloads XML file successfully', async () => {
-      const mockResponse = {
-        data: '<xml>test</xml>',
-        headers: { 'content-type': 'application/xml' }
-      }
-      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockResponse)
+      const mockBlob = new Blob(['<xml>test</xml>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
 
@@ -824,11 +821,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('downloads JSON file successfully', async () => {
-      const mockResponse = {
-        data: '{"test": true}',
-        headers: { 'content-type': 'application/json' }
-      }
-      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockResponse)
+      const mockBlob = new Blob(['{"test": true}'], { type: 'application/json' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'json')
 
@@ -837,12 +831,9 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(mockClick).toHaveBeenCalled()
     })
 
-    it('creates blob with correct content type from response headers', async () => {
-      const mockResponse = {
-        data: '<xml>data</xml>',
-        headers: { 'content-type': 'application/xml' }
-      }
-      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockResponse)
+    it('passes blob to createObjectURL', async () => {
+      const mockBlob = new Blob(['<xml>data</xml>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
 
@@ -851,11 +842,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('revokes object URL after download', async () => {
-      const mockResponse = {
-        data: '<xml>test</xml>',
-        headers: { 'content-type': 'application/xml' }
-      }
-      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockResponse)
+      const mockBlob = new Blob(['<xml>test</xml>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
 
@@ -885,10 +873,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('calls service with correct source id and format for XML', async () => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '',
-        headers: { 'content-type': 'application/xml' }
-      })
+      const mockBlob = new Blob([''], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
 
@@ -896,10 +882,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('calls service with correct source id and format for JSON', async () => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '',
-        headers: { 'content-type': 'application/json' }
-      })
+      const mockBlob = new Blob([''], { type: 'application/json' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'json')
 
@@ -911,10 +895,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       store.sources = [customSource]
       await wrapper.vm.$nextTick()
 
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '<xml/>',
-        headers: { 'content-type': 'application/xml' }
-      })
+      const mockBlob = new Blob(['<xml/>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(customSource, 'xml')
 
@@ -925,10 +907,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       { format: 'xml', expectedFilename: 'Test Source.xml' },
       { format: 'json', expectedFilename: 'Test Source.json' }
     ])('generates correct filename for $format format', async ({ format, expectedFilename }) => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: 'content',
-        headers: { 'content-type': `application/${format}` }
-      })
+      const mockBlob = new Blob(['content'], { type: `application/${format}` })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, format)
 
@@ -937,10 +917,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
     it('handles download for source with special characters in name', async () => {
       const specialSource = { ...mockSource, name: 'Source (v2) [test]' }
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '<xml/>',
-        headers: { 'content-type': 'application/xml' }
-      })
+      const mockBlob = new Blob(['<xml/>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(specialSource, 'xml')
 
@@ -949,10 +927,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
     it('creates anchor element for download link', async () => {
       const createElementSpy = vi.spyOn(document, 'createElement')
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '<xml/>',
-        headers: { 'content-type': 'application/xml' }
-      })
+      const mockBlob = new Blob(['<xml/>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource, 'xml')
 
@@ -960,10 +936,8 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('downloads file for different source with correct id', async () => {
-      mockDownloadSnmpDataCollectionById.mockResolvedValue({
-        data: '<xml>test</xml>',
-        headers: { 'content-type': 'application/xml' }
-      })
+      const mockBlob = new Blob(['<xml>test</xml>'], { type: 'application/xml' })
+      mockDownloadSnmpDataCollectionById.mockResolvedValue(mockBlob)
 
       await wrapper.vm.downloadCollectionSource(mockSource2, 'xml')
 

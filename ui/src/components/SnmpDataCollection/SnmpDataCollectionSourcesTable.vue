@@ -334,9 +334,8 @@ const downloadCollectionSource = async (source: any, format: string) => {
   const response = await downloadSnmpDataCollectionById(source.id, format)
 
   if (response) {
-    const blob = new Blob([response.data], { type: response.headers['content-type'] })
     const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
+    link.href = window.URL.createObjectURL(response)
     link.download = `${source.name}.${format}`
     link.click()
     window.URL.revokeObjectURL(link.href)
