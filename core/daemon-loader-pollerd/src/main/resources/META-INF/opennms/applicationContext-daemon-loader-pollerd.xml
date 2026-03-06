@@ -45,17 +45,20 @@
     <onmsgi:reference id="pollerConfig"
                       interface="org.opennms.netmgt.config.PollerConfig"/>
 
-    <!-- ICMP ping client (from RPC ICMP feature) -->
+    <!-- ICMP ping client (from RPC ICMP feature, optional — not in minimal daemon) -->
     <onmsgi:reference id="locationAwarePingClient"
-                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
+                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"
+                      availability="optional"/>
 
-    <!-- Collection persistence (from timeseries feature) -->
+    <!-- Collection persistence (from timeseries feature, optional for polling-only mode) -->
     <onmsgi:reference id="persisterFactory"
-                      interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
+                      interface="org.opennms.netmgt.collection.api.PersisterFactory"
+                      availability="optional"/>
 
-    <!-- Thresholding (from sentinel-thresholding-service feature) -->
+    <!-- Thresholding (from sentinel-thresholding-service feature, optional for polling-only mode) -->
     <onmsgi:reference id="thresholdingService"
-                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
+                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"
+                      availability="optional"/>
 
     <!-- Device config monitor adaptor (from device-config feature, optional) -->
     <onmsgi:reference id="deviceConfigMonitorAdaptor"
@@ -76,9 +79,10 @@
     <onmsgi:reference id="transactionTemplate"
                       interface="org.springframework.transaction.support.TransactionOperations"/>
 
-    <!-- KV store for poll outages DAO -->
+    <!-- KV store for poll outages DAO (optional — not in minimal daemon) -->
     <onmsgi:reference id="jsonStore"
-                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"
+                      availability="optional"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans (from daemon context, normally provided by Manager) -->
