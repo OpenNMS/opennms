@@ -87,7 +87,7 @@
   <div class="card-header">
 <span>Notice <%=notice.getId()%>
   <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
-    from <a href="event/detail.jsp?id=<%=notice.getEventId()%>">Event <%=notice.getEventId()%></a>
+    from Event <%=notice.getEventId()%>
   <% } %>
 </span>
   </div>
@@ -113,7 +113,7 @@
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%= eventLocation != null %>">
-          <a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%= eventLocation %></a>
+          <%= eventLocation %>
         </c:when>
         <c:otherwise>
           &nbsp;

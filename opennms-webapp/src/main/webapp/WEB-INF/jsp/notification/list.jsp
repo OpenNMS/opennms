@@ -227,7 +227,7 @@
 						<a href="notification/detail.jsp?notice=<%=notification.getId()%>"><%=notification.getId()%></a></td>
           <td class="divider" rowspan="2">
             <% if ( event != null && event.getEventDisplay() != null && event.getEventDisplay() ) { %>
-            <a href="event/detail.jsp?id=<%=notification.getEventId()%>"><%=notification.getEventId()%></a>
+            <%=notification.getEventId()%>
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
@@ -235,7 +235,7 @@
           <td class="divider">
             <% if ( event != null ) { %>
               <% Filter locationFilter = new LocationFilter(event.getLocation()); %>
-              <a href="event/detail.jsp?id=<%=notification.getEventId()%>"><%= event.getLocation() %></a>
+              <%= event.getLocation() %>
               <% if (parms.filters != null && !parms.filters.contains( locationFilter )) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, locationFilter, true)%>" class="filterLink" title="Show only notices from this event source location">${addPositiveFilter}</a>

@@ -158,7 +158,7 @@
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
         <th class="col-2">Last&nbsp;Event</th>
-        <td class="col-4"><% if (alarm.getEventTsid() != null) { %><span title="Event <%= alarm.getEventTsid()%>"><a href="event/detail.jsp?id=<%= alarm.getEventTsid()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span><% } else { %><onms:datetime date="<%=alarm.getLastEventTime()%>" /><% } %></td>
+        <td class="col-4"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></td>
         <th class="col-2">Interface</th>
         <td class="col-4">
             <% if (alarm.getIpAddr() != null) {%>
@@ -331,11 +331,7 @@
                 </td>
                 <td class="divider" valign="middle">
                     <c:if test="${relatedVar.lastEvent != null }">
-	                        <span title="Event ${relatedVar.lastEvent.id}">
-	                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-	                                <onms:datetime date="${relatedVar.lastEventTime}" />
-	                            </a>
-	                        </span>
+	                        <onms:datetime date="${relatedVar.lastEventTime}" />
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
@@ -398,11 +394,7 @@
                 </td>
                 <td class="divider" valign="middle">
                     <c:if test="${relatedVar.lastEvent != null }">
-	                        <span title="Event ${relatedVar.lastEvent.id}">
-	                            <a href="event/detail.htm?id=${relatedVar.lastEvent.id}">
-	                                <onms:datetime date="${relatedVar.lastEventTime}" />
-	                            </a>
-	                        </span>
+	                        <onms:datetime date="${relatedVar.lastEventTime}" />
                     </c:if>
                 </td>
                 <td class="divider" valign="middle">
@@ -436,7 +428,7 @@
                 <tr class="severity-<%=entry.getSeverity().getLabel().toLowerCase()%>">
                     <td rowspan="2">
                         <% if (entry.getEventId() != 0) { %>
-                            <a href="event/detail.jsp?id=<%= entry.getEventId() %>"><%= entry.getEventId() %></a>
+                            <%= entry.getEventId() %>
                         <% } %>
                     </td>
                     <td rowspan="2"><%= entry.getSeverity().getLabel() %></td>

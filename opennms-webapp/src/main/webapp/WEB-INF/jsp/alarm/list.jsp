@@ -697,19 +697,11 @@
             </c:if>
           </td>          
           <td valign="middle">
-	    <% if(alarms[i].getId() > 0 ) { %>           
-                <nobr>
-                  <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCounter()%></a>
-                </nobr>
-            <% } else { %>
             <%=alarms[i].getCounter()%>
-            <% } %>
           </td>
           <td>
             <nobr>
-              <% if(alarms[i].getEventTsid() != null) { %><span title="Event <%= alarms[i].getEventTsid()%>"><a href="event/detail.htm?id=<%= alarms[i].getEventTsid()%>"><% } %>
-                <onms:datetime date="${alarm.lastEventTime}" />
-              <% if(alarms[i].getEventTsid() != null) { %></a></span><% } %>
+              <onms:datetime date="${alarm.lastEventTime}" />
               <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
@@ -725,9 +717,9 @@
             <% if (alarms[i].getDistPoller() != null && alarms[i].getEventTsid() != null) { %>
               <% String location = alarms[i].getDistPoller().getLocation(); %>
               <% Filter locationFilter = new LocationFilter(location); %>
-              <span title="Event source location <%= location %>"><a href="event/detail.htm?id=<%= alarms[i].getEventTsid()%>">
+              <span title="Event source location <%= location %>">
                 <%= location %>
-              </a></span>
+              </span>
               <% if( !parms.getFilters().contains(locationFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this event source location">${addPositiveFilter}</a>
