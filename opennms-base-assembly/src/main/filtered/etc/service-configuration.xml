@@ -19,12 +19,10 @@
   <service enabled="true"><name>OpenNMS:Name=EnhancedLinkd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Collectd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Discovery</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Vacuumd</name></service>
   <service enabled="true"><name>OpenNMS:Name=EventTranslator</name></service>
   <service enabled="true"><name>OpenNMS:Name=PassiveStatusd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Statsd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Provisiond</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Ackd</name></service>
   <service enabled="true"><name>OpenNMS:Name=JettyServer</name></service>
   <service enabled="true"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
   <service enabled="false"><name>OpenNMS:Name=Syslogd</name></service>

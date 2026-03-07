@@ -71,7 +71,6 @@
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.config.ackd,
                             org.opennms.netmgt.config.api,
                             org.opennms.netmgt.config.javamail,
                             org.opennms.netmgt.config.microblog,
