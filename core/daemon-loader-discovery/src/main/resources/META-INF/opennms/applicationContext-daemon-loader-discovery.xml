@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Discovery loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  Spring hierarchy with a flat context that wires Discovery beans directly to
+  OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - InterfaceToNodeCache from DAO feature
+  - LocationAwarePingClient from RPC ICMP feature
+  - LocationAwareDetectorClient from provisioning feature (optional)
+  - DiscoveryConfigFactory from opennms-config feature
+  - MessageBus from messagebus feature (optional)
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for Discovery and DiscoveryTaskExecutorImpl -->
+    <context:annotation-config />
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventIpcManager"
+                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- MessageBus for IPC events (optional — may not be installed) -->
+    <onmsgi:reference id="messageBus"
+                      interface="org.opennms.core.messagebus.MessageBus"
+                      availability="optional"/>
+
+    <!-- Discovery configuration (from opennms-config feature) -->
+    <onmsgi:reference id="discoveryConfigFactory"
+                      interface="org.opennms.netmgt.config.DiscoveryConfigFactory"/>
+
+    <!-- InterfaceToNodeCache (from DAO feature) -->
+    <onmsgi:reference id="interfaceToNodeCache"
+                      interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
+
+    <!-- ICMP ping client (from RPC ICMP feature) -->
+    <onmsgi:reference id="locationAwarePingClient"
+                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
+
+    <!-- Detector client (from provisioning feature, optional — not all deployments have it) -->
+    <onmsgi:reference id="locationAwareDetectorClient"
+                      interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"
+                      availability="optional"/>
+
+    <!-- ============================================================== -->
+    <!-- Local Beans (from discovery context)                           -->
+    <!-- ============================================================== -->
+
+    <bean id="unmanagedInterfaceFilter"
+          class="org.opennms.netmgt.discovery.UnmanagedInterfaceFilter">
+        <constructor-arg ref="interfaceToNodeCache"/>
+    </bean>
+
+    <bean id="rangeChunker"
+          class="org.opennms.netmgt.discovery.RangeChunker">
+        <constructor-arg ref="unmanagedInterfaceFilter"/>
+    </bean>
+
+    <bean id="discoveryTaskExecutor"
+          class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorImpl"/>
+
+    <!-- Export DiscoveryTaskExecutor as OSGi service -->
+    <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor"
+                    ref="discoveryTaskExecutor"/>
+
+    <!-- ============================================================== -->
+    <!-- Discovery Daemon                                               -->
+    <!-- ============================================================== -->
+
+    <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery"/>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

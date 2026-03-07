@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Syslogd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  multi-level Spring hierarchy with a flat context that wires Syslogd beans
+  directly to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - SyslogdConfig from opennms-config feature
+  - EventForwarder from event-forwarder-kafka feature
+  - DistPollerDao from distributed DAO feature
+  - MessageDispatcherFactory from IPC Sink feature
+  - MessageConsumerManager from IPC Sink feature
+  - LocationAwareDnsLookupClient from provisioning feature
+  - MessageBus (optional) for IPC reload events
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for SyslogSinkConsumer and SinkDispatchingSyslogReceiver -->
+    <context:annotation-config />
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Syslogd configuration (from opennms-config feature) -->
+    <onmsgi:reference id="syslogdConfig"
+                      interface="org.opennms.netmgt.config.SyslogdConfig"/>
+
+    <!-- Event forwarding (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventForwarder"
+                      interface="org.opennms.netmgt.events.api.EventForwarder"/>
+
+    <!-- MessageBus for IPC events (optional — may not be installed) -->
+    <onmsgi:reference id="messageBus"
+                      interface="org.opennms.core.messagebus.MessageBus"
+                      availability="optional"/>
+
+    <!-- DistPollerDao (from distributed DAO feature) -->
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+    <!-- Sink API: dispatcher factory for sending syslog messages to sink -->
+    <onmsgi:reference id="messageDispatcherFactory"
+                      interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+
+    <!-- Sink API: consumer manager for receiving syslog messages from sink -->
+    <onmsgi:reference id="messageConsumerManager"
+                      interface="org.opennms.core.ipc.sink.api.MessageConsumerManager"/>
+
+    <!-- DNS lookup client for reverse DNS (from provisioning feature, optional) -->
+    <onmsgi:reference id="locationAwareDnsLookupClient"
+                      interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient"
+                      availability="optional"/>
+
+    <!-- ============================================================== -->
+    <!-- Local Beans                                                    -->
+    <!-- ============================================================== -->
+
+    <!-- Metrics registry for SyslogSinkConsumer -->
+    <bean id="syslogdMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <!-- Consume syslog messages from the Sink API and forward as events -->
+    <bean id="syslogSinkConsumer" class="org.opennms.netmgt.syslogd.SyslogSinkConsumer">
+        <constructor-arg ref="syslogdMetricRegistry"/>
+    </bean>
+
+    <!-- Listen for Syslog UDP messages and dispatch to the Sink API -->
+    <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl"
+          destroy-method="stop">
+        <constructor-arg ref="syslogdConfig"/>
+    </bean>
+
+    <!-- The Syslogd daemon -->
+    <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
+        <property name="syslogReceiver" ref="syslogReceiverCamelNetty"/>
+        <property name="messageBus" ref="messageBus"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

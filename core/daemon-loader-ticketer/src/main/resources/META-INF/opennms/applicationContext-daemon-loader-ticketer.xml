@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only TroubleTicketer loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  multi-level Spring hierarchy with a flat context that wires TroubleTicketer
+  beans directly to OSGi services.
+
+  All dependencies come from the OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - AlarmDao and AlarmEntityNotifier from distributed DAO feature
+  - Plugin implementations from OSGi-registered ticketing plugins
+  - MessageBus (optional) for IPC daemon reload events
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for DefaultTicketerServiceLayer -->
+    <context:annotation-config />
+    <tx:annotation-driven/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventIpcManager"
+                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- MessageBus for IPC events (optional — may not be installed) -->
+    <onmsgi:reference id="messageBus"
+                      interface="org.opennms.core.messagebus.MessageBus"
+                      availability="optional"/>
+
+    <!-- DAOs (from opennms-distributed-core-impl / opennms-dao feature) -->
+    <onmsgi:reference id="alarmDao"
+                      interface="org.opennms.netmgt.dao.api.AlarmDao"/>
+
+    <onmsgi:reference id="alarmEntityNotifier"
+                      interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier"/>
+
+    <onmsgi:reference id="transactionManager"
+                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+
+    <!-- ============================================================== -->
+    <!-- Ticketer Plugin (OSGi-based dynamic plugin discovery)          -->
+    <!-- ============================================================== -->
+
+    <bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin"/>
+
+    <!-- Listen for OSGi ticketer plugin service registrations -->
+    <onmsgi:list id="ticketerPlugins" interface="org.opennms.api.integration.ticketing.Plugin">
+        <onmsgi:listener ref="ticketerPlugin"
+                         bind-method="registerTicketerPlugin"
+                         unbind-method="unregisterTicketerPlugin"/>
+    </onmsgi:list>
+
+    <!-- ============================================================== -->
+    <!-- Ticketer Service Layer                                         -->
+    <!-- ============================================================== -->
+
+    <bean name="ticketerServiceLayer" class="org.opennms.netmgt.ticketd.DefaultTicketerServiceLayer">
+        <property name="ticketerPlugin" ref="ticketerPlugin"/>
+    </bean>
+
+    <!-- Export TicketerServiceLayer to OSGi for other bundles (e.g. REST) -->
+    <onmsgi:service interface="org.opennms.netmgt.ticketd.TicketerServiceLayer"
+                    ref="ticketerServiceLayer"/>
+
+    <!-- ============================================================== -->
+    <!-- TroubleTicketer Daemon                                         -->
+    <!-- ============================================================== -->
+
+    <bean name="daemon" class="org.opennms.netmgt.ticketd.TroubleTicketer">
+        <property name="eventIpcManager" ref="eventIpcManager"/>
+        <property name="ticketerServiceLayer" ref="ticketerServiceLayer"/>
+        <property name="messageBus" ref="messageBus"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.SpringDaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+        <constructor-arg value="TroubleTicketer"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only EventTranslator loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  legacy Spring hierarchy with a flat context that wires EventTranslator beans
+  directly to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - DataSource from distributed datasource feature
+  - MessageBus from messagebus feature (optional)
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventIpcManager"
+                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- DataSource (from distributed datasource feature) -->
+    <onmsgi:reference id="dataSource"
+                      interface="javax.sql.DataSource"/>
+
+    <!-- MessageBus for IPC events (optional — may not be installed) -->
+    <onmsgi:reference id="messageBus"
+                      interface="org.opennms.core.messagebus.MessageBus"
+                      availability="optional"/>
+
+    <!-- ============================================================== -->
+    <!-- DataSourceFactory initialization                               -->
+    <!-- EventTranslatorConfigFactory.init() uses DataSourceFactory     -->
+    <!-- ============================================================== -->
+
+    <bean id="dataSourceFactoryInit"
+          class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="staticMethod"
+                  value="org.opennms.core.db.DataSourceFactory.setInstance"/>
+        <property name="arguments">
+            <list>
+                <ref bean="dataSource"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- EventTranslatorConfig (from EventTranslatorConfigFactory)      -->
+    <!-- ============================================================== -->
+
+    <bean id="eventTranslatorConfigFactory-init"
+          class="org.springframework.beans.factory.config.MethodInvokingBean"
+          depends-on="dataSourceFactoryInit">
+        <property name="staticMethod"
+                  value="org.opennms.netmgt.config.EventTranslatorConfigFactory.init"/>
+    </bean>
+
+    <bean id="eventTranslatorConfig"
+          class="org.opennms.netmgt.config.EventTranslatorConfigFactory"
+          depends-on="eventTranslatorConfigFactory-init"
+          factory-method="getInstance"/>
+
+    <!-- ============================================================== -->
+    <!-- EventTranslator Daemon                                         -->
+    <!-- ============================================================== -->
+
+    <bean name="daemon" class="org.opennms.netmgt.translator.EventTranslator">
+        <property name="eventManager" ref="eventIpcManager"/>
+        <property name="config" ref="eventTranslatorConfig"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="messageBus" ref="messageBus"/>
+    </bean>
+
+    <!-- Register this instance as the singleton -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="staticMethod"
+                  value="org.opennms.netmgt.translator.EventTranslator.setInstance"/>
+        <property name="arguments">
+            <list>
+                <ref bean="daemon"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>
