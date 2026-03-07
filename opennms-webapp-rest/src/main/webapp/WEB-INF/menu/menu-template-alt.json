@@ -240,13 +240,6 @@
           "roles": null
         },
         {
-          "id": "statistics",
-          "name": "Metrics Statistics (statsd)",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
-          "roles": null
-        },
-        {
           "id": "kscReports",
           "name": "Metrics Dashboard (KSC Reports)",
           "url": "KSC/index.jsp",

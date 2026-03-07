@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * <p>
  * Eventd receives events sent in as XML, looks up the event.conf and adds
  * information to these events and stores them to the db. It also reconverts
- * them back to XML to be sent to other processes like 'actiond'
+ * them back to XML to be sent to other subscribed processes
  * </p>
  *
  * <p>

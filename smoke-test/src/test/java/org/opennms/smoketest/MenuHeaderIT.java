@@ -78,8 +78,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("dashboardsMenu", "Database Reports");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
 
-        clickMenuItem("dashboardsMenu", "Metrics Statistics (statsd)");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
 
         clickMenuItem("dashboardsMenu", "Metrics Dashboard (KSC Reports)");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));

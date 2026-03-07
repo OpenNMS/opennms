@@ -125,15 +125,6 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao" />
 
-  <bean id="statsdConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/statsd-configuration.xml" />
-  </bean>
-  <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" ref="statsdConfigResourceLocation" />
-    <property name="reloadCheckInterval" value="-1" />
-  </bean>
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsDaemonConfigDao" ref="statsdConfigDao" />
-  
   <bean id="javamailConfigResourceLocation" class="java.lang.String">
     <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
   </bean>
