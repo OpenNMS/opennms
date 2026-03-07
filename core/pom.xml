@@ -63,6 +63,7 @@
     <module>encrypt-util</module>
     <module>daemon-loader-alarmd</module>
     <module>daemon-loader-collectd</module>
+    <module>daemon-loader-passivestatusd</module>
     <module>daemon-loader-pollerd</module>
     <module>daemon-loader-rtcd</module>
     <module>event-forwarder-kafka</module>

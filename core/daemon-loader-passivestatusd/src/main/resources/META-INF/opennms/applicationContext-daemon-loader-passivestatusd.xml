@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only PassiveStatusd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  legacy Spring hierarchy with a flat context that wires PassiveStatusKeeper
+  beans directly to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - DataSource from distributed DAO feature
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
+    <onmsgi:reference id="eventIpcManager"
+                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- DataSource (from distributed DAO feature) -->
+    <onmsgi:reference id="dataSource"
+                      interface="javax.sql.DataSource"/>
+
+    <!-- ============================================================== -->
+    <!-- PassiveStatusKeeper Daemon                                     -->
+    <!-- ============================================================== -->
+
+    <bean name="daemon" class="org.opennms.netmgt.passive.PassiveStatusKeeper">
+        <property name="eventManager" ref="eventIpcManager"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- Register this instance as the singleton so PassiveServiceMonitor can find it -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="staticMethod"
+                  value="org.opennms.netmgt.passive.PassiveStatusKeeper.setInstance"/>
+        <property name="arguments">
+            <list>
+                <ref bean="daemon"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>
