@@ -1,6 +1,8 @@
 ---
-# Strike Fighter: OpenNMS microservice-mode deployment
-# Core (daemons) + Webapp (JettyServer) + standalone Alarmd + Pollerd + Collectd
+# Strike Fighter: OpenNMS microservice-mode deployment (15 services)
+# Core (Eventd, Provisiond, Enlinkd, Telemetryd, Bsmd, Correlator, Scriptd)
+# + Webapp + Alarmd + Pollerd + Collectd + Rtcd + PassiveStatusd + Notifd
+# + Discovery + Trapd + Syslogd + Ticketer + EventTranslator
 #
 # Usage:
 #   docker compose up -d
@@ -64,6 +66,18 @@ services:
       CORE_SERVICE_ALARMD_ENABLED: "false"
       CORE_SERVICE_POLLERD_ENABLED: "false"
       CORE_SERVICE_COLLECTD_ENABLED: "false"
+      CORE_SERVICE_RTCD_ENABLED: "false"
+      CORE_SERVICE_PASSIVESTATUSD_ENABLED: "false"
+      CORE_SERVICE_NOTIFD_ENABLED: "false"
+      CORE_SERVICE_DISCOVERY_ENABLED: "false"
+      CORE_SERVICE_TRAPD_ENABLED: "false"
+      CORE_SERVICE_SYSLOGD_ENABLED: "false"
+      CORE_SERVICE_TICKETER_ENABLED: "false"
+      CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
+      CORE_SERVICE_VACUUMD_ENABLED: "false"
+      CORE_SERVICE_STATSD_ENABLED: "false"
+      CORE_SERVICE_ACTIOND_ENABLED: "false"
+      CORE_SERVICE_ACKD_ENABLED: "false"
       # JettyServer disabled — triggers Spring classloader conflict on this branch.
       # Without JettyServer, Karaf never starts (bootstrapped via WebAppListener),
       # so disable KarafStartupMonitor to prevent it from killing the JVM.
@@ -223,6 +237,234 @@ services:
       retries: 20
       start_period: 60s
 
+  rtcd:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-rtcd
+    hostname: rtcd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=6
+    volumes:
+      - rtcd-data:/opt/daemon/data
+      - ./rtcd-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  passivestatusd:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-passivestatusd
+    hostname: passivestatusd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=7
+    volumes:
+      - passivestatusd-data:/opt/daemon/data
+      - ./passivestatusd-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  notifd:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-notifd
+    hostname: notifd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=8
+    volumes:
+      - notifd-data:/opt/daemon/data
+      - ./notifd-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  discovery:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-discovery
+    hostname: discovery
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=9
+    volumes:
+      - discovery-data:/opt/daemon/data
+      - ./discovery-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  trapd:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-trapd
+    hostname: trapd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=10
+    volumes:
+      - trapd-data:/opt/daemon/data
+      - ./trapd-overlay:/opt/daemon-overlay:ro
+    ports:
+      - "1162:1162/udp"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  syslogd:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-syslogd
+    hostname: syslogd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=11
+    volumes:
+      - syslogd-data:/opt/daemon/data
+      - ./syslogd-overlay:/opt/daemon-overlay:ro
+    ports:
+      - "10514:10514/udp"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  ticketer:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-ticketer
+    hostname: ticketer
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=12
+    volumes:
+      - ticketer-data:/opt/daemon/data
+      - ./ticketer-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  eventtranslator:
+    image: opennms/daemon:${VERSION}
+    container_name: strike-fighter-eventtranslator
+    hostname: eventtranslator
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=13
+    volumes:
+      - eventtranslator-data:/opt/daemon/data
+      - ./eventtranslator-overlay:/opt/daemon-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
   alarmd:
     image: opennms/alarmd:${VERSION}
     entrypoint: ["/bin/bash", "-c"]
@@ -270,4 +512,12 @@ volumes:
   webapp-data:
   pollerd-data:
   collectd-data:
+  rtcd-data:
+  passivestatusd-data:
+  notifd-data:
+  discovery-data:
+  trapd-data:
+  syslogd-data:
+  ticketer-data:
+  eventtranslator-data:
   alarmd-data:
