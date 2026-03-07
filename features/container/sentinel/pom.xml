@@ -401,6 +401,14 @@
                         <feature>opennms-daemon-pollerd</feature>
                         <feature>opennms-daemon-collectd</feature>
                         <feature>opennms-daemon-alarmd</feature>
+                        <feature>opennms-daemon-notifd</feature>
+                        <feature>opennms-daemon-discovery</feature>
+                        <feature>opennms-daemon-trapd</feature>
+                        <feature>opennms-daemon-syslogd</feature>
+                        <feature>opennms-daemon-ticketer</feature>
+                        <feature>opennms-daemon-eventtranslator</feature>
+                        <feature>opennms-daemon-rtcd</feature>
+                        <feature>opennms-daemon-passivestatusd</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
