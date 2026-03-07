@@ -2484,10 +2484,6 @@
       <!--  opennms dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
-        <groupId>org.opennms</groupId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.api</artifactId>
         <version>${project.version}</version>
