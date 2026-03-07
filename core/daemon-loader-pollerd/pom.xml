@@ -32,7 +32,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Spring-Context>
-                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=false
+                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
                         </Spring-Context>
                     </instructions>
                 </configuration>
@@ -53,14 +53,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-services</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Poller RPC client -->
-        <dependency>
-            <groupId>org.opennms.features.poller</groupId>
-            <artifactId>org.opennms.features.poller.client-rpc</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -149,6 +141,14 @@
         <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- MATE API (EntityScopeProvider for metadata interpolation) -->
+        <dependency>
+            <groupId>org.opennms.core.mate</groupId>
+            <artifactId>org.opennms.core.mate.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

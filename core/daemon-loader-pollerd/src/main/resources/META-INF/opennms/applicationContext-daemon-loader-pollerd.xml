@@ -9,8 +9,8 @@
 
   All dependencies come from OSGi service registry:
   - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
-  - DAOs from distributed DAO feature
-  - PollerConfig from opennms-config feature
+  - DAOs from distributed DAO feature (via SOA ServiceRegistry)
+  - PollerConfig created locally (opennms-config has no Spring-Context header)
   - ThresholdingService from thresholding feature
   - PersisterFactory from collection persistence feature
   - LocationAwarePingClient from RPC ICMP feature
@@ -30,19 +30,34 @@
     <!-- Enable @Autowired processing for Poller and QueryManagerDaoImpl -->
     <context:annotation-config />
 
-    <onmsgi:default-registry/>
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint)
+         Uses osgi:reference because event-forwarder-kafka registers services
+         via Aries Blueprint <service> in the OSGi framework registry,
+         not in the OpenNMS ServiceRegistry used by onmsgi namespace. -->
     <osgi:reference id="eventIpcManager"
                     interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- Poller configuration (from opennms-config feature) -->
-    <onmsgi:reference id="pollerConfig"
-                      interface="org.opennms.netmgt.config.PollerConfig"/>
+    <!-- Poller configuration: created locally because the opennms-config bundle
+         has no Spring-Context header, so Spring-DM never loads its XML configs.
+         Requires poller-configuration.xml in ${opennms.home}/etc/ -->
+    <bean id="init-pollerConfig-factory"
+          class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod">
+            <value>org.opennms.netmgt.config.PollerConfigFactory.init</value>
+        </property>
+    </bean>
+    <bean id="pollerConfig" class="org.opennms.netmgt.config.PollerConfigFactory"
+          depends-on="init-pollerConfig-factory" factory-method="getInstance"/>
 
     <!-- ICMP ping client (from RPC ICMP feature, optional — not in minimal daemon) -->
     <onmsgi:reference id="locationAwarePingClient"
@@ -60,7 +75,7 @@
     <onmsgi:reference id="deviceConfigMonitorAdaptor"
                       interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor"/>
 
-    <!-- DAOs (from opennms-distributed-core-impl / opennms-dao feature) -->
+    <!-- DAOs (from opennms-persistence / opennms-distributed-core-impl via SOA ServiceRegistry) -->
     <onmsgi:reference id="nodeDao"
                       interface="org.opennms.netmgt.dao.api.NodeDao"/>
     <onmsgi:reference id="eventDao"
@@ -71,45 +86,37 @@
                       interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
     <onmsgi:reference id="ipInterfaceDao"
                       interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
-    <onmsgi:reference id="transactionTemplate"
-                      interface="org.springframework.transaction.support.TransactionOperations"/>
 
-    <!-- KV store for poll outages DAO (optional — not in minimal daemon) -->
-    <onmsgi:reference id="jsonStore"
-                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+    <!-- Transaction management (from opennms-persistence via SOA ServiceRegistry) -->
+    <onmsgi:reference id="platformTransactionManager"
+                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+    <bean id="transactionTemplate"
+          class="org.springframework.transaction.support.TransactionTemplate">
+        <constructor-arg ref="platformTransactionManager"/>
+    </bean>
 
     <!-- ============================================================== -->
     <!-- Local Beans (from daemon context, normally provided by Manager) -->
     <!-- ============================================================== -->
 
+    <!-- Service monitor registry (discovers monitors via ServiceLoader) -->
+    <bean id="serviceMonitorRegistry"
+          class="org.opennms.core.daemon.loader.LocalServiceMonitorRegistry"/>
+
     <bean id="localHostName" class="org.opennms.core.utils.InetAddressUtils"
           factory-method="getLocalHostName"/>
 
-    <!-- ============================================================== -->
-    <!-- Poll Outages DAO (from pollerConfigDaos context)               -->
-    <!-- ============================================================== -->
-
-    <bean name="pollOutagesDao"
-          class="org.opennms.netmgt.config.dao.outages.impl.OnmsPollOutagesDao">
-        <constructor-arg ref="jsonStore"/>
-    </bean>
-    <onmsgi:service ref="pollOutagesDao"
-                    interface="org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao"/>
-
-    <!-- ============================================================== -->
-    <!-- RPC Poller (from rpc-poller context)                           -->
-    <!-- ============================================================== -->
-
-    <bean id="pollerClientRpcModule"
-          class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule"/>
-
-    <bean id="locationAwarePollerClient"
-          class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl"/>
-    <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient"
-                    ref="locationAwarePollerClient"/>
-
     <bean id="pollerExecutor" class="java.util.concurrent.Executors"
           factory-method="newCachedThreadPool"/>
+
+    <!-- Local poller client: executes polls directly in-process (no RPC to Minion) -->
+    <bean id="locationAwarePollerClient"
+          class="org.opennms.core.daemon.loader.LocalPollerClient">
+        <constructor-arg ref="serviceMonitorRegistry"/>
+        <constructor-arg ref="pollerExecutor"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient"
+                    ref="locationAwarePollerClient"/>
 
     <!-- ============================================================== -->
     <!-- Pollerd Beans (from pollerd context)                           -->
@@ -122,7 +129,7 @@
     <bean name="pollerQueryManager"
           class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
 
-    <bean name="pollContext" class="org.opennms.netmgt.poller.DefaultPollContext">
+    <bean name="pollContext" class="org.opennms.core.daemon.loader.StandalonePollContext">
         <property name="eventManager" ref="eventIpcManager"/>
         <property name="localHostName" ref="localHostName"/>
         <property name="name" value="OpenNMS.Poller.DefaultPollContext"/>

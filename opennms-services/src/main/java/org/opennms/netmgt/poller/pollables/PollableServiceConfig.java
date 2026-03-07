@@ -92,7 +92,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
         m_statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
         m_DeviceConfigMonitorAdaptor = serviceMonitorAdaptor;
-        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_pollOutagesDao = pollOutagesDao;
 
         this.findService();
     }
@@ -273,14 +273,17 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      */
     @Override
     public synchronized boolean scheduledSuspension() {
+        if (m_pollOutagesDao == null) {
+            return false;
+        }
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendars()) {
             // Does the outage apply to the current time?
             if (m_pollOutagesDao.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?
 
-                if (m_pollOutagesDao.isNodeIdInOutage(nodeId, outageName) || 
-                        (m_pollOutagesDao.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
+                if (m_pollOutagesDao.isNodeIdInOutage(nodeId, outageName) ||
+                        (m_pollOutagesDao.isInterfaceInOutage(m_service.getIpAddr(), outageName)) ||
                         (m_pollOutagesDao.isInterfaceInOutage("match-any", outageName))) {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
