@@ -12,23 +12,23 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
        ">
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- DataSource (from distributed DAO feature) -->
-    <onmsgi:reference id="dataSource"
-                      interface="javax.sql.DataSource"/>
+    <!-- DataSource (from distributed datasource blueprint) -->
+    <osgi:reference id="dataSource"
+                    interface="javax.sql.DataSource"/>
 
     <!-- ============================================================== -->
     <!-- PassiveStatusKeeper Daemon                                     -->

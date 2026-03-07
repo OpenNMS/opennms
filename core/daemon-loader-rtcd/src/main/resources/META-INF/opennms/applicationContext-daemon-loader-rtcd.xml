@@ -14,15 +14,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for RTCManager and AvailabilityServiceHibernateImpl -->
     <context:annotation-config />
+
+    <onmsgi:default-registry/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
@@ -37,11 +41,6 @@
                       interface="org.opennms.netmgt.filter.api.FilterDao"/>
     <onmsgi:reference id="transactionTemplate"
                       interface="org.springframework.transaction.support.TransactionOperations"/>
-
-    <!-- MessageBus for RTC subscribe/unsubscribe IPC (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans                                                    -->

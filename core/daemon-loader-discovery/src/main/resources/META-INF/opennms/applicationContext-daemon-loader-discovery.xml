@@ -17,28 +17,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for Discovery and DiscoveryTaskExecutorImpl -->
     <context:annotation-config />
 
+    <onmsgi:default-registry/>
+
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
-
-    <!-- MessageBus for IPC events (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
     <!-- Discovery configuration (from opennms-config feature) -->
     <onmsgi:reference id="discoveryConfigFactory"
@@ -54,8 +53,7 @@
 
     <!-- Detector client (from provisioning feature, optional — not all deployments have it) -->
     <onmsgi:reference id="locationAwareDetectorClient"
-                      interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans (from discovery context)                           -->

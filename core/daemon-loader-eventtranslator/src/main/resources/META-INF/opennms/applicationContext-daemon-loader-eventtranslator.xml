@@ -13,28 +13,23 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
        ">
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- DataSource (from distributed datasource feature) -->
-    <onmsgi:reference id="dataSource"
-                      interface="javax.sql.DataSource"/>
-
-    <!-- MessageBus for IPC events (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
+    <!-- DataSource (from distributed datasource blueprint) -->
+    <osgi:reference id="dataSource"
+                    interface="javax.sql.DataSource"/>
 
     <!-- ============================================================== -->
     <!-- DataSourceFactory initialization                               -->
@@ -76,7 +71,6 @@
         <property name="eventManager" ref="eventIpcManager"/>
         <property name="config" ref="eventTranslatorConfig"/>
         <property name="dataSource" ref="dataSource"/>
-        <property name="messageBus" ref="messageBus"/>
     </bean>
 
     <!-- Register this instance as the singleton -->

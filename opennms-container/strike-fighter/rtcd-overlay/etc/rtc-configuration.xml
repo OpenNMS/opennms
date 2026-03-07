@@ -1,0 +1,1 @@
+<RTCConfiguration xmlns="http://xmlns.opennms.org/xsd/config/rtc" updaters="10" senders="5" rollingWindow="24h" maxEventsBeforeResend="100" lowThresholdInterval="20s" highThresholdInterval="45s" userRefreshInterval="2m" errorsBeforeUrlUnsubscribe="5"/>

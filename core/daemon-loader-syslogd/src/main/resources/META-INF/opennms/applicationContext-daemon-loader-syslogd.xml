@@ -18,15 +18,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for SyslogSinkConsumer and SinkDispatchingSyslogReceiver -->
     <context:annotation-config />
+
+    <onmsgi:default-registry/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
@@ -36,14 +40,9 @@
     <onmsgi:reference id="syslogdConfig"
                       interface="org.opennms.netmgt.config.SyslogdConfig"/>
 
-    <!-- Event forwarding (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventForwarder"
-                      interface="org.opennms.netmgt.events.api.EventForwarder"/>
-
-    <!-- MessageBus for IPC events (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
+    <!-- Event forwarding (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventForwarder"
+                    interface="org.opennms.netmgt.events.api.EventForwarder"/>
 
     <!-- DistPollerDao (from distributed DAO feature) -->
     <onmsgi:reference id="distPollerDao"
@@ -59,8 +58,7 @@
 
     <!-- DNS lookup client for reverse DNS (from provisioning feature, optional) -->
     <onmsgi:reference id="locationAwareDnsLookupClient"
-                      interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.provision.LocationAwareDnsLookupClient"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans                                                    -->
@@ -83,7 +81,6 @@
     <!-- The Syslogd daemon -->
     <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
         <property name="syslogReceiver" ref="syslogReceiverCamelNetty"/>
-        <property name="messageBus" ref="messageBus"/>
     </bean>
 
     <!-- ============================================================== -->

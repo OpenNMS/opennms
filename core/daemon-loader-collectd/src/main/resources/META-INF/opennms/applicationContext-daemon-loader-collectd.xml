@@ -16,28 +16,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for Collectd -->
     <context:annotation-config />
 
+    <onmsgi:default-registry/>
+
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
-
-    <!-- MessageBus for IPC events (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
     <!-- Collectd configuration (from opennms-config feature) -->
     <onmsgi:reference id="collectdConfigFactory"
@@ -53,18 +52,15 @@
 
     <!-- Collection persistence (optional — not in minimal daemon) -->
     <onmsgi:reference id="persisterFactory"
-                      interface="org.opennms.netmgt.collection.api.PersisterFactory"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
 
     <!-- Thresholding (optional — not in minimal daemon) -->
     <onmsgi:reference id="thresholdingService"
-                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
 
     <!-- Entity scope provider (optional — MATE engine) -->
     <onmsgi:reference id="entityScopeProvider"
-                      interface="org.opennms.core.mate.api.EntityScopeProvider"
-                      availability="optional"/>
+                      interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
     <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence) -->
     <onmsgi:reference id="nodeDao"
@@ -80,13 +76,11 @@
 
     <!-- Poll outages DAO (optional — not in minimal daemon) -->
     <onmsgi:reference id="pollOutagesDao"
-                      interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
 
     <!-- KV store (optional — not in minimal daemon) -->
     <onmsgi:reference id="jsonStore"
-                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"
-                      availability="optional"/>
+                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans                                                    -->

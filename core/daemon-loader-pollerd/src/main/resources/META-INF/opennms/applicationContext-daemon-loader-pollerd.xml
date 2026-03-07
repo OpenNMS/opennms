@@ -18,28 +18,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for Poller and QueryManagerDaoImpl -->
     <context:annotation-config />
 
+    <onmsgi:default-registry/>
+
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
-
-    <!-- MessageBus for IPC events (optional — may not be installed) -->
-    <onmsgi:reference id="messageBus"
-                      interface="org.opennms.core.messagebus.MessageBus"
-                      availability="optional"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
     <!-- Poller configuration (from opennms-config feature) -->
     <onmsgi:reference id="pollerConfig"
@@ -47,23 +46,19 @@
 
     <!-- ICMP ping client (from RPC ICMP feature, optional — not in minimal daemon) -->
     <onmsgi:reference id="locationAwarePingClient"
-                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
 
     <!-- Collection persistence (from timeseries feature, optional for polling-only mode) -->
     <onmsgi:reference id="persisterFactory"
-                      interface="org.opennms.netmgt.collection.api.PersisterFactory"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
 
     <!-- Thresholding (from sentinel-thresholding-service feature, optional for polling-only mode) -->
     <onmsgi:reference id="thresholdingService"
-                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
 
     <!-- Device config monitor adaptor (from device-config feature, optional) -->
     <onmsgi:reference id="deviceConfigMonitorAdaptor"
-                      interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor"
-                      availability="optional"/>
+                      interface="org.opennms.netmgt.poller.ServiceMonitorAdaptor"/>
 
     <!-- DAOs (from opennms-distributed-core-impl / opennms-dao feature) -->
     <onmsgi:reference id="nodeDao"
@@ -81,8 +76,7 @@
 
     <!-- KV store for poll outages DAO (optional — not in minimal daemon) -->
     <onmsgi:reference id="jsonStore"
-                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"
-                      availability="optional"/>
+                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans (from daemon context, normally provided by Manager) -->
@@ -135,7 +129,6 @@
         <property name="pollerConfig" ref="pollerConfig"/>
         <property name="queryManager" ref="pollerQueryManager"/>
         <property name="locationAwarePingClient" ref="locationAwarePingClient"/>
-        <property name="messageBus" ref="messageBus"/>
         <property name="tsidFactory" ref="tsidFactory"/>
     </bean>
 
@@ -148,7 +141,6 @@
         <property name="network" ref="pollableNetwork"/>
         <property name="pollerConfig" ref="pollerConfig"/>
         <property name="eventIpcManager" ref="eventIpcManager"/>
-        <property name="messageBus" ref="messageBus"/>
     </bean>
 
     <!-- ============================================================== -->

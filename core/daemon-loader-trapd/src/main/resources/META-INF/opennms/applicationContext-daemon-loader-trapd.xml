@@ -24,27 +24,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
            http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
     <!-- Enable @Autowired processing for Trapd, TrapListener, TrapSinkConsumer -->
     <context:annotation-config />
 
+    <onmsgi:default-registry/>
+
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Event infrastructure (from opennms-event-forwarder-kafka) -->
-    <onmsgi:reference id="eventIpcManager"
-                      interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- EventSubscriptionService for @EventHandler annotation adapter -->
-    <onmsgi:reference id="eventSubscriptionService"
-                      interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+    <!-- EventSubscriptionService (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
     <!-- Trap configuration (from opennms-config feature) -->
     <onmsgi:reference id="trapdConfig"
@@ -56,16 +60,13 @@
 
     <!-- Secure Credentials Vault (for SNMPv3 credential interpolation) -->
     <onmsgi:reference id="secureCredentialsVault"
-                      interface="org.opennms.features.scv.api.SecureCredentialsVault"
-                      availability="optional"/>
+                      interface="org.opennms.features.scv.api.SecureCredentialsVault"/>
 
     <!-- Twin API (for publishing/subscribing trap listener config to Minions) -->
     <onmsgi:reference id="twinPublisher"
-                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"
-                      availability="optional"/>
+                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
     <onmsgi:reference id="twinSubscriber"
-                      interface="org.opennms.core.ipc.twin.api.TwinSubscriber"
-                      availability="optional"/>
+                      interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
 
     <!-- Sink API (for trap message dispatch and consumption) -->
     <onmsgi:reference id="messageDispatcherFactory"
