@@ -8,9 +8,9 @@
 
   All dependencies come from OSGi service registry:
   - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
-  - DAOs from distributed DAO feature
-  - CollectdConfigFactory from opennms-config feature
-  - ServiceCollectorRegistry / LocationAwareCollectorClient from collection client-rpc
+  - DAOs from distributed DAO feature (via SOA ServiceRegistry)
+  - CollectdConfigFactory created locally (opennms-config has no Spring-Context header)
+  - ServiceCollectorRegistry / LocationAwareCollectorClient created locally
   - PersisterFactory / ThresholdingService optional (not in minimal container)
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -28,7 +28,11 @@
     <!-- Enable @Autowired processing for Collectd -->
     <context:annotation-config />
 
-    <onmsgi:default-registry/>
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
@@ -38,17 +42,11 @@
     <osgi:reference id="eventIpcManager"
                     interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- Collectd configuration (from opennms-config feature) -->
-    <onmsgi:reference id="collectdConfigFactory"
-                      interface="org.opennms.netmgt.config.CollectdConfigFactory"/>
-
-    <!-- Service collector registry (from collection client-rpc feature) -->
-    <onmsgi:reference id="serviceCollectorRegistry"
-                      interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry"/>
-
-    <!-- Location-aware collector client (from collection client-rpc feature) -->
-    <onmsgi:reference id="locationAwareCollectorClient"
-                      interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"/>
+    <!-- Collectd configuration: created locally because the opennms-config bundle
+         has no Spring-Context header, so Spring-DM never loads its XML configs.
+         Requires collectd-configuration.xml in ${opennms.home}/etc/ -->
+    <bean id="collectdConfigFactory"
+          class="org.opennms.netmgt.config.CollectdConfigFactory"/>
 
     <!-- Collection persistence (optional — not in minimal daemon) -->
     <onmsgi:reference id="persisterFactory"
@@ -62,13 +60,11 @@
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
-    <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence) -->
+    <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence via SOA ServiceRegistry) -->
     <onmsgi:reference id="nodeDao"
                       interface="org.opennms.netmgt.dao.api.NodeDao"/>
     <onmsgi:reference id="ipInterfaceDao"
                       interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
-    <onmsgi:reference id="transactionTemplate"
-                      interface="org.springframework.transaction.support.TransactionOperations"/>
 
     <!-- Filter DAO (from opennms-config feature) -->
     <onmsgi:reference id="filterDao"
@@ -78,13 +74,35 @@
     <onmsgi:reference id="pollOutagesDao"
                       interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
 
-    <!-- KV store (optional — not in minimal daemon) -->
-    <onmsgi:reference id="jsonStore"
-                      interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+    <!-- Transaction management (from opennms-persistence via SOA ServiceRegistry) -->
+    <onmsgi:reference id="platformTransactionManager"
+                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+    <bean id="transactionTemplate"
+          class="org.springframework.transaction.support.TransactionTemplate">
+        <constructor-arg ref="platformTransactionManager"/>
+    </bean>
 
     <!-- ============================================================== -->
-    <!-- Local Beans                                                    -->
+    <!-- Local Beans (from daemon context, normally provided by Manager) -->
     <!-- ============================================================== -->
+
+    <!-- Service collector registry (discovers collectors via ServiceLoader) -->
+    <bean id="serviceCollectorRegistry"
+          class="org.opennms.core.daemon.loader.LocalServiceCollectorRegistry"/>
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry"
+                    ref="serviceCollectorRegistry"/>
+
+    <bean id="collectorExecutor" class="java.util.concurrent.Executors"
+          factory-method="newCachedThreadPool"/>
+
+    <!-- Local collector client: executes collections directly in-process (no RPC to Minion) -->
+    <bean id="locationAwareCollectorClient"
+          class="org.opennms.core.daemon.loader.LocalCollectorClient">
+        <constructor-arg ref="serviceCollectorRegistry"/>
+        <constructor-arg ref="collectorExecutor"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"
+                    ref="locationAwareCollectorClient"/>
 
     <bean id="collectionAgentFactory"
           class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory"/>

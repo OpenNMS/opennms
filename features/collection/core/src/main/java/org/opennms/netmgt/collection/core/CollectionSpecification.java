@@ -88,7 +88,7 @@ public class CollectionSpecification {
         m_collector = Objects.requireNonNull(collector);
         m_instrumentation = Objects.requireNonNull(instrumentation);
         m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
-        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_pollOutagesDao = pollOutagesDao;
         this.collectorImplClassName = collectorImplClassName;
         this.scopeProvider = scopeProvider;
         initializeParameters();
@@ -341,6 +341,9 @@ public class CollectionSpecification {
      * @return a boolean.
      */
     public boolean scheduledOutage(CollectionAgent agent) {
+        if (m_pollOutagesDao == null) {
+            return false;
+        }
         boolean outageFound = false;
 
         /*
@@ -349,7 +352,7 @@ public class CollectionSpecification {
          * applies to the current time and the outage applies to this
          * interface then break and return true. Otherwise process the
          * next outage.
-         */ 
+         */
         for (String outageName : m_package.getOutageCalendars()) {
             // Does the outage apply to the current time?
             if (m_pollOutagesDao.isCurTimeInOutage(outageName)) {
