@@ -34,7 +34,6 @@ import java.util.List;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
@@ -55,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author brozow
  */
-public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWriter {
+public class MockDatabase extends TemporaryDatabasePostgreSQL {
     private static final Logger LOG = LoggerFactory.getLogger(MockDatabase.class);
 
     private String distPoller = "00000000-0000-0000-0000-000000000000";
@@ -260,7 +259,6 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     /**
      * @param e
      */
-    @Override
     public void writeEvent(Event e) {
         Long eventId = getNextEventId();
         

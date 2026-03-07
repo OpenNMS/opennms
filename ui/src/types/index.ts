@@ -71,10 +71,6 @@ export interface CategoryApiResponse extends ApiResponse {
 export interface NodeApiResponse extends ApiResponse {
   node: Node[]
 }
-export interface EventApiResponse extends ApiResponse {
-  event: Event[]
-}
-
 export interface AlarmApiResponse extends ApiResponse {
   alarm: Alarm[]
 }
@@ -171,24 +167,6 @@ export interface Alarm {
   count: number
   lastEventTime: number
   logMessage: string
-}
-
-export interface Event {
-  createTime: number
-  description: string
-  display: string
-  id: number
-  label: string | null
-  location: string | null
-  log: string
-  logMessage: string
-  nodeId: number | null
-  nodeLabel: string | null
-  parameters: Array<any>
-  severity: string
-  source: string
-  time: number
-  uei: string
 }
 
 export interface MonitoringLocation {

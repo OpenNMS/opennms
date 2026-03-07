@@ -195,7 +195,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         File data = tempFolder.newFolder("data");
 
-        eventdIpcMgr.setEventWriter(mockDatabase);
+        eventdIpcMgr.setEventWriteHook(mockDatabase::writeEvent);
 
         databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
 

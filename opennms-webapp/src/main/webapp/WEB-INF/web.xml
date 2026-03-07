@@ -387,15 +387,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-120</filter-name>
-    <url-pattern>/event/list</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-120</filter-name>
     <url-pattern>/alarm/list</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/event/list.htm</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
@@ -666,15 +658,6 @@
     </init-param>
   </servlet>
   <servlet>
-    <servlet-name>queryEvent</servlet-name>
-    <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
-    <init-param>
-      <description>Redirect to this sibling URL after changing the parameter set.</description>
-      <param-name>redirect.url</param-name>
-      <param-value>list</param-value>
-    </init-param>
-  </servlet>
-  <servlet>
     <servlet-name>queryAlarm</servlet-name>
     <servlet-class>org.opennms.web.alarm.AlarmQueryServlet</servlet-class>
     <init-param>
@@ -935,11 +918,6 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>queryEvent</servlet-name>
-    <url-pattern>/event/query</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
   </servlet-mapping>
@@ -1164,34 +1142,6 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/index</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/createFavorite</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/deleteFavorite</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/detail.jsp</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
     <url-pattern>/notification/browse</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
@@ -1238,10 +1188,6 @@
   <error-page>
     <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
     <location>/errors/missingparam.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.event.EventIdNotFoundException</exception-type>
-    <location>/errors/eventidnotfound.jsp</location>
   </error-page>
   <error-page>
     <exception-type>org.opennms.web.alarm.AlarmIdNotFoundException</exception-type>

@@ -13,7 +13,6 @@
       <InterfacesTabsVue />
     </div>
     <div class="feather-col-6">
-      <EventsTable />
       <OutagesTable />
     </div>
     -->
@@ -21,7 +20,6 @@
 </template>
   
 <script setup lang="ts">
-//import EventsTable from '@/components/Nodes/EventsTable.vue'
 //import OutagesTable from '@/components/Nodes/OutagesTable.vue'
 //import InterfacesTabsVue from '@/components/Nodes/InterfacesTabs.vue'
 //import NodeAvailabilityGraphVue from '@/components/Nodes/NodeAvailabilityGraph.vue'

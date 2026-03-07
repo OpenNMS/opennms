@@ -172,7 +172,7 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.databasePopulator.populateDatabase();
 
         this.database.setDistPoller(distPollerDao.whoami().getId());
-        this.eventIpcManager.setEventWriter(this.database);
+        this.eventIpcManager.setEventWriteHook(this.database::writeEvent);
 
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
         PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));

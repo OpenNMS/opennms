@@ -118,7 +118,7 @@ public class NotificationsITCase implements TemporaryDatabaseAware<MockDatabase>
         DataSourceFactory.setInstance(m_db);
 
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventWriter(m_db);
+        m_eventMgr.setEventWriteHook(m_db::writeEvent);
 
         m_notifdConfig = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());

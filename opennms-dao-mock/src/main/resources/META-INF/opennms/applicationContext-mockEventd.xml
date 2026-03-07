@@ -22,12 +22,11 @@
 		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventProcessors">
 			<list>
-				<!-- This EventProcessor can be used to perform regex replacements on 
-					incoming parm values. It was added in 1.11 and because of performance concerns, 
+				<!-- This EventProcessor can be used to perform regex replacements on
+					incoming parm values. It was added in 1.11 and because of performance concerns,
 					it is commented-out for now. -->
 				<!-- <ref bean="eventParmRegexFilter"/> -->
 				<ref bean="eventExpander" />
-				<ref bean="eventWriter" />
 				<ref bean="eventIpcBroadcastProcessor" />
 			</list>
 		</property>
@@ -59,13 +58,6 @@
 		<constructor-arg ref="eventdMetricRegistry"/>
 		<property name="eventConfDao" ref="eventConfDao" />
 		<property name="eventUtil" ref="eventUtil"/>
-	</bean>
-
-	<bean id="eventWriter" class="org.opennms.netmgt.dao.mock.MockEventWriter">
-		<property name="eventDao" ref="eventDao" />
-		<property name="distPollerDao" ref="distPollerDao" />
-		<property name="nodeDao" ref="nodeDao" />
-		<property name="serviceTypeDao" ref="serviceTypeDao" />
 	</bean>
 
 	<import resource="classpath:/META-INF/opennms/applicationContext-eventUtil.xml" />

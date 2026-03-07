@@ -47,7 +47,6 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
-import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -175,12 +174,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
     private EventAnticipator m_anticipator;
     
-    private EventWriter m_eventWriter = new EventWriter() {
-        @Override
-        public void writeEvent(final Event e) {
-            e.setDbid(m_eventId.incrementAndGet());
-        }
-    };
+    /**
+     * Hook that is called for each event before broadcasting.
+     * By default, assigns a synthetic event ID. Tests that need
+     * to write events to a database can override this via
+     * {@link #setEventWriteHook(java.util.function.Consumer)}.
+     */
+    private java.util.function.Consumer<Event> m_eventWriteHook = e -> e.setDbid(m_eventId.incrementAndGet());
 
     private List<ListenerKeeper> m_listeners = new ArrayList<>();
 
@@ -235,8 +235,12 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
     
-    public void setEventWriter(final EventWriter eventWriter) {
-        m_eventWriter = eventWriter;
+    /**
+     * Replaces the default ID-assignment hook with a custom consumer,
+     * typically one that persists the event to a test database.
+     */
+    public void setEventWriteHook(final java.util.function.Consumer<Event> hook) {
+        m_eventWriteHook = hook;
     }
 
     public EventAnticipator getEventAnticipator() {
@@ -274,7 +278,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      * @param event
      */
     public void sendEventToListeners(final Event event) {
-        m_eventWriter.writeEvent(event);
+        m_eventWriteHook.accept(event);
         broadcastNow(event, false);
     }
 
@@ -326,7 +330,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                         m_sendNowHook.beforeBroadcast(event);
                     }
 
-                    m_eventWriter.writeEvent(event);
+                    m_eventWriteHook.accept(event);
                     broadcastNow(event, synchronous);
                     m_anticipator.eventProcessed(event);
                 } finally {

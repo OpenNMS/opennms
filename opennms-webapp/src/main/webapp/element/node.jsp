@@ -312,13 +312,6 @@ function confirmAssetEdit() {
 </h5>
 
   <ul class="list-inline">
-    <c:url var="eventLink" value="event/list">
-      <c:param name="filter" value="node=${model.id}"/>
-    </c:url>
-    <li class="list-inline-item">
-      <a href="<c:out value="${eventLink}"/>">View Events</a>
-    </li>
-
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
@@ -653,17 +646,6 @@ function confirmAssetEdit() {
   <!-- notification box -->
   <jsp:include page="/includes/notification-box.jsp" flush="false" >
     <jsp:param name="node" value="${model.id}" />
-  </jsp:include>
-  
-  <!-- events list  box -->
-  <c:url var="eventListUrl" value="event/list">
-    <c:param name="filter" value="node=${model.id}"/>
-  </c:url>
-  <jsp:include page="/includes/eventlist.jsp" flush="false" >
-    <jsp:param name="node" value="${model.id}" />
-    <jsp:param name="throttle" value="5" />
-    <jsp:param name="header" value="<a href='${eventListUrl}'>Recent Events</a>" />
-    <jsp:param name="moreUrl" value="${eventListUrl}" />
   </jsp:include>
   
   <!-- Recent outages box -->

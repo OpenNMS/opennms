@@ -137,7 +137,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
         m_database.setDistPoller(m_distPollerDao.whoami().getId());
         // Events need database IDs to make alarmd happy
-        m_eventMgr.setEventWriter(m_database);
+        m_eventMgr.setEventWriteHook(m_database::writeEvent);
 
         // Events need to real nodes too
         final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");

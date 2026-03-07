@@ -131,16 +131,6 @@
     <constructor-arg ref="ipcMessageConverter"/>
   </bean>
 
-  <!-- Legacy beans kept for backward compatibility (referenced by other modules) -->
-  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
-    <constructor-arg ref="eventdMetricRegistry"/>
-  </bean>
-
-  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-    <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
-  </bean>
-
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
     <property name="eventIpcManager" ref="eventIpcManagerImpl"/>
   </bean>

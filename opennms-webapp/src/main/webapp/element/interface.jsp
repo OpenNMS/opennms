@@ -91,15 +91,6 @@
   PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
   pollerCfgFactory.rebuildPackageIpListMap();    
 %>
-<c:url var="eventUrl1" value="event/list.htm">
-    <c:param name="filter" value='<%="node=" + nodeId%>'/>
-    <c:param name="filter" value='<%="interface=" + ipAddr%>'/>
-</c:url>
-<c:url var="eventUrl2" value="event/list.htm">
-    <c:param name="filter" value='<%="node=" + nodeId%>'/>
-    <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
-</c:url>
-
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle(ipAddr)
@@ -297,32 +288,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
     <!-- interface desktop information box -->
 
-    <!-- events list box 1 using ipaddress-->
-    <% if (!ipAddr.equals("0.0.0.0")) { %>
-      <c:set var="eventHeader1">
-        <a href="<c:out value="${eventUrl1}"/>">Recent Events (Using Filter IP Address: <c:out value="<%=ipAddr%>"/>)</a>
-      </c:set>
-      <jsp:include page="/includes/eventlist.jsp" flush="false" >
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="ipAddr" value="<%=ipAddr%>" />
-        <jsp:param name="throttle" value="5" />
-        <jsp:param name="header" value="${eventHeader1}" />
-        <jsp:param name="moreUrl" value="${eventUrl1}" />
-      </jsp:include>
-    <% } %>
-    <!-- events list box 2 using ifindex -->
-    <% if (ifIndex > 0 ) { %>
-      <c:set var="eventHeader2">
-        <a href="<c:out value="${eventUrl2}"/>">Recent Events (Using Filter ifIndex: <c:out value="<%=ifIndex%>"/>)</a>
-      </c:set>
-      <jsp:include page="/includes/eventlist.jsp" flush="false" >
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="throttle" value="5" />
-        <jsp:param name="header" value="${eventHeader2}" />
-        <jsp:param name="moreUrl" value="${eventUrl2}" />
-        <jsp:param name="ifIndex" value="<%=ifIndex%>" />
-      </jsp:include>
-    <% } %>
     <!-- Recent outages box -->
     <jsp:include page="/outage/interfaceOutages-box.htm" flush="false">
         <jsp:param name="node" value="<%=nodeId%>" />
