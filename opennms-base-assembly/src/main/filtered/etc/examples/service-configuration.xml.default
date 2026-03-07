@@ -155,14 +155,6 @@ Note that omitting the enabled attribute will default to enabled = true -->
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service enabled="true">
-    <name>OpenNMS:Name=Statsd</name>
-    <class-name>org.opennms.netmgt.statsd.jmx.Statsd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="true">
     <name>OpenNMS:Name=Provisiond</name>
     <class-name>org.opennms.netmgt.provisiond.jmx.Provisiond</class-name>
     <invoke at="start" pass="0" method="init"/>

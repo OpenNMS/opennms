@@ -140,11 +140,6 @@ public abstract class ConfigFileConstants {
     public static final int SCRIPTD_CONFIG_FILE_NAME;
 
     /**
-     * The vacuumd config file
-     */
-    public static final int VACUUMD_CONFIG_FILE_NAME;
-
-    /**
      * The config file specifying the rrd config (ie RRD implementation)
      */
     public static final int RRD_CONFIG_FILE_NAME;
@@ -477,7 +472,6 @@ public abstract class ConfigFileConstants {
         RRD_CONFIG_FILE_NAME = 51;
 
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
-        VACUUMD_CONFIG_FILE_NAME = 53;
 
         XMPP_CONFIG_FILE_NAME = 54;
         
@@ -587,7 +581,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
-        FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
         FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
         FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";

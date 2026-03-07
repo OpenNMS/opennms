@@ -454,11 +454,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
-
-    @Test
     public void testSurveillanceViews() {
         testConfigFile("surveillance-views.xml");
     }
@@ -615,9 +610,7 @@ public class ConfigTesterTest {
         if (allXml.size() > 0) {
             List<String> files = new ArrayList<>(allXml);
             Collections.sort(files);
-            fail("These files in " + configDir.getAbsolutePath() + " were not tested: 
-	" + StringUtils.collectionToDelimitedString(files, "
-	"));
+            fail("These files in " + configDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
         }
     }
 
@@ -658,38 +651,25 @@ public class ConfigTesterTest {
 
     @Test
     public void testValidForeignSources() throws IOException {
-        final String validXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">
-" +
-                "   <scan-interval>1d</scan-interval>
-" +
-                "   <detectors>
-" +
-                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>
-" +
-                "   </detectors>
-" +
-                "   <policies/>
-" +
+        final String validXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
+                "   <scan-interval>1d</scan-interval>\n" +
+                "   <detectors>\n" +
+                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n" +
+                "   </detectors>\n" +
+                "   <policies/>\n" +
                 "</foreign-source>";
         testXmlFile("foreign-sources", validXml);
     }
 
     @Test(expected = ConfigCheckValidationException.class)
     public void testInvalidForeignSources() throws IOException {
-        final String invalidXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">
-" +
-                "   <scan-interval>1d</scan-interval>
-" +
-                "   <detectors>
-" +
-                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>
-" +
-                "   </detectors>
-" +
-                "   <foo/>
-" +
-                "   <policies/>
-" +
+        final String invalidXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
+                "   <scan-interval>1d</scan-interval>\n" +
+                "   <detectors>\n" +
+                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n" +
+                "   </detectors>\n" +
+                "   <foo/>\n" +
+                "   <policies/>\n" +
                 "</foreign-source>";
         testXmlFile("foreign-sources", invalidXml);
     }
@@ -699,7 +679,7 @@ public class ConfigTesterTest {
 
         // create broken properties file in opennms.properties.d:
         File file = createFileInPropertiesD("properties");
-        String invalidCharacter="' zb9";
+        String invalidCharacter="'\\u0zb9";
         Files.write(invalidCharacter, file, StandardCharsets.UTF_8);
 
         // test it => should complain

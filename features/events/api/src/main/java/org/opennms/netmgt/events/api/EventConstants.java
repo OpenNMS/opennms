@@ -401,11 +401,6 @@ public abstract class EventConstants {
     public static final String SNMPPOLLERCONFIG_CHANGED_EVENT_UEI = "uei.opennms.org/internal/reloadSnmpPollerConfig";
     
     /**
-     * Reload Vacuumd configuration UEI.
-     */
-    public static final String RELOAD_VACUUMD_CONFIG_UEI = "uei.opennms.org/internal/reloadVacuumdConfig";
-
-    /**
      * Reload topology UEI.
      */
     public static final String RELOAD_TOPOLOGY_UEI = "uei.opennms.org/internal/reloadTopology";

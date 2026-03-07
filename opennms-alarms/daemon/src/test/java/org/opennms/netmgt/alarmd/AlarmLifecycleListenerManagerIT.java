@@ -67,7 +67,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * Used to verify that alarmd and vacuumd generate alarm
+ * Used to verify that alarmd generates alarm
  * life-cycle events when creating or updating alarms.
  *
  * @author jwhite

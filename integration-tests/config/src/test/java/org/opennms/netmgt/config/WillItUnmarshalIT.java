@@ -101,7 +101,6 @@ import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
-import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
@@ -151,8 +150,7 @@ import junit.framework.AssertionFailedError;
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalIT {
 
-    private static final Pattern COMMENT_START_PATTERN = Pattern.compile("\s*[
-]*\s*<!--", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern COMMENT_START_PATTERN = Pattern.compile("\\s*[\\r\\n]*\\s*<!--", Pattern.DOTALL | Pattern.MULTILINE);
 
     /**
      * Possible implementations for resource loading.
@@ -253,7 +251,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "snmp-metadata-adapter-configuration.xml", SnmpMetadataConfig.class, false, null);
-        addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, false, null);
         addFile(Source.CONFIG, "search-actions.xml", Actions.class, false, null);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);

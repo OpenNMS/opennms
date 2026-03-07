@@ -5,7 +5,7 @@ package org.opennms.core.messagebus;
  *
  * <p>Follows the same pattern as {@code EventIpcManagerFactory}: a holder that is
  * populated during Eventd startup via {@code MethodInvokingFactoryBean} and
- * consumed by JMX-managed singletons (e.g. Vacuumd) that lack Spring/OSGi injection.</p>
+ * consumed by JMX-managed singletons that lack Spring/OSGi injection.</p>
  */
 public class MessageBusFactory {
 
