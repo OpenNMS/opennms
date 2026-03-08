@@ -189,7 +189,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
@@ -220,7 +220,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=5
@@ -251,7 +251,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=6
@@ -279,7 +279,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=7
@@ -307,7 +307,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=8
@@ -335,7 +335,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=9
@@ -363,7 +363,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=10
@@ -393,7 +393,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
@@ -423,7 +423,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=12
@@ -451,7 +451,7 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms512m -Xmx1g
+        -Xms256m -Xmx512m
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=13

@@ -29,7 +29,11 @@
     <!-- Enable @Autowired processing for Discovery and DiscoveryTaskExecutorImpl -->
     <context:annotation-config />
 
-    <onmsgi:default-registry/>
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->

@@ -30,7 +30,11 @@
     <!-- Enable @Autowired processing for SyslogSinkConsumer and SinkDispatchingSyslogReceiver -->
     <context:annotation-config />
 
-    <onmsgi:default-registry/>
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
@@ -48,13 +52,13 @@
     <onmsgi:reference id="distPollerDao"
                       interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
-    <!-- Sink API: dispatcher factory for sending syslog messages to sink -->
-    <onmsgi:reference id="messageDispatcherFactory"
-                      interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
-
-    <!-- Sink API: consumer manager for receiving syslog messages from sink -->
-    <onmsgi:reference id="messageConsumerManager"
-                      interface="org.opennms.core.ipc.sink.api.MessageConsumerManager"/>
+    <!-- Sink API: local in-process implementations (no remote transport needed) -->
+    <bean id="messageConsumerManager"
+          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager"/>
+    <bean id="messageDispatcherFactory"
+          class="org.opennms.core.daemon.loader.LocalMessageDispatcherFactory">
+        <constructor-arg ref="messageConsumerManager"/>
+    </bean>
 
     <!-- DNS lookup client for reverse DNS (from provisioning feature, optional) -->
     <onmsgi:reference id="locationAwareDnsLookupClient"

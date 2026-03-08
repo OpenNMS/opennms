@@ -32,7 +32,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Spring-Context>
-                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=false
+                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
                         </Spring-Context>
                     </instructions>
                 </configuration>
@@ -97,6 +97,28 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Sink Common (AbstractMessageConsumerManager, AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OpenTracing (required by AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+            <version>${opentracingVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
+            <version>${opentracingVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Provision API (LocationAwareDnsLookupClient) -->
         <dependency>
             <groupId>org.opennms</groupId>
@@ -117,6 +139,14 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OSGi (for BundleContext, required by AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgiVersion}</version>
             <scope>provided</scope>
         </dependency>
 

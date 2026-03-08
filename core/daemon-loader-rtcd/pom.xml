@@ -31,7 +31,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Spring-Context>
-                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=false
+                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
                         </Spring-Context>
                     </instructions>
                 </configuration>

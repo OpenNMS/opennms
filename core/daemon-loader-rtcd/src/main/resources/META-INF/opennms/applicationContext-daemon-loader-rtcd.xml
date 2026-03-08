@@ -26,7 +26,11 @@
     <!-- Enable @Autowired processing for RTCManager and AvailabilityServiceHibernateImpl -->
     <context:annotation-config />
 
-    <onmsgi:default-registry/>
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
 
     <!-- ============================================================== -->
     <!-- OSGi Service References (from other Karaf features)            -->
@@ -39,8 +43,13 @@
                       interface="org.opennms.netmgt.dao.api.OutageDao"/>
     <onmsgi:reference id="filterDao"
                       interface="org.opennms.netmgt.filter.api.FilterDao"/>
-    <onmsgi:reference id="transactionTemplate"
-                      interface="org.springframework.transaction.support.TransactionOperations"/>
+    <!-- Transaction management (from opennms-persistence via SOA ServiceRegistry) -->
+    <onmsgi:reference id="platformTransactionManager"
+                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+    <bean id="transactionTemplate"
+          class="org.springframework.transaction.support.TransactionTemplate">
+        <constructor-arg ref="platformTransactionManager"/>
+    </bean>
 
     <!-- ============================================================== -->
     <!-- Local Beans                                                    -->
