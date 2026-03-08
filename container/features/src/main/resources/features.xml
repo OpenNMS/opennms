@@ -2153,15 +2153,7 @@
         <feature>opennms-events-api</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.kafka-consumer/${project.version}</bundle>
     </feature>
-    <feature name="opennms-events-store" version="${project.version}" description="OpenNMS :: Events :: Event Store">
-        <feature>opennms-events-api</feature>
-        <feature version="[4.2,4.3)">spring-jdbc</feature>
-        <feature>postgresql</feature>
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.event-store/${project.version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
-    </feature>
+
     <feature name="opennms-event-forwarder-kafka" version="${project.version}"
              description="OpenNMS :: Event Forwarder :: Kafka">
         <feature>opennms-events-api</feature>

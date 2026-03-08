@@ -394,9 +394,6 @@
                         <feature>sentinel-timeseries-api</feature>
                         <feature>sentinel-plugin-sample</feature>
 
-                        <!-- Event store (for daemon containers to archive events to DB) -->
-                        <feature>opennms-events-store</feature>
-
                         <!-- Daemon loader features (for opennms/daemon container) -->
                         <feature>opennms-daemon-pollerd</feature>
                         <feature>opennms-daemon-collectd</feature>

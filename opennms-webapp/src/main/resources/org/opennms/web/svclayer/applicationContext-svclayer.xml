@@ -35,18 +35,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean name="filterService" class="org.opennms.web.services.FilterFavoriteService"/>
   <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
   <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
-  <bean name="eventStore" class="org.opennms.features.events.store.JdbcEventStore">
-    <constructor-arg ref="dataSource"/>
-  </bean>
-  <bean name="webEventRepository" class="org.opennms.web.event.EventStoreWebEventRepository">
-    <constructor-arg ref="eventStore"/>
-  </bean>
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod" value="org.opennms.web.event.EventFactory.setEventStore"/>
-    <property name="arguments">
-      <list><ref bean="eventStore"/></list>
-    </property>
-  </bean>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
   <bean name="webOutageRepository" class="org.opennms.web.outage.DaoWebOutageRepository"/>
   <bean name="webGroupRepository" class="org.opennms.web.group.DefaultWebGroupRepository">

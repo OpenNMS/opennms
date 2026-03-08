@@ -55,8 +55,6 @@ from (
 
 		 JOIN service ON ifservices.serviceid = service.serviceid
 
-		 JOIN events_archive ON outages.svclosteventid = events_archive.event_tsid
-
 		 JOIN node ON ipinterface.nodeid = node.nodeid
 
 		 JOIN category_node ON ipinterface.nodeid = category_node.nodeid
@@ -65,7 +63,6 @@ from (
 
 		 WHERE
 		   service.servicename = 'ICMP' AND
-		   events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown' AND
 		   categories.categoryname = '$P!{DS_SURVEILLANCE_CATEGORY}' AND
 		   outages.perspective IS NULL
 		 )

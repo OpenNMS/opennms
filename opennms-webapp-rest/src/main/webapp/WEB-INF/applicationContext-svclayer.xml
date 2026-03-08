@@ -106,9 +106,5 @@
   </bean>
   <bean id="enLinkdElementFactory" class="org.opennms.web.enlinkd.EnLinkdElementFactory"/>
 
-  <!-- EventStore backed by events_archive table -->
-  <bean id="eventStore" class="org.opennms.features.events.store.JdbcEventStore">
-    <constructor-arg ref="dataSource"/>
-  </bean>
 
 </beans>

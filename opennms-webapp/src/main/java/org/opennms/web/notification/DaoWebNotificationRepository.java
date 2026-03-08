@@ -71,8 +71,13 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
         final OnmsCriteria criteria = new OnmsCriteria(OnmsNotification.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("event", "event", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("event.distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
+        // Event alias removed: the events table no longer exists (events flow
+        // through Kafka).  Notifications still carry an eventId column but there
+        // is no OnmsEvent row to join against.  Sort-by-severity and
+        // sort-by-location fall back to notifyId ordering instead.
+        //
+        // criteria.createAlias("event", "event", OnmsCriteria.LEFT_JOIN);
+        // criteria.createAlias("event.distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
         
         notificationCriteria.visit(new NotificationCriteriaVisitor<RuntimeException>(){
 
@@ -102,7 +107,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
             public void visitSortStyle(SortStyle sortStyle) throws RuntimeException {
                 switch(sortStyle){
                     case LOCATION:
-                        criteria.addOrder(Order.desc("event.distPoller.location"));
+                        criteria.addOrder(Order.desc("notifyId"));
                         break;
                     case RESPONDER:
                         criteria.addOrder(Order.desc("answeredBy"));        
@@ -129,10 +134,10 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         criteria.addOrder(Order.desc("notifyId"));
                         break;
                     case SEVERITY:
-                        criteria.addOrder(Order.desc("event.eventSeverity"));
+                        criteria.addOrder(Order.desc("notifyId"));
                         break;
                     case REVERSE_LOCATION:
-                        criteria.addOrder(Order.desc("event.distPoller.location"));
+                        criteria.addOrder(Order.asc("notifyId"));
                         break;
                     case REVERSE_RESPONDER:
                         criteria.addOrder(Order.asc("answeredBy"));            
@@ -159,7 +164,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
                         criteria.addOrder(Order.asc("notifyId"));
                         break;
                     case REVERSE_SEVERITY:
-                        criteria.addOrder(Order.asc("event.eventSeverity"));
+                        criteria.addOrder(Order.asc("notifyId"));
                         break;
                     
                 }
@@ -174,7 +179,7 @@ public class DaoWebNotificationRepository implements WebNotificationRepository, 
     private static Notification mapOnmsNotificationToNotification(OnmsNotification onmsNotification){
         if(onmsNotification != null){
             Notification notif = new Notification();
-            notif.m_eventId = onmsNotification.getEvent() != null ? onmsNotification.getEvent().getId() : 0;
+            notif.m_eventId = onmsNotification.getEventId() != null ? onmsNotification.getEventId().intValue() : 0;
             notif.m_interfaceID = onmsNotification.getIpAddress() == null ? null : InetAddressUtils.toIpAddrString(onmsNotification.getIpAddress());
             notif.m_nodeID = onmsNotification.getNode() != null ? onmsNotification.getNode().getId() : 0;
             notif.m_notifyID = onmsNotification.getNotifyId();

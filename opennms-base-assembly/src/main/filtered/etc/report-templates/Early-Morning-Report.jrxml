@@ -13,75 +13,61 @@
 	detailed_outages_24h.unresolved AS unresolved, detailed_outages_24h.resolved AS resolved, SUM(detailed_outages_24h.node_outage) AS node_outages_24h, SUM(detailed_outages_24h.interface_outage) AS interface_outage_24h, SUM(detailed_outages_24h.service_outage) AS service_outages_24h, SUM(detailed_outages_24h.management_outage) AS management_outages_24h
 FROM
 	(SELECT
-		event_outages_24h.eventuei, event_outages_24h.servicename, event_outages_24h.duration, event_outages_24h.unresolved, event_outages_24h.resolved,
+		outages_24h.servicename, outages_24h.duration, outages_24h.unresolved, outages_24h.resolved,
 		CASE
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename = 'StrafePing' THEN CAST('0' AS INTEGER)
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename = 'SNMP' THEN CAST('0' AS INTEGER)
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outages_24h.servicename != 'ICMP' THEN CAST('1' AS INTEGER)
+			WHEN outages_24h.servicename = 'StrafePing' THEN CAST('0' AS INTEGER)
+			WHEN outages_24h.servicename = 'SNMP' THEN CAST('0' AS INTEGER)
+			WHEN outages_24h.servicename != 'ICMP' THEN CAST('1' AS INTEGER)
 			ELSE CAST('0' AS INTEGER)
 		END AS service_outage,
 		CASE
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outages_24h.servicename = 'SNMP') THEN CAST('1' AS INTEGER)
+			WHEN outages_24h.servicename = 'SNMP' THEN CAST('1' AS INTEGER)
 			ELSE CAST('0' AS INTEGER)
 		END AS management_outage,
-		CASE
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outages_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS interface_outage,
-		CASE
-			WHEN event_outages_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outages_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS node_outage
+		CAST('0' AS INTEGER) AS interface_outage,
+		CAST('0' AS INTEGER) AS node_outage
 	FROM
 		(SELECT
-			outages_24h.nodeid, outages_24h.duration, outages_24h.unresolved, outages_24h.resolved, events_archive.event_uei AS eventuei, outages_24h.svclosteventid, outages_24h.svcregainedeventid, outages_24h.servicename
+			ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
+			CASE
+				WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
+				ELSE outages.ifregainedservice-outages.iflostservice
+			END AS duration,
+			CASE
+				WHEN ifregainedservice is null THEN CAST('1' AS INTEGER)
+				ELSE CAST('0' AS INTEGER)
+			END AS unresolved,
+			CASE
+				WHEN ifregainedservice is not null THEN CAST('1' AS INTEGER)
+				ELSE CAST('0' AS INTEGER)
+			END AS resolved
 		FROM
-			(SELECT
-				ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
-				CASE
-					WHEN outages.ifregainedservice is null THEN now()-outages.iflostservice
-					ELSE outages.ifregainedservice-outages.iflostservice
-				END AS duration,
-				CASE
-					WHEN ifregainedservice is null THEN CAST('1' AS INTEGER)
-					ELSE CAST('0' AS INTEGER)
-				END AS unresolved,
-				CASE
-					WHEN ifregainedservice is not null THEN CAST('1' AS INTEGER)
-					ELSE CAST('0' AS INTEGER)
-				END AS resolved
-			FROM
-			outages
-		JOIN 
-			ifservices
-		ON
-			(outages.ifserviceid = ifservices.id)
-		JOIN
-			service
-		ON
-			(ifservices.serviceid=service.serviceid)
-		JOIN
-			ipinterface
-		ON
-			(ifservices.ipinterfaceid = ipinterface.id)
-		WHERE
-			service.servicename not like 'StrafePing' AND
-			(
-				outages.iflostservice > now()-INTERVAL '23 hours' 
-				OR 
-				outages.ifregainedservice is null
-			) AND
-			outages.perspective IS NULL
-		) AS outages_24h
-		JOIN
-			events_archive
-		ON
-			(outages_24h.svclosteventid = events_archive.event_tsid))
-		AS event_outages_24h
+		outages
+	JOIN
+		ifservices
+	ON
+		(outages.ifserviceid = ifservices.id)
+	JOIN
+		service
+	ON
+		(ifservices.serviceid=service.serviceid)
+	JOIN
+		ipinterface
+	ON
+		(ifservices.ipinterfaceid = ipinterface.id)
+	WHERE
+		service.servicename not like 'StrafePing' AND
+		(
+			outages.iflostservice > now()-INTERVAL '23 hours'
+			OR
+			outages.ifregainedservice is null
+		) AND
+		outages.perspective IS NULL
+	) AS outages_24h
 	JOIN
 		node
 	ON
-		event_outages_24h.nodeid = node.nodeid) AS detailed_outages_24h
+		outages_24h.nodeid = node.nodeid) AS detailed_outages_24h
 GROUP BY
 	detailed_outages_24h.unresolved, detailed_outages_24h.resolved]]>
 		</queryString>
@@ -130,47 +116,10 @@ WHERE
 	<subDataset name="events_histogramm_last24h" uuid="dcf6cf80-4a6f-42e3-95a7-151588b68551">
 		<queryString>
 			<![CDATA[SELECT
-	series.day_hours, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical
+	series.day_hours, CAST(0 AS BIGINT) AS indeterminate, CAST(0 AS BIGINT) AS cleared, CAST(0 AS BIGINT) AS normal, CAST(0 AS BIGINT) AS warning, CAST(0 AS BIGINT) AS minor, CAST(0 AS BIGINT) AS major, CAST(0 AS BIGINT) AS critical
 FROM
 	(SELECT
 		generate_series(0,23) as day_hours) AS series
-LEFT JOIN
-	(SELECT
-		EXTRACT (hours from events_archive.event_time) AS eventtime_hour,
-		CASE
-			WHEN events_archive.event_severity = '1' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS indeterminate,
-		CASE
-			WHEN events_archive.event_severity = '2' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS cleared,
-		CASE
-			WHEN events_archive.event_severity = '3' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS normal,
-		CASE
-			WHEN events_archive.event_severity = '4' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS warning,
-		CASE
-			WHEN events_archive.event_severity = '5' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS minor,
-		CASE
-			WHEN events_archive.event_severity = '6' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS major,
-		CASE
-			WHEN events_archive.event_severity = '7' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS critical
-	FROM
-		events_archive
-	WHERE
-		events_archive.event_time > now() - INTERVAL '23 hour') AS events_per_hour
-ON
-	(series.day_hours=events_per_hour.eventtime_hour)
 GROUP BY
 	day_hours
 ORDER BY
@@ -204,48 +153,8 @@ ORDER BY
 	<subDataset name="top_20_event_nodes" uuid="08f5a3d4-3979-4e98-b715-a23431d8a861">
 		<queryString>
 			<![CDATA[SELECT
-	nodelabel, SUM(indeterminate) AS indeterminate, SUM(cleared) AS cleared, SUM(normal) AS normal, SUM(warning) AS warning, SUM(minor) AS minor, SUM(major) AS major, SUM(critical) AS critical, SUM(indeterminate + cleared + normal + warning + minor + major + critical) AS total
-FROM
-	(SELECT
-		node.nodelabel,
-		CASE
-			WHEN events_archive.event_severity = '1' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS indeterminate,
-		CASE
-			WHEN events_archive.event_severity = '2' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS cleared,
-		CASE
-			WHEN events_archive.event_severity = '3' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS normal,
-		CASE
-			WHEN events_archive.event_severity = '4' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS warning,
-		CASE
-			WHEN events_archive.event_severity = '5' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS minor,
-		CASE
-			WHEN events_archive.event_severity = '6' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS major,
-		CASE
-			WHEN events_archive.event_severity = '7' THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS critical
-	FROM
-		node, events_archive
-	WHERE
-		events_archive.event_time > now() - INTERVAL '23 hour' AND
-		events_archive.node_id = node.nodeid) AS node_events
-GROUP BY
-	nodelabel
-ORDER BY
-	total DESC
-LIMIT '20']]>
+	NULL::TEXT AS nodelabel, CAST(0 AS BIGINT) AS indeterminate, CAST(0 AS BIGINT) AS cleared, CAST(0 AS BIGINT) AS normal, CAST(0 AS BIGINT) AS warning, CAST(0 AS BIGINT) AS minor, CAST(0 AS BIGINT) AS major, CAST(0 AS BIGINT) AS critical, CAST(0 AS BIGINT) AS total
+WHERE false]]>
 		</queryString>
 		<field name="nodelabel" class="java.lang.String">
 			<fieldDescription><![CDATA[]]></fieldDescription>
@@ -281,14 +190,11 @@ LIMIT '20']]>
 		detailed_outages_24h.nodelabel, detailed_outages_24h.outage_status, COUNT(detailed_outages_24h.outage_type) AS count, detailed_outages_24h.outage_type
 	FROM
 		(SELECT
-			node.nodelabel, outages_24h.duration, outages_24h.outage_status, events_archive.event_uei AS eventuei, outages_24h.servicename,
+			node.nodelabel, outages_24h.duration, outages_24h.outage_status, outages_24h.servicename,
 			CASE
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown' AND outages_24h.servicename != 'ICMP' THEN 'NULL'
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/interfaceDown' AND outages_24h.servicename != 'ICMP' THEN 'NULL'
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/nodeLostService' AND outages_24h.servicename = 'SNMP' THEN 'management'
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/nodeDown' AND outages_24h.servicename = 'ICMP' THEN 'node'
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/interfaceDown' AND outages_24h.servicename = 'ICMP' THEN 'interface'
-				WHEN events_archive.event_uei = 'uei.opennms.org/nodes/nodeLostService' AND (outages_24h.servicename != 'ICMP' OR outages_24h.servicename != 'SNMP')THEN 'service'
+				WHEN outages_24h.servicename = 'SNMP' THEN 'management'
+				WHEN outages_24h.servicename = 'ICMP' THEN 'node'
+				WHEN outages_24h.servicename != 'ICMP' AND outages_24h.servicename != 'SNMP' THEN 'service'
 				ELSE 'NULL'
 			END AS outage_type
 		FROM
@@ -321,10 +227,6 @@ LIMIT '20']]>
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
 				outages.ifregainedservice is null))
 			AS outages_24h
-		JOIN
-			events_archive
-		ON
-			(outages_24h.svclosteventid = events_archive.event_tsid)
 		JOIN
 			node
 		ON
@@ -408,31 +310,27 @@ FROM
 	(SELECT
 		node.nodelabel, event_outage_24h.state,  event_outage_24h.current, event_outage_24h.resolved,
 		CASE
-			WHEN (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'SNMP') AND (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'ICMP') THEN CAST ('1' AS INTEGER)
+			WHEN event_outage_24h.servicename != 'SNMP' AND event_outage_24h.servicename != 'ICMP' THEN CAST ('1' AS INTEGER)
 			ELSE CAST('0' AS INTEGER)
 		END AS service_outage,
 		CASE
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outage_24h.servicename = 'SNMP') THEN CAST('1' AS INTEGER)
+			WHEN event_outage_24h.servicename = 'SNMP' THEN CAST('1' AS INTEGER)
 			ELSE CAST('0' AS INTEGER)
 		END AS management_outage,
+		CAST('0' AS INTEGER) AS interface_outage,
 		CASE
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outage_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
-			ELSE CAST('0' AS INTEGER)
-		END AS interface_outage,
-		CASE
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outage_24h.servicename = 'ICMP') THEN CAST('1' AS INTEGER)
+			WHEN event_outage_24h.servicename = 'ICMP' THEN CAST('1' AS INTEGER)
 			ELSE CAST('0' AS INTEGER)
 		END AS node_outage,
 		CASE
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND (event_outage_24h.servicename = 'SNMP') THEN 'management'
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND (event_outage_24h.servicename = 'ICMP') THEN 'interface'
-			WHEN event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeDown' AND (event_outage_24h.servicename = 'ICMP') THEN 'node'
-			WHEN (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'SNMP') AND (event_outage_24h.eventuei = 'uei.opennms.org/nodes/nodeLostService' AND event_outage_24h.servicename != 'ICMP') THEN 'service'
+			WHEN event_outage_24h.servicename = 'SNMP' THEN 'management'
+			WHEN event_outage_24h.servicename = 'ICMP' THEN 'node'
+			WHEN event_outage_24h.servicename != 'SNMP' AND event_outage_24h.servicename != 'ICMP' THEN 'service'
 			ELSE 'filtered'
 		END AS outage_type
 	FROM
 		(SELECT
-			outage_24h.nodeid, outage_24h.state, outage_24h.current, outage_24h.resolved, events_archive.event_uei AS eventuei, outage_24h.svclosteventid, outage_24h.svcregainedeventid, outage_24h.servicename
+			outage_24h.nodeid, outage_24h.state, outage_24h.current, outage_24h.resolved, 'N/A' AS eventuei, outage_24h.svclosteventid, outage_24h.svcregainedeventid, outage_24h.servicename
 		FROM
 			(SELECT
 				ipinterface.nodeid, outages.svclosteventid, outages.svcregainedeventid, service.serviceid, service.servicename,
@@ -467,11 +365,7 @@ FROM
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
 				outages.ifregainedservice is null) AND
 				outages.perspective IS NULL)
-			AS outage_24h
-		JOIN
-			events_archive
-		ON
-			(outage_24h.svclosteventid = events_archive.event_tsid))
+			AS outage_24h)
 		AS event_outage_24h
 	JOIN
 		node

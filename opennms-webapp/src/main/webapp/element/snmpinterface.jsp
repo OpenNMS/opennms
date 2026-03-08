@@ -89,11 +89,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 %>
 
 <ul class="list-inline">
-  <% if (ifIndex > 0 ) { %>
-  	<li class="list-inline-item">
-      <a href="<%=eventUrl2%>">View Events by ifIndex</a>
-  	</li>
-  <% } %>
   <%
     String ifLabel;
     if (ifIndex != -1) {

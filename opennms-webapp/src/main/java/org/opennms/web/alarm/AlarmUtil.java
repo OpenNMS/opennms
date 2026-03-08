@@ -103,7 +103,9 @@ public abstract class AlarmUtil extends Object {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
+        // lastEvent alias removed: the events table no longer exists (events
+        // flow through Kafka).  Event data is denormalized onto OnmsAlarm.
+        // criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
 
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {

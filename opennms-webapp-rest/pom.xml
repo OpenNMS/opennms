@@ -598,11 +598,5 @@
       <artifactId>org.opennms.features.notifications.api</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.events</groupId>
-      <artifactId>org.opennms.features.events.event-store</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
   </dependencies>
 </project>
