@@ -162,7 +162,6 @@
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="defaultShortLimit" value="20"/>
     </bean>
 
@@ -221,7 +220,6 @@
         <property name="defaultLongLimit" value="10"/>
         <property name="defaultSortStyle" value="ID"/>
         <property name="webNotificationRepository" ref="webNotificationRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
