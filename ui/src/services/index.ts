@@ -39,15 +39,6 @@ import {
   getPreFabGraphs
 } from './graphService'
 
-import {
-  getDeviceConfigBackups,
-  backupDeviceConfig,
-  downloadDeviceConfigs,
-  getVendorOptions,
-  getOsImageOptions,
-  getHistoryByIpInterface
-} from './deviceService'
-
 import { getGeolocationConfig } from './geolocationService'
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getMainMonitoringSystem } from './monitoringSystemService'
@@ -117,12 +108,6 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getPlugins,
-  getDeviceConfigBackups,
-  backupDeviceConfig,
-  downloadDeviceConfigs,
-  getVendorOptions,
-  getOsImageOptions,
-  getHistoryByIpInterface,
   getAliases,
   getCredentialsByAlias,
   addCredentials,

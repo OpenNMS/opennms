@@ -190,4 +190,38 @@
         </createView>
     </changeSet>
 
+    <changeSet author="delta-v" id="36.0.0-drop-device-config">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="device_config"/>
+        </preConditions>
+        <dropTable tableName="device_config" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet author="delta-v" id="36.0.0-drop-device-config-sequence">
+        <preConditions onFail="MARK_RAN">
+            <sequenceExists sequenceName="deviceconfignxtid"/>
+        </preConditions>
+        <dropSequence sequenceName="deviceconfignxtid"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet author="delta-v" id="36.0.0-drop-statisticsreport">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="statisticsreport"/>
+        </preConditions>
+        <dropTable tableName="statisticsreportdata" cascadeConstraints="true"/>
+        <dropTable tableName="statisticsreport" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet author="delta-v" id="36.0.0-drop-reportcatalog">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="reportcatalog"/>
+        </preConditions>
+        <dropTable tableName="reportlocator" cascadeConstraints="true"/>
+        <dropTable tableName="reportcatalog" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -36,8 +36,6 @@
     <module>../features/config/dao/api</module>
     <module>../features/config/rest/api</module>
     <module>../features/config/service/api</module>
-    <module>../features/device-config/api</module>
-    <module>../features/device-config/persistence/api</module>
     <module>../features/distributed/coordination/api</module>
     <module>../features/distributed/core/api</module>
     <module>../features/distributed/dao/api</module>
@@ -66,7 +64,6 @@
     <module>../features/openconfig/api</module>
     <module>../features/poller/api</module>
     <module>../features/provisioning/api</module>
-    <module>../features/reporting/api</module>
     <module>../features/scv/api</module>
     <module>../features/search/api</module>
     <module>../features/situation-feedback/api</module>

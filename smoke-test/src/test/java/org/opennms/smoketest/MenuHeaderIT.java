@@ -72,12 +72,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("dashboardsMenu", "Trends");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
 
-        clickMenuItem("dashboardsMenu", "Charts");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
-
-        clickMenuItem("dashboardsMenu", "Database Reports");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
-
 
         clickMenuItem("dashboardsMenu", "Metrics Dashboard (KSC Reports)");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
@@ -293,10 +287,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
         clickMenuItem("inventoryMenu", "Structured Node List");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Node List']")));
-
-        clickMenuItem("inventoryMenu", "Device Configs");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Device Configuration']")));
 
         clickMenuItem("toolsMenu", "Secure Credentials Vault");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Secure Credentials Vault']")));

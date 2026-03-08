@@ -26,7 +26,6 @@
     <module>hibernate</module>
     <module>jackson1</module>
     <module>jackson2</module>
-    <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
     <module>jaxb</module>

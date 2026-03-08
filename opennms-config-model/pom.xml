@@ -43,10 +43,8 @@
             <Export-Package>
               org.opennms.netmgt.config.ami.*;version="${project.version}",
               org.opennms.netmgt.config.categories.*;version="${project.version}",
-              org.opennms.netmgt.config.charts.*;version="${project.version}",
               org.opennms.netmgt.config.collectd.*;version="${project.version}",
               org.opennms.netmgt.config.collector.*;version="${project.version}",
-              org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
               org.opennms.netmgt.config.destinationPaths.*;version="${project.version}",
               org.opennms.netmgt.config.discovery.*;version="${project.version}",
               org.opennms.netmgt.config.eventd.*;version="${project.version}",
@@ -66,8 +64,6 @@
               org.opennms.netmgt.config.pagesequence.*;version="${project.version}",
               org.opennms.netmgt.config.poller.*;version="${project.version}",
               org.opennms.netmgt.config.provisiond.*;version="${project.version}",
-              org.opennms.netmgt.config.reportd.*;version="${project.version}",
-              org.opennms.netmgt.config.reporting.*;version="${project.version}",
               org.opennms.netmgt.config.rtc.*;version="${project.version}",
               org.opennms.netmgt.config.scriptd.*;version="${project.version}",
               org.opennms.netmgt.config.server.*;version="${project.version}",
@@ -80,7 +76,7 @@
               org.opennms.netmgt.config.syslogd.*;version="${project.version}",
               org.opennms.netmgt.config.tags.*;version="${project.version}",
               org.opennms.netmgt.config.threshd.*;version="${project.version}",
-              org.opennms.netmgt.config.tl1d.*;version="${project.version}",
+
               org.opennms.netmgt.config.translator.*;version="${project.version}",
               org.opennms.netmgt.config.users.*;version="${project.version}",
               org.opennms.netmgt.config.views.*;version="${project.version}",

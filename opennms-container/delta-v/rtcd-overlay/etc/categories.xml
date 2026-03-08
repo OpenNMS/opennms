@@ -95,15 +95,6 @@
                 <service>ICMP</service>
                 <rule><![CDATA[ipaddr == '0.0.0.0']]></rule>
             </category>
-            <category>
-                <label><![CDATA[Device Config Backup]]></label>
-                <comment>This category includes all network devices for which configurations are retrieved by the Device Config Backup service</comment>
-                <normal>99.99</normal>
-                <warning>97</warning>
-                <service>~^DeviceConfig-.+$</service>
-                <service>DeviceConfig</service>
-                <rule><![CDATA[serviceName ~ '^DeviceConfig-.+$' | isDeviceConfig]]></rule>
-            </category>
         </categories>
     </categorygroup>
 </catinfo>

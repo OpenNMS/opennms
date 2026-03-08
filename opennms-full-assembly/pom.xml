@@ -418,7 +418,6 @@
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>
                 <feature>dashlet-bsm</feature>
-                <feature>dashlet-charts</feature>
                 <feature>dashlet-image</feature>
                 <feature>dashlet-ksc</feature>
                 <feature>dashlet-map</feature>
@@ -479,7 +478,6 @@
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
                 <feature>opennms-endpoints-grafana</feature>
-                <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
                 <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
@@ -506,12 +504,6 @@
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
 
-                <!-- Lots of deviceconfig features -->
-                <feature>opennms-deviceconfig-rest</feature>
-                <feature>opennms-deviceconfig-sink</feature>
-                <feature>opennms-deviceconfig-sink-consumer</feature>
-                <feature>opennms-deviceconfig-service</feature>
-                <feature>opennms-deviceconfig-monitor</feature>
                 <feature>opennms-timeseries-api</feature>
                 
                 <feature>inmemory-timeseries-plugin</feature>
@@ -540,7 +532,6 @@
                 <feature>opennms-activemq-component</feature>
                 <feature>opennms-discovery</feature>
                 <feature>opennms-events-daemon</feature>
-                <feature>opennms-reporting</feature>
                 <feature>opennms-webapp</feature>
               </features>
               <repository>${project.build.directory}/experimental-repo</repository>

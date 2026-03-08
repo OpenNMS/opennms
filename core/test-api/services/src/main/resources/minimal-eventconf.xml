@@ -1356,25 +1356,8 @@
 <!--    <alarm-data reduction-key="%uei%:%parm[user]%" alarm-type="3" auto-clean="true"/> -->
   </event> 
   
-  <event> 
-    <uei>uei.opennms.org/api/tl1d/message/autonomous</uei>
-    <event-label>OpenNMS-defined Autonomous TL1 message</event-label>
-    <descr>
-      This is a TL1 autonomous message delivered for host: %host%.&lt;p&gt;
 
-      &lt;p&gt;Message: %parm[raw-message]% &lt;/p&gt;
-      &lt;p&gt;Alarm Code: %parm[alarm-code]% &lt;/p&gt;
-      &lt;p&gt;ATAG: %parm[atag]% &lt;/p&gt;
-      &lt;p&gt;Verb: %parm[verb]% &lt;/p&gt;
-      &lt;p&gt;Auto Block: %parm[autoblock]% &lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt; %host%:%parm[verb]%:%parm[autoblock]% &lt;/p&gt;
-    </logmsg>
-    <severity>Warning</severity>
-    <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="3" auto-clean="false"/>
-  </event> 
-  
+
   <event> 
     <uei>uei.opennms.org/provisioner/provisioningAdapterFailed</uei>
     <event-label>OpenNMS-defined Provisioning Adapter Failed message</event-label>
@@ -1438,31 +1421,5 @@
       &lt;p&gt;DISCARD-MATCHING-MESSAGES.&lt;/p&gt;
      </logmsg>
      <severity>Normal</severity>
-  </event>
-  <event>
-    <uei>uei.opennms.org/reportd/reportRunFailed</uei>
-    <event-label>OpenNMS-defined Reportd Event: reportRunFailed</event-label>
-    <descr>
-      A message from the Reportd reporting service that a report has failed to run:
-      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay' >
-      &lt;p&gt;The report with name %parm[reportName]% failed to run for the following reason: %parm[reason]% &lt;/p&gt;
-     </logmsg>
-     <severity>Minor</severity>
-     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
-  </event>
-  <event>
-    <uei>uei.opennms.org/reportd/reportDeliveryFailed</uei>
-    <event-label>OpenNMS-defined Reportd Event: reportDeliveryFailed</event-label>
-    <descr>
-      A message from the Reportd delivery service that a report could not be delivered:
-      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay' >
-      &lt;p&gt;The report with name %parm[reportName]% could not be delivered for the following reason: %parm[reason]% &lt;/p&gt;
-     </logmsg>
-     <severity>Minor</severity>
-     <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[reportName]%" alarm-type="3" auto-clean="false" />
   </event>
 </events>

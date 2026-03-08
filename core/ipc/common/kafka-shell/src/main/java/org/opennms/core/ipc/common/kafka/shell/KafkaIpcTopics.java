@@ -72,8 +72,7 @@ public class KafkaIpcTopics implements Action {
     private static final List<String> OPTIONAL_SINK_MODULES = List.of(
             "Events",      // EventSinkModule.MODULE_ID (features/events/sink/dispatcher)
             "Syslog",      // SyslogSinkModule.MODULE_ID (features/events/syslog)
-            "Trap",        // TrapSinkModule.getId() (features/events/traps)
-            "DeviceConfig" // DeviceConfigSinkModuleImpl.MODULE_ID (features/device-config/sink/module)
+            "Trap"         // TrapSinkModule.getId() (features/events/traps)
     );
 
     // Telemetry module ID prefix

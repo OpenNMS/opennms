@@ -340,12 +340,6 @@
                                 <property name="url" value="pathOutage/index.jsp"/>
                                 <property name="locationMatch" value="pathOutage"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
-                                <property name="name" value="Device Configs"/>
-                                <property name="url" value="ui/index.html#/device-config-backup"/>
-                                <property name="locationMatch" value="configurationManagement"/>
-                                <property name="roles" value="ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="External Requisitions"/>
                                 <property name="url" value="ui/index.html#/configuration"/>
@@ -441,11 +435,6 @@
                     <property name="entries">
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Charts"/>
-                                <property name="url" value="charts/index.jsp"/>
-                                <property name="locationMatch" value="chart"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Resource Graphs"/>
                                 <property name="url" value="graph/index.jsp"/>
                                 <property name="locationMatch" value="performance"/>
@@ -454,16 +443,6 @@
                                 <property name="name" value="KSC Reports"/>
                                 <property name="url" value="KSC/index.jsp"/>
                                 <property name="locationMatch" value="ksc"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Database Reports"/>
-                                <property name="url" value="report/database/index.jsp"/>
-                                <property name="locationMatch" value="database-reports"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Statistics"/>
-                                <property name="url" value="statisticsReports/index.htm"/>
-                                <property name="locationMatch" value="reports"/>
                             </bean>
                         </list>
                     </property>
@@ -560,14 +539,6 @@
         <property name="kscReportFactory" ref="kscReportFactory"/>
         <property name="kscReportService" ref="kscReportService"/>
         <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean id="statisticsReportCommandValidator" class="org.opennms.web.validator.StatisticsReportCommandValidator">
-        <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    </bean>
-
-    <bean name="/statisticsReports/index.htm" class="org.opennms.web.controller.statisticsReports.ListController">
-        <property name="statisticsReportService" ref="statisticsReportService"/>
     </bean>
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

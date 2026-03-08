@@ -21,9 +21,6 @@
  */
 package org.opennms.netmgt.poller.shell;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -36,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -52,7 +48,6 @@ import org.opennms.core.mate.api.MapScope;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -211,12 +206,8 @@ public class Poll implements Action {
                         }
                         if (pollStatus.getDeviceConfig() != null) {
                             DeviceConfig deviceConfig = pollStatus.getDeviceConfig();
-                            byte[] content = deviceConfig.getContent();
-                            if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
-                                content = DeviceConfigUtil.decompressGzipToBytes(content);
-                            }
                             System.out.printf("Received file %s with content ... \n\n", deviceConfig.getFilename());
-                            String config = new String(deviceConfig.getContent(), Charset.forName(Charset.defaultCharset().name()));
+                            String config = new String(deviceConfig.getContent(), Charset.defaultCharset());
                             System.out.println(config);
                         }
                     } else {

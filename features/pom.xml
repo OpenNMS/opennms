@@ -65,9 +65,6 @@
     <!-- Discovery -->
     <module>discovery</module>
 
-    <!-- OpenNMS Reporting API and implementations -->
-    <module>reporting</module>
-
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
     <module>request-tracker</module>
@@ -174,15 +171,11 @@
     <!-- IfTtt integration -->
     <module>ifttt</module>
 
-    <!-- JFreeChart charts -->
-    <module>charts</module>
-
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
     <module>perspectivepoller</module>
     <module>openconfig</module>
-    <module>device-config</module>
     <module>zenith-connect</module>
     <module>ui-extension</module>
     <!-- Configuration Manager -->

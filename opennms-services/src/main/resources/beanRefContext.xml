@@ -7,7 +7,6 @@
         <constructor-arg>
             <list>
                 <value>META-INF/opennms/applicationContext-pollerConfigDaos.xml</value>
-                <value>META-INF/opennms/applicationContext-deviceConfig-MonitorAdaptor.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg ref="daoContext" />
@@ -79,14 +78,5 @@
      </constructor-arg>
      <constructor-arg ref="daoContext" />
     </bean>
-    
-   <bean id="tl1DaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-tl1Daemon.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daoContext" />
-   </bean>
-   
+ 
 </beans>

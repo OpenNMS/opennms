@@ -77,11 +77,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <ul class="list-unstyled">
-                        <li><a href="charts/index.jsp">Charts</a></li>
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
-                        <li><a href="report/database/index.jsp">Database Reports</a></li>
-                        <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
                     </ul>
                 </div>
             </div>
@@ -119,15 +116,6 @@
                 match on resource names.
             </p>
 
-            <p><b>Database Reports</b> provide graphical or numeric
-                view of your service level metrics for the current
-                month-to-date, previous month, and last twelve months by categories.
-            </p>
-
-            <p><b>Statistics Reports</b> provide regularly scheduled statistical
-                reports on collected numerical data (response time, SNMP performance
-                data, etc.).
-            </p>
         </div>
     </div>
   </div>

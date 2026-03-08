@@ -205,11 +205,5 @@
       <version>${project.version}</version>
       <classifier>jar-with-dependencies</classifier>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-shaded</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
   </dependencies>
 </project>

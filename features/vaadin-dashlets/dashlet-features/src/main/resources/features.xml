@@ -26,10 +26,6 @@
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${pom.version}</bundle>
   </feature>
-  <feature name="dashlet-charts" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: Charts">
-    <feature>opennms-core</feature>
-    <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${pom.version}</bundle>
-  </feature>
   <feature name="dashlet-rtc" version="${pom.version}" description="OpenNMS :: Features :: Dashlets :: RTC">
     <feature>opennms-core</feature>
     <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${pom.version}</bundle>

@@ -56,7 +56,6 @@ Each dashlet visualizes specific information:
 
 * xref:deep-dive/visualizations/opsboard/dashlets/alarm-detail.adoc[*Alarm Details:*] Displays a table with alarms and their details.
 * xref:deep-dive/visualizations/opsboard/dashlets/alarms.adoc[*Alarms:*] Displays a table with a short description of alarms.
-* xref:deep-dive/visualizations/opsboard/dashlets/charts.adoc[*Charts:*] Displays predefined and custom bar graphs.
 * xref:deep-dive/visualizations/opsboard/dashlets/grafana.adoc[*Grafana:*] Displays a Grafana dashboard with data spanning a specified time range.
 * xref:deep-dive/visualizations/opsboard/dashlets/image.adoc[*Image:*] Displays a custom image.
 * xref:deep-dive/visualizations/opsboard/dashlets/ksc.adoc[*KSC Reports:*] Displays a specified KSC report.
