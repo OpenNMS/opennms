@@ -1,0 +1,116 @@
+name: Delta-V Release
+
+# Triggered by pushing tags like 'delta-v-1.0.0'
+# Only repo owners can push tags, so GITHUB_REF_NAME is trusted input.
+on:
+  push:
+    tags:
+      - 'delta-v-*'
+
+env:
+  DOCKER_ORG: pbranestrategy
+  JAVA_VERSION: '17'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven
+
+      - name: Extract version from POM
+        id: version
+        run: |
+          VERSION=$(.circleci/scripts/pom2version.sh pom.xml)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Tag name is safe — only repo owners can push tags
+          TAG_VERSION="${GITHUB_REF_NAME#delta-v-}"
+          echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Compile OpenNMS
+        run: ./compile.pl -DskipTests
+
+      - name: Assemble Horizon distribution
+        run: ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests -p dir
+
+      - name: Build container/features
+        run: ./maven/bin/mvn -DskipTests -pl container/features install
+
+      - name: Build Sentinel features
+        run: ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
+
+      - name: Build Daemon assembly
+        working-directory: opennms-assemblies/daemon
+        run: ../../maven/bin/mvn -DskipTests install
+
+      - name: Build Alarmd assembly
+        working-directory: opennms-assemblies/alarmd
+        run: ../../maven/bin/mvn -DskipTests install
+
+      - name: Build and push Horizon image
+        working-directory: opennms-container/core
+        env:
+          POM_VERSION: ${{ steps.version.outputs.version }}
+          TAG_VERSION: ${{ steps.version.outputs.tag_version }}
+        run: |
+          make image DOCKER_ORG="${DOCKER_ORG}"
+          docker tag "${DOCKER_ORG}/horizon:${POM_VERSION}" "${DOCKER_ORG}/horizon:${TAG_VERSION}"
+          docker tag "${DOCKER_ORG}/horizon:${POM_VERSION}" "${DOCKER_ORG}/horizon:latest"
+          docker push "${DOCKER_ORG}/horizon:${POM_VERSION}"
+          docker push "${DOCKER_ORG}/horizon:${TAG_VERSION}"
+          docker push "${DOCKER_ORG}/horizon:latest"
+
+      - name: Build and push Daemon image
+        working-directory: opennms-container/sentinel
+        env:
+          POM_VERSION: ${{ steps.version.outputs.version }}
+          TAG_VERSION: ${{ steps.version.outputs.tag_version }}
+        run: |
+          make image DOCKER_ORG="${DOCKER_ORG}"
+          docker tag "${DOCKER_ORG}/daemon:${POM_VERSION}" "${DOCKER_ORG}/daemon:${TAG_VERSION}"
+          docker tag "${DOCKER_ORG}/daemon:${POM_VERSION}" "${DOCKER_ORG}/daemon:latest"
+          docker push "${DOCKER_ORG}/daemon:${POM_VERSION}"
+          docker push "${DOCKER_ORG}/daemon:${TAG_VERSION}"
+          docker push "${DOCKER_ORG}/daemon:latest"
+
+      - name: Build and push Alarmd image
+        working-directory: opennms-container/alarmd
+        env:
+          POM_VERSION: ${{ steps.version.outputs.version }}
+          TAG_VERSION: ${{ steps.version.outputs.tag_version }}
+        run: |
+          make image DOCKER_ORG="${DOCKER_ORG}"
+          docker tag "${DOCKER_ORG}/alarmd:${POM_VERSION}" "${DOCKER_ORG}/alarmd:${TAG_VERSION}"
+          docker tag "${DOCKER_ORG}/alarmd:${POM_VERSION}" "${DOCKER_ORG}/alarmd:latest"
+          docker push "${DOCKER_ORG}/alarmd:${POM_VERSION}"
+          docker push "${DOCKER_ORG}/alarmd:${TAG_VERSION}"
+          docker push "${DOCKER_ORG}/alarmd:latest"
+
+      - name: Prepare webapp overlay
+        run: opennms-container/delta-v/build.sh overlay
+
+      - name: Upload overlay artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-overlay
+          path: opennms-container/delta-v/webapp-jetty-webinf-overlay/
