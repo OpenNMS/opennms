@@ -165,6 +165,7 @@ services:
       - webapp-etc:/opt/opennms/etc
       - webapp-data:/opennms-data
       - ./webapp-overlay/etc/opennms.properties.d/:/opt/opennms-etc-overlay/opennms.properties.d/
+      - ./webapp-jetty-webinf-overlay/:/opt/opennms-jetty-webinf-overlay/
     ports:
       - "8980:8980"
       - "8102:8101"

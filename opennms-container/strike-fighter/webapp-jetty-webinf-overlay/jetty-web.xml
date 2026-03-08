@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+<!--
+  Force parent-first classloading for the OpenNMS webapp.
+
+  Without this, the webapp's WEB-INF/lib contains duplicate Spring JARs
+  (spring-beans, spring-context, etc.) that conflict with the identical
+  JARs in /opt/opennms/lib/. Jetty's default child-first classloading
+  causes NamespaceHandler instanceof checks to fail because the interface
+  and implementation are loaded by different classloaders.
+-->
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <Set name="parentLoaderPriority">true</Set>
+</Configure>
