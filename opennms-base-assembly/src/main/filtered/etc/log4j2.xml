@@ -153,10 +153,7 @@
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
     </logger>
-    <logger name="net.sf.jasperreports" additivity="false" level="INFO">
-      <appender-ref ref="RoutingAppender"/>
-      <appender-ref ref="\${console.daemon.output}"/>
-    </logger>
+
     <logger name="org.apache.bsf" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
       <appender-ref ref="\${console.daemon.output}"/>
@@ -298,7 +295,6 @@
         <KeyValuePair key="poller"               value="DEBUG" />
         <KeyValuePair key="provisiond"           value="DEBUG" />
         <KeyValuePair key="queued"               value="DEBUG" />
-        <KeyValuePair key="reportd"              value="DEBUG" />
         <KeyValuePair key="reports"              value="DEBUG" />
         <KeyValuePair key="rtc"                  value="DEBUG" />
         <KeyValuePair key="scriptd"              value="DEBUG" />

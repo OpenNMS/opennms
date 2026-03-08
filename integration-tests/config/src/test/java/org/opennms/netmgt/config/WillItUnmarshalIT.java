@@ -50,9 +50,6 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.ifttt.config.IfTttConfig;
-import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
-import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
-import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.netmgt.alarmd.northbounder.bsf.BSFNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
@@ -89,8 +86,6 @@ import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.config.prometheus.PrometheusDatacollectionConfig;
-import org.opennms.netmgt.config.reportd.ReportdConfiguration;
-import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
@@ -202,11 +197,9 @@ public class WillItUnmarshalIT {
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, false, "Invalid content was found starting with element 'bad-element'.");
 
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, true, null);
-        addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, false, null);
         addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "categories.xml", Catinfo.class, false, null);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
-        addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, false, null);
         addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
@@ -222,7 +215,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
         addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, true, null);
-        addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, false, null);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, false, null);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
@@ -237,8 +229,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
         // moved to CmWillItUnmarshalIT
         //addFile(Source.CLASSPATH, "/defaults/provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
-        addFile(Source.CONFIG, "remote-repository.xml", RemoteRepositoryConfig.class, true, null);
-        addFile(Source.CONFIG, "reportd-configuration.xml", ReportdConfiguration.class, false, null);
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, true, null);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, true, null);
         addFile(Source.CONFIG, "service-configuration.xml", ServiceConfiguration.class, false, null);

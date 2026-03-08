@@ -62,8 +62,8 @@
       <artifactId>opennms-provision-persistence</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.core</artifactId>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

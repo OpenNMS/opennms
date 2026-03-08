@@ -232,7 +232,6 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         m_poller.setPollerConfig(factory);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
         m_poller.setPollOutagesDao(m_pollOutagesDao);
-        m_poller.setServiceMonitorAdaptor((service, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 

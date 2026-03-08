@@ -77,30 +77,6 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-reporting" description="OpenNMS :: Reporting" version="${project.version}">
-      <feature>commons-beanutils</feature>
-      <feature>commons-io</feature>
-      <feature>fop</feature>
-      <feature>quartz</feature>
-
-      <feature>opennms-config</feature>
-      <feature>opennms-core</feature>
-      <feature>opennms-core-db</feature>
-      <feature>opennms-dao-api</feature>
-      <feature>opennms-javamail</feature>
-
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.availability/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.core/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.dao/${project.version}</bundle>
-      <!--
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.jasper-reports/${project.version}</bundle>
-      -->
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.repository/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.sdo/${project.version}</bundle>
-    </feature>
-
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
       <feature>war</feature>
 
@@ -117,7 +93,6 @@
       <feature>opennms-config</feature>
       <feature>opennms-dao</feature>
       <feature>opennms-provisioning</feature>
-      <feature>opennms-reporting</feature>
 
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>

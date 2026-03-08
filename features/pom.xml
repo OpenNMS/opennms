@@ -65,9 +65,6 @@
     <!-- Discovery -->
     <module>discovery</module>
 
-    <!-- OpenNMS Reporting API and implementations -->
-    <module>reporting</module>
-
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
     <module>request-tracker</module>

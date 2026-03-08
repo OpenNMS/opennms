@@ -423,16 +423,6 @@ public abstract class EventConstants {
     /** Constant <code>PARM_CONFIG_FILE_NAME="configFile"</code> */
     public static final String PARM_CONFIG_FILE_NAME = "configFile";
 
-    /*
-     * Reportd UEIs.
-     */
-    
-    public static final String REPORTD_RUN_REPORT = "uei.opennms.org/reportd/runReport";
-    /** Constant <code>PARM_REPORT_NAME="reportName"</code> */
-    public static final String PARM_REPORT_NAME = "reportName";
-    public static final String REPORT_RUN_FAILED_UEI = "uei.opennms.org/reportd/reportRunFailed";
-    public static final String REPORT_DELIVERY_FAILED_UEI = "uei.opennms.org/reportd/reportDeliveryFailed";
-    
     public static final String PERSPECTIVE_NODE_LOST_SERVICE_UEI = "uei.opennms.org/perspective/nodes/nodeLostService";
     public static final String PERSPECTIVE_NODE_REGAINED_SERVICE_UEI = "uei.opennms.org/perspective/nodes/nodeRegainedService";
     /** Constant <code>LOCATION_MONITOR_REGISTERED_UEI="uei.opennms.org/remote/locationMonitorR"{trunked}</code> */

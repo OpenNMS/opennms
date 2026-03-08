@@ -110,7 +110,6 @@ public class ConfigTesterTest {
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
     }
-    @Test
 
     @Test
     public void testAmiConfig() {
@@ -123,11 +122,6 @@ public class ConfigTesterTest {
      */
     public void testAsteriskConfiguration() {
         ignoreConfigFile("asterisk-configuration.properties");
-    }
-
-    @Test
-    public void testAvailabilityReports() {
-        testConfigFile("availability-reports.xml");
     }
 
     @Test
@@ -151,11 +145,6 @@ public class ConfigTesterTest {
     @Test
     public void testCollectdConfiguration() {
         testConfigFile("collectd-configuration.xml");
-    }
-
-    @Test
-    public void testDatabaseReports() {
-        testConfigFile("database-reports.xml");
     }
 
     @Test
@@ -216,11 +205,6 @@ public class ConfigTesterTest {
     @Test
     public void testIfTttConfig() {
         ignoreConfigFile("ifttt-config.xml");
-    }
-
-    @Test
-    public void testJasperReports() {
-        testConfigFile("jasper-reports.xml");
     }
 
     @Test
@@ -342,11 +326,6 @@ public class ConfigTesterTest {
     @Test
     public void testProvisiondConfiguration() {
         testConfigFile("provisiond-configuration.xml");
-    }
-
-    @Test
-    public void testReportdConfiguration() {
-        testConfigFile("reportd-configuration.xml");
     }
 
     @Test

@@ -64,7 +64,6 @@
     <module>../features/openconfig/api</module>
     <module>../features/poller/api</module>
     <module>../features/provisioning/api</module>
-    <module>../features/reporting/api</module>
     <module>../features/scv/api</module>
     <module>../features/search/api</module>
     <module>../features/situation-feedback/api</module>

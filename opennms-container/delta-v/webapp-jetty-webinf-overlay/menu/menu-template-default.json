@@ -56,13 +56,6 @@
           "roles": null
         },
         {
-          "id": "databaseReports",
-          "name": "Database Reports",
-          "url": "report/database/index.jsp",
-          "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
           "id": "kscReports",
           "name": "Metrics Dashboard (KSC Reports)",
           "url": "KSC/index.jsp",
@@ -152,7 +145,7 @@
           "locationMatch": "surveillance-view",
           "roles": null
         }
-     ]
+      ]
     },
     {
       "id": "mapsMenu",
@@ -208,7 +201,9 @@
           "url": "admin/index.jsp",
           "locationMatch": null,
           "icon": "network/Configuration",
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         },
         {
           "id": "surveillanceCategories",
@@ -229,7 +224,10 @@
           "name": "Flow Classification",
           "url": "admin/classification/index.jsp",
           "locationMatch": null,
-          "roles": ["ROLE_ADMIN", "ROLE_FLOW_MANAGER"]
+          "roles": [
+            "ROLE_ADMIN",
+            "ROLE_FLOW_MANAGER"
+          ]
         },
         {
           "id": "notifications",
@@ -333,7 +331,10 @@
           "name": "Provisioning Requisitions",
           "url": "admin/ng-requisitions/index.jsp",
           "locationMatch": "provisioning",
-          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+          "roles": [
+            "ROLE_ADMIN",
+            "ROLE_PROVISION"
+          ]
         },
         {
           "id": "scheduledDiscovery",
@@ -354,14 +355,20 @@
           "name": "Add a Single Node",
           "url": "admin/ng-requisitions/quick-add-node.jsp",
           "locationMatch": "",
-          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+          "roles": [
+            "ROLE_ADMIN",
+            "ROLE_PROVISION"
+          ]
         },
         {
           "id": "deleteNodes",
           "name": "Delete Nodes",
           "url": "admin/deleteNodes",
           "locationMatch": "",
-          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+          "roles": [
+            "ROLE_ADMIN",
+            "ROLE_PROVISION"
+          ]
         },
         {
           "id": "manageBusinessServices",
@@ -423,7 +430,9 @@
           "name": "External Requisitions",
           "url": "ui/index.html#/configuration",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         },
         {
           "id": "geocodingServices",
@@ -444,7 +453,10 @@
           "name": "Connect to Zenith",
           "url": "ui/index.html#/zenith-connect",
           "locationMatch": "zenithConnect",
-          "roles": ["ROLE_ADMIN", "ROLE_USER"],
+          "roles": [
+            "ROLE_ADMIN",
+            "ROLE_USER"
+          ],
           "requiredSystemProperties": [
             {
               "name": "opennms.zenithConnect.enabled",
@@ -495,14 +507,18 @@
           "name": "File Editor",
           "url": "ui/index.html#/file-editor",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_FILESYSTEM_EDITOR"]
+          "roles": [
+            "ROLE_FILESYSTEM_EDITOR"
+          ]
         },
         {
           "id": "scv",
           "name": "Secure Credentials Vault",
           "url": "ui/index.html#/scv",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         }
       ]
     },
@@ -512,21 +528,27 @@
       "url": "#",
       "locationMatch": null,
       "icon": "network/LogsAlt",
-      "roles": ["ROLE_ADMIN"],
+      "roles": [
+        "ROLE_ADMIN"
+      ],
       "items": [
         {
           "id": "logViewer",
           "name": "Log Viewer",
           "url": "ui/index.html#/logs",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         },
         {
           "id": "instrumentationLogReader",
           "name": "Instrumentation Log Reader",
           "url": "admin/nodemanagement/instrumentationLogReader.jsp",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         }
       ]
     },
@@ -603,7 +625,9 @@
           "name": "Support",
           "url": "support/index.jsp",
           "locationMatch": null,
-          "roles": ["ROLE_ADMIN"]
+          "roles": [
+            "ROLE_ADMIN"
+          ]
         }
       ]
     },
@@ -667,8 +691,7 @@
     "url": "#",
     "locationMatch": null,
     "roles": null,
-    "items": [
-    ]
+    "items": []
   },
   "selfServiceMenu": {
     "id": "selfServiceMenu",
@@ -736,13 +759,18 @@
     "name": "Quick-Add Node",
     "url": "admin/ng-requisitions/quick-add-node.jsp#/",
     "locationMatch": null,
-    "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+    "roles": [
+      "ROLE_ADMIN",
+      "ROLE_PROVISION"
+    ]
   },
   "configurationMenu": {
     "id": "configurationMenu",
     "name": "Configure OpenNMS",
     "url": "admin/index.jsp",
     "locationMatch": null,
-    "roles": ["ROLE_ADMIN"]
+    "roles": [
+      "ROLE_ADMIN"
+    ]
   }
 }

@@ -107,6 +107,14 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.timeformat</groupId>
             <artifactId>org.opennms.features.timeformat.api</artifactId>
             <version>${project.version}</version>

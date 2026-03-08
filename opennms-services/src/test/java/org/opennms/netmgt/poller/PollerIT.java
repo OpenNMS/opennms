@@ -250,7 +250,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
-        m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 
