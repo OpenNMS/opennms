@@ -113,46 +113,46 @@ do_test() {
     running=$(docker compose ps --status running --format "{{.Name}}" | wc -l | tr -d ' ')
     if [ "$running" -ge 4 ]; then
         log "  [PASS] $running services running"
-        ((pass++))
+        pass=$((pass + 1))
     else
         log "  [FAIL] Only $running services running"
-        ((fail++))
+        fail=$((fail + 1))
     fi
 
     # Test 2: Web UI accessible
     if curl -sf -o /dev/null http://localhost:8980/opennms/login.jsp 2>/dev/null; then
         log "  [PASS] Web UI accessible"
-        ((pass++))
+        pass=$((pass + 1))
     else
         log "  [FAIL] Web UI not accessible at http://localhost:8980/opennms"
-        ((fail++))
+        fail=$((fail + 1))
     fi
 
     # Test 3: REST API responds
     if curl -sf -u admin:admin http://localhost:8980/opennms/rest/info 2>/dev/null | grep -q "version"; then
         log "  [PASS] REST API responding"
-        ((pass++))
+        pass=$((pass + 1))
     else
         log "  [FAIL] REST API not responding"
-        ((fail++))
+        fail=$((fail + 1))
     fi
 
     # Test 4: Database accessible
-    if docker compose exec -T postgres psql -U opennms -d opennms -c "SELECT 1" >/dev/null 2>&1; then
+    if docker compose exec -T -e PGPASSWORD=opennms postgres psql -U opennms -d opennms -c "SELECT 1" >/dev/null 2>&1; then
         log "  [PASS] PostgreSQL accessible"
-        ((pass++))
+        pass=$((pass + 1))
     else
         log "  [FAIL] PostgreSQL not accessible"
-        ((fail++))
+        fail=$((fail + 1))
     fi
 
     # Test 5: Kafka topic exists
     if docker compose exec -T kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list 2>/dev/null | grep -q "opennms"; then
         log "  [PASS] Kafka topics created"
-        ((pass++))
+        pass=$((pass + 1))
     else
         log "  [FAIL] Kafka topics not found"
-        ((fail++))
+        fail=$((fail + 1))
     fi
 
     log ""
