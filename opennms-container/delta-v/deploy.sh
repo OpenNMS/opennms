@@ -52,8 +52,12 @@ do_up() {
             # Core + essential daemons (no trapd/syslogd/ticketer/eventtranslator/passivestatusd)
             docker compose up -d postgres kafka core webapp alarmd pollerd collectd notifd discovery rtcd
             ;;
+        passive)
+            # Passive monitoring: traps + syslogs → alarms, with new-suspect-on-trap/message enabled
+            docker compose up -d postgres kafka core webapp alarmd trapd syslogd
+            ;;
         *)
-            err "Unknown profile: $profile (use: full, core, lite)"
+            err "Unknown profile: $profile (use: full, core, lite, passive)"
             ;;
     esac
 
@@ -165,7 +169,7 @@ usage() {
 Usage: ./deploy.sh <command> [args]
 
 Commands:
-  up [profile]    Start services (profiles: full, core, lite)
+  up [profile]    Start services (profiles: full, core, lite, passive)
   down            Stop services (preserve data volumes)
   reset           Stop and destroy all data (clean slate)
   status          Show service status
@@ -178,9 +182,11 @@ Profiles:
   full    All 15 services (default)
   core    Minimal: postgres + kafka + core + webapp
   lite    Core + essential daemons (10 services)
+  passive Traps + syslogs → alarms (7 services, new-suspect enabled)
 
 Examples:
   ./deploy.sh up                    # Start everything
+  ./deploy.sh up passive            # Trap/syslog receivers with auto-discovery
   ./deploy.sh up lite               # Start without trapd/syslogd/etc.
   ./deploy.sh logs alarmd           # Tail alarmd logs
   ./deploy.sh shell core            # Karaf shell on core
