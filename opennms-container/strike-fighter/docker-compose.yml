@@ -133,8 +133,8 @@ services:
       OPENNMS_DBUSER: opennms
       OPENNMS_DBPASS: opennms
       JAVA_OPTS: >-
-        -Xmx512m
-        -XX:MaxMetaspaceSize=256m
+        -Xms512m -Xmx1536m
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=3
       # Disable ALL daemons except JettyServer (Manager + Eventd are always on)
@@ -164,7 +164,8 @@ services:
     volumes:
       - webapp-etc:/opt/opennms/etc
       - webapp-data:/opennms-data
-      - ./webapp-overlay/etc/opennms.properties.d/:/opt/opennms-etc-overlay/opennms.properties.d/
+      - ./webapp-overlay/etc/:/opt/opennms-etc-overlay/:ro
+      - ./webapp-overlay/system/:/opt/opennms-overlay/system/:ro
       - ./webapp-jetty-webinf-overlay/:/opt/opennms-jetty-webinf-overlay/
     ports:
       - "8980:8980"
