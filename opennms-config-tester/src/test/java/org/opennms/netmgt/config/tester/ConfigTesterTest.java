@@ -478,10 +478,6 @@ public class ConfigTesterTest {
         testConfigFile("thresholds.xml");
     }
 
-    @Test
-    public void testTl1dConfiguration() {
-        testConfigFile("tl1d-configuration.xml");
-    }
 
     @Test
     public void testTranslatorConfiguration() {

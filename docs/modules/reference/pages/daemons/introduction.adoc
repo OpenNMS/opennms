@@ -115,9 +115,6 @@ It is separate from pollerd's SnmpMonitor.
 | Enables {page-component-title} to create trouble tickets in external systems.
 | `CORE_SERVICE_TICKETER_ENABLED=true`
 
-| Tl1d
-| Enables reception of TL1 autonomous messages.
-| `CORE_SERVICE_TL1D_ENABLED=false`
 
 | Trapd
 | Provides an SNMP server that accepts SNMP traps that can be converted to events.

@@ -29,7 +29,7 @@
   <event-file>events/opennms.reportd.events.xml</event-file>
   <event-file>events/opennms.syslogd.events.xml</event-file>
   <event-file>events/opennms.ticketd.events.xml</event-file>
-  <event-file>events/opennms.tl1d.events.xml</event-file>
+
 
   <event-file>events/Cisco.syslog.events.xml</event-file>
 

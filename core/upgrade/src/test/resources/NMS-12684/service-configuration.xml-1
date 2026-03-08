@@ -275,14 +275,6 @@ maintained
       <invoke method="stop" pass="0" at="stop"/>
    </service>
    <service enabled="false">
-      <name>OpenNMS:Name=Tl1d</name>
-      <class-name>org.opennms.netmgt.tl1d.jmx.Tl1d</class-name>
-      <invoke method="init" pass="0" at="start"/>
-      <invoke method="start" pass="1" at="start"/>
-      <invoke method="status" pass="0" at="status"/>
-      <invoke method="stop" pass="0" at="stop"/>
-   </service>
-   <service enabled="false">
       <name>OpenNMS:Name=Syslogd</name>
       <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
       <invoke method="init" pass="0" at="start"/>
