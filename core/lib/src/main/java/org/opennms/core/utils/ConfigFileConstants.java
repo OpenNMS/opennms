@@ -158,12 +158,7 @@ public abstract class ConfigFileConstants {
     public static final int XMPP_CONFIG_FILE_NAME;
     
     /**
-     * JFree Chart configuration file
-     */
-    public static final int CHART_CONFIG_FILE_NAME;
-    
-    /**
-     * JFree Chart configuration file
+     * Translator configuration file
      */
     public static final int TRANSLATOR_CONFIG_FILE_NAME;
     
@@ -474,8 +469,6 @@ public abstract class ConfigFileConstants {
         JAVA_MAIL_CONFIG_FILE_NAME = 52;
 
         XMPP_CONFIG_FILE_NAME = 54;
-        
-        CHART_CONFIG_FILE_NAME = 55;
 
         JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
         
@@ -582,7 +575,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
-        FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";

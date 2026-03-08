@@ -427,12 +427,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-dashlets</groupId>
-      <artifactId>dashlet-charts</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.vaadin-dashlets</groupId>
       <artifactId>dashlet-image</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
