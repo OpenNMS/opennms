@@ -56,13 +56,6 @@
           "roles": null
         },
         {
-          "id": "events",
-          "name": "Events",
-          "url": "event/index",
-          "locationMatch": "event",
-          "roles": null
-        },
-        {
           "id": "surveillanceView",
           "name": "Surveillance View",
           "url": "surveillance-view.jsp",

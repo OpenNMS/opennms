@@ -139,13 +139,6 @@
           "roles": null
         },
         {
-          "id": "events",
-          "name": "Events",
-          "url": "event/index",
-          "locationMatch": "event",
-          "roles": null
-        },
-        {
           "id": "applications",
           "name": "Applications",
           "url": "application/index.jsp",
