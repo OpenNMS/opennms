@@ -40,17 +40,19 @@
     <!-- OSGi Service References (from other Karaf features)            -->
     <!-- ============================================================== -->
 
-    <!-- Syslogd configuration (from opennms-config feature) -->
-    <onmsgi:reference id="syslogdConfig"
-                      interface="org.opennms.netmgt.config.SyslogdConfig"/>
+    <!-- Syslogd configuration: create the factory locally.
+         The opennms-config bundle has no Spring-Context header, so applicationContext-commonConfigs.xml
+         is never loaded by Spring DM in the daemon container. Create the factory bean directly. -->
+    <bean id="syslogdConfig" class="org.opennms.netmgt.config.SyslogdConfigFactory"/>
 
     <!-- Event forwarding (from opennms-event-forwarder-kafka blueprint) -->
     <osgi:reference id="eventForwarder"
                     interface="org.opennms.netmgt.events.api.EventForwarder"/>
 
-    <!-- DistPollerDao (from distributed DAO feature) -->
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <!-- DistPollerDao (from distributed DAO feature).
+         Uses osgi:reference because SyslogSinkConsumer.init() calls distPollerDao.whoami(). -->
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
     <!-- Sink API: local in-process implementations (no remote transport needed) -->
     <bean id="messageConsumerManager"

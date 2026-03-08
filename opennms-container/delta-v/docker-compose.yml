@@ -373,7 +373,7 @@ services:
       - trapd-data:/opt/daemon/data
       - ./trapd-overlay/etc:/opt/daemon-etc-overlay:ro
     ports:
-      - "1162:1162/udp"
+      - "1162:10162/udp"
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
