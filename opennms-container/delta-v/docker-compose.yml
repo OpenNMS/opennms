@@ -1,5 +1,5 @@
 ---
-# Strike Fighter: OpenNMS microservice-mode deployment (15 services)
+# Delta-V: OpenNMS microservice-mode deployment (15 services)
 # Core (Eventd, Provisiond, Enlinkd, Telemetryd, Bsmd, Correlator, Scriptd)
 # + Webapp + Alarmd + Pollerd + Collectd + Rtcd + PassiveStatusd + Notifd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator
@@ -43,7 +43,7 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_NUM_PARTITIONS: "16"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
-      CLUSTER_ID: "strike-fighter-kafka-cluster"
+      CLUSTER_ID: "delta-v-kafka-cluster"
     volumes:
       - kafkadata:/tmp/kraft-combined-logs
     healthcheck:
@@ -102,7 +102,7 @@ services:
       - opennms-etc:/opt/opennms/etc
       - opennms-data:/opennms-data
       - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
-      - ./core-overlay/etc/opennms.properties.d/strike-fighter.properties:/opt/opennms-etc-overlay/opennms.properties.d/strike-fighter.properties:ro
+      - ./core-overlay/etc/opennms.properties.d/delta-v.properties:/opt/opennms-etc-overlay/opennms.properties.d/delta-v.properties:ro
     ports:
       - "8101:8101"
       - "61616:61616"
@@ -117,7 +117,7 @@ services:
 
   webapp:
     image: opennms/horizon:${VERSION}
-    container_name: strike-fighter-webapp
+    container_name: delta-v-webapp
     hostname: webapp
     command: ["-f"]
     depends_on:
@@ -179,7 +179,7 @@ services:
 
   pollerd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-pollerd
+    container_name: delta-v-pollerd
     hostname: pollerd
     depends_on:
       core:
@@ -210,7 +210,7 @@ services:
 
   collectd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-collectd
+    container_name: delta-v-collectd
     hostname: collectd
     depends_on:
       core:
@@ -241,7 +241,7 @@ services:
 
   rtcd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-rtcd
+    container_name: delta-v-rtcd
     hostname: rtcd
     depends_on:
       core:
@@ -269,7 +269,7 @@ services:
 
   passivestatusd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-passivestatusd
+    container_name: delta-v-passivestatusd
     hostname: passivestatusd
     depends_on:
       core:
@@ -297,7 +297,7 @@ services:
 
   notifd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-notifd
+    container_name: delta-v-notifd
     hostname: notifd
     depends_on:
       core:
@@ -325,7 +325,7 @@ services:
 
   discovery:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-discovery
+    container_name: delta-v-discovery
     hostname: discovery
     depends_on:
       core:
@@ -353,7 +353,7 @@ services:
 
   trapd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-trapd
+    container_name: delta-v-trapd
     hostname: trapd
     depends_on:
       core:
@@ -383,7 +383,7 @@ services:
 
   syslogd:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-syslogd
+    container_name: delta-v-syslogd
     hostname: syslogd
     depends_on:
       core:
@@ -413,7 +413,7 @@ services:
 
   ticketer:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-ticketer
+    container_name: delta-v-ticketer
     hostname: ticketer
     depends_on:
       core:
@@ -441,7 +441,7 @@ services:
 
   eventtranslator:
     image: opennms/daemon:${VERSION}
-    container_name: strike-fighter-eventtranslator
+    container_name: delta-v-eventtranslator
     hostname: eventtranslator
     depends_on:
       core:

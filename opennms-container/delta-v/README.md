@@ -1,4 +1,4 @@
-# Strike Fighter: OpenNMS Microservice Mode
+# Delta-V: OpenNMS Microservice Mode
 
 Run OpenNMS in split-architecture mode with **Core** (remaining daemons), **Webapp** (JettyServer only), **standalone Alarmd** consuming fault events from Kafka, **standalone Pollerd** polling services, and **standalone Collectd** collecting performance data independently.
 
@@ -65,7 +65,7 @@ cd ../daemon && make image
 ## Quick Start
 
 ```bash
-cd opennms-container/strike-fighter
+cd opennms-container/delta-v
 docker compose up -d
 ```
 
