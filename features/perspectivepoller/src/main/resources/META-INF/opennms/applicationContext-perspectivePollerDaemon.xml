@@ -28,6 +28,7 @@
   <onmsgi:reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
   <onmsgi:reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao"/>
   <onmsgi:reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao"/>
+  <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
 
   <bean id="tracker" class="org.opennms.netmgt.perspectivepoller.PerspectiveServiceTracker">
   </bean>

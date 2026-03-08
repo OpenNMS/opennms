@@ -46,7 +46,6 @@
 	if (intf_db.getSnmpIfIndex() > 0) {
 		ifIndex = intf_db.getSnmpIfIndex();
 	}
-  String eventUrl2 = "event/list.htm?filter=node%3D" + nodeId + "&filter=ifindex%3D" + ifIndex;    
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -90,11 +89,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 %>
 
 <ul class="list-inline">
-  <% if (ifIndex > 0 ) { %>
-  	<li class="list-inline-item">
-      <a href="<%=eventUrl2%>">View Events by ifIndex</a>
-  	</li>
-  <% } %>
   <%
     String ifLabel;
     if (ifIndex != -1) {
@@ -221,19 +215,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <div class="col-md-6">
 
     <!-- interface desktop information box -->
-    <!-- events list box 2 using ifindex -->
-    <% if (ifIndex > 0 ) { %>
-      <% String eventHeader2 = "<a href='" + eventUrl2 + "'>Recent Events (Using Filter ifIndex = " + ifIndex + ")</a>"; %>
-      <% String moreEventsUrl2 = eventUrl2; %>
-      <jsp:include page="/includes/eventlist.jsp" flush="false" >
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="throttle" value="5" />
-        <jsp:param name="header" value="<%=eventHeader2%>" />
-        <jsp:param name="moreUrl" value="<%=moreEventsUrl2%>" />
-        <jsp:param name="ifIndex" value="<%=ifIndex%>" />
-      </jsp:include>
-    <% } %>
-
   </div> <!-- right content -->
 
 </div> <!-- row -->

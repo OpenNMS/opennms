@@ -26,7 +26,6 @@
 <%@page import="org.opennms.core.utils.InetAddressUtils" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@page import="org.opennms.netmgt.model.OnmsAlarm" %>
-<%@page import="org.opennms.netmgt.model.OnmsEvent" %>
 <%@page import="org.opennms.netmgt.model.OnmsFilterFavorite"%>
 <%@page import="org.opennms.web.alarm.AcknowledgeType" %>
 <%@page import="org.opennms.web.alarm.SortStyle" %>
@@ -698,19 +697,11 @@
             </c:if>
           </td>          
           <td valign="middle">
-	    <% if(alarms[i].getId() > 0 ) { %>           
-                <nobr>
-                  <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCounter()%></a>
-                </nobr>
-            <% } else { %>
             <%=alarms[i].getCounter()%>
-            <% } %>
           </td>
           <td>
             <nobr>
-              <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
-                <onms:datetime date="${alarm.lastEventTime}" />
-              <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
+              <onms:datetime date="${alarm.lastEventTime}" />
               <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
               <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
@@ -723,12 +714,12 @@
             </nobr>
           </td>
           <td>
-            <% if (alarms[i].getDistPoller() != null && alarms[i].getLastEvent() != null) { %>
+            <% if (alarms[i].getDistPoller() != null && alarms[i].getEventTsid() != null) { %>
               <% String location = alarms[i].getDistPoller().getLocation(); %>
               <% Filter locationFilter = new LocationFilter(location); %>
-              <span title="Event source location <%= location %>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>">
+              <span title="Event source location <%= location %>">
                 <%= location %>
-              </a></span>
+              </span>
               <% if( !parms.getFilters().contains(locationFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this event source location">${addPositiveFilter}</a>
@@ -927,8 +918,8 @@
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
         if(soundOnEvent){
-            OnmsEvent lastEvent=onmsAlarm.getLastEvent();
-            if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
+            Long eventTsid = onmsAlarm.getEventTsid();
+            if(eventTsid != null) lastId = eventTsid;
         } else {
             lastId = (long) onmsAlarm.getId();
         }

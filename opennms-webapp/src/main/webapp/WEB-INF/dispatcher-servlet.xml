@@ -162,7 +162,6 @@
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="defaultShortLimit" value="20"/>
     </bean>
 
@@ -208,10 +207,6 @@
         <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
-   	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
-    </bean>
-
-
     <bean name="/notification/acknowledge"
           class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
         <property name="webNotificationRepository" ref="webNotificationRepository"/>
@@ -225,7 +220,6 @@
         <property name="defaultLongLimit" value="10"/>
         <property name="defaultSortStyle" value="ID"/>
         <property name="webNotificationRepository" ref="webNotificationRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
@@ -409,11 +403,6 @@
                     <property name="url" value="#" />
                     <property name="entries">
                         <list>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Events"/>
-                                <property name="url" value="event/index"/>
-                                <property name="locationMatch" value="event"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Alarms"/>
                                 <property name="url" value="alarm/index.htm"/>

@@ -12,7 +12,6 @@
 
   <event-file>events/opennms.snmp.trap.translator.events.xml</event-file>
 
-  <event-file>events/opennms.ackd.events.xml</event-file>
   <event-file>events/opennms.alarm.events.xml</event-file>
   <event-file>events/opennms.bsm.events.xml</event-file>
   <event-file>events/opennms.capsd.events.xml</event-file>

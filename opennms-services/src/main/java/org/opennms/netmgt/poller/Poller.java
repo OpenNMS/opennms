@@ -120,7 +120,7 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
     
-    @Autowired
+    @Autowired(required = false)
     private ReadablePollOutagesDao m_pollOutagesDao;
 
     @Autowired()
@@ -268,7 +268,7 @@ public class Poller extends AbstractServiceDaemon {
     
     @VisibleForTesting
     void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
-        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_pollOutagesDao = pollOutagesDao;
     }
 
     /**

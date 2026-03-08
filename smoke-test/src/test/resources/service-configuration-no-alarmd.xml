@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<service-configuration xmlns="http://xmlns.opennms.org/xsd/config/vmmgr">
+  <service><name>OpenNMS:Name=Manager</name></service>
+  <service><name>OpenNMS:Name=Eventd</name></service>
+  <service enabled="false"><name>OpenNMS:Name=Alarmd</name></service>
+  <service><name>OpenNMS:Name=Bsmd</name></service>
+  <service><name>OpenNMS:Name=Ticketer</name></service>
+  <service enabled="false"><name>OpenNMS:Name=Correlator</name></service>
+  <service><name>OpenNMS:Name=Queued</name></service>
+  <service><name>OpenNMS:Name=Notifd</name></service>
+  <service><name>OpenNMS:Name=Scriptd</name></service>
+  <service><name>OpenNMS:Name=Rtcd</name></service>
+  <service><name>OpenNMS:Name=Pollerd</name></service>
+  <service enabled="false"><name>OpenNMS:Name=SnmpPoller</name></service>
+  <service><name>OpenNMS:Name=EnhancedLinkd</name></service>
+  <service><name>OpenNMS:Name=Collectd</name></service>
+  <service><name>OpenNMS:Name=Discovery</name></service>
+  <service><name>OpenNMS:Name=EventTranslator</name></service>
+  <service><name>OpenNMS:Name=PassiveStatusd</name></service>
+  <service><name>OpenNMS:Name=Provisiond</name></service>
+  <service><name>OpenNMS:Name=JettyServer</name></service>
+  <service><name>OpenNMS:Name=KarafStartupMonitor</name></service>
+  <service><name>OpenNMS:Name=Syslogd</name></service>
+  <service><name>OpenNMS:Name=Telemetryd</name></service>
+  <service><name>OpenNMS:Name=Trapd</name></service>
+  <service><name>OpenNMS:Name=PerspectivePoller</name></service>
+</service-configuration>

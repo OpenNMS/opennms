@@ -241,13 +241,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         // Allow other users to read the folder
         OverlayUtils.setOverlayPermissions(home);
 
-        // Copy the files from the profile *first*
-        // If this test class writes something, we expect it to be there
-        OverlayUtils.copyFiles(profile.getFiles(), home);
-
-        // Copy over files from the class-path
+        // Copy base files from the class-path first (defaults)
         // Files ending in .j2 will be templated using Jinja2 with a context that has the model
         OverlayUtils.copyAndTemplate("opennms-overlay", home, model);
+
+        // Copy the files from the profile *last* so they can override classpath defaults
+        // (e.g., a test-specific service-configuration.xml that disables certain daemons)
+        OverlayUtils.copyFiles(profile.getFiles(), home);
 
         Path etc = home.resolve("etc");
         Path propsD = etc.resolve("opennms.properties.d");

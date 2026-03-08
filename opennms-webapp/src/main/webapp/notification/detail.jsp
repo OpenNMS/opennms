@@ -27,7 +27,6 @@
 	import="org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.notification.*,
 		org.opennms.web.element.*,
-		org.opennms.web.event.*,
 		org.springframework.web.context.WebApplicationContext,
 		org.springframework.web.context.support.WebApplicationContextUtils
 	"
@@ -62,13 +61,8 @@
         throw new NoticeIdNotFoundException("A notice with this ID was not found.", String.valueOf(noticeID));
     }
 
-    if (NoticeFactory.canDisplayEvent(notice.getEventId())) {
-		Event event = EventFactory.getEvent(notice.getEventId());
-		eventSeverity = event.getSeverity().getLabel();
-		eventLocation = event.getLocation();
-    } else {
-		eventSeverity = new String("Cleared");
-    }
+    eventSeverity = "N/A";
+    eventLocation = "N/A";
 
 	String nodeLabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(notice.getNodeId());
 	String nodeLocation = NetworkElementFactory.getInstance(getServletContext()).getNodeLocation(notice.getNodeId());
@@ -86,9 +80,7 @@
 <div class="card">
   <div class="card-header">
 <span>Notice <%=notice.getId()%>
-  <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
-    from <a href="event/detail.jsp?id=<%=notice.getEventId()%>">Event <%=notice.getEventId()%></a>
-  <% } %>
+  (Event <%=notice.getEventId()%>)
 </span>
   </div>
 
@@ -113,7 +105,7 @@
     <td class="col-md-2">
       <c:choose>
         <c:when test="<%= eventLocation != null %>">
-          <a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%= eventLocation %></a>
+          <%= eventLocation %>
         </c:when>
         <c:otherwise>
           &nbsp;

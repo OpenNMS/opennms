@@ -208,7 +208,7 @@ public class Collectd extends AbstractServiceDaemon implements
     @Autowired
     private ThresholdingService m_thresholdingService;
     
-    @Autowired
+    @Autowired(required = false)
     private ReadablePollOutagesDao pollOutagesDao;
 
     @Autowired
@@ -1626,7 +1626,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     @VisibleForTesting
     public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
-        this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        this.pollOutagesDao = pollOutagesDao;
     }
 
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {

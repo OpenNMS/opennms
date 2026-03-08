@@ -76,7 +76,7 @@
           <td class="col-2"><onms:datetime date="<%=outage.getLostServiceTime()%>" /></td>
           
           <th class="col-2">Lost&nbsp;Service&nbsp;Event</th>
-          <td class="col-2"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>
+          <td class="col-2"><%=outage.getLostServiceEventId()%></td>
           
         </tr>
         <tr class="d-flex">
@@ -113,9 +113,7 @@
           <td class="col-2">
             <% Long regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>
-              <a href="event/detail.jsp?id=<%=regainedEventId%>">
                 <%=regainedEventId%>
-              </a>
             <% } else { %>
               <% String label = OutageUtil.getStatusLabel(outage); %>
               <%=(label == null) ? "&nbsp;" : label %>

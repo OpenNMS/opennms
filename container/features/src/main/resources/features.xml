@@ -2154,4 +2154,215 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.kafka-consumer/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-event-forwarder-kafka" version="${project.version}"
+             description="OpenNMS :: Event Forwarder :: Kafka">
+        <feature>opennms-events-api</feature>
+        <feature>opennms-events-kafka-consumer</feature>
+        <feature>opennms-events-sink-dispatcher</feature>
+        <feature>opennms-core-messagebus-api</feature>
+        <feature>opennms-core-tsid</feature>
+        <feature>opennms-kafka</feature>
+        <feature>dropwizard-metrics</feature>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.event-forwarder-kafka/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Pollerd: loads Poller daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-pollerd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Pollerd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Poller config -->
+        <feature>opennms-config</feature>
+        <!-- Core daemon (ReadyRunnable, AbstractServiceDaemon) -->
+        <feature>opennms-core-daemon</feature>
+        <!-- API bundles needed by onmsgi:reference proxies (class loading) -->
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <!-- MATE API (for LocalPollerClient) -->
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+        <!-- Poller daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Poller, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Collectd: loads Collectd daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-collectd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Collectd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Collectd config -->
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies (class loading) -->
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <!-- Collection client RPC (ServiceCollectorRegistry, LocationAwareCollectorClient) -->
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.client-rpc/${project.version}</bundle>
+        <!-- Collectd daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Collectd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-collectd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Rtcd: loads RTCManager daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-rtcd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Rtcd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- RTC config -->
+        <feature>opennms-config</feature>
+        <!-- RTC daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates RTCManager, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only PassiveStatusd: loads PassiveStatusKeeper daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-passivestatusd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: PassiveStatusd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- PassiveStatusd daemon classes -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates PassiveStatusKeeper, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-passivestatusd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Notifd: loads Notifd daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-notifd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Notifd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies -->
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-notifd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Discovery: loads Discovery daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-discovery" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Discovery">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies -->
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-discovery/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Trapd: loads Trapd daemon (UDP :1162) without Manager/Eventd -->
+    <feature name="opennms-daemon-trapd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Trapd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies and traps bundle imports -->
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-trapd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Syslogd: loads Syslogd daemon (UDP :10514) without Manager/Eventd -->
+    <feature name="opennms-daemon-syslogd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Syslogd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by syslog bundle imports and onmsgi:reference proxies -->
+        <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-syslogd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only TroubleTicketer: loads TroubleTicketer daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-ticketer" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: TroubleTicketer">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- API bundle for ticketing plugin interface (onmsgi:reference proxy) -->
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-ticketer/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only EventTranslator: loads EventTranslator daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-eventtranslator" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: EventTranslator">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-eventtranslator/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
+         Receives events from Kafka and persists alarms to PostgreSQL.
+         NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->
+    <feature name="opennms-daemon-alarmd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Alarmd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Alarm API -->
+        <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
+        <!-- Alarmd daemon classes -->
+        <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
+        <!-- Event daemon (provides EventUtilDaoImpl, used by AlarmPersisterImpl) -->
+        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
+        <!-- Daemon loader (creates Alarmd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-alarmd/${project.version}</bundle>
+    </feature>
+
 </features>

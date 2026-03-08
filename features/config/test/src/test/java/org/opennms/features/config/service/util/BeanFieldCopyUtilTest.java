@@ -39,7 +39,6 @@ import org.opennms.netmgt.config.notifd.NotifdConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
-import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 
 import uk.co.jemos.podam.api.PodamFactory;
@@ -68,7 +67,6 @@ public class BeanFieldCopyUtilTest<T> {
                         PollerConfiguration.class,
                         EventdConfiguration.class,
                         NotifdConfiguration.class,
-                        VacuumdConfiguration.class,
                         JmxDatacollectionConfig.class,
                         MicroblogConfiguration.class,
                         ReadmailConfig.class,

@@ -59,8 +59,6 @@ import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
-import org.opennms.netmgt.config.ackd.AckdConfiguration;
-import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.config.charts.ChartConfiguration;
@@ -103,7 +101,6 @@ import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration
 import org.opennms.netmgt.config.snmpinterfacepoller.SnmpInterfacePollerConfiguration;
 import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfig;
 import org.opennms.netmgt.config.wsmanAsset.adapter.WsManAssetAdapterConfiguration;
-import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
@@ -113,7 +110,6 @@ import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.trend.TrendConfiguration;
 import org.opennms.netmgt.config.users.Userinfo;
-import org.opennms.netmgt.config.vacuumd.VacuumdConfiguration;
 import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
@@ -206,8 +202,6 @@ public class WillItUnmarshalIT {
 
         addFile(Source.SPRING, "eventconf-bad-element.xml", Events.class, false, "Invalid content was found starting with element 'bad-element'.");
 
-        addFile(Source.CONFIG, "ackd-configuration.xml", AckdConfiguration.class, false, null);
-        addFile(Source.CONFIG, "actiond-configuration.xml", ActiondConfiguration.class, true, null);
         addFile(Source.CONFIG, "ami-config.xml", AmiConfig.class, true, null);
         addFile(Source.CONFIG, "availability-reports.xml", OpennmsReports.class, false, null);
         addFile(Source.CONFIG, "bsf-northbounder-configuration.xml", BSFNorthbounderConfig.class, true, null);
@@ -257,7 +251,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "snmp-metadata-adapter-configuration.xml", SnmpMetadataConfig.class, false, null);
-        addFile(Source.CONFIG, "statsd-configuration.xml", StatisticsDaemonConfiguration.class, false, null);
         addFile(Source.CONFIG, "search-actions.xml", Actions.class, false, null);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);
@@ -270,7 +263,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, true, null);
         addFile(Source.CONFIG, "users.xml", Userinfo.class, true, null);
-        addFile(Source.CONFIG, "vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.CONFIG, "viewsdisplay.xml", Viewinfo.class, false, null);
         addFile(Source.CONFIG, "vmware-cim-datacollection-config.xml", VmwareCimDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "vmware-config.xml", VmwareConfig.class, false, null);
@@ -286,7 +278,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "event-proxy/vacuumd-configuration.xml", VacuumdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/collectd-configuration.xml", CollectdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-config.d/activemq.xml", JmxDatacollectionConfig.class, false, null);

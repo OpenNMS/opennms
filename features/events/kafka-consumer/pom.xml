@@ -19,6 +19,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.xml</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
             <version>${kafkaBundleVersion}</version>

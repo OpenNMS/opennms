@@ -18,6 +18,12 @@
 
   <context:annotation-config />
   <tx:annotation-driven/>
+
+  <!-- Resolve ${...} placeholders from system properties (e.g. -Dorg.opennms.tsid.node-id) -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+  </bean>
   <aop:aspectj-autoproxy proxy-target-class="true" />
 
   <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
@@ -104,6 +110,15 @@
 
   <onmsgi:service ref="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
 
+  <bean id="messageBusFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="messageBus">
+    <property name="staticMethod"><value>org.opennms.core.messagebus.MessageBusFactory.setMessageBus</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="messageBus"/>
+      </list>
+    </property>
+  </bean>
+
   <!-- Local-mode fault event publisher (logs instead of sending to Kafka).
        When Kafka is enabled, a Karaf feature will replace this with FaultEventPublisher. -->
   <bean id="faultEventPublisher" class="org.opennms.netmgt.eventd.processor.LocalFaultEventPublisher"/>
@@ -114,16 +129,6 @@
     <constructor-arg ref="messageBus"/>
     <constructor-arg ref="eventIpcManagerImpl"/>
     <constructor-arg ref="ipcMessageConverter"/>
-  </bean>
-
-  <!-- Legacy beans kept for backward compatibility (referenced by other modules) -->
-  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
-    <constructor-arg ref="eventdMetricRegistry"/>
-  </bean>
-
-  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
-    <constructor-arg ref="eventdMetricRegistry"/>
-    <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
   </bean>
 
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">

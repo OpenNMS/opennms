@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Trapd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  multi-level Spring hierarchy with a flat context that wires Trapd beans
+  directly to OSGi services.
+
+  Trapd is a UDP listener (port 1162) that receives SNMP traps, converts them
+  to OpenNMS events, and forwards them via the Sink API. Key components:
+
+  - Trapd: the daemon itself, manages TrapListener lifecycle and TwinPublisher
+  - TrapListener: opens UDP socket, receives SNMP traps, dispatches via Sink API
+  - TrapSinkConsumer: consumes trap messages from Sink, converts to events, forwards
+
+  All dependencies come from the OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - TrapdConfig from opennms-config feature (TrapdConfigFactory)
+  - SecureCredentialsVault from SCV feature
+  - TwinPublisher/TwinSubscriber from IPC Twin feature
+  - MessageDispatcherFactory/MessageConsumerManager from Sink API feature
+  - DAOs from distributed DAO feature
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for Trapd, TrapListener, TrapSinkConsumer -->
+    <context:annotation-config />
+
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- EventSubscriptionService (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+    <!-- Trap configuration (from opennms-config feature) -->
+    <onmsgi:reference id="trapdConfig"
+                      interface="org.opennms.netmgt.config.TrapdConfig"/>
+
+    <!-- Event configuration DAO (for TrapSinkConsumer event matching) -->
+    <onmsgi:reference id="eventConfDao"
+                      interface="org.opennms.netmgt.config.api.EventConfDao"/>
+
+    <!-- Secure Credentials Vault (for SNMPv3 credential interpolation) -->
+    <onmsgi:reference id="secureCredentialsVault"
+                      interface="org.opennms.features.scv.api.SecureCredentialsVault"/>
+
+    <!-- Twin API (for publishing/subscribing trap listener config to Minions) -->
+    <onmsgi:reference id="twinPublisher"
+                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
+    <onmsgi:reference id="twinSubscriber"
+                      interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
+    <!-- Sink API: local in-process implementations (no remote transport needed) -->
+    <bean id="messageConsumerManager"
+          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager"/>
+    <bean id="messageDispatcherFactory"
+          class="org.opennms.core.daemon.loader.LocalMessageDispatcherFactory">
+        <constructor-arg ref="messageConsumerManager"/>
+    </bean>
+
+    <!-- DAOs (from distributed DAO feature) -->
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <onmsgi:reference id="interfaceToNodeCache"
+                      interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
+
+    <!-- ============================================================== -->
+    <!-- Trapd Beans                                                    -->
+    <!-- ============================================================== -->
+
+    <!-- Metrics for the trap listener -->
+    <bean id="trapListenerMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <bean id="trapListenerMetrics" class="org.opennms.netmgt.trapd.TrapListenerMetrics"
+          init-method="startJmxReporter" destroy-method="stopJmxReporter">
+        <constructor-arg ref="trapListenerMetricRegistry"/>
+    </bean>
+
+    <!-- TrapListener: opens UDP socket, receives SNMP traps -->
+    <bean id="trapListener" class="org.opennms.netmgt.trapd.TrapListener">
+        <constructor-arg ref="trapdConfig"/>
+        <property name="trapListenerMetrics" ref="trapListenerMetrics"/>
+    </bean>
+
+    <!-- TrapSinkConsumer: consumes trap messages, creates events, forwards them -->
+    <bean id="trapSinkConsumer" class="org.opennms.netmgt.trapd.TrapSinkConsumer"/>
+
+    <!-- Trapd daemon -->
+    <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+        <property name="secureCredentialsVault" ref="secureCredentialsVault"/>
+    </bean>
+
+    <!-- @EventHandler adapter for daemon reload events -->
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="daemon"/>
+        <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

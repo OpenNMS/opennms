@@ -130,7 +130,7 @@ public class SpogExporterIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Before
     public void setUp() throws Exception {
-        eventdIpcMgr.setEventWriter(mockDatabase);
+        eventdIpcMgr.setEventWriteHook(mockDatabase::writeEvent);
         // create data for node
         populateData();
         initializeAndResetFutures();

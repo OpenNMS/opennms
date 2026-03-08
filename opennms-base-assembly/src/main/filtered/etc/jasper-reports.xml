@@ -18,7 +18,6 @@
         <report id="Snmp-Interface-Oper-Availability" template="SnmpInterfaceOperAvailabilityReport.jrxml" engine="jdbc" />
         <report id="AssetMangementMaintExpired" template="AssetManagementMaintExpired.jrxml" engine="jdbc" />
         <report id="AssetMangementMaintStrategy" template="AssetManagementMaintStrategy.jrxml" engine="jdbc" />
-        <report id="Event-Analysis" template="EventAnalysis.jrxml" engine="jdbc" />
         <report id="DiskUsageForCTX" template="DiskUsageForCTX.jrxml" engine="jdbc" />
         <report id="Top20-IOWait" template="TopIOWait.jrxml" engine="jdbc" />
 </jasper-reports>

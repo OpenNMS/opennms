@@ -1,0 +1,81 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd">
+
+    <!-- ================================================================ -->
+    <!-- Configuration from org.opennms.core.event.forwarder.kafka.cfg    -->
+    <!-- ================================================================ -->
+    <cm:property-placeholder id="eventForwarderKafkaProperties"
+                             persistent-id="org.opennms.core.event.forwarder.kafka"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="bootstrap.servers" value="localhost:9092"/>
+            <cm:property name="topic.name" value="opennms-fault-events"/>
+            <cm:property name="consumer.group.id" value="opennms-core"/>
+            <cm:property name="poll.timeout.ms" value="100"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- ================================================================ -->
+    <!-- OSGi service references                                          -->
+    <!-- ================================================================ -->
+    <reference id="messageBus"
+               interface="org.opennms.core.messagebus.MessageBus"
+               availability="optional"/>
+
+    <!-- ================================================================ -->
+    <!-- Beans                                                            -->
+    <!-- ================================================================ -->
+
+    <!-- KafkaEventForwarder: routes events to Kafka/MessageBus.
+         Uses KafkaEventForwarderFactory to avoid Aries Blueprint constructor/factory
+         matching issues with cross-bundle interface types and generics.
+         MessageBus injected via setter (optional in daemon containers). -->
+    <bean id="kafkaEventForwarder"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarderFactory"
+          factory-method="create">
+        <argument value="${bootstrap.servers}"/>
+        <argument value="${topic.name}"/>
+        <property name="messageBus" ref="messageBus"/>
+    </bean>
+
+    <!-- KafkaEventSubscriptionService: consumes events from Kafka topic.
+         Factory method takes only String/long primitives, creating KafkaConsumer
+         and XmlEventDeserializer internally to avoid Blueprint type-matching. -->
+    <bean id="kafkaEventSubscriptionService"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventSubscriptionService"
+          factory-method="create"
+          init-method="start"
+          destroy-method="stop">
+        <argument value="${bootstrap.servers}"/>
+        <argument value="${consumer.group.id}"/>
+        <argument value="${topic.name}"/>
+        <argument value="${poll.timeout.ms}" type="long"/>
+    </bean>
+
+    <!-- Adapter: composes forwarder + subscription into EventIpcManager -->
+    <bean id="kafkaEventIpcManagerAdapter"
+          class="org.opennms.core.event.forwarder.kafka.KafkaEventIpcManagerAdapter">
+        <argument ref="kafkaEventForwarder"/>
+        <argument ref="kafkaEventSubscriptionService"/>
+    </bean>
+
+    <!-- ================================================================ -->
+    <!-- OSGi service registration                                        -->
+    <!-- ================================================================ -->
+    <service ref="kafkaEventIpcManagerAdapter">
+        <interfaces>
+            <value>org.opennms.netmgt.events.api.EventForwarder</value>
+            <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+            <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+            <value>org.opennms.netmgt.events.api.EventProxy</value>
+            <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+        </interfaces>
+    </service>
+
+</blueprint>

@@ -53,75 +53,19 @@
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-	interface_outages.nodeid,
-	n.nodelabel,
-	s.snmpifdescr,
-	s.snmpifname,
-	interface_outages.ifindex,
-	SUM(interface_outages.outage_counter) as outages_count,
-	SUM(interface_outages.duration) as duration_tally,
-	AVG(interface_outages.duration) as average_duration,
-	100 - SUM(EXTRACT (epoch from interface_outages.duration)) * 100 / interface_outages.avail_total AS avail_percent,
-	SUM(EXTRACT (epoch from interface_outages.duration)) * 100 / interface_outages.avail_total AS outages_percent,
-	AVG( EXTRACT( epoch from interface_outages.duration)) as average_duration_seconds,
-	SUM(EXTRACT (epoch from interface_outages.duration)) AS outages_seconds
-FROM
-	(SELECT
-		outage_scope.nodeid,
-		outage_scope.ifindex,
-		EXTRACT (epoch from ('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) - '$P!{START_TIME_STRING}'::TIMESTAMP) AS avail_total,
-		outage_scope.outage_end - outage_scope.outage_start as duration,
-		CAST('1' AS INTEGER) as outage_counter
-	FROM
-		(SELECT
-			outages.nodeid,
-			outages.ifindex,
-			greatest('$P!{START_TIME_STRING}'::TIMESTAMP, outages.iflostservice) as outage_start,
-			case when outages.ifregainedservice is null then  '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL else least('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL, outages.ifregainedservice) end as outage_end
-		FROM
-			(SELECT
-				d.nodeid,
-				d.ifindex,
-				d.eventuei,
-				d.eventtime as iflostservice,
-				u.eventuei,
-				min(u.eventtime) as ifregainedservice,
-				age(min(u.eventtime), d.eventtime) as outage_total
-			FROM
-				events d
-			JOIN
-				events u
-			ON
-				(d.nodeid = u.nodeid AND d.ifindex = u.ifindex AND u.eventtime > d.eventtime)
-			WHERE
-				d.eventuei = 'uei.opennms.org/nodes/snmp/interfaceOperDown' AND
-				u.eventuei = 'uei.opennms.org/nodes/snmp/interfaceOperUp'
-			GROUP BY
-				d.eventuei,
-				d.eventtime,
-				u.eventuei,
-				d.nodeid,
-				d.ifindex) AS outages
-		WHERE
-			(outages.iflostservice, outages.ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL))
-		AS outage_scope)
-	AS interface_outages
-JOIN
-	node n
-ON
-	(n.nodeid = interface_outages.nodeid)
-JOIN
-	snmpinterface s
-ON
-	(s.nodeid = interface_outages.nodeid AND s.snmpifindex = interface_outages.ifindex)
-
-GROUP BY
-	interface_outages.nodeid,
-	interface_outages.ifindex,
-	interface_outages.avail_total,
-	n.nodelabel,
-	s.snmpifdescr,
-	s.snmpifname]]>
+	NULL::INTEGER AS nodeid,
+	NULL::TEXT AS nodelabel,
+	NULL::TEXT AS snmpifdescr,
+	NULL::TEXT AS snmpifname,
+	NULL::INTEGER AS ifindex,
+	NULL::BIGINT AS outages_count,
+	NULL::INTERVAL AS duration_tally,
+	NULL::INTERVAL AS average_duration,
+	NULL::DOUBLE PRECISION AS avail_percent,
+	NULL::DOUBLE PRECISION AS outages_percent,
+	NULL::DOUBLE PRECISION AS average_duration_seconds,
+	NULL::DOUBLE PRECISION AS outages_seconds
+WHERE false]]>
 	</queryString>
 	<field name="nodeid" class="java.lang.Integer"/>
 	<field name="nodelabel" class="java.lang.String"/>

@@ -162,14 +162,13 @@
     <alias name="/alarm/detail.htm" alias="/alarm/detail.jsp"/>
     <bean name="/alarm/detail.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="defaultShortLimit" value="20"/>
     </bean>
 
     <bean name="/alarm/saveStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
-    
+
     <bean name="/alarm/removeStickyMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
@@ -177,11 +176,11 @@
     <bean name="/alarm/saveJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
-    
+
     <bean name="/alarm/removeJournalMemo.htm" class="org.opennms.web.controller.alarm.AlarmDetailController">
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
-    
+
     <bean name="/alarm/summary-box.htm" class="org.opennms.web.controller.alarm.AlarmBoxController">
         <property name="successView" value="alarm/summary-box"/>
         <property name="alarmRepository" ref="alarmRepository"/>
@@ -208,10 +207,6 @@
         <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
-   	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
-    </bean>
-
-
     <bean name="/notification/acknowledge"
           class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
         <property name="webNotificationRepository" ref="webNotificationRepository"/>
@@ -225,7 +220,6 @@
         <property name="defaultLongLimit" value="10"/>
         <property name="defaultSortStyle" value="ID"/>
         <property name="webNotificationRepository" ref="webNotificationRepository"/>
-        <property name="webEventRepository" ref="webEventRepository"/>
         <property name="nodeDao" ref="nodeDao"/>
     </bean>
 

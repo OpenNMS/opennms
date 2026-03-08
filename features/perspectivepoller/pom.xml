@@ -63,6 +63,16 @@
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.core.messagebus.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.thresholding.api</artifactId>
     </dependency>

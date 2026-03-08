@@ -126,13 +126,6 @@
       "roles": null,
       "items": [
         {
-          "id": "events",
-          "name": "Events",
-          "url": "event/index",
-          "locationMatch": "event",
-          "roles": null
-        },
-        {
           "id": "alarms",
           "name": "Alarms",
           "url": "alarm/index.htm",

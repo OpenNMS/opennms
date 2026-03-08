@@ -41,8 +41,6 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.opennms.netmgt.config.ackd.*;version="${project.version}",
-              org.opennms.netmgt.config.actiond.*;version="${project.version}",
               org.opennms.netmgt.config.ami.*;version="${project.version}",
               org.opennms.netmgt.config.categories.*;version="${project.version}",
               org.opennms.netmgt.config.charts.*;version="${project.version}",
@@ -78,7 +76,6 @@
               org.opennms.netmgt.config.snmpAsset.adapter.*;version="${project.version}",
               org.opennms.netmgt.config.wsmanAsset.adapter.*;version="${project.version}",
               org.opennms.netmgt.config.snmpinterfacepoller.*;version="${project.version}",
-              org.opennms.netmgt.config.statsd.*;version="${project.version}",
               org.opennms.netmgt.config.surveillanceViews.*;version="${project.version}",
               org.opennms.netmgt.config.syslogd.*;version="${project.version}",
               org.opennms.netmgt.config.tags.*;version="${project.version}",
@@ -86,7 +83,6 @@
               org.opennms.netmgt.config.tl1d.*;version="${project.version}",
               org.opennms.netmgt.config.translator.*;version="${project.version}",
               org.opennms.netmgt.config.users.*;version="${project.version}",
-              org.opennms.netmgt.config.vacuumd.*;version="${project.version}",
               org.opennms.netmgt.config.views.*;version="${project.version}",
               org.opennms.netmgt.config.viewsdisplay.*;version="${project.version}",
               org.opennms.netmgt.config.webuiColors.*;version="${project.version}",

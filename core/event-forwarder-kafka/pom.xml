@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.core</artifactId>
+        <version>36.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.event-forwarder-kafka</artifactId>
+    <packaging>bundle</packaging>
+    <name>OpenNMS :: Core :: Event Forwarder Kafka</name>
+    <description>
+        EventForwarder implementation that enriches events locally and publishes
+        to Kafka (FAULT events) or JMS MessageBus (IPC events).
+    </description>
+
+    <dependencies>
+        <!-- Event API (EventForwarder, EventProcessor interfaces) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- MessageBus API (IPC event routing) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>org.opennms.core.messagebus.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Event daemon (EventExpander, TsidAssigner, EventClassifier, IpcMessageConverter) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.daemon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Kafka consumer (EventDeserializer interface) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.kafka-consumer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Kafka client -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
+            <version>${kafkaBundleVersion}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.lz4</groupId>
+                    <artifactId>lz4-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Spring (for InitializingBean) -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

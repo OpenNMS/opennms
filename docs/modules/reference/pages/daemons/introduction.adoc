@@ -13,14 +13,6 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 |===
 | Name | Description | Container Environment variable with defaults
 
-| Ackd
-| The acknowledge daemon is responsible for alarm acknowledgement.
-| `CORE_SERVICE_ACKD_ENABLED=true`
-
-| Actiond
-| Generates Java actions based on received events.
-| `CORE_SERVICE_ACTIOND_ENABLED=true`
-
 | Alarmd
 | Handles alarm workflows.
 | `CORE_SERVICE_ALARMD_ENABLED=true`
@@ -110,10 +102,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Checks SNMP interface admin status.
 It is separate from pollerd's SnmpMonitor.
 | `CORE_SERVICE_SNMPPOLLER_ENABLED=false`
-
-| Statsd
-| Generates statistical reports from node data.
-| `CORE_SERVICE_STATSD_ENABLED=true`
 
 | Syslogd
 | Allows retrieval and parsing of syslog messages to generate events.

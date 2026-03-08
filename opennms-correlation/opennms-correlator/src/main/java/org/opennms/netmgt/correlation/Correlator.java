@@ -35,6 +35,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.xml.event.Event;

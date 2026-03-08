@@ -313,7 +313,13 @@ public class Provisioner implements SpringServiceDaemon, MessageHandler {
         if (rescanExisting == null) {
             rescanExisting = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
         }
-        ProvisionMonitor monitor = monitorHolder.createMonitor(url);
+        ProvisionMonitor monitor;
+        try {
+            monitor = monitorHolder.createMonitor(url);
+        } catch (java.util.concurrent.ExecutionException e) {
+            LOG.error("handleReloadImportIpc: failed to create monitor for url={}", url, e);
+            return;
+        }
         monitor.start();
         if (url != null) {
             doImport(url, rescanExisting, monitor);

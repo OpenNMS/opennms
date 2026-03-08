@@ -60,7 +60,7 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
     @Autowired
     private AlarmLifecycleListenerManager m_alm;
 
-    @Autowired
+    @Autowired(required = false)
     private DroolsAlarmContext m_droolsAlarmContext;
 
     @Autowired
@@ -101,7 +101,7 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
         // Forward to NorthbounderManager — it matches daemonName against NBI names
         m_northbounderManager.onReloadDaemonConfig(daemonName);
         // Also reload Drools context when targeted at alarmd specifically
-        if (NAME.equalsIgnoreCase(daemonName)) {
+        if (NAME.equalsIgnoreCase(daemonName) && m_droolsAlarmContext != null) {
             m_droolsAlarmContext.reload();
         }
     }
@@ -136,8 +136,11 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
 
     @Override
     public synchronized void onStart() {
-        // Start the Drools context
-        m_droolsAlarmContext.start();
+        if (m_droolsAlarmContext != null) {
+            m_droolsAlarmContext.start();
+        } else {
+            LOG.warn("DroolsAlarmContext not available — alarm rules engine disabled");
+        }
     }
 
     @Override
@@ -145,7 +148,9 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
         // Stop the northbound interfaces
         m_northbounderManager.stop();
         // Stop the Drools context
-        m_droolsAlarmContext.stop();
+        if (m_droolsAlarmContext != null) {
+            m_droolsAlarmContext.stop();
+        }
     }
 
     @Override

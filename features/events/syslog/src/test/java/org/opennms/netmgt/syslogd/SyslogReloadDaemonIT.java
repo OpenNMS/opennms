@@ -43,7 +43,8 @@ import org.opennms.netmgt.config.syslogd.ProcessMatch;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.model.ImmutableMapper;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 import org.opennms.netmgt.syslogd.api.SyslogConnection;
@@ -157,9 +158,9 @@ public class SyslogReloadDaemonIT implements InitializingBean {
         // change configuration file location.
         File opennmsHome = Paths.get("src", "test", "resources", "opennms-home-reload").toFile();
         System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
-        EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/internal/reloadDaemonConfig", "syslog-test");
-        eventBuilder.addParam("daemonName", "Syslogd");
-        m_syslogd.handleReloadEvent(ImmutableMapper.fromMutableEvent(eventBuilder.getEvent()));
+        IpcMessage reloadMsg = new IpcMessage("reloadDaemonConfig", "syslog-test",
+                java.util.Map.of(EventConstants.PARM_DAEMON_NAME, "Syslogd"));
+        m_syslogd.onMessage(reloadMsg);
         SyslogdTestUtils.waitForSyslogdToReload();
         // test new port change in config 
         assertEquals(10515, m_config.getSyslogPort());

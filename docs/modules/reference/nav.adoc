@@ -185,7 +185,6 @@
 ** xref:daemons/daemon-config-files/rtcd.adoc[]
 ** xref:daemons/daemon-config-files/scriptd.adoc[]
 ** xref:daemons/daemon-config-files/snmp-interface-poller.adoc[]
-** xref:daemons/daemon-config-files/statsd.adoc[]
 ** xref:daemons/daemon-config-files/syslogd.adoc[]
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/ticketer.adoc[]

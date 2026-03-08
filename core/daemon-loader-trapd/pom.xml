@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.core</artifactId>
+        <version>36.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.daemon-loader-trapd</artifactId>
+    <packaging>bundle</packaging>
+    <name>OpenNMS :: Core :: Daemon Loader :: Trapd</name>
+    <description>
+        Karaf-only Trapd loader. Creates and starts the Trap daemon in a
+        Karaf container without the Manager/Eventd, wiring all dependencies
+        directly from the OSGi service registry.
+    </description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-17</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Spring-Context>
+                            META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
+                        </Spring-Context>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Daemon base (AbstractServiceDaemon) -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.daemon</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Trapd classes (Trapd, TrapListener, TrapSinkConsumer, etc.) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.traps</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Event API (EventIpcManager, EventForwarder, EventSubscriptionService) -->
+        <dependency>
+            <groupId>org.opennms.features.events</groupId>
+            <artifactId>org.opennms.features.events.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Trap configuration (TrapdConfig, TrapdConfigFactory) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- DAO APIs (DistPollerDao, InterfaceToNodeCache) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- EventConfDao interface -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Sink API (MessageDispatcherFactory, MessageConsumerManager) -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Sink Common (AbstractMessageConsumerManager, AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Metrics (required by AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OpenTracing (required by AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+            <version>${opentracingVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
+            <version>${opentracingVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Twin API (TwinPublisher, TwinSubscriber) -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin</groupId>
+            <artifactId>org.opennms.core.ipc.twin.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Secure Credentials Vault API -->
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring (for InitializingBean, DisposableBean) -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OSGi (for BundleContext, required by AbstractMessageDispatcherFactory) -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -108,7 +108,7 @@ public class OnmsRestEventsClient {
 			}
 			final String query = queryParts.isEmpty() ? "" : "?" + queryParts.stream().collect(Collectors.joining("&"));
 
-			// importing events generated from opennms-webapp-rest/src/main/java/org/opennms/web/rest/v1/EventRestService.java
+			// importing events from OpenNMS REST API
 			final HttpGet request = new HttpGet(baseUrl + EVENTS_URI + query);
 			request.addHeader("accept", "application/xml");
 

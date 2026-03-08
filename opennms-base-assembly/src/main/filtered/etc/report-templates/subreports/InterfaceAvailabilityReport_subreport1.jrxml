@@ -73,19 +73,17 @@ FROM(	SELECT
 			greatest('$P!{START_TIME_STRING}'::TIMESTAMP, outages.iflostservice) as outage_start,
 			case when outages.ifregainedservice is null then  '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL else least('$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL, outages.ifregainedservice) end as outage_end,
 			ipinterface.ipaddr,
-			events.eventuei,
+			'N/A' AS eventuei,
 			node.nodeid,
 			node.nodelabel
 		FROM
-			outages, service, events, node, ifservices, ipinterface
+			outages, service, node, ifservices, ipinterface
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
 			outages.ifserviceid = ifservices.id AND
 			ifservices.serviceid = service.serviceid  AND
 			service.servicename = 'ICMP' AND
-			outages.svclosteventid = events.eventid AND
 			ifservices.ipinterfaceid = ipinterface.id AND
-			events.eventuei = 'uei.opennms.org/nodes/interfaceDown' AND
 			node.nodeid = ipinterface.nodeid AND
 			outages.perspective IS NULL)
 		AS

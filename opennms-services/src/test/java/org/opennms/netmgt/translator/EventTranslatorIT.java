@@ -89,7 +89,7 @@ public class EventTranslatorIT {
         createAnticipators();
 
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventWriter(m_db);
+        m_eventMgr.setEventWriteHook(m_db::writeEvent);
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(true);
 

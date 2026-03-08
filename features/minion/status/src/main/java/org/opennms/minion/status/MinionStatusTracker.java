@@ -39,6 +39,9 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.opennms.core.messagebus.IpcMessage;
+import org.opennms.core.messagebus.MessageBus;
+import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -67,8 +70,8 @@ public class MinionStatusTracker implements InitializingBean {
 
     public static final String LOG_PREFIX = "minion";
 
-    private static final String OUTAGE_CREATED_EVENT_UEI = EventConstants.OUTAGE_CREATED_EVENT_UEI;
-    private static final String OUTAGE_RESOLVED_EVENT_UEI = EventConstants.OUTAGE_RESOLVED_EVENT_UEI;
+    private static final String MESSAGE_TYPE_OUTAGE_CREATED = "poller/outageCreated";
+    private static final String MESSAGE_TYPE_OUTAGE_RESOLVED = "poller/outageResolved";
 
     static final String MINION_HEARTBEAT = "Minion-Heartbeat";
     static final String MINION_RPC = "Minion-RPC";
@@ -87,6 +90,9 @@ public class MinionStatusTracker implements InitializingBean {
 
     @Autowired
     TransactionOperations m_transactionOperations;
+
+    @Autowired(required = false)
+    MessageBus m_messageBus;
 
     private long m_refresh = TimeUnit.MINUTES.toMillis(5);
 
@@ -114,6 +120,24 @@ public class MinionStatusTracker implements InitializingBean {
             };
             // sanity check every 5 minutes by default
             m_executor.scheduleAtFixedRate(command, 0, m_refresh, TimeUnit.MILLISECONDS);
+
+            if (m_messageBus != null) {
+                m_messageBus.subscribe(
+                        Arrays.asList(MESSAGE_TYPE_OUTAGE_CREATED, MESSAGE_TYPE_OUTAGE_RESOLVED),
+                        new MessageHandler() {
+                            @Override
+                            public String getName() {
+                                return "minionStatusTracker";
+                            }
+
+                            @Override
+                            public void onMessage(IpcMessage message) {
+                                handleOutageMessage(message);
+                            }
+                        }
+                );
+                LOG.info("Subscribed to MessageBus for outage events");
+            }
         }
     }
 
@@ -224,27 +248,28 @@ public class MinionStatusTracker implements InitializingBean {
         });
     }
 
-    @EventHandler(ueis= {
-            OUTAGE_CREATED_EVENT_UEI,
-            OUTAGE_RESOLVED_EVENT_UEI
-    })
-    public void onOutageEvent(final IEvent e) {
-        final boolean isHeartbeat = MINION_HEARTBEAT.equals(e.getService());
-        final boolean isRpc = MINION_RPC.equals(e.getService());
-        final boolean isPerspectiveNull = e.getParm("perspective") == null ? true : e.getParm("perspective").getValue() == null;
+    void handleOutageMessage(final IpcMessage message) {
+        Long nodeId = message.getNodeId();
+        String svcName = message.getParameter("service");
 
-        if (!isHeartbeat && !isRpc || !isPerspectiveNull) {
+        if (nodeId == null || svcName == null) {
+            return;
+        }
+
+        final boolean isHeartbeat = MINION_HEARTBEAT.equals(svcName);
+        final boolean isRpc = MINION_RPC.equals(svcName);
+
+        if (!isHeartbeat && !isRpc) {
             return;
         }
 
         runInLoggingTransaction(() -> {
             if (LOG.isTraceEnabled()) {
-                LOG.trace("Minion {} service event received for node {}: {}", isHeartbeat? "heartbeat":"rpc", e.getNodeid(), e);
+                LOG.trace("Minion {} service outage message received for node {}: {}",
+                        isHeartbeat ? "heartbeat" : "rpc", nodeId, message);
             }
 
-            assertHasNodeId(e);
-
-            final OnmsMinion minion = getMinionForNodeId(e.getNodeid().intValue());
+            final OnmsMinion minion = getMinionForNodeId(nodeId.intValue());
             final String minionId = minion.getId();
 
             AggregateMinionStatus status = m_state.get(minionId);
@@ -252,17 +277,17 @@ public class MinionStatusTracker implements InitializingBean {
                 status = AggregateMinionStatus.down();
             }
 
-            final String uei = e.getUei();
-            if (MINION_HEARTBEAT.equalsIgnoreCase(e.getService())) {
-                if (OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
+            String messageType = message.getType();
+            if (MINION_HEARTBEAT.equalsIgnoreCase(svcName)) {
+                if (MESSAGE_TYPE_OUTAGE_CREATED.equals(messageType)) {
                     status = status.heartbeatDown();
-                } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
+                } else if (MESSAGE_TYPE_OUTAGE_RESOLVED.equals(messageType)) {
                     status = status.heartbeatUp();
                 }
-            } else if (MINION_RPC.equalsIgnoreCase(e.getService())) {
-                if (OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
+            } else if (MINION_RPC.equalsIgnoreCase(svcName)) {
+                if (MESSAGE_TYPE_OUTAGE_CREATED.equals(messageType)) {
                     status = status.rpcDown();
-                } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
+                } else if (MESSAGE_TYPE_OUTAGE_RESOLVED.equals(messageType)) {
                     status = status.rpcUp();
                 }
             }

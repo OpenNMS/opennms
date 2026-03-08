@@ -110,16 +110,7 @@ public class ConfigTesterTest {
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
     }
-
     @Test
-    public void testAckdConfiguration() {
-        testConfigFile("ackd-configuration.xml");
-    }
-
-    @Test
-    public void testActiondConfiguration() {
-        testConfigFile("actiond-configuration.xml");
-    }
 
     @Test
     public void testAmiConfig() {
@@ -463,11 +454,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
-
-    @Test
     public void testSurveillanceViews() {
         testConfigFile("surveillance-views.xml");
     }
@@ -515,11 +501,6 @@ public class ConfigTesterTest {
     @Test
     public void testUsers() {
         testConfigFile("users.xml");
-    }
-
-    @Test
-    public void testVacuumdConfiguration() {
-        testConfigFile("vacuumd-configuration.xml");
     }
 
     @Test

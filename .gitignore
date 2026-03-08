@@ -59,6 +59,8 @@ built_dependencies
 opennms-container/*/rpms/*.repo
 opennms-container/*/rpms/*.rpm
 opennms-container/*/tarball/*.tar.gz
+opennms-container/*/tarball-root/
+opennms-container/**/tarball-root/
 
 # Python
 *.pyc

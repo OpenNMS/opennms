@@ -223,7 +223,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_outageAnticipator = new OutageAnticipator(m_db);
 
         m_eventMgr = new MockEventIpcManager();
-        m_eventMgr.setEventWriter(m_db);
+        m_eventMgr.setEventWriteHook(m_db::writeEvent);
         m_eventMgr.setEventAnticipator(m_eventMgr.getEventAnticipator());
         m_eventMgr.addEventListener(m_outageAnticipator);
         m_eventMgr.setSynchronous(false);

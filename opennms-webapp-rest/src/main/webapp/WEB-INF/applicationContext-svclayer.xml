@@ -106,4 +106,5 @@
   </bean>
   <bean id="enLinkdElementFactory" class="org.opennms.web.enlinkd.EnLinkdElementFactory"/>
 
+
 </beans>

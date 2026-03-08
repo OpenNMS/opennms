@@ -54,7 +54,7 @@
               org.opennms.core.messagebus;resolution:=optional,
               *
             </Import-Package>
-            <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
+            <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.scheduler.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>

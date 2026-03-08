@@ -26,13 +26,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -41,6 +44,7 @@ import org.junit.rules.TestRule;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.smoketest.containers.AlarmdContainer;
@@ -54,23 +58,21 @@ import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-
 /**
  * Smoke test that validates Alarmd can run as a standalone container, consuming
  * events from Kafka and creating alarms in PostgreSQL independently of the
  * core OpenNMS container.
  *
+ * <p>The core OpenNMS container has its internal Alarmd <b>disabled</b> via a
+ * service-configuration.xml overlay. This proves that the standalone Alarmd
+ * container is solely responsible for alarm creation — no alarm processing
+ * happens inside the core monolith.</p>
+ *
  * <p>Architecture under test:</p>
  * <pre>
- *   REST API → [OpenNMS Core] → Kafka → [Standalone Alarmd] → PostgreSQL
- *                                ↑ JMS (MessageBus) ↓
+ *   REST API → [OpenNMS Core (Alarmd disabled)] → Kafka → [Standalone Alarmd] → PostgreSQL
+ *                                                   ↑ JMS (MessageBus) ↓
  * </pre>
- *
- * <p>Note: The core OpenNMS container still has its internal Alarmd active.
- * Both instances share the same PostgreSQL database and alarm reduction keys.
- * A future enhancement should disable the core Alarmd via service-configuration.xml
- * overlay to prove the standalone container is solely responsible for alarm creation.</p>
  */
 public class AlarmdExtractionIT {
 
@@ -79,6 +81,7 @@ public class AlarmdExtractionIT {
     private static final StackModel MODEL = StackModel.newBuilder()
             .withOpenNMS(OpenNMSProfile.newBuilder()
                     .withKafkaProducerEnabled(true)
+                    .withFile("service-configuration-no-alarmd.xml", "etc/service-configuration.xml")
                     .build())
             .build();
 
@@ -93,11 +96,16 @@ public class AlarmdExtractionIT {
             .around(alarmd);
 
     /**
-     * Validates the end-to-end event→alarm pipeline through Kafka:
+     * Validates the end-to-end event→alarm pipeline through Kafka with core
+     * Alarmd disabled. Since Alarmd is not running in the core container,
+     * any alarm that appears in PostgreSQL must have been created by the
+     * standalone Alarmd consuming from Kafka.
+     *
      * <ol>
-     *   <li>Send a fault event to the Core container via REST</li>
+     *   <li>Send a fault event to the core container via REST</li>
      *   <li>OpenNMS publishes the event to Kafka (via Kafka producer)</li>
-     *   <li>Verify an alarm is created in PostgreSQL</li>
+     *   <li>Standalone Alarmd consumes from Kafka and creates the alarm</li>
+     *   <li>Verify the alarm exists in PostgreSQL with correct fields</li>
      * </ol>
      */
     @Test
@@ -109,13 +117,13 @@ public class AlarmdExtractionIT {
         parms.add(new Parm("service", "alarmd-extraction-test"));
         event.setParmCollection(parms);
 
-        LOG.info("Sending alarm-triggering event to OpenNMS core...");
+        LOG.info("Sending alarm-triggering event to OpenNMS core (Alarmd disabled)...");
         stack.opennms().getRestClient().sendEvent(event);
 
-        LOG.info("Waiting for alarm to appear in PostgreSQL...");
+        LOG.info("Waiting for alarm to appear in PostgreSQL (must come from standalone Alarmd)...");
         final var alarmDao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
 
-        final OnmsAlarm alarm = await("alarm from Kafka event")
+        final OnmsAlarm alarm = await("alarm from standalone Alarmd via Kafka")
                 .atMost(2, MINUTES)
                 .pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(alarmDao,
@@ -123,8 +131,16 @@ public class AlarmdExtractionIT {
                                 .eq("uei", "uei.opennms.org/alarms/trigger")
                                 .toCriteria()), notNullValue());
 
-        LOG.info("Alarm created successfully: id={}, reductionKey={}, severity={}",
+        LOG.info("Alarm created by standalone Alarmd: id={}, reductionKey={}, severity={}",
                 alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
+
+        // Verify alarm fields are populated correctly by the standalone Alarmd
+        assertNotNull("Alarm reduction key should be set", alarm.getReductionKey());
+        assertTrue("Alarm severity should be Critical (7)",
+                alarm.getSeverity() == OnmsSeverity.CRITICAL);
+        assertNotNull("Alarm should have a last event time", alarm.getLastEventTime());
+        assertTrue("Alarm counter should be at least 1",
+                alarm.getCounter() != null && alarm.getCounter() >= 1);
     }
 
     /**
@@ -166,5 +182,36 @@ public class AlarmdExtractionIT {
         alarmd.assertNoKarafDestroy(karafLog);
 
         LOG.info("Standalone Alarmd is healthy after reload.");
+    }
+
+    /**
+     * Verifies that the core OpenNMS container does not have Alarmd running,
+     * confirming the service-configuration.xml overlay successfully disabled it.
+     *
+     * <p>The {@link org.opennms.netmgt.vmmgr.Invoker} logs
+     * "Invoking init on object OpenNMS:Name=Alarmd" at INFO level when starting
+     * a daemon. If Alarmd is disabled in service-configuration.xml, this log
+     * line will not appear in manager.log.</p>
+     */
+    @Test
+    public void shouldNotHaveCoreAlarmdRunning() throws Exception {
+        LOG.info("Verifying core Alarmd is disabled via manager.log...");
+
+        final Path managerLog = Paths.get("/opt", "opennms", "logs", "manager.log");
+        final String logContents = TestContainerUtils.getFileFromContainerAsString(stack.opennms(), managerLog);
+
+        LOG.info("Core manager.log size: {} bytes", logContents.length());
+
+        // The Invoker logs "Invoking init on object OpenNMS:Name=Alarmd" when
+        // starting Alarmd. Its absence proves the overlay successfully disabled it.
+        assertFalse("Core Alarmd should not have been initialized — " +
+                        "service-configuration.xml overlay should disable it",
+                logContents.contains("Invoking init on object OpenNMS:Name=Alarmd"));
+
+        // Sanity check: Eventd SHOULD be initialized (proves the log is valid)
+        assertTrue("Core Eventd should be initialized (sanity check)",
+                logContents.contains("Invoking init on object OpenNMS:Name=Eventd"));
+
+        LOG.info("Confirmed: core Alarmd is disabled, Eventd is running.");
     }
 }

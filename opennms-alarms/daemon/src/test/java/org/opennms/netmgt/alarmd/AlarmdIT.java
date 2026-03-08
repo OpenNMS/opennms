@@ -190,7 +190,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         m_mockNetwork.createStandardNetwork();
 
         m_database.setDistPoller(m_distPollerDao.whoami().getId());
-        m_eventMgr.setEventWriter(m_database);
+        m_eventMgr.setEventWriteHook(m_database::writeEvent);
 
         // Insert some empty nodes to avoid foreign-key violations on subsequent events/alarms
         final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");

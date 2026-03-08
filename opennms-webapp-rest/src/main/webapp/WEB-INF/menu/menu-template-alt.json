@@ -56,13 +56,6 @@
           "roles": null
         },
         {
-          "id": "events",
-          "name": "Events",
-          "url": "event/index",
-          "locationMatch": "event",
-          "roles": null
-        },
-        {
           "id": "surveillanceView",
           "name": "Surveillance View",
           "url": "surveillance-view.jsp",
@@ -237,13 +230,6 @@
           "name": "Database Reports",
           "url": "report/database/index.jsp",
           "locationMatch": "database-reports",
-          "roles": null
-        },
-        {
-          "id": "statistics",
-          "name": "Metrics Statistics (statsd)",
-          "url": "statisticsReports/index.htm",
-          "locationMatch": "reports",
           "roles": null
         },
         {
