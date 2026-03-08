@@ -89,10 +89,6 @@ public class UsageStatisticsReportDTO {
     private long m_coreTssWritesCompleted;
     private int m_users;
     private int m_groups;
-    private long m_dcbSucceed;
-    private long m_dcbFailed;
-    private long m_dcbWebUiEntries;
-    private Map<String, Long> m_nodesWithDeviceConfigBySysOid = Collections.emptyMap();
     private int outages;
     private int notifications;
     private long m_onmsStartupTimeSeconds;
@@ -516,38 +512,6 @@ public class UsageStatisticsReportDTO {
 
     public void setUsers(int m_users) {
         this.m_users = m_users;
-    }
-
-    public long getDcbSucceed() {
-        return m_dcbSucceed;
-    }
-
-    public void setDcbSucceed(long m_dcbSucceed) {
-        this.m_dcbSucceed = m_dcbSucceed;
-    }
-
-    public long getDcbFailed() {
-        return m_dcbFailed;
-    }
-
-    public void setDcbFailed(long m_dcbFailed) {
-        this.m_dcbFailed = m_dcbFailed;
-    }
-
-    public long getDcbWebUiEntries() {
-        return m_dcbWebUiEntries;
-    }
-
-    public void setDcbWebUiEntries(long m_dcbWebUiEntries) {
-        this.m_dcbWebUiEntries = m_dcbWebUiEntries;
-    }
-
-    public Map<String, Long> getNodesWithDeviceConfigBySysOid() {
-        return m_nodesWithDeviceConfigBySysOid;
-    }
-
-    public void setNodesWithDeviceConfigBySysOid(Map<String, Long> nodesWithConfigBySysOid) {
-        this.m_nodesWithDeviceConfigBySysOid = nodesWithConfigBySysOid;
     }
 
     public long getOnmsStartupTimeSeconds() { return m_onmsStartupTimeSeconds; }

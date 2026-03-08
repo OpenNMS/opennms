@@ -291,10 +291,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("inventoryMenu", "Structured Node List");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Node List']")));
 
-        clickMenuItem("inventoryMenu", "Device Configs");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Device Configuration']")));
-
         clickMenuItem("toolsMenu", "Secure Credentials Vault");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Secure Credentials Vault']")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='scv-container']//p[text()='Add Credentials']")));

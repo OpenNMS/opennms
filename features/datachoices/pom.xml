@@ -138,11 +138,6 @@
             <artifactId>org.opennms.features.usageanalytics.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.features.device-config.persistence</groupId>
-            <artifactId>org.opennms.features.device-config.persistence.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>

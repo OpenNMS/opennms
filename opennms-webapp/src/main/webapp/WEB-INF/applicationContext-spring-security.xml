@@ -92,12 +92,6 @@
     <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
     <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
 
-    <!-- Allow certain actions for the ROLE_DEVICE_CONFIG_BACKUP role -->
-    <intercept-url pattern="/rest/device-config/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-
     <!-- Allow access to endpoint configuration only for ROLE_REST and ROLE_ADMIN roles -->
     <intercept-url pattern="/rest/endpoints/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
     <intercept-url pattern="/rest/endpoints/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />

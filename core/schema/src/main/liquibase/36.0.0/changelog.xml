@@ -190,4 +190,20 @@
         </createView>
     </changeSet>
 
+    <changeSet author="delta-v" id="36.0.0-drop-device-config">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="device_config"/>
+        </preConditions>
+        <dropTable tableName="device_config" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet author="delta-v" id="36.0.0-drop-device-config-sequence">
+        <preConditions onFail="MARK_RAN">
+            <sequenceExists sequenceName="deviceconfignxtid"/>
+        </preConditions>
+        <dropSequence sequenceName="deviceconfignxtid"/>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>

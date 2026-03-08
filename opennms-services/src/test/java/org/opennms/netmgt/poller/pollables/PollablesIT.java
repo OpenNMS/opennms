@@ -77,7 +77,6 @@ import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
@@ -159,7 +158,6 @@ public class PollablesIT {
 
     private PersisterFactory m_persisterFactory = new MockPersisterFactory();
     private ThresholdingService m_thresholdingService = null;
-    private ServiceMonitorAdaptor m_serviceMonitorAdaptor = (svc, parameters, status) -> status;
 
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
@@ -1518,7 +1516,7 @@ public class PollablesIT {
 
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, pkg,
-                     m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, m_pollerConfig, m_serviceMonitorAdaptor);
+                     m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, m_pollerConfig);
 
         m_timer.setCurrentTime(1000L);
         pDot1Smtp.updateStatus(PollStatus.down());
@@ -1552,7 +1550,7 @@ public class PollablesIT {
         final Package pkg = m_pollerConfig.getPackage("TestPkg2");
         final PollableServiceConfig pollConfig = new PollableServiceConfig(pDot3Http, m_pollerConfig,
                      pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient,
-                m_pollerConfig, m_serviceMonitorAdaptor);
+                m_pollerConfig);
 
         m_timer.setCurrentTime(1000L);
         pDot3Http.updateStatus(PollStatus.down());
@@ -1732,7 +1730,7 @@ public class PollablesIT {
         m_pollerConfig.addScheduledOutage(pkg, "first", 3000, 5000, "192.168.1.1");
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig,
                     pkg, m_timer, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient,
-                m_pollerConfig, m_serviceMonitorAdaptor);
+                m_pollerConfig);
 
         m_timer.setCurrentTime(2000L);
 
@@ -2754,7 +2752,7 @@ public class PollablesIT {
 
         PollableService svc = pNetwork.createService(nodeId, nodeLabel, nodeLocation, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pkg,
-                scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, pollOutagesDao, m_serviceMonitorAdaptor);
+                scheduler, m_persisterFactory, m_thresholdingService, m_locationAwarePollerClient, pollOutagesDao);
 
         svc.setPollConfig(pollConfig);
         synchronized (svc) {

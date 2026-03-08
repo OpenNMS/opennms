@@ -930,41 +930,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.tftp</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.shell</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.rest</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.retrieval</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.zenith-connect</groupId>
       <artifactId>org.opennms.features.zenith-connect.persistence</artifactId>
       <version>${project.version}</version>

@@ -115,12 +115,6 @@
             "datatype": "number"
         },
         {
-            "key": "dcbSucceed",
-            "name": "DCB: cumulative config count",
-            "description": "Total number of device configs ever successfully stored in this system, including deleted entries; must survive a restart",
-            "datatype": "number"
-        },
-        {
             "key": "dcbWebUiEntries",
             "name": "DCB: cumulative web UI entries",
             "description": "Total number of times any user has entered the DCB UI, excluding manual refreshes; must survive a restart",
@@ -250,12 +244,6 @@
             "key": "nodesBySysOid",
             "name": "Top-ten sysObjectIDs",
             "description": "Which device types dominate the set of SNMP-enabled nodes",
-            "datatype": "object"
-        },
-        {
-            "key": "nodesWithDeviceConfigBySysOid",
-            "name": "DCB: device count by sysObjectID",
-            "description": "Number of nodes with at least one config backed up, broken down by sysObjectID, including nodes that lack a sysObjectID",
             "datatype": "object"
         },
         {

@@ -68,13 +68,6 @@
           "roles": null
         },
         {
-          "id": "deviceConfigs",
-          "name": "Device Configs",
-          "url": "ui/index.html#/device-config-backup",
-          "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN", "ROLE_REST", "ROLE_DEVICE_CONFIG_BACKUP"]
-        },
-        {
           "id": "externalRequisitions",
           "name": "External Requisitions",
           "url": "ui/index.html#/configuration",

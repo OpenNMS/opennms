@@ -50,8 +50,7 @@ public class HibernateDaoFactory {
 
         AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
         sfb.setDataSource(ds);
-        sfb.setPackagesToScan("org.opennms.netmgt.model",
-                              "org.opennms.features.deviceconfig.persistence.api");
+        sfb.setPackagesToScan("org.opennms.netmgt.model");
         try {
             sfb.afterPropertiesSet();
         } catch (Exception e) {

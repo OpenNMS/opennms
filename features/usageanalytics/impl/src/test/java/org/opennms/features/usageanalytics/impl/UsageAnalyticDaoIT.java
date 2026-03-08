@@ -28,7 +28,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.usageanalytics.api.UsageAnalytic;
 import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
-import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,23 +61,23 @@ public class UsageAnalyticDaoIT {
     public void persistenceOfUsageAnalyticTest() {
         LOG.info("Test started");
         UsageAnalytic ua = new UsageAnalytic();
-        ua.setMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
+        ua.setMetricName("TEST_METRIC_A");
         ua.setCounter(13l);
         usageAnalyticDao.saveOrUpdate(ua);
 
         ua = new UsageAnalytic();
-        ua.setMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
+        ua.setMetricName("TEST_METRIC_B");
         ua.setCounter(23l);
         usageAnalyticDao.saveOrUpdate(ua);
 
-        Assert.assertEquals(13l, usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
-        Assert.assertEquals(23l, usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        Assert.assertEquals(13l, usageAnalyticDao.getValueByMetricName("TEST_METRIC_A"));
+        Assert.assertEquals(23l, usageAnalyticDao.getValueByMetricName("TEST_METRIC_B"));
 
-        usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
-        usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
+        usageAnalyticDao.incrementCounterByMetricName("TEST_METRIC_A");
+        usageAnalyticDao.incrementCounterByMetricName("TEST_METRIC_B");
 
-        Assert.assertEquals(14l, usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
-        Assert.assertEquals(24l, usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
+        Assert.assertEquals(14l, usageAnalyticDao.getValueByMetricName("TEST_METRIC_A"));
+        Assert.assertEquals(24l, usageAnalyticDao.getValueByMetricName("TEST_METRIC_B"));
 
         LOG.info("Test finished");
     }

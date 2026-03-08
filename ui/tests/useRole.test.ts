@@ -27,7 +27,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 
 const mockWhoAmI = {
-  roles: ['ROLE_DEVICE_CONFIG_BACKUP']
+  roles: ['ROLE_ADMIN']
 } as WhoAmIResponse
 
 describe('useRole test', () => {
@@ -39,8 +39,8 @@ describe('useRole test', () => {
     const authStore = useAuthStore()
     authStore.whoAmI = mockWhoAmI
 
-    const { adminRole, dcbRole } = useRole()
-    assert.equal(adminRole.value, false)
-    assert.equal(dcbRole.value, true)
+    const { adminRole, filesystemEditorRole } = useRole()
+    assert.equal(adminRole.value, true)
+    assert.equal(filesystemEditorRole.value, false)
   })
 })

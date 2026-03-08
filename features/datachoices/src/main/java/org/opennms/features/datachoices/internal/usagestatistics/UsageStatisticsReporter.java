@@ -63,7 +63,6 @@ import org.opennms.core.utils.TimeSeries;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.features.datachoices.internal.StateManager;
 import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler;
-import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
 import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
@@ -152,8 +151,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private MonitoringSystemDao m_monitoringSystemDao;
 
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
-
-    private DeviceConfigDao m_deviceConfigDao;
 
     private FeaturesService m_featuresService;
 
@@ -315,11 +312,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSinkStrategy(SinkStrategy.getSinkStrategy().getName());
         usageStatisticsReport.setRpcStrategy(RpcStrategy.getRpcStrategy().getName());
         usageStatisticsReport.setTssStrategies(TimeSeries.getTimeseriesStrategy().getName());
-        // DCB statistics
-        usageStatisticsReport.setDcbSucceed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString()));
-        usageStatisticsReport.setDcbFailed(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString()));
-        usageStatisticsReport.setDcbWebUiEntries(m_usageAnalyticDao.getValueByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString()));
-        usageStatisticsReport.setNodesWithDeviceConfigBySysOid(m_deviceConfigDao.getNumberOfNodesWithDeviceConfigBySysOid());
         usageStatisticsReport.setApplianceCounts(this.getApplianceCountByModel());
         // Container
         usageStatisticsReport.setInContainer(this.isContainerized());
@@ -703,10 +695,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public ForeignSourceRepository getDeployedForeignSourceRepository() {
         return m_deployedForeignSourceRepository;
-    }
-
-    public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
-        this.m_deviceConfigDao = deviceConfigDao;
     }
 
     public void setFlowQueryService(FlowQueryService flowQueryService) {

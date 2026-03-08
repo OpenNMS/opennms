@@ -59,12 +59,6 @@
 *** xref:deep-dive/service-assurance/shell/introduction.adoc[]
 **** xref:deep-dive/service-assurance/shell/pollerd-schedule.adoc[]
 
-** xref:deep-dive/device-config-backup/introduction.adoc[]
-*** xref:deep-dive/device-config-backup/ssh.adoc[]
-*** xref:deep-dive/device-config-backup/configuration.adoc[]
-*** xref:deep-dive/device-config-backup/dcb-requisition.adoc[]
-*** xref:deep-dive/device-config-backup/dcb.adoc[]
-
 ** xref:deep-dive/structured-node-list/introduction.adoc[]
 
 ** xref:deep-dive/performance-data-collection/introduction.adoc[]
