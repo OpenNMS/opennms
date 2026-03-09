@@ -2306,6 +2306,24 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Scriptd: loads Scriptd daemon (BSF script execution on events) without Manager/Eventd -->
+    <feature name="opennms-daemon-scriptd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Scriptd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure (provides NodeDao, SessionUtils) -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Config (ScriptdConfigFactory) -->
+        <feature>opennms-config</feature>
+        <!-- Scriptd classes (inside opennms-services monolithic bundle) -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Scriptd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-scriptd/${project.version}</bundle>
+    </feature>
+
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
          Receives events from Kafka and persists alarms to PostgreSQL.
          NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->

@@ -407,6 +407,7 @@
                         <feature>opennms-daemon-rtcd</feature>
                         <feature>opennms-daemon-passivestatusd</feature>
                         <feature>opennms-daemon-enlinkd</feature>
+                        <feature>opennms-daemon-scriptd</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
