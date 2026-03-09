@@ -1742,7 +1742,7 @@
     <activemqVersion>5.16.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
+    <bouncyCastleVersion>1.83</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1885,10 +1885,10 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.10</karafVersion>
+    <karafVersion>4.4.9</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
-    <eclipseOsgiVersion>3.17.200</eclipseOsgiVersion>
-    <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
+    <eclipseOsgiVersion>3.18.0</eclipseOsgiVersion>
+    <felixCmJsonVersion>1.0.8</felixCmJsonVersion>
     <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
     <felixConfigadminPluginInterpolationVersion>1.2.8</felixConfigadminPluginInterpolationVersion>
     <felixCoordinatorVersion>1.0.2</felixCoordinatorVersion>
@@ -1897,13 +1897,15 @@
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
-    <jansiVersion>2.4.0</jansiVersion>
-    <jlineVersion>3.21.0</jlineVersion>
-    <osgiUtilVersion>1.2.0</osgiUtilVersion>
-    <paxLoggingVersion>2.0.19</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
-    <paxUrlAetherVersion>2.6.14</paxUrlAetherVersion>
-    <paxWebVersion>7.3.29</paxWebVersion>
+    <jansiVersion>2.4.2</jansiVersion>
+    <jlineVersion>3.30.6</jlineVersion>
+    <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
+    <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
+    <paxLoggingVersion>2.3.0</paxLoggingVersion>
+    <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
+    <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
+    <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
+    <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
@@ -1935,8 +1937,8 @@
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>2.0.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
-    <osgiVersion>7.0.0</osgiVersion>
-    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
+    <osgiVersion>8.0.0</osgiVersion>
+    <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
@@ -1990,7 +1992,7 @@
     <wsmanVersion>1.3.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.12.1</minaSshdVersion>
+    <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>

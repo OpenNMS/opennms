@@ -132,7 +132,7 @@
                         <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
                         <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <javase>11</javase>
                 </configuration>
             </plugin>
             <plugin>

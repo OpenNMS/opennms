@@ -21,9 +21,9 @@
  */
 package liquibase.ext2.cm.change;
 
-import static liquibase.ext2.cm.change.ConfigFileUtil.OPENNMS_HOME;
 import static liquibase.ext2.cm.change.ConfigFileUtil.checkFileType;
 import static liquibase.ext2.cm.change.ConfigFileUtil.findConfigFiles;
+import static liquibase.ext2.cm.change.ConfigFileUtil.getOpennmsHome;
 import static liquibase.ext2.cm.change.ConfigFileUtil.validateAndGetArchiveDir;
 import static liquibase.ext2.cm.change.ImportConfigurationUtil.importConfig;
 
@@ -69,7 +69,7 @@ public class ImportConfiguration extends AbstractCmChange {
 
         if (configResource.isEmpty() || !configResource.get().isReadable()) {
             validationErrors.addError(String.format("Can not read configuration in file: %s/etc/%s or in classpath: /defaults/%s",
-                    OPENNMS_HOME, this.filePath, this.filePath));
+                    getOpennmsHome(), this.filePath, this.filePath));
         } else {
             this.configResource = configResource.get();
         }

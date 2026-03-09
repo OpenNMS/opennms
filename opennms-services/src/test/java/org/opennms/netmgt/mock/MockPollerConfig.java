@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollerConfig;
@@ -81,6 +82,8 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     private boolean m_pollAll = true;
 
     private boolean m_pathOutageEnabled = false;
+
+    private AtomicInteger m_rebuildPackageIpListMapCallCount = new AtomicInteger(0);
 
     private boolean m_serviceUnresponsiveEnabled = false;
 
@@ -403,8 +406,15 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
 
     @Override
     public void rebuildPackageIpListMap() {
-        // TODO Auto-generated method stub
+        m_rebuildPackageIpListMapCallCount.incrementAndGet();
+    }
 
+    public int getRebuildPackageIpListMapCallCount() {
+        return m_rebuildPackageIpListMapCallCount.get();
+    }
+
+    public void resetRebuildPackageIpListMapCallCount() {
+        m_rebuildPackageIpListMapCallCount.set(0);
     }
 
     @Override
