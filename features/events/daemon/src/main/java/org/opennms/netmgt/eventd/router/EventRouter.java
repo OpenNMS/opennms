@@ -1,7 +1,5 @@
 package org.opennms.netmgt.eventd.router;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
@@ -17,20 +15,17 @@ public class EventRouter implements EventProcessor {
 
     private final EventClassifier classifier;
     private final EventProcessor faultEventPublisher;
-    private final MessageBus messageBus;
+    private final EventProcessor ipcEventPublisher;
     private final EventIpcBroadcaster localBroadcaster;
-    private final IpcMessageConverter ipcMessageConverter;
 
     public EventRouter(EventClassifier classifier,
                        EventProcessor faultEventPublisher,
-                       MessageBus messageBus,
-                       EventIpcBroadcaster localBroadcaster,
-                       IpcMessageConverter ipcMessageConverter) {
+                       EventProcessor ipcEventPublisher,
+                       EventIpcBroadcaster localBroadcaster) {
         this.classifier = classifier;
         this.faultEventPublisher = faultEventPublisher;
-        this.messageBus = messageBus;
+        this.ipcEventPublisher = ipcEventPublisher;
         this.localBroadcaster = localBroadcaster;
-        this.ipcMessageConverter = ipcMessageConverter;
     }
 
     @Override
@@ -53,12 +48,12 @@ public class EventRouter implements EventProcessor {
                     broadcastLocally(event, synchronous);
                     break;
                 case IPC:
-                    publishIpcMessage(event);
+                    publishIpcEvent(eventLog, event, synchronous);
                     broadcastLocally(event, synchronous);
                     break;
                 case DUAL:
                     publishFaultEvent(eventLog, event, synchronous);
-                    publishIpcMessage(event);
+                    publishIpcEvent(eventLog, event, synchronous);
                     broadcastLocally(event, synchronous);
                     break;
             }
@@ -75,9 +70,14 @@ public class EventRouter implements EventProcessor {
         faultEventPublisher.process(singleEventLog, synchronous);
     }
 
-    private void publishIpcMessage(Event event) {
-        IpcMessage message = ipcMessageConverter.convert(event);
-        messageBus.publish(message);
+    private void publishIpcEvent(Log originalLog, Event event, boolean synchronous)
+            throws EventProcessorException {
+        Log singleEventLog = new Log();
+        Events events = new Events();
+        events.addEvent(event);
+        singleEventLog.setEvents(events);
+        singleEventLog.setHeader(originalLog.getHeader());
+        ipcEventPublisher.process(singleEventLog, synchronous);
     }
 
     private void broadcastLocally(Event event, boolean synchronous) {

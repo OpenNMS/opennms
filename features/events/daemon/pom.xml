@@ -50,16 +50,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.core.messagebus.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.core.messagebus.jms</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
       <version>${kafkaBundleVersion}</version>

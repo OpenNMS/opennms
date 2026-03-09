@@ -103,27 +103,6 @@
   <!-- Event classification and routing -->
   <bean id="eventClassifier" class="org.opennms.netmgt.eventd.router.EventClassifier"/>
 
-  <bean id="ipcMessageConverter" class="org.opennms.netmgt.eventd.router.IpcMessageConverter"/>
-
-  <!-- JMS-backed MessageBus: publishes IPC events to AMQ Topics (OpenNMS.IPC.*)
-       so daemon containers connected to core's broker receive them.
-       Uses jmsConnectionFactory from applicationContext-daemon.xml (vm://localhost). -->
-  <bean id="messageBus" class="org.opennms.core.messagebus.jms.JmsMessageBus"
-        init-method="start" destroy-method="stop">
-    <constructor-arg ref="jmsConnectionFactory"/>
-  </bean>
-
-  <onmsgi:service ref="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
-
-  <bean id="messageBusFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="messageBus">
-    <property name="staticMethod"><value>org.opennms.core.messagebus.MessageBusFactory.setMessageBus</value></property>
-    <property name="arguments">
-      <list>
-        <ref bean="messageBus"/>
-      </list>
-    </property>
-  </bean>
-
   <!-- Fault event publisher: sends events with alarm-data to Kafka.
        Uses FaultEventPublisherFactory to create KafkaProducer inline (avoiding
        circular Maven dependency with event-forwarder-kafka module).
@@ -144,13 +123,22 @@
     <constructor-arg value="${org.opennms.kafka.ipc.topic:opennms-ipc-events}"/>
   </bean>
 
-  <!-- Kafka consumer: polls fault events published by daemon containers and
-       broadcasts them to core's local listeners via EventIpcBroadcaster.
-       Skips events originated by core itself (TSID node-id=1) to prevent echo. -->
+  <!-- Kafka consumers: poll events published by daemon containers and
+       broadcast them to core's local listeners via EventIpcBroadcaster.
+       Events originated by core itself (TSID node-id=1) are skipped to prevent echo. -->
   <bean id="kafkaFaultEventConsumer"
-        class="org.opennms.netmgt.eventd.consumer.KafkaFaultEventConsumer">
+        class="org.opennms.netmgt.eventd.consumer.KafkaEventConsumer">
     <constructor-arg value="${org.opennms.kafka.bootstrap.servers:localhost:9092}"/>
     <constructor-arg value="${org.opennms.kafka.fault.topic:opennms-fault-events}"/>
+    <constructor-arg value="${org.opennms.kafka.consumer.group:opennms-core-consumer}"/>
+    <constructor-arg value="${org.opennms.tsid.node-id:1}"/>
+    <constructor-arg ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <bean id="kafkaIpcEventConsumer"
+        class="org.opennms.netmgt.eventd.consumer.KafkaEventConsumer">
+    <constructor-arg value="${org.opennms.kafka.bootstrap.servers:localhost:9092}"/>
+    <constructor-arg value="${org.opennms.kafka.ipc.topic:opennms-ipc-events}"/>
     <constructor-arg value="${org.opennms.kafka.consumer.group:opennms-core-consumer}"/>
     <constructor-arg value="${org.opennms.tsid.node-id:1}"/>
     <constructor-arg ref="eventIpcManagerImpl"/>
@@ -159,9 +147,8 @@
   <bean id="eventRouter" class="org.opennms.netmgt.eventd.router.EventRouter">
     <constructor-arg ref="eventClassifier"/>
     <constructor-arg ref="faultEventPublisher"/>
-    <constructor-arg ref="messageBus"/>
+    <constructor-arg ref="ipcEventPublisher"/>
     <constructor-arg ref="eventIpcManagerImpl"/>
-    <constructor-arg ref="ipcMessageConverter"/>
   </bean>
 
   <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">

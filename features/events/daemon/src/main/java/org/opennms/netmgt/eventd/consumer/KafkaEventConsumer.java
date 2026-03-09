@@ -22,19 +22,20 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Consumes fault events from the Kafka {@code opennms-fault-events} topic and
- * broadcasts them to core's local {@link EventIpcBroadcaster} listeners.
+ * Consumes events from a Kafka topic and broadcasts them to core's local
+ * {@link EventIpcBroadcaster} listeners.
  *
  * <p>Events originated by core itself (detected via TSID node-id) are skipped
- * to prevent echo loops — core publishes fault events to the same topic via
- * {@link org.opennms.netmgt.eventd.processor.FaultEventPublisher}.</p>
+ * to prevent echo loops — core publishes events to the same topics via
+ * {@link org.opennms.netmgt.eventd.processor.FaultEventPublisher} and
+ * {@link org.opennms.netmgt.eventd.processor.IpcEventPublisher}.</p>
  *
- * <p>This bean is wired in {@code applicationContext-eventDaemon.xml} and runs
- * a daemon thread that polls Kafka continuously.</p>
+ * <p>Two instances are wired in {@code applicationContext-eventDaemon.xml}:
+ * one for the fault topic and one for the IPC topic.</p>
  */
-public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean {
+public class KafkaEventConsumer implements InitializingBean, DisposableBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaFaultEventConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaEventConsumer.class);
 
     /** TSID node-id occupies bits 12-21 (10 bits, shifted right by SEQUENCE_BITS=12). */
     private static final int TSID_NODE_SHIFT = 12;
@@ -50,11 +51,11 @@ public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean
     private volatile boolean running;
     private Thread pollThread;
 
-    public KafkaFaultEventConsumer(String bootstrapServers,
-                                   String topicName,
-                                   String groupId,
-                                   int coreNodeId,
-                                   EventIpcBroadcaster localBroadcaster) {
+    public KafkaEventConsumer(String bootstrapServers,
+                              String topicName,
+                              String groupId,
+                              int coreNodeId,
+                              EventIpcBroadcaster localBroadcaster) {
         this.bootstrapServers = bootstrapServers;
         this.topicName = topicName;
         this.groupId = groupId;
@@ -74,11 +75,11 @@ public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean
         consumer.subscribe(Collections.singletonList(topicName));
 
         running = true;
-        pollThread = new Thread(this::pollLoop, "kafka-fault-event-consumer");
+        pollThread = new Thread(this::pollLoop, "kafka-event-consumer-" + topicName);
         pollThread.setDaemon(true);
         pollThread.start();
 
-        LOG.info("KafkaFaultEventConsumer started: topic={}, group={}, coreNodeId={}",
+        LOG.info("KafkaEventConsumer started: topic={}, group={}, coreNodeId={}",
                 topicName, groupId, coreNodeId);
     }
 
@@ -98,7 +99,7 @@ public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean
         if (consumer != null) {
             consumer.close();
         }
-        LOG.info("KafkaFaultEventConsumer stopped");
+        LOG.info("KafkaEventConsumer stopped: topic={}", topicName);
     }
 
     private void pollLoop() {
@@ -116,7 +117,7 @@ public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean
                     LOG.warn("Unexpected wakeup", e);
                 }
             } catch (Exception e) {
-                LOG.error("Error in Kafka fault event poll loop", e);
+                LOG.error("Error in Kafka event poll loop for topic {}", topicName, e);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ie) {
@@ -138,8 +139,8 @@ public class KafkaFaultEventConsumer implements InitializingBean, DisposableBean
                 return;
             }
 
-            LOG.debug("Broadcasting Kafka fault event: uei={} dbid={} source={}",
-                    event.getUei(), event.getDbid(), event.getSource());
+            LOG.debug("Broadcasting Kafka event from topic {}: uei={} dbid={} source={}",
+                    topicName, event.getUei(), event.getDbid(), event.getSource());
             localBroadcaster.broadcastNow(event, false);
         } catch (Exception e) {
             LOG.error("Failed to process Kafka record at offset {}", record.offset(), e);

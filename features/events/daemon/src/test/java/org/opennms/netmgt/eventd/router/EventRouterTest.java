@@ -9,8 +9,6 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.netmgt.events.api.EventIpcBroadcaster;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -21,21 +19,20 @@ import org.opennms.netmgt.xml.event.Log;
 public class EventRouterTest {
 
     private EventProcessor mockFaultPublisher;
-    private MessageBus mockMessageBus;
+    private EventProcessor mockIpcPublisher;
     private EventIpcBroadcaster mockBroadcaster;
     private EventRouter router;
 
     @Before
     public void setUp() {
         mockFaultPublisher = mock(EventProcessor.class);
-        mockMessageBus = mock(MessageBus.class);
+        mockIpcPublisher = mock(EventProcessor.class);
         mockBroadcaster = mock(EventIpcBroadcaster.class);
         router = new EventRouter(
                 new EventClassifier(),
                 mockFaultPublisher,
-                mockMessageBus,
-                mockBroadcaster,
-                new IpcMessageConverter()
+                mockIpcPublisher,
+                mockBroadcaster
         );
     }
 
@@ -47,24 +44,24 @@ public class EventRouterTest {
         router.process(log);
 
         verify(mockFaultPublisher, times(1)).process(any(Log.class), eq(false));
-        verify(mockMessageBus, never()).publish(any(IpcMessage.class));
+        verify(mockIpcPublisher, never()).process(any(Log.class), any(boolean.class));
         verify(mockBroadcaster, times(1)).broadcastNow(eq(event), eq(false));
     }
 
     @Test
-    public void shouldRouteIpcEventToMessageBusAndBroadcast() throws Exception {
+    public void shouldRouteIpcEventToIpcPublisherAndBroadcast() throws Exception {
         Event event = ipcEvent("uei.opennms.org/internal/reloadDaemonConfig");
         Log log = createLog(event);
 
         router.process(log);
 
         verify(mockFaultPublisher, never()).process(any(Log.class), any(boolean.class));
-        verify(mockMessageBus, times(1)).publish(any(IpcMessage.class));
+        verify(mockIpcPublisher, times(1)).process(any(Log.class), eq(false));
         verify(mockBroadcaster, times(1)).broadcastNow(eq(event), eq(false));
     }
 
     @Test
-    public void shouldRouteDualEventToBothKafkaAndMessageBus() throws Exception {
+    public void shouldRouteDualEventToBothPublishers() throws Exception {
         Event event = new Event();
         event.setUei("uei.opennms.org/internal/reloadDaemonConfigFailed");
         event.setSource("webui");
@@ -77,7 +74,7 @@ public class EventRouterTest {
         router.process(log);
 
         verify(mockFaultPublisher, times(1)).process(any(Log.class), eq(false));
-        verify(mockMessageBus, times(1)).publish(any(IpcMessage.class));
+        verify(mockIpcPublisher, times(1)).process(any(Log.class), eq(false));
         verify(mockBroadcaster, times(1)).broadcastNow(eq(event), eq(false));
     }
 
