@@ -142,23 +142,71 @@ No new containers. AMQ broker is embedded in core. Kafka cluster already exists.
 Once Phase 1 (AMQ IPC) works, revert `CORE_SERVICE_DISCOVERY_ENABLED` back to `"false"`
 on core — standalone Discovery container handles it via AMQ.
 
-## UEI Classification Audit (Future Critical Work)
+## UEI Classification Audit (COMPLETED 2026-03-09)
 
-EventClassifier routes based on UEI prefix: `uei.opennms.org/internal/*` → IPC. Many
-legacy events are functionally IPC messages but live in non-internal namespaces.
+EventClassifier routes based on UEI prefix: `uei.opennms.org/internal/*` → IPC. The
+`CROSS_CONTAINER_INTERNAL_UEIS` whitelist overrides this to DUAL for internal events
+that must also flow via Kafka (because consumers use `AnnotationBasedEventListenerAdapter`).
 
-**Known misclassified events (need migration or EventClassifier whitelist):**
-- `uei.opennms.org/nodes/nodeAdded` — functionally IPC (lifecycle notification)
-- `uei.opennms.org/nodes/nodeGainedService` — functionally DUAL
+### The Dual-Path Delivery Problem
 
-**Correctly classified:**
-- `uei.opennms.org/internal/discovery/newSuspect` — IPC
-- `uei.opennms.org/internal/node/nodeScanCompleted` — IPC
-- `uei.opennms.org/nodes/nodeDown` — FAULT
-- `uei.opennms.org/nodes/nodeUp` — FAULT
-- `uei.opennms.org/nodes/nodeLostService` — FAULT
+Daemon containers have two independent delivery paths for `@EventHandler` annotations:
 
-A full audit is required before all 15 daemon containers can operate end-to-end.
+1. **Kafka path**: `AnnotationBasedEventListenerAdapter` → `KafkaEventSubscriptionService`
+   — only delivers FAULT/DUAL events (published to Kafka topic)
+
+2. **AMQ path**: `MessageBusEventListenerBridge` → `JmsMessageBus`
+   — only delivers internal (IPC/DUAL) events via AMQ Topics
+
+If a daemon uses the Kafka path but its `@EventHandler` references an internal UEI,
+the event must be classified as DUAL (not IPC) or it will never arrive.
+
+### DUAL Events (in `CROSS_CONTAINER_INTERNAL_UEIS`)
+
+| Event | UEI | Why DUAL |
+|-------|-----|----------|
+| `newSuspect` | `uei.opennms.org/internal/discovery/newSuspect` | Discovery → Kafka → core; also AMQ → Provisiond |
+| `forceRescan` | `uei.opennms.org/internal/capsd/forceRescan` | Enlinkd uses Kafka path (`AnnotationBasedEventListenerAdapter`) |
+
+### IPC Events (MessageBus/AMQ only)
+
+| Event | UEI | Why IPC |
+|-------|-----|--------|
+| `nodeScanCompleted` | `uei.opennms.org/internal/provisiond/nodeScanCompleted` | Consumers (SnmpPoller, ProvisioningAdapterManager) are on core |
+| `reloadDaemonConfig` | `uei.opennms.org/internal/reloadDaemonConfig` | Trapd receives via `MessageBusEventListenerBridge` (AMQ path) |
+
+### FAULT Events (Kafka only)
+
+| Event | UEI | Consumers |
+|-------|-----|-----------|
+| `nodeAdded` | `uei.opennms.org/nodes/nodeAdded` | Enlinkd, Pollerd, Collectd (all via Kafka) |
+| `nodeDeleted` | `uei.opennms.org/nodes/nodeDeleted` | Enlinkd (Kafka) |
+| `nodeGainedService` | `uei.opennms.org/nodes/nodeGainedService` | Enlinkd, Pollerd, Collectd (Kafka) |
+| `nodeLostService` | `uei.opennms.org/nodes/nodeLostService` | Enlinkd, Pollerd, Collectd (Kafka) |
+| `nodeDown` / `nodeUp` | `uei.opennms.org/nodes/nodeDown` | Alarmd, Notifd (Kafka) |
+| All trap/syslog events | various | Alarmd (all events), Notifd, Scriptd |
+
+### Known Compromise: `nodeAdded` as FAULT
+
+`nodeAdded` is functionally an IPC lifecycle notification ("a new node exists, start
+monitoring it"). However, all consumers (Enlinkd, Pollerd, Collectd) use
+`addEventListener()` → `KafkaEventSubscriptionService`, so it MUST flow via Kafka.
+Classifying it as IPC would break delivery. The current FAULT classification is correct
+for the transport architecture even though it's semantically an IPC message.
+
+### Per-Daemon Event Delivery Summary
+
+| Daemon | Delivery Path | Events Received |
+|--------|--------------|-----------------|
+| **Alarmd** | Kafka (ALL_UEIS) | All fault events, creates alarms |
+| **Enlinkd** | Kafka (`AnnotationBasedEventListenerAdapter`) | nodeAdded, nodeDeleted, nodeGainedService, nodeLostService, nodeRegainedService, forceRescan (DUAL) |
+| **Pollerd** | Kafka (`addEventListener`) | nodeAdded, nodeGainedService, nodeLostService, nodeRegainedService, interfaceDown/Up |
+| **Collectd** | Kafka (`addEventListener`) | nodeAdded, nodeGainedService, nodeLostService, nodeRegainedService |
+| **Trapd** | AMQ (`MessageBusEventListenerBridge`) | reloadDaemonConfig |
+| **Notifd** | Kafka (ALL_UEIS) | All events for notification rules |
+| **Scriptd** | Kafka (ALL_UEIS) | All events for scripting |
+| **Provisiond** | AMQ (`MessageBusEventListenerBridge`) | newSuspect (DUAL) |
+| **RTCd** | Both | Outage events (AMQ), service/category events (Kafka) |
 
 ## Implementation Phases
 

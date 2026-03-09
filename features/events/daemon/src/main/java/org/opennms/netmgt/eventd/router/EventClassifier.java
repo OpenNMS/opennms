@@ -8,10 +8,16 @@ public class EventClassifier {
 
     /**
      * Internal events that must be routed to Kafka (DUAL) even without alarm-data,
-     * because they trigger cross-container actions (e.g., Discovery → Provisiond).
+     * because they trigger cross-container actions via KafkaEventSubscriptionService.
+     *
+     * Events here are classified as DUAL: published to both Kafka and MessageBus (AMQ).
+     * This is required when a daemon container's @EventHandler uses
+     * AnnotationBasedEventListenerAdapter (Kafka path) for an internal UEI that would
+     * otherwise be IPC-only (MessageBus).
      */
     private static final String[] CROSS_CONTAINER_INTERNAL_UEIS = {
         "uei.opennms.org/internal/discovery/newSuspect",
+        "uei.opennms.org/internal/capsd/forceRescan",
     };
 
     public EventClassification classify(Event event) {

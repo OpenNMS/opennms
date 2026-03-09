@@ -35,14 +35,23 @@ public class EventClassifierTest {
     }
 
     @Test
-    public void shouldClassifyCapsdInternalAsIpc() {
+    public void shouldClassifyForceRescanAsDual() {
+        // forceRescan is internal but must reach Enlinkd via Kafka (AnnotationBasedEventListenerAdapter)
         Event event = eventWithoutAlarmData("uei.opennms.org/internal/capsd/forceRescan");
-        assertThat(classifier.classify(event)).isEqualTo(EventClassification.IPC);
+        assertThat(classifier.classify(event)).isEqualTo(EventClassification.DUAL);
     }
 
     @Test
-    public void shouldClassifyDiscoveryInternalAsIpc() {
+    public void shouldClassifyNewSuspectAsDual() {
+        // newSuspect is internal but must reach Provisiond on core via both AMQ and Kafka
         Event event = eventWithoutAlarmData("uei.opennms.org/internal/discovery/newSuspect");
+        assertThat(classifier.classify(event)).isEqualTo(EventClassification.DUAL);
+    }
+
+    @Test
+    public void shouldClassifyNonWhitelistedInternalAsIpc() {
+        // Internal events NOT in the cross-container whitelist stay IPC-only
+        Event event = eventWithoutAlarmData("uei.opennms.org/internal/provisiond/nodeScanCompleted");
         assertThat(classifier.classify(event)).isEqualTo(EventClassification.IPC);
     }
 
