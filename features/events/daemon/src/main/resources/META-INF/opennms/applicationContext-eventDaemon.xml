@@ -105,8 +105,13 @@
 
   <bean id="ipcMessageConverter" class="org.opennms.netmgt.eventd.router.IpcMessageConverter"/>
 
-  <!-- Local-mode MessageBus: in-JVM pub/sub for IPC events -->
-  <bean id="messageBus" class="org.opennms.core.messagebus.local.LocalMessageBus"/>
+  <!-- JMS-backed MessageBus: publishes IPC events to AMQ Topics (OpenNMS.IPC.*)
+       so daemon containers connected to core's broker receive them.
+       Uses jmsConnectionFactory from applicationContext-daemon.xml (vm://localhost). -->
+  <bean id="messageBus" class="org.opennms.core.messagebus.jms.JmsMessageBus"
+        init-method="start" destroy-method="stop">
+    <constructor-arg ref="jmsConnectionFactory"/>
+  </bean>
 
   <onmsgi:service ref="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
 
