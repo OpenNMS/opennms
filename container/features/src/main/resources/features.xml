@@ -2092,6 +2092,7 @@
         <feature>opennms-events-kafka-consumer</feature>
         <feature>opennms-events-sink-dispatcher</feature>
         <feature>opennms-core-messagebus-api</feature>
+        <feature>opennms-core-messagebus-jms</feature>
         <feature>opennms-core-tsid</feature>
         <feature>opennms-kafka</feature>
         <feature>dropwizard-metrics</feature>
