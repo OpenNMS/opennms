@@ -313,6 +313,15 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
+
+        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            // Override the default 60-second start delay for GRPC server in test environments
+            writeProps(etc.resolve("org.opennms.core.ipc.grpc.server.cfg"),
+                    ImmutableMap.<String,String>builder()
+                            .put("port", String.valueOf(OPENNMS_GRPC_PORT))
+                            .put("startDelay", "PT0S")
+                            .build());
+        }
     }
 
     /**
