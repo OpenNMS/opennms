@@ -54,23 +54,47 @@
     <osgi:reference id="eventSubscriptionService"
                     interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
-    <!-- Trap configuration (from opennms-config feature) -->
-    <onmsgi:reference id="trapdConfig"
-                      interface="org.opennms.netmgt.config.TrapdConfig"/>
+    <!-- Trap configuration: initialize the static factory singleton locally.
+         The opennms-config bundle has no Spring-Context header, so applicationContext-commonConfigs.xml
+         is never loaded by Spring DM in the daemon container. We must init the factory here.
+         Trapd() constructor calls TrapdConfigFactory.getInstance(), so init must run first. -->
+    <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
+    </bean>
+    <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory"
+          depends-on="trapdConfig-init" factory-method="getInstance"/>
 
-    <!-- Event configuration DAO (for TrapSinkConsumer event matching) -->
-    <onmsgi:reference id="eventConfDao"
-                      interface="org.opennms.netmgt.config.api.EventConfDao"/>
+    <!-- Event configuration DAO (for TrapSinkConsumer event matching).
+         The opennms-config bundle has no Spring-Context header, so DefaultEventConfDao
+         is never created by Spring DM. Create it locally and load event definitions
+         from the database so traps are properly matched to UEIs and alarm-data. -->
+    <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao"/>
+
+    <!-- EventConfEventDao: Hibernate DAO for event_conf_event table.
+         Registered by distributed-dao-impl (applicationContext-shared.xml). -->
+    <onmsgi:reference id="eventConfEventDao"
+                      interface="org.opennms.netmgt.dao.api.EventConfEventDao"/>
+
+    <!-- Load event definitions from DB into EventConfDao on startup.
+         Without this, EventConfDao is empty and all traps get "uei.opennms.org/default/trap".
+         Uses a class in this bundle (not MethodInvokingBean) to avoid OSGi classloader
+         issues — MethodInvokingBean reflects via the Spring classloader which can't
+         resolve eventconf model classes. -->
+    <bean id="eventConfLoader" class="org.opennms.core.daemon.loader.EventConfInitializer">
+        <constructor-arg ref="eventConfEventDao"/>
+        <constructor-arg ref="eventConfDao"/>
+    </bean>
 
     <!-- Secure Credentials Vault (for SNMPv3 credential interpolation) -->
     <onmsgi:reference id="secureCredentialsVault"
                       interface="org.opennms.features.scv.api.SecureCredentialsVault"/>
 
-    <!-- Twin API (for publishing/subscribing trap listener config to Minions) -->
-    <onmsgi:reference id="twinPublisher"
-                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
-    <onmsgi:reference id="twinSubscriber"
-                      interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+    <!-- Twin API: in-process implementation (standalone: no remote Minions).
+         Trapd publishes config via TwinPublisher, TrapListener subscribes via TwinSubscriber.
+         The subscriber must deliver published values in-process so TrapListener opens
+         the UDP socket when it receives the trap config. -->
+    <bean id="twinPublisher" class="org.opennms.core.daemon.loader.NoOpTwinPublisher"/>
+    <bean id="twinSubscriber" factory-bean="twinPublisher" factory-method="createSubscriber"/>
 
     <!-- Sink API: local in-process implementations (no remote transport needed) -->
     <bean id="messageConsumerManager"
@@ -80,11 +104,15 @@
         <constructor-arg ref="messageConsumerManager"/>
     </bean>
 
-    <!-- DAOs (from distributed DAO feature) -->
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
-    <onmsgi:reference id="interfaceToNodeCache"
-                      interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
+    <!-- DAOs (from distributed DAO feature).
+         distPollerDao and interfaceToNodeCache use <osgi:reference> (not <onmsgi:reference>)
+         because TrapSinkConsumer.init() calls distPollerDao.whoami() during @PostConstruct.
+         The onmsgi proxy would throw IllegalStateException if the DAO isn't registered yet;
+         osgi:reference blocks context startup until the service is available. -->
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <osgi:reference id="interfaceToNodeCache"
+                    interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
 
     <!-- ============================================================== -->
     <!-- Trapd Beans                                                    -->
@@ -104,15 +132,29 @@
         <property name="trapListenerMetrics" ref="trapListenerMetrics"/>
     </bean>
 
+    <!-- Bind TwinSubscriber to TrapListener so it receives config updates.
+         Without this, TrapListener falls back to a 60-second delayed check that
+         may fail silently. bind() wires subscribe→publish in-process. -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="targetObject" ref="trapListener"/>
+        <property name="targetMethod" value="bind"/>
+        <property name="arguments">
+            <list><ref bean="twinSubscriber"/></list>
+        </property>
+    </bean>
+
     <!-- TrapSinkConsumer: consumes trap messages, creates events, forwards them -->
     <bean id="trapSinkConsumer" class="org.opennms.netmgt.trapd.TrapSinkConsumer"/>
 
-    <!-- Trapd daemon -->
-    <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+    <!-- Trapd daemon.
+         depends-on ensures TrapdConfigFactory.init() and event conf loading both
+         complete before the Trapd() constructor runs. -->
+    <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd"
+          depends-on="trapdConfig,eventConfLoader">
         <property name="secureCredentialsVault" ref="secureCredentialsVault"/>
     </bean>
 
-    <!-- @EventHandler adapter for daemon reload events -->
+    <!-- @EventHandler adapter for non-internal events (delivered via Kafka) -->
     <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
         <property name="annotatedListener" ref="daemon"/>
         <property name="eventSubscriptionService" ref="eventSubscriptionService"/>

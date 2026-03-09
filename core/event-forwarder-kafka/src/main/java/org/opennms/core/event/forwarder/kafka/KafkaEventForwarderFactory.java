@@ -25,7 +25,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.opennms.core.tsid.TsidFactory;
 import org.opennms.netmgt.eventd.processor.TsidAssigner;
 import org.opennms.netmgt.eventd.router.EventClassifier;
-import org.opennms.netmgt.eventd.router.IpcMessageConverter;
 
 /**
  * Blueprint factory for creating {@link KafkaEventForwarder} instances.
@@ -48,7 +47,7 @@ public class KafkaEventForwarderFactory {
      *
      * @param bootstrapServers Kafka broker addresses
      * @param topicName        Kafka topic for fault events
-     * @return configured KafkaEventForwarder; caller should set MessageBus via setter
+     * @return configured KafkaEventForwarder; caller should set IPC topic via setter
      */
     public static KafkaEventForwarder create(String bootstrapServers, String topicName) {
         KafkaProducer<Long, byte[]> kafkaProducer = KafkaProducerFactory.create(bootstrapServers);
@@ -57,7 +56,6 @@ public class KafkaEventForwarderFactory {
                 new NoOpEventProcessor(),
                 new TsidAssigner(new TsidFactory(0L)),
                 new EventClassifier(),
-                new IpcMessageConverter(),
                 kafkaProducer,
                 topicName
         );

@@ -22,6 +22,7 @@
 package org.opennms.core.event.forwarder.kafka;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,21 +48,22 @@ import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.stream.Collectors;
 
 /**
  * An {@link EventSubscriptionService} backed by a Kafka consumer.
  *
- * <p>Polls a single Kafka topic, deserializes each record into an {@link Event},
- * converts it to an immutable {@link IEvent}, and dispatches to registered
- * {@link EventListener}s using the same wildcard prefix-matching algorithm as
- * {@code EventIpcManagerDefaultImpl.broadcastNow()}.</p>
+ * <p>Polls one or more Kafka topics (comma-separated), deserializes each record
+ * into an {@link Event}, converts it to an immutable {@link IEvent}, and
+ * dispatches to registered {@link EventListener}s using the same wildcard
+ * prefix-matching algorithm as {@code EventIpcManagerDefaultImpl.broadcastNow()}.</p>
  */
 public class KafkaEventSubscriptionService implements EventSubscriptionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaEventSubscriptionService.class);
 
     private final KafkaConsumer<Long, byte[]> consumer;
-    private final String topicName;
+    private final List<String> topicNames;
     private final EventDeserializer deserializer;
     private final Duration pollTimeout;
     private final TsidFactory tsidFactory;
@@ -75,14 +77,21 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread pollThread;
 
+    /**
+     * @param topicNames comma-separated list of Kafka topics to subscribe to
+     */
     public KafkaEventSubscriptionService(
             KafkaConsumer<Long, byte[]> consumer,
-            String topicName,
+            String topicNames,
             EventDeserializer deserializer,
             Duration pollTimeout,
             TsidFactory tsidFactory) {
         this.consumer = Objects.requireNonNull(consumer, "consumer must not be null");
-        this.topicName = Objects.requireNonNull(topicName, "topicName must not be null");
+        Objects.requireNonNull(topicNames, "topicNames must not be null");
+        this.topicNames = Arrays.stream(topicNames.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
         this.deserializer = Objects.requireNonNull(deserializer, "deserializer must not be null");
         this.pollTimeout = Objects.requireNonNull(pollTimeout, "pollTimeout must not be null");
         this.tsidFactory = Objects.requireNonNull(tsidFactory, "tsidFactory must not be null");
@@ -93,17 +102,20 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
      * creating the KafkaConsumer and EventDeserializer internally to avoid
      * Aries Blueprint constructor type-matching issues with cross-bundle types.
      */
+    /**
+     * @param topicNames comma-separated list of Kafka topics to subscribe to
+     */
     public static KafkaEventSubscriptionService create(
             String bootstrapServers,
             String consumerGroupId,
-            String topicName,
+            String topicNames,
             long pollTimeoutMs) {
         KafkaConsumer<Long, byte[]> consumer = KafkaConsumerFactory.create(bootstrapServers, consumerGroupId);
         EventDeserializer deserializer = new XmlEventDeserializer();
         long nodeId = Long.parseLong(System.getProperty("org.opennms.tsid.node-id", "0"));
         TsidFactory tsidFactory = new TsidFactory(nodeId);
         LOG.info("Created TsidFactory with node-id={}", nodeId);
-        return new KafkaEventSubscriptionService(consumer, topicName, deserializer, Duration.ofMillis(pollTimeoutMs), tsidFactory);
+        return new KafkaEventSubscriptionService(consumer, topicNames, deserializer, Duration.ofMillis(pollTimeoutMs), tsidFactory);
     }
 
     /**
@@ -115,11 +127,11 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
             LOG.warn("KafkaEventSubscriptionService is already running");
             return;
         }
-        consumer.subscribe(Collections.singletonList(topicName));
+        consumer.subscribe(topicNames);
         pollThread = new Thread(this::pollLoop, "kafka-event-subscription-poll");
         pollThread.setDaemon(true);
         pollThread.start();
-        LOG.info("KafkaEventSubscriptionService started, polling topic '{}'", topicName);
+        LOG.info("KafkaEventSubscriptionService started, polling topics {}", topicNames);
     }
 
     /**

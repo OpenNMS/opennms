@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Enlinkd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  monolith Spring hierarchy with a flat context that wires EnhancedLinkd beans
+  directly to OSGi services.
+
+  All dependencies come from OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - DAOs / topology services from distributed DAO feature (opennms-persistence)
+  - LocationAwareSnmpClient from SNMP proxy feature
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for EnhancedLinkd and collaborators -->
+    <context:annotation-config />
+
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint)
+         Uses osgi:reference (not onmsgi:reference) because the event-forwarder-kafka
+         registers services via Aries Blueprint <service> in the OSGi framework registry,
+         not in the OpenNMS ServiceRegistry used by onmsgi namespace. -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+    <!-- Topology services (from opennms-persistence / opennms-distributed-core-impl) -->
+    <onmsgi:reference id="nodeTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.NodeTopologyService"/>
+    <onmsgi:reference id="bridgeTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService"/>
+    <onmsgi:reference id="cdpTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.CdpTopologyService"/>
+    <onmsgi:reference id="isisTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.IsisTopologyService"/>
+    <onmsgi:reference id="ipNetToMediaTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService"/>
+    <onmsgi:reference id="lldpTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.LldpTopologyService"/>
+    <onmsgi:reference id="ospfTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.OspfTopologyService"/>
+    <onmsgi:reference id="userDefinedLinkTopologyService"
+                      interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService"/>
+
+    <!-- OnmsTopologyDao (from topologies service) -->
+    <onmsgi:reference id="onmsTopologyDao"
+                      interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao"/>
+
+    <!-- SNMP client (from SNMP proxy feature) -->
+    <onmsgi:reference id="locationAwareSnmpClient"
+                      interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient"/>
+
+    <!-- ============================================================== -->
+    <!-- Local Beans: Enlinkd Configuration                             -->
+    <!-- ============================================================== -->
+
+    <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>
+
+    <!-- ============================================================== -->
+    <!-- Topology Updaters                                              -->
+    <!-- ============================================================== -->
+
+    <bean id="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="networkRouterTopologyUpdater" class="org.opennms.netmgt.enlinkd.NetworkRouterTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
+        <constructor-arg ref="userDefinedLinkTopologyService" />
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="bridgeOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.BridgeOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="bridgeTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="cdpTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="isisOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.IsisOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="isisTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="lldpTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="ospfOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="ospfTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="ospfAreaOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfAreaOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="ospfTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <!-- Bridge domain discovery -->
+    <bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
+        <constructor-arg ref="bridgeTopologyService" />
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- EnhancedLinkd Daemon                                           -->
+    <!-- ============================================================== -->
+
+    <!-- The daemon itself -->
+    <bean name="daemon" class="org.opennms.netmgt.enlinkd.EnhancedLinkd">
+        <property name="linkdConfig"    ref="linkdConfig" />
+        <property name="queryManager"   ref="nodeTopologyService" />
+        <property name="bridgeTopologyService"   ref="bridgeTopologyService" />
+        <property name="cdpTopologyService"   ref="cdpTopologyService" />
+        <property name="isisTopologyService"   ref="isisTopologyService" />
+        <property name="ipNetToMediaTopologyService"   ref="ipNetToMediaTopologyService" />
+        <property name="lldpTopologyService"   ref="lldpTopologyService" />
+        <property name="ospfTopologyService"   ref="ospfTopologyService" />
+    </bean>
+
+    <!-- Event listener: subscribes daemon to EventSubscriptionService -->
+    <bean id="receiver" class="org.opennms.netmgt.enlinkd.EventProcessor" init-method="init">
+        <property name="linkd" ref="daemon"/>
+    </bean>
+
+    <bean id="daemonListener"
+          class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="receiver"/>
+        <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>

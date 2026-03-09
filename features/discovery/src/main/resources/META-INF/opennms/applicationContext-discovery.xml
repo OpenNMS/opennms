@@ -28,9 +28,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutor"/>
 
-  <!-- MessageBus for IPC events (injected via OSGi) -->
-  <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
-
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery" />
 
 </beans>

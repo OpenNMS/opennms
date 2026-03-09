@@ -1,0 +1,11 @@
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery"
+    packets-per-second="1"
+    initial-sleep-time="10000"
+    restart-sleep-time="86400000"
+    retries="2"
+    timeout="3000">
+
+    <!-- Discover the Docker host via macOS host.docker.internal -->
+    <specific retries="2" timeout="3000" foreign-source="delta-v-hosts">host.docker.internal</specific>
+
+</discovery-configuration>

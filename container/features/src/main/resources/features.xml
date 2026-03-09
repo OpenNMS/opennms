@@ -1149,8 +1149,11 @@
         <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
-        <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
+        <!-- serviceregistry MUST start before spring-extender so the extender's
+             initial bundle scan finds it and creates its Spring context (which
+             registers ServiceRegistry as an OSGi service). -->
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.serviceregistry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
     <feature name="opennms-flows" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
@@ -2068,17 +2071,14 @@
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
 
-    <!-- EventBus redesign: TSID, MessageBus, Kafka fault event consumer -->
+    <!-- EventBus redesign: TSID, MessageBus API (for Import-Package resolution), Kafka fault event consumer -->
     <feature name="opennms-core-tsid" version="${project.version}" description="OpenNMS :: Core :: TSID">
         <bundle>mvn:org.opennms/org.opennms.core.tsid/${project.version}</bundle>
     </feature>
+    <!-- MessageBus API only — provides org.opennms.core.messagebus package for OSGi resolution.
+         JMS implementation removed; daemon containers use Kafka for all event transport. -->
     <feature name="opennms-core-messagebus-api" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: API">
         <bundle>mvn:org.opennms/org.opennms.core.messagebus.api/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-core-messagebus-jms" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: JMS">
-        <feature>opennms-core-messagebus-api</feature>
-        <feature>activemq-client</feature>
-        <bundle>mvn:org.opennms/org.opennms.core.messagebus.jms/${project.version}</bundle>
     </feature>
     <feature name="opennms-events-kafka-consumer" version="${project.version}" description="OpenNMS :: Events :: Kafka Consumer">
         <feature>opennms-kafka</feature>
@@ -2094,6 +2094,7 @@
         <feature>opennms-core-messagebus-api</feature>
         <feature>opennms-core-tsid</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-config</feature>
         <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.event-forwarder-kafka/${project.version}</bundle>
@@ -2273,6 +2274,58 @@
         <feature>opennms-config</feature>
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-eventtranslator/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Enlinkd: loads EnhancedLinkd daemon without Manager/Eventd.
+         Discovers network topology (LLDP, CDP, OSPF, IS-IS, Bridge) via SNMP. -->
+    <feature name="opennms-daemon-enlinkd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Enlinkd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Config model (provides org.opennms.netmgt.config.utils needed by enlinkd.config at runtime) -->
+        <bundle dependency="true">mvn:org.opennms/opennms-config-model/${project.version}</bundle>
+        <!-- Enlinkd service API (provides persistence API, service API, criteria, guava, jung) -->
+        <feature>org.opennms.features.enlinkd.service.api</feature>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.cdp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ipnettomedia/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.isis/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.lldp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ospf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.discovers.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.cdp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.isis/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.lldp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.nodes/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.ospf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.config/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Scriptd: loads Scriptd daemon (BSF script execution on events) without Manager/Eventd -->
+    <feature name="opennms-daemon-scriptd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Scriptd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure (provides NodeDao, SessionUtils) -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Config (ScriptdConfigFactory) -->
+        <feature>opennms-config</feature>
+        <!-- Scriptd classes (inside opennms-services monolithic bundle) -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Daemon loader (creates Scriptd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-scriptd/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.

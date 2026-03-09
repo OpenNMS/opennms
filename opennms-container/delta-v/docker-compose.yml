@@ -1,8 +1,8 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (15 services)
-# Core (Eventd, Provisiond, Enlinkd, Telemetryd, Bsmd, Correlator, Scriptd)
+# Delta-V: OpenNMS microservice-mode deployment (17 services)
+# Core (Eventd, Provisiond, Bsmd, Correlator)
 # + Webapp + Alarmd + Pollerd + Collectd + Rtcd + PassiveStatusd + Notifd
-# + Discovery + Trapd + Syslogd + Ticketer + EventTranslator
+# + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
 #
 # Usage:
 #   docker compose up -d
@@ -69,15 +69,20 @@ services:
       CORE_SERVICE_RTCD_ENABLED: "false"
       CORE_SERVICE_PASSIVESTATUSD_ENABLED: "false"
       CORE_SERVICE_NOTIFD_ENABLED: "false"
+      # Discovery runs as standalone container — IPC events flow via AMQ
       CORE_SERVICE_DISCOVERY_ENABLED: "false"
       CORE_SERVICE_TRAPD_ENABLED: "false"
       CORE_SERVICE_SYSLOGD_ENABLED: "false"
       CORE_SERVICE_TICKETER_ENABLED: "false"
       CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
+      CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
+      CORE_SERVICE_SCRIPTD_ENABLED: "false"
       CORE_SERVICE_VACUUMD_ENABLED: "false"
       CORE_SERVICE_STATSD_ENABLED: "false"
       CORE_SERVICE_ACTIOND_ENABLED: "false"
       CORE_SERVICE_ACKD_ENABLED: "false"
+      CORE_SERVICE_TELEMETRYD_ENABLED: "false"
+      CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED: "false"
       # JettyServer disabled — triggers Spring classloader conflict on this branch.
       # Without JettyServer, Karaf never starts (bootstrapped via WebAppListener),
       # so disable KarafStartupMonitor to prevent it from killing the JVM.
@@ -98,11 +103,22 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=1
+        -Dorg.opennms.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.kafka.fault.topic=opennms-fault-events
+        -Dorg.opennms.kafka.ipc.topic=opennms-ipc-events
+        -Dorg.opennms.kafka.consumer.group=opennms-core-consumer
     volumes:
       - opennms-etc:/opt/opennms/etc
       - opennms-data:/opennms-data
       - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
       - ./core-overlay/etc/opennms.properties.d/delta-v.properties:/opt/opennms-etc-overlay/opennms.properties.d/delta-v.properties:ro
+      - ./core-overlay/etc/discovery-configuration.xml:/opt/opennms-etc-overlay/discovery-configuration.xml:ro
+      - ./core-overlay/etc/snmp-config.xml:/opt/opennms-etc-overlay/snmp-config.xml:ro
+      # Dev overlay: mount updated JARs for event architecture changes
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-provision/opennms-provisiond/target/opennms-provisiond-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/opennms-provisiond-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-services/target/opennms-services-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/opennms-services-36.0.0-SNAPSHOT.jar:ro
+      - ../../features/discovery/target/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8101:8101"
       - "61616:61616"
@@ -196,8 +212,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
     volumes:
-      - pollerd-data:/opt/daemon/data
-      - ./pollerd-daemon-overlay/etc:/opt/daemon-etc-overlay:ro
+      - pollerd-data:/opt/sentinel/data
+      - ./pollerd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8103:8181"
     healthcheck:
@@ -227,8 +246,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=5
     volumes:
-      - collectd-data:/opt/daemon/data
-      - ./collectd-daemon-overlay/etc:/opt/daemon-etc-overlay:ro
+      - collectd-data:/opt/sentinel/data
+      - ./collectd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8104:8181"
     healthcheck:
@@ -258,8 +280,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=6
     volumes:
-      - rtcd-data:/opt/daemon/data
-      - ./rtcd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - rtcd-data:/opt/sentinel/data
+      - ./rtcd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -286,8 +311,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=7
     volumes:
-      - passivestatusd-data:/opt/daemon/data
-      - ./passivestatusd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - passivestatusd-data:/opt/sentinel/data
+      - ./passivestatusd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -314,8 +342,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=8
     volumes:
-      - notifd-data:/opt/daemon/data
-      - ./notifd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - notifd-data:/opt/sentinel/data
+      - ./notifd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -342,8 +373,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=9
     volumes:
-      - discovery-data:/opt/daemon/data
-      - ./discovery-overlay/etc:/opt/daemon-etc-overlay:ro
+      - discovery-data:/opt/sentinel/data
+      - ./discovery-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -370,10 +404,14 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=10
     volumes:
-      - trapd-data:/opt/daemon/data
-      - ./trapd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - trapd-data:/opt/sentinel/data
+      - ./trapd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+      - ../../core/daemon-loader-trapd/target/org.opennms.core.daemon-loader-trapd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-trapd/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-trapd-36.0.0-SNAPSHOT.jar:ro
     ports:
-      - "1162:1162/udp"
+      - "1162:10162/udp"
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -400,8 +438,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
     volumes:
-      - syslogd-data:/opt/daemon/data
-      - ./syslogd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - syslogd-data:/opt/sentinel/data
+      - ./syslogd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "10514:10514/udp"
     healthcheck:
@@ -430,8 +471,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=12
     volumes:
-      - ticketer-data:/opt/daemon/data
-      - ./ticketer-overlay/etc:/opt/daemon-etc-overlay:ro
+      - ticketer-data:/opt/sentinel/data
+      - ./ticketer-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -458,8 +502,73 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=13
     volumes:
-      - eventtranslator-data:/opt/daemon/data
-      - ./eventtranslator-overlay/etc:/opt/daemon-etc-overlay:ro
+      - eventtranslator-data:/opt/sentinel/data
+      - ./eventtranslator-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  enlinkd:
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-enlinkd
+    hostname: enlinkd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=14
+    volumes:
+      - enlinkd-data:/opt/sentinel/data
+      - ./enlinkd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  scriptd:
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-scriptd
+    hostname: scriptd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=15
+    volumes:
+      - scriptd-data:/opt/sentinel/data
+      - ./scriptd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -522,4 +631,6 @@ volumes:
   syslogd-data:
   ticketer-data:
   eventtranslator-data:
+  enlinkd-data:
+  scriptd-data:
   alarmd-data:

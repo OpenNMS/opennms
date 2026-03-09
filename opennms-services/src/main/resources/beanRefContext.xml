@@ -60,7 +60,6 @@
      <constructor-arg ref="daoContext" />
    </bean>
 
-    <bean id="REPLACED_MARKER" class="org.springframework.context.support.ClassPathXmlApplicationContext">
     <bean id="queuedContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>

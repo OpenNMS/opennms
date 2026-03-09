@@ -42,9 +42,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.fiber.Fiber;
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
-import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
@@ -65,15 +62,9 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org</A>
  */
-public class DataSender implements Fiber, MessageHandler {
+public class DataSender implements Fiber {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSender.class);
-
-    /** MessageBus type derived from uei.opennms.org/internal/rtc/subscribe */
-    private static final String MSG_TYPE_RTC_SUBSCRIBE = "rtc/subscribe";
-
-    /** MessageBus type derived from uei.opennms.org/internal/rtc/unsubscribe */
-    private static final String MSG_TYPE_RTC_UNSUBSCRIBE = "rtc/unsubscribe";
 
     /**
      * The listeners like the WebUI that send a URL to which the data is to be
@@ -103,9 +94,6 @@ public class DataSender implements Fiber, MessageHandler {
     private int m_status;
 
 	private final AvailabilityService m_dataMgr;
-
-    @Autowired(required = false)
-    private MessageBus m_messageBus;
 
     /**
      * Inner class to send data to all the categories - this runnable prevents
@@ -145,19 +133,9 @@ public class DataSender implements Fiber, MessageHandler {
         POST_ERROR_LIMIT = configFactory.getErrorsBeforeUrlUnsubscribe();
     }
 
-    /**
-     * Start the data sender thread pool and subscribe to MessageBus for IPC events
-     */
     @Override
     public synchronized void start() {
         m_status = RUNNING;
-
-        if (m_messageBus != null) {
-            m_messageBus.subscribe(List.of(MSG_TYPE_RTC_SUBSCRIBE, MSG_TYPE_RTC_UNSUBSCRIBE), this);
-            LOG.info("DataSender subscribed to MessageBus for RTC IPC events");
-        } else {
-            LOG.warn("MessageBus not available — DataSender will not receive IPC events via MessageBus");
-        }
     }
 
     /**
@@ -198,48 +176,6 @@ public class DataSender implements Fiber, MessageHandler {
     @Override
     public int getStatus() {
         return m_status;
-    }
-
-    // --- MessageHandler interface ---
-
-    @Override
-    public void onMessage(IpcMessage message) {
-        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
-        switch (message.getType()) {
-            case MSG_TYPE_RTC_SUBSCRIBE:
-                handleRtcSubscribe(message);
-                break;
-            case MSG_TYPE_RTC_UNSUBSCRIBE:
-                handleRtcUnsubscribe(message);
-                break;
-            default:
-                LOG.warn("Unexpected IPC message type: {}", message.getType());
-        }
-    }
-
-    private void handleRtcSubscribe(IpcMessage message) {
-        String url = message.getParameter("url");
-        String clabel = message.getParameter("catLabel");
-        String user = message.getParameter("user");
-        String passwd = message.getParameter("passwd");
-
-        if (url == null || clabel == null || user == null || passwd == null) {
-            LOG.warn("rtc/subscribe did not have all required information. Values contained url: {} catlabel: {} user: {} passwd: {}", url, clabel, user, passwd);
-        } else {
-            subscribe(url, clabel, user, passwd);
-            LOG.debug("rtc/subscribe subscribed {}: {}: {}", url, clabel, user);
-        }
-    }
-
-    private void handleRtcUnsubscribe(IpcMessage message) {
-        String url = message.getParameter("url");
-
-        if (url == null) {
-            LOG.warn("rtc/unsubscribe did not have required information. Value of url: {}", url);
-        } else {
-            unsubscribe(url);
-            LOG.debug("rtc/unsubscribe unsubscribed {}", url);
-        }
     }
 
     /**
@@ -456,7 +392,4 @@ public class DataSender implements Fiber, MessageHandler {
         }
     }
 
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
-    }
 }

@@ -24,12 +24,8 @@ package org.opennms.netmgt.poller;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.tsid.TsidFactory;
@@ -57,16 +53,12 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * Events are assigned a TSID (time-sorted unique ID) before being sent,
  * eliminating the need for the old PendingPollEvent round-trip pattern.
- * Outage notifications are published via MessageBus for internal IPC.
  *
  * @author brozow
  */
 public class DefaultPollContext implements PollContext, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollContext.class);
-
-    public static final String MESSAGE_TYPE_OUTAGE_CREATED = "poller/outageCreated";
-    public static final String MESSAGE_TYPE_OUTAGE_RESOLVED = "poller/outageResolved";
 
     /**
      * Poll timestamps are updated using a DB transaction in the same thread and immediately following the poll.
@@ -78,7 +70,6 @@ public class DefaultPollContext implements PollContext, InitializingBean {
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
     private volatile LocationAwarePingClient m_locationAwarePingClient;
-    private volatile MessageBus m_messageBus;
     private volatile TsidFactory m_tsidFactory;
     private volatile String m_name;
     private volatile String m_localHostName;
@@ -135,14 +126,6 @@ public class DefaultPollContext implements PollContext, InitializingBean {
 
     public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
         m_locationAwarePingClient = locationAwarePingClient;
-    }
-
-    public MessageBus getMessageBus() {
-        return m_messageBus;
-    }
-
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
     }
 
     public TsidFactory getTsidFactory() {
@@ -233,7 +216,7 @@ public class DefaultPollContext implements PollContext, InitializingBean {
 
     /**
      * Opens an outage and sets the svcLostEventId immediately using the TSID
-     * already assigned by sendEvent(). Publishes outage notification via MessageBus.
+     * already assigned by sendEvent().
      */
     @Override
     public void openOutage(final PollableService svc, final PollEvent svcLostEvent) {
@@ -247,13 +230,11 @@ public class DefaultPollContext implements PollContext, InitializingBean {
             LOG.warn("openOutage: svcLostEvent has no eventId for: {}", svc);
         }
 
-        LOG.debug("openOutage: publishing outageCreated for: {} on {}", svc.getSvcName(), svc.getIpAddr());
-        publishOutageMessage(MESSAGE_TYPE_OUTAGE_CREATED, svc, svcLostEvent.getDate());
     }
 
     /**
      * Resolves an outage and sets the svcRegainedEventId immediately using the TSID
-     * already assigned by sendEvent(). Publishes outage notification via MessageBus.
+     * already assigned by sendEvent().
      */
     @Override
     public void resolveOutage(final PollableService svc, final PollEvent svcRegainEvent) {
@@ -274,8 +255,6 @@ public class DefaultPollContext implements PollContext, InitializingBean {
             LOG.warn("resolveOutage: svcRegainEvent has no eventId for: {}", svc);
         }
 
-        LOG.debug("resolveOutage: publishing outageResolved for: {} on {}", svc.getSvcName(), svc.getIpAddr());
-        publishOutageMessage(MESSAGE_TYPE_OUTAGE_RESOLVED, svc, svcRegainEvent.getDate());
     }
 
     @Override
@@ -302,29 +281,6 @@ public class DefaultPollContext implements PollContext, InitializingBean {
     @Override
     public AsyncPollingEngine getAsyncPollingEngine() {
         return m_asyncPollingEngine;
-    }
-
-    private void publishOutageMessage(String messageType, PollableService svc, Date eventTime) {
-        if (m_messageBus == null) {
-            LOG.debug("publishOutageMessage: MessageBus not available, skipping {} for {}", messageType, svc);
-            return;
-        }
-
-        Map<String, String> params = new HashMap<>();
-        params.put("service", svc.getSvcName());
-        if (eventTime != null) {
-            params.put("eventTime", String.valueOf(eventTime.getTime()));
-        }
-
-        IpcMessage message = new IpcMessage(
-                messageType,
-                getName(),
-                eventTime != null ? eventTime.getTime() : System.currentTimeMillis(),
-                (long) svc.getNodeId(),
-                svc.getIpAddr(),
-                params
-        );
-        m_messageBus.publish(message);
     }
 
     private boolean testCriticalPath(CriticalPath criticalPath) {

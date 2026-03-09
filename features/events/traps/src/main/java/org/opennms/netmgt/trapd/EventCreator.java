@@ -24,9 +24,13 @@ package org.opennms.netmgt.trapd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -38,7 +42,11 @@ import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.ManagedObject;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,15 +109,142 @@ class EventCreator {
             eventBuilder.setDistPoller(systemId);
         }
 
-        // Get event template and set uei, if unknown
+        // Match trap to event definition and apply UEI, severity, and alarm-data.
+        // In the monolith, EventExpander (Eventd) applies these fields downstream.
+        // In standalone daemon containers without Eventd, we must apply them here
+        // so events arrive on Kafka fully formed for alarmd to process.
         final Event event = eventBuilder.getEvent();
         final org.opennms.netmgt.xml.eventconf.Event econf = eventConfDao.findByEvent(event);
         if (econf == null || econf.getUei() == null) {
             event.setUei("uei.opennms.org/default/trap");
         } else {
             event.setUei(econf.getUei());
+
+            if (econf.getSeverity() != null) {
+                event.setSeverity(econf.getSeverity());
+            }
+
+            if (econf.getAlarmData() != null) {
+                applyAlarmData(event, econf.getAlarmData());
+            }
         }
         return event;
+    }
+
+    /**
+     * Copy alarm-data from the eventconf definition to the runtime event, expanding
+     * parameter tokens in reduction-key and clear-key templates.
+     */
+    private static void applyAlarmData(Event event, org.opennms.netmgt.xml.eventconf.AlarmData econfAlarmData) {
+        AlarmData alarmData = new AlarmData();
+        alarmData.setAlarmType(econfAlarmData.getAlarmType());
+        alarmData.setReductionKey(expandParms(econfAlarmData.getReductionKey(), event));
+        alarmData.setAutoClean(econfAlarmData.getAutoClean());
+        alarmData.setX733AlarmType(econfAlarmData.getX733AlarmType());
+        alarmData.setX733ProbableCause(econfAlarmData.getX733ProbableCause());
+        alarmData.setClearKey(expandParms(econfAlarmData.getClearKey(), event));
+
+        List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econfAlarmData.getUpdateFields();
+        if (!updateFieldList.isEmpty()) {
+            List<UpdateField> updateFields = new ArrayList<>(updateFieldList.size());
+            for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
+                UpdateField eventField = new UpdateField();
+                eventField.setFieldName(econfUpdateField.getFieldName());
+                eventField.setUpdateOnReduction(econfUpdateField.getUpdateOnReduction());
+                updateFields.add(eventField);
+            }
+            alarmData.setUpdateField(updateFields);
+        }
+
+        org.opennms.netmgt.xml.eventconf.ManagedObject econfMo = econfAlarmData.getManagedObject();
+        if (econfMo != null) {
+            ManagedObject mo = new ManagedObject();
+            mo.setType(econfMo.getType());
+            alarmData.setManagedObject(mo);
+        }
+
+        event.setAlarmData(alarmData);
+    }
+
+    /** Pattern matching %token% placeholders in reduction-key/clear-key templates. */
+    private static final Pattern PARM_PATTERN = Pattern.compile("%([^%]+)%");
+
+    /**
+     * Lightweight parameter expansion for alarm-data reduction-key and clear-key
+     * templates. Handles the tokens commonly used in eventconf alarm-data:
+     * %uei%, %nodeid%, %interface%, %dpname%, %parm[#N]%, %parm[name]%.
+     *
+     * This is a simplified version of EventExpander's expandParms() that avoids
+     * the heavy dependencies of AbstractEventUtil (Spring, Hibernate, etc.).
+     */
+    static String expandParms(String template, Event event) {
+        if (template == null) {
+            return null;
+        }
+        Matcher m = PARM_PATTERN.matcher(template);
+        StringBuilder sb = new StringBuilder();
+        while (m.find()) {
+            String token = m.group(1);
+            String replacement = resolveToken(token, event);
+            m.appendReplacement(sb, Matcher.quoteReplacement(replacement != null ? replacement : ""));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String resolveToken(String token, Event event) {
+        switch (token) {
+            case "uei":
+                return event.getUei();
+            case "nodeid":
+                return event.getNodeid() != null ? String.valueOf(event.getNodeid()) : "";
+            case "interface":
+                return event.getInterface() != null ? event.getInterface() : "";
+            case "dpname":
+                return event.getDistPoller() != null ? event.getDistPoller() : "";
+            case "severity":
+                return event.getSeverity() != null ? event.getSeverity() : "";
+            case "source":
+                return event.getSource() != null ? event.getSource() : "";
+            case "host":
+                return event.getHost() != null ? event.getHost() : "";
+            case "snmphost":
+                return event.getSnmphost() != null ? event.getSnmphost() : "";
+            default:
+                // Handle %parm[#N]% (1-based parameter index)
+                // and %parm[name]% (named parameter)
+                if (token.startsWith("parm[") && token.endsWith("]")) {
+                    String parmRef = token.substring(5, token.length() - 1);
+                    return resolveParm(parmRef, event);
+                }
+                return "";
+        }
+    }
+
+    private static String resolveParm(String parmRef, Event event) {
+        List<Parm> parms = event.getParmCollection();
+        if (parms == null || parms.isEmpty()) {
+            return "";
+        }
+        // %parm[#N]% — 1-based index
+        if (parmRef.startsWith("#")) {
+            try {
+                int index = Integer.parseInt(parmRef.substring(1)) - 1;
+                if (index >= 0 && index < parms.size()) {
+                    return parms.get(index).getValue().getContent();
+                }
+            } catch (NumberFormatException e) {
+                // fall through
+            }
+            return "";
+        }
+        // %parm[name]% — lookup by parameter name
+        for (Parm parm : parms) {
+            if (parmRef.equals(parm.getParmName())) {
+                return parm.getValue() != null ? parm.getValue().getContent() : "";
+            }
+        }
+        return "";
     }
 
     private Optional<Integer> resolveNodeId(String location, InetAddress trapAddress) {

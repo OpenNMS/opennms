@@ -22,14 +22,10 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
-import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -47,25 +43,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-public class Discovery extends AbstractServiceDaemon implements MessageHandler {
+public class Discovery extends AbstractServiceDaemon {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discovery.class);
 
     protected static final String DAEMON_NAME = "Discovery";
 
     protected static final String LOG4J_CATEGORY = "discovery";
-
-    /** MessageBus type derived from uei.opennms.org/internal/discoveryConfigChange */
-    private static final String MSG_TYPE_CONFIG_CHANGED = "discoveryConfigChange";
-
-    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
-    private static final String MSG_TYPE_RELOAD_CONFIG = "reloadDaemonConfig";
-
-    /** MessageBus type derived from uei.opennms.org/internal/capsd/discResume */
-    private static final String MSG_TYPE_DISC_RESUME = "capsd/discResume";
-
-    /** MessageBus type derived from uei.opennms.org/internal/capsd/discPause */
-    private static final String MSG_TYPE_DISC_PAUSE = "capsd/discPause";
 
     @Autowired
     private DiscoveryConfigFactory m_discoveryFactory;
@@ -76,9 +60,6 @@ public class Discovery extends AbstractServiceDaemon implements MessageHandler {
     @Autowired
     @Qualifier("eventIpcManager")
     private EventForwarder m_eventForwarder;
-
-    @Autowired(required = false)
-    private MessageBus m_messageBus;
 
     private Timer discoveryTimer;
 
@@ -108,17 +89,6 @@ public class Discovery extends AbstractServiceDaemon implements MessageHandler {
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
         }
 
-        if (m_messageBus != null) {
-            m_messageBus.subscribe(List.of(
-                    MSG_TYPE_CONFIG_CHANGED,
-                    MSG_TYPE_RELOAD_CONFIG,
-                    MSG_TYPE_DISC_RESUME,
-                    MSG_TYPE_DISC_PAUSE
-            ), this);
-            LOG.info("Discovery subscribed to MessageBus for IPC events");
-        } else {
-            LOG.warn("MessageBus not available — Discovery will not receive IPC events via MessageBus");
-        }
     }
 
     /**
@@ -177,44 +147,6 @@ public class Discovery extends AbstractServiceDaemon implements MessageHandler {
         onStart();
     }
 
-    // --- MessageHandler interface ---
-    // getName() is already defined by AbstractServiceDaemon and satisfies MessageHandler
-
-    @Override
-    public void onMessage(IpcMessage message) {
-        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
-        switch (message.getType()) {
-            case MSG_TYPE_CONFIG_CHANGED:
-                handleDiscoveryConfigurationChanged();
-                break;
-            case MSG_TYPE_RELOAD_CONFIG:
-                handleReloadDaemonConfig(message);
-                break;
-            case MSG_TYPE_DISC_RESUME:
-                resume();
-                break;
-            case MSG_TYPE_DISC_PAUSE:
-                pause();
-                break;
-            default:
-                LOG.warn("Unexpected IPC message type: {}", message.getType());
-        }
-    }
-
-    private void handleDiscoveryConfigurationChanged() {
-        LOG.info("handleDiscoveryConfigurationChanged: handling message that a change to configuration happened...");
-        reloadAndReStart();
-    }
-
-    private void handleReloadDaemonConfig(IpcMessage message) {
-        LOG.info("reloadDaemonConfig: processing reload daemon event...");
-        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
-        if (DAEMON_NAME.equalsIgnoreCase(targetDaemon)) {
-            reloadAndReStart();
-        }
-        LOG.info("reloadDaemonConfig: reload daemon event processed.");
-    }
-
     private void reloadAndReStart() {
         EventBuilder ebldr = null;
         try {
@@ -248,9 +180,5 @@ public class Discovery extends AbstractServiceDaemon implements MessageHandler {
 
     public void setDiscoveryTaskExecutor(DiscoveryTaskExecutor discoveryTaskExecutor) {
         m_discoveryTaskExecutor = discoveryTaskExecutor;
-    }
-
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
     }
 }

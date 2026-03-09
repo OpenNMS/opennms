@@ -25,33 +25,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.eventd.router.EventClassifier;
-import org.opennms.netmgt.eventd.router.IpcMessageConverter;
 import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 
 public class KafkaEventForwarderTest {
 
-    private static final String TOPIC = "opennms-fault-events";
+    private static final String FAULT_TOPIC = "opennms-fault-events";
+    private static final String IPC_TOPIC = "opennms-ipc-events";
 
     private EventProcessor eventExpander;
     private EventProcessor tsidAssigner;
     private EventClassifier eventClassifier;
-    private IpcMessageConverter ipcMessageConverter;
-    private MessageBus messageBus;
 
     @SuppressWarnings("unchecked")
     private KafkaProducer<Long, byte[]> kafkaProducer = mock(KafkaProducer.class);
@@ -63,74 +66,83 @@ public class KafkaEventForwarderTest {
         eventExpander = mock(EventProcessor.class);
         tsidAssigner = mock(EventProcessor.class);
         eventClassifier = new EventClassifier();
-        ipcMessageConverter = new IpcMessageConverter();
-        messageBus = mock(MessageBus.class);
         kafkaProducer = mock(KafkaProducer.class);
 
         forwarder = new KafkaEventForwarder(
                 eventExpander,
                 tsidAssigner,
                 eventClassifier,
-                ipcMessageConverter,
                 kafkaProducer,
-                TOPIC
+                FAULT_TOPIC
         );
-        forwarder.setMessageBus(messageBus);
+        forwarder.setIpcTopicName(IPC_TOPIC);
     }
 
     @Test
-    public void shouldPublishFaultEventToKafka() {
-        // FAULT: external UEI + alarmData
+    public void shouldPublishFaultEventToKafkaFaultTopic() {
         Event event = createEvent("uei.opennms.org/nodes/nodeDown", 42L);
         event.setAlarmData(new AlarmData());
 
         forwarder.sendNow(event);
 
-        // Should publish to Kafka
         @SuppressWarnings("unchecked")
         ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
                 ArgumentCaptor.forClass(ProducerRecord.class);
         verify(kafkaProducer).send(captor.capture());
 
         ProducerRecord<Long, byte[]> record = captor.getValue();
-        assertThat(record.topic()).isEqualTo(TOPIC);
+        assertThat(record.topic()).isEqualTo(FAULT_TOPIC);
         assertThat(record.key()).isEqualTo(42L);
         assertThat(record.value()).isNotEmpty();
-
-        // Should NOT publish to MessageBus
-        verify(messageBus, never()).publish(any(IpcMessage.class));
     }
 
     @Test
-    public void shouldPublishIpcEventToMessageBus() {
-        // IPC: internal UEI, no alarmData
-        Event event = createEvent("uei.opennms.org/internal/discovery/newSuspect", 10L);
+    public void shouldPublishIpcEventToKafkaIpcTopic() {
+        // Pure IPC: internal UEI not in CROSS_CONTAINER_INTERNAL_UEIS, no alarmData
+        Event event = createEvent("uei.opennms.org/internal/provisiond/nodeScanCompleted", 10L);
 
         forwarder.sendNow(event);
 
-        // Should publish to MessageBus
-        ArgumentCaptor<IpcMessage> captor = ArgumentCaptor.forClass(IpcMessage.class);
-        verify(messageBus).publish(captor.capture());
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer).send(captor.capture());
 
-        IpcMessage message = captor.getValue();
-        assertThat(message.getType()).isEqualTo("discovery/newSuspect");
-        assertThat(message.getSource()).isEqualTo("test-source");
+        ProducerRecord<Long, byte[]> record = captor.getValue();
+        assertThat(record.topic()).isEqualTo(IPC_TOPIC);
+        assertThat(record.key()).isEqualTo(10L);
+        assertThat(record.value()).isNotEmpty();
+    }
 
-        // Should NOT publish to Kafka
+    @Test
+    public void shouldPublishDualEventToBothKafkaTopics() {
+        // DUAL: internal UEI in CROSS_CONTAINER_INTERNAL_UEIS (newSuspect is DUAL)
+        Event event = createEvent("uei.opennms.org/internal/discovery/newSuspect", 7L);
+
+        forwarder.sendNow(event);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer, times(2)).send(captor.capture());
+
+        List<ProducerRecord<Long, byte[]>> records = captor.getAllValues();
+        assertThat(records).extracting(ProducerRecord::topic)
+                .containsExactly(FAULT_TOPIC, IPC_TOPIC);
+    }
+
+    @Test
+    public void shouldDropIpcEventWhenIpcTopicNotConfigured() {
+        // Create forwarder without IPC topic
+        KafkaEventForwarder noIpcForwarder = new KafkaEventForwarder(
+                eventExpander, tsidAssigner, eventClassifier, kafkaProducer, FAULT_TOPIC);
+        // Don't set ipcTopicName — pure IPC events should be dropped
+
+        Event event = createEvent("uei.opennms.org/internal/provisiond/nodeScanCompleted", 10L);
+        noIpcForwarder.sendNow(event);
+
+        // Pure IPC event with no IPC topic → should not publish to any topic
         verify(kafkaProducer, never()).send(any());
-    }
-
-    @Test
-    public void shouldPublishDualEventToBothKafkaAndMessageBus() {
-        // DUAL: internal UEI + alarmData
-        Event event = createEvent("uei.opennms.org/internal/alarms/alarmCreated", 7L);
-        event.setAlarmData(new AlarmData());
-
-        forwarder.sendNow(event);
-
-        // Should publish to both Kafka and MessageBus
-        verify(kafkaProducer).send(any());
-        verify(messageBus).publish(any(IpcMessage.class));
     }
 
     @Test
@@ -140,17 +152,13 @@ public class KafkaEventForwarderTest {
 
         forwarder.sendNow(event);
 
-        // Verify the enrichment pipeline was called
         verify(eventExpander).process(any(Log.class));
         verify(tsidAssigner).process(any(Log.class));
-
-        // And routing happened (Kafka send proves enrichment completed first)
         verify(kafkaProducer).send(any());
     }
 
     @Test
     public void shouldUseZeroKeyForNodelessEvents() {
-        // Event without a nodeId
         Event event = new Event();
         event.setUei("uei.opennms.org/traps/genericTrap");
         event.setSource("test-source");
@@ -171,7 +179,8 @@ public class KafkaEventForwarderTest {
     public void shouldHandleSendNowWithLog() throws Exception {
         Event event1 = createEvent("uei.opennms.org/nodes/nodeDown", 1L);
         event1.setAlarmData(new AlarmData());
-        Event event2 = createEvent("uei.opennms.org/internal/discovery/newSuspect", 2L);
+        // Pure IPC event (not in CROSS_CONTAINER_INTERNAL_UEIS, no alarmData)
+        Event event2 = createEvent("uei.opennms.org/internal/provisiond/nodeScanCompleted", 2L);
 
         Log log = new Log();
         log.addEvent(event1);
@@ -179,10 +188,16 @@ public class KafkaEventForwarderTest {
 
         forwarder.sendNow(log);
 
-        // event1 is FAULT -> Kafka only
-        // event2 is IPC -> MessageBus only
-        verify(kafkaProducer).send(any());
-        verify(messageBus).publish(any(IpcMessage.class));
+        // event1 is FAULT -> fault topic, event2 is IPC -> IPC topic
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer, times(2)).send(captor.capture());
+
+        List<ProducerRecord<Long, byte[]>> records = captor.getAllValues();
+        assertThat(records.get(0).topic()).isEqualTo(FAULT_TOPIC);
+        assertThat(records.get(1).topic()).isEqualTo(IPC_TOPIC);
+
         verify(eventExpander).process(any(Log.class));
         verify(tsidAssigner).process(any(Log.class));
     }
@@ -206,8 +221,119 @@ public class KafkaEventForwarderTest {
 
         forwarder.sendNowSync(log);
 
-        verify(messageBus).publish(any(IpcMessage.class));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer).send(captor.capture());
+        assertThat(captor.getValue().topic()).isEqualTo(IPC_TOPIC);
+
         verify(eventExpander).process(any(Log.class));
+    }
+
+    // -------- Eventconf enrichment tests --------
+
+    @Test
+    public void shouldEnrichEventWithAlarmDataFromEventConf() {
+        // Set up EventConfDao mock that returns eventconf with alarm-data
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        org.opennms.netmgt.xml.eventconf.Event econf = new org.opennms.netmgt.xml.eventconf.Event();
+        econf.setSeverity("Major");
+        org.opennms.netmgt.xml.eventconf.AlarmData econfAlarmData = new org.opennms.netmgt.xml.eventconf.AlarmData();
+        econfAlarmData.setAlarmType(1);
+        econfAlarmData.setReductionKey("uei.opennms.org/test:%nodeid%");
+        econfAlarmData.setAutoClean(false);
+        econf.setAlarmData(econfAlarmData);
+        when(eventConfDao.findByEvent(any(Event.class))).thenReturn(econf);
+
+        forwarder.setEventConfDao(eventConfDao);
+
+        // Event with no alarm-data or severity
+        Event event = createEvent("uei.opennms.org/test/alarm", 42L);
+
+        forwarder.sendNow(event);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer).send(captor.capture());
+
+        // The event should have been published to the fault topic (has alarm-data now)
+        assertThat(captor.getValue().topic()).isEqualTo(FAULT_TOPIC);
+
+        // Verify the XML contains alarm-data
+        String xml = new String(captor.getValue().value());
+        assertThat(xml).contains("alarm-data");
+        assertThat(xml).contains("uei.opennms.org/test:42");
+    }
+
+    @Test
+    public void shouldNotOverwriteExistingAlarmData() {
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        forwarder.setEventConfDao(eventConfDao);
+
+        Event event = createEvent("uei.opennms.org/nodes/nodeDown", 42L);
+        AlarmData existing = new AlarmData();
+        existing.setReductionKey("existing-key");
+        event.setAlarmData(existing);
+
+        forwarder.sendNow(event);
+
+        // EventConfDao should NOT be consulted since alarm-data already present
+        verify(eventConfDao, never()).findByEvent(any(Event.class));
+    }
+
+    @Test
+    public void shouldWorkWithoutEventConfDao() {
+        // No eventConfDao set — should still forward events normally
+        Event event = createEvent("uei.opennms.org/nodes/nodeDown", 42L);
+        event.setAlarmData(new AlarmData());
+
+        forwarder.sendNow(event);
+
+        verify(kafkaProducer).send(any());
+    }
+
+    // -------- expandParms tests --------
+
+    @Test
+    public void shouldExpandNodeIdToken() {
+        Event event = createEvent("uei.opennms.org/test", 42L);
+        String result = KafkaEventForwarder.expandParms("prefix:%nodeid%:suffix", event);
+        assertThat(result).isEqualTo("prefix:42:suffix");
+    }
+
+    @Test
+    public void shouldExpandParmByIndex() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        Parm parm = new Parm();
+        parm.setParmName(".1.3.6.1.2.1.2.2.1.1");
+        Value val = new Value();
+        val.setContent("9");
+        parm.setValue(val);
+        event.addParm(parm);
+
+        String result = KafkaEventForwarder.expandParms("key:%parm[#1]%", event);
+        assertThat(result).isEqualTo("key:9");
+    }
+
+    @Test
+    public void shouldExpandParmByName() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        Parm parm = new Parm();
+        parm.setParmName("ifDescr");
+        Value val = new Value();
+        val.setContent("eth0");
+        parm.setValue(val);
+        event.addParm(parm);
+
+        String result = KafkaEventForwarder.expandParms("key:%parm[ifDescr]%", event);
+        assertThat(result).isEqualTo("key:eth0");
+    }
+
+    @Test
+    public void shouldReturnNullForNullTemplate() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        assertThat(KafkaEventForwarder.expandParms(null, event)).isNull();
     }
 
     private Event createEvent(String uei, long nodeId) {

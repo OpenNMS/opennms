@@ -26,9 +26,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
-import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -48,12 +45,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
-public class EventTranslator extends AbstractServiceDaemon implements EventListener, MessageHandler {
+public class EventTranslator extends AbstractServiceDaemon implements EventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventTranslator.class);
-
-    /** MessageBus type derived from uei.opennms.org/internal/reloadDaemonConfig */
-    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     private static EventTranslator s_instance = new EventTranslator();
 
@@ -62,7 +56,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
     private volatile boolean m_initialized = false;
 
     private DataSource m_dataSource;
-    private MessageBus m_messageBus;
 
 
     /**
@@ -110,15 +103,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
 
         checkPreRequisites();
         createMessageSelectorAndSubscribe();
-
-        // Subscribe to MessageBus for reload events
-        if (m_messageBus != null) {
-            m_messageBus.subscribe(MSG_TYPE_RELOAD_DAEMON_CONFIG, this);
-            LOG.info("EventTranslator subscribed to MessageBus for IPC events");
-        } else {
-            LOG.warn("MessageBus not available — EventTranslator will not receive IPC events via MessageBus");
-        }
-
         m_initialized = true;
     }
 
@@ -183,19 +167,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
             }
             log.setEvents(events);
             getEventManager().sendNow(log);
-        }
-    }
-
-    // --- MessageHandler interface ---
-
-    @Override
-    public void onMessage(IpcMessage message) {
-        LOG.debug("Received IPC message: type={} source={}", message.getType(), message.getSource());
-        if (MSG_TYPE_RELOAD_DAEMON_CONFIG.equals(message.getType())) {
-            String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
-            if ("Translator".equalsIgnoreCase(targetDaemon)) {
-                handleReload();
-            }
         }
     }
 
@@ -282,10 +253,6 @@ public class EventTranslator extends AbstractServiceDaemon implements EventListe
      */
     public void setDataSource(DataSource dataSource) {
         m_dataSource = dataSource;
-    }
-
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
     }
 
 }
