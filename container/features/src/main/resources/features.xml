@@ -2283,7 +2283,10 @@
         <feature>opennms-event-forwarder-kafka</feature>
         <feature>opennms-distributed-core-impl</feature>
         <feature>opennms-persistence</feature>
-        <feature>opennms-config</feature>
+        <!-- Config model (provides org.opennms.netmgt.config.utils needed by enlinkd.config at runtime) -->
+        <bundle dependency="true">mvn:org.opennms/opennms-config-model/${project.version}</bundle>
+        <!-- Enlinkd service API (provides persistence API, service API, criteria, guava, jung) -->
+        <feature>org.opennms.features.enlinkd.service.api</feature>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.common/${project.version}</bundle>
