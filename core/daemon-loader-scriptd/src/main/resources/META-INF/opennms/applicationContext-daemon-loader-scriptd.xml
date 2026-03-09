@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Scriptd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  legacy singleton/JMX lifecycle with a flat context that wires Scriptd
+  directly to OSGi services.
+
+  Scriptd uses two legacy static APIs:
+  1. BeanUtils.getBeanFactory("daoContext") — for NodeDao and SessionUtils
+  2. EventIpcManagerFactory.getIpcManager() — for event subscription
+
+  ScriptdContextInitializer bridges both by:
+  - Setting BeanUtils.staticApplicationContext to this context (so bean lookups resolve here)
+  - Setting EventIpcManagerFactory.ipcManager to the Kafka-backed EventIpcManager
+
+  All dependencies come from the OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - NodeDao and SessionUtils from distributed-dao-impl
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- DAOs needed by Scriptd's Executor (fetched via BeanUtils.getBeanFactory("daoContext")) -->
+    <onmsgi:reference id="nodeDao"
+                      interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <onmsgi:reference id="sessionUtils"
+                      interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+
+    <!-- ============================================================== -->
+    <!-- Static Singleton Initialization                                -->
+    <!-- ============================================================== -->
+
+    <!-- Bridge legacy static APIs to OSGi services.
+         Must run before Scriptd.onInit() which calls BeanUtils and EventIpcManagerFactory. -->
+    <bean id="scriptdContextInitializer"
+          class="org.opennms.core.daemon.loader.ScriptdContextInitializer">
+        <property name="eventIpcManager" ref="eventIpcManager"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Scriptd Daemon                                                 -->
+    <!-- ============================================================== -->
+
+    <!-- Scriptd is a singleton with a private constructor. Use getInstance(). -->
+    <bean id="daemon" class="org.opennms.netmgt.scriptd.Scriptd"
+          factory-method="getInstance"
+          depends-on="scriptdContextInitializer"/>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+    </bean>
+
+</beans>
