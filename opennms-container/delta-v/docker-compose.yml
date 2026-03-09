@@ -1,8 +1,8 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (16 services)
-# Core (Eventd, Provisiond, Telemetryd, Bsmd, Correlator, Scriptd)
+# Delta-V: OpenNMS microservice-mode deployment (17 services)
+# Core (Eventd, Provisiond, Telemetryd, Bsmd, Correlator)
 # + Webapp + Alarmd + Pollerd + Collectd + Rtcd + PassiveStatusd + Notifd
-# + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd
+# + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
 #
 # Usage:
 #   docker compose up -d
@@ -75,6 +75,7 @@ services:
       CORE_SERVICE_TICKETER_ENABLED: "false"
       CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
       CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
+      CORE_SERVICE_SCRIPTD_ENABLED: "false"
       CORE_SERVICE_VACUUMD_ENABLED: "false"
       CORE_SERVICE_STATSD_ENABLED: "false"
       CORE_SERVICE_ACTIOND_ENABLED: "false"
@@ -496,6 +497,34 @@ services:
       retries: 20
       start_period: 60s
 
+  scriptd:
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-scriptd
+    hostname: scriptd
+    depends_on:
+      core:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=15
+    volumes:
+      - scriptd-data:/opt/daemon/data
+      - ./scriptd-overlay/etc:/opt/daemon-etc-overlay:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
   alarmd:
     image: opennms/alarmd:${VERSION}
     entrypoint: ["/bin/bash", "-c"]
@@ -552,4 +581,5 @@ volumes:
   ticketer-data:
   eventtranslator-data:
   enlinkd-data:
+  scriptd-data:
   alarmd-data:
