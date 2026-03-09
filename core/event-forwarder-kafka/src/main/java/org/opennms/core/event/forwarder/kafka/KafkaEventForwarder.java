@@ -26,12 +26,9 @@ import java.util.Objects;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.eventd.router.EventClassification;
 import org.opennms.netmgt.eventd.router.EventClassifier;
-import org.opennms.netmgt.eventd.router.IpcMessageConverter;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
@@ -43,14 +40,13 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link EventForwarder} implementation that enriches events locally
  * (via an event expander and a TSID assigner, both {@link EventProcessor}
- * instances) and then routes them to Kafka (fault events) or the in-process
- * {@link MessageBus} (IPC events).
+ * instances) and then routes them to Kafka topics based on classification.
  *
  * <p>Routing is determined by {@link EventClassifier}:
  * <ul>
- *   <li>{@link EventClassification#FAULT} -- published to Kafka topic only</li>
- *   <li>{@link EventClassification#IPC} -- published to MessageBus only</li>
- *   <li>{@link EventClassification#DUAL} -- published to both Kafka and MessageBus</li>
+ *   <li>{@link EventClassification#FAULT} -- published to fault Kafka topic</li>
+ *   <li>{@link EventClassification#IPC} -- published to IPC Kafka topic</li>
+ *   <li>{@link EventClassification#DUAL} -- published to both Kafka topics</li>
  * </ul>
  */
 public class KafkaEventForwarder implements EventForwarder {
@@ -60,10 +56,9 @@ public class KafkaEventForwarder implements EventForwarder {
     private final EventProcessor eventExpander;
     private final EventProcessor tsidAssigner;
     private final EventClassifier eventClassifier;
-    private final IpcMessageConverter ipcMessageConverter;
     private final KafkaProducer<Long, byte[]> kafkaProducer;
     private final String topicName;
-    private volatile MessageBus messageBus; // injected via setter; optional in daemon containers
+    private volatile String ipcTopicName; // injected via setter; null until configured
 
     /**
      * @param eventExpander expands events using eventconf; use {@link NoOpEventProcessor}
@@ -72,13 +67,11 @@ public class KafkaEventForwarder implements EventForwarder {
     public KafkaEventForwarder(EventProcessor eventExpander,
                                EventProcessor tsidAssigner,
                                EventClassifier eventClassifier,
-                               IpcMessageConverter ipcMessageConverter,
                                KafkaProducer<Long, byte[]> kafkaProducer,
                                String topicName) {
         this.eventExpander = Objects.requireNonNull(eventExpander, "eventExpander");
         this.tsidAssigner = Objects.requireNonNull(tsidAssigner, "tsidAssigner");
         this.eventClassifier = Objects.requireNonNull(eventClassifier, "eventClassifier");
-        this.ipcMessageConverter = Objects.requireNonNull(ipcMessageConverter, "ipcMessageConverter");
         this.kafkaProducer = Objects.requireNonNull(kafkaProducer, "kafkaProducer");
         this.topicName = Objects.requireNonNull(topicName, "topicName");
     }
@@ -91,15 +84,14 @@ public class KafkaEventForwarder implements EventForwarder {
     public static KafkaEventForwarder create(EventProcessor eventExpander,
                                               EventProcessor tsidAssigner,
                                               EventClassifier eventClassifier,
-                                              IpcMessageConverter ipcMessageConverter,
                                               KafkaProducer<Long, byte[]> kafkaProducer,
                                               String topicName) {
         return new KafkaEventForwarder(eventExpander, tsidAssigner, eventClassifier,
-                ipcMessageConverter, kafkaProducer, topicName);
+                kafkaProducer, topicName);
     }
 
-    public void setMessageBus(MessageBus messageBus) {
-        this.messageBus = messageBus;
+    public void setIpcTopicName(String ipcTopicName) {
+        this.ipcTopicName = ipcTopicName;
     }
 
     @Override
@@ -158,11 +150,11 @@ public class KafkaEventForwarder implements EventForwarder {
                 publishToKafka(event);
                 break;
             case IPC:
-                publishToMessageBus(event);
+                publishToIpcKafka(event);
                 break;
             case DUAL:
                 publishToKafka(event);
-                publishToMessageBus(event);
+                publishToIpcKafka(event);
                 break;
             default:
                 LOG.warn("Unknown classification {} for event {}", classification, event.getUei());
@@ -182,17 +174,19 @@ public class KafkaEventForwarder implements EventForwarder {
         }
     }
 
-    private void publishToMessageBus(Event event) {
-        if (messageBus == null) {
-            LOG.debug("MessageBus not available, skipping event {}", event.getUei());
+    private void publishToIpcKafka(Event event) {
+        if (ipcTopicName == null) {
+            LOG.debug("IPC topic not configured, dropping IPC event {}", event.getUei());
             return;
         }
         try {
-            IpcMessage ipcMessage = ipcMessageConverter.convert(event);
-            messageBus.publish(ipcMessage);
-            LOG.debug("Published event {} to MessageBus as type {}", event.getUei(), ipcMessage.getType());
+            byte[] payload = JaxbUtils.marshal(event).getBytes(StandardCharsets.UTF_8);
+            long key = event.getNodeid(); // returns 0L when nodeId is null
+            ProducerRecord<Long, byte[]> record = new ProducerRecord<>(ipcTopicName, key, payload);
+            kafkaProducer.send(record);
+            LOG.debug("Published IPC event {} to Kafka topic {} with key {}", event.getUei(), ipcTopicName, key);
         } catch (Exception e) {
-            LOG.error("Failed to publish event {} to MessageBus", event.getUei(), e);
+            LOG.error("Failed to publish IPC event {} to Kafka", event.getUei(), e);
         }
     }
 
