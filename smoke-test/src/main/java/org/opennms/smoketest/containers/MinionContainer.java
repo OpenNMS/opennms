@@ -293,7 +293,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         OverlayUtils.writeProps(dest, props);
     }
 
-    private void writeKafkaConfigs(Path etc) {
+    private void writeKafkaConfigs(Path etc) throws IOException {
         String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
         String compressionType = model.getKafkaCompressionStrategy().getCodec();
 
