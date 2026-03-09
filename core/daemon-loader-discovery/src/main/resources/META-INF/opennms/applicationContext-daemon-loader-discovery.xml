@@ -43,17 +43,21 @@
     <osgi:reference id="eventIpcManager"
                     interface="org.opennms.netmgt.events.api.EventIpcManager"/>
 
-    <!-- Discovery configuration (from opennms-config feature) -->
-    <onmsgi:reference id="discoveryConfigFactory"
-                      interface="org.opennms.netmgt.config.DiscoveryConfigFactory"/>
+    <!-- Discovery configuration — instantiated directly (not an interface,
+         so cannot use onmsgi:reference JDK proxy). Constructor calls reload()
+         which reads discovery-configuration.xml from opennms.home/etc/. -->
+    <bean id="discoveryConfigFactory"
+          class="org.opennms.netmgt.config.DiscoveryConfigFactory"/>
 
     <!-- InterfaceToNodeCache (from DAO feature) -->
     <onmsgi:reference id="interfaceToNodeCache"
                       interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
 
-    <!-- ICMP ping client (from RPC ICMP feature) -->
-    <onmsgi:reference id="locationAwarePingClient"
-                      interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
+    <!-- ICMP ping client — local implementation using InetAddress.isReachable()
+         (the RPC-based LocationAwarePingClientImpl requires the full ICMP+RPC stack
+         which is not available in standalone daemon containers) -->
+    <bean id="locationAwarePingClient"
+          class="org.opennms.core.daemon.loader.LocalLocationAwarePingClient"/>
 
     <!-- Detector client (from provisioning feature, optional — not all deployments have it) -->
     <onmsgi:reference id="locationAwareDetectorClient"
