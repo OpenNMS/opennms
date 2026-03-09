@@ -107,8 +107,8 @@
 
         <!-- SNMP API (LocationAwareSnmpClient) -->
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-snmp-api</artifactId>
+            <groupId>org.opennms.core.snmp</groupId>
+            <artifactId>org.opennms.core.snmp.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

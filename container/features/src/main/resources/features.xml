@@ -2302,7 +2302,7 @@
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.ospf/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.config/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms/opennms-snmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
     </feature>
 
