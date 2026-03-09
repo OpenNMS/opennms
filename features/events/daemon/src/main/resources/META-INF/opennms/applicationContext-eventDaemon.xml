@@ -135,6 +135,15 @@
     <constructor-arg value="${org.opennms.kafka.fault.topic:opennms-fault-events}"/>
   </bean>
 
+  <!-- IPC event publisher: sends internal/IPC events to Kafka opennms-ipc-events topic.
+       Used by EventRouter for cross-container daemon-to-daemon events. -->
+  <bean id="ipcEventPublisher"
+        class="org.opennms.netmgt.eventd.processor.IpcEventPublisherFactory"
+        factory-method="create">
+    <constructor-arg value="${org.opennms.kafka.bootstrap.servers:localhost:9092}"/>
+    <constructor-arg value="${org.opennms.kafka.ipc.topic:opennms-ipc-events}"/>
+  </bean>
+
   <!-- Kafka consumer: polls fault events published by daemon containers and
        broadcasts them to core's local listeners via EventIpcBroadcaster.
        Skips events originated by core itself (TSID node-id=1) to prevent echo. -->
