@@ -16,35 +16,30 @@
         <cm:default-properties>
             <cm:property name="bootstrap.servers" value="localhost:9092"/>
             <cm:property name="topic.name" value="opennms-fault-events"/>
+            <cm:property name="ipc.topic.name" value="opennms-ipc-events"/>
             <cm:property name="consumer.group.id" value="opennms-core"/>
             <cm:property name="poll.timeout.ms" value="100"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <!-- ================================================================ -->
-    <!-- OSGi service references                                          -->
-    <!-- ================================================================ -->
-    <reference id="messageBus"
-               interface="org.opennms.core.messagebus.MessageBus"
-               availability="optional"/>
-
-    <!-- ================================================================ -->
     <!-- Beans                                                            -->
     <!-- ================================================================ -->
 
-    <!-- KafkaEventForwarder: routes events to Kafka/MessageBus.
+    <!-- KafkaEventForwarder: routes events to Kafka topics (fault + IPC).
          Uses KafkaEventForwarderFactory to avoid Aries Blueprint constructor/factory
          matching issues with cross-bundle interface types and generics.
-         MessageBus injected via setter (optional in daemon containers). -->
+         IPC topic name injected via setter. -->
     <bean id="kafkaEventForwarder"
           class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarderFactory"
           factory-method="create">
         <argument value="${bootstrap.servers}"/>
         <argument value="${topic.name}"/>
-        <property name="messageBus" ref="messageBus"/>
+        <property name="ipcTopicName" value="${ipc.topic.name}"/>
     </bean>
 
-    <!-- KafkaEventSubscriptionService: consumes events from Kafka topic.
+    <!-- KafkaEventSubscriptionService: consumes events from Kafka topics.
+         Subscribes to both fault and IPC topics (comma-separated).
          Factory method takes only String/long primitives, creating KafkaConsumer
          and XmlEventDeserializer internally to avoid Blueprint type-matching. -->
     <bean id="kafkaEventSubscriptionService"
@@ -54,7 +49,7 @@
           destroy-method="stop">
         <argument value="${bootstrap.servers}"/>
         <argument value="${consumer.group.id}"/>
-        <argument value="${topic.name}"/>
+        <argument value="${topic.name},${ipc.topic.name}"/>
         <argument value="${poll.timeout.ms}" type="long"/>
     </bean>
 
