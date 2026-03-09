@@ -124,6 +124,9 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
                 .withEnv("JAVA_OPTS", "-Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("MINION_ID",profile.getId())
+                .withEnv("MINION_LOCATION",profile.getLocation())
+                .withEnv("OPENNMS_BROKER_URL","failover:tcp://" + OpenNMSContainer.ALIAS + ":61616")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand("-c")
@@ -166,11 +169,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // Allow other users to read the file
         OverlayUtils.setOverlayPermissions(minionConfigYaml);
 
-        String config = "{\n" +
-                "\t\"location\": \"" + profile.getLocation() + "\",\n" +
-                "\t\"id\": \"" + profile.getId() + "\",\n" +
-                "\t\"broker-url\": \"failover:tcp://" + OpenNMSContainer.ALIAS + ":61616\"\n" +
-                "}";
+        String config = "";
         OverlayUtils.writeYaml(minionConfigYaml, jsonMapper.readValue(config, Map.class));
 
         if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
