@@ -154,10 +154,31 @@
         <property name="secureCredentialsVault" ref="secureCredentialsVault"/>
     </bean>
 
-    <!-- @EventHandler adapter for daemon reload events -->
+    <!-- @EventHandler adapter for non-internal events (delivered via Kafka) -->
     <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
         <property name="annotatedListener" ref="daemon"/>
         <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+
+    <!-- Bridge internal UEIs (uei.opennms.org/internal/...) from MessageBus (AMQ)
+         to @EventHandler methods on the daemon bean.
+         Trapd has @EventHandler(uei = RELOAD_DAEMON_CONFIG_UEI) which is an internal UEI
+         that flows via MessageBus, not Kafka. Without this bridge, Trapd won't receive
+         reloadDaemonConfig events in the daemon container. -->
+    <osgi:reference id="messageBus"
+                    interface="org.opennms.core.messagebus.MessageBus"/>
+
+    <bean id="messageBusEventListenerBridge"
+          class="org.opennms.netmgt.eventd.bridge.MessageBusEventListenerBridge">
+        <constructor-arg ref="messageBus"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="targetObject" ref="messageBusEventListenerBridge"/>
+        <property name="targetMethod" value="register"/>
+        <property name="arguments">
+            <list><ref bean="daemon"/></list>
+        </property>
     </bean>
 
     <!-- ============================================================== -->
