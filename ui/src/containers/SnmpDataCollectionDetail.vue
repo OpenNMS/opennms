@@ -36,8 +36,9 @@
       <div class="action-container">
         <FeatherButton
           v-if="!store.selectedCollectionSource.enabled"
-          primary
+          secondary
           data-test="enable-source"
+          @click="openChangeStatusDialog(store.selectedCollectionSource)"
         >
           Enable Source
         </FeatherButton>
@@ -45,6 +46,7 @@
           v-if="store.selectedCollectionSource.enabled"
           secondary
           data-test="disable-source"
+          @click="openChangeStatusDialog(store.selectedCollectionSource)"
         >
           Disable Source
         </FeatherButton>
@@ -133,16 +135,25 @@
     @close="closeDeleteCollectionSourceDialog"
     @confirm="deleteCollectionSource"
   />
+  <SnmpDataCollectionChangeStatusDialog
+    :visible="isChangeStatusDialogVisible"
+    :selected="selectedCollectionSource"
+    type="source"
+    :status="selectedCollectionSource?.enabled ? 'Disable' : 'Enable'"
+    @close="closeChangeStatusDialog"
+    @confirm="changeCollectionSourceStatus"
+  />
 </template>
 
 <script setup lang="ts">
 import TableCard from '@/components/Common/TableCard.vue'
-import DeleteConfirmationDialog from '@/components/SnmpDataCollectionDetail/Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from '@/components/SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from '@/components/SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 import MibGroupsTable from '@/components/SnmpDataCollectionDetail/MibGroupsTable.vue'
 import ResourceTypesTable from '@/components/SnmpDataCollectionDetail/ResourceTypesTable.vue'
 import SystemDefinitionsTable from '@/components/SnmpDataCollectionDetail/SystemDefinitionsTable.vue'
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSnmpCollectionSources } from '@/services/snmpDataCollectionService'
+import { deleteSnmpCollectionSources, enableDisableSnmpDataCollectionSources } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
@@ -155,17 +166,28 @@ const router = useRouter()
 const route = useRoute()
 const store = useSnmpDataCollectionDetailStore()
 const isDeleteDialogVisible = ref(false)
-const selectedCollectionSource = ref<{ id: number; name: string } | null>(null)
+const isChangeStatusDialogVisible = ref(false)
+const selectedCollectionSource = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 
-const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string } | null) => {
+const openDeleteCollectionSourceDialog = (collectionSource: { id: number; name: string, enabled: boolean } | null) => {
   selectedCollectionSource.value = collectionSource
   isDeleteDialogVisible.value = true
+}
+
+const openChangeStatusDialog = (collectionSource: { id: number; name: string, enabled: boolean } | null) => {
+  selectedCollectionSource.value = collectionSource
+  isChangeStatusDialogVisible.value = true
 }
 
 const closeDeleteCollectionSourceDialog = () => {
   selectedCollectionSource.value = null
   isDeleteDialogVisible.value = false
+}
+
+const closeChangeStatusDialog = () => {
+  selectedCollectionSource.value = null
+  isChangeStatusDialogVisible.value = false
 }
 
 const deleteCollectionSource = async (selected: { id: number; name: string } | null, type: string) => {
@@ -195,6 +217,37 @@ const deleteCollectionSource = async (selected: { id: number; name: string } | n
     })
   }
 }
+
+const changeCollectionSourceStatus = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'source' &&
+    selected?.id &&
+    selected?.id === selectedCollectionSource.value?.id &&
+    selected?.name === selectedCollectionSource.value?.name
+  ) {
+    const updatedStatus = !selectedCollectionSource.value?.enabled
+    const success = await enableDisableSnmpDataCollectionSources(updatedStatus, [selectedCollectionSource.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Collection Source '${selectedCollectionSource.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+      })
+      await store.fetchCollectionSourceById(String(selectedCollectionSource.value?.id))
+      selectedCollectionSource.value = null
+      isChangeStatusDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} Collection Source '${selectedCollectionSource.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to change status for Collection Source '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
+
 
 onMounted(async () => {
   if (route.params.id) {

@@ -103,7 +103,10 @@
                         <FeatherIcon :icon="MenuIcon" />
                       </FeatherButton>
                     </template>
-                    <FeatherDropdownItem data-test="change-status-button">
+                    <FeatherDropdownItem
+                      data-test="change-status-button"
+                      @click="openChangeStatusDialog(systemDefinition)"
+                    >
                       {{ systemDefinition.enabled ? 'Disable Definition' : 'Enable Definition' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
@@ -163,7 +166,6 @@
     <div v-if="!store.systemDefinitions.length">
       <EmptyList :content="{ msg: 'No System Definitions found.' }" />
     </div>
-    <SystemDefinitionCreationDrawer />
     <DeleteConfirmationDialog
       :visible="isDeleteDialogVisible"
       :selected="selectedSystemDef"
@@ -171,16 +173,26 @@
       @close="closeDeleteSystemDefDialog"
       @confirm="deleteSystemDef"
     />
+    <SnmpDataCollectionChangeStatusDialog
+      :visible="isChangeStatusDialogVisible"
+      :selected="selectedSystemDef"
+      type="system-def"
+      :status="selectedSystemDef?.enabled ? 'Disable' : 'Enable'"
+      @close="closeChangeStatusDialog"
+      @confirm="changeSystemDefStatus"
+    />
+    <SystemDefinitionCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteSystemDefinitions } from '@/services/snmpDataCollectionService'
+import { deleteSystemDefinitions, enableDisableSnmpSystemDefs } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionSystemDef } from '@/types/snmpDataCollection'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
@@ -194,14 +206,15 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
+import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 import SystemDefinitionCreationDrawer from './Drawer/SystemDefinitionCreationDrawer.vue'
-import { FeatherChip } from '@featherds/chips'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
-const selectedSystemDef = ref<{ id: number; name: string } | null>(null)
+const isChangeStatusDialogVisible = ref(false)
+const selectedSystemDef = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
@@ -247,7 +260,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeSystemDefsSearchTerm(value)
 }, 500)
 
-const openDeleteSystemDefDialog = (systemDef: { id: number; name: string } | null) => {
+const openDeleteSystemDefDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
   selectedSystemDef.value = systemDef
   isDeleteDialogVisible.value = true
 }
@@ -255,6 +268,16 @@ const openDeleteSystemDefDialog = (systemDef: { id: number; name: string } | nul
 const closeDeleteSystemDefDialog = () => {
   selectedSystemDef.value = null
   isDeleteDialogVisible.value = false
+}
+
+const openChangeStatusDialog = (systemDef: { id: number; name: string, enabled: boolean } | null) => {
+  selectedSystemDef.value = systemDef
+  isChangeStatusDialogVisible.value = true
+}
+
+const closeChangeStatusDialog = () => {
+  selectedSystemDef.value = null
+  isChangeStatusDialogVisible.value = false
 }
 
 const deleteSystemDef = async (selected: { id: number; name: string } | null, type: string) => {
@@ -282,6 +305,37 @@ const deleteSystemDef = async (selected: { id: number; name: string } | null, ty
   } else {
     snackbar.showSnackBar({
       msg: `Failed to delete System Definition '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
+
+const changeSystemDefStatus = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'system-def' &&
+    selected?.id &&
+    selected?.id === selectedSystemDef.value?.id &&
+    selected?.name === selectedSystemDef.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const updatedStatus = !selectedSystemDef.value?.enabled
+    const success = await enableDisableSnmpSystemDefs(store.selectedCollectionSource.id, updatedStatus, [selectedSystemDef.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `System Definition '${selectedSystemDef.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+      })
+      await store.fetchSystemDefinitions()
+      selectedSystemDef.value = null
+      isChangeStatusDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} System Definition '${selectedSystemDef.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to change status for System Definition '${selected?.name}'.`,
       error: true
     })
   }

@@ -312,7 +312,6 @@ export const getAllMibGroupNames = async (): Promise<string[]> => {
  * @param {SnmpCollectionSystemDefPayload} payload The payload to send with the request, containing the details of the System Definition to create.
  * @param {number} sourceId The ID of the SnmpCollectionSources to create the System Definition in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const createSystemDefinition = async (
   payload: SnmpCollectionSystemDefPayload,
@@ -326,11 +325,11 @@ export const createSystemDefinition = async (
     if (response.status === 201) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error creating SNMP data collection system definition:', error)
-    throw error
+    return false
   }
 }
 
@@ -339,7 +338,6 @@ export const createSystemDefinition = async (
  * @param {SnmpCollectionSystemDefPayload} payload The payload to send with the request, containing the details of the System Definition to update.
  * @param {number} sourceId The ID of the SnmpCollectionSources to update the System Definition in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const updateSystemDefinition = async (
   payload: SnmpCollectionSystemDefPayload,
@@ -353,11 +351,11 @@ export const updateSystemDefinition = async (
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error updating SNMP data collection system definition:', error)
-    throw error
+    return false
   }
 }
 
@@ -366,7 +364,6 @@ export const updateSystemDefinition = async (
  * @param {SnmpCollectionMibGroupPayload} payload The payload to send with the request, containing the details of the MIB group to create.
  * @param {number} sourceId The ID of the SnmpCollectionSources to create the MIB group in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const createMibGroup = async (payload: SnmpCollectionMibGroupPayload, sourceId: number): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mibgroups`
@@ -377,11 +374,11 @@ export const createMibGroup = async (payload: SnmpCollectionMibGroupPayload, sou
     if (response.status === 201) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error creating SNMP data collection MIB group:', error)
-    throw error
+    return false
   }
 }
 
@@ -390,7 +387,6 @@ export const createMibGroup = async (payload: SnmpCollectionMibGroupPayload, sou
  * @param {SnmpCollectionMibGroupPayload} payload The payload to send with the request, containing the details of the MIB group to update.
  * @param {number} sourceId The ID of the SnmpCollectionSources to update the MIB group in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const updateMibGroup = async (payload: SnmpCollectionMibGroupPayload, sourceId: number): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mibgroups/${payload.id}`
@@ -401,11 +397,11 @@ export const updateMibGroup = async (payload: SnmpCollectionMibGroupPayload, sou
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error updating SNMP data collection MIB group:', error)
-    throw error
+    return false
   }
 }
 
@@ -414,7 +410,6 @@ export const updateMibGroup = async (payload: SnmpCollectionMibGroupPayload, sou
  * @param {SnmpCollectionResourceTypePayload} payload The payload to send with the request, containing the details of the resource type to create.
  * @param {number} sourceId The ID of the SnmpCollectionSources to create the resource type in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const createResourceType = async (
   payload: SnmpCollectionResourceTypePayload,
@@ -428,11 +423,11 @@ export const createResourceType = async (
     if (response.status === 201) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error creating SNMP data collection resource type:', error)
-    throw error
+    return false
   }
 }
 
@@ -441,7 +436,6 @@ export const createResourceType = async (
  * @param {SnmpCollectionResourceTypePayload} payload The payload to send with the request, containing the details of the resource type to update.
  * @param {number} sourceId The ID of the SnmpCollectionSources to update the resource type in.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const updateResourceType = async (
   payload: SnmpCollectionResourceTypePayload,
@@ -455,11 +449,11 @@ export const updateResourceType = async (
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error updating SNMP data collection resource type:', error)
-    throw error
+    return false
   }
 }
 
@@ -467,7 +461,6 @@ export const updateResourceType = async (
  * Makes a DELETE request to the REST endpoint to delete one or more SNMP data collection sources.
  * @param {number[]} sourceIds The IDs of the SNMP data collection sources to delete.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<boolean> => {
   const endpoint = '/datacollectionconf/collectsources'
@@ -479,11 +472,11 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error deleting SNMP data collection sources:', error)
-    throw error
+    return false
   }
 }
 
@@ -492,7 +485,6 @@ export const deleteSnmpCollectionSources = async (sourceIds: number[]): Promise<
  * @param {number} sourceId The ID of the SNMP data collection source containing the MIB groups.
  * @param {number[]} mibGroupIds The IDs of the MIB groups to delete.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/mib-groups`
@@ -504,11 +496,11 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error deleting SNMP data collection MIB groups:', error)
-    throw error
+    return false
   }
 }
 
@@ -517,7 +509,6 @@ export const deleteMibGroups = async (sourceId: number, mibGroupIds: number[]): 
  * @param {number} sourceId The ID of the SNMP data collection source containing the resource types.
  * @param {number[]} resourceTypeIds The IDs of the resource types to delete.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/resource-types`
@@ -529,40 +520,11 @@ export const deleteResourceTypes = async (sourceId: number, resourceTypeIds: num
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error deleting SNMP data collection resource types:', error)
-    throw error
-  }
-}
-
-/**
- * Makes a GET request to download all Resource types, MIB groups and System defs
- * associated with the specified SNMP data collection source ID.
- *
- * @param {number} collectionSourceId The ID of the SNMP data collection source to download.
- * @param {string} format The format of the download (e.g., 'xml' or 'json').
- * @returns {Promise<any>} A promise that resolves to the full Axios response containing the downloaded file content.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
- */
-export const downloadSnmpDataCollectionById = async (collectionSourceId: number, format: string): Promise<any> => {
-  const endpoint = `/datacollectionconf/collectsources/${collectionSourceId}/download`
-
-  try {
-    const response = await v2.get(endpoint, {
-      params: { format },
-      responseType: 'blob'
-    })
-
-    if (response.status === 200) {
-      return response
-    } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
-    }
-  } catch (error) {
-    console.error(`Error downloading SNMP data collection for source ID ${collectionSourceId}:`, error)
-    throw error
+    return false
   }
 }
 
@@ -571,7 +533,6 @@ export const downloadSnmpDataCollectionById = async (collectionSourceId: number,
  * @param {number} sourceId The ID of the SNMP data collection source containing the system definitions.
  * @param {number[]} systemDefIds The IDs of the system definitions to delete.
  * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
- * @throws {Error} If the request was unsuccessful, an error is thrown with a message indicating the reason for the failure.
  */
 export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: number[]): Promise<boolean> => {
   const endpoint = `/datacollectionconf/collectsources/${sourceId}/system-defs`
@@ -583,11 +544,153 @@ export const deleteSystemDefinitions = async (sourceId: number, systemDefIds: nu
     if (response.status === 200) {
       return true
     } else {
-      throw new Error(`Unexpected response status: ${response.status}`)
+      return false
     }
   } catch (error) {
     console.error('Error deleting SNMP data collection system definitions:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a GET request to download all Resource types, MIB groups and System defs
+ * associated with the specified SNMP data collection source ID.
+ *
+ * @param {number} collectionSourceId The ID of the SNMP data collection source to download.
+ * @param {string} format The format of the download (e.g., 'xml' or 'json').
+ * @returns {Promise<Blob | false>} A promise that resolves to a Blob containing the downloaded file content, or false if the request was unsuccessful.
+ */
+export const downloadSnmpDataCollectionById = async (collectionSourceId: number, format: string): Promise<Blob> => {
+  const endpoint = `/datacollectionconf/collectsources/${collectionSourceId}/download`
+
+  try {
+    const response = await v2.get(endpoint, {
+      params: { format },
+      responseType: 'blob'
+    })
+
+    if (response.status === 200) {
+      return new Blob([response.data], { type: response.headers['content-type'] })
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error(`Error downloading SNMP data collection for source ID ${collectionSourceId}:`, error)
     throw error
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP data collection sources.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the SNMP data collection sources.
+ * @param {number[]} sourceIds The IDs of the SNMP data collection sources to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ */
+export const enableDisableSnmpDataCollectionSources = async (
+  enabled: boolean,
+  sourceIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    sourceIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP data collection sources:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP MIB groups.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the MIB groups.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the MIB groups.
+ * @param {number[]} mibGroupIds The IDs of the MIB groups to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ */
+export const enableDisableSnmpMibGroups = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  mibGroupIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/mib-groups/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    mibGroupIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP MIB groups:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP resource types.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the resource types.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the resource types.
+ * @param {number[]} resourceTypeIds The IDs of the resource types to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ */
+export const enableDisableSnmpResourceTypes = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  resourceTypeIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/resource-types/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    resourceTypeIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP resource types:', error)
+    return false
+  }
+}
+
+/**
+ * Makes a PATCH request to the REST endpoint to enable or disable one or more SNMP system definitions.
+ * @param {number} snmpDataCollectionSourceId The ID of the SNMP data collection source containing the system definitions.
+ * @param {boolean} enabled Whether to enable (true) or disable (false) the system definitions.
+ * @param {number[]} systemDefIds The IDs of the system definitions to enable or disable.
+ * @returns {Promise<boolean>} A promise that resolves to a boolean indicating whether the request was successful or not.
+ */
+export const enableDisableSnmpSystemDefs = async (
+  snmpDataCollectionSourceId: number,
+  enabled: boolean,
+  systemDefIds: number[]
+): Promise<boolean> => {
+  const endpoint = `/datacollectionconf/collectsources/${snmpDataCollectionSourceId}/system-defs/status/${enabled}`
+  try {
+    const params = new URLSearchParams()
+    systemDefIds.forEach((id) => params.append('id', id.toString()))
+    const response = await v2.patch(`${endpoint}?${params.toString()}`)
+
+    if (response.status === 200) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error('Error enabling/disabling SNMP system definitions:', error)
+    return false
   }
 }
 

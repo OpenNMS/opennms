@@ -315,6 +315,13 @@ const deleteMibObject = (index: number) => {
   const actualIndex = (page.value - 1) * pageSize.value + index
   mibObjects.value.splice(actualIndex, 1)
   total.value = mibObjects.value.length
+
+  // If current page is now empty and we're not on the first page, go back one page
+  const maxPage = Math.max(1, Math.ceil(total.value / pageSize.value))
+  if (page.value > maxPage) {
+    page.value = maxPage
+  }
+
   tableRecords.value = mibObjects.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
 }
 

@@ -103,12 +103,15 @@
                         <FeatherIcon :icon="MenuIcon" />
                       </FeatherButton>
                     </template>
-                    <FeatherDropdownItem data-test="change-status-button">
+                    <FeatherDropdownItem
+                      data-test="change-status-button"
+                      @click="openChangeStatusDialog(resourceType)"
+                    >
                       {{ resourceType.enabled ? 'Disable Resource Type' : 'Enable Resource Type' }}
                     </FeatherDropdownItem>
                     <FeatherDropdownItem
                       data-test="delete-resource-type-button"
-                      @click="openResourceTypeDeleteDialog(resourceType.id, resourceType.name)"
+                      @click="openResourceTypeDeleteDialog(resourceType)"
                     >
                       Delete Resource Type
                     </FeatherDropdownItem>
@@ -172,13 +175,21 @@
       @close="closeDeleteResourceTypeDialog"
       @confirm="deleteResourceType"
     />
+    <SnmpDataCollectionChangeStatusDialog
+      :visible="isChangeStatusDialogVisible"
+      :selected="selectedResourceType"
+      type="resource-type"
+      :status="selectedResourceType?.enabled ? 'Disable' : 'Enable'"
+      @close="closeChangeStatusDialog"
+      @confirm="changeResourceTypeStatus"
+    />
     <ResourceTypeCreationDrawer />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteResourceTypes } from '@/services/snmpDataCollectionService'
+import { deleteResourceTypes, enableDisableSnmpResourceTypes } from '@/services/snmpDataCollectionService'
 import { useSnmpDataCollectionDetailStore } from '@/stores/snmpDataCollectionDetailStore'
 import { CreateEditMode } from '@/types'
 import { SnmpCollectionResourceType } from '@/types/snmpDataCollection'
@@ -197,13 +208,15 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
-import DeleteConfirmationDialog from './Dialog/DeleteConfirmationDialog.vue'
+import DeleteConfirmationDialog from '../SnmpDataCollection/Dialog/DeleteConfirmationDialog.vue'
 import ResourceTypeCreationDrawer from './Drawer/ResourceTypeCreationDrawer.vue'
+import SnmpDataCollectionChangeStatusDialog from '../SnmpDataCollection/Dialog/SnmpDataCollectionChangeStatusDialog.vue'
 
 const store = useSnmpDataCollectionDetailStore()
 const expandedRows = ref<number[]>([])
 const isDeleteDialogVisible = ref(false)
-const selectedResourceType = ref<{ id: number; name: string } | null>(null)
+const isChangeStatusDialogVisible = ref(false)
+const selectedResourceType = ref<{ id: number; name: string, enabled: boolean } | null>(null)
 const snackbar = useSnackbar()
 const columns = computed(() => [
   { id: 'name', label: 'Name' },
@@ -249,14 +262,24 @@ const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeResourceTypesSearchTerm(value)
 }, 500)
 
-const openResourceTypeDeleteDialog = (id: number, name: string) => {
-  selectedResourceType.value = { id, name }
+const openResourceTypeDeleteDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+  selectedResourceType.value = resourceType
   isDeleteDialogVisible.value = true
 }
 
 const closeDeleteResourceTypeDialog = () => {
   selectedResourceType.value = null
   isDeleteDialogVisible.value = false
+}
+
+const openChangeStatusDialog = (resourceType: { id: number; name: string, enabled: boolean } | null) => {
+  selectedResourceType.value = resourceType
+  isChangeStatusDialogVisible.value = true
+}
+
+const closeChangeStatusDialog = () => {
+  selectedResourceType.value = null
+  isChangeStatusDialogVisible.value = false
 }
 
 const deleteResourceType = async (selected: { id: number; name: string } | null, type: string) => {
@@ -284,6 +307,37 @@ const deleteResourceType = async (selected: { id: number; name: string } | null,
   } else {
     snackbar.showSnackBar({
       msg: `Failed to delete Resource Type '${selected?.name}'.`,
+      error: true
+    })
+  }
+}
+
+const changeResourceTypeStatus = async (selected: { id: number; name: string } | null, type: string) => {
+  if (
+    type === 'resource-type' &&
+    selected?.id &&
+    selected?.id === selectedResourceType.value?.id &&
+    selected?.name === selectedResourceType.value?.name &&
+    store.selectedCollectionSource?.id
+  ) {
+    const updatedStatus = !selectedResourceType.value?.enabled
+    const success = await enableDisableSnmpResourceTypes(store.selectedCollectionSource.id, updatedStatus, [selectedResourceType.value?.id])
+    if (success) {
+      snackbar.showSnackBar({
+        msg: `Resource Type '${selectedResourceType.value?.name}' ${updatedStatus ? 'enabled' : 'disabled'} successfully.`
+      })
+      await store.fetchResourceTypes()
+      selectedResourceType.value = null
+      isChangeStatusDialogVisible.value = false
+    } else {
+      snackbar.showSnackBar({
+        msg: `Failed to ${updatedStatus ? 'enable' : 'disable'} Resource Type '${selectedResourceType.value?.name}'.`,
+        error: true
+      })
+    }
+  } else {
+    snackbar.showSnackBar({
+      msg: `Failed to change status for Resource Type '${selected?.name}'.`,
       error: true
     })
   }

@@ -1266,5 +1266,428 @@ describe('MibGroupsTable.vue', () => {
       expect(store.resetMibGroupsFilters).toHaveBeenCalled()
     })
   })
+
+  describe('Change Status Dialog - State Management', () => {
+    beforeEach(async () => {
+      store.mibGroups = [mockMibGroup]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('change status dialog is initially hidden', () => {
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+    })
+
+    it('selected mib group is initially null', () => {
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('opens change status dialog and sets selected mib group', () => {
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup).toEqual(mockMibGroup)
+    })
+
+    it('closes change status dialog and clears selection', () => {
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      wrapper.vm.closeChangeStatusDialog()
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('opens and closes change status dialog multiple times', () => {
+      for (let i = 0; i < 3; i++) {
+        wrapper.vm.openChangeStatusDialog(mockMibGroup)
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+        wrapper.vm.closeChangeStatusDialog()
+        expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      }
+    })
+
+    it('opens change status dialog with null', () => {
+      wrapper.vm.openChangeStatusDialog(null)
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('renders SnmpDataCollectionChangeStatusDialog component', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.exists()).toBe(true)
+    })
+
+    it('passes correct props to SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(true)
+      expect(dialog.props('type')).toBe('mib-group')
+      expect(dialog.props('selected')).toEqual(mockMibGroup)
+    })
+
+    it('passes correct status prop based on enabled state - enabled mib group shows Disable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+    })
+
+    it('passes correct status prop based on enabled state - disabled mib group shows Enable', async () => {
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('passes visible=false when change status dialog is closed', () => {
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('visible')).toBe(false)
+    })
+
+    it('handles close event from SnmpDataCollectionChangeStatusDialog', async () => {
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('close')
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+  })
+
+  describe('Change MIB Group Status - Successful Status Change', () => {
+    let enableDisableSnmpMibGroupsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpMibGroups')
+
+      store.mibGroups = [mockMibGroup, mockMibGroup2]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('calls enableDisableSnmpMibGroups service when disabling', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: true })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, false, [mockMibGroup.id])
+    })
+
+    it('calls enableDisableSnmpMibGroups service when enabling', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: false })
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, true, [mockMibGroup.id])
+    })
+
+    it('closes dialog and fetches data after successful status change', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+      expect(store.fetchMibGroups).toHaveBeenCalled()
+    })
+
+    it('uses correct collection source id for status change service call', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = { id: 99, name: 'Custom Source' } as any
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(99, false, [mockMibGroup.id])
+    })
+
+    it('handles confirm event from SnmpDataCollectionChangeStatusDialog', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      const dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      await dialog.vm.$emit('confirm', { id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, false, [mockMibGroup.id])
+    })
+  })
+
+  describe('Change MIB Group Status - Failed Status Change', () => {
+    let enableDisableSnmpMibGroupsSpy: any
+    let showSnackBarSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpMibGroups')
+
+      const useSnackbar = (await import('@/composables/useSnackbar')).default
+      showSnackBarSpy = vi.fn()
+      vi.spyOn({ useSnackbar }, 'useSnackbar').mockReturnValue({
+        showSnackBar: showSnackBarSpy
+      } as any)
+
+      store.mibGroups = [mockMibGroup]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('does not close dialog when status change fails', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(false)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(true)
+      expect(wrapper.vm.selectedMibGroup).toEqual(mockMibGroup)
+    })
+
+    it('does not fetch mib groups when status change fails', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(false)
+      store.fetchMibGroups = vi.fn()
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(store.fetchMibGroups).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Change MIB Group Status - Validation Failures', () => {
+    let enableDisableSnmpMibGroupsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpMibGroups')
+
+      store.mibGroups = [mockMibGroup]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it.each([
+      { desc: 'type does not match', params: { id: 1, name: 'mib2-interfaces' }, type: 'wrong-type' },
+      { desc: 'selected id does not match', params: { id: 999, name: 'mib2-interfaces' }, type: 'mib-group' },
+      { desc: 'selected name does not match', params: { id: 1, name: 'wrong-name' }, type: 'mib-group' }
+    ])('does not call enableDisableSnmpMibGroups when $desc', async ({ params, type }) => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus(params, type)
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call enableDisableSnmpMibGroups when selectedCollectionSource is missing', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = null
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call enableDisableSnmpMibGroups when selected is null', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus(null, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not call enableDisableSnmpMibGroups when selectedMibGroup is null (dialog not opened)', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+    })
+
+    it.each([{ type: 'source' }, { type: 'system-def' }, { type: 'resource-type' }, { type: 'unknown' }, { type: '' }])(
+      'rejects status change when type is "$type" instead of "mib-group"',
+      async ({ type }) => {
+        enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+        wrapper.vm.openChangeStatusDialog(mockMibGroup)
+        await wrapper.vm.$nextTick()
+
+        await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, type)
+        await flushPromises()
+
+        expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+      }
+    )
+  })
+
+  describe('Change Status with Edge Cases', () => {
+    let enableDisableSnmpMibGroupsSpy: any
+
+    beforeEach(async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      enableDisableSnmpMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpMibGroups')
+
+      store.mibGroups = [mockMibGroup, mockMibGroup2, disabledMibGroup]
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+      await wrapper.vm.$nextTick()
+    })
+
+    it('handles status change for disabled mib group', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      wrapper.vm.openChangeStatusDialog(disabledMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: disabledMibGroup.id, name: disabledMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, true, [disabledMibGroup.id])
+    })
+
+    it('switches selected mib group without closing dialog', () => {
+      wrapper.vm.openChangeStatusDialog(mockMibGroup)
+      expect(wrapper.vm.selectedMibGroup).toEqual(mockMibGroup)
+
+      wrapper.vm.openChangeStatusDialog(mockMibGroup2)
+      expect(wrapper.vm.selectedMibGroup).toEqual(mockMibGroup2)
+    })
+
+    it('handles rapid open/close of change status dialog', () => {
+      for (let i = 0; i < 5; i++) {
+        wrapper.vm.openChangeStatusDialog(mockMibGroup)
+        wrapper.vm.closeChangeStatusDialog()
+      }
+      expect(wrapper.vm.isChangeStatusDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedMibGroup).toBeNull()
+    })
+
+    it('handles sequential status change operations correctly', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+
+      // First operation - disable
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: true })
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, false, [mockMibGroup.id])
+
+      enableDisableSnmpMibGroupsSpy.mockClear()
+
+      // Second operation - enable
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup2, enabled: false })
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup2.id, name: mockMibGroup2.name }, 'mib-group')
+      await flushPromises()
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, true, [mockMibGroup2.id])
+    })
+
+    it('handles mib group with special characters in name for status change', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+      const specialMibGroup = { ...mockMibGroup, name: 'Test <MIB> & "Quotes"' }
+
+      wrapper.vm.openChangeStatusDialog(specialMibGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: specialMibGroup.id, name: specialMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalled()
+    })
+
+    it('handles status change when selected mib group id is 0 (falsy)', async () => {
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+      const zeroIdGroup = { ...mockMibGroup, id: 0 }
+
+      wrapper.vm.openChangeStatusDialog(zeroIdGroup)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.changeMibGroupStatus({ id: 0, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+
+      expect(enableDisableSnmpMibGroupsSpy).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Multiple MIB Groups with Mixed States - Change Status', () => {
+    beforeEach(async () => {
+      store.mibGroups = [
+        { ...mockMibGroup, enabled: true },
+        { ...mockMibGroup2, enabled: false },
+        { ...disabledMibGroup, enabled: false }
+      ]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('passes correct status prop for each mib group based on enabled state', async () => {
+      // Test enabled mib group shows Disable
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: true })
+      await wrapper.vm.$nextTick()
+      let dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Disable')
+
+      // Test disabled mib group shows Enable
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup2, enabled: false })
+      await wrapper.vm.$nextTick()
+      dialog = wrapper.findComponent({ name: 'SnmpDataCollectionChangeStatusDialog' })
+      expect(dialog.props('status')).toBe('Enable')
+    })
+
+    it('handles mixed mib groups status changes correctly', async () => {
+      const snmpDataCollectionService = await import('@/services/snmpDataCollectionService')
+      const enableDisableSnmpMibGroupsSpy = vi.spyOn(snmpDataCollectionService, 'enableDisableSnmpMibGroups')
+      enableDisableSnmpMibGroupsSpy.mockResolvedValue(true)
+      store.selectedCollectionSource = { id: 1, name: 'Test Source' } as any
+
+      // Disable an enabled mib group
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup, enabled: true })
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup.id, name: mockMibGroup.name }, 'mib-group')
+      await flushPromises()
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, false, [mockMibGroup.id])
+
+      enableDisableSnmpMibGroupsSpy.mockClear()
+
+      // Enable a disabled mib group
+      wrapper.vm.openChangeStatusDialog({ ...mockMibGroup2, enabled: false })
+      await wrapper.vm.changeMibGroupStatus({ id: mockMibGroup2.id, name: mockMibGroup2.name }, 'mib-group')
+      await flushPromises()
+      expect(enableDisableSnmpMibGroupsSpy).toHaveBeenCalledWith(1, true, [mockMibGroup2.id])
+    })
+  })
 })
 
