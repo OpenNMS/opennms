@@ -16,10 +16,31 @@ MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
-CONFD_KEY_STORE="${MINION_HOME}/minion-config.yaml"
-CONFD_CONFIG_DIR="${MINION_HOME}/confd"
-CONFD_BIN="/usr/bin/confd"
-CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
+CUSTOM_SYSTEM_PROPERTIES="${MINION_HOME}/etc/custom.system.properties"
+INSTANCE_ID_CFG="${MINION_HOME}/etc/instance-id.properties"
+KARAF_SHELL_CFG="${MINION_HOME}/etc/org.apache.karaf.shell.cfg"
+KARAF_MGMT_CFG="${MINION_HOME}/etc/org.apache.karaf.management.cfg"
+JETTY_WEB_CFG="${MINION_HOME}/etc/org.ops4j.pax.web.cfg"
+IPC_KAFKA_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
+IPC_KAFKA_RPC_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+IPC_KAFKA_SINK_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
+IPC_KAFKA_TWIN_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.twin.kafka.cfg"
+IPC_KAFKA_SINK_OFFHEAP_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.sink.offheap.cfg"
+IPC_GRPC_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.grpc.client.cfg"
+DOMINION_GRPC_CFG="${MINION_HOME}/etc/org.opennms.features.minion.dominion.grpc.cfg"
+SYSLOG_CFG="${MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg"
+TRAPD_CFG="${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg"
+TELEMETRY_FEATURE_XML="${MINION_HOME}/deploy/confd-telemetry-feature.xml"
+PROM_JMX_EXPORTER_CONFIG_PATH="/opt/prom-jmx-exporter/config.yaml"
+FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
+KAFKA_IPC_BOOT="${FEATURES_BOOT_DIR}/kafka-ipc.boot"
+KAFKA_RPC_BOOT="${FEATURES_BOOT_DIR}/kafka-rpc.boot"
+KAFKA_SINK_BOOT="${FEATURES_BOOT_DIR}/kafka-sink.boot"
+KAFKA_TWIN_BOOT="${FEATURES_BOOT_DIR}/kafka-twin.boot"
+DISABLE_JMS_BOOT="${FEATURES_BOOT_DIR}/disable-jms.boot"
+GRPC_BOOT="${FEATURES_BOOT_DIR}/grpc.boot"
+DOMINION_SCV_BOOT="${FEATURES_BOOT_DIR}/dominion-scv.boot"
+JAEGER_BOOT="${FEATURES_BOOT_DIR}/jaeger.boot"
 CACERTS="${MINION_HOME}/cacerts"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
@@ -33,12 +54,12 @@ export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 # - All other settings are optional and have sensible defaults
 #
 # Default behavior:
-# - Configuration is managed via confd templates
-# - Template uses key/values from /java/agent/prom-jmx-exporter
+# - Configuration is managed via environment variables
+# - Settings are applied to ${PROM_JMX_EXPORTER_CONFIG_PATH}
 PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
 PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
 PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
-PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/prom-jmx-exporter/config.yaml}"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-${PROM_JMX_EXPORTER_CONFIG_PATH}}"
 
 if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
   export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
@@ -102,43 +123,401 @@ function updateConfig() {
     [ "$key" == "max.packet.size" ]  && key="maxPacketSize"
     [ "$key" == "template.timeout" ] && key="templateTimeout"
 
+    mkdir -p "$(dirname "$file")"
+    [ -f "$file" ] || touch "$file"
+
     # Omit $value here, in case there is sensitive information
     echo "[Configuring] '$key' in '$file'"
 
     # If config exists in file, replace it. Otherwise, append to file.
     if grep -E -q "^#?$key=" "$file"; then
-        sed -r -i "s@^#?$key=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
+      sed -r -i "s@^#?$key=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
     else
-        echo "$key=$value" >> "$file"
+      echo "$key=$value" >> "$file"
     fi
 }
 
+  function writeBootFile() {
+    file=$1
+    shift
+    if [ "$#" -gt 0 ]; then
+      printf "%s\n" "$@" > "$file"
+    else
+      rm -f "$file"
+    fi
+  }
+
+  function mapKeyLowerDot() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | tr _ .
+  }
+
+  function mapKeyPreserveCase() {
+    echo "$1" | sed 's/__/./g'
+  }
+
+  function applyEnvPrefixToConfig() {
+    prefix=$1
+    targetFile=$2
+    mapper=$3
+    found=0
+
+    IFS=$'\n'
+    for VAR in $(env); do
+      env_var=$(echo "$VAR" | cut -d= -f1)
+      if [[ $env_var =~ ^${prefix} ]]; then
+        env_val=$(echo "$VAR" | cut -d= -f2)
+        key_raw=$(echo "$env_var" | sed "s/^${prefix}//")
+        key=$($mapper "$key_raw")
+        updateConfig "$key" "$env_val" "$targetFile"
+        found=1
+      fi
+    done
+
+    return $found
+  }
+
+  function writeSystemProperties() {
+    found=0
+    tmpfile=$(mktemp)
+
+    IFS=$'\n'
+    for VAR in $(env); do
+      env_var=$(echo "$VAR" | cut -d= -f1)
+      if [[ $env_var =~ ^SYSTEM_PROP_ ]]; then
+        env_val=$(echo "$VAR" | cut -d= -f2)
+        key_raw=$(echo "$env_var" | sed "s/^SYSTEM_PROP_//")
+        key=$(mapKeyPreserveCase "$key_raw")
+        echo "$key=$env_val" >> "$tmpfile"
+        found=1
+      fi
+    done
+
+    if [ "$found" -gt 0 ]; then
+      mkdir -p "$(dirname "$CUSTOM_SYSTEM_PROPERTIES")"
+      mv "$tmpfile" "$CUSTOM_SYSTEM_PROPERTIES"
+    else
+      rm -f "$tmpfile" "$CUSTOM_SYSTEM_PROPERTIES"
+    fi
+  }
+
+  function writeProcessEnv() {
+    if [ -n "${MINION_PROCESS_ENV_JAVA_OPTS}" ]; then
+      mkdir -p "$(dirname "$MINION_PROCESS_ENV_CFG")"
+      {
+        echo "#"
+        echo "# DON'T EDIT THIS FILE :: GENERATED FROM ENV"
+        echo "#"
+        echo "CUSTOM_JAVA_OPTS=${MINION_PROCESS_ENV_JAVA_OPTS}"
+      } > "$MINION_PROCESS_ENV_CFG"
+      return
+    fi
+
+    java_opts=""
+    IFS=$'\n'
+    for VAR in $(env); do
+      env_var=$(echo "$VAR" | cut -d= -f1)
+      if [[ $env_var =~ ^MINION_PROCESS_ENV_JAVA_OPT_ ]]; then
+        env_val=$(echo "$VAR" | cut -d= -f2)
+        if [ -z "$java_opts" ]; then
+          java_opts="$env_val"
+        else
+          java_opts="$java_opts $env_val"
+        fi
+      fi
+    done
+
+    if [ -n "$java_opts" ]; then
+      mkdir -p "$(dirname "$MINION_PROCESS_ENV_CFG")"
+      {
+        echo "#"
+        echo "# DON'T EDIT THIS FILE :: GENERATED FROM ENV"
+        echo "#"
+        echo "CUSTOM_JAVA_OPTS=$java_opts"
+      } > "$MINION_PROCESS_ENV_CFG"
+    else
+      rm -f "$MINION_PROCESS_ENV_CFG"
+    fi
+  }
+
+  function writeServerCerts() {
+    if [ -n "${MINION_SERVER_CERTS}" ]; then
+      mkdir -p "$(dirname "$MINION_SERVER_CERTS_CFG")"
+      echo "${MINION_SERVER_CERTS}" | tr ',' '\n' > "$MINION_SERVER_CERTS_CFG"
+    else
+      rm -f "$MINION_SERVER_CERTS_CFG"
+    fi
+  }
+
+  function writePromJmxConfig() {
+    if [ -n "${PROM_JMX_EXPORTER_CONFIG_YAML}" ]; then
+      mkdir -p "$(dirname "$PROM_JMX_EXPORTER_CONFIG_PATH")"
+      printf "%s\n" "$PROM_JMX_EXPORTER_CONFIG_YAML" > "$PROM_JMX_EXPORTER_CONFIG_PATH"
+      return
+    fi
+
+    found=0
+    start_delay=${PROM_JMX_EXPORTER_CFG_START_DELAY_SECONDS}
+    lower_name=${PROM_JMX_EXPORTER_CFG_LOWER_CASE_OUTPUT_NAME}
+    lower_labels=${PROM_JMX_EXPORTER_CFG_LOWERCASE_OUTPUT_LABEL_NAMES}
+    auto_exclude=${PROM_JMX_EXPORTER_CFG_AUTO_EXCLUDE_OBJECT_NAME_ATTRIBUTES}
+    include_objects=${PROM_JMX_EXPORTER_CFG_INCLUDE_OBJECT_NAMES}
+    exclude_objects=${PROM_JMX_EXPORTER_CFG_EXCLUDE_OBJECT_NAMES}
+
+    [ -n "$start_delay" ] && found=1
+    [ -n "$lower_name" ] && found=1
+    [ -n "$lower_labels" ] && found=1
+    [ -n "$auto_exclude" ] && found=1
+    [ -n "$include_objects" ] && found=1
+    [ -n "$exclude_objects" ] && found=1
+
+    if [ "$found" -eq 0 ]; then
+      return
+    fi
+
+    mkdir -p "$(dirname "$PROM_JMX_EXPORTER_CONFIG_PATH")"
+    {
+      echo "#"
+      echo "# DON'T EDIT THIS FILE :: GENERATED FROM ENV"
+      echo "#"
+      echo "startDelaySeconds: ${start_delay:-0}"
+      echo "lowercaseOutputName: ${lower_name:-true}"
+      echo "lowercaseOutputLabelNames: ${lower_labels:-true}"
+      echo "autoExcludeObjectNameAttributes: ${auto_exclude:-true}"
+
+      if [ -n "$include_objects" ]; then
+        echo "includeObjectNames:"
+        echo "$include_objects" | tr ',' '\n' | while read -r item; do
+          [ -n "$item" ] && echo "- \"$item\""
+        done
+      fi
+
+      if [ -n "$exclude_objects" ]; then
+        echo "excludeObjectNames:"
+        echo "$exclude_objects" | tr ',' '\n' | while read -r item; do
+          [ -n "$item" ] && echo "- \"$item\""
+        done
+      fi
+
+        cat <<'EOF'
+rules:
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
+  name: minion_$1_$2
+  type: GAUGE
+
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
+  name: minion_$1_$2_count
+  type: COUNTER
+
+- pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
+  name: minion_$1_$2
+  type: GAUGE
+  labels:
+    quantile: "0.$3"
+
+- pattern: 'org\.opennms\.netmgt\.trapd\.device<location="([^"]+)", ip="([^"]+)", type=([^>]+)><>(\w+)'
+  name: trapd_device_$4
+  type: COUNTER
+  labels:
+    location: "$1"
+    ip: "$2"
+    type: "$3"
+EOF
+    } > "$PROM_JMX_EXPORTER_CONFIG_PATH"
+  }
+
+  function writeTelemetryFeatureXml() {
+    if [ -n "${TELEMETRY_FEATURES_XML}" ]; then
+      mkdir -p "$(dirname "$TELEMETRY_FEATURE_XML")"
+      printf "%s\n" "$TELEMETRY_FEATURES_XML" > "$TELEMETRY_FEATURE_XML"
+    else
+      rm -f "$TELEMETRY_FEATURE_XML"
+    fi
+  }
+
 function parseEnvironment() {
     # Configure additional features
-    IFS=$'\n'
+  IFS=$'\n'
+  kafka_ipc_bootstrap=""
+  kafka_rpc_bootstrap=""
+  kafka_sink_bootstrap=""
+  kafka_twin_bootstrap=""
+  grpc_host=""
+  jaeger_enabled=""
 
-    for VAR in $(env)
-    do
-        env_var=$(echo "$VAR" | cut -d= -f1)
-        env_val=$(echo "$VAR" | cut -d= -f2)
+  for VAR in $(env); do
+    env_var=$(echo "$VAR" | cut -d= -f1)
+    env_val=$(echo "$VAR" | cut -d= -f2)
 
-        if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
-          export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
-        fi
-        if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
-          export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
-        fi
+    if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
+      export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
+    fi
+    if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
+      export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
+    fi
 
-        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
-            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
-            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
-                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
-                echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-                echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-            fi
-        fi
-    done
+    if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f3-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_KAFKA_CFG"
+      if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+        kafka_ipc_bootstrap="${!env_var}"
+      fi
+    fi
+
+    if [[ $env_var =~ ^KAFKA_RPC_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f4-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_KAFKA_RPC_CFG"
+      if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+        kafka_rpc_bootstrap="${!env_var}"
+      fi
+    fi
+
+    if [[ $env_var =~ ^KAFKA_SINK_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f4-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_KAFKA_SINK_CFG"
+      if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+        kafka_sink_bootstrap="${!env_var}"
+      fi
+    fi
+
+    if [[ $env_var =~ ^KAFKA_TWIN_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f4-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_KAFKA_TWIN_CFG"
+      if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+        kafka_twin_bootstrap="${!env_var}"
+      fi
+    fi
+
+    if [[ $env_var =~ ^OFFHEAP_SINK_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f4-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_KAFKA_SINK_OFFHEAP_CFG"
+    fi
+
+    if [[ $env_var =~ ^GRPC_IPC_ ]]; then
+      ipc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f3-)")
+      updateConfig "$ipc_name" "${!env_var}" "$IPC_GRPC_CFG"
+      if [[ "$ipc_name" == "host" ]]; then
+        grpc_host="${!env_var}"
+      fi
+    fi
+
+    if [[ $env_var =~ ^DOMINION_GRPC_ ]]; then
+      grpc_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f3-)")
+      if [[ "$grpc_name" == "client.secret" ]]; then
+        grpc_name="clientSecret"
+      fi
+      updateConfig "$grpc_name" "${!env_var}" "$DOMINION_GRPC_CFG"
+    fi
+
+    if [[ $env_var =~ ^SYSLOG_CFG_ ]]; then
+      cfg_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f3-)")
+      updateConfig "$cfg_name" "${!env_var}" "$SYSLOG_CFG"
+    fi
+
+    if [[ $env_var =~ ^TRAPD_CFG_ ]]; then
+      cfg_name=$(mapKeyLowerDot "$(echo "$env_var" | cut -d_ -f3-)")
+      updateConfig "$cfg_name" "${!env_var}" "$TRAPD_CFG"
+    fi
+
+    if [[ $env_var =~ ^KARAF_SSH_ ]]; then
+      cfg_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:lower:]' '[:upper:]')
+      if [[ "$cfg_name" == "PORT" ]]; then
+        updateConfig "sshPort" "${!env_var}" "$KARAF_SHELL_CFG"
+      elif [[ "$cfg_name" == "HOST" ]]; then
+        updateConfig "sshHost" "${!env_var}" "$KARAF_SHELL_CFG"
+      fi
+    fi
+
+    if [[ $env_var =~ ^KARAF_RMI_REGISTRY_ ]]; then
+      cfg_name=$(echo "$env_var" | cut -d_ -f4- | tr '[:lower:]' '[:upper:]')
+      if [[ "$cfg_name" == "PORT" ]]; then
+        updateConfig "rmiRegistryPort" "${!env_var}" "$KARAF_MGMT_CFG"
+      elif [[ "$cfg_name" == "HOST" ]]; then
+        updateConfig "rmiRegistryHost" "${!env_var}" "$KARAF_MGMT_CFG"
+      fi
+    fi
+
+    if [[ $env_var =~ ^KARAF_RMI_SERVER_ ]]; then
+      cfg_name=$(echo "$env_var" | cut -d_ -f4- | tr '[:lower:]' '[:upper:]')
+      if [[ "$cfg_name" == "PORT" ]]; then
+        updateConfig "rmiServerPort" "${!env_var}" "$KARAF_MGMT_CFG"
+      elif [[ "$cfg_name" == "HOST" ]]; then
+        updateConfig "rmiServerHost" "${!env_var}" "$KARAF_MGMT_CFG"
+      fi
+    fi
+
+    if [[ $env_var =~ ^JETTY_WEB_ ]]; then
+      cfg_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:lower:]' '[:upper:]')
+      if [[ "$cfg_name" == "PORT" ]]; then
+        updateConfig "org.osgi.service.http.port" "${!env_var}" "$JETTY_WEB_CFG"
+      elif [[ "$cfg_name" == "HOST" ]]; then
+        updateConfig "org.ops4j.pax.web.listening.addresses" "${!env_var}" "$JETTY_WEB_CFG"
+      fi
+    fi
+
+    if [[ $env_var == "OPENNMS_INSTANCE_ID" ]]; then
+      updateConfig "org.opennms.instance.id" "${!env_var}" "$INSTANCE_ID_CFG"
+    fi
+
+    if [[ $env_var == "SCV_PROVIDER" ]]; then
+      if [[ "${!env_var}" == "dominion" ]]; then
+        writeBootFile "$DOMINION_SCV_BOOT" "!scv-jceks-impl" "dominion-secure-credentials-vault"
+      else
+        rm -f "$DOMINION_SCV_BOOT"
+      fi
+    fi
+
+    if [[ $env_var == "JAEGER_AGENT_HOST" || $env_var == "JAEGER_ENDPOINT" ]]; then
+      jaeger_enabled="true"
+    fi
+  done
+
+  writeSystemProperties
+  writeProcessEnv
+  writeServerCerts
+  writePromJmxConfig
+  writeTelemetryFeatureXml
+
+  if [ -n "$kafka_ipc_bootstrap" ]; then
+    writeBootFile "$KAFKA_IPC_BOOT" "!minion-jms" "!opennms-core-ipc-jms" "opennms-core-ipc-kafka"
+  else
+    rm -f "$KAFKA_IPC_BOOT"
+  fi
+
+  if [ -n "$kafka_rpc_bootstrap" ]; then
+    writeBootFile "$KAFKA_RPC_BOOT" "!opennms-core-ipc-rpc-jms" "opennms-core-ipc-rpc-kafka"
+  else
+    rm -f "$KAFKA_RPC_BOOT"
+  fi
+
+  if [ -n "$kafka_sink_bootstrap" ]; then
+    writeBootFile "$KAFKA_SINK_BOOT" "!opennms-core-ipc-sink-camel" "opennms-core-ipc-sink-kafka"
+  else
+    rm -f "$KAFKA_SINK_BOOT"
+  fi
+
+  if [ -n "$kafka_twin_bootstrap" ]; then
+    writeBootFile "$KAFKA_TWIN_BOOT" "!opennms-core-ipc-twin-jms" "opennms-core-ipc-twin-kafka"
+  else
+    rm -f "$KAFKA_TWIN_BOOT"
+  fi
+
+  if [ -n "$kafka_rpc_bootstrap" ] && [ -n "$kafka_sink_bootstrap" ]; then
+    writeBootFile "$DISABLE_JMS_BOOT" "!minion-jms" "!opennms-core-ipc-jms"
+  else
+    rm -f "$DISABLE_JMS_BOOT"
+  fi
+
+  if [ -n "$grpc_host" ]; then
+    writeBootFile "$GRPC_BOOT" "!opennms-core-ipc-jms" "!minion-jms" "opennms-core-ipc-grpc-client"
+  else
+    rm -f "$GRPC_BOOT"
+  fi
+
+  if [ -n "$jaeger_enabled" ]; then
+    writeBootFile "$JAEGER_BOOT" "opennms-core-tracing-jaeger"
+  else
+    rm -f "$JAEGER_BOOT"
+  fi
 }
 
 initConfig() {
@@ -186,15 +565,6 @@ applyOverlayConfig() {
   fi
 }
 
-applyConfd() {
-  if [ -f "${CONFD_KEY_STORE}" ]; then
-    echo "Found a configuration key store, applying configuration via confd."
-    runConfd
-  else
-    echo "No configuration key store present, skipping confd configuration."
-  fi
-}
-
 applyOpennmsPropertiesD() {
   find "${MINION_HOME}/etc/opennms.properties.d" -name '*.properties' | while IFS= read -r filename; do
     echo "appending to custom.system.properties: $filename"
@@ -209,24 +579,11 @@ start() {
     exec ./karaf server
 }
 
-runConfd() {
-  # Create any directories that confd might write to
-  while IFS= read -r dir; do
-    local dirToCreate="$MINION_HOME"/"$dir"
-    echo "Creating $dirToCreate so confd can write to it"
-    mkdir -p "$dirToCreate"
-  done < "$CONFD_CONFIG_DIR"/directories
-
-  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
-}
-
 # Order of precedence is (later overwrites former):
 # 1. Config set via environment variable
-# 2. Config set via overlayed keystore (confd)
-# 3. Config set via direct file overlay
+# 2. Config set via direct file overlay
 configure() {
   initConfig
-  applyConfd
   applyOpennmsPropertiesD
   applyOverlayConfig
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
