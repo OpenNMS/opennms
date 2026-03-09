@@ -72,6 +72,7 @@
     <module>daemon-loader-syslogd</module>
     <module>daemon-loader-ticketer</module>
     <module>daemon-loader-trapd</module>
+    <module>daemon-loader-enlinkd</module>
     <module>event-forwarder-kafka</module>
     <module>fileutils</module>
     <module>tsid</module>
