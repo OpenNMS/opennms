@@ -2275,6 +2275,37 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-eventtranslator/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Enlinkd: loads EnhancedLinkd daemon without Manager/Eventd.
+         Discovers network topology (LLDP, CDP, OSPF, IS-IS, Bridge) via SNMP. -->
+    <feature name="opennms-daemon-enlinkd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Enlinkd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.daemon/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.cdp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ipnettomedia/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.isis/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.lldp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ospf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.discovers.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.cdp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.isis/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.lldp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.nodes/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.updaters.ospf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.config/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-snmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
+    </feature>
+
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
          Receives events from Kafka and persists alarms to PostgreSQL.
          NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->
