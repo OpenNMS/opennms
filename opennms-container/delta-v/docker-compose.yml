@@ -102,6 +102,9 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=1
+        -Dorg.opennms.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.kafka.fault.topic=opennms-fault-events
+        -Dorg.opennms.kafka.consumer.group=opennms-core-consumer
     volumes:
       - opennms-etc:/opt/opennms/etc
       - opennms-data:/opennms-data
