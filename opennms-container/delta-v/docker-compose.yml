@@ -69,7 +69,9 @@ services:
       CORE_SERVICE_RTCD_ENABLED: "false"
       CORE_SERVICE_PASSIVESTATUSD_ENABLED: "false"
       CORE_SERVICE_NOTIFD_ENABLED: "false"
-      CORE_SERVICE_DISCOVERY_ENABLED: "false"
+      # Discovery temporarily enabled on core for integration testing
+      # (standalone Discovery container works but core lacks Kafka event consumer)
+      CORE_SERVICE_DISCOVERY_ENABLED: "true"
       CORE_SERVICE_TRAPD_ENABLED: "false"
       CORE_SERVICE_SYSLOGD_ENABLED: "false"
       CORE_SERVICE_TICKETER_ENABLED: "false"
@@ -105,6 +107,7 @@ services:
       - opennms-data:/opennms-data
       - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
       - ./core-overlay/etc/opennms.properties.d/delta-v.properties:/opt/opennms-etc-overlay/opennms.properties.d/delta-v.properties:ro
+      - ./core-overlay/etc/discovery-configuration.xml:/opt/opennms-etc-overlay/discovery-configuration.xml:ro
     ports:
       - "8101:8101"
       - "61616:61616"
@@ -198,8 +201,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
     volumes:
-      - pollerd-data:/opt/daemon/data
-      - ./pollerd-daemon-overlay/etc:/opt/daemon-etc-overlay:ro
+      - pollerd-data:/opt/sentinel/data
+      - ./pollerd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
     ports:
       - "8103:8181"
     healthcheck:
@@ -229,8 +232,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=5
     volumes:
-      - collectd-data:/opt/daemon/data
-      - ./collectd-daemon-overlay/etc:/opt/daemon-etc-overlay:ro
+      - collectd-data:/opt/sentinel/data
+      - ./collectd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
     ports:
       - "8104:8181"
     healthcheck:
@@ -260,8 +263,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=6
     volumes:
-      - rtcd-data:/opt/daemon/data
-      - ./rtcd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - rtcd-data:/opt/sentinel/data
+      - ./rtcd-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -288,8 +291,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=7
     volumes:
-      - passivestatusd-data:/opt/daemon/data
-      - ./passivestatusd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - passivestatusd-data:/opt/sentinel/data
+      - ./passivestatusd-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -316,8 +319,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=8
     volumes:
-      - notifd-data:/opt/daemon/data
-      - ./notifd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - notifd-data:/opt/sentinel/data
+      - ./notifd-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -344,8 +347,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=9
     volumes:
-      - discovery-data:/opt/daemon/data
-      - ./discovery-overlay/etc:/opt/daemon-etc-overlay:ro
+      - discovery-data:/opt/sentinel/data
+      - ./discovery-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -372,8 +375,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=10
     volumes:
-      - trapd-data:/opt/daemon/data
-      - ./trapd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - trapd-data:/opt/sentinel/data
+      - ./trapd-overlay/etc:/opt/sentinel-etc-overlay:ro
     ports:
       - "1162:10162/udp"
     healthcheck:
@@ -402,8 +405,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
     volumes:
-      - syslogd-data:/opt/daemon/data
-      - ./syslogd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - syslogd-data:/opt/sentinel/data
+      - ./syslogd-overlay/etc:/opt/sentinel-etc-overlay:ro
     ports:
       - "10514:10514/udp"
     healthcheck:
@@ -432,8 +435,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=12
     volumes:
-      - ticketer-data:/opt/daemon/data
-      - ./ticketer-overlay/etc:/opt/daemon-etc-overlay:ro
+      - ticketer-data:/opt/sentinel/data
+      - ./ticketer-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -460,8 +463,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=13
     volumes:
-      - eventtranslator-data:/opt/daemon/data
-      - ./eventtranslator-overlay/etc:/opt/daemon-etc-overlay:ro
+      - eventtranslator-data:/opt/sentinel/data
+      - ./eventtranslator-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -488,8 +491,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=14
     volumes:
-      - enlinkd-data:/opt/daemon/data
-      - ./enlinkd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - enlinkd-data:/opt/sentinel/data
+      - ./enlinkd-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -516,8 +519,8 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=15
     volumes:
-      - scriptd-data:/opt/daemon/data
-      - ./scriptd-overlay/etc:/opt/daemon-etc-overlay:ro
+      - scriptd-data:/opt/sentinel/data
+      - ./scriptd-overlay/etc:/opt/sentinel-etc-overlay:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
