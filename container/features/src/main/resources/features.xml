@@ -1149,8 +1149,11 @@
         <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
-        <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
+        <!-- serviceregistry MUST start before spring-extender so the extender's
+             initial bundle scan finds it and creates its Spring context (which
+             registers ServiceRegistry as an OSGi service). -->
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.serviceregistry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
     <feature name="opennms-flows" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Features :: Flows :: Feature Definition">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
