@@ -115,8 +115,9 @@ services:
       - ./core-overlay/etc/discovery-configuration.xml:/opt/opennms-etc-overlay/discovery-configuration.xml:ro
       # Dev overlay: mount updated JARs for event architecture changes
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
-      - ../../core/messagebus-api/target/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
-      - ../../core/messagebus-jms/target/org.opennms.core.messagebus.jms-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.core.messagebus.jms-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-provision/opennms-provisiond/target/opennms-provisiond-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/opennms-provisiond-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-services/target/opennms-services-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/opennms-services-36.0.0-SNAPSHOT.jar:ro
+      - ../../features/discovery/target/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8101:8101"
       - "61616:61616"
@@ -358,6 +359,7 @@ services:
     volumes:
       - discovery-data:/opt/sentinel/data
       - ./discovery-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s

@@ -5,7 +5,7 @@
     retries="2"
     timeout="3000">
 
-    <!-- Discover the Docker host via macOS host.docker.internal -->
-    <specific retries="2" timeout="3000" foreign-source="delta-v-hosts">host.docker.internal</specific>
+    <!-- Discover the postgres container (known to be reachable within Docker network) -->
+    <specific retries="2" timeout="3000" foreign-source="delta-v-hosts">postgres</specific>
 
 </discovery-configuration>
