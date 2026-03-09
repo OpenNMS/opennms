@@ -32,9 +32,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
-import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -58,17 +55,10 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class PollerEventProcessor implements EventListener, MessageHandler {
+final class PollerEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(PollerEventProcessor.class);
 
-    private static final String MSG_TYPE_SUSPEND_POLLING = "suspendPollingService";
-    private static final String MSG_TYPE_RESUME_POLLING = "resumePollingService";
-    private static final String MSG_TYPE_SCHEDOUTAGES_CHANGED = "schedOutagesChanged";
-    private static final String MSG_TYPE_THRESHOLDCONFIG_CHANGED = "thresholdConfigChange";
-    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
-
     private final Poller m_poller;
-    private final MessageBus m_messageBus;
 
     /**
      * Create message selector to set to the subscription
@@ -161,20 +151,6 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
 
         // Subscribe to eventd for domain events
         getEventManager().addEventListener(this, ueiList);
-
-        // Subscribe to MessageBus for IPC coordination events
-        if (m_messageBus != null) {
-            m_messageBus.subscribe(List.of(
-                    MSG_TYPE_SUSPEND_POLLING,
-                    MSG_TYPE_RESUME_POLLING,
-                    MSG_TYPE_SCHEDOUTAGES_CHANGED,
-                    MSG_TYPE_THRESHOLDCONFIG_CHANGED,
-                    MSG_TYPE_RELOAD_DAEMON_CONFIG
-            ), this);
-            LOG.info("PollerEventProcessor subscribed to MessageBus for IPC events");
-        } else {
-            LOG.warn("MessageBus not available — PollerEventProcessor will not receive IPC events via MessageBus");
-        }
     }
 
     /**
@@ -511,7 +487,6 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
      */
     PollerEventProcessor(Poller poller) {
         m_poller = poller;
-        m_messageBus = poller.getMessageBus();
 
         createMessageSelectorAndSubscribe();
 
@@ -519,13 +494,10 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
     }
 
     /**
-     * Unsubscribe from eventd and MessageBus
+     * Unsubscribe from eventd
      */
     public void close() {
         getEventManager().removeEventListener(this);
-        if (m_messageBus != null) {
-            m_messageBus.unsubscribe(this);
-        }
     }
 
     private EventIpcManager getEventManager() {
@@ -608,100 +580,6 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
 
     } // end onEvent()
 
-    // --- MessageHandler interface ---
-
-    @Override
-    public void onMessage(IpcMessage message) {
-        LOG.debug("PollerEventProcessor: received IPC message, type={}", message.getType());
-        switch (message.getType()) {
-            case MSG_TYPE_SUSPEND_POLLING:
-                handleSuspendPolling(message);
-                break;
-            case MSG_TYPE_RESUME_POLLING:
-                handleResumePolling(message);
-                break;
-            case MSG_TYPE_SCHEDOUTAGES_CHANGED:
-                LOG.info("Reloading poller config factory and polloutages config factory");
-                scheduledOutagesChangeHandler();
-                break;
-            case MSG_TYPE_THRESHOLDCONFIG_CHANGED:
-                LOG.info("Threshold configuration changed notification received");
-                break;
-            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
-                handleReloadDaemonConfig(message);
-                break;
-            default:
-                LOG.warn("Unexpected IPC message type: {}", message.getType());
-        }
-    }
-
-    private void handleSuspendPolling(IpcMessage message) {
-        Long nodeId = message.getNodeId();
-        String ipAddr = message.getInterfaceAddress();
-        String svcName = message.getParameter("service");
-        if (nodeId == null || ipAddr == null || svcName == null) {
-            LOG.warn("suspendPollingService: missing required parameters (nodeId={}, interface={}, service={})",
-                    nodeId, ipAddr, svcName);
-            return;
-        }
-        PollableService svc = getNetwork().getService(nodeId.intValue(), addr(ipAddr), svcName);
-        if (svc != null) {
-            svc.delete();
-        }
-    }
-
-    private void handleResumePolling(IpcMessage message) {
-        Long nodeId = message.getNodeId();
-        String ipAddr = message.getInterfaceAddress();
-        String svcName = message.getParameter("service");
-        if (nodeId == null || ipAddr == null || svcName == null) {
-            LOG.warn("resumePollingService: missing required parameters (nodeId={}, interface={}, service={})",
-                    nodeId, ipAddr, svcName);
-            return;
-        }
-        String nodeLabel = message.getParameter("nodeLabel");
-        try {
-            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
-        } catch (final Exception e) {
-            LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
-        }
-        String nodeLocation = null;
-        try {
-            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
-        } catch (final Exception e) {
-            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
-        }
-        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
-        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName, pnode);
-    }
-
-    private void handleReloadDaemonConfig(IpcMessage message) {
-        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
-        if (!"Pollerd".equalsIgnoreCase(targetDaemon)) {
-            return;
-        }
-        LOG.info("handleReloadDaemonConfig: reloading poller configuration");
-        final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-        EventBuilder ebldr = null;
-        try {
-            getPollerConfig().update();
-            rescheduleAllServices();
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Pollerd");
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Pollerd");
-            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-        } catch (Throwable e) {
-            LOG.error("handleReloadDaemonConfig: Error reloading/processing poller configuration: {}", e.getMessage(), e);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, "Pollerd");
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Pollerd");
-            ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
-            ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
-        } finally {
-            if (ebldr != null) {
-                getEventManager().sendNow(ebldr.getEvent());
-            }
-        }
-    }
-
     private void serviceReschedule(IEvent event, boolean rescheduleExisting)   {
         final Long nodeId = event.getNodeid();
 
@@ -746,28 +624,6 @@ final class PollerEventProcessor implements EventListener, MessageHandler {
             }
 
             serviceReschedule(nodeId, nodeLabel, nodeLocation, event, true);
-        }
-    }
-
-    private void rescheduleAllServices() {
-        LOG.info("Poller configuration has been changed (via IPC), rescheduling services.");
-        getPollerConfig().rebuildPackageIpListMap();
-        for (Long nodeId : getNetwork().getNodeIds()) {
-            String nodeLabel = null;
-            try {
-                nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
-            } catch (final Exception e) {
-                LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
-            }
-
-            String nodeLocation = null;
-            try {
-                nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
-            } catch (final Exception e) {
-                LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
-            }
-
-            serviceReschedule(nodeId, nodeLabel, nodeLocation, null, true);
         }
     }
 

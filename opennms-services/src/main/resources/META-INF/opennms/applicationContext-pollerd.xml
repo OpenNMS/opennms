@@ -21,9 +21,6 @@
 
     <bean name="pollerQueryManager" class="org.opennms.netmgt.poller.QueryManagerDaoImpl"/>
 
-    <!-- MessageBus for IPC events (injected via OSGi, optional) -->
-    <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
-
     <bean name="tsidFactory" class="org.opennms.core.tsid.TsidFactory">
       <constructor-arg value="0"/>
     </bean>
@@ -35,7 +32,6 @@
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="queryManager" ref="pollerQueryManager" />
       <property name="locationAwarePingClient" ref="locationAwarePingClient" />
-      <property name="messageBus" ref="messageBus" />
       <property name="tsidFactory" ref="tsidFactory" />
     </bean>
 
@@ -47,7 +43,6 @@
       <property name="network" ref="pollableNetwork" />
       <property name="pollerConfig" ref="pollerConfig" />
       <property name="eventIpcManager" ref="eventIpcManager"/>
-      <property name="messageBus" ref="messageBus"/>
     </bean>
     
 </beans>

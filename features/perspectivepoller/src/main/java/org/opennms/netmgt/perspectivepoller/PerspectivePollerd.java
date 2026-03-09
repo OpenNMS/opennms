@@ -32,9 +32,7 @@ import java.util.Optional;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.core.tracing.api.TracerRegistry;
-import org.opennms.netmgt.eventd.bridge.MessageBusEventListenerBridge;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.SystemInfoUtils;
@@ -122,13 +120,11 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
     private final TracerRegistry tracerRegistry;
 
     private final PerspectiveServiceTracker tracker;
-    private final MessageBus messageBus;
 
     @VisibleForTesting
     Scheduler scheduler;
 
     private AutoCloseable trackerSession;
-    private MessageBusEventListenerBridge trackerBridge;
 
     @Autowired
     public PerspectivePollerd(final SessionUtils sessionUtils,
@@ -144,8 +140,7 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
                               final EventDao eventDao,
                               final OutageDao outageDao,
                               final TracerRegistry tracerRegistry,
-                              final PerspectiveServiceTracker tracker,
-                              final MessageBus messageBus) {
+                              final PerspectiveServiceTracker tracker) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -163,7 +158,6 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
 
         this.tracker = Objects.requireNonNull(tracker);
-        this.messageBus = Objects.requireNonNull(messageBus);
     }
 
     @Override
@@ -177,20 +171,11 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
             }
         });
 
-        // Bridge internal UEIs from MessageBus to the tracker's @EventHandler methods
-        this.trackerBridge = new MessageBusEventListenerBridge(this.messageBus);
-        this.trackerBridge.register(this.tracker);
-
         this.trackerSession = this.tracker.track(this);
     }
 
     @Override
     public void destroy() throws Exception {
-        if (this.trackerBridge != null) {
-            this.trackerBridge.unregister(this.tracker);
-            this.trackerBridge = null;
-        }
-
         this.trackerSession.close();
         this.trackerSession = null;
 

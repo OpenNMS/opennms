@@ -19,9 +19,6 @@
     <context:annotation-config />
     <tx:annotation-driven/>
 
-    <!-- MessageBus for IPC events (injected via OSGi, optional) -->
-    <onmsgi:reference id="messageBus" interface="org.opennms.core.messagebus.MessageBus"/>
-
     <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
       <property name="eventIpcManager" ref="eventIpcManager"/>
     </bean>

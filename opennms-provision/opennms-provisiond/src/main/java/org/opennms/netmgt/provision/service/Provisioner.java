@@ -42,9 +42,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
-import org.opennms.core.messagebus.MessageHandler;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
@@ -93,14 +90,11 @@ import io.opentracing.Tracer;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 @EventListener(name="Provisiond:EventListener", logPrefix="provisiond")
-public class Provisioner implements SpringServiceDaemon, MessageHandler {
+public class Provisioner implements SpringServiceDaemon {
     private static final String SCHEDULE_RESCAN_FOR_UPDATED_NODES = "org.opennms.provisiond.scheduleRescanForUpdatedNodes";
     private static final String SCHEDULE_RESCAN_FOR_EXISTING_NODES = "org.opennms.provisiond.scheduleRescanForExistingNodes";
 
     private static final Logger LOG = LoggerFactory.getLogger(Provisioner.class);
-
-    private static final String MSG_TYPE_RELOAD_IMPORT = "importer/reloadImport";
-    private static final String MSG_TYPE_RELOAD_DAEMON_CONFIG = "reloadDaemonConfig";
 
     /** Constant <code>NAME="Provisiond"</code> */
     public static final String NAME = "Provisiond";
@@ -112,8 +106,6 @@ public class Provisioner implements SpringServiceDaemon, MessageHandler {
     private ScheduledExecutorService m_scheduledExecutor;
     private final Map<Integer, ScheduledFuture<?>> m_scheduledNodes = new ConcurrentHashMap<Integer, ScheduledFuture<?>>();
     private volatile EventForwarder m_eventForwarder;
-    @Autowired(required = false)
-    private MessageBus m_messageBus;
     private SnmpAgentConfigFactory m_agentConfigFactory;
 
     private final ThreadFactory newSuspectThreadFactory = new ThreadFactoryBuilder()
@@ -257,16 +249,6 @@ public class Provisioner implements SpringServiceDaemon, MessageHandler {
         Tracer tracer = m_tracerRegistry.getTracer();
         m_provisionService.setTracer(tracer);
 
-        // Subscribe to MessageBus for IPC coordination events
-        if (m_messageBus != null) {
-            m_messageBus.subscribe(List.of(
-                    MSG_TYPE_RELOAD_IMPORT,
-                    MSG_TYPE_RELOAD_DAEMON_CONFIG
-            ), this);
-            LOG.info("Provisiond subscribed to MessageBus for IPC events");
-        } else {
-            LOG.warn("MessageBus not available — Provisiond will not receive IPC events via MessageBus");
-        }
     }
 
     /**
@@ -276,81 +258,10 @@ public class Provisioner implements SpringServiceDaemon, MessageHandler {
      */
     @Override
     public void destroy() throws Exception {
-        if (m_messageBus != null) {
-            m_messageBus.unsubscribe(this);
-        }
         m_importSchedule.stop();
         m_scheduledExecutor.shutdown();
         m_newSuspectExecutor.shutdown();
         monitorHolder.shutdown();
-    }
-
-    // --- MessageHandler interface ---
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public void onMessage(IpcMessage message) {
-        LOG.debug("Provisiond received IPC message, type={}", message.getType());
-        switch (message.getType()) {
-            case MSG_TYPE_RELOAD_IMPORT:
-                handleReloadImportIpc(message);
-                break;
-            case MSG_TYPE_RELOAD_DAEMON_CONFIG:
-                handleReloadDaemonConfigIpc(message);
-                break;
-            default:
-                LOG.warn("Unexpected IPC message type: {}", message.getType());
-        }
-    }
-
-    private void handleReloadImportIpc(IpcMessage message) {
-        String url = message.getParameter(EventConstants.PARM_URL);
-        String rescanExisting = message.getParameter(EventConstants.PARM_IMPORT_RESCAN_EXISTING);
-        if (rescanExisting == null) {
-            rescanExisting = System.getProperty(SCHEDULE_RESCAN_FOR_UPDATED_NODES, "true");
-        }
-        ProvisionMonitor monitor;
-        try {
-            monitor = monitorHolder.createMonitor(url);
-        } catch (java.util.concurrent.ExecutionException e) {
-            LOG.error("handleReloadImportIpc: failed to create monitor for url={}", url, e);
-            return;
-        }
-        monitor.start();
-        if (url != null) {
-            doImport(url, rescanExisting, monitor);
-        } else {
-            final String msg = "reloadImport IPC message requires 'url' parameter";
-            LOG.error("handleReloadImportIpc: {}", msg);
-            send(importFailedEvent(msg, url, rescanExisting), monitor);
-        }
-    }
-
-    private void handleReloadDaemonConfigIpc(IpcMessage message) {
-        String targetDaemon = message.getParameter(EventConstants.PARM_DAEMON_NAME);
-        if (!"Provisiond".equalsIgnoreCase(targetDaemon)) {
-            return;
-        }
-        LOG.info("handleReloadDaemonConfigIpc: reloading configuration...");
-        EventBuilder ebldr = null;
-        try {
-            m_importSchedule.rebuildImportSchedule();
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, NAME);
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-        } catch (Throwable exception) {
-            LOG.error("handleReloadDaemonConfigIpc: Error reloading configuration", exception);
-            ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, NAME);
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-            ebldr.addParam(EventConstants.PARM_REASON, exception.getLocalizedMessage().substring(1, 128));
-        }
-        if (ebldr != null) {
-            m_eventForwarder.sendNow(ebldr.getEvent());
-        }
-        LOG.info("handleReloadDaemonConfigIpc: configuration reloaded.");
     }
 
     /**

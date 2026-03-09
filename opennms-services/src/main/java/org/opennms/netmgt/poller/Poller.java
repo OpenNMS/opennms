@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -97,9 +96,6 @@ public class Poller extends AbstractServiceDaemon {
     private PollerConfig m_pollerConfig;
 
     private EventIpcManager m_eventMgr;
-
-    @Autowired(required = false)
-    private MessageBus m_messageBus;
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;
@@ -172,14 +168,6 @@ public class Poller extends AbstractServiceDaemon {
      */
     public EventIpcManager getEventManager() {
         return m_eventMgr;
-    }
-
-    public MessageBus getMessageBus() {
-        return m_messageBus;
-    }
-
-    public void setMessageBus(MessageBus messageBus) {
-        m_messageBus = messageBus;
     }
 
     /**

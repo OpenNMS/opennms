@@ -39,9 +39,6 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.opennms.core.messagebus.IpcMessage;
-import org.opennms.core.messagebus.MessageBus;
 import org.opennms.core.tsid.TsidFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -56,7 +53,6 @@ public class DefaultPollContextTsidTest {
     private DefaultPollContext pollContext;
     private EventIpcManager eventManager;
     private QueryManager queryManager;
-    private MessageBus messageBus;
     private TsidFactory tsidFactory;
     private PollerConfig pollerConfig;
 
@@ -64,7 +60,6 @@ public class DefaultPollContextTsidTest {
     public void setUp() throws Exception {
         eventManager = mock(EventIpcManager.class);
         queryManager = mock(QueryManager.class);
-        messageBus = mock(MessageBus.class);
         tsidFactory = new TsidFactory(0);
         pollerConfig = mock(PollerConfig.class);
 
@@ -74,7 +69,6 @@ public class DefaultPollContextTsidTest {
         pollContext = new DefaultPollContext();
         pollContext.setEventManager(eventManager);
         pollContext.setQueryManager(queryManager);
-        pollContext.setMessageBus(messageBus);
         pollContext.setTsidFactory(tsidFactory);
         pollContext.setPollerConfig(pollerConfig);
         pollContext.setName("TestPoller");
@@ -140,34 +134,6 @@ public class DefaultPollContextTsidTest {
     }
 
     @Test
-    public void openOutageShouldPublishMessageBusNotification() {
-        when(queryManager.openOutagePendingLostEventId(anyInt(), anyString(), anyString(), any(Date.class)))
-                .thenReturn(42);
-
-        PollableService svc = mock(PollableService.class);
-        when(svc.getNodeId()).thenReturn(1);
-        when(svc.getIpAddr()).thenReturn("192.168.1.1");
-        when(svc.getSvcName()).thenReturn("ICMP");
-        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
-
-        PollEvent svcLostEvent = pollContext.sendEvent(pollContext.createEvent(
-                EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
-                1, InetAddress.getLoopbackAddress(), "ICMP",
-                new Date(), "test"));
-
-        pollContext.openOutage(svc, svcLostEvent);
-
-        ArgumentCaptor<IpcMessage> captor = ArgumentCaptor.forClass(IpcMessage.class);
-        verify(messageBus).publish(captor.capture());
-
-        IpcMessage msg = captor.getValue();
-        assertEquals(DefaultPollContext.MESSAGE_TYPE_OUTAGE_CREATED, msg.getType());
-        assertEquals(Long.valueOf(1L), msg.getNodeId());
-        assertEquals("192.168.1.1", msg.getInterfaceAddress());
-        assertEquals("ICMP", msg.getParameter("service"));
-    }
-
-    @Test
     public void resolveOutageShouldSetEventIdImmediately() {
         when(queryManager.resolveOutagePendingRegainEventId(anyInt(), anyString(), anyString(), any(Date.class)))
                 .thenReturn(42);
@@ -208,56 +174,5 @@ public class DefaultPollContextTsidTest {
         pollContext.resolveOutage(svc, svcRegainEvent);
 
         verify(queryManager, never()).updateResolvedOutageWithEventId(anyInt(), anyLong());
-        verify(messageBus, never()).publish(any(IpcMessage.class));
-    }
-
-    @Test
-    public void resolveOutageShouldPublishMessageBusNotification() {
-        when(queryManager.resolveOutagePendingRegainEventId(anyInt(), anyString(), anyString(), any(Date.class)))
-                .thenReturn(42);
-
-        PollableService svc = mock(PollableService.class);
-        when(svc.getNodeId()).thenReturn(1);
-        when(svc.getIpAddr()).thenReturn("192.168.1.1");
-        when(svc.getSvcName()).thenReturn("ICMP");
-        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
-
-        PollEvent svcRegainEvent = pollContext.sendEvent(pollContext.createEvent(
-                EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
-                1, InetAddress.getLoopbackAddress(), "ICMP",
-                new Date(), null));
-
-        pollContext.resolveOutage(svc, svcRegainEvent);
-
-        ArgumentCaptor<IpcMessage> captor = ArgumentCaptor.forClass(IpcMessage.class);
-        verify(messageBus).publish(captor.capture());
-
-        IpcMessage msg = captor.getValue();
-        assertEquals(DefaultPollContext.MESSAGE_TYPE_OUTAGE_RESOLVED, msg.getType());
-        assertEquals(Long.valueOf(1L), msg.getNodeId());
-        assertEquals("ICMP", msg.getParameter("service"));
-    }
-
-    @Test
-    public void openOutageShouldWorkWithoutMessageBus() {
-        pollContext.setMessageBus(null);
-
-        when(queryManager.openOutagePendingLostEventId(anyInt(), anyString(), anyString(), any(Date.class)))
-                .thenReturn(42);
-
-        PollableService svc = mock(PollableService.class);
-        when(svc.getNodeId()).thenReturn(1);
-        when(svc.getIpAddr()).thenReturn("192.168.1.1");
-        when(svc.getSvcName()).thenReturn("ICMP");
-        when(svc.getAddress()).thenReturn(InetAddress.getLoopbackAddress());
-
-        PollEvent svcLostEvent = pollContext.sendEvent(pollContext.createEvent(
-                EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
-                1, InetAddress.getLoopbackAddress(), "ICMP",
-                new Date(), "test"));
-
-        pollContext.openOutage(svc, svcLostEvent);
-
-        verify(queryManager).updateOpenOutageWithEventId(eq(42), anyLong());
     }
 }
