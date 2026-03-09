@@ -2071,17 +2071,14 @@
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
 
-    <!-- EventBus redesign: TSID, MessageBus, Kafka fault event consumer -->
+    <!-- EventBus redesign: TSID, MessageBus API (for Import-Package resolution), Kafka fault event consumer -->
     <feature name="opennms-core-tsid" version="${project.version}" description="OpenNMS :: Core :: TSID">
         <bundle>mvn:org.opennms/org.opennms.core.tsid/${project.version}</bundle>
     </feature>
+    <!-- MessageBus API only — provides org.opennms.core.messagebus package for OSGi resolution.
+         JMS implementation removed; daemon containers use Kafka for all event transport. -->
     <feature name="opennms-core-messagebus-api" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: API">
         <bundle>mvn:org.opennms/org.opennms.core.messagebus.api/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-core-messagebus-jms" version="${project.version}" description="OpenNMS :: Core :: MessageBus :: JMS">
-        <feature>opennms-core-messagebus-api</feature>
-        <feature>activemq-client</feature>
-        <bundle>mvn:org.opennms/org.opennms.core.messagebus.jms/${project.version}</bundle>
     </feature>
     <feature name="opennms-events-kafka-consumer" version="${project.version}" description="OpenNMS :: Events :: Kafka Consumer">
         <feature>opennms-kafka</feature>
@@ -2094,8 +2091,10 @@
         <feature>opennms-events-api</feature>
         <feature>opennms-events-kafka-consumer</feature>
         <feature>opennms-events-sink-dispatcher</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <feature>opennms-core-tsid</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-config</feature>
         <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.event-forwarder-kafka/${project.version}</bundle>

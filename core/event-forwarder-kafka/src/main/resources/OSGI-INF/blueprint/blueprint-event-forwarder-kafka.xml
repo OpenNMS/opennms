@@ -23,19 +23,46 @@
     </cm:property-placeholder>
 
     <!-- ================================================================ -->
+    <!-- OSGi references                                                  -->
+    <!-- ================================================================ -->
+
+    <!-- EventConfEventDao: Hibernate DAO for loading eventconf from DB.
+         Registered as OSGi service by distributed-dao-impl's applicationContext-shared.xml. -->
+    <reference id="eventConfEventDao"
+               interface="org.opennms.netmgt.dao.api.EventConfEventDao"
+               availability="mandatory"/>
+
+    <!-- ================================================================ -->
+    <!-- Eventconf enrichment                                             -->
+    <!-- ================================================================ -->
+
+    <!-- Creates DefaultEventConfDao internally and loads event definitions
+         from database on init. Exposes the populated DAO via getEventConfDao()
+         for producer-side enrichment of events with severity + alarm-data. -->
+    <bean id="eventConfInitializer"
+          class="org.opennms.core.event.forwarder.kafka.EventConfInitializer"
+          init-method="init">
+        <argument ref="eventConfEventDao"/>
+    </bean>
+
+    <!-- ================================================================ -->
     <!-- Beans                                                            -->
     <!-- ================================================================ -->
 
     <!-- KafkaEventForwarder: routes events to Kafka topics (fault + IPC).
          Uses KafkaEventForwarderFactory to avoid Aries Blueprint constructor/factory
          matching issues with cross-bundle interface types and generics.
-         IPC topic name injected via setter. -->
+         EventConfDao injected via setter for eventconf enrichment. -->
     <bean id="kafkaEventForwarder"
           class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarderFactory"
-          factory-method="create">
+          factory-method="create"
+          depends-on="eventConfInitializer">
         <argument value="${bootstrap.servers}"/>
         <argument value="${topic.name}"/>
         <property name="ipcTopicName" value="${ipc.topic.name}"/>
+        <property name="eventConfDao">
+            <bean factory-ref="eventConfInitializer" factory-method="getEventConfDao"/>
+        </property>
     </bean>
 
     <!-- KafkaEventSubscriptionService: consumes events from Kafka topics.

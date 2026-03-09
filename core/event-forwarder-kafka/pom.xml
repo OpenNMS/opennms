@@ -26,6 +26,28 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Config API (EventConfDao interface) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- DAO API (EventConfEventDao interface) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Config (DefaultEventConfDao implementation — available at runtime via Karaf) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- MessageBus API (IPC event routing) -->
         <dependency>
             <groupId>org.opennms</groupId>

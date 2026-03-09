@@ -22,18 +22,27 @@
 package org.opennms.core.event.forwarder.kafka;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.eventd.router.EventClassification;
 import org.opennms.netmgt.eventd.router.EventClassifier;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.ManagedObject;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +62,15 @@ public class KafkaEventForwarder implements EventForwarder {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaEventForwarder.class);
 
+    private static final Pattern PARM_PATTERN = Pattern.compile("%([^%]+)%");
+
     private final EventProcessor eventExpander;
     private final EventProcessor tsidAssigner;
     private final EventClassifier eventClassifier;
     private final KafkaProducer<Long, byte[]> kafkaProducer;
     private final String topicName;
     private volatile String ipcTopicName; // injected via setter; null until configured
+    private volatile EventConfDao eventConfDao; // optional; enriches events with eventconf data
 
     /**
      * @param eventExpander expands events using eventconf; use {@link NoOpEventProcessor}
@@ -94,6 +106,11 @@ public class KafkaEventForwarder implements EventForwarder {
         this.ipcTopicName = ipcTopicName;
     }
 
+    public void setEventConfDao(EventConfDao eventConfDao) {
+        this.eventConfDao = eventConfDao;
+        LOG.info("EventConfDao injected — events will be enriched with eventconf data (severity, alarm-data)");
+    }
+
     @Override
     public void sendNow(Event event) {
         Log log = wrapInLog(event);
@@ -124,6 +141,12 @@ public class KafkaEventForwarder implements EventForwarder {
             LOG.error("EventExpander failed, events will not be routed", e);
             return;
         }
+
+        // Apply eventconf enrichment (severity, alarm-data) for events that
+        // don't already have it. In daemon containers the eventExpander is a
+        // NoOpEventProcessor, so this fills the gap that EventExpander/Eventd
+        // would fill in the monolith.
+        enrichWithEventConf(log);
 
         try {
             tsidAssigner.process(log);
@@ -194,5 +217,130 @@ public class KafkaEventForwarder implements EventForwarder {
         Log log = new Log();
         log.addEvent(event);
         return log;
+    }
+
+    // -------- Eventconf enrichment --------
+
+    private void enrichWithEventConf(Log log) {
+        EventConfDao dao = this.eventConfDao;
+        if (dao == null) {
+            return;
+        }
+        if (log.getEvents() == null || log.getEvents().getEventCollection() == null) {
+            return;
+        }
+        for (Event event : log.getEvents().getEventCollection()) {
+            if (event.getAlarmData() != null) {
+                continue; // already enriched (e.g., by Trapd's EventCreator)
+            }
+            try {
+                org.opennms.netmgt.xml.eventconf.Event econf = dao.findByEvent(event);
+                if (econf == null) {
+                    continue;
+                }
+                if (event.getSeverity() == null && econf.getSeverity() != null) {
+                    event.setSeverity(econf.getSeverity());
+                }
+                if (econf.getAlarmData() != null) {
+                    applyAlarmData(event, econf.getAlarmData());
+                    LOG.debug("Enriched event {} with alarm-data from eventconf", event.getUei());
+                }
+            } catch (Exception e) {
+                LOG.warn("Failed to enrich event {} with eventconf: {}", event.getUei(), e.getMessage());
+            }
+        }
+    }
+
+    private static void applyAlarmData(Event event, org.opennms.netmgt.xml.eventconf.AlarmData econfAlarmData) {
+        AlarmData alarmData = new AlarmData();
+        alarmData.setAlarmType(econfAlarmData.getAlarmType());
+        alarmData.setReductionKey(expandParms(econfAlarmData.getReductionKey(), event));
+        alarmData.setAutoClean(econfAlarmData.getAutoClean());
+        alarmData.setX733AlarmType(econfAlarmData.getX733AlarmType());
+        alarmData.setX733ProbableCause(econfAlarmData.getX733ProbableCause());
+        alarmData.setClearKey(expandParms(econfAlarmData.getClearKey(), event));
+
+        List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFieldList = econfAlarmData.getUpdateFields();
+        if (!updateFieldList.isEmpty()) {
+            List<UpdateField> updateFields = new ArrayList<>(updateFieldList.size());
+            for (org.opennms.netmgt.xml.eventconf.UpdateField econfUpdateField : updateFieldList) {
+                UpdateField eventField = new UpdateField();
+                eventField.setFieldName(econfUpdateField.getFieldName());
+                eventField.setUpdateOnReduction(econfUpdateField.getUpdateOnReduction());
+                updateFields.add(eventField);
+            }
+            alarmData.setUpdateField(updateFields);
+        }
+
+        org.opennms.netmgt.xml.eventconf.ManagedObject econfMo = econfAlarmData.getManagedObject();
+        if (econfMo != null) {
+            ManagedObject mo = new ManagedObject();
+            mo.setType(econfMo.getType());
+            alarmData.setManagedObject(mo);
+        }
+
+        event.setAlarmData(alarmData);
+    }
+
+    static String expandParms(String template, Event event) {
+        if (template == null) {
+            return null;
+        }
+        Matcher m = PARM_PATTERN.matcher(template);
+        StringBuilder sb = new StringBuilder();
+        while (m.find()) {
+            String token = m.group(1);
+            String replacement = resolveToken(token, event);
+            m.appendReplacement(sb, Matcher.quoteReplacement(replacement != null ? replacement : ""));
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String resolveToken(String token, Event event) {
+        switch (token) {
+            case "uei":
+                return event.getUei();
+            case "nodeid":
+                return event.getNodeid() != null ? String.valueOf(event.getNodeid()) : "";
+            case "interface":
+                return event.getInterface() != null ? event.getInterface() : "";
+            case "dpname":
+                return event.getDistPoller() != null ? event.getDistPoller() : "";
+            case "severity":
+                return event.getSeverity() != null ? event.getSeverity() : "";
+            case "source":
+                return event.getSource() != null ? event.getSource() : "";
+            default:
+                if (token.startsWith("parm[") && token.endsWith("]")) {
+                    String parmRef = token.substring(5, token.length() - 1);
+                    return resolveParm(parmRef, event);
+                }
+                return "";
+        }
+    }
+
+    private static String resolveParm(String parmRef, Event event) {
+        List<Parm> parms = event.getParmCollection();
+        if (parms == null || parms.isEmpty()) {
+            return "";
+        }
+        if (parmRef.startsWith("#")) {
+            try {
+                int index = Integer.parseInt(parmRef.substring(1)) - 1;
+                if (index >= 0 && index < parms.size()) {
+                    return parms.get(index).getValue().getContent();
+                }
+            } catch (NumberFormatException e) {
+                // fall through
+            }
+            return "";
+        }
+        for (Parm parm : parms) {
+            if (parmRef.equals(parm.getParmName())) {
+                return parm.getValue() != null ? parm.getValue().getContent() : "";
+            }
+        }
+        return "";
     }
 }

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
@@ -36,11 +37,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.eventd.router.EventClassifier;
 import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 
 public class KafkaEventForwarderTest {
 
@@ -223,6 +228,112 @@ public class KafkaEventForwarderTest {
         assertThat(captor.getValue().topic()).isEqualTo(IPC_TOPIC);
 
         verify(eventExpander).process(any(Log.class));
+    }
+
+    // -------- Eventconf enrichment tests --------
+
+    @Test
+    public void shouldEnrichEventWithAlarmDataFromEventConf() {
+        // Set up EventConfDao mock that returns eventconf with alarm-data
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        org.opennms.netmgt.xml.eventconf.Event econf = new org.opennms.netmgt.xml.eventconf.Event();
+        econf.setSeverity("Major");
+        org.opennms.netmgt.xml.eventconf.AlarmData econfAlarmData = new org.opennms.netmgt.xml.eventconf.AlarmData();
+        econfAlarmData.setAlarmType(1);
+        econfAlarmData.setReductionKey("uei.opennms.org/test:%nodeid%");
+        econfAlarmData.setAutoClean(false);
+        econf.setAlarmData(econfAlarmData);
+        when(eventConfDao.findByEvent(any(Event.class))).thenReturn(econf);
+
+        forwarder.setEventConfDao(eventConfDao);
+
+        // Event with no alarm-data or severity
+        Event event = createEvent("uei.opennms.org/test/alarm", 42L);
+
+        forwarder.sendNow(event);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<ProducerRecord<Long, byte[]>> captor =
+                ArgumentCaptor.forClass(ProducerRecord.class);
+        verify(kafkaProducer).send(captor.capture());
+
+        // The event should have been published to the fault topic (has alarm-data now)
+        assertThat(captor.getValue().topic()).isEqualTo(FAULT_TOPIC);
+
+        // Verify the XML contains alarm-data
+        String xml = new String(captor.getValue().value());
+        assertThat(xml).contains("alarm-data");
+        assertThat(xml).contains("uei.opennms.org/test:42");
+    }
+
+    @Test
+    public void shouldNotOverwriteExistingAlarmData() {
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        forwarder.setEventConfDao(eventConfDao);
+
+        Event event = createEvent("uei.opennms.org/nodes/nodeDown", 42L);
+        AlarmData existing = new AlarmData();
+        existing.setReductionKey("existing-key");
+        event.setAlarmData(existing);
+
+        forwarder.sendNow(event);
+
+        // EventConfDao should NOT be consulted since alarm-data already present
+        verify(eventConfDao, never()).findByEvent(any(Event.class));
+    }
+
+    @Test
+    public void shouldWorkWithoutEventConfDao() {
+        // No eventConfDao set — should still forward events normally
+        Event event = createEvent("uei.opennms.org/nodes/nodeDown", 42L);
+        event.setAlarmData(new AlarmData());
+
+        forwarder.sendNow(event);
+
+        verify(kafkaProducer).send(any());
+    }
+
+    // -------- expandParms tests --------
+
+    @Test
+    public void shouldExpandNodeIdToken() {
+        Event event = createEvent("uei.opennms.org/test", 42L);
+        String result = KafkaEventForwarder.expandParms("prefix:%nodeid%:suffix", event);
+        assertThat(result).isEqualTo("prefix:42:suffix");
+    }
+
+    @Test
+    public void shouldExpandParmByIndex() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        Parm parm = new Parm();
+        parm.setParmName(".1.3.6.1.2.1.2.2.1.1");
+        Value val = new Value();
+        val.setContent("9");
+        parm.setValue(val);
+        event.addParm(parm);
+
+        String result = KafkaEventForwarder.expandParms("key:%parm[#1]%", event);
+        assertThat(result).isEqualTo("key:9");
+    }
+
+    @Test
+    public void shouldExpandParmByName() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        Parm parm = new Parm();
+        parm.setParmName("ifDescr");
+        Value val = new Value();
+        val.setContent("eth0");
+        parm.setValue(val);
+        event.addParm(parm);
+
+        String result = KafkaEventForwarder.expandParms("key:%parm[ifDescr]%", event);
+        assertThat(result).isEqualTo("key:eth0");
+    }
+
+    @Test
+    public void shouldReturnNullForNullTemplate() {
+        Event event = createEvent("uei.opennms.org/test", 1L);
+        assertThat(KafkaEventForwarder.expandParms(null, event)).isNull();
     }
 
     private Event createEvent(String uei, long nodeId) {
