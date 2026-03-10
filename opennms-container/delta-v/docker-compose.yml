@@ -703,36 +703,31 @@ services:
 
   alarmd:
     profiles: [lite, passive, full]
-    image: opennms/alarmd:${VERSION}
-    entrypoint: ["/bin/bash", "-c"]
-    command:
-      - "cp -a /opt/alarmd-overlay/* /opt/alarmd/ 2>/dev/null; exec /opt/alarmd/bin/karaf server"
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-alarmd
+    hostname: alarmd
     depends_on:
       core:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
-      OPENNMS_BROKER_URL: failover:tcp://core:61616
-      OPENNMS_HTTP_USER: admin
-      OPENNMS_HTTP_PASS: admin
-      OPENNMS_BROKER_USER: admin
-      OPENNMS_BROKER_PASS: admin
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
       POSTGRES_USER: opennms
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
-      OPENNMS_DBNAME: opennms
-      OPENNMS_DBUSER: opennms
-      OPENNMS_DBPASS: opennms
       JAVA_OPTS: >-
         -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=2
     volumes:
-      - alarmd-data:/opt/alarmd/data
-      - ./alarmd-overlay:/opt/alarmd-overlay:ro
-    ports:
-      - "8201:8201"
+      - alarmd-data:/opt/sentinel/data
+      - ./alarmd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/daemon-loader-alarmd/target/org.opennms.core.daemon-loader-alarmd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-alarmd/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-alarmd-36.0.0-SNAPSHOT.jar:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
