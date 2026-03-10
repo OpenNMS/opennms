@@ -26,8 +26,7 @@
               org.opennms.core.queue.*;version="${project.version}",
               org.opennms.core.resource.*;version="${project.version}",
               org.opennms.core.resource.db.*;version="${project.version}",
-              <!-- Don't export org.opennms.core.utils to avoid conflicts with core/lib -->
-              <!-- org.opennms.core.utils.*;version="${project.version}", -->
+              org.opennms.core.utils;version="${project.version}",
               org.opennms.core.utils.url.*;version="${project.version}",
               org.opennms.core.utils.http.*;version="${project.version}",
               org.opennms.core.utils.jexl.*;version="${project.version}",
