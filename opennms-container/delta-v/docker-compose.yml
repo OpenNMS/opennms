@@ -77,6 +77,7 @@ services:
       CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
       CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
       CORE_SERVICE_SCRIPTD_ENABLED: "false"
+      CORE_SERVICE_PROVISIOND_ENABLED: "false"
       CORE_SERVICE_VACUUMD_ENABLED: "false"
       CORE_SERVICE_STATSD_ENABLED: "false"
       CORE_SERVICE_ACTIOND_ENABLED: "false"
@@ -624,6 +625,45 @@ services:
       retries: 20
       start_period: 60s
 
+  provisiond:
+    profiles: [lite, full]
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-provisiond
+    hostname: provisiond
+    depends_on:
+      core:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      OPENNMS_DBNAME: opennms
+      OPENNMS_DBUSER: opennms
+      OPENNMS_DBPASS: opennms
+      JAVA_OPTS: >-
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=16
+        -Dorg.opennms.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.kafka.fault.topic=opennms-fault-events
+        -Dorg.opennms.kafka.ipc.topic=opennms-ipc-events
+        -Dorg.opennms.kafka.consumer.group=opennms-provisiond
+    volumes:
+      - provisiond-data:/opt/sentinel/data
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+    healthcheck:
+      test: ["CMD", "/health.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
   alarmd:
     profiles: [lite, passive, full]
     image: opennms/alarmd:${VERSION}
@@ -683,4 +723,5 @@ volumes:
   eventtranslator-data:
   enlinkd-data:
   scriptd-data:
+  provisiond-data:
   alarmd-data:

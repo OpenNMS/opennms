@@ -73,6 +73,7 @@
     <module>daemon-loader-ticketer</module>
     <module>daemon-loader-trapd</module>
     <module>daemon-loader-enlinkd</module>
+    <module>daemon-loader-provisiond</module>
     <module>daemon-loader-scriptd</module>
     <module>event-forwarder-kafka</module>
     <module>fileutils</module>
