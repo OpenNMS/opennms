@@ -2353,6 +2353,33 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-provisiond/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Bsmd: loads Bsmd daemon without Manager/Eventd.
+         Monitors business service operational status from alarm snapshots.
+         AlarmLifecycleListenerManager polls AlarmDao every 30 seconds. -->
+    <feature name="opennms-daemon-bsmd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Bsmd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- BSM service API + persistence API -->
+        <feature>org.opennms.features.bsm.service.api</feature>
+        <!-- Alarm API -->
+        <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
+        <!-- Alarmd classes (AlarmLifecycleListenerManager) -->
+        <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
+        <!-- BSM service implementation (registers StateMachine + Manager via onmsgi) -->
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.impl/${project.version}</bundle>
+        <!-- BSM daemon class -->
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.daemon/${project.version}</bundle>
+        <!-- Daemon loader (creates Bsmd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-bsmd/${project.version}</bundle>
+    </feature>
+
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
          Receives events from Kafka and persists alarms to PostgreSQL.
          NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->
