@@ -405,9 +405,10 @@
                         <feature>opennms-daemon-ticketer</feature>
                         <feature>opennms-daemon-eventtranslator</feature>
                         <feature>opennms-daemon-rtcd</feature>
-                        <feature>opennms-daemon-passivestatusd</feature>
                         <feature>opennms-daemon-enlinkd</feature>
                         <feature>opennms-daemon-scriptd</feature>
+                        <feature>opennms-daemon-provisiond</feature>
+                        <feature>opennms-daemon-bsmd</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
