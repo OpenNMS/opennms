@@ -68,7 +68,6 @@ services:
       CORE_SERVICE_COLLECTD_ENABLED: "false"
       CORE_SERVICE_RTCD_ENABLED: "false"
       CORE_SERVICE_NOTIFD_ENABLED: "false"
-      # Discovery runs as standalone container — IPC events flow via AMQ
       CORE_SERVICE_DISCOVERY_ENABLED: "false"
       CORE_SERVICE_TRAPD_ENABLED: "false"
       CORE_SERVICE_SYSLOGD_ENABLED: "false"
@@ -88,7 +87,7 @@ services:
       # JettyServer disabled — triggers Spring classloader conflict on this branch.
       # Without JettyServer, Karaf never starts (bootstrapped via WebAppListener),
       # so disable KarafStartupMonitor to prevent it from killing the JVM.
-      # Core runs legacy daemons only (Eventd, ActiveMQ, Provisiond, etc.)
+      # Core runs legacy daemons only (Eventd, Provisiond, etc.)
       CORE_SERVICE_JETTYSERVER_ENABLED: "false"
       CORE_SERVICE_KARAFSTARTUPMONITOR_ENABLED: "false"
       # Database
@@ -112,7 +111,6 @@ services:
     volumes:
       - opennms-etc:/opt/opennms/etc
       - opennms-data:/opennms-data
-      - ./core-overlay/etc/opennms-activemq.xml:/opt/opennms-etc-overlay/opennms-activemq.xml:ro
       - ./core-overlay/etc/opennms.properties.d/delta-v.properties:/opt/opennms-etc-overlay/opennms.properties.d/delta-v.properties:ro
       - ./core-overlay/etc/discovery-configuration.xml:/opt/opennms-etc-overlay/discovery-configuration.xml:ro
       - ./core-overlay/etc/snmp-config.xml:/opt/opennms-etc-overlay/snmp-config.xml:ro
@@ -123,11 +121,9 @@ services:
       - ../../features/discovery/target/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:/opt/opennms/lib/org.opennms.features.discovery-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8101:8101"
-      - "61616:61616"
     healthcheck:
-      # Without Karaf, 'opennms status' won't report running.
-      # Check ActiveMQ TCP port instead (needed by daemon containers).
-      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/61616' 2>/dev/null"]
+      # Without Karaf, check that the Java process is running.
+      test: ["CMD-SHELL", "pgrep -f opennms_bootstrap || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 20
