@@ -157,7 +157,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- MessageBus API (MessageBus interface for MessageBusEventListenerBridge) -->
+        <!-- MessageBus API (for OSGi Import-Package resolution) -->
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>org.opennms.core.messagebus.api</artifactId>
@@ -165,7 +165,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Events daemon (MessageBusEventListenerBridge) -->
+        <!-- Events daemon -->
         <dependency>
             <groupId>org.opennms.features.events</groupId>
             <artifactId>org.opennms.features.events.daemon</artifactId>

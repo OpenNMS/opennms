@@ -79,6 +79,5 @@
     <module>fileutils</module>
     <module>tsid</module>
     <module>messagebus-api</module>
-    <module>messagebus-jms</module>
   </modules>
 </project>
