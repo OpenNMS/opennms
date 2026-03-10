@@ -1256,18 +1256,6 @@
   </event>
   
   <event>
-    <uei>uei.opennms.org/internal/promoteQueueData</uei>
-    <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
-    <descr>
-      This event is generated to invoke the promotion data of the Queueing RRD Strategy.
-    </descr>
-    <logmsg dest='donotpersist'>
-      A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
-    </logmsg>
-    <severity>Normal</severity>
-  </event>
-
-  <event>
     <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
     <event-label>OpenNMS defined event: An event received from Hyperic has been translated</event-label>
     <descr>
