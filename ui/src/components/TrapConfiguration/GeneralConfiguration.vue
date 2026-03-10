@@ -137,10 +137,6 @@ const onChangeTrapSourceAddressStatus = () => {
   padding: 25px;
   border: 1px solid var(--feather-border-on-surface);
 
-  .spacer {
-    height: 0.5em;
-  }
-
   .header {
     display: flex;
     justify-content: space-between;
@@ -157,6 +153,10 @@ const onChangeTrapSourceAddressStatus = () => {
         color: var(--feather-text-secondary);
       }
     }
+  }
+
+  .spacer {
+    height: 0.5em;
   }
 
   .switch-row {
