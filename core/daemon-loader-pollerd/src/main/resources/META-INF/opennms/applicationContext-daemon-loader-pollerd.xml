@@ -155,11 +155,6 @@
     <osgi:reference id="dataSource"
                     interface="javax.sql.DataSource"/>
 
-    <bean id="passiveStatusKeeper" class="org.opennms.netmgt.passive.PassiveStatusKeeper">
-        <property name="eventManager" ref="eventIpcManager"/>
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
     <!-- Register this instance as the singleton so PassiveServiceMonitor can find it -->
     <bean id="passiveStatusKeeper-init" class="org.springframework.beans.factory.config.MethodInvokingBean">
         <property name="staticMethod"
@@ -171,10 +166,13 @@
         </property>
     </bean>
 
-    <!-- Wire PassiveStatusKeeper event listeners via the subscription service -->
-    <bean id="passiveStatusKeeperListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-        <property name="annotatedListener" ref="passiveStatusKeeper"/>
-        <property name="eventSubscriptionService" ref="eventIpcManager"/>
+    <!-- PassiveStatusKeeper implements EventListener directly and subscribes
+         in onInit() via getEventManager().addEventListener(this, PASSIVE_STATUS_UEI).
+         init-method="init" triggers AbstractServiceDaemon.init() → onInit(). -->
+    <bean id="passiveStatusKeeper" class="org.opennms.netmgt.passive.PassiveStatusKeeper"
+          init-method="init" destroy-method="stop">
+        <property name="eventManager" ref="eventIpcManager"/>
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
     <!-- ============================================================== -->
