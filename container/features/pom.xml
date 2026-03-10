@@ -1054,11 +1054,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.daemon-loader-passivestatusd</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon-loader-provisiond</artifactId>
       <version>${project.version}</version>
     </dependency>

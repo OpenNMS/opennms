@@ -2178,22 +2178,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only PassiveStatusd: loads PassiveStatusKeeper daemon without Manager/Eventd -->
-    <feature name="opennms-daemon-passivestatusd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: PassiveStatusd">
-        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
-        <feature>opennms-spring-extender</feature>
-        <!-- Event transport (Kafka-based, replaces Eventd) -->
-        <feature>opennms-event-forwarder-kafka</feature>
-        <!-- DAO infrastructure -->
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <!-- PassiveStatusd daemon classes -->
-        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
-        <!-- Daemon loader (creates PassiveStatusKeeper, starts it) -->
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-passivestatusd/${project.version}</bundle>
-    </feature>
-
     <!-- Karaf-only Notifd: loads Notifd daemon without Manager/Eventd -->
     <feature name="opennms-daemon-notifd" version="${project.version}"
              description="OpenNMS :: Daemon Loader :: Notifd">

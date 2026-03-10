@@ -28,7 +28,6 @@ Delta-V decomposes the monolithic OpenNMS into 15 independently scalable service
 | pollerd          | opennms/daemon   | Service polling                               | 8103      |
 | collectd         | opennms/daemon   | Data collection                               | 8104      |
 | rtcd             | opennms/daemon   | Real-time console data                        | —         |
-| passivestatusd   | opennms/daemon   | Passive status monitoring                     | —         |
 | notifd           | opennms/daemon   | Notifications                                 | —         |
 | discovery        | opennms/daemon   | Network discovery                             | —         |
 | trapd            | opennms/daemon   | SNMP trap reception                           | 1162/udp  |
@@ -67,7 +66,7 @@ cd opennms-container/delta-v
 ./deploy.sh up
 
 # Or start a smaller subset
-./deploy.sh up lite    # 10 services (no trapd/syslogd/ticketer/eventtranslator/passivestatusd)
+./deploy.sh up lite    # 10 services (no trapd/syslogd/ticketer/eventtranslator)
 ./deploy.sh up core    # 4 services (postgres + kafka + core + webapp)
 
 # Check status
