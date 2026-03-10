@@ -194,6 +194,7 @@ services:
       start_period: 120s
 
   pollerd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-pollerd
     hostname: pollerd
@@ -228,6 +229,7 @@ services:
       start_period: 60s
 
   collectd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-collectd
     hostname: collectd
@@ -262,6 +264,7 @@ services:
       start_period: 60s
 
   rtcd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-rtcd
     hostname: rtcd
@@ -293,6 +296,7 @@ services:
       start_period: 60s
 
   passivestatusd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-passivestatusd
     hostname: passivestatusd
@@ -324,6 +328,7 @@ services:
       start_period: 60s
 
   notifd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-notifd
     hostname: notifd
@@ -355,6 +360,7 @@ services:
       start_period: 60s
 
   discovery:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-discovery
     hostname: discovery
@@ -386,6 +392,7 @@ services:
       start_period: 60s
 
   trapd:
+    profiles: [passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-trapd
     hostname: trapd
@@ -420,6 +427,7 @@ services:
       start_period: 60s
 
   syslogd:
+    profiles: [passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-syslogd
     hostname: syslogd
@@ -453,6 +461,7 @@ services:
       start_period: 60s
 
   ticketer:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-ticketer
     hostname: ticketer
@@ -484,6 +493,7 @@ services:
       start_period: 60s
 
   eventtranslator:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-eventtranslator
     hostname: eventtranslator
@@ -515,6 +525,7 @@ services:
       start_period: 60s
 
   enlinkd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-enlinkd
     hostname: enlinkd
@@ -546,6 +557,7 @@ services:
       start_period: 60s
 
   scriptd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-scriptd
     hostname: scriptd
@@ -577,6 +589,7 @@ services:
       start_period: 60s
 
   alarmd:
+    profiles: [lite, passive, full]
     image: opennms/alarmd:${VERSION}
     entrypoint: ["/bin/bash", "-c"]
     command:
