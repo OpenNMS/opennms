@@ -177,7 +177,7 @@ Commands:
 Profiles:
   (none)    Infrastructure only: postgres + kafka + db-init + webapp + minion
   lite      + essential daemons (alarmd, pollerd, collectd, notifd, discovery, rtcd, provisiond, bsmd)
-  passive   + trap/syslog receivers (alarmd, trapd, syslogd)
+  passive   + trap/syslog receivers (alarmd, trapd, syslogd, eventtranslator, provisiond)
   full      All 17 services
 
 Examples:

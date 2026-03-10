@@ -458,7 +458,7 @@ services:
       start_period: 60s
 
   eventtranslator:
-    profiles: [full]
+    profiles: [passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-eventtranslator
     hostname: eventtranslator
@@ -560,7 +560,7 @@ services:
       start_period: 60s
 
   provisiond:
-    profiles: [lite, full]
+    profiles: [lite, passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-provisiond
     hostname: provisiond
