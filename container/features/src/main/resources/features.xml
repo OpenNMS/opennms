@@ -330,6 +330,7 @@
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
         <feature>opennms-core</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>
@@ -1173,6 +1174,7 @@
         <feature>opennms-kafka</feature>
         <feature>opennms-mate-impl</feature>
         <feature>opennms-elastic-client</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <feature>rate-limited-logger</feature>
 
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
@@ -1590,6 +1592,7 @@
         <feature>quartz</feature>
         <feature>opennms-health-api</feature>
         <feature>opennms-dao</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
         <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
@@ -1819,6 +1822,7 @@
     <feature name="opennms-graph-rest" description="OpenNMS :: Features :: Graph :: ReST API" version="${project.version}">
         <feature>opennms-graph-api</feature>
         <feature>opennms-graph-service</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph.rest/org.opennms.features.graph.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graph.rest/org.opennms.features.graph.rest.impl/${project.version}</bundle>
@@ -1874,6 +1878,7 @@
     <feature name="opennms-config-management" description="OpenNMS :: Features :: Config" version="${project.version}">
         <feature>jackson-dataformat-yaml</feature>
         <feature>jackson-datatype-jsr310</feature>
+        <feature>opennms-core-messagebus-api</feature>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlschemaVersion}</bundle>
         <bundle>mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlschemaVersion}</bundle>
