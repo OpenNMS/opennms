@@ -46,7 +46,7 @@ services:
       KAFKA_NUM_PARTITIONS: "16"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       CLUSTER_ID: "delta-v-kafka-cluster"
-      KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+      KAFKA_HEAP_OPTS: "-Xms1g -Xmx1g"
     volumes:
       - kafkadata:/tmp/kraft-combined-logs
     healthcheck:
@@ -75,7 +75,7 @@ services:
       OPENNMS_DBUSER: opennms
       OPENNMS_DBPASS: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx512m
+        -Xms512m -Xmx1g
         -Djava.security.egd=file:/dev/./urandom
     volumes:
       - db-init-etc:/opt/opennms/etc
@@ -99,8 +99,8 @@ services:
       OPENNMS_DBUSER: opennms
       OPENNMS_DBPASS: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx1g
-        -XX:MaxMetaspaceSize=384m
+        -Xms512m -Xmx1536m
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=3
       # Disable ALL daemons except JettyServer (Manager + Eventd are always on)
@@ -159,7 +159,7 @@ services:
       OPENNMS_HTTP_PASS: admin
       KAFKA_IPC_BOOTSTRAP_SERVERS: kafka:9092
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
+        -Xms256m -Xmx512m
         -Djava.security.egd=file:/dev/./urandom
     volumes:
       - minion-data:/opt/minion/data
@@ -193,8 +193,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx768m
-        -XX:MaxMetaspaceSize=384m
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
     volumes:
@@ -230,8 +230,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx768m
-        -XX:MaxMetaspaceSize=384m
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=5
     volumes:
@@ -267,8 +267,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=6
     volumes:
@@ -301,8 +301,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=8
     volumes:
@@ -335,8 +335,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=9
     volumes:
@@ -369,8 +369,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=10
     volumes:
@@ -406,8 +406,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
     volumes:
@@ -442,8 +442,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=12
     volumes:
@@ -476,8 +476,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=13
     volumes:
@@ -512,8 +512,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=14
     volumes:
@@ -546,8 +546,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=15
     volumes:
@@ -580,8 +580,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx768m
-        -XX:MaxMetaspaceSize=384m
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=16
     volumes:
@@ -615,8 +615,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms128m -Xmx384m
-        -XX:MaxMetaspaceSize=192m
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=17
         -Dorg.opennms.alarms.snapshot.sync.ms=30000
@@ -655,8 +655,8 @@ services:
       POSTGRES_PASSWORD: opennms
       POSTGRES_DB: opennms
       JAVA_OPTS: >-
-        -Xms256m -Xmx768m
-        -XX:MaxMetaspaceSize=384m
+        -Xms512m -Xmx1g
+        -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=2
     volumes:

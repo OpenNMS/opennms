@@ -27,23 +27,17 @@
     <!-- ================================================================ -->
 
     <!-- EventConfEventDao: Hibernate DAO for loading eventconf from DB.
-         Registered as OSGi service by distributed-dao-impl's applicationContext-shared.xml. -->
+         Registered as OSGi service by distributed-dao-impl's applicationContext-shared.xml
+         via onmsgi:service → OnmsOSGiBridge → OSGi Framework registry.
+         Optional because distributed-dao-impl may fail to restart during Karaf feature
+         refresh cycles (its own osgi:reference for serviceRegistry/dataSource times out). -->
     <reference id="eventConfEventDao"
                interface="org.opennms.netmgt.dao.api.EventConfEventDao"
-               availability="mandatory"/>
+               availability="optional"/>
 
     <!-- ================================================================ -->
     <!-- Eventconf enrichment                                             -->
     <!-- ================================================================ -->
-
-    <!-- Creates DefaultEventConfDao internally and loads event definitions
-         from database on init. Exposes the populated DAO via getEventConfDao()
-         for producer-side enrichment of events with severity + alarm-data. -->
-    <bean id="eventConfInitializer"
-          class="org.opennms.core.event.forwarder.kafka.EventConfInitializer"
-          init-method="init">
-        <argument ref="eventConfEventDao"/>
-    </bean>
 
     <!-- ================================================================ -->
     <!-- Beans                                                            -->
@@ -51,18 +45,24 @@
 
     <!-- KafkaEventForwarder: routes events to Kafka topics (fault + IPC).
          Uses KafkaEventForwarderFactory to avoid Aries Blueprint constructor/factory
-         matching issues with cross-bundle interface types and generics.
-         EventConfDao injected via setter for eventconf enrichment. -->
+         matching issues with cross-bundle interface types and generics. -->
     <bean id="kafkaEventForwarder"
           class="org.opennms.core.event.forwarder.kafka.KafkaEventForwarderFactory"
-          factory-method="create"
-          depends-on="eventConfInitializer">
+          factory-method="create">
         <argument value="${bootstrap.servers}"/>
         <argument value="${topic.name}"/>
         <property name="ipcTopicName" value="${ipc.topic.name}"/>
-        <property name="eventConfDao">
-            <bean factory-ref="eventConfInitializer" factory-method="getEventConfDao"/>
-        </property>
+    </bean>
+
+    <!-- EventConfInitializer: loads event definitions from DB on init and
+         injects the resulting EventConfDao into KafkaEventForwarder for
+         producer-side enrichment. Gracefully degrades if EventConfEventDao
+         is unavailable (distributed-dao-impl not yet started). -->
+    <bean id="eventConfInitializer"
+          class="org.opennms.core.event.forwarder.kafka.EventConfInitializer"
+          init-method="init">
+        <argument ref="eventConfEventDao"/>
+        <argument ref="kafkaEventForwarder"/>
     </bean>
 
     <!-- KafkaEventSubscriptionService: consumes events from Kafka topics.
