@@ -172,6 +172,7 @@ Commands:
   logs [service]  Tail logs (all or specific service)
   shell <service> Open Karaf shell (webapp, pollerd, etc.)
   test            Run deployment verification tests
+  test-e2e        Run end-to-end trap-to-alarm integration test
   help            Show this help
 
 Profiles:
@@ -188,6 +189,8 @@ Examples:
   ./deploy.sh logs alarmd           # Tail alarmd logs
   ./deploy.sh shell webapp          # Karaf shell on webapp
   ./deploy.sh test                  # Verify deployment
+  ./deploy.sh test-e2e             # Full trap-to-alarm integration test
+  ./deploy.sh test-e2e --verbose   # With Kafka event trace
   ./deploy.sh reset && ./deploy.sh up  # Fresh start
 USAGE
 }
@@ -201,6 +204,7 @@ main() {
         logs)    shift; do_logs "$@" ;;
         shell)   shift; do_shell "$@" ;;
         test)    do_test ;;
+        test-e2e) shift; "$SCRIPT_DIR/test-e2e.sh" "$@" ;;
         help|-h|--help) usage ;;
         *)       err "Unknown command: $1 (run './deploy.sh help')" ;;
     esac
