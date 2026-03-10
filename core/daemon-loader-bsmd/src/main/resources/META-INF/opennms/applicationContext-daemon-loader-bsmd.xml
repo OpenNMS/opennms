@@ -48,6 +48,21 @@
     <!-- EventConfDao — local instance loading from DB (same pattern as Trapd/Syslogd) -->
     <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao"/>
 
+    <!-- EventConfEventDao: Hibernate DAO for event_conf_event table.
+         Registered by distributed-dao-impl (applicationContext-shared.xml). -->
+    <onmsgi:reference id="eventConfEventDao"
+                      interface="org.opennms.netmgt.dao.api.EventConfEventDao"/>
+
+    <!-- Load event definitions from DB into EventConfDao on startup.
+         Without this, EventConfDao is empty and Bsmd's reduction key
+         verification in start() will fail silently.
+         Uses a class in this bundle (not MethodInvokingBean) to avoid
+         OSGi classloader issues. -->
+    <bean id="eventConfLoader" class="org.opennms.core.daemon.loader.EventConfInitializer">
+        <constructor-arg ref="eventConfEventDao"/>
+        <constructor-arg ref="eventConfDao"/>
+    </bean>
+
     <!-- Transaction template -->
     <onmsgi:reference id="transactionTemplate"
                       interface="org.springframework.transaction.support.TransactionTemplate"/>
@@ -90,7 +105,8 @@
     <!-- Bsmd Daemon (SpringServiceDaemon)                             -->
     <!-- ============================================================== -->
 
-    <bean id="daemon" class="org.opennms.netmgt.bsm.daemon.Bsmd"/>
+    <bean id="daemon" class="org.opennms.netmgt.bsm.daemon.Bsmd"
+          depends-on="eventConfLoader"/>
 
     <!-- Event listener adapter -->
     <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
