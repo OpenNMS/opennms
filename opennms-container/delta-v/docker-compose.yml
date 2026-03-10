@@ -193,6 +193,39 @@ services:
       retries: 3
       start_period: 120s
 
+  minion:
+    image: opennms/minion:${VERSION}
+    container_name: delta-v-minion
+    hostname: minion-default-01
+    depends_on:
+      core:
+        condition: service_healthy
+      webapp:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      MINION_ID: minion-default-01
+      MINION_LOCATION: Default
+      OPENNMS_HTTP_URL: http://webapp:8980/opennms
+      OPENNMS_HTTP_USER: admin
+      OPENNMS_HTTP_PASS: admin
+      KAFKA_RPC_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_SINK_BOOTSTRAP_SERVERS: kafka:9092
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -Djava.security.egd=file:/dev/./urandom
+    volumes:
+      - minion-data:/opt/minion/data
+    ports:
+      - "8301:8201"
+    healthcheck:
+      test: ["CMD", "/health.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
   pollerd:
     profiles: [lite, full]
     image: opennms/daemon:${VERSION}
@@ -634,6 +667,7 @@ volumes:
   opennms-data:
   webapp-etc:
   webapp-data:
+  minion-data:
   pollerd-data:
   collectd-data:
   rtcd-data:
