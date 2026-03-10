@@ -1,1 +1,0 @@
-opennms-kafka-producer

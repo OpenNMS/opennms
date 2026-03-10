@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Provisiond loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  Spring hierarchy with a flat context that wires Provisioner beans directly to
+  OSGi services.
+
+  IRON RULE: Events are NEVER written to PostgreSQL. Events flow via Kafka only.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+    <tx:annotation-driven />
+
+    <!-- Property placeholder for filesystem paths -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <!-- ServiceRegistry from OSGi (NOT onmsgi:default-registry) -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References                                        -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+    <osgi:reference id="eventForwarder"
+                    interface="org.opennms.netmgt.events.api.EventForwarder"/>
+
+    <!-- DAOs (from distributed DAO feature) -->
+    <onmsgi:reference id="monitoringLocationDao"
+                      interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"/>
+    <onmsgi:reference id="nodeDao"
+                      interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <onmsgi:reference id="ipInterfaceDao"
+                      interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <onmsgi:reference id="snmpInterfaceDao"
+                      interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao"/>
+    <onmsgi:reference id="monitoredServiceDao"
+                      interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <onmsgi:reference id="serviceTypeDao"
+                      interface="org.opennms.netmgt.dao.api.ServiceTypeDao"/>
+    <onmsgi:reference id="categoryDao"
+                      interface="org.opennms.netmgt.dao.api.CategoryDao"/>
+    <onmsgi:reference id="categoryAssociationDao"
+                      interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao"/>
+    <onmsgi:reference id="monitoringSystemDao"
+                      interface="org.opennms.netmgt.dao.api.MonitoringSystemDao"/>
+
+    <!-- Transaction management -->
+    <onmsgi:reference id="transactionManager"
+                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+
+    <!-- ============================================================== -->
+    <!-- ForeignSourceRepository (local filesystem-based)               -->
+    <!-- ============================================================== -->
+
+    <bean id="pendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+        <qualifier value="filePending" />
+        <property name="requisitionPath" value="${importer.requisition.dir:/opt/sentinel/etc/imports}/pending" />
+        <property name="foreignSourcePath" value="${importer.foreign-source.dir:/opt/sentinel/etc/foreign-sources}/pending" />
+    </bean>
+
+    <bean id="deployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository">
+        <qualifier value="fileDeployed" />
+        <property name="requisitionPath" value="${importer.requisition.dir:/opt/sentinel/etc/imports}" />
+        <property name="foreignSourcePath" value="${importer.foreign-source.dir:/opt/sentinel/etc/foreign-sources}" />
+    </bean>
+
+    <bean id="fastPendingForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository">
+        <qualifier value="fastFilePending" />
+        <property name="requisitionPath" value="${importer.requisition.dir:/opt/sentinel/etc/imports}/pending" />
+        <property name="foreignSourcePath" value="${importer.foreign-source.dir:/opt/sentinel/etc/foreign-sources}/pending" />
+    </bean>
+
+    <bean id="fastDeployedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FasterFilesystemForeignSourceRepository">
+        <qualifier value="fastFileDeployed" />
+        <property name="requisitionPath" value="${importer.requisition.dir:/opt/sentinel/etc/imports}" />
+        <property name="foreignSourcePath" value="${importer.foreign-source.dir:/opt/sentinel/etc/foreign-sources}" />
+    </bean>
+
+    <bean id="fusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
+        <qualifier value="fused" />
+        <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository" />
+        <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository" />
+    </bean>
+
+    <bean id="fastFusedForeignSourceRepository" class="org.opennms.netmgt.provision.persist.FusedForeignSourceRepository">
+        <qualifier value="fastFused" />
+        <property name="pendingForeignSourceRepository" ref="fastPendingForeignSourceRepository" />
+        <property name="deployedForeignSourceRepository" ref="fastDeployedForeignSourceRepository" />
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Local Implementations (standalone container stubs)             -->
+    <!-- ============================================================== -->
+
+    <!-- SNMP config factory (inline initializer avoids MethodInvokingBean classloader issue) -->
+    <bean id="snmpPeerFactoryInitializer" class="org.opennms.core.daemon.loader.SnmpPeerFactoryInitializer"/>
+    <bean id="snmpPeerFactory" factory-bean="snmpPeerFactoryInitializer" factory-method="getInstance"/>
+
+    <!-- LocationAware clients - local implementations for standalone container -->
+    <bean id="locationAwareSnmpClient"
+          class="org.opennms.core.daemon.loader.LocalSnmpClient"/>
+    <bean id="locationAwareDnsLookupClient"
+          class="org.opennms.core.daemon.loader.LocalDnsLookupClient"/>
+    <bean id="locationAwareDetectorClient"
+          class="org.opennms.core.daemon.loader.LocalDetectorClient"/>
+    <bean id="snmpProfileMapper"
+          class="org.opennms.core.daemon.loader.NoOpSnmpProfileMapper"/>
+    <bean id="tracerRegistry"
+          class="org.opennms.core.daemon.loader.NoOpTracerRegistry"/>
+
+    <!-- In standalone container, use eventForwarder directly (no JPA transaction coordination needed) -->
+    <alias name="eventForwarder" alias="transactionAwareEventForwarder"/>
+
+    <!-- Provisiond config DAO (inline implementation — avoids classloader issues with opennms-dao) -->
+    <bean id="provisiondConfigDao"
+          class="org.opennms.core.daemon.loader.InlineProvisiondConfigDao"/>
+    <onmsgi:service ref="provisiondConfigDao"
+                    interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao"/>
+
+    <!-- ============================================================== -->
+    <!-- Thread Pools (from provisiond applicationContext)              -->
+    <!-- ============================================================== -->
+
+    <bean id="importThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getImportThreads"/>
+    <bean id="scanThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getScanThreads"/>
+    <bean id="writeThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getWriteThreads"/>
+    <bean id="rescanThreads" class="java.lang.Integer" factory-bean="provisiondConfigDao" factory-method="getRescanThreads"/>
+
+    <bean id="importExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+        <property name="poolSize" ref="importThreads"/>
+    </bean>
+    <bean id="scanExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+        <property name="poolSize" ref="scanThreads"/>
+    </bean>
+    <bean id="writeExecutor" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean">
+        <property name="poolSize" ref="writeThreads"/>
+    </bean>
+
+    <bean id="nodeScanExecutor" class="org.springframework.scheduling.concurrent.CustomizableThreadFactory">
+        <property name="threadNamePrefix" value="nodeScanExecutor-"/>
+    </bean>
+    <bean id="scheduledExecutor" class="org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor">
+        <constructor-arg ref="rescanThreads"/>
+        <constructor-arg ref="nodeScanExecutor"/>
+    </bean>
+
+    <!-- Task coordinator -->
+    <bean id="taskCoordinator" class="org.opennms.core.tasks.DefaultTaskCoordinator">
+        <constructor-arg value="Provisiond"/>
+        <property name="defaultExecutor" value="scan"/>
+        <property name="executors">
+            <map>
+                <entry key="import" value-ref="importExecutor"/>
+                <entry key="scan" value-ref="scanExecutor"/>
+                <entry key="write" value-ref="writeExecutor"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Lifecycle repository -->
+    <bean id="lifeCycleRepository" class="org.opennms.netmgt.provision.service.lifecycle.DefaultLifeCycleRepository">
+        <constructor-arg ref="taskCoordinator"/>
+        <property name="lifeCycles">
+            <list>
+                <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+                    <constructor-arg value="import"/>
+                    <constructor-arg>
+                        <list>
+                            <value>validate</value>
+                            <value>audit</value>
+                            <value>scan</value>
+                            <value>delete</value>
+                            <value>update</value>
+                            <value>insert</value>
+                            <value>relate</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+                <bean class="org.opennms.netmgt.provision.service.lifecycle.LifeCycle">
+                    <constructor-arg value="nodeImport"/>
+                    <constructor-arg>
+                        <list>
+                            <value>scan</value>
+                            <value>persist</value>
+                        </list>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Provisiond Beans                                               -->
+    <!-- ============================================================== -->
+
+    <bean id="scriptCache" class="org.opennms.netmgt.provision.persist.JSR223ScriptCache"/>
+    <bean id="pluginRegistry" class="org.opennms.netmgt.provision.service.DefaultPluginRegistry"/>
+    <bean id="provisionService" class="org.opennms.netmgt.provision.service.DefaultProvisionService"/>
+    <bean id="coreImportActivities" class="org.opennms.netmgt.provision.service.CoreImportActivities">
+        <constructor-arg ref="provisionService"/>
+    </bean>
+    <bean id="adapterManager" class="org.opennms.netmgt.provision.service.ProvisioningAdapterManager">
+        <property name="pluginRegistry" ref="pluginRegistry"/>
+    </bean>
+    <bean id="monitorHolder" class="org.opennms.netmgt.provision.service.MonitorHolder"/>
+
+    <!-- Quartz import scheduler -->
+    <bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="schedulerName" value="provisiond"/>
+    </bean>
+    <bean id="jobFactory" class="org.opennms.netmgt.provision.service.ImportJobFactory">
+        <property name="provisioner" ref="daemon"/>
+    </bean>
+    <bean id="provisiondImportSchedule" class="org.opennms.netmgt.provision.service.ImportScheduler">
+        <constructor-arg ref="quartzScheduler"/>
+        <property name="provisioner" ref="daemon"/>
+        <property name="importJobFactory" ref="jobFactory"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Provisiond Daemon (SpringServiceDaemon)                        -->
+    <!-- ============================================================== -->
+
+    <bean id="daemon" class="org.opennms.netmgt.provision.service.Provisioner"
+          depends-on="init-snmpPeerFactory">
+        <property name="provisionService" ref="provisionService"/>
+        <property name="eventForwarder" ref="transactionAwareEventForwarder"/>
+        <property name="lifeCycleRepository" ref="lifeCycleRepository"/>
+        <property name="scheduledExecutor" ref="scheduledExecutor"/>
+        <property name="importSchedule" ref="provisiondImportSchedule"/>
+        <property name="importActivities" ref="coreImportActivities"/>
+        <property name="taskCoordinator" ref="taskCoordinator"/>
+        <property name="agentConfigFactory" ref="snmpPeerFactory"/>
+    </bean>
+
+    <!-- Event listener adapters -->
+    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="daemon"/>
+        <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+    <bean id="adapterManagerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+        <property name="annotatedListener" ref="adapterManager"/>
+        <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (replaces Manager)                            -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.SpringDaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+        <constructor-arg value="Provisiond"/>
+    </bean>
+
+</beans>

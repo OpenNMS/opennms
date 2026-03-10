@@ -363,11 +363,6 @@ public abstract class EventConstants {
      */
     public static final String RTC_UNSUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/unsubscribe";
 
-    
-    /**
-     * An event used by queued to indicate that data for certain rrds should be immediately flushed to the disk.
-     */
-    public static final String PROMOTE_QUEUE_DATA_UEI = "uei.opennms.org/internal/promoteQueueData";
 
     /**
      * Notification without users event.
@@ -886,11 +881,6 @@ public abstract class EventConstants {
     public static final String PARM_LOCATION_MONITOR_ID = "locationMonitorId";
     /** Constant <code>PARM_LOCATION="location"</code> */
     public static final String PARM_LOCATION = "location";
-    
-    /**
-     * Parm use for promoteEnqueuedData event
-     */
-    public static final String PARM_FILES_TO_PROMOTE = "filesToPromote";
     
     /**
      * Parameter used in event SNMP poller definition

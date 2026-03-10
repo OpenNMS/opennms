@@ -2178,22 +2178,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only PassiveStatusd: loads PassiveStatusKeeper daemon without Manager/Eventd -->
-    <feature name="opennms-daemon-passivestatusd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: PassiveStatusd">
-        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
-        <feature>opennms-spring-extender</feature>
-        <!-- Event transport (Kafka-based, replaces Eventd) -->
-        <feature>opennms-event-forwarder-kafka</feature>
-        <!-- DAO infrastructure -->
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <!-- PassiveStatusd daemon classes -->
-        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
-        <!-- Daemon loader (creates PassiveStatusKeeper, starts it) -->
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-passivestatusd/${project.version}</bundle>
-    </feature>
-
     <!-- Karaf-only Notifd: loads Notifd daemon without Manager/Eventd -->
     <feature name="opennms-daemon-notifd" version="${project.version}"
              description="OpenNMS :: Daemon Loader :: Notifd">
@@ -2331,6 +2315,53 @@
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
         <!-- Daemon loader (creates Scriptd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-scriptd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Provisiond: loads Provisioner daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-provisiond" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Provisiond">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies -->
+        <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
+        <!-- Provisiond classes -->
+        <bundle>mvn:org.opennms/opennms-provisiond/${project.version}</bundle>
+        <!-- Daemon loader (creates Provisioner, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-provisiond/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Bsmd: loads Bsmd daemon without Manager/Eventd.
+         Monitors business service operational status from alarm snapshots.
+         AlarmLifecycleListenerManager polls AlarmDao every 30 seconds. -->
+    <feature name="opennms-daemon-bsmd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Bsmd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- BSM service API + persistence API -->
+        <feature>org.opennms.features.bsm.service.api</feature>
+        <!-- Alarm API -->
+        <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
+        <!-- Alarmd classes (AlarmLifecycleListenerManager) -->
+        <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
+        <!-- BSM service implementation (registers StateMachine + Manager via onmsgi) -->
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.impl/${project.version}</bundle>
+        <!-- BSM daemon class -->
+        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.daemon/${project.version}</bundle>
+        <!-- Daemon loader (creates Bsmd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-bsmd/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.

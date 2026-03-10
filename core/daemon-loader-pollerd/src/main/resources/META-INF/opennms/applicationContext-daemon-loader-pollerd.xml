@@ -147,6 +147,35 @@
     </bean>
 
     <!-- ============================================================== -->
+    <!-- PassiveStatusKeeper — same JVM as Pollerd so                   -->
+    <!-- PassiveServiceMonitor.poll() can access the singleton          -->
+    <!-- ============================================================== -->
+
+    <!-- DataSource (from distributed datasource blueprint) -->
+    <osgi:reference id="dataSource"
+                    interface="javax.sql.DataSource"/>
+
+    <!-- Register this instance as the singleton so PassiveServiceMonitor can find it -->
+    <bean id="passiveStatusKeeper-init" class="org.springframework.beans.factory.config.MethodInvokingBean">
+        <property name="staticMethod"
+                  value="org.opennms.netmgt.passive.PassiveStatusKeeper.setInstance"/>
+        <property name="arguments">
+            <list>
+                <ref bean="passiveStatusKeeper"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- PassiveStatusKeeper implements EventListener directly and subscribes
+         in onInit() via getEventManager().addEventListener(this, PASSIVE_STATUS_UEI).
+         init-method="init" triggers AbstractServiceDaemon.init() → onInit(). -->
+    <bean id="passiveStatusKeeper" class="org.opennms.netmgt.passive.PassiveStatusKeeper"
+          init-method="init" destroy-method="stop">
+        <property name="eventManager" ref="eventIpcManager"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- ============================================================== -->
     <!-- Daemon Lifecycle (replaces Manager)                            -->
     <!-- ============================================================== -->
 

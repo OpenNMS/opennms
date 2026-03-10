@@ -21,7 +21,6 @@
  */
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,16 +29,11 @@ import java.util.Map;
 
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.api.ResourceService;
 import org.slf4j.Logger;
@@ -59,7 +53,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
 
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
-    private EventProxy m_eventProxy;
 
     /**
      * <p>getResourceDao</p>
@@ -98,15 +91,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     }
     
     /**
-     * <p>setEventProxy</p>
-     *
-     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy} object.
-     */
-    public void setEventProxy(EventProxy eventProxy) {
-        m_eventProxy = eventProxy;
-    }
-
-    /**
      * <p>afterPropertiesSet</p>
      *
      * @throws java.lang.Exception if any.
@@ -115,7 +99,6 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_resourceDao != null, "resourceDao property is not set");
         Assert.state(m_graphDao != null, "graphDao property is not set");
-        Assert.state(m_eventProxy != null, "eventProxy property is not set");
     }
 
     /**
@@ -238,29 +221,13 @@ public class DefaultResourceService implements ResourceService, InitializingBean
     /** {@inheritDoc} */
     @Override
     public void promoteGraphAttributesForResource(OnmsResource resource) {
-        final String rrdBaseDir = System.getProperty("rrd.base.dir");
-        List<String> rrdFiles = new LinkedList<>();
-        for(RrdGraphAttribute attribute : resource.getRrdGraphAttributes().values()) {
-            rrdFiles.add(rrdBaseDir+File.separator+attribute.getRrdRelativePath());
-        }
-        EventBuilder bldr = new EventBuilder(EventConstants.PROMOTE_QUEUE_DATA_UEI, "OpenNMS.Webapp");
-        bldr.addParam(EventConstants.PARM_FILES_TO_PROMOTE, rrdFiles);
-        
-        try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException e) {
-            LOG.warn("Unable to send file promotion event to opennms: {}", e, e);
-        }
+        // No-op: Queued daemon has been removed; RRD queue promotion is no longer needed.
     }
 
-    /**
-     * <p>promoteGraphAttributesForResource</p>
-     *
-     * @param resourceId a {@link java.lang.String} object.
-     */
+    /** {@inheritDoc} */
     @Override
     public void promoteGraphAttributesForResource(ResourceId resourceId) {
-        promoteGraphAttributesForResource(getResourceById(resourceId));
+        // No-op: Queued daemon has been removed; RRD queue promotion is no longer needed.
     }
 
     /**

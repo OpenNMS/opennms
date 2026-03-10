@@ -24,18 +24,16 @@ err() { echo "ERROR: $*" >&2; exit 1; }
 
 # Karaf SSH ports per service (host:container)
 declare -A KARAF_PORTS=(
-    [core]=8101
     [webapp]=8102
     [pollerd]=8103
     [collectd]=8104
-    [alarmd]=8201
 )
 
 do_up() {
     log "Starting Delta-V (version $VERSION)..."
 
     # Check images exist
-    for img in "opennms/horizon:$VERSION" "opennms/daemon:$VERSION" "opennms/alarmd:$VERSION" "opennms/minion:$VERSION"; do
+    for img in "opennms/horizon:$VERSION" "opennms/daemon:$VERSION" "opennms/minion:$VERSION"; do
         docker image inspect "$img" >/dev/null 2>&1 || err "Image $img not found. Run ./build.sh first."
     done
 
@@ -44,7 +42,7 @@ do_up() {
         log "Using profile: $profile"
         COMPOSE_PROFILES="$profile" docker compose up -d
     else
-        log "Starting infrastructure only (core + webapp + minion)"
+        log "Starting infrastructure only (db-init + webapp + minion)"
         docker compose up -d
     fi
 
@@ -102,7 +100,7 @@ do_test() {
     # Test 1: Check services are running
     local running
     running=$(docker compose ps --status running --format "{{.Name}}" | wc -l | tr -d ' ')
-    if [ "$running" -ge 4 ]; then
+    if [ "$running" -ge 3 ]; then
         log "  [PASS] $running services running"
         pass=$((pass + 1))
     else
@@ -146,6 +144,17 @@ do_test() {
         fail=$((fail + 1))
     fi
 
+    # Test 6: db-init completed successfully
+    local db_init_status
+    db_init_status=$(docker compose ps db-init --format "{{.State}}" 2>/dev/null || echo "unknown")
+    if [ "$db_init_status" = "exited" ]; then
+        log "  [PASS] db-init completed (exited)"
+        pass=$((pass + 1))
+    else
+        log "  [FAIL] db-init status: $db_init_status (expected: exited)"
+        fail=$((fail + 1))
+    fi
+
     log ""
     log "Results: $pass passed, $fail failed"
     [ "$fail" -eq 0 ] && return 0 || return 1
@@ -161,24 +170,27 @@ Commands:
   reset           Stop and destroy all data (clean slate)
   status          Show service status
   logs [service]  Tail logs (all or specific service)
-  shell <service> Open Karaf shell (core, webapp, pollerd, etc.)
+  shell <service> Open Karaf shell (webapp, pollerd, etc.)
   test            Run deployment verification tests
+  test-e2e        Run end-to-end trap-to-alarm integration test
   help            Show this help
 
 Profiles:
-  (none)    Infrastructure only: postgres + kafka + core + webapp + minion
-  lite      + essential daemons (alarmd, pollerd, collectd, notifd, discovery, rtcd)
-  passive   + trap/syslog receivers (alarmd, trapd, syslogd)
-  full      All 18 services
+  (none)    Infrastructure only: postgres + kafka + db-init + webapp + minion
+  lite      + essential daemons (alarmd, pollerd, collectd, notifd, discovery, rtcd, provisiond, bsmd)
+  passive   + trap/syslog receivers (alarmd, trapd, syslogd, eventtranslator, provisiond)
+  full      All 17 services
 
 Examples:
   ./deploy.sh up                    # Infrastructure only (5 services)
-  ./deploy.sh up full               # Start everything (18 services)
-  ./deploy.sh up passive            # Trap/syslog receivers with auto-discovery
-  ./deploy.sh up lite               # Core + essential daemons (11 services)
+  ./deploy.sh up full               # Start everything (17 services)
+  ./deploy.sh up passive            # Trap/syslog receivers with alarmd
+  ./deploy.sh up lite               # Webapp + essential daemons
   ./deploy.sh logs alarmd           # Tail alarmd logs
-  ./deploy.sh shell core            # Karaf shell on core
+  ./deploy.sh shell webapp          # Karaf shell on webapp
   ./deploy.sh test                  # Verify deployment
+  ./deploy.sh test-e2e             # Full trap-to-alarm integration test
+  ./deploy.sh test-e2e --verbose   # With Kafka event trace
   ./deploy.sh reset && ./deploy.sh up  # Fresh start
 USAGE
 }
@@ -192,6 +204,7 @@ main() {
         logs)    shift; do_logs "$@" ;;
         shell)   shift; do_shell "$@" ;;
         test)    do_test ;;
+        test-e2e) shift; "$SCRIPT_DIR/test-e2e.sh" "$@" ;;
         help|-h|--help) usage ;;
         *)       err "Unknown command: $1 (run './deploy.sh help')" ;;
     esac

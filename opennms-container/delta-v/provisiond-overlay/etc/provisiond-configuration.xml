@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+  foreign-source-dir="/opt/sentinel/etc/foreign-sources"
+  requistion-dir="/opt/sentinel/etc/imports"
+  importThreads="4" scanThreads="4" rescanThreads="4" writeThreads="4" >
+</provisiond-configuration>
