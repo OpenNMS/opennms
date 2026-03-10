@@ -193,7 +193,44 @@ services:
       retries: 3
       start_period: 120s
 
+  minion:
+    image: opennms/minion:${VERSION}
+    container_name: delta-v-minion
+    hostname: minion-default-01
+    depends_on:
+      core:
+        condition: service_healthy
+      webapp:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      MINION_ID: minion-default-01
+      MINION_LOCATION: Default
+      OPENNMS_HTTP_URL: http://webapp:8980/opennms
+      OPENNMS_HTTP_USER: admin
+      OPENNMS_HTTP_PASS: admin
+      KAFKA_IPC_BOOTSTRAP_SERVERS: kafka:9092
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -Djava.security.egd=file:/dev/./urandom
+    volumes:
+      - minion-data:/opt/minion/data
+      - ./webapp-overlay/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:/opt/minion/repositories/core/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ./webapp-overlay/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:/opt/minion/repositories/default/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ./webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/core/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
+      - ./webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/default/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
+    ports:
+      - "8301:8201"
+    healthcheck:
+      test: ["CMD", "/health.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
   pollerd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-pollerd
     hostname: pollerd
@@ -228,6 +265,7 @@ services:
       start_period: 60s
 
   collectd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-collectd
     hostname: collectd
@@ -262,6 +300,7 @@ services:
       start_period: 60s
 
   rtcd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-rtcd
     hostname: rtcd
@@ -293,6 +332,7 @@ services:
       start_period: 60s
 
   passivestatusd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-passivestatusd
     hostname: passivestatusd
@@ -324,6 +364,7 @@ services:
       start_period: 60s
 
   notifd:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-notifd
     hostname: notifd
@@ -355,6 +396,7 @@ services:
       start_period: 60s
 
   discovery:
+    profiles: [lite, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-discovery
     hostname: discovery
@@ -386,6 +428,7 @@ services:
       start_period: 60s
 
   trapd:
+    profiles: [passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-trapd
     hostname: trapd
@@ -420,6 +463,7 @@ services:
       start_period: 60s
 
   syslogd:
+    profiles: [passive, full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-syslogd
     hostname: syslogd
@@ -453,6 +497,7 @@ services:
       start_period: 60s
 
   ticketer:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-ticketer
     hostname: ticketer
@@ -484,6 +529,7 @@ services:
       start_period: 60s
 
   eventtranslator:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-eventtranslator
     hostname: eventtranslator
@@ -515,6 +561,7 @@ services:
       start_period: 60s
 
   enlinkd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-enlinkd
     hostname: enlinkd
@@ -546,6 +593,7 @@ services:
       start_period: 60s
 
   scriptd:
+    profiles: [full]
     image: opennms/daemon:${VERSION}
     container_name: delta-v-scriptd
     hostname: scriptd
@@ -577,6 +625,7 @@ services:
       start_period: 60s
 
   alarmd:
+    profiles: [lite, passive, full]
     image: opennms/alarmd:${VERSION}
     entrypoint: ["/bin/bash", "-c"]
     command:
@@ -621,6 +670,7 @@ volumes:
   opennms-data:
   webapp-etc:
   webapp-data:
+  minion-data:
   pollerd-data:
   collectd-data:
   rtcd-data:
