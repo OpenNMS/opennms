@@ -84,12 +84,8 @@ do_images() {
     cd "$REPO_ROOT/opennms-container/sentinel"
     make image $make_args
 
-    log "Building Alarmd image (opennms/alarmd:$VERSION)..."
-    cd "$REPO_ROOT/opennms-container/alarmd"
-    make image $make_args
-
     log "Docker images built:"
-    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|alarmd)" | head -10
+    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon)" | head -10
 }
 
 do_webapp_overlay() {

@@ -2,18 +2,18 @@
 
 **Composable, containerized deployment of OpenNMS Horizon.**
 
-Delta-V decomposes the monolithic OpenNMS into 15 independently scalable services connected by Kafka and PostgreSQL. Each daemon runs in its own Karaf container, communicating via a shared event bus.
+Delta-V decomposes the monolithic OpenNMS into 17 independently scalable services connected by Kafka and PostgreSQL. Each daemon runs in its own Karaf container, communicating via a shared event bus. There is no core container — schema migration is handled by a one-shot db-init container, and the webapp serves only the Web UI and REST API.
 
 ```
                     ┌──────────────────────────────────────────────────┐
                     │                   Kafka (KRaft)                  │
-                    │              opennms-fault-events topic          │
-                    └──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬────────────┘
-                       │  │  │  │  │  │  │  │  │  │  │  │
-  ┌─────────┐     ┌────┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴────┐
-  │Postgres │◄────┤  core  │ webapp │ alarmd │ pollerd │ ...   │
-  │         │     │ Eventd │ Jetty  │ Alarms │ Polling │       │
-  └─────────┘     └───────────────────────────────────────────┘
+                    │    opennms-fault-events / opennms-ipc-events     │
+                    └──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬─────┘
+                       │  │  │  │  │  │  │  │  │  │  │  │  │  │
+  ┌─────────┐     ┌────┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴────┐
+  │Postgres │◄────┤ webapp │ alarmd │ pollerd │ provisiond │ ...     │
+  │         │     │ Jetty  │ Alarms │ Polling │ Provision  │         │
+  └─────────┘     └─────────────────────────────────────────────────┘
 ```
 
 ## Services
@@ -22,9 +22,10 @@ Delta-V decomposes the monolithic OpenNMS into 15 independently scalable service
 |------------------|------------------|-----------------------------------------------|-----------|
 | postgres         | postgres:15      | Shared database                               | 5432      |
 | kafka            | apache/kafka     | Event bus (KRaft mode)                        | —         |
-| core             | opennms/horizon  | Eventd, Provisiond, Enlinkd, Telemetryd, Bsmd | 8101      |
-| webapp           | opennms/horizon  | JettyServer — Web UI and REST API             | 8980      |
-| alarmd           | opennms/alarmd   | Alarm processing (Kafka consumer)             | 8201      |
+| db-init          | opennms/horizon  | One-shot schema migration (exits after init)  | —         |
+| webapp           | opennms/horizon  | JettyServer — Web UI, REST API, Provisiond    | 8980      |
+| minion           | opennms/minion   | Distributed data collection agent             | —         |
+| alarmd           | opennms/daemon   | Alarm processing (Kafka consumer)             | 8201      |
 | pollerd          | opennms/daemon   | Service polling                               | 8103      |
 | collectd         | opennms/daemon   | Data collection                               | 8104      |
 | rtcd             | opennms/daemon   | Real-time console data                        | —         |
@@ -34,6 +35,8 @@ Delta-V decomposes the monolithic OpenNMS into 15 independently scalable service
 | syslogd          | opennms/daemon   | Syslog reception                              | 10514/udp |
 | ticketer         | opennms/daemon   | Trouble ticket integration                    | —         |
 | eventtranslator  | opennms/daemon   | Event transformation rules                    | —         |
+| enlinkd          | opennms/daemon   | Link discovery (CDP, LLDP, OSPF, IS-IS, Bridge) | —      |
+| scriptd          | opennms/daemon   | Event-driven scripting                        | —         |
 
 ## Quick Start
 
@@ -62,12 +65,10 @@ opennms-container/delta-v/build.sh images
 ```bash
 cd opennms-container/delta-v
 
-# Start all 15 services
-./deploy.sh up
-
-# Or start a smaller subset
-./deploy.sh up lite    # 10 services (no trapd/syslogd/ticketer/eventtranslator)
-./deploy.sh up core    # 4 services (postgres + kafka + core + webapp)
+# Start with a profile
+./deploy.sh up lite       # Essential daemons
+./deploy.sh up passive    # Lite + trapd/syslogd/eventtranslator
+./deploy.sh up full       # All 17 services
 
 # Check status
 ./deploy.sh status
@@ -86,7 +87,6 @@ Web UI: **http://localhost:8980/opennms** (admin / admin)
 ./deploy.sh logs alarmd       # Single service
 
 # Karaf shell access
-./deploy.sh shell core        # SSH to core Karaf
 ./deploy.sh shell webapp      # SSH to webapp Karaf
 
 # Stop (preserve data)
@@ -115,12 +115,13 @@ DOCKER_ORG=pbranestrategy ./build.sh push
 
 Delta-V replaces the monolithic OpenNMS runtime with a composable service mesh:
 
-- **Core** runs Eventd (event ingestion), Provisiond (node management), Enlinkd, Telemetryd, Bsmd, Correlator, and Scriptd
-- **Webapp** runs only JettyServer — serves the Web UI and REST API
+- **db-init** runs schema migration (Liquibase) and exits — no persistent core container
+- **Webapp** runs JettyServer (Web UI + REST API) and Provisiond (node management)
 - **Alarmd** consumes events from Kafka and processes them into alarms in PostgreSQL
 - **Daemon containers** (pollerd, collectd, etc.) each run a single daemon in a lightweight Karaf instance
+- **Minion** handles distributed data collection (SNMP, ICMP) via Kafka IPC
 
-All services communicate via Kafka's `opennms-fault-events` topic. Each service generates globally unique event IDs using TSID (Time-Sorted IDs) with a unique node-id per JVM.
+All services communicate via two Kafka topics: `opennms-fault-events` (alarm-bearing events) and `opennms-ipc-events` (daemon-to-daemon coordination). Each service generates globally unique event IDs using TSID (Time-Sorted IDs) with a unique node-id per JVM.
 
 ### Event Flow
 
@@ -134,13 +135,13 @@ Events bypass the traditional `events` database table entirely. They flow throug
 
 ## Memory Requirements
 
-Running all 15 services requires significant memory. If Docker Desktop runs out of memory (exit code 137), use deployment profiles:
+Running all 17 services requires significant memory. If Docker Desktop runs out of memory (exit code 137), use deployment profiles:
 
 | Profile | Services | Approx. Memory |
 |---------|----------|-----------------|
-| core    | 4        | ~4 GB           |
-| lite    | 10       | ~8 GB           |
-| full    | 15       | ~12 GB          |
+| lite    | ~10      | ~8 GB           |
+| passive | ~13      | ~10 GB          |
+| full    | 17       | ~12 GB          |
 
 ## Troubleshooting
 

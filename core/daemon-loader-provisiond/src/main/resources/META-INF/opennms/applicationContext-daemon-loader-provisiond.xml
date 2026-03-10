@@ -115,12 +115,9 @@
     <!-- Local Implementations (standalone container stubs)             -->
     <!-- ============================================================== -->
 
-    <!-- SNMP config factory (static init pattern) -->
-    <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
-    </bean>
-    <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory"
-          depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
+    <!-- SNMP config factory (inline initializer avoids MethodInvokingBean classloader issue) -->
+    <bean id="snmpPeerFactoryInitializer" class="org.opennms.core.daemon.loader.SnmpPeerFactoryInitializer"/>
+    <bean id="snmpPeerFactory" factory-bean="snmpPeerFactoryInitializer" factory-method="getInstance"/>
 
     <!-- LocationAware clients - local implementations for standalone container -->
     <bean id="locationAwareSnmpClient"
@@ -134,16 +131,12 @@
     <bean id="tracerRegistry"
           class="org.opennms.core.daemon.loader.NoOpTracerRegistry"/>
 
-    <!-- Transaction-aware event forwarder -->
-    <bean id="transactionAwareEventForwarder"
-          class="org.opennms.netmgt.dao.TransactionAwareEventForwarder">
-        <qualifier value="transactionAware"/>
-        <property name="eventForwarder" ref="eventForwarder"/>
-    </bean>
+    <!-- In standalone container, use eventForwarder directly (no JPA transaction coordination needed) -->
+    <alias name="eventForwarder" alias="transactionAwareEventForwarder"/>
 
-    <!-- Provisiond config DAO -->
+    <!-- Provisiond config DAO (inline implementation — avoids classloader issues with opennms-dao) -->
     <bean id="provisiondConfigDao"
-          class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao"/>
+          class="org.opennms.core.daemon.loader.InlineProvisiondConfigDao"/>
     <onmsgi:service ref="provisiondConfigDao"
                     interface="org.opennms.netmgt.dao.api.ProvisiondConfigurationDao"/>
 
