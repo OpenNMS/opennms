@@ -25,8 +25,6 @@ import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A local implementation of {@link LocationAwareDnsLookupClient} for standalone
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
  * lookups. The location parameter is ignored.
  */
 public class LocalDnsLookupClient implements LocationAwareDnsLookupClient {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LocalDnsLookupClient.class);
 
     @Override
     public CompletableFuture<String> lookup(String hostName, String location) {

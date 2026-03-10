@@ -2333,6 +2333,26 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-scriptd/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only Provisiond: loads Provisioner daemon without Manager/Eventd -->
+    <feature name="opennms-daemon-provisiond" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Provisiond">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-config</feature>
+        <!-- API bundles needed by onmsgi:reference proxies -->
+        <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
+        <!-- Provisiond classes -->
+        <bundle>mvn:org.opennms/opennms-provisiond/${project.version}</bundle>
+        <!-- Daemon loader (creates Provisioner, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-provisiond/${project.version}</bundle>
+    </feature>
+
     <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
          Receives events from Kafka and persists alarms to PostgreSQL.
          NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->
