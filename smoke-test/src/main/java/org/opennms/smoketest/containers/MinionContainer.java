@@ -151,7 +151,10 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
-            addEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
+            final String bootstrapServers = OpenNMSContainer.KAFKA_ALIAS + ":9092";
+            addEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", bootstrapServers);
+            addEnv("KAFKA_RPC_IPC_BOOTSTRAP_SERVERS", bootstrapServers);
+            addEnv("KAFKA_SINK_IPC_BOOTSTRAP_SERVERS", bootstrapServers);
             addEnv("KAFKA_IPC_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             addEnv("GRPC_IPC_HOST", OpenNMSContainer.ALIAS);
