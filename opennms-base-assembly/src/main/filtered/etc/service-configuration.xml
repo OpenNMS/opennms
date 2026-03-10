@@ -18,7 +18,6 @@
   <service enabled="true"><name>OpenNMS:Name=Collectd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Discovery</name></service>
   <service enabled="true"><name>OpenNMS:Name=EventTranslator</name></service>
-  <service enabled="true"><name>OpenNMS:Name=PassiveStatusd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Provisiond</name></service>
   <service enabled="true"><name>OpenNMS:Name=JettyServer</name></service>
   <service enabled="true"><name>OpenNMS:Name=KarafStartupMonitor</name></service>
