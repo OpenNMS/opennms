@@ -2359,7 +2359,7 @@
         <!-- Alarmd classes (AlarmLifecycleListenerManager) -->
         <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
         <!-- BSM service implementation (registers StateMachine + Manager via onmsgi) -->
-        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.impl/${project.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.impl/${project.version}$Bundle-SymbolicName=org.opennms.features.bsm.persistence.impl&amp;Import-Package=*;resolution:=optional&amp;DynamicImport-Package=*</bundle>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.impl/${project.version}</bundle>
         <!-- BSM daemon class -->
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.daemon/${project.version}</bundle>
