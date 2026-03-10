@@ -35,6 +35,22 @@ REST_USER="admin"
 REST_PASS="admin"
 IFINDEX=1
 
+# ── Usage ─────────────────────────────────────────────────────────
+usage() {
+    cat <<'USAGE'
+Usage: ./test-e2e.sh [options]
+
+Options:
+  --verbose    Show full Kafka event trace
+  --cleanup    Delete test alarms after test
+  --help       Show this help
+
+Prerequisites:
+  - Deploy with: ./deploy.sh up passive
+  - snmptrap must be installed (net-snmp)
+USAGE
+}
+
 # ── Parse flags ────────────────────────────────────────────────────
 VERBOSE=false
 CLEANUP=false
@@ -49,9 +65,11 @@ done
 # ── Helpers ────────────────────────────────────────────────────────
 PASS=0
 FAIL=0
-TMPDIR=$(mktemp -d)
-FAULT_LOG="$TMPDIR/fault-events.log"
-IPC_LOG="$TMPDIR/ipc-events.log"
+FAULT_CONSUMER_PID=""
+IPC_CONSUMER_PID=""
+TEST_TMPDIR=$(mktemp -d)
+FAULT_LOG="$TEST_TMPDIR/fault-events.log"
+IPC_LOG="$TEST_TMPDIR/ipc-events.log"
 
 log()  { echo "==> $*"; }
 ok()   { echo "  [PASS] $*"; PASS=$((PASS + 1)); }
@@ -59,8 +77,8 @@ fail() { echo "  [FAIL] $*"; FAIL=$((FAIL + 1)); }
 err()  { echo "ERROR: $*" >&2; exit 2; }
 
 cleanup() {
-    kill "$FAULT_CONSUMER_PID" 2>/dev/null || true
-    kill "$IPC_CONSUMER_PID" 2>/dev/null || true
+    [ -n "$FAULT_CONSUMER_PID" ] && kill "$FAULT_CONSUMER_PID" 2>/dev/null || true
+    [ -n "$IPC_CONSUMER_PID" ] && kill "$IPC_CONSUMER_PID" 2>/dev/null || true
 
     if $VERBOSE; then
         log ""
@@ -79,24 +97,10 @@ cleanup() {
             2>/dev/null || true
     fi
 
-    rm -rf "$TMPDIR"
+    docker compose exec -T kafka pkill -f 'kafka-console-consumer' 2>/dev/null || true
+    rm -rf "$TEST_TMPDIR"
 }
 trap cleanup EXIT
-
-usage() {
-    cat <<'USAGE'
-Usage: ./test-e2e.sh [options]
-
-Options:
-  --verbose    Show full Kafka event trace
-  --cleanup    Delete test alarms/node after test
-  --help       Show this help
-
-Prerequisites:
-  - Deploy with: ./deploy.sh up passive
-  - snmptrap must be installed (net-snmp)
-USAGE
-}
 
 wait_for_kafka_event() {
     local log_file="$1"
@@ -128,7 +132,7 @@ command -v snmptrap >/dev/null 2>&1 || err "snmptrap not found. Install net-snmp
 
 REQUIRED_SERVICES="postgres kafka trapd eventtranslator alarmd provisiond webapp"
 for svc in $REQUIRED_SERVICES; do
-    if ! docker compose ps --status running --format '{{.Name}}' 2>/dev/null | grep -q "$svc"; then
+    if ! docker compose ps --status running --format '{{.Name}}' 2>/dev/null | grep -qw "$svc"; then
         err "Service '$svc' is not running. Deploy with: ./deploy.sh up passive"
     fi
 done
@@ -140,14 +144,12 @@ log "Starting Kafka event consumers..."
 docker compose exec -T kafka /opt/kafka/bin/kafka-console-consumer.sh \
     --bootstrap-server localhost:9092 \
     --topic opennms-fault-events \
-    --from-latest \
     > "$FAULT_LOG" 2>/dev/null &
 FAULT_CONSUMER_PID=$!
 
 docker compose exec -T kafka /opt/kafka/bin/kafka-console-consumer.sh \
     --bootstrap-server localhost:9092 \
     --topic opennms-ipc-events \
-    --from-latest \
     > "$IPC_LOG" 2>/dev/null &
 IPC_CONSUMER_PID=$!
 
