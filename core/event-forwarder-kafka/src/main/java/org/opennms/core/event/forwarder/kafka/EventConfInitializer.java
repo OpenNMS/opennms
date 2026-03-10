@@ -24,40 +24,45 @@ package org.opennms.core.event.forwarder.kafka;
 import java.util.List;
 
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Creates and populates an in-memory {@link EventConfDao} from the database
- * on startup. The populated DAO is exposed via {@link #getEventConfDao()} for
- * injection into {@link KafkaEventForwarder}, enabling producer-side enrichment
- * of events with severity and alarm-data from eventconf definitions.
+ * Loads event definitions from the database on startup and injects the
+ * resulting {@link EventConfDao} into {@link KafkaEventForwarder} for
+ * producer-side enrichment of events with severity and alarm-data.
+ *
+ * <p>Gracefully degrades if {@link EventConfEventDao} is unavailable
+ * (e.g., distributed-dao-impl failed to restart during a Karaf feature
+ * refresh cycle). In that case, events are forwarded without enrichment.</p>
  */
 public class EventConfInitializer {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfInitializer.class);
 
     private final EventConfEventDao eventConfEventDao;
-    private EventConfDao eventConfDao;
+    private final KafkaEventForwarder kafkaEventForwarder;
 
-    public EventConfInitializer(EventConfEventDao eventConfEventDao) {
+    public EventConfInitializer(EventConfEventDao eventConfEventDao, KafkaEventForwarder kafkaEventForwarder) {
         this.eventConfEventDao = eventConfEventDao;
+        this.kafkaEventForwarder = kafkaEventForwarder;
     }
 
     public void init() {
-        final long startTime = System.currentTimeMillis();
-        DefaultEventConfDao dao = new DefaultEventConfDao();
-        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        dao.loadEventsFromDB(dbEvents);
-        this.eventConfDao = dao;
-        final long elapsed = System.currentTimeMillis() - startTime;
-        LOG.info("Loaded {} event definitions from database in {} ms", dbEvents.size(), elapsed);
-    }
-
-    public EventConfDao getEventConfDao() {
-        return eventConfDao;
+        try {
+            final long startTime = System.currentTimeMillis();
+            DefaultEventConfDao dao = new DefaultEventConfDao();
+            List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+            dao.loadEventsFromDB(dbEvents);
+            kafkaEventForwarder.setEventConfDao(dao);
+            final long elapsed = System.currentTimeMillis() - startTime;
+            LOG.info("Loaded {} event definitions from database in {} ms", dbEvents.size(), elapsed);
+        } catch (Throwable t) {
+            LOG.warn("EventConfEventDao is not available — event enrichment will be disabled. "
+                    + "This typically means distributed-dao-impl has not yet started. "
+                    + "Cause: {} ({})", t.getMessage(), t.getClass().getSimpleName());
+        }
     }
 }
