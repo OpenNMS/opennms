@@ -235,6 +235,7 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
     // -------- poll loop --------
 
     private void pollLoop() {
+        LOG.info("Poll loop starting on thread {}", Thread.currentThread().getName());
         try {
             while (running.get()) {
                 ConsumerRecords<Long, byte[]> records;
@@ -270,12 +271,20 @@ public class KafkaEventSubscriptionService implements EventSubscriptionService {
                     }
                 }
             }
+            LOG.info("Poll loop exited normally, running={}", running.get());
         } catch (WakeupException e) {
             // Expected during shutdown — only rethrow if still running
             if (running.get()) {
+                LOG.error("WakeupException while still running — rethrowing", e);
                 throw e;
             }
+            LOG.info("Poll loop received WakeupException during shutdown");
+        } catch (Exception e) {
+            LOG.error("Poll loop terminated by unexpected exception", e);
+        } catch (Throwable t) {
+            LOG.error("Poll loop terminated by Throwable (likely Error)", t);
         } finally {
+            LOG.info("Poll loop finally block — closing consumer (running={})", running.get());
             try {
                 consumer.close();
             } catch (Exception e) {

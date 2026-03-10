@@ -38,6 +38,7 @@ services:
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
@@ -484,6 +485,8 @@ services:
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-config/target/opennms-config-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/opennms-config/36.0.0-SNAPSHOT/opennms-config-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-util/target/opennms-util-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/opennms-util/36.0.0-SNAPSHOT/opennms-util-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -588,10 +591,10 @@ services:
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
       - ../../core/daemon-loader-provisiond/target/org.opennms.core.daemon-loader-provisiond-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-provisiond/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-provisiond-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
-      test: ["CMD", "/health.sh"]
-      interval: 30s
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
       timeout: 10s
-      retries: 10
+      retries: 20
       start_period: 90s
 
   bsmd:
@@ -628,10 +631,10 @@ services:
       # events daemon JAR
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
-      test: ["CMD", "/health.sh"]
-      interval: 30s
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
       timeout: 10s
-      retries: 10
+      retries: 20
       start_period: 90s
 
   alarmd:
