@@ -2325,6 +2325,9 @@
         <feature>opennms-distributed-core-impl</feature>
         <feature>opennms-persistence</feature>
         <feature>opennms-config</feature>
+        <feature>quartz</feature>
+        <!-- Task coordinator (DefaultTaskCoordinator for import/scan/write lifecycles) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.tasks/${project.version}</bundle>
         <!-- API bundles needed by onmsgi:reference proxies -->
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-provision-persistence/${project.version}</bundle>
