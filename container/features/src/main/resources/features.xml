@@ -1691,10 +1691,8 @@
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
-        <!--
         <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
-        -->
     </feature>
 
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
