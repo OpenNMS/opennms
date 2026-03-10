@@ -21,13 +21,10 @@
  */
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,16 +33,10 @@ import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.ResourceId;
-import org.opennms.netmgt.model.ResourceTypeUtils;
-import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.svclayer.api.GraphResultsService;
 import org.opennms.web.svclayer.model.Graph;
 import org.opennms.web.svclayer.model.GraphResults;
@@ -78,8 +69,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     private NodeDao m_nodeDao;
 
     private RrdDao m_rrdDao;
-
-    private EventProxy m_eventProxy;
 
     private JsonStore m_jsonStore;
 
@@ -229,16 +218,11 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
         List<Graph> graphs = new ArrayList<Graph>(reports.length);
 
-        List<String> filesToPromote = new LinkedList<>();
         for (String report : reports) {
             PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
             Graph graph = new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd());
-            getAttributeFiles(graph, filesToPromote);
             graphs.add(graph);
         }
-
-        sendEvent(filesToPromote);
-
 
         /*
          * Sort the graphs by their order in the properties file. PrefabGraph
@@ -249,37 +233,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
         rs.setGraphs(graphs);
 
         return rs;
-    }
-
-    private void sendEvent(List<String> filesToPromote) {
-
-        EventBuilder bldr = new EventBuilder(EventConstants.PROMOTE_QUEUE_DATA_UEI, "OpenNMS.Webapp");
-        bldr.addParam(EventConstants.PARM_FILES_TO_PROMOTE, filesToPromote);
-
-        try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException e) {
-            LOG.warn("Unable to send promotion event to opennms daemon", e);
-        }
-
-    }
-
-   
-
-    private void getAttributeFiles(Graph graph, List<String> filesToPromote) {
-
-        Collection<RrdGraphAttribute> attrs = graph.getRequiredRrGraphdAttributes();
-
-        final String rrdBaseDir = System.getProperty("rrd.base.dir");
-        for(RrdGraphAttribute rrdAttr : attrs) {
-            LOG.debug("getAttributeFiles: ResourceType, ParentResourceType = {}, {}", rrdAttr.getResource().getResourceType().getLabel(), rrdAttr.getResource().getParent().getResourceType().getLabel());
-            if (rrdAttr.getResource().getParent().getResourceType().getLabel().equals("nodeSource")) {
-                filesToPromote.add(rrdBaseDir+File.separator+ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY+File.separator+rrdAttr.getRrdRelativePath());
-            } else {
-                filesToPromote.add(rrdBaseDir+File.separator+rrdAttr.getRrdRelativePath());
-            }
-        }
-
     }
 
     /**
@@ -365,17 +318,6 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
     public void setRrdDao(RrdDao rrdDao) {
         m_rrdDao = rrdDao;
     }
-
-    /**
-     * <p>setEventProxy</p>
-     *
-     * @param eventProxy a {@link org.opennms.netmgt.events.api.EventProxy}
-     * object.
-     */
-    public void setEventProxy(EventProxy eventProxy) {
-        m_eventProxy = eventProxy;
-    }
-
 
     /**
      * <p>setJsonStore</p>

@@ -105,14 +105,12 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process,type=timers";
     private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted,type=meters";
     private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted,type=meters";
-    private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
     private static final String JMX_OBJ_OPENNMS_TSS = "org.opennms.timeseries:name=samples.write.integration";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
     private static final String JMX_ATTR_TASKS_COMPLETED = "TasksCompleted";
     private static final String JMX_ATTR_COUNT = "Count";
-    private static final String JMX_ATTR_UPDATES_COMPLETED = "UpdatesCompleted";
     private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
     private static final int MAX_DEP_RECURSION_DEPTH = 2;
     private static final String OIA_FEATURE_NAME = "opennms-integration-api";
@@ -409,10 +407,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object coreNewtsSamplesInsertedObj = getJmxAttribute(JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED, JMX_ATTR_COUNT);
         if (coreNewtsSamplesInsertedObj != null) {
             usageStatisticsReport.setCoreNewtsSamplesInserted((long) coreNewtsSamplesInsertedObj);
-        }
-        Object coreQueuedUpdatesCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_QUEUED, JMX_ATTR_UPDATES_COMPLETED);
-        if (coreQueuedUpdatesCompletedObj != null) {
-            usageStatisticsReport.setCoreQueuedUpdatesCompleted((long) coreQueuedUpdatesCompletedObj);
         }
         Object coreTssWritesCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_TSS, JMX_ATTR_COUNT);
         if (coreTssWritesCompletedObj != null) {

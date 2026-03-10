@@ -85,12 +85,6 @@
             "datatype": "number"
         },
         {
-            "key": "coreQueuedUpdatesCompleted",
-            "name": "Metrics persisted",
-            "description": "Number of metric data items persisted to time-series storage since the core last started up",
-            "datatype": "number"
-        },
-        {
             "key": "databaseProductName",
             "name": "RDBMS type",
             "description": "Whether PostgreSQL or some other RDBMS is in use",

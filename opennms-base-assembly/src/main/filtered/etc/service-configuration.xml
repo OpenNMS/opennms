@@ -9,7 +9,6 @@
   <service enabled="true"><name>OpenNMS:Name=Bsmd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Ticketer</name></service>
   <service enabled="false"><name>OpenNMS:Name=Correlator</name></service>
-  <service enabled="true"><name>OpenNMS:Name=Queued</name></service>
   <service enabled="true"><name>OpenNMS:Name=Notifd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Scriptd</name></service>
   <service enabled="true"><name>OpenNMS:Name=Rtcd</name></service>
