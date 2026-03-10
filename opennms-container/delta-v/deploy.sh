@@ -3,7 +3,7 @@
 # deploy.sh — Deploy and manage OpenNMS Delta-V
 #
 # Usage:
-#   ./deploy.sh up          Start all services
+#   ./deploy.sh up [profile] Start services (profiles: lite, passive, full)
 #   ./deploy.sh down        Stop all services (preserve data)
 #   ./deploy.sh reset       Stop and remove all data
 #   ./deploy.sh status      Show service status
@@ -39,27 +39,14 @@ do_up() {
         docker image inspect "$img" >/dev/null 2>&1 || err "Image $img not found. Run ./build.sh first."
     done
 
-    local profile="${1:-full}"
-    case "$profile" in
-        full)
-            docker compose up -d
-            ;;
-        core)
-            # Minimal: postgres + kafka + core + webapp
-            docker compose up -d postgres kafka core webapp
-            ;;
-        lite)
-            # Core + essential daemons (no trapd/syslogd/ticketer/eventtranslator/passivestatusd)
-            docker compose up -d postgres kafka core webapp alarmd pollerd collectd notifd discovery rtcd
-            ;;
-        passive)
-            # Passive monitoring: traps + syslogs → alarms, with new-suspect-on-trap/message enabled
-            docker compose up -d postgres kafka core webapp alarmd trapd syslogd
-            ;;
-        *)
-            err "Unknown profile: $profile (use: full, core, lite, passive)"
-            ;;
-    esac
+    local profile="${1:-}"
+    if [ -n "$profile" ]; then
+        log "Using profile: $profile"
+        COMPOSE_PROFILES="$profile" docker compose up -d
+    else
+        log "Starting infrastructure only (core + webapp + minion)"
+        docker compose up -d
+    fi
 
     log "Waiting for services to start..."
     log "Run './deploy.sh status' to check progress."
@@ -169,7 +156,7 @@ usage() {
 Usage: ./deploy.sh <command> [args]
 
 Commands:
-  up [profile]    Start services (profiles: full, core, lite, passive)
+  up [profile]    Start services (profiles: lite, passive, full)
   down            Stop services (preserve data volumes)
   reset           Stop and destroy all data (clean slate)
   status          Show service status
@@ -179,15 +166,16 @@ Commands:
   help            Show this help
 
 Profiles:
-  full    All 15 services (default)
-  core    Minimal: postgres + kafka + core + webapp
-  lite    Core + essential daemons (10 services)
-  passive Traps + syslogs → alarms (7 services, new-suspect enabled)
+  (none)    Infrastructure only: postgres + kafka + core + webapp + minion
+  lite      + essential daemons (alarmd, pollerd, collectd, notifd, discovery, rtcd)
+  passive   + trap/syslog receivers (alarmd, trapd, syslogd)
+  full      All 18 services
 
 Examples:
-  ./deploy.sh up                    # Start everything
+  ./deploy.sh up                    # Infrastructure only (5 services)
+  ./deploy.sh up full               # Start everything (18 services)
   ./deploy.sh up passive            # Trap/syslog receivers with auto-discovery
-  ./deploy.sh up lite               # Start without trapd/syslogd/etc.
+  ./deploy.sh up lite               # Core + essential daemons (11 services)
   ./deploy.sh logs alarmd           # Tail alarmd logs
   ./deploy.sh shell core            # Karaf shell on core
   ./deploy.sh test                  # Verify deployment
