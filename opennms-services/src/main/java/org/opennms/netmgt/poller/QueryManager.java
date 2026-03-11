@@ -53,9 +53,9 @@ public interface QueryManager {
     Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
 
     /**
-     * Set or updates the lost event id on the specified outage.
+     * Set or updates the lost event TSID and UEI on the specified outage.
      */
-    void updateOpenOutageWithEventId(int outageId, long lostEventId);
+    void updateOpenOutageWithEvent(int outageId, long eventTsid, String eventUei);
 
     /**
      * Marks the outage for the given service as resolved
@@ -67,9 +67,9 @@ public interface QueryManager {
     Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime);
 
     /**
-     * Set or updates the regained event id on the specified outage.
+     * Set or updates the regained event TSID and UEI on the specified outage.
      */
-    void updateResolvedOutageWithEventId(int outageId, long regainedEventId);
+    void updateResolvedOutageWithEvent(int outageId, long eventTsid, String eventUei);
 
     /**
      * @param nodeId
@@ -79,11 +79,11 @@ public interface QueryManager {
 
     void closeOutagesForUnmanagedServices();
 
-    void closeOutagesForNode(Date closeDate, long eventId, int nodeId);
+    void closeOutagesForNode(Date closeDate, long eventTsid, String eventUei, int nodeId);
 
-    void closeOutagesForInterface(Date closeDate, long eventId, int nodeId, String ipAddr);
+    void closeOutagesForInterface(Date closeDate, long eventTsid, String eventUei, int nodeId, String ipAddr);
 
-    void closeOutagesForService(Date closeDate, long eventId, int nodeId, String ipAddr, String serviceName);
+    void closeOutagesForService(Date closeDate, long eventTsid, String eventUei, int nodeId, String ipAddr, String serviceName);
 
     void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status);
 

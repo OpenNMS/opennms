@@ -42,12 +42,10 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.core.criteria.restrictions.NullRestriction;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -69,9 +67,6 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     @Autowired
     private NodeDao m_nodeDao;
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     private OutageDao m_outageDao;
@@ -119,19 +114,17 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateOpenOutageWithEventId(int outageId, long lostEventId) {
-        LOG.info("updating open outage {} with event id {}", outageId, lostEventId);
+    public void updateOpenOutageWithEvent(int outageId, long eventTsid, String eventUei) {
+        LOG.info("updating open outage {} with event tsid {}", outageId, eventTsid);
 
-        final OnmsEvent event = m_eventDao.get(lostEventId);
         final OnmsOutage outage = m_outageDao.get(outageId);
         if (outage == null) {
-            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
-                    outageId, lostEventId);
+            LOG.warn("Failed to update outage {}. The outage no longer exists.", outageId);
             return;
         }
 
-        // Update the outage
-        outage.setServiceLostEvent(event);
+        outage.setSvcLostEventTsid(eventTsid);
+        outage.setSvcLostEventUei(eventUei);
         m_outageDao.saveOrUpdate(outage);
     }
 
@@ -159,19 +152,17 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateResolvedOutageWithEventId(int outageId, long regainedEventId) {
-        LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
+    public void updateResolvedOutageWithEvent(int outageId, long eventTsid, String eventUei) {
+        LOG.info("updating resolved outage {} with event tsid {}", outageId, eventTsid);
 
-        final OnmsEvent event = m_eventDao.get(regainedEventId);
         final OnmsOutage outage = m_outageDao.get(outageId);
         if (outage == null) {
-            LOG.warn("Failed to update outage {} with event id {}. The outage no longer exists.",
-                    outageId, regainedEventId);
+            LOG.warn("Failed to update outage {}. The outage no longer exists.", outageId);
             return;
         }
 
-        // Update the outage
-        outage.setServiceRegainedEvent(event);
+        outage.setSvcRegainedEventTsid(eventTsid);
+        outage.setSvcRegainedEventUei(eventUei);
         m_outageDao.saveOrUpdate(outage);
     }
 
@@ -243,7 +234,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param nodeId a int.
      */
     @Override
-    public void closeOutagesForNode(Date closeDate, long eventId, int nodeId) {
+    public void closeOutagesForNode(Date closeDate, long eventTsid, String eventUei, int nodeId) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -253,10 +244,11 @@ public class QueryManagerDaoImpl implements QueryManager {
         criteria.addRestriction(new EqRestriction("node.id", nodeId));
         criteria.addRestriction(new NullRestriction("ifRegainedService"));
         List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
-        
+
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
-            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            outage.setSvcRegainedEventTsid(eventTsid);
+            outage.setSvcRegainedEventUei(eventUei);
             m_outageDao.update(outage);
         }
     }
@@ -270,7 +262,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param ipAddr a {@link java.lang.String} object.
      */
     @Override
-    public void closeOutagesForInterface(Date closeDate, long eventId, int nodeId, String ipAddr) {
+    public void closeOutagesForInterface(Date closeDate, long eventTsid, String eventUei, int nodeId, String ipAddr) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -281,10 +273,11 @@ public class QueryManagerDaoImpl implements QueryManager {
         criteria.addRestriction(new EqRestriction("ipInterface.ipAddress", addr(ipAddr)));
         criteria.addRestriction(new NullRestriction("ifRegainedService"));
         List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
-        
+
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
-            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            outage.setSvcRegainedEventTsid(eventTsid);
+            outage.setSvcRegainedEventUei(eventUei);
             m_outageDao.update(outage);
         }
     }
@@ -299,7 +292,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param serviceName a {@link java.lang.String} object.
      */
     @Override
-    public void closeOutagesForService(Date closeDate, long eventId, int nodeId, String ipAddr, String serviceName) {
+    public void closeOutagesForService(Date closeDate, long eventTsid, String eventUei, int nodeId, String ipAddr, String serviceName) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -312,13 +305,13 @@ public class QueryManagerDaoImpl implements QueryManager {
         criteria.addRestriction(new EqRestriction("serviceType.name", serviceName));
         criteria.addRestriction(new NullRestriction("ifRegainedService"));
         List<OnmsOutage> outages = m_outageDao.findMatching(criteria);
-        
+
         for (OnmsOutage outage : outages) {
             outage.setIfRegainedService(closeDate);
-            outage.setServiceRegainedEvent(m_eventDao.get(eventId));
+            outage.setSvcRegainedEventTsid(eventTsid);
+            outage.setSvcRegainedEventUei(eventUei);
             m_outageDao.update(outage);
-            LOG.info("Calling closeOutagesForService: {}",outage);
-            
+            LOG.info("Calling closeOutagesForService: {}", outage);
         }
     }
 
