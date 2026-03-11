@@ -108,9 +108,6 @@
     <bean id="memoDao" class="org.opennms.netmgt.dao.mock.MockMemoDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MemoDao" ref="memoDao" />
 
-    <bean id="notificationDao" class="org.opennms.netmgt.dao.mock.MockNotificationDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.NotificationDao" ref="notificationDao" />
-
     <bean id="outageDao" class="org.opennms.netmgt.dao.mock.MockOutageDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.OutageDao" ref="outageDao" />
 
@@ -147,9 +144,6 @@
         <property name="configResource" ref="surveillanceViewConfigResourceLocation" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SurveillanceViewConfigDao" ref="surveillanceViewConfigDao" />
-
-    <bean id="userNotificationDao" class="org.opennms.netmgt.dao.mock.MockUserNotificationDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.UserNotificationDao" ref="userNotificationDao" />
 
     <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
@@ -207,8 +201,6 @@
         <property name="eventDao" ref="eventDao" />
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmAssociationDao" ref="alarmAssociationDao" />
-        <property name="notificationDao" ref="notificationDao" />
-        <property name="userNotificationDao" ref="userNotificationDao" />
         <property name="monitoringLocationDao" ref="monitoringLocationDao" />
         <property name="applicationDao" ref="applicationDao" />
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />

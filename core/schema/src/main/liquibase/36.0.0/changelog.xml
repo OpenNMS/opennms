@@ -286,4 +286,11 @@
         </createView>
     </changeSet>
 
+    <changeSet id="36.0.0-drop-notifications-tables" author="delta-v">
+        <comment>Drop notification tables — Notifd daemon eliminated from Delta-V</comment>
+        <dropTable tableName="usersnotified" cascadeConstraints="true"/>
+        <dropTable tableName="notifications" cascadeConstraints="true"/>
+        <sql>DROP SEQUENCE IF EXISTS notifynxtid;</sql>
+    </changeSet>
+
 </databaseChangeLog>
