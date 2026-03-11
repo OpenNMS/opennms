@@ -398,7 +398,6 @@
                         <feature>opennms-daemon-pollerd</feature>
                         <feature>opennms-daemon-collectd</feature>
                         <feature>opennms-daemon-alarmd</feature>
-                        <feature>opennms-daemon-notifd</feature>
                         <feature>opennms-daemon-discovery</feature>
                         <feature>opennms-daemon-trapd</feature>
                         <feature>opennms-daemon-syslogd</feature>

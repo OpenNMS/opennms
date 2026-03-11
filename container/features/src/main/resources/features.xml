@@ -2178,21 +2178,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only Notifd: loads Notifd daemon without Manager/Eventd -->
-    <feature name="opennms-daemon-notifd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: Notifd">
-        <feature>opennms-spring-extender</feature>
-        <feature>opennms-event-forwarder-kafka</feature>
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <feature>opennms-config</feature>
-        <!-- API bundles needed by onmsgi:reference proxies -->
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-notifd/${project.version}</bundle>
-    </feature>
 
     <!-- Karaf-only Discovery: loads Discovery daemon without Manager/Eventd -->
     <feature name="opennms-daemon-discovery" version="${project.version}"

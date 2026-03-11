@@ -1,7 +1,7 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (17 services)
+# Delta-V: OpenNMS microservice-mode deployment (16 services)
 # db-init (schema migration, runs once) + Webapp + Minion
-# + Alarmd + Pollerd + Collectd + Rtcd + Notifd
+# + Alarmd + Pollerd + Collectd + Rtcd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
 # + Provisiond + Bsmd
 #
@@ -103,7 +103,6 @@ services:
       CORE_SERVICE_TICKETER_ENABLED: "false"
       CORE_SERVICE_QUEUED_ENABLED: "false"
       CORE_SERVICE_ACTIOND_ENABLED: "false"
-      CORE_SERVICE_NOTIFD_ENABLED: "false"
       CORE_SERVICE_SCRIPTD_ENABLED: "false"
       CORE_SERVICE_RTCD_ENABLED: "false"
       CORE_SERVICE_POLLERD_ENABLED: "false"
@@ -268,40 +267,6 @@ services:
     volumes:
       - rtcd-data:/opt/sentinel/data
       - ./rtcd-overlay/etc:/opt/sentinel-etc-overlay:ro
-      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
-      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
-      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 60s
-
-  notifd:
-    profiles: [lite, full]
-    image: opennms/daemon:${VERSION}
-    container_name: delta-v-notifd
-    hostname: notifd
-    depends_on:
-      db-init:
-        condition: service_completed_successfully
-      kafka:
-        condition: service_healthy
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: opennms
-      POSTGRES_PASSWORD: opennms
-      POSTGRES_DB: opennms
-      JAVA_OPTS: >-
-        -Xms256m -Xmx512m
-        -XX:MaxMetaspaceSize=256m
-        -Djava.security.egd=file:/dev/./urandom
-        -Dorg.opennms.tsid.node-id=8
-    volumes:
-      - notifd-data:/opt/sentinel/data
-      - ./notifd-overlay/etc:/opt/sentinel-etc-overlay:ro
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
@@ -675,7 +640,6 @@ volumes:
   pollerd-data:
   collectd-data:
   rtcd-data:
-  notifd-data:
   discovery-data:
   trapd-data:
   syslogd-data:
