@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      This module does NOT inherit from the OpenNMS parent POM.
+      It is a standalone Spring Boot application with its own dependency
+      management, Java version, and build lifecycle.
+    -->
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.db-init</artifactId>
+    <version>36.0.0-SNAPSHOT</version>
+    <name>OpenNMS :: Core :: DB Init</name>
+    <description>Standalone Spring Boot CLI for PostgreSQL schema migration</description>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.3</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <java.version>21</java.version>
+        <opennms.version>36.0.0-SNAPSHOT</opennms.version>
+        <liquibase.version>3.6.3</liquibase.version>
+    </properties>
+
+    <dependencies>
+        <!-- Migrator library (Migrator.java, custom Liquibase extensions) -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.schema</artifactId>
+            <version>${opennms.version}</version>
+            <exclusions>
+                <!-- Exclude transitive Spring 4.x / Liquibase managed by Boot -->
+                <exclusion>
+                    <groupId>org.opennms.dependencies</groupId>
+                    <artifactId>spring-dependencies</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opennms.dependencies</groupId>
+                    <artifactId>liquibase-dependencies</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Changelog XMLs (separate assembly JAR, NOT in main schema JAR) -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.schema</artifactId>
+            <version>${opennms.version}</version>
+            <classifier>liquibase</classifier>
+        </dependency>
+
+        <!-- Spring Boot (JDBC only, no web server) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL JDBC driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <!-- Liquibase — pinned to 3.6.3 to match core/schema compilation -->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquibase.version}</version>
+        </dependency>
+
+        <!-- commons-lang (transitive from core.schema, but explicit) -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>db-init-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
