@@ -71,6 +71,42 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
     private static final int MINION_TELEMETRY_JTI_PORT = 50001;
     private static final int MINION_TELEMETRY_NXOS_PORT = 50002;
     private static final int MINION_JETTY_PORT = 8181;
+    private static final String TELEMETRY_FEATURES_XML = String.join("\n",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+            "<features name=\"my-features\" xmlns=\"http://karaf.apache.org/xmlns/features/v1.3.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0\">",
+            "  <feature name=\"confd-telemetry-auto\" version=\"1.0\" install=\"auto\">",
+            "    <config name=\"org.opennms.features.telemetry.listeners-single-port-flows\">",
+            "      name=Single-Port-Flow-Listener",
+            "      class-name=org.opennms.netmgt.telemetry.listeners.UdpListener",
+            "      parameters.port=50000",
+            "      parsers.1.name=Netflow-5",
+            "      parsers.1.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser",
+            "      parsers.1.parameters.maxClockSkew=300",
+            "      parsers.2.name=Netflow-9",
+            "      parsers.2.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser",
+            "      parsers.2.parameters.maxClockSkew=300",
+            "      parsers.3.name=IPFIX",
+            "      parsers.3.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser",
+            "      parsers.3.parameters.maxClockSkew=300",
+            "      parsers.4.name=SFlow",
+            "      parsers.4.class-name=org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser",
+            "    </config>",
+            "    <config name=\"org.opennms.features.telemetry.listeners-JTI-Listener\">",
+            "      name=JTI-Listener",
+            "      class-name=org.opennms.netmgt.telemetry.listeners.UdpListener",
+            "      parameters.port=50001",
+            "      parsers.0.name=JTI",
+            "      parsers.0.class-name=org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser",
+            "    </config>",
+            "    <config name=\"org.opennms.features.telemetry.listeners-NXOS-Listener\">",
+            "      name=NXOS-Listener",
+            "      class-name=org.opennms.netmgt.telemetry.listeners.UdpListener",
+            "      parameters.port=50002",
+            "      parsers.0.name=NXOS",
+            "      parsers.0.class-name=org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser",
+            "    </config>",
+            "  </feature>",
+            "</features>");
 
     static final String ALIAS = "minion";
     static final String IMAGE = "opennms/minion";
@@ -118,6 +154,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withEnv("TRAPD_CFG_TRAPD_LISTEN_INTERFACE", "0.0.0.0")
                 .withEnv("TRAPD_CFG_TRAPD_USEADDRESSFROMVARBIND", "true")
                 .withEnv("KARAF_SSH_HOST", "0.0.0.0")
+                .withEnv("TELEMETRY_FEATURES_XML", TELEMETRY_FEATURES_XML)
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
                 .withEnv("JAVA_OPTS", "-Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom")
                 .withEnv("MINION_ID",profile.getId())
