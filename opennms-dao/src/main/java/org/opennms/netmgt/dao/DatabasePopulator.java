@@ -399,11 +399,17 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), svc, null, null);
+        resolved.setSvcLostEventTsid(event.getId().longValue());
+        resolved.setSvcLostEventUei(event.getEventUei());
+        resolved.setSvcRegainedEventTsid(event.getId().longValue());
+        resolved.setSvcRegainedEventUei(event.getEventUei());
         getOutageDao().save(resolved);
         getOutageDao().flush();
-        
-        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
+
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), svc);
+        unresolved.setSvcLostEventTsid(event.getId().longValue());
+        unresolved.setSvcLostEventUei(event.getEventUei());
         getOutageDao().save(unresolved);
         getOutageDao().flush();
 
@@ -440,12 +446,18 @@ public class DatabasePopulator {
         m_monitoringLocationDao.save(locFD);
 
         // added this to assure that the old behaviour before PerspectivePoller is still the same, see NMS-12792
-        final OnmsOutage perspectiveResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
+        final OnmsOutage perspectiveResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), svc, null, null);
+        perspectiveResolved.setSvcLostEventTsid(event.getId().longValue());
+        perspectiveResolved.setSvcLostEventUei(event.getEventUei());
+        perspectiveResolved.setSvcRegainedEventTsid(event.getId().longValue());
+        perspectiveResolved.setSvcRegainedEventUei(event.getEventUei());
         perspectiveResolved.setPerspective(locFD);
         getOutageDao().save(perspectiveResolved);
         getOutageDao().flush();
 
-        final OnmsOutage perspectiveUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
+        final OnmsOutage perspectiveUnresolved = new OnmsOutage(new Date(1436881448292L), svc);
+        perspectiveUnresolved.setSvcLostEventTsid(event.getId().longValue());
+        perspectiveUnresolved.setSvcLostEventUei(event.getEventUei());
         perspectiveUnresolved.setPerspective(locRDU);
         getOutageDao().save(perspectiveUnresolved);
         getOutageDao().flush();
