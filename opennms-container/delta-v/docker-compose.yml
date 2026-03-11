@@ -67,11 +67,12 @@ services:
         condition: service_healthy
     environment:
       OPENNMS_DBINIT_ADMIN_URL: jdbc:postgresql://postgres:5432/template1
-      OPENNMS_DBINIT_ADMIN_USER: postgres
+      OPENNMS_DBINIT_ADMIN_USER: opennms
       OPENNMS_DBINIT_ADMIN_PASSWORD: opennms
       OPENNMS_DBINIT_DATABASE_NAME: opennms
       OPENNMS_DBINIT_DATABASE_USER: opennms
       OPENNMS_DBINIT_DATABASE_PASSWORD: opennms
+      OPENNMS_DBINIT_CREATE_USER: "false"
       JAVA_TOOL_OPTIONS: -Xms256m -Xmx512m
 
   webapp:

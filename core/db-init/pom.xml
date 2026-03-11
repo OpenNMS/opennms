@@ -121,6 +121,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!--
+                      Liquibase 3.6.3 uses classpath scanning (ServiceLocator)
+                      that cannot traverse Spring Boot's jar:nested: URLs.
+                      Extracting liquibase-core at runtime allows it to scan
+                      its own classes normally.
+                    -->
+                    <requiresUnpack>
+                        <dependency>
+                            <groupId>org.liquibase</groupId>
+                            <artifactId>liquibase-core</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.opennms.core</groupId>
+                            <artifactId>org.opennms.core.schema</artifactId>
+                        </dependency>
+                    </requiresUnpack>
+                </configuration>
             </plugin>
         </plugins>
     </build>
