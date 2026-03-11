@@ -238,4 +238,52 @@
         <rollback/>
     </changeSet>
 
+    <changeSet id="36.0.0-add-outage-event-denormalization" author="delta-v">
+        <comment>Denormalize event data onto outages — events table is gone, FK columns are orphaned</comment>
+
+        <addColumn tableName="outages">
+            <column name="svc_lost_event_tsid" type="BIGINT"/>
+            <column name="svc_lost_event_uei" type="VARCHAR(256)"/>
+            <column name="svc_regained_event_tsid" type="BIGINT"/>
+            <column name="svc_regained_event_uei" type="VARCHAR(256)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="36.0.0-drop-outage-event-fk-columns" author="delta-v">
+        <comment>Drop orphaned FK columns — events table was dropped with cascadeConstraints</comment>
+
+        <dropView viewName="node_outages"/>
+
+        <dropColumn tableName="outages" columnName="svclosteventid"/>
+        <dropColumn tableName="outages" columnName="svcregainedeventid"/>
+
+        <createView replaceIfExists="true" viewName="node_outages">
+            SELECT
+              outages.outageid,
+              outages.svc_lost_event_tsid,
+              outages.svc_lost_event_uei,
+              outages.svc_regained_event_tsid,
+              outages.svc_regained_event_uei,
+              outages.iflostservice,
+              outages.ifregainedservice,
+              outages.ifserviceid,
+              5 AS eventseverity,
+              (outages.ifregainedservice IS NOT NULL) AS resolved,
+              s.servicename,
+              ifs.serviceid,
+              ipif.ipaddr,
+              COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+              nos.max_outage_severity,
+              nc.*
+            FROM
+              outages
+            JOIN ifservices ifs ON outages.ifserviceid = ifs.id
+            JOIN service s ON ifs.serviceid = s.serviceid
+            JOIN ipinterface ipif ON ifs.ipinterfaceid = ipif.id
+            JOIN node_categories nc ON ipif.nodeid = nc.nodeid
+            JOIN node_outage_status nos ON nc.nodeid = nos.nodeid
+            WHERE outages.perspective IS NULL
+        </createView>
+    </changeSet>
+
 </databaseChangeLog>
