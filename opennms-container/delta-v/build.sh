@@ -83,6 +83,15 @@ do_assemble() {
     ../../maven/bin/mvn -DskipTests install
 }
 
+do_db_init_image() {
+    log "Building db-init image (opennms/db-init:$VERSION)..."
+    cd "$REPO_ROOT"
+    JAVA_HOME="${JAVA_HOME_21:-/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home}" \
+        ./maven/bin/mvn -f core/db-init/pom.xml -DskipTests package
+    cd "$REPO_ROOT/core/db-init"
+    docker build -t "opennms/db-init:$VERSION" -t "opennms/db-init:latest" .
+}
+
 do_images() {
     local make_args="DOCKER_REGISTRY=$DOCKER_REGISTRY DOCKER_ORG=$DOCKER_ORG"
     [ "${1:-}" = "push" ] && make_args="$make_args DOCKER_FLAGS=--push"
@@ -99,8 +108,10 @@ do_images() {
     docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:$VERSION"
     docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:latest"
 
+    do_db_init_image
+
     log "Docker images built:"
-    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel)" | head -10
+    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel|db-init)" | head -15
 }
 
 do_webapp_overlay() {

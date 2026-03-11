@@ -56,30 +56,23 @@ services:
       retries: 10
       start_period: 30s
 
-  # Database schema initialization — runs Liquibase + install -dis, then exits.
-  # All services that need PostgreSQL should depend on this with
-  # condition: service_completed_successfully.
+  # Database schema initialization — standalone Spring Boot app that runs
+  # Liquibase migrations, then exits. All services that need PostgreSQL
+  # should depend on this with condition: service_completed_successfully.
   db-init:
-    image: opennms/horizon:${VERSION}
+    image: opennms/db-init:${VERSION}
     container_name: delta-v-db-init
-    command: ["-i"]
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: opennms
-      POSTGRES_PASSWORD: opennms
-      OPENNMS_DBNAME: opennms
-      OPENNMS_DBUSER: opennms
-      OPENNMS_DBPASS: opennms
-      JAVA_OPTS: >-
-        -Xms512m -Xmx1g
-        -Djava.security.egd=file:/dev/./urandom
-    volumes:
-      - db-init-etc:/opt/opennms/etc
-      - db-init-data:/opennms-data
+      OPENNMS_DBINIT_ADMIN_URL: jdbc:postgresql://postgres:5432/template1
+      OPENNMS_DBINIT_ADMIN_USER: postgres
+      OPENNMS_DBINIT_ADMIN_PASSWORD: opennms
+      OPENNMS_DBINIT_DATABASE_NAME: opennms
+      OPENNMS_DBINIT_DATABASE_USER: opennms
+      OPENNMS_DBINIT_DATABASE_PASSWORD: opennms
+      JAVA_TOOL_OPTIONS: -Xms256m -Xmx512m
 
   webapp:
     image: opennms/horizon:${VERSION}
@@ -675,8 +668,6 @@ services:
 volumes:
   pgdata:
   kafkadata:
-  db-init-etc:
-  db-init-data:
   webapp-etc:
   webapp-data:
   minion-data:

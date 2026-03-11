@@ -8,6 +8,7 @@ producing Docker images, and deploying locally.
 | Requirement | Version | Notes |
 |-------------|---------|-------|
 | Java | JDK 17 (exact) | Enforced range `[17,18)`. Temurin recommended. |
+| Java | JDK 21 | Required for `core/db-init` Spring Boot module only. |
 | Docker Desktop | 4.x+ | **16 GB memory** required for full profile (16 JVMs). 8 GB causes OOM kills. |
 | Perl | 5.x | Required by `compile.pl` / `assemble.pl` wrappers. |
 | pnpm | 10.24+ | For the Vue UI build (invoked automatically by Maven). |
@@ -89,12 +90,13 @@ cd opennms-container/delta-v
 
 ### 4. Docker Images
 
-Builds two images:
+Builds three images:
 
 | Image | Source | Purpose |
 |-------|--------|---------|
-| `opennms/horizon` | `opennms-container/core/` | Webapp container and db-init |
+| `opennms/horizon` | `opennms-container/core/` | Webapp container |
 | `opennms/daemon` | `opennms-container/sentinel/` | All 14 daemon containers |
+| `opennms/db-init` | `core/db-init/` | Schema migration (run-and-exit, ~312 MB) |
 
 ```bash
 cd opennms-container/delta-v
@@ -208,16 +210,17 @@ cd opennms-container/delta-v && ./build.sh overlay
 docker compose up -d --force-recreate webapp
 ```
 
-### Changed Liquibase schema (core/schema)
+### Changed Liquibase schema or db-init module
 
-Rebuild the module, copy the JAR into the Horizon tarball-root, rebuild the image,
+Rebuild the schema module, package the db-init fat JAR, rebuild the image,
 and restart with clean volumes:
 
 ```bash
 ./maven/bin/mvn -DskipTests -pl core/schema install
-cp core/schema/target/org.opennms.core.schema-36.0.0-SNAPSHOT-liquibase.jar \
-   opennms-container/core/tarball-root/lib/
-cd opennms-container/core && make image && cd ../..
+cd core/db-init && \
+  JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home \
+  ../../maven/bin/mvn -DskipTests package && \
+  docker build -t opennms/db-init:36.0.0-SNAPSHOT . && cd ../..
 cd opennms-container/delta-v
 COMPOSE_PROFILES=full docker compose down -v
 COMPOSE_PROFILES=full docker compose up -d
