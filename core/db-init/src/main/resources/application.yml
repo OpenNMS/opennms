@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/opennms
+    username: opennms
+    password: opennms
+    admin:
+      url: jdbc:postgresql://localhost:5432/template1
+      username: postgres
+      password: ""
+  liquibase:
+    enabled: false
+
+opennms:
+  dbinit:
+    database-name: opennms
+    database-user: opennms
+    database-password: opennms
+    admin-user: postgres
+    admin-password: ""
+    create-user: true
+    create-database: true
+    iplike: true
+    timescale-db: false
+    vacuum: false
+    full-vacuum: false
+
+logging:
+  level:
+    org.opennms.core.schema: INFO
+    org.opennms.core.dbinit: INFO
+    liquibase: INFO
