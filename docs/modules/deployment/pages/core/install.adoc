@@ -141,7 +141,10 @@ Java requires additional space for threads, metaspace, socket buffers, etc.
 sudo systemctl enable --now opennms
 ----
 
-.Configure firewall rules
+
+[[configure-firewall]]
+=== Configure firewall rules
+
 include::firewall.adoc[]
 
 [[first-sign-in]]
