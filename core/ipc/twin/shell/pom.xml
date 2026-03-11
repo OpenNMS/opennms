@@ -37,11 +37,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
-            <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.core</artifactId>
         </dependency>
@@ -49,10 +44,6 @@
             <groupId>org.osgi</groupId>
             <artifactId>osgi.enterprise</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.core.snmp</groupId>
-            <artifactId>org.opennms.core.snmp.api</artifactId>
         </dependency>
     </dependencies>
 </project>
