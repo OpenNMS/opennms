@@ -254,11 +254,11 @@ public class AnnotationIT implements InitializingBean {
 				assertNotNull("monitored service should not be null: " + entity.toString(), entity.getMonitoredService());
 				assertNotNull("ip address should not be null: " + entity.toString(), entity.getIpAddress());
 				assertNotNull("node ID should not be null: " + entity.toString(), entity.getNodeId());
-				assertNotNull("service lost event should not be null: " + entity.toString(), entity.getServiceLostEvent());
-				assertNotNull("service lost event UEI should not be null: " + entity.toString(), entity.getServiceLostEvent().getEventUei());
+				assertNotNull("service lost event TSID should not be null: " + entity.toString(), entity.getSvcLostEventTsid());
+				assertNotNull("service lost event UEI should not be null: " + entity.toString(), entity.getSvcLostEventUei());
 				if (entity.getIfRegainedService() != null) {
-					assertNotNull("outage has ended (ifregainedservice) so service regained event should not be null: " + entity.toString(), entity.getServiceRegainedEvent());
-					assertNotNull("outage has ended (ifregainedservice) so service regained event UEI should not be null: " + entity.toString(), entity.getServiceRegainedEvent().getEventUei());
+					assertNotNull("outage has ended (ifregainedservice) so service regained event TSID should not be null: " + entity.toString(), entity.getSvcRegainedEventTsid());
+					assertNotNull("outage has ended (ifregainedservice) so service regained event UEI should not be null: " + entity.toString(), entity.getSvcRegainedEventUei());
 				}
 					
 			}

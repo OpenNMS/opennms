@@ -166,7 +166,8 @@ public class OutageDaoIT implements InitializingBean {
         OnmsEvent event = new OnmsEvent();
 
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
-        outage.setServiceLostEvent(event);
+        outage.setSvcLostEventTsid(event.getId() != null ? event.getId().longValue() : 0L);
+        outage.setSvcLostEventUei(event.getEventUei());
         m_outageDao.save(outage);
 
         //it works we're so smart! hehe
@@ -543,7 +544,8 @@ public class OutageDaoIT implements InitializingBean {
 
     private OnmsOutage getOutage(OnmsMonitoredService monitoredService, OnmsEvent event) {
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
-        outage.setServiceLostEvent(event);
+        outage.setSvcLostEventTsid(event.getId() != null ? event.getId().longValue() : 0L);
+        outage.setSvcLostEventUei(event.getEventUei());
         m_outageDao.save(outage);
         m_outageDao.flush();
         return outage;
