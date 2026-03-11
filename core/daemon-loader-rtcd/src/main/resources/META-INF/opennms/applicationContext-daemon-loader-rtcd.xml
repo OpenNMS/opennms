@@ -9,7 +9,6 @@
   All dependencies come from OSGi service registry:
   - DAOs from distributed DAO feature (MonitoredServiceDao, OutageDao, FilterDao)
   - TransactionOperations from distributed DAO feature
-  - MessageBus from messagebus-jms feature (optional)
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

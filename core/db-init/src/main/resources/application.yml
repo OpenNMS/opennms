@@ -1,0 +1,25 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+
+opennms:
+  dbinit:
+    database-name: opennms
+    database-user: opennms
+    database-password: opennms
+    admin-user: postgres
+    admin-password: ""
+    admin-url: jdbc:postgresql://localhost:5432/template1
+    create-user: true
+    create-database: true
+    iplike: true
+    timescale-db: false
+    vacuum: false
+    full-vacuum: false
+
+logging:
+  level:
+    org.opennms.core.schema: INFO
+    org.opennms.core.dbinit: INFO
+    liquibase: INFO

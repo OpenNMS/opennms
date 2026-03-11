@@ -954,15 +954,6 @@ INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabl
         </logmsg>
    <severity>Normal</severity>
 </event>', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration');
-INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (64, 12, 'uei.opennms.org/internal/promoteQueueData', 'OpenNMS-defined event: A request has been made promote data from the RRD Queue', 'This event is generated to invoke the promotion data of the Queueing RRD Strategy.', true, '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
-   <uei>uei.opennms.org/internal/promoteQueueData</uei>
-   <event-label>OpenNMS-defined event: A request has been made promote data from the RRD Queue</event-label>
-   <descr>This event is generated to invoke the promotion data of the Queueing RRD Strategy.</descr>
-   <logmsg dest="donotpersist">
-            A request has been generated to promote data from the queue for the file(s): %parm[filesToPromote]%.
-        </logmsg>
-   <severity>Normal</severity>
-</event>', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration');
 INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (65, 12, 'uei.opennms.org/internal/authentication/successfulLogin', 'OpenNMS-defined internal event: a user has successfully authentication to the WebUI', 'This event is sent by the WebUI when a user has successfully authenticated', true, '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
    <uei>uei.opennms.org/internal/authentication/successfulLogin</uei>
    <event-label>OpenNMS-defined internal event: a user has successfully authentication to the WebUI</event-label>

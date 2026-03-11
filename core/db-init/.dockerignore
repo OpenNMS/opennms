@@ -1,0 +1,7 @@
+src/
+pom.xml
+*.md
+target/classes
+target/test-classes
+target/maven-*
+target/surefire-*

@@ -40,6 +40,17 @@ check_prereqs() {
     fi
     java_version=$(java -version 2>&1 | head -1 | sed 's/.*"\([0-9]*\)\..*/\1/')
     [ "$java_version" = "17" ] || err "Java 17 required (found: $java_version)"
+
+    # Ensure Docker buildx uses the "default" builder instance.
+    # Docker Desktop sets the active builder to "desktop-linux", which the
+    # Makefile in opennms-container/core and sentinel rejects.
+    local current_buildx
+    current_buildx=$(docker buildx inspect 2>/dev/null | head -1 | sed 's/^Name: *//')
+    if [ "$current_buildx" != "default" ]; then
+        log "Switching Docker buildx from '$current_buildx' to 'default'..."
+        docker context use default 2>/dev/null || true
+        docker buildx use default 2>/dev/null || true
+    fi
 }
 
 do_compile() {
@@ -72,6 +83,15 @@ do_assemble() {
     ../../maven/bin/mvn -DskipTests install
 }
 
+do_db_init_image() {
+    log "Building db-init image (opennms/db-init:$VERSION)..."
+    cd "$REPO_ROOT"
+    JAVA_HOME="${JAVA_HOME_21:-/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home}" \
+        ./maven/bin/mvn -f core/db-init/pom.xml -DskipTests package
+    cd "$REPO_ROOT/core/db-init"
+    docker build -t "opennms/db-init:$VERSION" -t "opennms/db-init:latest" .
+}
+
 do_images() {
     local make_args="DOCKER_REGISTRY=$DOCKER_REGISTRY DOCKER_ORG=$DOCKER_ORG"
     [ "${1:-}" = "push" ] && make_args="$make_args DOCKER_FLAGS=--push"
@@ -80,12 +100,18 @@ do_images() {
     cd "$REPO_ROOT/opennms-container/core"
     make image $make_args
 
+    # The sentinel Makefile tags as opennms/sentinel, but the Delta-V
+    # docker-compose expects opennms/daemon. Build then re-tag.
     log "Building Daemon image (opennms/daemon:$VERSION)..."
     cd "$REPO_ROOT/opennms-container/sentinel"
     make image $make_args
+    docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:$VERSION"
+    docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:latest"
+
+    do_db_init_image
 
     log "Docker images built:"
-    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon)" | head -10
+    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel|db-init)" | head -15
 }
 
 do_webapp_overlay() {
@@ -93,11 +119,16 @@ do_webapp_overlay() {
     local overlay_dir="$SCRIPT_DIR/webapp-jetty-webinf-overlay"
     mkdir -p "$overlay_dir/lib" "$overlay_dir/menu"
 
-    # Copy updated webapp JARs
-    local webapp_jar="$REPO_ROOT/opennms-webapp/target/opennms-webapp-$VERSION.jar"
+    # Copy updated webapp JARs.
+    # opennms-webapp produces a WAR — the JAR is inside the exploded WAR.
+    local webapp_jar="$REPO_ROOT/opennms-webapp/target/opennms-webapp-$VERSION/WEB-INF/lib/opennms-webapp-$VERSION.jar"
     local rest_jar="$REPO_ROOT/opennms-webapp-rest/target/opennms-webapp-rest-$VERSION.jar"
-    [ -f "$webapp_jar" ] && cp "$webapp_jar" "$overlay_dir/lib/"
-    [ -f "$rest_jar" ]   && cp "$rest_jar"   "$overlay_dir/lib/"
+    if [ -f "$webapp_jar" ]; then
+        cp "$webapp_jar" "$overlay_dir/lib/"
+    else
+        log "WARNING: webapp JAR not found at $webapp_jar — run './build.sh compile' first"
+    fi
+    [ -f "$rest_jar" ] && cp "$rest_jar" "$overlay_dir/lib/"
 
     # Copy dispatcher-servlet.xml
     local servlet_xml="$REPO_ROOT/opennms-webapp/src/main/webapp/WEB-INF/dispatcher-servlet.xml"

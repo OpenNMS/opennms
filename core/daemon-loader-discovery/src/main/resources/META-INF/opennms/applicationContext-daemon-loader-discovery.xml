@@ -12,7 +12,6 @@
   - LocationAwarePingClient from RPC ICMP feature
   - LocationAwareDetectorClient from provisioning feature (optional)
   - DiscoveryConfigFactory from opennms-config feature
-  - MessageBus from messagebus feature (optional)
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

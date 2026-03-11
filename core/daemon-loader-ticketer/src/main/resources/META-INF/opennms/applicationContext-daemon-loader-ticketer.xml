@@ -10,7 +10,6 @@
   - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
   - AlarmDao and AlarmEntityNotifier from distributed DAO feature
   - Plugin implementations from OSGi-registered ticketing plugins
-  - MessageBus (optional) for IPC daemon reload events
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

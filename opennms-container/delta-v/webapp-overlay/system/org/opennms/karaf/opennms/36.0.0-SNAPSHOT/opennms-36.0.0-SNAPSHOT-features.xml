@@ -2148,11 +2148,6 @@
     <feature name="opennms-core-messagebus-api" version="36.0.0-SNAPSHOT" description="OpenNMS :: Core :: MessageBus :: API">
         <bundle>mvn:org.opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT</bundle>
     </feature>
-    <feature name="opennms-core-messagebus-jms" version="36.0.0-SNAPSHOT" description="OpenNMS :: Core :: MessageBus :: JMS">
-        <feature>opennms-core-messagebus-api</feature>
-        <feature>activemq-client</feature>
-        <bundle>mvn:org.opennms/org.opennms.core.messagebus.jms/36.0.0-SNAPSHOT</bundle>
-    </feature>
     <feature name="opennms-events-kafka-consumer" version="36.0.0-SNAPSHOT" description="OpenNMS :: Events :: Kafka Consumer">
         <feature>opennms-kafka</feature>
         <feature>opennms-events-api</feature>

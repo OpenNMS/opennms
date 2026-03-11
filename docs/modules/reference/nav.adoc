@@ -165,7 +165,6 @@
 *** xref:provisioning/detectors/WsmanWqlDetector.adoc[WS-MAN WQL]
 
 * xref:daemons/introduction.adoc[]
-** xref:daemons/daemon-config-files/ackd.adoc[]
 ** xref:daemons/daemon-config-files/alarmd.adoc[]
 ** xref:daemons/daemon-config-files/bsmd.adoc[]
 ** xref:daemons/daemon-config-files/collectd.adoc[]
@@ -179,7 +178,6 @@
 ** xref:daemons/daemon-config-files/perspectivepollerd.adoc[]
 ** xref:daemons/daemon-config-files/pollerd.adoc[]
 ** xref:daemons/daemon-config-files/provisiond.adoc[]
-** xref:daemons/daemon-config-files/queued.adoc[]
 ** xref:daemons/daemon-config-files/rtcd.adoc[]
 ** xref:daemons/daemon-config-files/scriptd.adoc[]
 ** xref:daemons/daemon-config-files/snmp-interface-poller.adoc[]
@@ -188,6 +186,5 @@
 ** xref:daemons/daemon-config-files/ticketer.adoc[]
 
 ** xref:daemons/daemon-config-files/trapd.adoc[]
-** xref:daemons/daemon-config-files/vacuumd.adoc[]
 
 * xref:glossary.adoc[]
