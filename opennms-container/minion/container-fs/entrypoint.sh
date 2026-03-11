@@ -122,6 +122,8 @@ function updateConfig() {
     [ "$key" == "class.name" ]       && key="class-name"
     [ "$key" == "max.packet.size" ]  && key="maxPacketSize"
     [ "$key" == "template.timeout" ] && key="templateTimeout"
+    [ "$key" == "trapd.useaddressfromvarbind" ] && key="trapd.useAddressFromVarbind"
+    [ "$key" == "trapd.newsuspectontrap" ] && key="trapd.newSuspectOnTrap"
 
     mkdir -p "$(dirname "$file")"
     [ -f "$file" ] || touch "$file"

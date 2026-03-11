@@ -115,6 +115,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withEnv("OPENNMS_HTTP_PASS", "admin")
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
+                .withEnv("TRAPD_CFG_TRAPD_USEADDRESSFROMVARBIND", "true")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
                 .withEnv("JAVA_OPTS", "-Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom")
                 .withEnv("MINION_ID",profile.getId())
