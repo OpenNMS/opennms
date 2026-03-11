@@ -81,6 +81,11 @@ public class PendingPollEvent extends PollEvent {
     public long getEventId() {
         return m_event.getDbid();
     }
+
+    @Override
+    public String getEventUei() {
+        return m_event.getUei();
+    }
     
     /**
      * <p>addPending</p>

@@ -335,7 +335,7 @@ final class PollerEventProcessor implements EventListener {
 
         Date closeDate = event.getTime();
 
-        getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
+        getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), event.getUei(), nodeId.intValue());
 
 
         PollableNode node = getNetwork().getNode(nodeId.intValue());
@@ -406,7 +406,7 @@ final class PollerEventProcessor implements EventListener {
 
         Date closeDate = event.getTime();
 
-        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
+        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), event.getUei(), nodeId.intValue(), str(ipAddr));
 
 
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
@@ -431,7 +431,7 @@ final class PollerEventProcessor implements EventListener {
 
         Date closeDate = event.getTime();
 
-        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), event.getUei(), nodeId.intValue(), str(ipAddr), service);
 
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
@@ -728,8 +728,9 @@ final class PollerEventProcessor implements EventListener {
 
     protected void closeOutagesForService(final IEvent event, final Long nodeId, final Date closeDate,
                                           final Service polledService) {
-        long eventId = event != null ? event.getDbid() : 0;
-        getPoller().getQueryManager().closeOutagesForService(closeDate, eventId, nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
+        long eventTsid = event != null ? event.getDbid() : 0;
+        String eventUei = event != null ? event.getUei() : null;
+        getPoller().getQueryManager().closeOutagesForService(closeDate, eventTsid, eventUei, nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
     private void scheduledOutagesChangeHandler() {

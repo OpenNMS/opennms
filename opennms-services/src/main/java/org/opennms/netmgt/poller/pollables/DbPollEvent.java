@@ -33,8 +33,9 @@ import java.util.Date;
 public class DbPollEvent extends PollEvent {
     
     private final long m_eventId;
+    private final String m_uei;
     private final Date m_date;
-    
+
     /**
      * <p>Constructor for DbPollEvent.</p>
      *
@@ -45,6 +46,7 @@ public class DbPollEvent extends PollEvent {
     public DbPollEvent(long eventId, String uei, Date date) {
         super(Scope.fromUei(uei));
         m_eventId = eventId;
+        m_uei = uei;
         m_date = date;
     }
     
@@ -57,7 +59,12 @@ public class DbPollEvent extends PollEvent {
     public long getEventId() {
         return m_eventId;
     }
-    
+
+    @Override
+    public String getEventUei() {
+        return m_uei;
+    }
+
     /**
      * <p>getDate</p>
      *

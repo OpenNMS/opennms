@@ -225,7 +225,7 @@ public class DefaultPollContext implements PollContext, InitializingBean {
                 svc.getIpAddr(), svc.getSvcName(), svcLostEvent.getDate());
 
         if (eventId > 0) {
-            getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
+            getQueryManager().updateOpenOutageWithEvent(outageId, eventId, svcLostEvent.getEventUei());
         } else {
             LOG.warn("openOutage: svcLostEvent has no eventId for: {}", svc);
         }
@@ -250,7 +250,7 @@ public class DefaultPollContext implements PollContext, InitializingBean {
         }
 
         if (eventId > 0) {
-            getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
+            getQueryManager().updateResolvedOutageWithEvent(outageId, eventId, svcRegainEvent.getEventUei());
         } else {
             LOG.warn("resolveOutage: svcRegainEvent has no eventId for: {}", svc);
         }
