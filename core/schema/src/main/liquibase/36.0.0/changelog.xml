@@ -206,12 +206,27 @@
         <rollback/>
     </changeSet>
 
+    <changeSet author="delta-v" id="36.0.0-drop-statisticsreportdata">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="statisticsreportdata"/>
+        </preConditions>
+        <dropTable tableName="statisticsreportdata" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
     <changeSet author="delta-v" id="36.0.0-drop-statisticsreport">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="statisticsreport"/>
         </preConditions>
-        <dropTable tableName="statisticsreportdata" cascadeConstraints="true"/>
         <dropTable tableName="statisticsreport" cascadeConstraints="true"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet author="delta-v" id="36.0.0-drop-reportlocator">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="reportlocator"/>
+        </preConditions>
+        <dropTable tableName="reportlocator" cascadeConstraints="true"/>
         <rollback/>
     </changeSet>
 
@@ -219,7 +234,6 @@
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="reportcatalog"/>
         </preConditions>
-        <dropTable tableName="reportlocator" cascadeConstraints="true"/>
         <dropTable tableName="reportcatalog" cascadeConstraints="true"/>
         <rollback/>
     </changeSet>
