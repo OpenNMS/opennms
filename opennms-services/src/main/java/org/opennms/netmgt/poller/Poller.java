@@ -44,7 +44,6 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.events.api.EventIpcManager;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -485,13 +484,12 @@ public class Poller extends AbstractServiceDaemon {
     private boolean scheduleService(OnmsMonitoredService service, Set<OnmsOutage> outages) {
         final OnmsIpInterface iface = service.getIpInterface();
         final OnmsOutage outage = (outages == null || outages.size() < 1 ? null : outages.iterator().next());
-        final OnmsEvent event = (outage == null ? null : outage.getServiceLostEvent());
         final String ipAddr = InetAddressUtils.str(iface.getIpAddress());
         final String serviceName = service.getServiceName();
         boolean active = "A".equals(service.getStatus());
-        final Number svcLostEventId = event == null ? null : event.getId();
+        final Number svcLostEventId = outage == null ? null : outage.getSvcLostEventTsid();
         final Date ifLostService = outage == null ? null : outage.getIfLostService();
-        final String svcLostUei = event == null ? null : event.getEventUei();
+        final String svcLostUei = outage == null ? null : outage.getSvcLostEventUei();
 
         closeOutageIfSvcLostEventIsMissing(outage);
 
@@ -576,7 +574,7 @@ public class Poller extends AbstractServiceDaemon {
      * duplicate outstanding outage records.
      */
     private void closeOutageIfSvcLostEventIsMissing(final OnmsOutage outage) {
-        if (outage == null || outage.getServiceLostEvent() != null || outage.getIfRegainedService() != null) {
+        if (outage == null || outage.getSvcLostEventTsid() != null || outage.getIfRegainedService() != null) {
             // Nothing to do
             return;
         }
