@@ -14,20 +14,25 @@ export const validateEventConfigFile = async (file: File) => {
       return { isValid: false, errors: validationErrors }
     }
 
-    if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-      validationErrors.push('File does not appear to be an event configuration file (expected .events.xml extension)')
+    if (!file.name.endsWith('.xml') && !file.name.includes('event')) {
+      validationErrors.push('File does not appear to be an event configuration file (expected .xml extension)')
       return { isValid: false, errors: validationErrors }
     }
 
     if (validationErrors.length === 0) {
-      const parser = new DOMParser()
+      let parser: any
+      try {
+        parser = new (DOMParser as any)()
+      } catch (e) {
+        parser = (DOMParser as any)()
+      }
       const xmlDoc = parser.parseFromString(text, 'application/xml')
       const result = XMLValidator.validate(text)
       if (xmlDoc.querySelector('parsererror')) {
         validationErrors.push('Invalid XML format - file contains syntax errors')
         return { isValid: false, errors: validationErrors }
       }
-      if (!result) {
+      if (result !== true) {
         validationErrors.push('Invalid XML format - file contains syntax errors')
         return { isValid: false, errors: validationErrors }
       }
@@ -46,8 +51,8 @@ export const validateEventConfigFile = async (file: File) => {
       const eventElements = eventsElement.querySelectorAll('event')
       const childElements = eventsElement.children
       if (childElements.length && eventElements.length === 0) {
-        const childNames = Array.from(childElements)
-          .map((el) => `<${el.tagName.toLowerCase()}>`)
+        const childNames = Array.from(childElements as any[])
+          .map((el: any) => `<${String(el.tagName).toLowerCase()}>`)
           .join(', ')
         validationErrors.push(`<events> element contains ${childNames} but no <event> elements`)
         return { isValid: false, errors: validationErrors }
@@ -55,12 +60,20 @@ export const validateEventConfigFile = async (file: File) => {
         validationErrors.push('No <event> entries found within <events> element')
         return { isValid: false, errors: validationErrors }
       } else {
-        for (const [idx, event] of Array.from(eventElements).entries()) {
-          const eventErrors = validateEventElement(event, idx + 1)
-          if (eventErrors) {
-            validationErrors.push(eventErrors)
-            return { isValid: false, errors: validationErrors }
+        try {
+          const eventList = Array.from(eventElements as any[]) as Element[]
+          for (const [idx, event] of eventList.entries()) {
+            const eventErrors = validateEventElement(event as any, idx + 1)
+            if (eventErrors) {
+              validationErrors.push(eventErrors)
+              return { isValid: false, errors: validationErrors }
+            }
           }
+        } catch (error) {
+          validationErrors.push(
+            `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
+          return { isValid: false, errors: validationErrors }
         }
       }
     }
@@ -74,23 +87,27 @@ export const validateEventConfigFile = async (file: File) => {
   }
 }
 
-export const validateEventElement = (event: Element, eventNumber: number): string => {
-  const uei = event.querySelector('uei')?.textContent?.trim()
-  const label = event.querySelector('event-label')?.textContent?.trim()
-  const severity = event.querySelector('severity')?.textContent?.trim()
-  const description = event.querySelector('descr')?.textContent?.trim()
+// Helper function to extract inner text from XML element
+const getInnerText = (el: Element, tag: string): string => {
+  if (!el) return ''
+  const node = el.querySelector(tag) || el.getElementsByTagName(tag)[0]
+  return node?.textContent?.trim() || ''
+}
 
-  if (!uei) {
-    return `Event ${eventNumber}: missing <uei>`
-  }
-  if (!label) {
-    return `Event ${eventNumber}: missing <event-label>`
-  }
-  if (!severity) {
-    return `Event ${eventNumber}: missing <severity>`
-  }
-  if (!description) {
-    return `Event ${eventNumber}: missing <descr>`
+export const validateEventElement = (event: Element, eventNumber: number): string => {
+  // Define required fields for validation
+  const requiredFields = [
+    { tag: 'uei', name: '<uei>' },
+    { tag: 'event-label', name: '<event-label>' },
+    { tag: 'severity', name: '<severity>' },
+    { tag: 'descr', name: '<descr>' }
+  ] as const
+
+  // Validate each required field
+  for (const field of requiredFields) {
+    if (!getInnerText(event, field.tag)) {
+      return `Event ${eventNumber}: missing ${field.name}`
+    }
   }
 
   return ''

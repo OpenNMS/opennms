@@ -2,6 +2,38 @@
 
 = Changelog
 
+[[releasenotes-changelog-35.0.4]]
+
+== Release 35.0.4
+
+=== Bug
+
+* FE: Fix warnings in EventConfigurationDetail unit tests (Issue https://issues.opennms.org/browse/NMS-19492[NMS-19492])
+* Missing EventId changes in Meridian 2025 (Issue https://issues.opennms.org/browse/NMS-19556[NMS-19556])
+* ParseException in log files (Issue https://issues.opennms.org/browse/NMS-19558[NMS-19558])
+* Pollerd is slow to start after async support added (Issue https://issues.opennms.org/browse/NMS-19538[NMS-19538])
+* Realtime graphing doesn't work when the Cortex TSS plugin is used (Issue https://issues.opennms.org/browse/NMS-19489[NMS-19489])
+* Update com.hubspot.jinjava:jinjava library (Issue https://issues.opennms.org/browse/NMS-19511[NMS-19511])
+* Update com.mchange:c3p0 library (Issue https://issues.opennms.org/browse/NMS-19568[NMS-19568])
+* Update com.mchange:mchange-commons-java library (Issue https://issues.opennms.org/browse/NMS-19569[NMS-19569])
+* Update com.squareup.okhttp3:okhttp library (Issue https://issues.opennms.org/browse/NMS-19525[NMS-19525])
+
+=== Enhancement
+
+* Offer the fancy new Resource Graphs interface in the sidebar (Issue https://issues.opennms.org/browse/NMS-19532[NMS-19532])
+
+=== New Feature
+
+* Karaf Command to Clear Alarms (Issue https://issues.opennms.org/browse/NMS-19552[NMS-19552])
+
+=== Story
+
+* OpenNMS fails to start after dropdb due to missing provisiond-configuration.xml (Issue https://issues.opennms.org/browse/NMS-19565[NMS-19565])
+
+=== Task
+
+* Backport of Jung depenedncies (Issue https://issues.opennms.org/browse/NMS-19571[NMS-19571])
+
 [[releasenotes-changelog-35.0.3]]
 
 == Release 35.0.3

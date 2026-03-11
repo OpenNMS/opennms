@@ -604,6 +604,7 @@
         <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.commands/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-jexl3/${commonsJexl3Version}</bundle>
     </feature>
     <!--This feature lives on Minion, OpenNMS and Sentinel is the reason it needs separate feature.-->
     <feature name="opennms-send-event-command" version="${project.version}" description="OpenNMS :: Events :: Send :: Command">

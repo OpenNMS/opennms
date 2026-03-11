@@ -9,7 +9,10 @@
       <div class="modal-body">
         <p v-html="getMessage()"></p>
         <p v-if="store.changeEventConfigEventStatusDialogState.eventConfigEvent?.vendor === VENDOR_OPENNMS">
-          <strong>Note: Changing the status of an OpenNMS event configuration event may effect the OpenNMS system functionality. </strong>
+          <strong
+            >Note: Changing the status of an OpenNMS event configuration event may effect the OpenNMS system
+            functionality.
+          </strong>
         </p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
@@ -27,12 +30,14 @@
 </template>
 
 <script lang="ts" setup>
+import useSnackbar from '@/composables/useSnackbar'
 import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigDetailStore()
+const snackbar = useSnackbar()
 const labels = {
   title: 'Change Event Configuration Event Status'
 }
@@ -57,9 +62,11 @@ const changeStatus = async () => {
       await store.hideChangeEventConfigEventStatusDialog()
     } else {
       console.error('No event configuration event selected')
+      snackbar.showSnackBar({ msg: 'No event configuration event selected', error: true })
     }
   } catch (error) {
     console.error('Error changing event configuration event status:', error)
+    snackbar.showSnackBar({ msg: 'Failed to change event configuration event status', error: true })
   }
 }
 </script>

@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -103,6 +104,69 @@ public class MonitoredServiceDaoIT implements InitializingBean {
             assertNotNull(ifservice.getServiceType());
         }
         
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllServicesForScheduling() {
+        // All services from DatabasePopulator have status 'A'.
+        // Mark one service as 'D' (deleted) so we can verify it's excluded.
+        final OnmsMonitoredService svcToDelete = m_monitoredServiceDao.get(
+                m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "SNMP");
+        assertNotNull(svcToDelete);
+        svcToDelete.setStatus("D");
+        m_monitoredServiceDao.saveOrUpdate(svcToDelete);
+        m_monitoredServiceDao.flush();
+
+        // Mark another service as 'N' (not monitored) — should still be included.
+        final OnmsMonitoredService svcNotMonitored = m_monitoredServiceDao.get(
+                m_databasePopulator.getNode1().getId(), addr("192.168.1.1"), "ICMP");
+        assertNotNull(svcNotMonitored);
+        svcNotMonitored.setStatus("N");
+        m_monitoredServiceDao.saveOrUpdate(svcNotMonitored);
+        m_monitoredServiceDao.flush();
+
+        final List<OnmsMonitoredService> allSvcs = m_monitoredServiceDao.findAllServices();
+        final List<OnmsMonitoredService> schedulingSvcs = m_monitoredServiceDao.findAllServicesForScheduling();
+
+        // Detach all entities so lazy loading will fail — this proves the
+        // query eagerly fetched the associations we need.
+        m_monitoredServiceDao.clear();
+
+        // Should have one fewer than findAllServices (the 'D' service is excluded)
+        assertTrue(schedulingSvcs.size() > 0);
+        assertTrue("findAllServicesForScheduling should return fewer services than findAllServices " +
+                        "because deleted services are excluded",
+                schedulingSvcs.size() < allSvcs.size());
+
+        for (OnmsMonitoredService svc : schedulingSvcs) {
+            // Only 'A' or 'N' statuses should be present
+            assertTrue("Expected status A or N but got " + svc.getStatus(),
+                    "A".equals(svc.getStatus()) || "N".equals(svc.getStatus()));
+
+            // Verify associations are eagerly fetched (no lazy-load after clear)
+            assertNotNull(svc.getServiceType());
+            assertNotNull(svc.getIpInterface());
+            assertNotNull(svc.getIpInterface().getNode());
+            assertNotNull(svc.getIpInterface().getNode().getLocation());
+            assertNotNull(svc.getIpInterface().getNode().getLocation().getLocationName());
+        }
+
+        // Verify the 'D' service is not in the result
+        for (OnmsMonitoredService svc : schedulingSvcs) {
+            assertFalse("Deleted service should not be in scheduling results",
+                    svc.getId().equals(svcToDelete.getId()));
+        }
+
+        // Verify the 'N' service IS in the result
+        boolean foundNotMonitored = false;
+        for (OnmsMonitoredService svc : schedulingSvcs) {
+            if (svc.getId().equals(svcNotMonitored.getId())) {
+                foundNotMonitored = true;
+                assertEquals("N", svc.getStatus());
+            }
+        }
+        assertTrue("Service with status 'N' should be included in scheduling results", foundNotMonitored);
     }
 
     @Test

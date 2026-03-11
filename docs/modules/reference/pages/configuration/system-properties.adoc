@@ -1,0 +1,431 @@
+
+[[system-properties-reference]]
+= System properties
+:description: System properties used to configure OpenNMS and their default values
+
+== Documented Properties
+This list is not exhaustive; some properties critical to core functions may been purposely omitted as they should never be changed.
+Many of the properties here are documented with much greater detail in their relevant sections.
+
+[cols="5,3,3"]
+|===
+|Command   | Default Value | Description
+
+| `gwt.openlayers.name`
+| "OpenNMS Default"
+| Used by mapping and geocoding; defined tile server friendly name
+
+| `gwt.openlayers.options.attribution`
+| "Map data © OpenStreetMap contributors under ODbL, CC BY-SA 2.0"
+| Used by mapping and geocoding; OSM attribution string
+
+| `gwt.openlayers.url`
+| "https://tiles.opennms.org/$\{z}/$\{x}/$\{y}.png"
+| Used by mapping and geocoding; default tile server URL
+
+| `gwt.openlayers.userDefinedAsDefault`
+| false
+| If true, the user-defined tile provider will appear first on the Geographical Map
+
+| `importer.adapter.dns.level`
+| 0
+| Used by the forward and reverse DNS provisiong adapters; define the default level dns domain for nodelabel
+
+| `importer.adapter.dns.privatekey`
+| `null`
+| TSIGKey private key the `DnsProvisioningAdapter` should use for dynamic DNS updates
+
+| `importer.adapter.dns.reverse.level`
+| 0
+| Used by the forward and reverse DNS provisiong adapters; define the default level reverse dns domain for nodelabel
+
+| `importer.adapter.dns.server`
+| 127.0.0.1
+| IP address of the DNS server to which the `DnsProvisioningAdapter` should send dynamic DNS updates
+
+| `irccat.host`
+| 127.0.0.1
+| Hostname or IP address used by the IRCcat notification strategy
+
+| `irccat.port`
+| 12345
+| Port number used by IRCcat notification strategy
+
+| `opennms.alarmlist.sound.enable`
+| false
+| If `true`, enable "alarm sounds" on Alarm List Pages
+
+| `opennms.alarmlist.sound.status`
+| off
+| When the Alarm List Pages generates sounds; off = no sounds, newalarm = for every new alarm in the page, newalarmcount = every increase in alarm event count for displayed alarms
+
+| `opennms.alarmlist.unackflash`
+| false
+| Allows the alarm list page to display acknowleged and unacknowledged alarms on the same list but unacknowledged alarms flash until they are acknowledged
+
+| `opennms.alarmTroubleTicketLinkTemplate`
+| "http://localhost/Ticket/Display.html?id=$\{id}"
+| The link template used by the alarm ticketer plugin
+
+| `opennms.applicationsWithProblems.show`
+| true
+| If `true` display the "Applications with Pending Alarms" box on the front page in the OpenNMS web UI
+
+| `opennms.assets.allowHtmlFields`
+| `null`
+| Asset fields strip markup. To allow markup in specific asset fields, set the value to a comma-separated list of the asset field names that require markup
+
+| `opennms.businessServicesWithProblems.show`
+| true
+| If `true` display the "Business Services with Pending Alarms" box on the front page in the OpenNMS web UI
+
+| `opennms.eventdetail.parmsRoles`
+| ROLE_USER
+| If `opennms.eventdetail.showParms` is `true`, you may also specify roles that can see parameters in a comma separated list
+
+| `opennms.eventdetail.showParms`
+| false
+| Show a table containing all event parameters on the event detail page
+
+| `opennms.eventlist.acknowledge`
+| false
+| Show or hide the Acknowledge event button
+
+| `opennms.minion.provisioning`
+| true
+| Enable the automatic, heartbeat-based provisioning mechanism for Minions
+
+| `opennms.minion.provisioning.foreignSourcePattern`
+| "Minions"
+| The pattern used to name the foreign source to provision minions. can contain a single `%s` placeholder which is replaced with the minion location
+
+| `opennms.newsFeedPanel.show`
+| true
+| Enable or disable the News Feed Panel on the front page in the OpenNMS web UI
+
+| `opennms.newsFeedPanel.url`
+| "https://www.opennms.com/feed/"
+| Set the News Feed URL for the News Feed Panel
+
+| `opennms.nodeStatusBar.show`
+| false
+| Enable or disable the status bar resume at the top of the node page in the OpenNMS web UI
+
+| `opennms.nodesWithOutages.show`
+| true
+| If `true` display the "Nodes with Outages" box on the front page in the OpenNMS web UI
+
+| `opennms.nodesWithProblems.show`
+| true
+| Enable or disable the "Nodes with Pending Alarms" box on the front page in the OpenNMS web UI
+
+| `opennms.poller.server.serverHost`
+| "127.0.0.1"
+| Analogous to `java.rmi.server.hostname`. Used to configure RMI
+
+| `opennms.productUpdateEnrollment.show`
+| true
+| Enables or disables display of the Product Update Enrollment popup in the Web UI; `false` will disable the popup and prevent any data being sent
+
+| `opennms.report.dir`
+| "${install.share.dir}/reports"
+| The directory used for Database Reports
+
+| `opennms.situations.show`
+| true
+| Enable or disable the Situations box on the front page in the OpenNMS web UI
+
+| `opennms.ticketer.plugin`
+| "org.opennms.netmgt.ticketd.NullTicketerPlugin"
+| The ticket plugin implementation to use to create tickets via the Alarm details pages (if configured)
+
+| `org.opennms.collectd.instrumentationClass`
+| "org.opennms.netmgt.collectd.DefaultCollectdInstrumentation"
+| The Collectd Instrumentation class, used for the instrumentation log and reader
+
+| `org.opennms.dao.ipinterface.findByServiceType`
+| "select distinct ipInterface from OnmsIpInterface as ipInterface join ipInterface.monitoredServices as monSvc where monSvc.serviceType.name = ?"
+| Used by `IpInterfaceDaoHibernate` to allow a custom SQL query to look up ipinterfaces by service
+
+| `org.opennms.dashboard.redirect`
+| false
+| Controls whether users will be redirected to the dashboard page after a successful login
+
+| `org.opennms.eventd.eventTemplateCacheSize`
+| 1000
+| Defines the size of the event parsing cache
+
+| `org.opennms.features.apilayer.mapping.nodeCacheSpec`
+| "maximumSize=10000,expireAfterWrite=15m"
+| Cache specification for node objects used in alarms 
+
+| `org.opennms.geomap.defaultSeverity`
+| "Normal"
+| Minimum alarm severity for the node to be displayed on the geomap
+
+| `org.opennms.geomap.defaultStrategy`
+| "Alarms"
+| The strategy used to calculate each node's status for the geomap
+
+| `org.opennms.grafanaBox.apiKey`
+| `null`
+| Grafana API key used to fetch Grafana dashboards displayed in the Grafana Box widget
+
+| `org.opennms.grafanaBox.basePath`
+| `null`
+| Grafana base path to be used fetch dashboards via API to display in the Grafana Box widget
+
+| `org.opennms.grafanaBox.connectionTimeout`
+| 500
+| Timeout value used by the Grafana Box widget
+
+| `org.opennms.grafanaBox.dashboardLimit`
+| 0
+| Upper limit to the number of dashboards to fetch and display in the Grafana Box widget
+
+| `org.opennms.grafanaBox.hostname`
+| "localhost"
+| Hostname used to fetch dashboards via API for the Grafana Box widget
+
+| `org.opennms.grafanaBox.link.basePath`
+| `null` 
+| Base path used to build links in the Grafana Box widget 
+
+| `org.opennms.grafanaBox.link.hostname`
+| "localhost"
+| Hostname used to build dashboard links for the Grafana Box widget
+
+| `org.opennms.grafanaBox.link.port`
+| 3000
+| Port used to build dashboard links for the Grafana Box widget
+
+| `org.opennms.grafanaBox.link.protocol`
+| "http"
+| Protocol used to build dashboard links for the Grafana Box widget
+
+| `org.opennms.grafanaBox.port`
+| 3000
+| Port used to fetch dashboards for the Grafana Box widget
+
+| `org.opennms.grafanaBox.protocol`
+| "http"
+| Protocol used to fetch dashboards via API for the Grafana Box widget
+
+| `org.opennms.grafanaBox.show`
+| false
+| Enable or disable the Grafana Box widget showing the available Grafana dashboards on the front page in the OpenNMS web UI
+
+| `org.opennms.grafanaBox.soTimeout`
+| 500
+| Timeout value used by the Grafana Box widget
+
+| `org.opennms.grafanaBox.tag`
+| `null`
+| Only display dashboards in the Grafana Box that match this tag
+
+| `org.opennms.heatmap.defaultHeatmap`
+| "categories"
+| The default heatmap can be set wiht a value of `categories`, `foreignSources` or `monitoredServices`.
+
+| `org.opennms.heatmap.defaultMode`
+| "alarms"
+| There are two modes for operating the heatmap. Valid options are `alarms` and `outages`
+
+| `org.opennms.interfaceAvailabilityBox.maxInterfaceCount`
+| 10
+| The maximum number of interfaces before the availability box is hidden in the node page
+
+| `org.opennms.jasperReportsVersion`
+| Varies with OpenNMS version
+| Defines the Version of the Jasperreports libraryaused for database reports
+
+| `org.opennms.netmgt.asterisk.agi.listenAddress`
+| 127.0.0.1
+| If you are using the built-in Asterisk Gateway Interface (AGI) server to integrate with an external Asterisk server, this property should be set to an IP address on the OpenNMS server that is reachable from the Asterisk server
+
+| `org.opennms.netmgt.asterisk.agi.listenPort`
+| 4573
+| A port other than the default for the the built-in Asterisk Gateway Interface 
+
+| `org.opennms.netmgt.asterisk.agi.maxPoolSize`
+| 10
+| Thread pool size for the built-in Asterisk Gateway Interface
+
+| `org.opennms.netmgt.collectd.SnmpCollector.forceRescan`
+| false
+| Enable or disable the SNMP Collector's ability to force rescans when the interface count changes
+
+| `org.opennms.netmgt.icmp.best.timeout`
+| 500
+| The default timeout used when dynamically determining the best pinger implementation
+
+| `org.opennms.netmgt.icmp.pingerClass`
+| "org.opennms.netmgt.icmp.best.BestMatchPinger"
+| The default ICMP implementation class.
+
+| `org.opennms.netmgt.icmp.requireV4`
+| "detect"
+| Used to to force IPv4 ICMP support explicitly
+
+| `org.opennms.netmgt.icmp.requireV6`
+| "detect"
+| Used to to force IPv6 ICMP support explicitly
+
+| `org.opennms.netmgt.search.info`
+| `null`
+| By default the central search shows only the found nodes and the corresponding matched field. This property allows you to add an additional field where you can use a meta-data DSL expression
+
+| `org.opennms.netmgt.vmmgr.emitStandardFileNotFoundWarnings`
+| true
+| Enable or disable display of standard "file not found" warnings during startup
+
+| `org.opennms.newts.config.datacenter`
+| "datacenter1"
+| Cassandra datacenter used by NewTS
+
+| `org.opennms.newts.config.driver_settings_file`
+| `null` 
+| Driver settings file for the built-in Cassandra client used by NewTS
+
+| `org.opennms.newts.config.hostname`
+| "localhost"
+| Comma-separated of list IP address or hostnames of the Cassandra nodes
+
+| `org.opennms.newts.config.keyspace`
+| "newts"
+| Name of the Cassandra keyspace to use for NewTS
+
+| `org.opennms.newts.config.max_batch_size`
+| 16
+| Maximum number of records to insert in a single Cassandra transaction
+
+| `org.opennms.newts.config.password`
+| "cassandra"
+| Password to use when connecting to Cassandra
+
+| `org.opennms.newts.config.port`
+| 9042
+| Port used to connect to the Cassandra nodes
+
+| `org.opennms.newts.config.read_consistency`
+| "ONE"
+| Consistency level for read operations
+
+| `org.opennms.newts.config.resource_shard`
+| 604800
+| Time (in seconds) that NewTS samples are stored at the same key
+
+| `org.opennms.newts.config.ttl`
+| 31540000
+| Number of seconds after which NewTS samples will automatically be deleted
+
+| `org.opennms.newts.config.username`
+| "cassandra"
+| Username to use when connecting to Cassandra
+
+| `org.opennms.newts.config.write_consistency`
+| "ANY"
+| Consistency level for Cassandra write operations
+
+| `org.opennms.protocols.icmp.interfaceJar`
+| `null`
+| This path is added to the `opennms.classpath` at startup
+
+| `org.opennms.provisiond.enableDiscovery`
+| true
+| Enable or disable the handling of new suspect events in provisiond and periodic scanning of discovered nodes
+
+| `org.opennms.provisiond.resolveMissingCoordinatesFromAddressString`
+| "true" 
+| Used to control if address asset strings are resolved to longitude/latitude coordinates when a geocoder service is available and the node does not have existing lat/lon coordinates
+
+| `org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames`
+| true
+| Whether or not to perform a reverse look up hostnames for a node's IP addresses during the provisioning's audit phase
+
+| `org.opennms.provisiond.scheduleRescanForUpdatedNodes`
+| true
+| Enable or disable rescans of existing nodes following synchronization of a requistion
+
+| `org.opennms.rrd.fileExtension`
+| `null`
+| Define a custom file extension to use for timeseries (rrd) data files
+
+| `org.opennms.rrd.interfaceJar`
+| `null`
+| This path is added to the `opennms.classpath` at startup
+
+| `org.opennms.rrd.storeByForeignSource`
+| false
+| Store RRDs by foreignSource/ForeignId rather than database nodeId
+
+| `org.opennms.rrd.strategyClass`
+| "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy"
+| Which `RrdStrategy` implementation to use for writing data to RRD files
+
+| `org.opennms.rrd.usetcp`
+| false
+| Enable or disable exporting performance data to an external system over a TCP port
+
+| `org.opennms.security.disableLoginSuccessEvent`
+| false
+| Enable or disable sending successful login events on a successful login to the webui
+
+| `org.opennms.snmp.mib-compiler.default-graph-template.color`
+| "#00ccff"
+| Sets the default color for graphs generated by the MIB Compiler
+
+| `org.opennms.statusbox.elements`
+| "business-services,nodes-by-alarms,nodes-by-outages"
+| Controls which elements are shown in the Status Box on the front page in the OpenNMS web UI
+
+| `org.opennms.threshd.value.decimalformat`
+| "\\##.##"
+| Format rule used when setting the datasource value for threshold events
+
+| `org.opennms.timeseries.strategy`
+| "rrd"
+| Sets the strategy used to persist and retrieve time series metrics
+
+| `org.opennms.web.aclsEnabled`
+| false
+| Enable ACL support in the webapp. When ACLs enabled then visible Nodes, Alarms, Events, and others are filtered according to categories
+
+| `org.opennms.web.assets.minified`
+| true
+| Whether to use minified web assets
+
+| `org.opennms.web.assets.path`
+| `null`
+| A filesystem path fromwhich to load web assets
+
+| `org.opennms.web.console.centerUrl`
+| "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp"
+| Controls the content that will be displayed in the middle box of the front page
+
+| `org.opennms.web.defaultGraphPeriod`
+| "lastday"
+| Set the default time period when rendering graphs
+
+| `org.snmp4j.smisyntaxes`
+| "opennms-snmp4j-smisyntaxes.properties"
+| Enable various workarounds for buggy SNMP agents
+
+| `rrd.base.dir`
+| "/opt/opennms/share/rrd"
+| Base directory for storing RRD files
+
+| `rrd.binary`
+| "/usr/bin/rrdtool"
+| RRD binary path (only used if the JniRrdStrategy is used)
+
+| `rscript.binary`
+| "Rscript"
+| Location of the `rscript` binary used by the R integration
+
+| `sftp.private-key.location`
+| `null`
+| Used by the XmlCollector for experimental SSH Private/Public keys authentication
+
+
+|===

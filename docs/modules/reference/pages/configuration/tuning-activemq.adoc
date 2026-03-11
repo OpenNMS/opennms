@@ -1,12 +1,75 @@
 = Tuning ActiveMQ
 :description: Learn about default ActiveMQ settings in OpenNMS {page-component-title} and how to change them for better performance.
 
+== Memory limits
+
 The settings for the embedded ActiveMQ broker are found in `$\{OPENNMS_HOME}/etc/opennms-activemq.xml`.
 Memory and storage limits are conservative by default and should be tuned to accommodate your workload.
 Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, assuming you have enough heap available.
 
+[source, xml]
+----
+<systemUsage>
+    <systemUsage>
+        <memoryUsage>
+            <memoryUsage limit="20 mb"/> <1>
+        </memoryUsage>
+        <storeUsage>
+            <storeUsage limit="1 gb"/> <2>
+        </storeUsage>
+        <tempUsage>
+            <tempUsage limit="100 mb"/> <3>
+        </tempUsage>
+    </systemUsage>
+</systemUsage>
+----
+<1> The amount of JVM heap memory assigned to the broker to track of destinations, cache messages, etc; `memoryUsage` limit can be increased to `512MB` or more.
+<2> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store persistent messages; `storeUsage` limit can be increased to `5GB` or more.
+<3> The limit of disk storage in `$\{OPENNMS_HOME}/data/` that can be used to store non-persistent messages; `tempUsage` limit can be increased to `1GB` or more.
+
 TIP: If the memory limit is reached, https://activemq.apache.org/producer-flow-control.html[flow control] will prevent messages
 from being published to the broker.
+
+== Per destination limits
+ActiveMQ provides mechanism to tune memory usage per destination. The default limits are conservative and should be tuned to accommodate your workload.
+
+[source, xml]
+----
+<policyEntry queue=">" <1>
+             producerFlowControl="true"
+             memoryLimit="1mb"> <2>
+   <deadLetterStrategy>
+     <discarding/>
+   </deadLetterStrategy>
+ </policyEntry>
+----
+<1> This matches all queues
+<2> This is the `memoryLimit` per queue and should be increased.
+
+The `policyEntry/memoryLimit` value prevents any one queue from consuming all broker resources, but should be tuned such that the per-queue limit is a reasonable percentage of the total `systemUsage/memoryUsage` limit.
+
+== KahaDB persistence
+KahaDB is a file based persistence database that is local to the ActiveMQ broker.
+It has been optimized for fast persistence and is the the default broker storage mechanism.
+ActiveMQ spools messages to disk in order to prevent broker running out of memory or to fulfill persistence requirements.
+
+You can optimize the performance of the KahaDB message store by modifying the following attributes:
+
+[source, xml]
+----
+<persistenceAdapter>
+    <kahaDB directory="${activemq.data}/kahadb"
+            journalMaxFileLength="128mb" <1>
+            journalDiskSyncStrategy="never" <2>
+            indexWriteBatchSize="10000" <3>
+     />
+</persistenceAdapter>
+----
+<1> Because there is a cost associated with closing a full journal file and opening a new journal file, you can get a slight performance improvement by increasing the journal file size (Default `32MB`)
+<2> By default the broker performs an expensive disk sync before sending an acknowledgement back to a producer.
+A substantial improvement in broker performance can be achieved by disabling these syncs. (Default: `true`)
+<3> Defines the threshold for the number of dirty indexes that are allowed to accumulate, before KahaDB writes the cache to the store.
+This consolidates more small journal writes into a single larger write operation. (Default: 1000)
 
 == Monitoring the ActiveMQ broker using the Karaf shell
 
@@ -108,9 +171,39 @@ These will exit after remaining unused for some period of time.
 | 1000
 | Maximum number of requests to queue.
 Set to `-1` to be unlimited.
+
+| org.opennms.activemq.client.max-connections
+| 8
+| The maximum number of concurrent connections to the ActiveMQ broker; larger numbers allow for increased concurrency and throughput.
+
+| org.opennms.activemq.client.concurrent-consumers
+| 10
+| The maximum number of concurrent ActiveMQ consumers to spawn; larger numbers can increase concurrency and throughput.
+
 |===
 
-TIP: Use the `opennms:stress-rpc` Karaf shell command to help evaluate and tune performance.
+TIP: Use the `opennms:stress-rpc` Karaf shell command on the core to help evaluate and tune performance.
+
+== Tuning the RPC client in Minion
+
+The following properties can be added to `org.opennms.minion.controller.cfg` to tune the thread pool used to issue RPCs:
+
+[options="header, %autowidth", cols="2,1,3"]
+|===
+| Name
+| Default
+| Description
+
+| broker-max-connections
+| 8
+| The maximum number of concurrent connections to the ActiveMQ broker; larger numbers allow for increased concurrency and throughput.
+
+| broker-concurrent-consumers
+| 10
+| The maximum number of concurrent ActiveMQ consumers to spawn; larger numbers can increase concurrency and throughput.
+
+|===
+TIP: Use the `opennms:stress-rpc` Karaf shell command on the core to help evaluate and tune performance.
 
 == Troubleshooting RPC failures
 

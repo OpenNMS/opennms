@@ -1599,6 +1599,29 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
                         greaterThanOrEqualTo(beforeDown));
     }
 
+    /**
+     * Verify that rebuildPackageIpListMap() is NOT called during bulk
+     * scheduling at startup. Before the NMS-19538 fix, m_initialized was set
+     * to true before async scheduling ran, causing rebuildPackageIpListMap()
+     * to be called for every service — turning a seconds-long startup into
+     * a multi-hour crawl on large systems.
+     */
+    @Test
+    public void testNoRebuildPackageIpListMapDuringInit() throws Exception {
+        m_pollerConfig.resetRebuildPackageIpListMapCallCount();
+
+        startDaemons();
+
+        // Wait for the async scheduling to complete and polling to start
+        await().atMost(30, TimeUnit.SECONDS)
+                .until(() -> m_poller.getNumPolls() > 0);
+
+        // During bulk init, m_initialized is false, so rebuildPackageIpListMap
+        // should NOT have been called
+        assertEquals("rebuildPackageIpListMap should not be called during initial scheduling",
+                0, m_pollerConfig.getRebuildPackageIpListMapCallCount());
+    }
+
     //
     // Utility methods
     //
