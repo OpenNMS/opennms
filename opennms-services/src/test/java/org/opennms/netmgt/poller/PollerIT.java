@@ -1178,7 +1178,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         smtpOutages = getOutages(smtpService);
         assertEquals(2, smtpOutages.size());
         assertNotNull(smtpOutages.get(0).getIfRegainedService());
-        assertNotNull(smtpOutages.get(0).getServiceRegainedEvent());
+        assertNotNull(smtpOutages.get(0).getSvcRegainedEventTsid());
         assertNull(smtpOutages.get(1).getIfRegainedService());
     }
 
@@ -1313,12 +1313,12 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         assertNotNull(httpOutages.get(0).getIfRegainedService());
         assertNotNull(httpOutages.get(0).getIfLostService());
         assertNotNull(httpOutages.get(0).getIfRegainedService());
-        assertNotNull(httpOutages.get(0).getServiceRegainedEvent());
+        assertNotNull(httpOutages.get(0).getSvcRegainedEventTsid());
 
         assertNotNull(httpOutages.get(1).getIfRegainedService());
         assertNotNull(httpOutages.get(1).getIfLostService());
         assertNotNull(httpOutages.get(1).getIfRegainedService());
-        assertNotNull(httpOutages.get(1).getServiceRegainedEvent());
+        assertNotNull(httpOutages.get(1).getSvcRegainedEventTsid());
     }
 
     /**
@@ -1473,7 +1473,8 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         // and let's pretend that they weren't even there in the first place
         Set<Integer> outageIds = new HashSet<>();
         for (OnmsOutage outage : m_outageDao.findAll()) {
-            outage.setServiceLostEvent(null);
+            outage.setSvcLostEventTsid(null);
+            outage.setSvcLostEventUei(null);
             m_outageDao.update(outage);
             outageIds.add(outage.getId());
         }
@@ -1497,7 +1498,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
                 // Outages in our list should be closed with
                 // no svcRegainedEvent
                 assertNotNull(outage.getIfRegainedService());
-                assertNull(outage.getServiceRegainedEvent());
+                assertNull(outage.getSvcRegainedEventTsid());
             } else {
                 // Other outages should be open
                 assertNull(outage.getIfRegainedService());
