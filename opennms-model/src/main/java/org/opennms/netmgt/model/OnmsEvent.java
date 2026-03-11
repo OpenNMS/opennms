@@ -229,10 +229,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private org.opennms.netmgt.model.OnmsNode node;
 
 	/** persistent field */
-	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
-	private Set<OnmsNotification> notifications = new HashSet<>();
-
-	/** persistent field */
 	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
 	private Set<OnmsOutage> associatedServiceRegainedOutages = new HashSet<>();
 
@@ -958,25 +954,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 */
 	public void setNode(OnmsNode node) {
 		this.node = node;
-	}
-
-	/**
-	 * <p>getNotifications</p>
-	 *
-	 * @return a {@link java.util.Set} object.
-	 */
-	@XmlTransient
-	public Set<OnmsNotification> getNotifications() {
-		return notifications;
-	}
-
-	/**
-	 * <p>setNotifications</p>
-	 *
-	 * @param notifications a {@link java.util.Set} object.
-	 */
-	public void setNotifications(Set<OnmsNotification> notifications) {
-		this.notifications = notifications;
 	}
 
 	/**

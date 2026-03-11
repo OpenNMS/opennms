@@ -54,8 +54,6 @@ public class UsageStatisticsReportDTO {
     private int m_alarms;
     private long m_alarmsLastHours;
     private long m_situations;
-    private int m_destinationPathCount;
-    private Boolean m_notificationEnablementStatus;
     private int m_onCallRoleCount;
     private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
     private long m_monitoringLocations;
@@ -90,16 +88,12 @@ public class UsageStatisticsReportDTO {
     private int m_users;
     private int m_groups;
     private int outages;
-    private int notifications;
     private long m_onmsStartupTimeSeconds;
     private long m_flowCountPerSecond;
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
     private boolean m_inContainer;
-    public int getNotifications() {return notifications;}
-
-    public void setNotifications(int notifications) {this.notifications = notifications;}
 
     public int getOutages() {return outages;}
 
@@ -363,21 +357,7 @@ public class UsageStatisticsReportDTO {
         m_services = services;
     }
 
-    public int getDestinationPathCount() {
-        return m_destinationPathCount;
-    }
 
-    public void setDestinationPathCount(int m_destinationPathCount) {
-        this.m_destinationPathCount = m_destinationPathCount;
-    }
-
-    public Boolean isNotificationEnablementStatus() {
-        return m_notificationEnablementStatus;
-    }
-
-    public void setNotificationEnablementStatus(Boolean m_notificationEnablementStatus) {
-        this.m_notificationEnablementStatus = m_notificationEnablementStatus;
-    }
 
     public int getOnCallRoleCount() {
         return m_onCallRoleCount;

@@ -47,7 +47,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -81,15 +80,6 @@ public class ManageNodesServlet extends HttpServlet {
      *
      * @throws javax.servlet.ServletException if any.
      */
-    @Override
-    public void init() throws ServletException {
-        try {
-            NotificationFactory.init();
-        } catch (Throwable e) {
-            throw new ServletException("Could not initialize notification factory: " + e.getMessage(), e);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -39,7 +39,6 @@ public enum Aliases {
     memo,
     monitoredService,
     node,
-    notification,
     outage,
     reductionKeyMemo,
     serviceType,

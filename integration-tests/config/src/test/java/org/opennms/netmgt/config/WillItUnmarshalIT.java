@@ -64,7 +64,6 @@ import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.ResourceTypes;
-import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
@@ -79,9 +78,6 @@ import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.config.kscReports.ReportsList;
 import org.opennms.netmgt.config.mailtransporttest.MailTransportTest;
 import org.opennms.netmgt.config.microblog.MicroblogConfiguration;
-import org.opennms.netmgt.config.notifd.NotifdConfiguration;
-import org.opennms.netmgt.config.notificationCommands.NotificationCommands;
-import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.outages.Outages;
@@ -202,7 +198,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
         addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
-        addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.CONFIG, "drools-northbounder-configuration.xml", DroolsNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "elastic-credentials.xml", ElasticCredentials.class, true, null);
@@ -221,9 +216,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "ksc-performance-reports.xml", ReportsList.class, true, null);
         addFile(Source.CONFIG, "microblog-configuration.xml", MicroblogConfiguration.class, false, null);
-        addFile(Source.CONFIG, "notifd-configuration.xml", NotifdConfiguration.class, true, null);
-        addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
-        addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
@@ -261,7 +253,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, true, null);
 
         addFile(Source.EXAMPLE, "collectd-configuration.xml", CollectdConfiguration.class, false, null);
-        addFile(Source.EXAMPLE, "destinationPaths.xml", DestinationPaths.class, false, null);
         addFile(Source.EXAMPLE, "devices/motorola_cpei_150_wimax_gateway/http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, false, null);
@@ -280,8 +271,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, false, null);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection-mbeans/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, false, null);
         addFile(Source.EXAMPLE, "mail-transport-test.xml", MailTransportTest.class, false, null);
-        addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, false, null);
-        addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, false, null);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, false, null);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, false, null);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, false, null);

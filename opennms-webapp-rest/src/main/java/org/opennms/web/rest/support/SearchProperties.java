@@ -50,7 +50,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -354,18 +353,6 @@ public abstract class SearchProperties {
 		)
 	));
 
-	static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(OnmsNotification.class, "notifyId", "ID", INTEGER),
-		new SearchProperty(OnmsNotification.class, "answeredBy", "Answered By", STRING),
-		new SearchPropertyBuilder().entityClass(OnmsNotification.class).id("ipAddress").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
-		new SearchProperty(OnmsNotification.class, "numericMsg", "Numeric Message", STRING),
-		new SearchProperty(OnmsNotification.class, "pageTime", "Page Time", TIMESTAMP),
-		new SearchProperty(OnmsNotification.class, "queueId", "Queue ID", STRING),
-		new SearchProperty(OnmsNotification.class, "respondTime", "Responded Time", TIMESTAMP),
-		new SearchProperty(OnmsNotification.class, "subject", "Subject", STRING),
-		new SearchProperty(OnmsNotification.class, "textMsg", "Text Message", STRING)
-	));
-
 	static final SortedSet<SearchProperty> OUTAGE_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsOutage.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsOutage.class, "ifLostService", "Lost Service Time", TIMESTAMP),
@@ -404,7 +391,6 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> MINION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> LOCATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
-	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 
 	/**
@@ -546,20 +532,6 @@ public abstract class SearchProperties {
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES, false));
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES, false));
 		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES, false));
-
-		// Root prefix
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);
-		//NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.notification, NOTIFICATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, "Event", EVENT_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
 		// Root prefix
 		OUTAGE_SERVICE_PROPERTIES.addAll(OUTAGE_PROPERTIES);

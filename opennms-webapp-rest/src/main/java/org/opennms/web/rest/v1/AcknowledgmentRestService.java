@@ -38,19 +38,17 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAcknowledgmentCollection;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.web.rest.support.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * ReST service for Acknowledgments of alarms/notifications.
+ * ReST service for Acknowledgments of alarms.
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
@@ -61,12 +59,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AcknowledgmentRestService extends OnmsRestService {
     @Autowired
     private AcknowledgmentDao m_ackDao;
-    
+
     @Autowired
     private AlarmDao m_alarmDao;
-    
-    @Autowired
-    private NotificationDao m_notificationDao;
     
     /**
      * <p>getAcknowledgment</p>
@@ -132,7 +127,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
     @Transactional
     public Response acknowledge(@Context final SecurityContext securityContext, MultivaluedMap<String, String> formParams) {
         String alarmId = formParams.getFirst("alarmId");
-        String notifId = formParams.getFirst("notifId");
         String action = formParams.getFirst("action");
         String ackUser = formParams.getFirst("ackUser");
 
@@ -147,31 +141,18 @@ public class AcknowledgmentRestService extends OnmsRestService {
         SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
 
         OnmsAcknowledgment ack = null;
-        if (alarmId == null && notifId == null) {
-            return getBadRequestResponse("You must supply either an alarmId or notifId");
-        } else if (alarmId != null && notifId != null) {
-            return getBadRequestResponse("You cannot supply both an alarmId and a notifId");
-        } else if (alarmId != null) {
-            final Integer numericAlarmId = getNumericValue(alarmId);
-            if (numericAlarmId == null) {
-                return getBadRequestResponse("The alarmId has to be an integer value");
-            }
-            final OnmsAlarm alarm = m_alarmDao.get(numericAlarmId);
-            if (alarm == null) {
-                return Response.notModified().build();
-            }
-            ack = new OnmsAcknowledgment(alarm, ackUser);
-        } else if (notifId != null) {
-            final Integer numericNotifId = getNumericValue(notifId);
-            if (numericNotifId == null) {
-                return getBadRequestResponse("The notifId has to be an integer value");
-            }
-            final OnmsNotification notification = m_notificationDao.get(numericNotifId);
-            if (notification == null) {
-                return Response.notModified().build();
-            }
-            ack = new OnmsAcknowledgment(notification, ackUser);
+        if (alarmId == null) {
+            return getBadRequestResponse("You must supply an alarmId");
         }
+        final Integer numericAlarmId = getNumericValue(alarmId);
+        if (numericAlarmId == null) {
+            return getBadRequestResponse("The alarmId has to be an integer value");
+        }
+        final OnmsAlarm alarm = m_alarmDao.get(numericAlarmId);
+        if (alarm == null) {
+            return Response.notModified().build();
+        }
+        ack = new OnmsAcknowledgment(alarm, ackUser);
         
         if ("ack".equals(action)) {
             ack.setAckAction(AckAction.ACKNOWLEDGE);

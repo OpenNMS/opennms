@@ -32,7 +32,6 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
@@ -78,15 +77,6 @@ public interface SurveillanceViewService {
      */
     List<OnmsAlarm> getAlarmsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories);
 
-    /**
-     * Returns the list og OpenNMS notification instacnes for a given set of row and column categories.
-     *
-     * @param rowCategories  the row categories
-     * @param colCategories  the column categories
-     * @param customSeverity the custom severity to be used
-     * @return a list of notifications found
-     */
-    List<OnmsNotification> getNotificationsForCategories(Set<OnmsCategory> rowCategories, Set<OnmsCategory> colCategories, Map<OnmsNotification, String> customSeverity);
 
     /**
      * Returns the list of OpenNMS node instances for a given set of row and column categories.

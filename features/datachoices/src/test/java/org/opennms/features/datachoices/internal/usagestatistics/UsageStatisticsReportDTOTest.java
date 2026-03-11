@@ -55,8 +55,6 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setServices(services);
 
         usageStatisticsReport.setOnCallRoleCount(1);
-        usageStatisticsReport.setNotificationEnablementStatus(null);
-        usageStatisticsReport.setDestinationPathCount(-1);
         usageStatisticsReport.setUsers(0);
         usageStatisticsReport.setGroups(0);
         usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
@@ -79,7 +77,6 @@ public class UsageStatisticsReportDTOTest {
             "\"cpuUtilization\":null," +
             "\"databaseProductName\":null," +
             "\"databaseProductVersion\":null," +
-            "\"destinationPathCount\":-1," +
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
             "\"eventsLastHours\":0," +
@@ -96,8 +93,6 @@ public class UsageStatisticsReportDTOTest {
             "\"monitoringLocations\":0," +
             "\"nodes\":0," +
             "\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6}," +
-            "\"notificationEnablementStatus\":null," +
-            "\"notifications\":0," +
             "\"onCallRoleCount\":1," +
             "\"onmsStartupTimeSeconds\":1000," +
             "\"osArch\":null," +

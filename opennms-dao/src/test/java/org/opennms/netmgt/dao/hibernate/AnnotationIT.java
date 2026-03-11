@@ -44,11 +44,9 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,8 +280,6 @@ public class AnnotationIT implements InitializingBean {
 				assertTrue("there should be zero or more associated service regained outages", entity.getAssociatedServiceRegainedOutages().size() >= 0);
 				assertNotNull("dist poller should not be null: " + entity.toString(), entity.getDistPoller());
 				assertNotNull("dist poller name should not be null: " + entity.toString(), entity.getDistPoller().getId());
-				assertNotNull("notifications list should not be null: " + entity.toString(), entity.getNotifications());
-				assertTrue("notifications list size should be greater than or equal to zero", entity.getNotifications().size() >= 0);
 			}
 			
 		});
@@ -305,17 +301,7 @@ public class AnnotationIT implements InitializingBean {
 		});
 	}
 
-	@Test
-	@Transactional
-	public void testNotifications() {
-		assertLoadAll(OnmsNotification.class, new NullChecker<OnmsNotification>());
-	}
 
-	@Test
-	@Transactional
-	public void testUsersNotified() {
-		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
-	}
 
 	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
 		HibernateTemplate template = new HibernateTemplate(m_sessionFactory);

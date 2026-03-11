@@ -110,9 +110,6 @@
     <module>timeseries</module>
     <module>timeseries-shell</module>
 
-    <!-- OpenNMS Notifications -->
-    <module>notifications</module>
-
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 

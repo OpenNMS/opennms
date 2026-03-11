@@ -38,7 +38,6 @@ import javax.ws.rs.core.UriInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
@@ -157,7 +156,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateCollectd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updatePollerd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
-            updateNotifd(ConfigAction.REMOVE, outageName);
             try {
                 m_pollOutagesDao.withWriteLock(outages -> outages.removeOutage(outageName));
                 m_pollOutagesDao.saveConfig();
@@ -251,31 +249,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         }
     }
 
-    @PUT
-    @Path("{outageName}/notifd")
-    public Response addOutageToNotifications(@PathParam("outageName") String outageName) {
-        writeLock();
-        try {
-            updateNotifd(ConfigAction.ADD, outageName);
-            sendConfigChangedEvent();
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
-
-    @DELETE
-    @Path("{outageName}/notifd")
-    public Response removeOutageFromNotifications(@PathParam("outageName") String outageName) {
-        writeLock();
-        try {
-            updateNotifd(ConfigAction.REMOVE, outageName);
-            sendConfigChangedEvent();
-            return Response.noContent().build();
-        } finally {
-            writeUnlock();
-        }
-    }
 
     @GET
     @Path("{outageName}/nodeInOutage/{nodeId}")
@@ -416,22 +389,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
         return m_threshdDao.getWriteableConfig().getPackage(packageName)
                 .orElseThrow(() -> getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName));
-    }
-
-    private void updateNotifd(ConfigAction action, String outageName) {
-        getOutage(outageName); // Validate if outageName exists.
-        try {
-            NotifdConfigFactory factory = NotifdConfigFactory.getInstance();
-            if (action.equals(ConfigAction.ADD)) {
-                factory.getConfiguration().addOutageCalendar(outageName);
-            }
-            if (action.equals(ConfigAction.REMOVE) || action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-                factory.getConfiguration().removeOutageCalendar(outageName);
-            }
-            factory.saveCurrent();
-        } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save notifications configuration: {}", e.getMessage());
-        }
     }
 
     private void sendConfigChangedEvent() {

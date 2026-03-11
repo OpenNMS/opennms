@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.time.CentralizedDateTimeFormat;
-import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.api.MenuProvider;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -131,12 +130,7 @@ public class NavBarController extends AbstractController implements Initializing
         model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
         model.put("formattedTime", this.dateTimeFormat.format(Instant.now(), extractUserTimeZone(request)));
 
-        String noticeStatus = "Unknown";
-        try {
-            noticeStatus = NotifdConfigFactory.getPrettyStatus();
-        } catch (final Throwable t) {
-        }
-        model.put("noticeStatus", noticeStatus);
+        model.put("noticeStatus", "Off");
 
         // Helper functions
         model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));

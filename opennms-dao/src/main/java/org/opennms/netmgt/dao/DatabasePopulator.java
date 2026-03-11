@@ -42,12 +42,10 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.AlarmAssociation;
@@ -63,12 +61,10 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +141,6 @@ public class DatabasePopulator {
     private EventDao m_eventDao;
     private AlarmDao m_alarmDao;
     private AlarmAssociationDao m_alarmAssociationDao;
-    private NotificationDao m_notificationDao;
-    private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
     private ApplicationDao applicationDao;
     private AcknowledgmentDao m_acknowledgmentDao;
@@ -264,12 +258,6 @@ public class DatabasePopulator {
         for (final OnmsOutage outage : m_outageDao.findAll()) {
             m_outageDao.delete(outage);
         }
-        for (final OnmsUserNotification not : m_userNotificationDao.findAll()) {
-            m_userNotificationDao.delete(not);
-        }
-        for (final OnmsNotification not : m_notificationDao.findAll()) {
-            m_notificationDao.delete(not);
-        }
         for (final AlarmAssociation ass : m_alarmAssociationDao.findAll()) {
             ass.getRelatedAlarm().getAssociatedAlarms().clear();
             ass.getSituationAlarm().getAssociatedAlarms().clear();
@@ -331,8 +319,6 @@ public class DatabasePopulator {
     	LOG.debug("= DatabasePopulatorExtension Reset Finished =");
         
         m_outageDao.flush();
-        m_userNotificationDao.flush();
-        m_notificationDao.flush();
         m_alarmAssociationDao.flush();
         m_alarmDao.flush();
         m_eventDao.flush();
@@ -386,18 +372,6 @@ public class DatabasePopulator {
         getEventDao().save(event);
         getEventDao().flush();
 
-        final OnmsNotification notif = buildTestNotification(builder, event);
-        getNotificationDao().save(notif);
-        getNotificationDao().flush();
-        
-        final OnmsUserNotification userNotif = buildTestUserNotification(notif);
-        getUserNotificationDao().save(userNotif);
-        getUserNotificationDao().flush();
-        
-        final OnmsUserNotification userNotif2 = buildTestUser2Notification(notif);
-        getUserNotificationDao().save(userNotif2);
-        getUserNotificationDao().flush();
-        
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
         final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), svc, null, null);
         resolved.setSvcLostEventTsid(event.getId().longValue());
@@ -660,29 +634,6 @@ public class DatabasePopulator {
         return event;
     }
 
-    private OnmsNotification buildTestNotification(final NetworkBuilder builder, final OnmsEvent event) {
-        final OnmsNotification notif = new OnmsNotification();
-        notif.setEvent(event);
-        notif.setTextMsg("This is a test notification");
-        notif.setIpAddress(InetAddressUtils.getInetAddress("192.168.1.1"));
-        notif.setNode(m_node1);
-        notif.setServiceType(getService("ICMP"));
-        return notif;
-    }
-
-    private OnmsUserNotification buildTestUserNotification(final OnmsNotification notif) {
-        final OnmsUserNotification userNotif = new OnmsUserNotification();
-        userNotif.setUserId("TestUser");
-        userNotif.setNotification(notif);
-        return userNotif;
-    }
-
-    private OnmsUserNotification buildTestUser2Notification(final OnmsNotification notif) {
-        final OnmsUserNotification userNotif2 = new OnmsUserNotification();
-        userNotif2.setUserId("TestUser2");
-        userNotif2.setNotification(notif);
-        return userNotif2;
-    }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
         // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
@@ -791,15 +742,6 @@ public class DatabasePopulator {
         m_nodeDao = nodeDao;
     }
 
-    public NotificationDao getNotificationDao() {
-        return m_notificationDao;
-    }
-
-
-    public void setNotificationDao(final NotificationDao notificationDao) {
-        m_notificationDao = notificationDao;
-    }
-
 
     public OutageDao getOutageDao() {
         return m_outageDao;
@@ -831,14 +773,6 @@ public class DatabasePopulator {
     }
 
 
-    public UserNotificationDao getUserNotificationDao() {
-        return m_userNotificationDao;
-    }
-
-
-    public void setUserNotificationDao(final UserNotificationDao userNotificationDao) {
-        m_userNotificationDao = userNotificationDao;
-    }
     
     public OnmsNode getNode1() {
         return m_node1;
