@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.opennms.core.schema.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,8 @@ public class DbInitRunner implements CommandLineRunner {
     private final ApplicationContext context;
     private final DbInitProperties properties;
 
-    public DbInitRunner(DataSource adminDataSource,
-                        DataSource dataSource,
+    public DbInitRunner(@Qualifier("adminDataSource") DataSource adminDataSource,
+                        @Qualifier("dataSource") DataSource dataSource,
                         ApplicationContext context,
                         DbInitProperties properties) {
         this.adminDataSource = adminDataSource;

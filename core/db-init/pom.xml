@@ -54,6 +54,16 @@
             <artifactId>org.opennms.core.schema</artifactId>
             <version>${opennms.version}</version>
             <classifier>liquibase</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.opennms.dependencies</groupId>
+                    <artifactId>spring-dependencies</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opennms.dependencies</groupId>
+                    <artifactId>liquibase-dependencies</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spring Boot (JDBC only, no web server) -->
@@ -96,6 +106,11 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

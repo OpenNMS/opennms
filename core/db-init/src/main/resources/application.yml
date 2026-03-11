@@ -1,14 +1,7 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/opennms
-    username: opennms
-    password: opennms
-    admin:
-      url: jdbc:postgresql://localhost:5432/template1
-      username: postgres
-      password: ""
-  liquibase:
-    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
 
 opennms:
   dbinit:
@@ -17,6 +10,7 @@ opennms:
     database-password: opennms
     admin-user: postgres
     admin-password: ""
+    admin-url: jdbc:postgresql://localhost:5432/template1
     create-user: true
     create-database: true
     iplike: true

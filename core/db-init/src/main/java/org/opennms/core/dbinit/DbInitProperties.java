@@ -9,6 +9,7 @@ public record DbInitProperties(
     String databasePassword,
     String adminUser,
     String adminPassword,
+    String adminUrl,
     boolean createUser,
     boolean createDatabase,
     boolean iplike,
