@@ -2131,6 +2131,40 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
     </feature>
 
+    <!-- Karaf-only PerspectivePollerd: polls from multiple locations via Minion RPC -->
+    <feature name="opennms-daemon-perspectivepoller" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: PerspectivePollerd">
+        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
+        <feature>opennms-spring-extender</feature>
+        <!-- Event transport (Kafka-based, replaces Eventd) -->
+        <feature>opennms-event-forwarder-kafka</feature>
+        <!-- DAO infrastructure -->
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <!-- Poller + daemon config -->
+        <feature>opennms-config</feature>
+        <!-- Core daemon (SpringServiceDaemon, DaemonTools) -->
+        <feature>opennms-core-daemon</feature>
+        <!-- Kafka RPC (provides RpcClientFactory for LocationAwarePollerClient) -->
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <!-- API bundles needed by onmsgi:reference proxies (class loading) -->
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+        <!-- Poller RPC client (LocationAwarePollerClientImpl, PollerClientRpcModule) -->
+        <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+        <!-- Poller daemon classes (ServiceMonitor impls, DaemonTools) -->
+        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- PerspectivePoller feature bundle -->
+        <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
+        <!-- Daemon loader (creates PerspectivePollerd, starts it) -->
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-perspectivepoller/${project.version}</bundle>
+    </feature>
+
     <!-- Karaf-only Collectd: loads Collectd daemon without Manager/Eventd -->
     <feature name="opennms-daemon-collectd" version="${project.version}"
              description="OpenNMS :: Daemon Loader :: Collectd">

@@ -408,6 +408,7 @@
                         <feature>opennms-daemon-scriptd</feature>
                         <feature>opennms-daemon-provisiond</feature>
                         <feature>opennms-daemon-bsmd</feature>
+                        <feature>opennms-daemon-perspectivepoller</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
