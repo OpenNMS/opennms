@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.Fetch;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -37,7 +36,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -70,7 +68,7 @@ public class AlarmsDashlet extends AbstractDashlet {
     /**
      * Helper for handling criterias
      */
-    private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+    private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class);
 
     /**
      * wallboard layout
@@ -212,14 +210,10 @@ public class AlarmsDashlet extends AbstractDashlet {
 
         alarmCb.alias("node", "node");
         alarmCb.alias("node.categories", "category");
-        alarmCb.alias("lastEvent", "event");
 
         String criteria = getDashletSpec().getParameters().get("criteria");
 
         m_criteriaBuilderHelper.parseConfiguration(alarmCb, criteria);
-
-        alarmCb.fetch("firstEvent", Fetch.FetchType.EAGER);
-        alarmCb.fetch("lastEvent", Fetch.FetchType.EAGER);
 
         /**
          * due to restrictions in the criteria api it's quite hard

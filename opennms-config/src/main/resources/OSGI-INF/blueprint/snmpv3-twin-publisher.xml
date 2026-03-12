@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher"
+               availability="mandatory"/>
+
+    <bean id="snmpV3UserTwinPublisher"
+          class="org.opennms.netmgt.config.SnmpV3UserTwinPublisher"
+          init-method="init" destroy-method="close">
+        <argument ref="twinPublisher"/>
+    </bean>
+
+</blueprint>

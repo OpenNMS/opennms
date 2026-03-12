@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.hibernate.ObjectNotFoundException;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -39,7 +38,6 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.util.SnmpInfo;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsHwEntityAlias;
@@ -262,71 +260,6 @@ public class ProtobufMapper {
         getString(snmp.getCommunity()).ifPresent(snmpInfoBuilder::setCommunity);
         getString(snmp.getTrapOID()).ifPresent(snmpInfoBuilder::setTrapOid);
         return snmpInfoBuilder;
-    }
-
-    public OpennmsModelProtos.Event.Builder toEvent(OnmsEvent event) {
-        if (event == null) {
-            return null;
-        }
-        try {
-            final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
-                    .setId(event.getId())
-                    .setUei(event.getEventUei())
-                    .setSource(event.getEventSource())
-                    .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
-                    .setLog("Y".equalsIgnoreCase(event.getEventLog()))
-                    .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
-
-            final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
-            if (eventLabel != null) {
-                builder.setLabel(eventLabel);
-            }
-            if (event.getEventDescr() != null) {
-                builder.setDescription(event.getEventDescr());
-            }
-            if (event.getEventLogMsg() != null) {
-                builder.setLogMessage(event.getEventLogMsg());
-            }
-            if (event.getNodeId() != null) {
-                builder.setNodeCriteria(toNodeCriteria(event.getNode()));
-            }
-
-            if(event.getIpAddr() != null) {
-                builder.setIpAddress(InetAddressUtils.toIpAddrString(event.getIpAddr()));
-            }
-
-            for (OnmsEventParameter param : event.getEventParameters()) {
-                if (param.getName() == null || param.getValue() == null) {
-                    continue;
-                }
-                builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
-                        .setName(param.getName())
-                        .setValue(param.getValue()));
-            }
-            setTimeIfNotNull(event.getEventTime(), builder::setTime);
-            setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
-            if(event.getDistPoller() != null) {
-                getString(event.getDistPoller().getId()).ifPresent(builder::setDistPoller);
-            }
-            if(!Strings.isNullOrEmpty(event.getEventSnmp())) {
-                Snmp snmp = SnmpInfo.createSnmp(event.getEventSnmp());
-                if(snmp != null) {
-                    builder.setSnmpInfo(buildSnmpInfo(snmp));
-                }
-            }
-            return builder;
-        } catch (RuntimeException e) {
-            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
-            // which has a different class for this loaded then what is being thrown
-            // Resort to comparing the name instead
-            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
-                LOG.debug("Event was deleted before we could perform the mapping.");
-                return null;
-            } else {
-                // Rethrow
-                throw e;
-            }
-        }
     }
 
     /**

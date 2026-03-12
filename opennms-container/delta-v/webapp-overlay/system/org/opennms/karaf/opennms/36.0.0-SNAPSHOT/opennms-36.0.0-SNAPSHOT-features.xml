@@ -571,7 +571,6 @@
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
         <feature>opennms-config-api</feature>
-        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/36.0.0-SNAPSHOT</bundle>
     </feature>
     <feature name="opennms-dao" version="36.0.0-SNAPSHOT" description="OpenNMS :: DAO">
@@ -941,9 +940,6 @@
     </feature>
     <feature name="opennms-poller-shell" version="36.0.0-SNAPSHOT" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/36.0.0-SNAPSHOT</bundle>
-    </feature>
-    <feature name="opennms-notifications-shell" version="36.0.0-SNAPSHOT" description="OpenNMS :: Notifications :: Shell">
-        <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.shell/36.0.0-SNAPSHOT</bundle>
     </feature>
     <feature name="opennms-situation-feedback-api" version="36.0.0-SNAPSHOT" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <feature>jackson-core</feature>
@@ -1690,11 +1686,6 @@
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/36.0.0-SNAPSHOT</bundle>-->
         <bundle dependency="true">mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/1.9.10</bundle>
     </feature>
-    <feature name="opennms-reporting" version="36.0.0-SNAPSHOT" description="OpenNMS :: Features :: Reporting">
-        <!-- All other dependencies are wired in through custom.properties -->
-        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
     <feature name="opennms-dnsresolver-api" version="36.0.0-SNAPSHOT" description="OpenNMS :: Features :: DNS Resolver :: API">
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/36.0.0-SNAPSHOT</bundle>
     </feature>
@@ -1979,63 +1970,6 @@
 
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="36.0.0-SNAPSHOT">
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-deps" description="OpenNMS :: Features :: Device Config :: Deps" version="36.0.0-SNAPSHOT">
-        <feature>commons-net</feature>
-        <feature>opennms-util</feature>
-        <feature>commons-compress</feature>
-        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-tftp" description="OpenNMS :: Features :: Device Config :: TFTP" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-deps</feature>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.shell/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.tftp/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-monitor" description="OpenNMS :: Features :: Device Config :: Monitor" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-tftp</feature>
-        <feature>quartz</feature>
-        <feature>opennms-util</feature>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.ssh-scripting/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.retrieval/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.monitor/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-rest" description="OpenNMS :: Features :: Device Config :: Rest" version="36.0.0-SNAPSHOT">
-        <feature>commons-compress</feature>
-        <feature>cron-parser-core</feature>
-        <feature>opennms-osgi-core-rest</feature>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.rest/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <feature name="opennms-deviceconfig-service" description="OpenNMS :: Features :: Device Config :: Service" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-tftp</feature>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.api/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.device-config/org.opennms.features.device-config.service/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <!-- common module for sink client and server -->
-    <feature name="opennms-deviceconfig-sink-module" description="OpenNMS :: Features :: Device Config :: Sink :: Common" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-deps</feature>
-        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.module/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <!-- server side feature for the device config sink -->
-    <feature name="opennms-deviceconfig-sink-consumer" description="OpenNMS :: Features :: Device Config :: Sink :: Consumer" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-sink-module</feature>
-        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.consumer/36.0.0-SNAPSHOT</bundle>
-    </feature>
-
-    <!-- client side feature for the device config sink -->
-    <feature name="opennms-deviceconfig-sink" description="OpenNMS :: Features :: Device Config :: Sink :: Dispatcher" version="36.0.0-SNAPSHOT">
-        <feature>opennms-deviceconfig-sink-module</feature>
-        <feature>opennms-deviceconfig-tftp</feature>
-        <bundle>mvn:org.opennms.features.device-config.sink/org.opennms.features.device-config.sink.dispatcher/36.0.0-SNAPSHOT</bundle>
     </feature>
 
     <feature name="opennms-health-rest-service" description="OpenNMS :: Feature :: Health :: ReST Service" version="36.0.0-SNAPSHOT">

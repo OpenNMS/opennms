@@ -39,11 +39,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,9 +67,6 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -203,33 +197,6 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
         parameters.put("orderBy", new String[] { "ifName", "ipAddress", "ifDesc" });
         String xml = sendRequest(GET, "/nodes/1/snmpinterfaces", parameters, 200);
         assertTrue(xml.contains("Initial ifAlias value"));
-    }
-
-    @Test
-    @JUnitTemporaryDatabase
-    public void testEventsForNodeId() throws Exception {
-        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation());
-        node.setId(1);
-
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.whoami());
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setNode(node);
-        m_eventDao.save(event);
-        m_eventDao.flush();
-
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("limit", "50");
-        parameters.put("node.id", "1");
-        String xml = sendRequest(GET, "/events", parameters, 200);
-        assertTrue(xml, xml.contains("totalCount=\"2\""));
-        assertTrue(xml, xml.contains("uei.opennms.org/test"));
     }
 
     @Test

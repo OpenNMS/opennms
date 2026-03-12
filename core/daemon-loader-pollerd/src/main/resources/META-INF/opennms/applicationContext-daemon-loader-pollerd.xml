@@ -74,8 +74,6 @@
     <!-- DAOs (from opennms-persistence / opennms-distributed-core-impl via SOA ServiceRegistry) -->
     <onmsgi:reference id="nodeDao"
                       interface="org.opennms.netmgt.dao.api.NodeDao"/>
-    <onmsgi:reference id="eventDao"
-                      interface="org.opennms.netmgt.dao.api.EventDao"/>
     <onmsgi:reference id="outageDao"
                       interface="org.opennms.netmgt.dao.api.OutageDao"/>
     <onmsgi:reference id="monitoredServiceDao"

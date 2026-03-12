@@ -28,7 +28,6 @@ import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewSer
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewGraphComponent;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -343,7 +342,6 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
              * create the tables and components
              */
             SurveillanceViewAlarmTable surveillanceViewAlarmTable = new SurveillanceViewAlarmTable(m_surveillanceViewService, m_enabled);
-            SurveillanceViewNotificationTable surveillanceViewNotificationTable = new SurveillanceViewNotificationTable(m_surveillanceViewService, m_enabled);
             SurveillanceViewNodeRtcTable surveillanceViewNodeRtcTable = new SurveillanceViewNodeRtcTable(m_surveillanceViewService, m_enabled);
             SurveillanceViewGraphComponent surveillanceViewGraphComponent = new SurveillanceViewGraphComponent(m_surveillanceViewService, m_enabled);
 
@@ -352,9 +350,6 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
              */
             surveillanceViewAlarmTable.setId("alarms");
             lowerLayout.addComponent(surveillanceViewAlarmTable);
-
-            surveillanceViewNotificationTable.setId("notifications");
-            lowerLayout.addComponent(surveillanceViewNotificationTable);
 
             surveillanceViewNodeRtcTable.setId("outages");
             lowerLayout.addComponent(surveillanceViewNodeRtcTable);
@@ -366,7 +361,6 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
              * associate the detail tables and components with the surveillance view table
              */
             m_surveillanceViewTable.addDetailsTable(surveillanceViewAlarmTable);
-            m_surveillanceViewTable.addDetailsTable(surveillanceViewNotificationTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewNodeRtcTable);
             m_surveillanceViewTable.addDetailsTable(surveillanceViewGraphComponent);
 
@@ -388,9 +382,6 @@ public class SurveillanceView extends CssLayout implements UIEvents.PollListener
                     "                </li>\n" +
                     "                <li class=\"nav-item\">\n" +
                     "                    <a class=\"nav-link\" href=\"#alarms\" data-target=\"#alarms\">Alarms</a>\n" +
-                    "                </li>\n" +
-                    "                <li class=\"nav-item\">\n" +
-                    "                    <a class=\"nav-link\" href=\"#notifications\" data-target=\"#notifications\">Notifications</a>\n" +
                     "                </li>\n" +
                     "                <li class=\"nav-item\">\n" +
                     "                    <a class=\"nav-link\" href=\"#outages\" data-target=\"#outages\">Outages</a>\n" +

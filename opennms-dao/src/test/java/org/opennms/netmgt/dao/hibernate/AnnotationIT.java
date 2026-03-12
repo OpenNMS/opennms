@@ -40,15 +40,12 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.OnmsUserNotification;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -254,11 +251,11 @@ public class AnnotationIT implements InitializingBean {
 				assertNotNull("monitored service should not be null: " + entity.toString(), entity.getMonitoredService());
 				assertNotNull("ip address should not be null: " + entity.toString(), entity.getIpAddress());
 				assertNotNull("node ID should not be null: " + entity.toString(), entity.getNodeId());
-				assertNotNull("service lost event should not be null: " + entity.toString(), entity.getServiceLostEvent());
-				assertNotNull("service lost event UEI should not be null: " + entity.toString(), entity.getServiceLostEvent().getEventUei());
+				assertNotNull("service lost event TSID should not be null: " + entity.toString(), entity.getSvcLostEventTsid());
+				assertNotNull("service lost event UEI should not be null: " + entity.toString(), entity.getSvcLostEventUei());
 				if (entity.getIfRegainedService() != null) {
-					assertNotNull("outage has ended (ifregainedservice) so service regained event should not be null: " + entity.toString(), entity.getServiceRegainedEvent());
-					assertNotNull("outage has ended (ifregainedservice) so service regained event UEI should not be null: " + entity.toString(), entity.getServiceRegainedEvent().getEventUei());
+					assertNotNull("outage has ended (ifregainedservice) so service regained event TSID should not be null: " + entity.toString(), entity.getSvcRegainedEventTsid());
+					assertNotNull("outage has ended (ifregainedservice) so service regained event UEI should not be null: " + entity.toString(), entity.getSvcRegainedEventUei());
 				}
 					
 			}
@@ -266,28 +263,7 @@ public class AnnotationIT implements InitializingBean {
 		});
 	}
 
-	@Test
-	@Transactional
-	public void testEvents() {
-		assertLoadAll(OnmsEvent.class, new EmptyChecker<OnmsEvent>() {
-
-			@Override
-			public void check(OnmsEvent entity) {
-				if (entity.getAlarm() != null) {
-					assertEquals("event UEI should equal the alarm UEI", entity.getEventUei(), entity.getAlarm().getUei());
-				}
-				assertNotNull("associated service lost outages list should not be null: " + entity.toString(), entity.getAssociatedServiceLostOutages());
-				assertTrue("there should be zero or more associated service lost outages", entity.getAssociatedServiceLostOutages().size() >= 0);
-				assertNotNull("associated service regained outages list should not be null: " + entity.toString(), entity.getAssociatedServiceRegainedOutages());
-				assertTrue("there should be zero or more associated service regained outages", entity.getAssociatedServiceRegainedOutages().size() >= 0);
-				assertNotNull("dist poller should not be null: " + entity.toString(), entity.getDistPoller());
-				assertNotNull("dist poller name should not be null: " + entity.toString(), entity.getDistPoller().getId());
-				assertNotNull("notifications list should not be null: " + entity.toString(), entity.getNotifications());
-				assertTrue("notifications list size should be greater than or equal to zero", entity.getNotifications().size() >= 0);
-			}
-			
-		});
-	}
+	// testEvents removed: OnmsEvent entity deleted (events in Kafka only)
 
 	@Test
 	@Transactional
@@ -305,17 +281,7 @@ public class AnnotationIT implements InitializingBean {
 		});
 	}
 
-	@Test
-	@Transactional
-	public void testNotifications() {
-		assertLoadAll(OnmsNotification.class, new NullChecker<OnmsNotification>());
-	}
 
-	@Test
-	@Transactional
-	public void testUsersNotified() {
-		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
-	}
 
 	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
 		HibernateTemplate template = new HibernateTemplate(m_sessionFactory);

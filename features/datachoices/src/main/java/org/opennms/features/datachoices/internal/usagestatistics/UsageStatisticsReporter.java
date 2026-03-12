@@ -66,22 +66,18 @@ import org.opennms.features.datachoices.internal.StateManager.StateChangeHandler
 import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
 import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
-import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
-import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -140,8 +136,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private MonitoredServiceDao m_monitoredServiceDao;
 
-    private EventDao m_eventDao;
-
     private AlarmDao m_alarmDao;
 
     private MonitoringLocationDao m_monitoringLocationDao;
@@ -156,10 +150,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private ServiceConfigFactory m_serviceConfigurationFactory;
 
-    private DestinationPathFactory m_destinationPathFactory;
-
-    private NotifdConfigFactory m_notifdConfigFactory;
-
     private UsageAnalyticDao m_usageAnalyticDao;
 
     private GroupFactory m_groupFactory;
@@ -171,9 +161,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private boolean m_useSystemProxy = true; // true == legacy behaviour
 
     private OutageDao m_outageDao;
-
-    private NotificationDao m_notificationDao;
-
 
     private FlowQueryService flowQueryService;
 
@@ -280,8 +267,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
-        usageStatisticsReport.setEvents(m_eventDao.countAll());
-        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(DEFAULT_EVENTS_LAST_HOURS));
+        usageStatisticsReport.setEvents(0);
+        usageStatisticsReport.setEventsLastHours(0L);
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
         usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(DEFAULT_ALERTS_LAST_HOURS));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
@@ -289,8 +276,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
         usageStatisticsReport.setApplications(m_applicationDao.countAll());
         usageStatisticsReport.setOutages(m_outageDao.currentOutageCount());
-        usageStatisticsReport.setNotifications(m_notificationDao.countAll());
-        
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
         // Karaf features
@@ -301,8 +286,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setServices(m_serviceConfigurationFactory.getServiceNameMap());
         usageStatisticsReport.setGroups(this.getGroupCount());
         usageStatisticsReport.setUsers(this.getUserCount());
-        usageStatisticsReport.setDestinationPathCount(getDestinationPathCount());
-        usageStatisticsReport.setNotificationEnablementStatus(getNotificationEnablementStatus());
         usageStatisticsReport.setOnCallRoleCount(m_groupFactory.getRoles().size());
         usageStatisticsReport.setRequisitionCount(getDeployedRequisitionCount());
         usageStatisticsReport.setRequisitionWithChangedFSCount(getDeployedRequisitionWithModifiedFSCount());
@@ -597,10 +580,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_monitoredServiceDao = monitoredServiceDao;
     }
 
-    public void setEventDao(EventDao eventDao) {
-        m_eventDao = eventDao;
-    }
-
     public void setAlarmDao(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
@@ -621,9 +600,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_outageDao = outageDao;
     }
 
-    public void setNotificationDao(NotificationDao notificationDao){
-        m_notificationDao = notificationDao;
-    }
     public void setFeaturesService(FeaturesService featuresService) {
         m_featuresService = featuresService;
     }
@@ -671,14 +647,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         m_serviceConfigurationFactory = serviceConfigurationFactory;
     }
 
-    public void setDestinationPathFactory(DestinationPathFactory destinationPathFactory){
-        m_destinationPathFactory = destinationPathFactory;
-    }
-
-    public void setNotifdConfigFactory(NotifdConfigFactory notifdConfigFactory) {
-        this.m_notifdConfigFactory = notifdConfigFactory;
-    }
-
     public void setGroupFactory(GroupFactory groupFactory) {
         this.m_groupFactory = groupFactory;
     }
@@ -696,28 +664,4 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     }
 
 
-    private int getDestinationPathCount(){
-        try {
-            return m_destinationPathFactory.getPaths().size();
-
-        } catch (IOException e) {
-            return -1;
-        }
-    }
-
-    private Boolean getNotificationEnablementStatus(){
-        try {
-            final String bool = m_notifdConfigFactory.getNotificationStatus();
-            switch (bool){
-                case "on":
-                    return true;
-                case "off":
-                    return false;
-                default:
-                    return null;
-            }
-        } catch (IOException e) {
-            return null;
-        }
-    }
 }

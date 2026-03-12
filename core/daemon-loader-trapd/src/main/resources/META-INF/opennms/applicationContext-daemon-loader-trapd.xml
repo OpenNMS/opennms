@@ -96,9 +96,19 @@
     <bean id="twinPublisher" class="org.opennms.core.daemon.loader.NoOpTwinPublisher"/>
     <bean id="twinSubscriber" factory-bean="twinPublisher" factory-method="createSubscriber"/>
 
-    <!-- Sink API: local in-process implementations (no remote transport needed) -->
+    <!-- Sink API: local in-process dispatch + Kafka Sink bridge for Minion-forwarded traps.
+         The KafkaSinkBridge consumes from the Kafka Sink topic (OpenNMS.Sink.Trap) and
+         dispatches to the LocalMessageConsumerManager, which delivers to TrapSinkConsumer.
+         This enables the full Minion → Kafka → Trapd pipeline. -->
     <bean id="messageConsumerManager"
-          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager"/>
+          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager">
+        <property name="kafkaSinkBridge" ref="kafkaSinkBridge"/>
+    </bean>
+    <bean id="kafkaSinkBridge"
+          class="org.opennms.core.daemon.loader.KafkaSinkBridge"
+          init-method="afterPropertiesSet" destroy-method="destroy">
+        <constructor-arg ref="messageConsumerManager"/>
+    </bean>
     <bean id="messageDispatcherFactory"
           class="org.opennms.core.daemon.loader.LocalMessageDispatcherFactory">
         <constructor-arg ref="messageConsumerManager"/>

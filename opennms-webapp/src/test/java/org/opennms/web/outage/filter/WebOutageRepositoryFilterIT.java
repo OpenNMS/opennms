@@ -42,7 +42,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -98,10 +97,10 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     public void setUp(){
         m_dbPopulator.populateDatabase();
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
-        // This requires every test method to have a new database instance :/
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1L);
-        
-        OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
+
+        OnmsOutage unresolved2 = new OnmsOutage(new Date(), svc2);
+        unresolved2.setSvcLostEventTsid(1L);
+        unresolved2.setSvcLostEventUei("uei.opennms.org/test/outage");
         m_dbPopulator.getOutageDao().save(unresolved2);
         m_dbPopulator.getOutageDao().flush();
     }
@@ -155,12 +154,14 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     @JUnitTemporaryDatabase // Relies on records created in @Before so we need a fresh database
     public void testRegainedServiceDateAfterFilter(){
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(m_dbPopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP");
-        // This requires every test method to have a new database instance :/
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1L);
 
         // Put a resolved outage into the database so that one will match the
         // filter below
-        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), event, event, svc2, null, null);
+        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), svc2);
+        resolvedToday.setSvcLostEventTsid(1L);
+        resolvedToday.setSvcLostEventUei("uei.opennms.org/test/outage");
+        resolvedToday.setSvcRegainedEventTsid(2L);
+        resolvedToday.setSvcRegainedEventUei("uei.opennms.org/test/outageRegained");
         m_dbPopulator.getOutageDao().save(resolvedToday);
         m_dbPopulator.getOutageDao().flush();
 

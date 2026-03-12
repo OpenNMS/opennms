@@ -51,14 +51,13 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class CriteriaBuilderTest {
 
     public void testRestriction(final String criteria, Restriction restriction) {
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
-        final CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+        final CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class);
         criteriaBuilderHelper.parseConfiguration(criteriaBuilder, criteria);
         final Collection<Restriction> restrictions = criteriaBuilder.toCriteria().getRestrictions();
         Assert.assertEquals(restrictions.iterator().next().toString(), restriction.toString());
@@ -97,7 +96,7 @@ public class CriteriaBuilderTest {
         }
 
         final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
-        final CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+        final CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class);
         criteriaBuilderHelper.parseConfiguration(criteriaBuilder, criteria);
         final Collection<Restriction> restrictions = criteriaBuilder.toCriteria().getRestrictions();
         Assert.assertThat(validRestrictions, hasItem(restrictions.iterator().next().toString()));

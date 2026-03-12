@@ -53,11 +53,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
@@ -90,8 +88,6 @@ public class AlarmDaoIT implements InitializingBean {
 	@Autowired
 	private DistPollerDao m_distPollerDao;
 
-	@Autowired
-	private EventDao m_eventDao;
 
 	@Autowired
 	private NodeDao m_nodeDao;
@@ -120,29 +116,18 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testActions() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		OnmsAlarm alarm = new OnmsAlarm();
 
 		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverity(OnmsSeverity.get(event.getEventSeverity()));
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEventTime(event.getEventTime());
-		alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm.setEventUei(event.getEventUei());
+		alarm.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm.setSeverity(OnmsSeverity.MAJOR);
+		alarm.setSeverityId(OnmsSeverity.MAJOR.getId());
+		alarm.setFirstEventTime(new Date());
+		alarm.setLastEventTime(new Date());
+		alarm.setEventTsid(1L);
+		alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
@@ -166,38 +151,27 @@ public class AlarmDaoIT implements InitializingBean {
 
 	}
 
-	private OnmsAlarm createAlarm(OnmsEvent event) {
+	private OnmsAlarm createAlarm() {
 
 		OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		OnmsAlarm alarm = new OnmsAlarm();
 		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEventTime(event.getEventTime());
-		alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm.setEventUei(event.getEventUei());
+		alarm.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm.setSeverityId(OnmsSeverity.MAJOR.getId());
+		alarm.setFirstEventTime(new Date());
+		alarm.setLastEventTime(new Date());
+		alarm.setEventTsid(1L);
+		alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
-		return  alarm;
+		return alarm;
 	}
 
 	@Test
 	@Transactional
 	public void testGetNumAlarmsLastHours() {
-
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
 
 		//there exists one populated alarm in setup with time: 2015-07-14 13:45:48
 		assertEquals(1, m_alarmDao.findAll().size());
@@ -207,11 +181,11 @@ public class AlarmDaoIT implements InitializingBean {
 		assertEquals(0, alarmCount);
 
 		//saving a new alarm
-		OnmsAlarm alarm = createAlarm(event);
+		OnmsAlarm alarm = createAlarm();
 		m_alarmDao.save(alarm);
 
 		//saving another alarm
-		OnmsAlarm alarm1 = createAlarm(event);
+		OnmsAlarm alarm1 = createAlarm();
 		m_alarmDao.save(alarm1);
 		m_alarmDao.flush();
 
@@ -247,7 +221,7 @@ public class AlarmDaoIT implements InitializingBean {
 		assertEquals(2, alarmCount);
 
 		//saving another alarm
-		OnmsAlarm alarm2 = createAlarm(event);
+		OnmsAlarm alarm2 = createAlarm();
 		alarm2.setFirstEventTime(Date.from(Instant.now().minus(Duration.ofHours(11))));
 		m_alarmDao.save(alarm2);
 
@@ -265,28 +239,17 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testSave() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		OnmsAlarm alarm = new OnmsAlarm();
 
 		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEventTime(event.getEventTime());
-		alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm.setEventUei(event.getEventUei());
+		alarm.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm.setFirstEventTime(new Date());
+		alarm.setLastEventTime(new Date());
+		alarm.setEventTsid(1L);
+		alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
@@ -310,28 +273,17 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testAlarmSummary() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		OnmsAlarm alarm = new OnmsAlarm();
 
 		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEventTime(event.getEventTime());
-		alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm.setEventUei(event.getEventUei());
+		alarm.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm.setFirstEventTime(new Date());
+		alarm.setLastEventTime(new Date());
+		alarm.setEventTsid(1L);
+		alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
@@ -349,39 +301,28 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testSituationSummary() {
-		final OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		final OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		final OnmsAlarm alarm1 = new OnmsAlarm();
 		alarm1.setNode(node);
-		alarm1.setUei(event.getEventUei());
-		alarm1.setSeverityId(event.getEventSeverity());
-		alarm1.setFirstEventTime(event.getEventTime());
-		alarm1.setLastEventTime(event.getEventTime());
-		alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm1.setEventUei(event.getEventUei());
+		alarm1.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm1.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm1.setFirstEventTime(new Date());
+		alarm1.setLastEventTime(new Date());
+		alarm1.setEventTsid(1L);
+		alarm1.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm1.setCounter(1);
 		alarm1.setDistPoller(m_distPollerDao.whoami());
 		m_alarmDao.save(alarm1);
 
 		final OnmsAlarm alarm2 = new OnmsAlarm();
 		alarm2.setNode(node);
-		alarm2.setUei(event.getEventUei());
-		alarm2.setSeverityId(event.getEventSeverity());
-		alarm2.setFirstEventTime(event.getEventTime());
-		alarm2.setLastEventTime(event.getEventTime());
-		alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm2.setEventUei(event.getEventUei());
+		alarm2.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm2.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm2.setFirstEventTime(new Date());
+		alarm2.setLastEventTime(new Date());
+		alarm2.setEventTsid(2L);
+		alarm2.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm2.setCounter(1);
 		alarm2.setDistPoller(m_distPollerDao.whoami());
 		alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -399,27 +340,16 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testSituationSeverities() {
-		final OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		final OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		final OnmsAlarm alarm1 = new OnmsAlarm();
 		alarm1.setNode(node);
-		alarm1.setUei(event.getEventUei());
-		alarm1.setSeverityId(event.getEventSeverity());
-		alarm1.setFirstEventTime(event.getEventTime());
-		alarm1.setLastEventTime(event.getEventTime());
-		alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm1.setEventUei(event.getEventUei());
+		alarm1.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm1.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm1.setFirstEventTime(new Date());
+		alarm1.setLastEventTime(new Date());
+		alarm1.setEventTsid(1L);
+		alarm1.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm1.setCounter(1);
 		alarm1.setDistPoller(m_distPollerDao.whoami());
 		m_alarmDao.save(alarm1);
@@ -427,12 +357,12 @@ public class AlarmDaoIT implements InitializingBean {
 		for(OnmsSeverity onmsSeverity : OnmsSeverity.values()) {
 			final OnmsAlarm situation = new OnmsAlarm();
 			situation.setNode(node);
-			situation.setUei(event.getEventUei());
+			situation.setUei("uei://org/opennms/test/EventDaoTest");
 			situation.setSeverityId(onmsSeverity.getId());
-			situation.setFirstEventTime(event.getEventTime());
-			situation.setLastEventTime(event.getEventTime());
-			situation.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-			situation.setEventUei(event.getEventUei());
+			situation.setFirstEventTime(new Date());
+			situation.setLastEventTime(new Date());
+			situation.setEventTsid(2L);
+			situation.setEventUei("uei://org/opennms/test/EventDaoTest");
 			situation.setCounter(1);
 			situation.setDistPoller(m_distPollerDao.whoami());
 			situation.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -509,28 +439,17 @@ public class AlarmDaoIT implements InitializingBean {
 	@Test
 	@Transactional
 	public void testParameterizedSql() {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setEventCreateTime(new Date());
-		event.setDistPoller(m_distPollerDao.whoami());
-		event.setEventTime(new Date());
-		event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-		event.setEventUei("uei://org/opennms/test/EventDaoTest");
-		event.setEventSource("test");
-		m_eventDao.save(event);
-
 		OnmsNode node = m_nodeDao.findAll().iterator().next();
 
 		OnmsAlarm alarm = new OnmsAlarm();
 
 		alarm.setNode(node);
-		alarm.setUei(event.getEventUei());
-		alarm.setSeverityId(event.getEventSeverity());
-		alarm.setFirstEventTime(event.getEventTime());
-		alarm.setLastEventTime(event.getEventTime());
-		alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-		alarm.setEventUei(event.getEventUei());
+		alarm.setUei("uei://org/opennms/test/EventDaoTest");
+		alarm.setSeverityId(OnmsSeverity.CRITICAL.getId());
+		alarm.setFirstEventTime(new Date());
+		alarm.setLastEventTime(new Date());
+		alarm.setEventTsid(1L);
+		alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
@@ -540,29 +459,29 @@ public class AlarmDaoIT implements InitializingBean {
 		cb.sql("{alias}.alarmid in (?)", alarm.getId(), Type.INTEGER);
 		List<OnmsAlarm> alarms = m_alarmDao.findMatching(cb.toCriteria());
 		assertEquals(alarm.getId(), alarms.get(0).getId());
-		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
-		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+		assertEquals(alarm.getFirstEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(alarm.getUei(), alarms.get(0).getUei());
 
 		cb = new CriteriaBuilder(OnmsAlarm.class);
-		cb.sql("{alias}.firsteventtime = ?", event.getEventTime(), Type.TIMESTAMP);
+		cb.sql("{alias}.firsteventtime = ?", alarm.getFirstEventTime(), Type.TIMESTAMP);
 		m_alarmDao.findMatching(cb.toCriteria());
 		assertEquals(alarm.getId(), alarms.get(0).getId());
-		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
-		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+		assertEquals(alarm.getFirstEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(alarm.getUei(), alarms.get(0).getUei());
 
 		cb = new CriteriaBuilder(OnmsAlarm.class);
-		cb.sql("{alias}.eventuei = ?", event.getEventUei(), Type.STRING);
+		cb.sql("{alias}.eventuei = ?", alarm.getUei(), Type.STRING);
 		m_alarmDao.findMatching(cb.toCriteria());
 		assertEquals(alarm.getId(), alarms.get(0).getId());
-		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
-		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+		assertEquals(alarm.getFirstEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(alarm.getUei(), alarms.get(0).getUei());
 
 		cb = new CriteriaBuilder(OnmsAlarm.class);
 		cb.sql("{alias}.alarmid = ? and {alias}.eventuei like ?", new Object[] { alarm.getId(), "%uei.opennms.org%" }, new Type[] { Type.INTEGER, Type.STRING });
 		m_alarmDao.findMatching(cb.toCriteria());
 		assertEquals(alarm.getId(), alarms.get(0).getId());
-		assertEquals(event.getEventTime(), alarms.get(0).getFirstEventTime());
-		assertEquals(event.getEventUei(), alarms.get(0).getUei());
+		assertEquals(alarm.getFirstEventTime(), alarms.get(0).getFirstEventTime());
+		assertEquals(alarm.getUei(), alarms.get(0).getUei());
 	}
 
 	@Test

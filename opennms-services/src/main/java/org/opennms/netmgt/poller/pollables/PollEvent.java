@@ -61,6 +61,13 @@ public abstract class PollEvent {
     public abstract long getEventId();
 
     /**
+     * Returns the UEI of the event.
+     *
+     * @return the event UEI, or null if not available.
+     */
+    public abstract String getEventUei();
+
+    /**
      * <p>getDate</p>
      *
      * @return a {@link java.util.Date} object.

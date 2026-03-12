@@ -130,7 +130,7 @@ public class DefaultPollContextTsidTest {
         pollContext.openOutage(svc, svcLostEvent);
 
         verify(queryManager).openOutagePendingLostEventId(eq(1), eq("192.168.1.1"), eq("ICMP"), any(Date.class));
-        verify(queryManager).updateOpenOutageWithEventId(42, expectedEventId);
+        verify(queryManager).updateOpenOutageWithEvent(eq(42), eq(expectedEventId), anyString());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class DefaultPollContextTsidTest {
         pollContext.resolveOutage(svc, svcRegainEvent);
 
         verify(queryManager).resolveOutagePendingRegainEventId(eq(1), eq("192.168.1.1"), eq("ICMP"), any(Date.class));
-        verify(queryManager).updateResolvedOutageWithEventId(42, expectedEventId);
+        verify(queryManager).updateResolvedOutageWithEvent(eq(42), eq(expectedEventId), anyString());
     }
 
     @Test
@@ -173,6 +173,6 @@ public class DefaultPollContextTsidTest {
 
         pollContext.resolveOutage(svc, svcRegainEvent);
 
-        verify(queryManager, never()).updateResolvedOutageWithEventId(anyInt(), anyLong());
+        verify(queryManager, never()).updateResolvedOutageWithEvent(anyInt(), anyLong(), anyString());
     }
 }

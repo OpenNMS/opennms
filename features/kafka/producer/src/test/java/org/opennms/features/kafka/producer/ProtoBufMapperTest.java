@@ -38,7 +38,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -166,14 +164,6 @@ public class ProtoBufMapperTest {
         snmp.setCommunity("OpenNMS");
         event.setSnmp(snmp);
         return event;
-    }
-
-    @Test
-    public void canCatchObjectNotFoundExceptionsWhenMappingEvents() {
-        OnmsEvent e = mock(OnmsEvent.class);
-        when(e.getId()).thenThrow(new ObjectNotFoundException("oops", OnmsEvent.class.getCanonicalName()));
-        // Expect a null value back when mapping
-        assertThat(protobufMapper.toEvent(e), nullValue());
     }
 
     @Test

@@ -22,7 +22,6 @@
 package org.opennms.netmgt.alarmd.api;
 
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -45,9 +44,8 @@ public interface AlarmPersisterExtension {
      *
      * @param alarm the alarm that was created
      * @param event the event that triggered the alarm
-     * @param dbEvent the database entity associated with the given event
      */
-    void afterAlarmCreated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent);
+    void afterAlarmCreated(OnmsAlarm alarm, Event event);
 
     /**
      * Invoked by the AlarmPersister after the alarm has been updated, but *before*
@@ -55,8 +53,7 @@ public interface AlarmPersisterExtension {
      *
      * @param alarm the alarm that was update
      * @param event the event that triggered the update to the alarm
-     * @param dbEvent the database entity associated with the given event
      */
-    void afterAlarmUpdated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent);
+    void afterAlarmUpdated(OnmsAlarm alarm, Event event);
 
 }

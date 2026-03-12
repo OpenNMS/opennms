@@ -29,7 +29,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -103,7 +102,7 @@ public class AlarmConfigurationWindow extends DashletConfigurationWindow {
         /**
          * Setting up the {@link CriteriaBuilderComponent} component
          */
-        CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsEvent.class, OnmsCategory.class);
+        CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class);
 
         final CriteriaBuilderComponent criteriaBuilderComponent = new CriteriaBuilderComponent(criteriaBuilderHelper, m_dashletSpec.getParameters().get("criteria"));
 

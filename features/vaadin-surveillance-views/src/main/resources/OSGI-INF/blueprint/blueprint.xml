@@ -3,7 +3,6 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
     <reference id="graphDao" interface="org.opennms.netmgt.dao.api.GraphDao" availability="mandatory"/>
-    <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
     <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory"/>
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
     <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
@@ -23,7 +22,6 @@
         <property name="nodeDao" ref="nodeDao"/>
         <property name="resourceDao" ref="resourceDao"/>
         <property name="graphDao" ref="graphDao"/>
-        <property name="notificationDao" ref="notificationDao"/>
         <property name="categoryDao" ref="categoryDao"/>
         <property name="alarmDao" ref="alarmDao"/>
         <property name="groupDao" ref="groupDao"/>

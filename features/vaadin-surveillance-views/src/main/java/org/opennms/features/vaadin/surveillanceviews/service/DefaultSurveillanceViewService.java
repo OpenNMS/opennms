@@ -53,14 +53,12 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -95,7 +93,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private GraphDao m_graphDao;
-    private NotificationDao m_notificationDao;
     private CategoryDao m_categoryDao;
     private AlarmDao m_alarmDao;
     private GroupDao m_groupDao;
@@ -141,15 +138,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      */
     public void setGraphDao(GraphDao graphDao) {
         this.m_graphDao = graphDao;
-    }
-
-    /**
-     * Method to set the notification dao.
-     *
-     * @param notificationDao the {@link org.opennms.netmgt.dao.api.NotificationDao} to be used
-     */
-    public void setNotificationDao(NotificationDao notificationDao) {
-        this.m_notificationDao = notificationDao;
     }
 
     /**
@@ -349,27 +337,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<OnmsNotification> getNotificationsForCategories(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories, final Map<OnmsNotification, String> customSeverity) {
-        return m_transactionOperations.execute(new TransactionCallback<List<OnmsNotification>>() {
-            @Override
-            public List<OnmsNotification> doInTransaction(TransactionStatus transactionStatus) {
-                Date fifteenMinutesAgo = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
-                Date oneWeekAgo = new Date(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000));
-
-                customSeverity.clear();
-
-                List<OnmsNotification> notifications = new ArrayList<>();
-                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Critical", Restrictions.isNull("respondTime"), Restrictions.le("pageTime", fifteenMinutesAgo)));
-                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Minor", Restrictions.isNull("respondTime"), Restrictions.gt("pageTime", fifteenMinutesAgo)));
-                notifications.addAll(getNotificationsWithCriterias(rowCategories, colCategories, customSeverity, "Normal", Restrictions.isNotNull("respondTime"), Restrictions.gt("pageTime", oneWeekAgo)));
-                return notifications;
-            }
-        });
-    }
 
     /**
      * {@inheritDoc}
@@ -641,51 +608,6 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         return model;
     }
 
-    /**
-     * Returns a list of notifications for a given list of nodes.
-     *
-     * @param rowCategories  the row catgories
-     * @param colCategories  the column categories
-     * @param customSeverity the custom severity mapping for notifications
-     * @param severity       the severity for these nodes
-     * @param criterias      the restrictions to use
-     * @return the list of notifications
-     */
-    private List<OnmsNotification> getNotificationsWithCriterias(final Set<OnmsCategory> rowCategories, final Set<OnmsCategory> colCategories, final Map<OnmsNotification, String> customSeverity, final String severity, final Restriction... criterias) {
-        CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsNotification.class);
-
-        criteriaBuilder.alias("node", "node");
-
-        final List<String> parameters = new ArrayList<>(rowCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
-        parameters.addAll(colCategories.stream().map(OnmsCategory::getName).collect(Collectors.toList()));
-
-        final Type[] types = new Type[parameters.size()];
-        Arrays.fill(types, Type.STRING);
-
-        // Restrict on OnmsNotification.nodeId
-        criteriaBuilder.sql(
-            createQuery("{alias}.nodeId", rowCategories, colCategories),
-            parameters.toArray(new String[parameters.size()]),
-            types
-        );
-
-        criteriaBuilder.ne("node.type", "D");
-        criteriaBuilder.orderBy("pageTime", false);
-
-        Criteria myCriteria = criteriaBuilder.toCriteria();
-
-        for (Restriction criteria : criterias) {
-            myCriteria.addRestriction(criteria);
-        }
-
-        List<OnmsNotification> notifications = m_notificationDao.findMatching(myCriteria);
-
-        for (OnmsNotification onmsNotification : notifications) {
-            customSeverity.put(onmsNotification, severity);
-        }
-
-        return notifications;
-    }
 
     /**
      * Checks a label for quotes and returns a safe resource instance.

@@ -50,10 +50,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -64,8 +61,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -96,9 +91,6 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DistPollerDao m_distPollerDao;
 
     @Autowired
-    private EventDao m_eventDao;
-
-    @Autowired
     private AlarmDao m_alarmDao;
 
     @Autowired
@@ -111,10 +103,6 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_eventCount = 0;
         MockLogAppender.setupLogging(true, "DEBUG");
         m_databasePopulator.populateDatabase();
-        for (final OnmsEvent event : m_eventDao.findAll()) {
-            m_eventDao.delete(event);
-        }
-        m_eventDao.flush();
         for (final OnmsAlarm alarm : m_alarmDao.findAll()) {
             m_alarmDao.delete(alarm);
         }
@@ -242,11 +230,16 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     private OnmsAlarm createAlarm(final OnmsSeverity severity, final String ackUser) {
-        final OnmsEvent event = createEvent();
-        
+        final Calendar c = new GregorianCalendar();
+        c.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
+        c.setTimeZone(TimeZone.getTimeZone("EST"));
+        c.set(Calendar.MILLISECOND, 0);
+        c.add(Calendar.HOUR_OF_DAY, m_eventCount);
+        final Date date = c.getTime();
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_distPollerDao.whoami());
-        alarm.setUei(event.getEventUei());
+        alarm.setUei("uei.opennms.org/test/" + m_eventCount);
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
@@ -254,55 +247,25 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
         alarm.setSeverity(severity);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm.setEventUei(event.getEventUei());
-        alarm.setServiceType(event.getServiceType());
-        
+        alarm.setFirstEventTime(date);
+        alarm.setLastEventTime(date);
+        alarm.setEventTsid((long) (m_eventCount + 1));
+        alarm.setEventUei("uei.opennms.org/test/" + m_eventCount);
+        alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
+        alarm.setReductionKey("uei.opennms.org/test/" + m_eventCount + "::" + m_databasePopulator.getNode1().getId());
+
         if (ackUser != null) {
             alarm.setAlarmAckTime(new Date(1282329200000L));
             alarm.setAlarmAckUser(ackUser);
         }
-        
-        m_alarmDao.save(alarm);
-        m_alarmDao.flush();
-        
-        LOG.debug("CreateAlarm: {}", alarm);
-
-        return alarm;
-    }
-
-    protected OnmsEvent createEvent() {
-        final Calendar c = new GregorianCalendar();
-        c.set(2010, Calendar.JANUARY, 1, 0, 0, 0);
-        c.setTimeZone(TimeZone.getTimeZone("EST")); // test data assumes hours starting at midnight EST (not GMT)
-        c.set(Calendar.MILLISECOND, 0);
-        c.add(Calendar.HOUR_OF_DAY, m_eventCount); // no matter how big m_eventCount gets, this will still work
-        final Date date = c.getTime();
-
-        final OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_distPollerDao.whoami());
-        event.setEventUei("uei.opennms.org/test/" + m_eventCount);
-        event.setEventCreateTime(date);
-        event.setEventTime(date);
-        event.setEventDescr("Test event " + m_eventCount);
-        event.setEventDisplay("Y");
-        event.setEventLog("Y");
-        event.setEventHost("es-with-the-most-es");
-        event.setEventLogMsg("Test event " + m_eventCount + " (log)");
-        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "parm", "string")));
-        event.setEventSeverity(OnmsSeverity.MAJOR.getId());
-        event.setEventSource("AlarmStatsRestServiceTest");
-        event.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);
-        event.setNode(m_databasePopulator.getNode1());
-        event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
-
-        m_eventDao.save(event);
-        m_eventDao.flush();
 
         m_eventCount++;
 
-        return event;
+        m_alarmDao.save(alarm);
+        m_alarmDao.flush();
+
+        LOG.debug("CreateAlarm: {}", alarm);
+
+        return alarm;
     }
 }

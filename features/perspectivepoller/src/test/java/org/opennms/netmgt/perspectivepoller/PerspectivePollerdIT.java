@@ -61,7 +61,6 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -138,9 +137,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Autowired
     private OverrideableThresholdingDao thresholdingDao;
-
-    @Autowired
-    private EventDao eventDao;
 
     @Autowired
     private OutageDao outageDao;
@@ -235,7 +231,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                 this.persisterFactory,
                 this.eventIpcManager,
                 this.thresholdingService,
-                this.eventDao,
                 this.outageDao,
                 new MockTracerRegistry(),
                 tracker

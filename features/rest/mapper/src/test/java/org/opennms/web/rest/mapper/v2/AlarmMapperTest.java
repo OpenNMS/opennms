@@ -39,8 +39,6 @@ import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -52,7 +50,6 @@ import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -101,10 +98,11 @@ public class AlarmMapperTest {
         alarm.setLastEventTime(new Date(1503412443118L));
         alarm.setX733ProbableCause(0);
 
-        OnmsEvent lastEvent = getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm));
-        alarm.setLastEventTime(lastEvent.getEventTime());
-        alarm.setEventTsid(lastEvent.getId() != null ? (long) lastEvent.getId() : null);
-        alarm.setEventUei(lastEvent.getEventUei());
+        getOnmsMonitoringSystem(alarm);
+        getOnmsServiceType(alarm);
+        alarm.setLastEventTime(new Date(1503412443118L));
+        alarm.setEventTsid(2035L);
+        alarm.setEventUei("uei.opennms.org/nodes/interfaceDown");
 
         alarm.setTTicketId("NMS-9587");
         alarm.setTTicketState(TroubleTicketState.OPEN);
@@ -140,10 +138,11 @@ public class AlarmMapperTest {
         alarm.setX733ProbableCause(0);
         alarm.setRelatedAlarms(getRelatedAlarms());
 
-        OnmsEvent situationEvent = getOnmsEvent(getOnmsMonitoringSystem(alarm), node, getOnmsServiceType(alarm));
-        alarm.setLastEventTime(situationEvent.getEventTime());
-        alarm.setEventTsid(situationEvent.getId() != null ? (long) situationEvent.getId() : null);
-        alarm.setEventUei(situationEvent.getEventUei());
+        getOnmsMonitoringSystem(alarm);
+        getOnmsServiceType(alarm);
+        alarm.setLastEventTime(new Date(1503412443118L));
+        alarm.setEventTsid(2035L);
+        alarm.setEventUei("uei.opennms.org/nodes/interfaceDown");
 
         AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
         mapAndMarshalToFromXmlAndJson(alarmDTO, "situation.16.dto.xml", "situation.16.dto.json");
@@ -194,27 +193,6 @@ public class AlarmMapperTest {
         return monitoringSystem;
     }
 
-    private OnmsEvent getOnmsEvent(OnmsMonitoringSystem monitoringSystem, OnmsNode node, OnmsServiceType serviceType) throws UnknownHostException {
-        OnmsEvent event = new OnmsEvent();
-        event.setId(2035L);
-        event.setEventUei("uei.opennms.org/nodes/interfaceDown");
-        event.setEventTime(new Date(1503412443118L));
-        event.setEventHost("noise");
-        event.setEventSource("OpenNMS.Poller.DefaultPollContext");
-        event.setIpAddr(InetAddress.getByName("10.8.0.30"));
-        event.setEventCreateTime(new Date(1503412443118L));
-        event.setEventDescr("All services are down on interface 10.8.0.30.");
-        event.setEventLogMsg("Interface 10.8.0.30 is down.");
-        event.setEventSeverity(OnmsSeverity.MINOR.getId());
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setNode(node);
-        event.setDistPoller(monitoringSystem);
-        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "testVal", "string")));
-        event.setServiceType(serviceType);
-        return event;
-    }
-
     private OnmsNode getNode(Integer id, String label) {
         OnmsNode node = new OnmsNode();
         node.setId(id);
@@ -232,10 +210,11 @@ public class AlarmMapperTest {
         OnmsNode node1 = getNode(1, "n1");
         alarm1.setNode(node1);
         alarm1.setLogMsg("logit");
-        OnmsEvent alarm1Event = getOnmsEvent(getOnmsMonitoringSystem(alarm1), node1, getOnmsServiceType(alarm1));
-        alarm1.setLastEventTime(alarm1Event.getEventTime());
-        alarm1.setEventTsid(alarm1Event.getId() != null ? (long) alarm1Event.getId() : null);
-        alarm1.setEventUei(alarm1Event.getEventUei());
+        getOnmsMonitoringSystem(alarm1);
+        getOnmsServiceType(alarm1);
+        alarm1.setLastEventTime(new Date(1503412443118L));
+        alarm1.setEventTsid(2035L);
+        alarm1.setEventUei("uei.opennms.org/nodes/interfaceDown");
         OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setId(32);
         alarm2.setUei("uei.opennms.org/nodes/interfaceDown");
@@ -244,10 +223,11 @@ public class AlarmMapperTest {
         OnmsNode node2 = getNode(2, "n2");
         alarm2.setNode(node2);
         alarm2.setLogMsg("logit again");
-        OnmsEvent alarm2Event = getOnmsEvent(getOnmsMonitoringSystem(alarm2), node2, getOnmsServiceType(alarm2));
-        alarm2.setLastEventTime(alarm2Event.getEventTime());
-        alarm2.setEventTsid(alarm2Event.getId() != null ? (long) alarm2Event.getId() : null);
-        alarm2.setEventUei(alarm2Event.getEventUei());
+        getOnmsMonitoringSystem(alarm2);
+        getOnmsServiceType(alarm2);
+        alarm2.setLastEventTime(new Date(1503412443118L));
+        alarm2.setEventTsid(2035L);
+        alarm2.setEventUei("uei.opennms.org/nodes/interfaceDown");
         Set<OnmsAlarm> alarms = new HashSet<>();
         alarms.add(alarm1);
         alarms.add(alarm2);

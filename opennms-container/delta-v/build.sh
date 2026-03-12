@@ -58,7 +58,8 @@ do_compile() {
     local test_flag=""
     [ "$SKIP_TESTS" = "true" ] && test_flag="-DskipTests"
     cd "$REPO_ROOT"
-    ./compile.pl $test_flag
+    # Exclude core/db-init (requires Java 21) — built separately in do_db_init_image()
+    ./compile.pl $test_flag -pl '!core/db-init'
 }
 
 do_assemble() {

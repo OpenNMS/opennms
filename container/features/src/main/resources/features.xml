@@ -941,9 +941,6 @@
     <feature name="opennms-poller-shell" version="${project.version}" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
-    <feature name="opennms-notifications-shell" version="${project.version}" description="OpenNMS :: Notifications :: Shell">
-        <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.shell/${project.version}</bundle>
-    </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <feature>jackson-core</feature>
         <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
@@ -2178,21 +2175,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only Notifd: loads Notifd daemon without Manager/Eventd -->
-    <feature name="opennms-daemon-notifd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: Notifd">
-        <feature>opennms-spring-extender</feature>
-        <feature>opennms-event-forwarder-kafka</feature>
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <feature>opennms-config</feature>
-        <!-- API bundles needed by onmsgi:reference proxies -->
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms/org.opennms.config-dao.poll-outages.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-notifd/${project.version}</bundle>
-    </feature>
 
     <!-- Karaf-only Discovery: loads Discovery daemon without Manager/Eventd -->
     <feature name="opennms-daemon-discovery" version="${project.version}"

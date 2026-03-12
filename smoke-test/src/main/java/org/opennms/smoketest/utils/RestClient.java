@@ -53,8 +53,6 @@ import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -245,16 +243,6 @@ public class RestClient {
         return getBuilder(target).get();
     }
 
-    public OnmsEventCollection getEventsForNode(int nodeId) {
-        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId);
-        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
-    }
-
-    public OnmsEventCollection getEventsForNodeByEventUei(int nodeId, String eventUei) {
-        final WebTarget target = getTarget().path("events").queryParam("node.id", nodeId).queryParam("eventUei", eventUei);
-        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsEventCollection.class);
-    }
-
     public OnmsAlarmCollection getAlarmsByEventUei(String eventUei) {
         final WebTarget target = getTarget().path("alarms").queryParam("uei", eventUei);
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
@@ -305,20 +293,6 @@ public class RestClient {
         final WebTarget target = getTarget().path("events");
         final Response response = getBuilder(target).post(Entity.entity(event, MediaType.APPLICATION_XML));
         bailOnFailure(response);
-    }
-
-    public List<OnmsEvent> getEvents() {
-        GenericType<List<OnmsEvent>> events = new GenericType<List<OnmsEvent>>() {
-        };
-        final WebTarget target = getTarget().path("events");
-        return getBuilder(target).get(events);
-    }
-
-    public List<OnmsEvent> getAllEvents() {
-        GenericType<List<OnmsEvent>> events = new GenericType<List<OnmsEvent>>() {
-        };
-        final WebTarget target = getTarget().path("events").queryParam("limit", 0);
-        return getBuilder(target).get(events);
     }
 
     public Long getFlowCount(long start, long end) {

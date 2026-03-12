@@ -42,4 +42,12 @@
             <entry key="systemType" value="Minion"/>
         </service-properties>
     </service>
+
+    <!-- SNMPv3 user config Twin subscriber — receives v3 user config from core via Kafka Twin API -->
+    <bean id="snmpV3UserTwinSubscriber" class="org.opennms.minion.core.impl.SnmpV3UserTwinSubscriber"
+          destroy-method="close"/>
+
+    <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="snmpV3UserTwinSubscriber"/>
+    </reference-list>
 </blueprint>

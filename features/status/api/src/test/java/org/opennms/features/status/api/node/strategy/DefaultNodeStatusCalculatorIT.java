@@ -45,11 +45,9 @@ import org.opennms.features.status.api.node.strategy.query.Query;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -84,8 +82,6 @@ public class DefaultNodeStatusCalculatorIT {
     @Autowired
     private AlarmDao alarmDao;
 
-    @Autowired
-    private EventDao eventDao;
 
     @Autowired
     private OutageDao outageDao;
@@ -105,9 +101,6 @@ public class DefaultNodeStatusCalculatorIT {
 
         alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         alarmDao.flush();
-
-        eventDao.findAll().forEach(e -> eventDao.delete(e));
-        eventDao.flush();
 
         outageDao.findAll().forEach(o -> outageDao.delete(o));
         outageDao.flush();
@@ -225,23 +218,23 @@ public class DefaultNodeStatusCalculatorIT {
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.NORMAL), statusCalculator.calculateStatus(config));
 
         // Create an alarm and verify status
-        final OnmsOutage outage = createOutage(icmpService, createEvent(node, OnmsSeverity.WARNING));
+        final OnmsOutage outage = createOutage(icmpService, OnmsSeverity.WARNING);
         saveOrUpdate(outage);
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.WARNING), statusCalculator.calculateStatus(config));
 
         // Create another outage on same interface and verify
-        final OnmsOutage outage2 = createOutage(snmpService, createEvent(node, OnmsSeverity.MINOR));
+        final OnmsOutage outage2 = createOutage(snmpService, OnmsSeverity.MINOR);
         saveOrUpdate(outage2);
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
 
         // Create another outage on another interface and verify
         final OnmsMonitoredService httpService = node.getIpInterfaceByIpAddress("192.168.1.2").getMonitoredServiceByServiceType("HTTP");
-        saveOrUpdate(createOutage(httpService, createEvent(node, OnmsSeverity.MAJOR)));
+        saveOrUpdate(createOutage(httpService, OnmsSeverity.MAJOR));
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
 
         // Create another outage on another node and verify
         saveOrUpdate(createOutage(databasePopulator.getNode2().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP"),
-                createEvent(databasePopulator.getNode2(), OnmsSeverity.CRITICAL)));
+                OnmsSeverity.CRITICAL));
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
 
         // calculate status for both
@@ -255,7 +248,8 @@ public class DefaultNodeStatusCalculatorIT {
 
         // Resolve the Warning Outage
         config.setNodeIds(nodeIds);
-        outage.setServiceRegainedEvent(createEvent(node, OnmsSeverity.WARNING));
+        outage.setSvcRegainedEventTsid(2L);
+        outage.setSvcRegainedEventUei(org.opennms.netmgt.events.api.EventConstants.NODE_UP_EVENT_UEI);
         outage.setIfRegainedService(new Date());
         saveOrUpdate(outage);
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MAJOR), statusCalculator.calculateStatus(config));
@@ -286,22 +280,12 @@ public class DefaultNodeStatusCalculatorIT {
     }
 
     private void saveOrUpdate(OnmsOutage outage) {
-        if (outage.getServiceLostEvent() != null) {
-            eventDao.saveOrUpdate(outage.getServiceLostEvent());
-        }
-        if (outage.getServiceRegainedEvent() != null) {
-            eventDao.saveOrUpdate(outage.getServiceRegainedEvent());
-        }
         outageDao.save(outage);
         outageDao.flush();
     }
 
-    private OnmsOutage createOutage(OnmsMonitoredService service, OnmsEvent svcLostEvent) {
-        return TestUtils.createOutage(service, svcLostEvent);
-    }
-
-    private OnmsEvent createEvent(OnmsNode node, OnmsSeverity severity) {
-        return TestUtils.createEvent(node, severity, distPollerDao.whoami());
+    private OnmsOutage createOutage(OnmsMonitoredService service, OnmsSeverity severity) {
+        return TestUtils.createOutage(service, severity);
     }
 
     static void verifyStatus(int statusCount, Map<Integer, OnmsSeverity> expectedStatusMap, Status verifyMe) {

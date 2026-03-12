@@ -130,11 +130,6 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryDao" ref="categoryDao" />
 
-    <bean id="eventDao" class="org.opennms.netmgt.dao.hibernate.EventDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
-
     <bean id="eventConfEventDao" class="org.opennms.netmgt.dao.hibernate.EventConfEventDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -208,11 +203,6 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao" ref="requisitionedCategoryAssociationDao" />
 
-    <bean id="notificationDao" class="org.opennms.netmgt.dao.hibernate.NotificationDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.NotificationDao" ref="notificationDao" />
-
     <bean id="outageDao" class="org.opennms.netmgt.dao.hibernate.OutageDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -232,11 +222,6 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" ref="snmpInterfaceDao" />
-
-    <bean id="userNotificationDao" class="org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.UserNotificationDao" ref="userNotificationDao" />
 
     <bean id="applicationDao" class="org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />

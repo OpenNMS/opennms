@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -252,16 +252,15 @@ public class BeanWrapperVisitorTest {
     }
     
     @Test
-    public void testEventsMatching() {
-        final CriteriaBuilder cb = new CriteriaBuilder(OnmsEvent.class);
-        cb.eq("eventuei", EventConstants.NODE_DOWN_EVENT_UEI);
-        cb.isNull("ipaddr");
-        
-        final List<OnmsEvent> events = new ArrayList<>();
-        events.add(createEvent(1, "uei.opennms.org/test"));
-        events.add(createEvent(2, EventConstants.NODE_DOWN_EVENT_UEI));
-        events.add(createEvent(3, EventConstants.NODE_DOWN_EVENT_UEI));
-        final BeanWrapperCriteriaVisitor visitor = new BeanWrapperCriteriaVisitor(events);
+    public void testAlarmsMatching() {
+        final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
+        cb.eq("uei", EventConstants.NODE_DOWN_EVENT_UEI);
+
+        final List<OnmsAlarm> alarms = new ArrayList<>();
+        alarms.add(createAlarm(1, "uei.opennms.org/test"));
+        alarms.add(createAlarm(2, EventConstants.NODE_DOWN_EVENT_UEI));
+        alarms.add(createAlarm(3, EventConstants.NODE_DOWN_EVENT_UEI));
+        final BeanWrapperCriteriaVisitor visitor = new BeanWrapperCriteriaVisitor(alarms);
         cb.toCriteria().visit(visitor);
         assertEquals(2, visitor.getMatches().size());
     }
@@ -362,10 +361,10 @@ public class BeanWrapperVisitorTest {
         THIRD
     }
 
-    private OnmsEvent createEvent(final long id, final String uei) {
-        final OnmsEvent event = new OnmsEvent();
-        event.setId(id);
-        event.setEventUei(uei);
-        return event;
+    private OnmsAlarm createAlarm(final int id, final String uei) {
+        final OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setId(id);
+        alarm.setUei(uei);
+        return alarm;
     }
 }

@@ -41,7 +41,7 @@ import org.opennms.netmgt.model.TroubleTicketState;
 /**
  * Used by MapStruct to generate mapping code.
  */
-@Mapper(uses = {EventMapper.class, MemoMapper.class, DateMapper.class})
+@Mapper(uses = {MemoMapper.class, DateMapper.class})
 public interface AlarmMapper {
     @Mapping(source = "TTicketId", target = "ticketId")
     @Mapping(source = "TTicketState", target = "ticketStateId")
@@ -54,6 +54,8 @@ public interface AlarmMapper {
     @Mapping(source = "reductionKeyMemo", target = "journalMemo")
     // Skip the node field since we handle it explicitly for caching purposes
     @Mapping(ignore = true, target = "node")
+    // Events are no longer persisted to PostgreSQL; lastEvent is not populated
+    @Mapping(ignore = true, target = "lastEvent")
     AlarmDocumentDTO map(OnmsAlarm alarm, @Context MappingContext mappingContext);
     
     default String mapIpAddressToString(InetAddress ipAddress) {

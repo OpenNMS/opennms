@@ -43,14 +43,12 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -213,53 +211,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsDistPoller.class, "location", "Monitoring Location", STRING)
 	));
 
-	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(OnmsEvent.class, "id", "ID", LONG),
-		new SearchProperty(OnmsEvent.class, "eventAckTime", "Acknowledged Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventAckUser", "Acknowledging User", STRING),
-		new SearchProperty(OnmsEvent.class, "eventAutoAction", "Autoaction", STRING),
-		new SearchProperty(OnmsEvent.class, "eventCorrelation", "Correlation", STRING),
-		new SearchProperty(OnmsEvent.class, "eventCreateTime", "Creation Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventDescr", "Description", STRING),
-		new SearchProperty(OnmsEvent.class, "eventDisplay", "Display", STRING, ImmutableMap.<String,String>builder()
-			.put("Y", "Yes")
-			.put("N", "No")
-			.build()
-		),
-		// This field has an unusual format with fields from the eventconf
-		new SearchProperty(OnmsEvent.class, "eventForward", "Forward", STRING),
-		new SearchProperty(OnmsEvent.class, "eventHost", "Host", STRING),
-		new SearchProperty(OnmsEvent.class, "eventLog", "Log", STRING, ImmutableMap.<String,String>builder()
-			.put("Y", "Yes")
-			.put("N", "No")
-			.build()
-		),
-		new SearchProperty(OnmsEvent.class, "eventLogGroup", "Log Group", STRING),
-		new SearchProperty(OnmsEvent.class, "eventLogMsg", "Log Message", STRING),
-		new SearchProperty(OnmsEvent.class, "eventMouseOverText", "Mouseover Text", STRING),
-		new SearchProperty(OnmsEvent.class, "eventNotification", "Notification", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperAction", "Operator Action", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperActionMenuText", "Operator Action Menu Text", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperInstruct", "Operator Instructions", STRING),
-		new SearchProperty(OnmsEvent.class, "eventPathOutage", "Path Outage", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSeverity", "Severity", INTEGER, ONMS_SEVERITIES),
-		// This field has an unusual format with fields from the eventconf
-		new SearchProperty(OnmsEvent.class, "eventSnmp", "SNMP", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSnmpHost", "SNMP Host", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSource", "Source", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSuppressedCount", "Suppressed Count", INTEGER),
-		new SearchProperty(OnmsEvent.class, "eventTime", "Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventTTicket", "Trouble Ticket ID", STRING),
-		new SearchProperty(OnmsEvent.class, "eventTTicketState", "Trouble Ticket State", INTEGER, ImmutableMap.<String,String>builder()
-			// Can also be null, but that's probably not useful for searching
-			.put("0", "Off")
-			.put("1", "On")
-			.build()
-		),
-		new SearchProperty(OnmsEvent.class, "eventUei", "UEI", STRING),
-		new SearchProperty(OnmsEvent.class, "ifIndex", "ifIndex", INTEGER),
-		new SearchPropertyBuilder().entityClass(OnmsEvent.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build()
-	));
+	// Events are no longer persisted to PostgreSQL — EVENT_PROPERTIES is empty
+	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>();
 
 	static final SortedSet<SearchProperty> EVENT_PARAMETER_PROPERTIES = new TreeSet<>(Arrays.asList(
 		//new SearchProperty(OnmsEventParameter.class, "id", "ID", INTEGER),
@@ -354,18 +307,6 @@ public abstract class SearchProperties {
 		)
 	));
 
-	static final SortedSet<SearchProperty> NOTIFICATION_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(OnmsNotification.class, "notifyId", "ID", INTEGER),
-		new SearchProperty(OnmsNotification.class, "answeredBy", "Answered By", STRING),
-		new SearchPropertyBuilder().entityClass(OnmsNotification.class).id("ipAddress").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
-		new SearchProperty(OnmsNotification.class, "numericMsg", "Numeric Message", STRING),
-		new SearchProperty(OnmsNotification.class, "pageTime", "Page Time", TIMESTAMP),
-		new SearchProperty(OnmsNotification.class, "queueId", "Queue ID", STRING),
-		new SearchProperty(OnmsNotification.class, "respondTime", "Responded Time", TIMESTAMP),
-		new SearchProperty(OnmsNotification.class, "subject", "Subject", STRING),
-		new SearchProperty(OnmsNotification.class, "textMsg", "Text Message", STRING)
-	));
-
 	static final SortedSet<SearchProperty> OUTAGE_PROPERTIES = new TreeSet<>(Arrays.asList(
 		new SearchProperty(OnmsOutage.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsOutage.class, "ifLostService", "Lost Service Time", TIMESTAMP),
@@ -404,7 +345,6 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> MINION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> LOCATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
-	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 
 	/**
@@ -546,20 +486,6 @@ public abstract class SearchProperties {
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES, false));
 		//NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES, false));
 		NODE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES, false));
-
-		// Root prefix
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(NOTIFICATION_PROPERTIES);
-		//NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.notification, NOTIFICATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.distPoller, "Monitoring System", DIST_POLLER_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.event, "Event", EVENT_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.eventParameter, "Event Parameter", EVENT_PARAMETER_PROPERTIES, false));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
-		NOTIFICATION_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
 
 		// Root prefix
 		OUTAGE_SERVICE_PROPERTIES.addAll(OUTAGE_PROPERTIES);

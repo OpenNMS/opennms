@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterfaceList;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -255,26 +254,8 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     }
 
     public List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters) {
-        final StringBuffer hqlStringBuffer = new StringBuffer("From OnmsAlarm a where ");
-        for (int i = 0; i < eventParameters.size(); i++) {
-            if (i > 0) {
-                hqlStringBuffer.append(" and ");
-            }
-            hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where a.lastEvent=p.event and p.name = :name" + i + " and p.value like :value" + i + ")");
-        }
-
-        return (List<OnmsAlarm>) getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
-            @Override
-            public List<OnmsEvent> doInHibernate(Session session) throws HibernateException, SQLException {
-                Query q = session.createQuery(hqlStringBuffer.toString());
-                int i = 0;
-                for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {
-                    q = q.setParameter("name" + i, entry.getKey()).setParameter("value" + i, entry.getValue());
-                    i++;
-                }
-
-                return q.list();
-            }
-        });
+        // Events are no longer persisted to PostgreSQL; event parameters are not
+        // queryable via Hibernate. Return an empty list.
+        return Collections.emptyList();
     }
 }

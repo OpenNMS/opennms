@@ -81,11 +81,13 @@ public class OnmsOutage implements Serializable {
     /** nullable persistent field */
     private Date m_ifRegainedService;
 
-    /** persistent field */
-    private OnmsEvent m_serviceRegainedEvent;
+    /** denormalized event TSID and UEI for service lost event */
+    private Long m_svcLostEventTsid;
+    private String m_svcLostEventUei;
 
-    /** persistent field */
-    private OnmsEvent m_serviceLostEvent;
+    /** denormalized event TSID and UEI for service regained event */
+    private Long m_svcRegainedEventTsid;
+    private String m_svcRegainedEventUei;
 
     /** persistent field */
     private OnmsMonitoredService m_monitoredService;
@@ -104,21 +106,16 @@ public class OnmsOutage implements Serializable {
      *
      * @param ifLostService a {@link java.util.Date} object.
      * @param ifRegainedService a {@link java.util.Date} object.
-     * @param eventBySvcRegainedEvent a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     * @param eventBySvcLostEvent a {@link org.opennms.netmgt.model.OnmsEvent} object.
      * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      * @param suppressTime a {@link java.util.Date} object.
      * @param suppressedBy a {@link java.lang.String} object.
      */
-    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, Date suppressTime, String suppressedBy) {
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsMonitoredService monitoredService, Date suppressTime, String suppressedBy) {
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
-        m_serviceRegainedEvent = eventBySvcRegainedEvent;
-        m_serviceLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
         m_suppressTime = suppressTime;
         m_suppressedBy = suppressedBy;
-        
     }
 
     /**
@@ -137,19 +134,6 @@ public class OnmsOutage implements Serializable {
     public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsMonitoredService monitoredService) {
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
-        m_monitoredService = monitoredService;
-    }
-
-    /**
-     * minimal constructor
-     *
-     * @param ifLostService a {@link java.util.Date} object.
-     * @param eventBySvcLostEvent a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     * @param monitoredService a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
-     */
-    public OnmsOutage(Date ifLostService, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
-        m_ifLostService = ifLostService;
-        m_serviceLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
     }
 
@@ -218,24 +202,22 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-    /**
-     * <p>getServiceLostEvent</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="svcLostEventId")
-    public OnmsEvent getServiceLostEvent() {
-        return m_serviceLostEvent;
+    @Column(name="svc_lost_event_tsid")
+    public Long getSvcLostEventTsid() {
+        return m_svcLostEventTsid;
     }
 
-    /**
-     * <p>setServiceLostEvent</p>
-     *
-     * @param svcLostEvent a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    public void setServiceLostEvent(OnmsEvent svcLostEvent) {
-        m_serviceLostEvent = svcLostEvent;
+    public void setSvcLostEventTsid(Long svcLostEventTsid) {
+        m_svcLostEventTsid = svcLostEventTsid;
+    }
+
+    @Column(name="svc_lost_event_uei")
+    public String getSvcLostEventUei() {
+        return m_svcLostEventUei;
+    }
+
+    public void setSvcLostEventUei(String svcLostEventUei) {
+        m_svcLostEventUei = svcLostEventUei;
     }
 
 
@@ -259,24 +241,22 @@ public class OnmsOutage implements Serializable {
         m_ifRegainedService = ifRegainedService;
     }
 
-    /**
-     * <p>getServiceRegainedEvent</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="svcRegainedEventId")
-    public OnmsEvent getServiceRegainedEvent() {
-        return m_serviceRegainedEvent;
+    @Column(name="svc_regained_event_tsid")
+    public Long getSvcRegainedEventTsid() {
+        return m_svcRegainedEventTsid;
     }
 
-    /**
-     * <p>setServiceRegainedEvent</p>
-     *
-     * @param svcRegainedEvent a {@link org.opennms.netmgt.model.OnmsEvent} object.
-     */
-    public void setServiceRegainedEvent(OnmsEvent svcRegainedEvent) {
-        m_serviceRegainedEvent = svcRegainedEvent;
+    public void setSvcRegainedEventTsid(Long svcRegainedEventTsid) {
+        m_svcRegainedEventTsid = svcRegainedEventTsid;
+    }
+
+    @Column(name="svc_regained_event_uei")
+    public String getSvcRegainedEventUei() {
+        return m_svcRegainedEventUei;
+    }
+
+    public void setSvcRegainedEventUei(String svcRegainedEventUei) {
+        m_svcRegainedEventUei = svcRegainedEventUei;
     }
 
     /**
@@ -499,7 +479,10 @@ public class OnmsOutage implements Serializable {
             .add("outageId", m_id)
             .add("ifLostService", m_ifLostService)
             .add("ifRegainedService", m_ifRegainedService)
-            .add("ifRegainedServiceEvent", m_serviceRegainedEvent)
+            .add("svcLostEventTsid", m_svcLostEventTsid)
+            .add("svcLostEventUei", m_svcLostEventUei)
+            .add("svcRegainedEventTsid", m_svcRegainedEventTsid)
+            .add("svcRegainedEventUei", m_svcRegainedEventUei)
             .add("service", m_monitoredService)
             .add("suppressedBy", m_suppressedBy)
             .add("suppressTime", m_suppressTime)

@@ -28,8 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.time.ExtendedDateOnlyFormat;
 import org.opennms.core.time.ExtendedTimeOnlyFormat;
-import org.opennms.netmgt.config.NotifdConfigFactory;
-
 public class HttpMenuRequestContext implements MenuRequestContext {
     final private HttpServletRequest request;
     final private CentralizedDateTimeFormat dateTimeFormatter = new CentralizedDateTimeFormat();
@@ -71,12 +69,7 @@ public class HttpMenuRequestContext implements MenuRequestContext {
     }
 
     public String getNoticeStatus() {
-        try {
-            return NotifdConfigFactory.getPrettyStatus();
-        } catch (final Throwable ignored) {
-        }
-
-        return "Unknown";
+        return "Off";
     }
 
     public String getSystemProperty(String name, String def) {

@@ -34,7 +34,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -55,10 +54,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     
     @Autowired
     public SnmpInterfaceDao m_snmpInterfaceDao;
-    
-    @Autowired
-    public EventDao m_eventDao;
-    
+
     @Autowired
     public AlarmDao m_alarmDao;
 
@@ -101,9 +97,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         if (m_snmpInterfaceDao != null) {
             map.put("Number of SNMP Interfaces", getResource(Integer.toString(m_snmpInterfaceDao.countAll())));
         }
-        if (m_eventDao != null) {
-            map.put("Number of Events", getResource(Integer.toString(m_eventDao.countAll())));
-        }
+        map.put("Number of Events", getResource("N/A (events in Kafka)"));
         if (m_alarmDao != null) {
             map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
         }

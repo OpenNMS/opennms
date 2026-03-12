@@ -50,19 +50,45 @@ public class EventConfInitializer {
         this.kafkaEventForwarder = kafkaEventForwarder;
     }
 
+    private static final int MAX_RETRIES = 10;
+    private static final long RETRY_DELAY_MS = 3000;
+
     public void init() {
-        try {
-            final long startTime = System.currentTimeMillis();
-            DefaultEventConfDao dao = new DefaultEventConfDao();
-            List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-            dao.loadEventsFromDB(dbEvents);
-            kafkaEventForwarder.setEventConfDao(dao);
-            final long elapsed = System.currentTimeMillis() - startTime;
-            LOG.info("Loaded {} event definitions from database in {} ms", dbEvents.size(), elapsed);
-        } catch (Throwable t) {
-            LOG.warn("EventConfEventDao is not available — event enrichment will be disabled. "
-                    + "This typically means distributed-dao-impl has not yet started. "
-                    + "Cause: {} ({})", t.getMessage(), t.getClass().getSimpleName());
-        }
+        // Start retry loop in a daemon thread to avoid blocking Blueprint context creation.
+        // EventConfEventDao (from distributed-dao-impl) may not be registered yet when
+        // init() runs — there's a 2-5 second race window during container startup.
+        Thread initThread = new Thread(() -> {
+            for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                try {
+                    final long startTime = System.currentTimeMillis();
+                    DefaultEventConfDao dao = new DefaultEventConfDao();
+                    List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+                    dao.loadEventsFromDB(dbEvents);
+                    kafkaEventForwarder.setEventConfDao(dao);
+                    final long elapsed = System.currentTimeMillis() - startTime;
+                    LOG.info("Loaded {} event definitions from database in {} ms (attempt {})",
+                            dbEvents.size(), elapsed, attempt);
+                    return;
+                } catch (Throwable t) {
+                    if (attempt < MAX_RETRIES) {
+                        LOG.info("EventConfEventDao not yet available (attempt {}/{}), retrying in {} ms: {}",
+                                attempt, MAX_RETRIES, RETRY_DELAY_MS, t.getMessage());
+                        try {
+                            Thread.sleep(RETRY_DELAY_MS);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            LOG.warn("EventConfInitializer interrupted during retry wait");
+                            return;
+                        }
+                    } else {
+                        LOG.warn("EventConfEventDao is not available after {} attempts — event enrichment "
+                                + "will be disabled. Cause: {} ({})", MAX_RETRIES, t.getMessage(),
+                                t.getClass().getSimpleName());
+                    }
+                }
+            }
+        }, "eventconf-initializer");
+        initThread.setDaemon(true);
+        initThread.start();
     }
 }

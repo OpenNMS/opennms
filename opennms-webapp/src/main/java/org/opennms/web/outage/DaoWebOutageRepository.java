@@ -38,7 +38,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsEvent;
+
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -209,19 +209,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                 }
             }
 
-            // Event-related fields
-            final OnmsEvent event = onmsOutage.getServiceLostEvent();
-            outage.lostServiceEventId = 0L;
-            outage.regainedServiceEventId = 0L;
-            if (event != null) {
-                outage.lostServiceEventId = onmsOutage.getServiceLostEvent().getId();
-                if (event.getDistPoller() != null) {
-                    outage.eventLocation = event.getDistPoller().getLocation();
-                }
-            }
-            if (onmsOutage.getServiceRegainedEvent() != null) {
-                outage.regainedServiceEventId = onmsOutage.getServiceRegainedEvent().getId();
-            }
+            // Event-related fields (denormalized on OnmsOutage)
+            outage.lostServiceEventId = onmsOutage.getSvcLostEventTsid() != null ? onmsOutage.getSvcLostEventTsid() : 0L;
+            outage.regainedServiceEventId = onmsOutage.getSvcRegainedEventTsid() != null ? onmsOutage.getSvcRegainedEventTsid() : 0L;
             
             return outage;
         }else{

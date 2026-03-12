@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
 import org.opennms.features.apilayer.model.mappers.AlarmFeedbackMapper;
-import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
 import org.opennms.features.apilayer.model.mappers.InMemoryEventMapper;
 import org.opennms.features.apilayer.model.mappers.NodeMapper;
 import org.opennms.features.apilayer.model.mappers.SnmpInterfaceMapper;
@@ -46,7 +45,6 @@ import org.opennms.integration.api.v1.model.immutables.ImmutableDatabaseEvent;
 import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
 import org.opennms.integration.api.v1.ticketing.Ticket.State;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -69,7 +67,7 @@ public class ModelMappers {
     private static final Logger LOG = LoggerFactory.getLogger(ModelMappers.class);
 
     private static final InMemoryEventMapper inMemoryEventMapper = Mappers.getMapper(InMemoryEventMapper.class);
-    private static final DatabaseEventMapper databaseEventMapper = Mappers.getMapper(DatabaseEventMapper.class);
+
     private static final NodeMapper nodeMapper = Mappers.getMapper(NodeMapper.class);
     private static final SnmpInterfaceMapper snmpInterfaceMapper = Mappers.getMapper(SnmpInterfaceMapper.class);
     private static final AlarmFeedbackMapper alarmFeedbackMapper = Mappers.getMapper(AlarmFeedbackMapper.class);
@@ -149,10 +147,6 @@ public class ModelMappers {
             builder.setParam(p.getName(), p.getValue());
         }
         return builder.getEvent();
-    }
-
-    public static DatabaseEvent toEvent(OnmsEvent event) {
-        return event == null ? null : databaseEventMapper.map(event);
     }
 
     /**

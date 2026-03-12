@@ -207,22 +207,6 @@
         <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
-    <bean name="/notification/acknowledge"
-          class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
-        <property name="webNotificationRepository" ref="webNotificationRepository"/>
-        <property name="redirectView" value="/notification/list.htm"/>
-    </bean>
-
-    <alias name="/notification/list.htm" alias="/notification/browse"/>
-    <bean name="/notification/list.htm" class="org.opennms.web.controller.notification.NotificationFilterController">
-        <property name="successView" value="notification/list"/>
-        <property name="defaultShortLimit" value="20"/>
-        <property name="defaultLongLimit" value="10"/>
-        <property name="defaultSortStyle" value="ID"/>
-        <property name="webNotificationRepository" ref="webNotificationRepository"/>
-        <property name="nodeDao" ref="nodeDao"/>
-    </bean>
-
     <alias name="/outage/list.htm" alias="/outage/list"/>
     <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
         <property name="successView" value="outage/list"/>
@@ -396,11 +380,6 @@
                                 <property name="locationMatch" value="alarm"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Notifications"/>
-                                <property name="url" value="notification/index.jsp"/>
-                                <property name="locationMatch" value="notification"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Outages"/>
                                 <property name="url" value="outage/index.jsp"/>
                                 <property name="locationMatch" value="outage"/>
@@ -541,26 +520,6 @@
         <property name="resourceService" ref="resourceService"/>
     </bean>
 
-    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
-    </bean>
-
-    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="notifdConfigFactory-init">
-        <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
-    </bean>
-
-    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
-
-    <bean name="/admin/notification/noticeWizard/eventNotices.htm"
-          class="org.opennms.web.controller.admin.notifications.EventNoticesController">
-        <property name="eventConfDao" ref="eventConfDao"/>
-        <property name="notificationFactory" ref="notificationFactory"/>
-    </bean>
-
-    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
-          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
-        <property name="eventConfDao" ref="eventConfDao"/>
-    </bean>
 
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">

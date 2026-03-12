@@ -51,7 +51,6 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
@@ -176,15 +175,6 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</threshd-configuration>", Charset.defaultCharset());
         m_threshdDao.overrideConfig(new FileInputStream(threshdConfig));
 
-        // Setup Notifid Configuration
-        FileUtils.writeStringToFile(new File(etc, "notifd-configuration.xml"), "<?xml version=\"1.0\"?>"
-                + "<notifd-configuration status=\"off\" match-all=\"true\">"
-                + "<queue><queue-id>default</queue-id><interval>20s</interval>"
-                + "<handler-class><name>org.opennms.netmgt.notifd.DefaultQueueHandler</name></handler-class>"
-                + "</queue>"
-                + "</notifd-configuration>", Charset.defaultCharset());
-        NotifdConfigFactory.init();
-
         m_jaxbContext = JaxbUtils.getContextFor(Outages.class);
     }
 
@@ -288,11 +278,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
         sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 204);
     }
 
-    @Test
-    public void testUpdateNotifdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 204);
-        sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 204);
-    }
+
 
     @Test
     public void testNodeInOutage() throws Exception {

@@ -70,7 +70,6 @@ usage() {
 useEnvCredentials(){
   echo "WARNING: Credentials can be exposed via docker inspect and log files. Please consider to use a keystore file."
   echo "         You can initialize a keystore file with the -s option."
-  ${MINION_HOME}/bin/scvcli set opennms.http ${OPENNMS_HTTP_USER} ${OPENNMS_HTTP_PASS}
   ${MINION_HOME}/bin/scvcli set opennms.broker ${OPENNMS_BROKER_USER} ${OPENNMS_BROKER_PASS}
 }
 
@@ -78,15 +77,10 @@ setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
   mkdir -p /keystore
 
-  read -r -p "Enter OpenNMS HTTP username: " OPENNMS_HTTP_USER
-  read -r -s -p "Enter OpenNMS HTTP password: " OPENNMS_HTTP_PASS
-  echo ""
-
   read -r -p "Enter OpenNMS Broker username: " OPENNMS_BROKER_USER
   read -r -s -p "Enter OpenNMS Broker password: " OPENNMS_BROKER_PASS
   echo ""
 
-  ${MINION_HOME}/bin/scvcli set opennms.http ${OPENNMS_HTTP_USER} ${OPENNMS_HTTP_PASS}
   ${MINION_HOME}/bin/scvcli set opennms.broker ${OPENNMS_BROKER_USER} ${OPENNMS_BROKER_PASS}
 
   rsync --out-format="%n %C" ${MINION_HOME}/etc/scv.jce /keystore/.

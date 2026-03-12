@@ -26,12 +26,10 @@ import java.util.Objects;
 import org.opennms.features.apilayer.common.utils.InterfaceMapper;
 import org.opennms.features.apilayer.utils.ModelMappers;
 import org.opennms.integration.api.v1.model.Alarm;
-import org.opennms.integration.api.v1.model.DatabaseEvent;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
 import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.framework.BundleContext;
 
@@ -48,21 +46,19 @@ public class AlarmPersisterExtensionManager extends InterfaceMapper<org.opennms.
     public AlarmPersisterExtension map(org.opennms.integration.api.v1.alarms.AlarmPersisterExtension ext) {
         return new AlarmPersisterExtension() {
             @Override
-            public void afterAlarmCreated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent) {
+            public void afterAlarmCreated(OnmsAlarm alarm, Event event) {
                 final Alarm mappedAlarm = ModelMappers.toAlarm(alarm);
                 final InMemoryEvent inMemoryEvent = ModelMappers.toEvent(event);
-                final DatabaseEvent databaseEvent = ModelMappers.toEvent(dbEvent);
-                final Alarm updatedAlarm = ext.afterAlarmCreated(mappedAlarm, inMemoryEvent, databaseEvent);
+                final Alarm updatedAlarm = ext.afterAlarmCreated(mappedAlarm, inMemoryEvent, null);
 
                 maybeUpdateAlarm(alarm, updatedAlarm);
             }
 
             @Override
-            public void afterAlarmUpdated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent) {
+            public void afterAlarmUpdated(OnmsAlarm alarm, Event event) {
                 final Alarm mappedAlarm = ModelMappers.toAlarm(alarm);
                 final InMemoryEvent inMemoryEvent = ModelMappers.toEvent(event);
-                final DatabaseEvent databaseEvent = ModelMappers.toEvent(dbEvent);
-                final Alarm updatedAlarm = ext.afterAlarmUpdated(mappedAlarm, inMemoryEvent, databaseEvent);
+                final Alarm updatedAlarm = ext.afterAlarmUpdated(mappedAlarm, inMemoryEvent, null);
                 maybeUpdateAlarm(alarm, updatedAlarm);
             }
         };

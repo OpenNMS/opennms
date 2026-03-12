@@ -177,7 +177,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, null));
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
@@ -194,7 +194,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmUpdated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, null));
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
@@ -417,7 +417,17 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (event.getDistPoller() == null) {
             return m_distPollerDao.whoami();
         }
-        return m_distPollerDao.get(event.getDistPoller());
+        org.opennms.netmgt.model.OnmsMonitoringSystem system = m_distPollerDao.get(event.getDistPoller());
+        if (system == null) {
+            // Minion monitoring systems have discriminator="Minion", not "OpenNMS",
+            // so DistPollerDao.get() (which queries OnmsDistPoller) won't find them.
+            // In Delta-V, Minions register via Kafka heartbeats, not REST, so they
+            // may not be in the monitoringsystems table at all. Fall back to the local
+            // system identity to avoid null systemId constraint violations.
+            LOG.debug("Monitoring system '{}' not found, falling back to local system", event.getDistPoller());
+            system = m_distPollerDao.whoami();
+        }
+        return system;
     }
 
     private InetAddress resolveIpAddr(Event event) {
