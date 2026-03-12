@@ -16,7 +16,6 @@
 		<property name="assetRecordDao" ref="assetRecordDao" />
 		<property name="categoryDao" ref="categoryDao" />
 		<property name="outageDao" ref="outageDao" />
-		<property name="eventDao" ref="eventDao" />
 		<property name="alarmDao" ref="alarmDao" />
 		<property name="alarmAssociationDao" ref="alarmAssociationDao" />
 		<property name="monitoringLocationDao" ref="monitoringLocationDao" />

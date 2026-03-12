@@ -293,4 +293,12 @@
         <sql>DROP SEQUENCE IF EXISTS notifynxtid;</sql>
     </changeSet>
 
+    <changeSet id="36.0.0-drop-event-parameters-table" author="delta-v">
+        <comment>Drop orphaned event_parameters table — parent events table was dropped but cascadeConstraints only removed FKs, not child tables</comment>
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="event_parameters"/>
+        </preConditions>
+        <dropTable tableName="event_parameters" cascadeConstraints="true"/>
+    </changeSet>
+
 </databaseChangeLog>

@@ -77,10 +77,6 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.config.api.EventConfDao" ref="eventConfDao" />
 
-    <bean id="eventDao" class="org.opennms.netmgt.dao.mock.MockEventDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventCountDao" ref="eventDao" />
-
     <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.mock.MockFilterFavoriteDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterFavoriteDao" ref="filterFavoriteDao" />
 
@@ -198,7 +194,6 @@
         <property name="assetRecordDao" ref="assetRecordDao" />
         <property name="categoryDao" ref="categoryDao" />
         <property name="outageDao" ref="outageDao" />
-        <property name="eventDao" ref="eventDao" />
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmAssociationDao" ref="alarmAssociationDao" />
         <property name="monitoringLocationDao" ref="monitoringLocationDao" />
