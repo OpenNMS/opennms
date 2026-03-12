@@ -34,6 +34,23 @@
 | `OPENNMS_BROKER_PASS` | Password for ActiveMQ authentication   | optional | `admin`
 |===
 
+.Settings for listeners, Karaf access, and web binding
+[options="header, autowidth"]
+|===
+| Environment variable | Description | Required | Default value
+| `SYSLOG_CFG_*` | Writes keys to `org.opennms.netmgt.syslog.cfg` using lower-case and dot-separated key conversion. | optional | -
+| `TRAPD_CFG_*` | Writes keys to `org.opennms.netmgt.trapd.cfg` using lower-case and dot-separated key conversion. | optional | -
+| `KARAF_SSH_HOST` | Sets Karaf shell bind host (`sshHost`) in `org.apache.karaf.shell.cfg`. | optional | image default
+| `KARAF_SSH_PORT` | Sets Karaf shell port (`sshPort`) in `org.apache.karaf.shell.cfg`. | optional | image default
+| `KARAF_RMI_REGISTRY_HOST` | Sets RMI registry host (`rmiRegistryHost`) in `org.apache.karaf.management.cfg`. | optional | image default
+| `KARAF_RMI_REGISTRY_PORT` | Sets RMI registry port (`rmiRegistryPort`) in `org.apache.karaf.management.cfg`. | optional | image default
+| `KARAF_RMI_SERVER_HOST` | Sets RMI server host (`rmiServerHost`) in `org.apache.karaf.management.cfg`. | optional | image default
+| `KARAF_RMI_SERVER_PORT` | Sets RMI server port (`rmiServerPort`) in `org.apache.karaf.management.cfg`. | optional | image default
+| `JETTY_WEB_HOST` | Sets Jetty listening addresses in `org.ops4j.pax.web.cfg`. | optional | image default
+| `JETTY_WEB_PORT` | Sets Jetty HTTP port in `org.ops4j.pax.web.cfg`. | optional | image default
+| `TELEMETRY_FEATURES_XML` | Writes full telemetry feature XML to `deploy/confd-telemetry-feature.xml`. | optional | none
+|===
+
 .Settings when using Apache Kafka
 
 If you want to use Apache Kafka, the environment variable names are converted with a prefix convention:
@@ -56,6 +73,10 @@ This creates the file `org.opennms.core.ipc.kafka.cfg` with the content:
 ----
 bootstrap.servers=192.168.1.1,192.168.1.2
 ----
+
+NOTE: The Kafka prefix conversion above applies to IPC configuration files. Telemetry listener features are configured separately via `TELEMETRY_FEATURES_XML`.
+
+NOTE: Environment-generated configuration can be overridden by direct file overlays mounted to `/opt/minion-etc-overlay`.
 
 == Directory conventions
 
