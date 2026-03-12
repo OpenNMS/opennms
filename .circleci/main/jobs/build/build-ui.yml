@@ -6,4 +6,4 @@ jobs:
       - run:
           name: Build
           command: |
-            cd ui && pnpm install && pnpm build && pnpm test
+            cd ui && pnpm install && pnpm build:all && pnpm test
