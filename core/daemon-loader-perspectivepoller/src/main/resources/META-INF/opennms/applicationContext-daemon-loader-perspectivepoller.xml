@@ -86,9 +86,11 @@
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
-    <!-- Transaction management -->
-    <onmsgi:reference id="transactionManager"
-                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+    <!-- Transaction management (osgi:reference blocks context startup until
+         dao-impl publishes HibernateTransactionManager — prevents the known race
+         where onmsgi:reference proxy is non-null but empty during startup) -->
+    <osgi:reference id="transactionManager"
+                    interface="org.springframework.transaction.PlatformTransactionManager"/>
 
     <!-- ============================================================== -->
     <!-- Poller Configuration (local factory — opennms-config has no    -->
