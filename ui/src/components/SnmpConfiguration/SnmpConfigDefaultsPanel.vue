@@ -1,11 +1,9 @@
 <template>
   <div class="snmp-config-defaults-panel">
     <div class="main-section">
-      <div class="title-container">
-        <h3 class="section-title">SNMP Configuration Defaults</h3>
-      </div>
       <div>
-        <span>View and set "global" default values for SNMP configuration parameters.</span>
+        <h3>SNMP Configuration Default Overrides</h3>
+        <span>View and set "global" default override values for SNMP configuration parameters.</span>
         <FeatherIcon
           :icon="InfoIcon"
           class="info-icon"

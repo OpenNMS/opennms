@@ -201,11 +201,11 @@ describe('useSnmpConfigStore', () => {
 
   describe('State Management', () => {
     it('should set active tab', () => {
-      store.setActiveTab(ActiveTabs.Definitions)
-      expect(store.activeTab).toBe(ActiveTabs.Definitions)
+      store.setActiveTab(ActiveTabs.ViewConfigurations)
+      expect(store.activeTab).toBe(ActiveTabs.ViewConfigurations)
 
-      store.setActiveTab(ActiveTabs.Profiles)
-      expect(store.activeTab).toBe(ActiveTabs.Profiles)
+      store.setActiveTab(ActiveTabs.Advanced)
+      expect(store.activeTab).toBe(ActiveTabs.Advanced)
 
       store.setActiveTab(ActiveTabs.Lookup)
       expect(store.activeTab).toBe(ActiveTabs.Lookup)
@@ -649,10 +649,8 @@ describe('useSnmpConfigStore', () => {
 
     it('should have correct ActiveTabs values', () => {
       expect(ActiveTabs.Lookup).toBe(0)
-      expect(ActiveTabs.Definitions).toBe(1)
-      expect(ActiveTabs.Profiles).toBe(2)
-      expect(ActiveTabs.ConfigDefaults).toBe(3)
-      expect(ActiveTabs.UploadDownload).toBe(4)
+      expect(ActiveTabs.ViewConfigurations).toBe(1)
+      expect(ActiveTabs.Advanced).toBe(2)
     })
   })
 })

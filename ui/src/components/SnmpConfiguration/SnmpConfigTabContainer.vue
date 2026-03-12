@@ -5,26 +5,18 @@
       v-model="store.activeTab"
     >
       <template v-slot:tabs>
-        <FeatherTab>Lookup by IP</FeatherTab>
-        <FeatherTab>Browse Definitions</FeatherTab>
-        <FeatherTab>Browse Profiles</FeatherTab>
-        <FeatherTab>Default Configuration</FeatherTab>
-        <FeatherTab>Upload/Download</FeatherTab>
+        <FeatherTab>Lookup</FeatherTab>
+        <FeatherTab>Browse Configurations</FeatherTab>
+        <FeatherTab>Advanced</FeatherTab>
       </template>
       <FeatherTabPanel>
         <SnmpConfigLookupTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <SnmpConfigDefinitionsTab />
+        <SnmpConfigViewTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <SnmpConfigProfilesTab />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigDefaultsTab />
-      </FeatherTabPanel>
-      <FeatherTabPanel>
-        <SnmpConfigUploadDownloadTab />
+        <SnmpConfigAdvancedTab />
       </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
@@ -34,10 +26,8 @@
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
-import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
-import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
-import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
-import SnmpConfigDefaultsTab from './SnmpConfigDefaultsTab.vue'
+import SnmpConfigViewTab from './SnmpConfigViewTab.vue'
+import SnmpConfigAdvancedTab from './SnmpConfigAdvancedTab.vue'
 
 const store = useSnmpConfigStore()
 

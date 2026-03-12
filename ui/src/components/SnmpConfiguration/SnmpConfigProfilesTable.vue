@@ -1,13 +1,25 @@
 <template>
   <TableCard class="snmp-config-profiles-table">
     <div class="header">
-      <div class="title-container">
-        <!-- <span class="title"> SNMP Profiles </span> -->
-      </div>
       <div class="action-container">
         <div class="search-container">
+          <FeatherInput
+            v-model="searchTerm"
+            @update:modelValue="onSearchChange"
+            label="Search label or filter"
+          >
+            <template #pre>
+              <FeatherIcon :icon="IconSearch" />
+            </template>
+          </FeatherInput>
         </div>
         <div class="refresh">
+          <FeatherButton
+            primary
+            @click="onCreateProfile"
+          >
+            Create New Profile
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -96,16 +108,19 @@
 </template>
 
 <script lang="ts" setup>
+import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
+import IconSearch from '@featherds/icon/action/Search'
+import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { useSnmpConfigStore, ActiveTabs, ViewConfigurationsTabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { sortPredicate } from '@/lib/sorting'
 import { FeatherSortObject } from '@/types'
 import { SnmpProfile } from '@/types/snmpConfig'
@@ -117,6 +132,8 @@ const emit = defineEmits<{
 const store = useSnmpConfigStore()
 const displayDeleteDialog = ref(false)
 const selectedProfileLabel = ref<string | null>(null)
+const searchTerm = ref('')
+const debouncedSearchTerm = ref('')
 
 const deleteDialogLabels = {
   title: 'Delete SNMP Configuration Profile'
@@ -142,12 +159,37 @@ const createFilterExpressionLabel = (profile: SnmpProfile) => {
   return profile.filter ?? '--'
 }
 
+const matchesSearchTerm = (profile: SnmpProfile, search: string) => {
+  const lowerSearch = search.toLowerCase()
+
+  // Check label
+  if (profile.label?.toLowerCase().includes(lowerSearch)) {
+    return true
+  }
+
+  // Check filter
+  if (profile.filter?.toLowerCase().includes(lowerSearch)) {
+    return true
+  }
+
+  return false
+}
+
 const profiles = computed(() => {
   if (!store.config.profiles?.profile) {
     return []
   }
 
-  const items = store.config.profiles.profile.map(profile => {
+  let profileList = store.config.profiles.profile
+
+  // Filter by search term
+  if (debouncedSearchTerm.value) {
+    profileList = profileList.filter(profile => 
+      matchesSearchTerm(profile, debouncedSearchTerm.value)
+    )
+  }
+
+  const items = profileList.map(profile => {
     return {
       label: profile.label ?? '--',
       filter: createFilterExpressionLabel(profile)
@@ -192,6 +234,20 @@ const onProfileEdit = (label: string) => {
   store.setProfileLabel(label)
   store.setSnmpProfileEditMode(SnmpConfigEditMode.Edit)
 }
+
+const onCreateProfile = () => {
+  store.setSnmpProfileEditMode(SnmpConfigEditMode.Create)
+  store.setActiveTab(ActiveTabs.ViewConfigurations)
+  store.setActiveViewConfigurationsTab(ViewConfigurationsTabs.Profiles)
+}
+
+const updateDebouncedSearchTerm = debounce((value: string) => {
+  debouncedSearchTerm.value = value
+}, 200)
+
+const onSearchChange = (value: string | number | undefined) => {
+  updateDebouncedSearchTerm(String(value || ''))
+}
 </script>
 
 <style lang="scss" scoped>
@@ -201,32 +257,24 @@ const onProfileEdit = (label: string) => {
 @use '@/styles/_transitionDataTable';
 
 .snmp-config-profiles-table {
-  margin-top: 10px;
-  padding: 25px;
+  margin-top: 0;
+  padding: 0;
 
   .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-
-    .title-container {
-      display: flex;
-      align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
-    }
+    margin-bottom: 0;
 
     .action-container {
       display: flex;
       align-items: flex-start;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 5px;
-      width: 30%;
+      width: 100%;
 
       .search-container {
-        width: 80%;
+        flex: 0 0 auto;
+        min-width: 30em;
       }
     }
   }
