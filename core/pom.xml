@@ -75,6 +75,7 @@
     <module>daemon-loader-provisiond</module>
     <module>daemon-loader-scriptd</module>
     <module>daemon-loader-bsmd</module>
+    <module>daemon-loader-perspectivepoller</module>
     <module>event-forwarder-kafka</module>
     <module>fileutils</module>
     <module>tsid</module>
