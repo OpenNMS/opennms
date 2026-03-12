@@ -40,7 +40,6 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -264,26 +263,7 @@ public class AnnotationIT implements InitializingBean {
 		});
 	}
 
-	@Test
-	@Transactional
-	public void testEvents() {
-		assertLoadAll(OnmsEvent.class, new EmptyChecker<OnmsEvent>() {
-
-			@Override
-			public void check(OnmsEvent entity) {
-				if (entity.getAlarm() != null) {
-					assertEquals("event UEI should equal the alarm UEI", entity.getEventUei(), entity.getAlarm().getUei());
-				}
-				assertNotNull("associated service lost outages list should not be null: " + entity.toString(), entity.getAssociatedServiceLostOutages());
-				assertTrue("there should be zero or more associated service lost outages", entity.getAssociatedServiceLostOutages().size() >= 0);
-				assertNotNull("associated service regained outages list should not be null: " + entity.toString(), entity.getAssociatedServiceRegainedOutages());
-				assertTrue("there should be zero or more associated service regained outages", entity.getAssociatedServiceRegainedOutages().size() >= 0);
-				assertNotNull("dist poller should not be null: " + entity.toString(), entity.getDistPoller());
-				assertNotNull("dist poller name should not be null: " + entity.toString(), entity.getDistPoller().getId());
-			}
-			
-		});
-	}
+	// testEvents removed: OnmsEvent entity deleted (events in Kafka only)
 
 	@Test
 	@Transactional

@@ -267,7 +267,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
-        usageStatisticsReport.setEvents(0L);
+        usageStatisticsReport.setEvents(0);
         usageStatisticsReport.setEventsLastHours(0L);
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
         usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(DEFAULT_ALERTS_LAST_HOURS));

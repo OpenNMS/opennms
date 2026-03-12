@@ -49,7 +49,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -350,188 +349,9 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         }
     }
 
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testParmsLikeFilter() {
-        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
-        assertNotNull(poller);
+    // testParmsLikeFilter and testParmsNotLikeFilter removed:
+    // Event parameters are no longer stored in PostgreSQL (events table eliminated).
 
-        final OnmsEvent event1 = new OnmsEvent();
-        event1.setDistPoller(poller);
-        event1.setEventCreateTime(new Date(1436881548292L));
-        event1.setEventTime(new Date(1436881548292L));
-        event1.setEventCreateTime(new Date(1437061537126L));
-        event1.setEventDescr("This is the description of a test event.");
-        event1.setEventDisplay("Y");
-        event1.setEventHost("127.0.0.1");
-        event1.setEventLog("Y");
-        event1.setEventLogMsg("Test Event Log Message");
-        event1.setEventSeverity(1);
-        event1.setEventSource("test");
-        event1.setEventTime(new Date(1437061537105L));
-        event1.setEventUei("uei.opennms.org/test");
-        event1.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
-        event1.setNode(m_dbPopulator.getNode1());
-        event1.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
-        event1.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter("user", "rtc", "string"),
-                new OnmsEventParameter("passwd", "rtc", "string"),
-                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
-        m_dbPopulator.getEventDao().saveOrUpdate(event1);
-        m_dbPopulator.getEventDao().flush();
-
-        final OnmsEvent event2 = new OnmsEvent();
-        event2.setDistPoller(poller);
-        event2.setEventCreateTime(new Date(1436881548292L));
-        event2.setEventTime(new Date(1436881548292L));
-        event2.setEventCreateTime(new Date(1437061537126L));
-        event2.setEventDescr("This is the description of a test event.");
-        event2.setEventDisplay("Y");
-        event2.setEventHost("127.0.0.1");
-        event2.setEventLog("Y");
-        event2.setEventLogMsg("Test Event Log Message");
-        event2.setEventSeverity(1);
-        event2.setEventSource("test");
-        event2.setEventTime(new Date(1437061537105L));
-        event2.setEventUei("uei.opennms.org/test");
-        event2.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
-        event2.setNode(m_dbPopulator.getNode1());
-        event2.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
-        event2.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter("componentType", "serviceElement", "string"),
-                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter("user", "rtcbomb", "string"),
-                new OnmsEventParameter("passwd", "rtc", "string"),
-                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
-        m_dbPopulator.getEventDao().saveOrUpdate(event2);
-        m_dbPopulator.getEventDao().flush();
-        
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm.setLastEventTime(event1.getEventTime());
-        alarm.setEventTsid(event1.getId() != null ? (long) event1.getId() : null);
-        alarm.setEventUei(event1.getEventUei());
-        alarm.setSeverityId(3);
-        alarm.setDistPoller(poller);
-        alarm.setCounter(100);
-
-        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
-        alarmDao.save(alarm);
-        alarmDao.flush();
-
-        OnmsAlarm alarm2 = new OnmsAlarm();
-        alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEventTime(event2.getEventTime());
-        alarm2.setEventTsid(event2.getId() != null ? (long) event2.getId() : null);
-        alarm2.setEventUei(event2.getEventUei());
-        alarm2.setSeverityId(3);
-        alarm2.setDistPoller(poller);
-        alarm2.setCounter(100);
-
-        alarmDao.save(alarm2);
-        alarmDao.flush();
-
-        EventParmLikeFilter eventParmFilter = new EventParmLikeFilter("user=rtc");
-        assertEquals("user=\"rtc\"", eventParmFilter.getTextDescription());
-        AlarmCriteria criteria = new AlarmCriteria(eventParmFilter);
-        OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        assertEquals(1, alarms.length);
-    }
-    
-    @Test
-    @Transactional
-    @JUnitTemporaryDatabase
-    public void testParmsNotLikeFilter() {
-        OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
-        assertNotNull(poller);
-
-        final OnmsEvent event1 = new OnmsEvent();
-        event1.setDistPoller(poller);
-        event1.setEventCreateTime(new Date(1436881548292L));
-        event1.setEventTime(new Date(1436881548292L));
-        event1.setEventCreateTime(new Date(1437061537126L));
-        event1.setEventDescr("This is the description of a test event.");
-        event1.setEventDisplay("Y");
-        event1.setEventHost("127.0.0.1");
-        event1.setEventLog("Y");
-        event1.setEventLogMsg("Test Event Log Message");
-        event1.setEventSeverity(1);
-        event1.setEventSource("test");
-        event1.setEventTime(new Date(1437061537105L));
-        event1.setEventUei("uei.opennms.org/test");
-        event1.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
-        event1.setNode(m_dbPopulator.getNode1());
-        event1.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
-        event1.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter("user", "rtc", "string"),
-                new OnmsEventParameter("passwd", "rtc", "string"),
-                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
-        m_dbPopulator.getEventDao().saveOrUpdate(event1);
-        m_dbPopulator.getEventDao().flush();
-
-        final OnmsEvent event2 = new OnmsEvent();
-        event2.setDistPoller(poller);
-        event2.setEventCreateTime(new Date(1436881548292L));
-        event2.setEventTime(new Date(1436881548292L));
-        event2.setEventCreateTime(new Date(1437061537126L));
-        event2.setEventDescr("This is the description of a test event.");
-        event2.setEventDisplay("Y");
-        event2.setEventHost("127.0.0.1");
-        event2.setEventLog("Y");
-        event2.setEventLogMsg("Test Event Log Message");
-        event2.setEventSeverity(1);
-        event2.setEventSource("test");
-        event2.setEventTime(new Date(1437061537105L));
-        event2.setEventUei("uei.opennms.org/test");
-        event2.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
-        event2.setNode(m_dbPopulator.getNode1());
-        event2.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
-        event2.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter("componentType", "serviceElement", "string"),
-                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter("user", "rtcbomb", "string"),
-                new OnmsEventParameter("passwd", "rtc", "string"),
-                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
-        m_dbPopulator.getEventDao().saveOrUpdate(event2);
-        m_dbPopulator.getEventDao().flush();
-        
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm.setLastEventTime(event1.getEventTime());
-        alarm.setEventTsid(event1.getId() != null ? (long) event1.getId() : null);
-        alarm.setEventUei(event1.getEventUei());
-        alarm.setSeverityId(3);
-        alarm.setDistPoller(poller);
-        alarm.setCounter(100);
-
-        AlarmDao alarmDao = m_dbPopulator.getAlarmDao();
-        alarmDao.save(alarm);
-        alarmDao.flush();
-
-        OnmsAlarm alarm2 = new OnmsAlarm();
-        alarm2.setUei("uei.opennms.org/vendor/Juniper/traps/jnxVpnIfUp");
-        alarm2.setLastEventTime(event2.getEventTime());
-        alarm2.setEventTsid(event2.getId() != null ? (long) event2.getId() : null);
-        alarm2.setEventUei(event2.getEventUei());
-        alarm2.setSeverityId(3);
-        alarm2.setDistPoller(poller);
-        alarm2.setCounter(100);
-
-        alarmDao.save(alarm2);
-        alarmDao.flush();
-
-        NegativeEventParmLikeFilter parmFilter = new NegativeEventParmLikeFilter("user=rtc");
-        assertEquals("user is not \"rtc\"", parmFilter.getTextDescription());
-        
-        AlarmCriteria criteria = new AlarmCriteria(parmFilter);
-        OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        
-        // alarm2 and the alarm from DatabasePopulator match this criteria
-        assertEquals(2, alarms.length);
-    }
 
     @Test
     @Transactional
@@ -539,28 +359,20 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
     public void testSituations() {
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventCreateTime(new Date());
-        event.setDistPoller(poller);
-        event.setEventTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        event.setEventSource("test");
-        m_dbPopulator.getEventDao().save(event);
-        m_dbPopulator.getEventDao().flush();
+        final Date eventTime = new Date();
+        final String eventUei = "uei://org/opennms/test/EventDaoTest";
+        final int eventSeverity = OnmsSeverity.CRITICAL.getId();
 
         final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
 
         final OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(node);
-        alarm1.setUei(event.getEventUei());
-        alarm1.setSeverityId(event.getEventSeverity());
-        alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEventTime(event.getEventTime());
-        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm1.setEventUei(event.getEventUei());
+        alarm1.setUei(eventUei);
+        alarm1.setSeverityId(eventSeverity);
+        alarm1.setFirstEventTime(eventTime);
+        alarm1.setLastEventTime(eventTime);
+        alarm1.setEventTsid(1L);
+        alarm1.setEventUei(eventUei);
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -568,12 +380,12 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
 
         final OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setNode(node);
-        alarm2.setUei(event.getEventUei());
-        alarm2.setSeverityId(event.getEventSeverity());
-        alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEventTime(event.getEventTime());
-        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm2.setEventUei(event.getEventUei());
+        alarm2.setUei(eventUei);
+        alarm2.setSeverityId(eventSeverity);
+        alarm2.setFirstEventTime(eventTime);
+        alarm2.setLastEventTime(eventTime);
+        alarm2.setEventTsid(1L);
+        alarm2.setEventUei(eventUei);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -624,28 +436,20 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         final OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
 
         // set up alarms...
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventCreateTime(new Date());
-        event.setDistPoller(poller);
-        event.setEventTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        event.setEventSource("test");
-        m_dbPopulator.getEventDao().save(event);
-        m_dbPopulator.getEventDao().flush();
+        final Date eventTime = new Date();
+        final String eventUei = "uei://org/opennms/test/EventDaoTest";
+        final int eventSeverity = OnmsSeverity.CRITICAL.getId();
 
         final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
 
         final OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(node);
-        alarm1.setUei(event.getEventUei());
-        alarm1.setSeverityId(event.getEventSeverity());
-        alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEventTime(event.getEventTime());
-        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm1.setEventUei(event.getEventUei());
+        alarm1.setUei(eventUei);
+        alarm1.setSeverityId(eventSeverity);
+        alarm1.setFirstEventTime(eventTime);
+        alarm1.setLastEventTime(eventTime);
+        alarm1.setEventTsid(1L);
+        alarm1.setEventUei(eventUei);
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -653,12 +457,12 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
 
         final OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setNode(node);
-        alarm2.setUei(event.getEventUei());
-        alarm2.setSeverityId(event.getEventSeverity());
-        alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEventTime(event.getEventTime());
-        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm2.setEventUei(event.getEventUei());
+        alarm2.setUei(eventUei);
+        alarm2.setSeverityId(eventSeverity);
+        alarm2.setFirstEventTime(eventTime);
+        alarm2.setLastEventTime(eventTime);
+        alarm2.setEventTsid(1L);
+        alarm2.setEventUei(eventUei);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm2);
@@ -667,12 +471,12 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         // ...and one situation
         final OnmsAlarm alarm3 = new OnmsAlarm();
         alarm3.setNode(node);
-        alarm3.setUei(event.getEventUei());
-        alarm3.setSeverityId(event.getEventSeverity());
-        alarm3.setFirstEventTime(event.getEventTime());
-        alarm3.setLastEventTime(event.getEventTime());
-        alarm3.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm3.setEventUei(event.getEventUei());
+        alarm3.setUei(eventUei);
+        alarm3.setSeverityId(eventSeverity);
+        alarm3.setFirstEventTime(eventTime);
+        alarm3.setLastEventTime(eventTime);
+        alarm3.setEventTsid(1L);
+        alarm3.setEventUei(eventUei);
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1, alarm2));
@@ -683,12 +487,12 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         for(int i=0;i<10; i++) {
             final OnmsAlarm alarm = new OnmsAlarm();
             alarm.setNode(node);
-            alarm.setUei(event.getEventUei());
-            alarm.setSeverityId(event.getEventSeverity());
-            alarm.setFirstEventTime(event.getEventTime());
-            alarm.setLastEventTime(event.getEventTime());
-            alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-            alarm.setEventUei(event.getEventUei());
+            alarm.setUei(eventUei);
+            alarm.setSeverityId(eventSeverity);
+            alarm.setFirstEventTime(eventTime);
+            alarm.setLastEventTime(eventTime);
+            alarm.setEventTsid(1L);
+            alarm.setEventUei(eventUei);
             alarm.setCounter(1);
             alarm.setDistPoller(poller);
             m_dbPopulator.getAlarmDao().save(alarm);

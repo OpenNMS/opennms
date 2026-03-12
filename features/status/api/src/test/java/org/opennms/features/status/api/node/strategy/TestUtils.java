@@ -33,7 +33,6 @@ import java.util.Date;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -50,26 +49,12 @@ public class TestUtils {
         return alarm;
     }
 
-    static OnmsOutage createOutage(OnmsMonitoredService service, OnmsEvent svcLostEvent) {
+    static OnmsOutage createOutage(OnmsMonitoredService service, OnmsSeverity severity) {
         OnmsOutage outage = new OnmsOutage();
         outage.setMonitoredService(service);
         outage.setIfLostService(new Date());
-        outage.setServiceLostEvent(svcLostEvent);
+        outage.setSvcLostEventTsid(1L);
+        outage.setSvcLostEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
         return outage;
-    }
-
-    static OnmsEvent createEvent(OnmsNode node, OnmsSeverity severity, OnmsDistPoller distPoller) {
-        OnmsEvent event = new OnmsEvent();
-        event.setEventUei(EventConstants.NODE_DOWN_EVENT_UEI);
-        event.setEventTime(new Date());
-        event.setEventCreateTime(new Date());
-        event.setEventSource(TestUtils.class.getName());
-        event.setDistPoller(distPoller);
-        event.setEventSeverity(severity.getId());
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventLogMsg("Dummy Log Message");
-        event.setNode(node);
-        return event;
     }
 }

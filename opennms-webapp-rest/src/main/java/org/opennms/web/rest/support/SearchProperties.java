@@ -43,7 +43,6 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -212,53 +211,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsDistPoller.class, "location", "Monitoring Location", STRING)
 	));
 
-	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(OnmsEvent.class, "id", "ID", LONG),
-		new SearchProperty(OnmsEvent.class, "eventAckTime", "Acknowledged Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventAckUser", "Acknowledging User", STRING),
-		new SearchProperty(OnmsEvent.class, "eventAutoAction", "Autoaction", STRING),
-		new SearchProperty(OnmsEvent.class, "eventCorrelation", "Correlation", STRING),
-		new SearchProperty(OnmsEvent.class, "eventCreateTime", "Creation Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventDescr", "Description", STRING),
-		new SearchProperty(OnmsEvent.class, "eventDisplay", "Display", STRING, ImmutableMap.<String,String>builder()
-			.put("Y", "Yes")
-			.put("N", "No")
-			.build()
-		),
-		// This field has an unusual format with fields from the eventconf
-		new SearchProperty(OnmsEvent.class, "eventForward", "Forward", STRING),
-		new SearchProperty(OnmsEvent.class, "eventHost", "Host", STRING),
-		new SearchProperty(OnmsEvent.class, "eventLog", "Log", STRING, ImmutableMap.<String,String>builder()
-			.put("Y", "Yes")
-			.put("N", "No")
-			.build()
-		),
-		new SearchProperty(OnmsEvent.class, "eventLogGroup", "Log Group", STRING),
-		new SearchProperty(OnmsEvent.class, "eventLogMsg", "Log Message", STRING),
-		new SearchProperty(OnmsEvent.class, "eventMouseOverText", "Mouseover Text", STRING),
-		new SearchProperty(OnmsEvent.class, "eventNotification", "Notification", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperAction", "Operator Action", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperActionMenuText", "Operator Action Menu Text", STRING),
-		new SearchProperty(OnmsEvent.class, "eventOperInstruct", "Operator Instructions", STRING),
-		new SearchProperty(OnmsEvent.class, "eventPathOutage", "Path Outage", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSeverity", "Severity", INTEGER, ONMS_SEVERITIES),
-		// This field has an unusual format with fields from the eventconf
-		new SearchProperty(OnmsEvent.class, "eventSnmp", "SNMP", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSnmpHost", "SNMP Host", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSource", "Source", STRING),
-		new SearchProperty(OnmsEvent.class, "eventSuppressedCount", "Suppressed Count", INTEGER),
-		new SearchProperty(OnmsEvent.class, "eventTime", "Time", TIMESTAMP),
-		new SearchProperty(OnmsEvent.class, "eventTTicket", "Trouble Ticket ID", STRING),
-		new SearchProperty(OnmsEvent.class, "eventTTicketState", "Trouble Ticket State", INTEGER, ImmutableMap.<String,String>builder()
-			// Can also be null, but that's probably not useful for searching
-			.put("0", "Off")
-			.put("1", "On")
-			.build()
-		),
-		new SearchProperty(OnmsEvent.class, "eventUei", "UEI", STRING),
-		new SearchProperty(OnmsEvent.class, "ifIndex", "ifIndex", INTEGER),
-		new SearchPropertyBuilder().entityClass(OnmsEvent.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build()
-	));
+	// Events are no longer persisted to PostgreSQL — EVENT_PROPERTIES is empty
+	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>();
 
 	static final SortedSet<SearchProperty> EVENT_PARAMETER_PROPERTIES = new TreeSet<>(Arrays.asList(
 		//new SearchProperty(OnmsEventParameter.class, "id", "ID", INTEGER),

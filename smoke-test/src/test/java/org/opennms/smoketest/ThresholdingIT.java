@@ -52,8 +52,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -175,7 +173,7 @@ public class ThresholdingIT {
         assertThat(categoriesOnNode, hasItem(TEST_NODE_CATEGORY));
 
         // Verify that no existing absoluteChangeExceeded event exists for the node
-        assertThat(getEventsUeisForNode(testNode.getId()), not(hasItem(ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI)));
+        assertThat(getAlarmsUeisForNode(testNode.getId()), not(hasItem(ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI)));
 
         // We use a another distinct meta-data attribute since there's a bug with JDBC collector whereby it doesn't
         // build generic type resources if there is only one result in the result-set
@@ -188,7 +186,7 @@ public class ThresholdingIT {
                 .until(() -> {
                     // Keep increasing the value until the threshold is hit
                     setServiceJitter(currentValue.getAndAdd(absoluteChangeThreshold), TimeUnit.SECONDS);
-                    return getEventsUeisForNode(testNode.getId());
+                    return getAlarmsUeisForNode(testNode.getId());
                 }, hasItem(ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI));
     }
 
@@ -197,10 +195,6 @@ public class ThresholdingIT {
         return alarms.getObjects().stream().map(OnmsAlarm::getUei).collect(Collectors.toSet());
     }
 
-    private Set<String> getEventsUeisForNode(int nodeId) {
-        final OnmsEventCollection events = restClient.getEventsForNode(nodeId);
-        return events.getObjects().stream().map(OnmsEvent::getEventUei).collect(Collectors.toSet());
-    }
 
     private void setServiceDelay(long duration, TimeUnit unit) {
         LOG.info("Updating service delay to {} {}.", duration, unit);

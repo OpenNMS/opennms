@@ -47,7 +47,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.integration.api.v1.model.Alarm;
-import org.opennms.integration.api.v1.model.DatabaseEvent;
 import org.opennms.integration.api.v1.model.Geolocation;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
 import org.opennms.integration.api.v1.model.IpInterface;
@@ -63,7 +62,6 @@ import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -241,23 +239,6 @@ public class ModelMappersTest {
         assertThat(inMemoryEvent.getParameterValue(parmName).get(), equalTo(parmValue));
         assertThat(inMemoryEvent.getParametersByName(parmName), hasItems(ImmutableEventParameter.newInstance(parmName,
                 parmValue)));
-    }
-
-    @Test
-    public void canMapDatabaseEvent() {
-        OnmsEvent event = new OnmsEvent();
-        event.setEventUei("test.uei");
-        event.setId(1L);
-        String eventName = "test.name";
-        String eventValue = "test.value";
-        event.setEventParameters(Collections.singletonList(new OnmsEventParameter(eventName, eventValue, null)));
-
-        DatabaseEvent databaseEvent = ModelMappers.toEvent(event);
-        assertThat(databaseEvent.getUei(), equalTo(event.getEventUei()));
-        assertThat(Long.valueOf(databaseEvent.getId()), equalTo(Long.valueOf(event.getId())));
-        assertThat(databaseEvent.getParameters(), hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));
-        assertThat(databaseEvent.getParametersByName(eventName),
-                hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));
     }
 
     @Test

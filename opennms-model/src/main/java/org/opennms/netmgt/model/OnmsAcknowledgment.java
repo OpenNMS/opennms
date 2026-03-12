@@ -124,10 +124,10 @@ public class OnmsAcknowledgment {
             
             if ("ackType".equals(parm.getParmName())) {
 
-                if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
-                    m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
+                if ("ALARM".equalsIgnoreCase(parmValue)) {
+                    m_ackType = AckType.ALARM;
                 } else {
-                    throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
+                    throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\"." );
                 }
                 
             } else if ("refId".equals(parm.getParmName())){

@@ -44,7 +44,6 @@ import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -299,28 +298,20 @@ public class AlarmRepositoryIT implements InitializingBean {
     public void testSortBySituation() {
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventCreateTime(new Date());
-        event.setDistPoller(poller);
-        event.setEventTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        event.setEventSource("test");
-        m_dbPopulator.getEventDao().save(event);
-        m_dbPopulator.getEventDao().flush();
+        final Date eventTime = new Date();
+        final String eventUei = "uei://org/opennms/test/EventDaoTest";
+        final int eventSeverity = OnmsSeverity.CRITICAL.getId();
 
         final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
 
         final OnmsAlarm alarm1 = new OnmsAlarm();
         alarm1.setNode(node);
-        alarm1.setUei(event.getEventUei());
-        alarm1.setSeverityId(event.getEventSeverity());
-        alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEventTime(event.getEventTime());
-        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm1.setEventUei(event.getEventUei());
+        alarm1.setUei(eventUei);
+        alarm1.setSeverityId(eventSeverity);
+        alarm1.setFirstEventTime(eventTime);
+        alarm1.setLastEventTime(eventTime);
+        alarm1.setEventTsid(1L);
+        alarm1.setEventUei(eventUei);
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -328,12 +319,12 @@ public class AlarmRepositoryIT implements InitializingBean {
 
         final OnmsAlarm alarm2 = new OnmsAlarm();
         alarm2.setNode(node);
-        alarm2.setUei(event.getEventUei());
-        alarm2.setSeverityId(event.getEventSeverity());
-        alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEventTime(event.getEventTime());
-        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm2.setEventUei(event.getEventUei());
+        alarm2.setUei(eventUei);
+        alarm2.setSeverityId(eventSeverity);
+        alarm2.setFirstEventTime(eventTime);
+        alarm2.setLastEventTime(eventTime);
+        alarm2.setEventTsid(1L);
+        alarm2.setEventUei(eventUei);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -364,28 +355,20 @@ public class AlarmRepositoryIT implements InitializingBean {
     public void testAckSituation() {
         OnmsDistPoller poller = m_dbPopulator.getDistPollerDao().whoami();
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventCreateTime(new Date());
-        event.setDistPoller(poller);
-        event.setEventTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        event.setEventSource("test");
-        m_dbPopulator.getEventDao().save(event);
-        m_dbPopulator.getEventDao().flush();
+        final Date eventTime = new Date();
+        final String eventUei = "uei://org/opennms/test/EventDaoTest";
+        final int eventSeverity = OnmsSeverity.CRITICAL.getId();
 
         final OnmsNode node = m_dbPopulator.getNodeDao().findAll().iterator().next();
 
         final OnmsAlarm alarm1 = new OnmsAlarm(); // Simple Alarm #1
         alarm1.setNode(node);
-        alarm1.setUei(event.getEventUei());
-        alarm1.setSeverityId(event.getEventSeverity());
-        alarm1.setFirstEventTime(event.getEventTime());
-        alarm1.setLastEventTime(event.getEventTime());
-        alarm1.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm1.setEventUei(event.getEventUei());
+        alarm1.setUei(eventUei);
+        alarm1.setSeverityId(eventSeverity);
+        alarm1.setFirstEventTime(eventTime);
+        alarm1.setLastEventTime(eventTime);
+        alarm1.setEventTsid(1L);
+        alarm1.setEventUei(eventUei);
         alarm1.setCounter(1);
         alarm1.setDistPoller(poller);
         m_dbPopulator.getAlarmDao().save(alarm1);
@@ -393,12 +376,12 @@ public class AlarmRepositoryIT implements InitializingBean {
 
         final OnmsAlarm alarm2 = new OnmsAlarm(); // Situation #2 with Alarm #1 associated
         alarm2.setNode(node);
-        alarm2.setUei(event.getEventUei());
-        alarm2.setSeverityId(event.getEventSeverity());
-        alarm2.setFirstEventTime(event.getEventTime());
-        alarm2.setLastEventTime(event.getEventTime());
-        alarm2.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm2.setEventUei(event.getEventUei());
+        alarm2.setUei(eventUei);
+        alarm2.setSeverityId(eventSeverity);
+        alarm2.setFirstEventTime(eventTime);
+        alarm2.setLastEventTime(eventTime);
+        alarm2.setEventTsid(1L);
+        alarm2.setEventUei(eventUei);
         alarm2.setCounter(1);
         alarm2.setDistPoller(poller);
         alarm2.setRelatedAlarms(Sets.newHashSet(alarm1));
@@ -407,12 +390,12 @@ public class AlarmRepositoryIT implements InitializingBean {
 
         final OnmsAlarm alarm3 = new OnmsAlarm(); // Situation #3 with Situation #2 associated
         alarm3.setNode(node);
-        alarm3.setUei(event.getEventUei());
-        alarm3.setSeverityId(event.getEventSeverity());
-        alarm3.setFirstEventTime(event.getEventTime());
-        alarm3.setLastEventTime(event.getEventTime());
-        alarm3.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm3.setEventUei(event.getEventUei());
+        alarm3.setUei(eventUei);
+        alarm3.setSeverityId(eventSeverity);
+        alarm3.setFirstEventTime(eventTime);
+        alarm3.setLastEventTime(eventTime);
+        alarm3.setEventTsid(1L);
+        alarm3.setEventUei(eventUei);
         alarm3.setCounter(1);
         alarm3.setDistPoller(poller);
         alarm3.setRelatedAlarms(Sets.newHashSet(alarm2));

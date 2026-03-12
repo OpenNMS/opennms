@@ -45,7 +45,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -139,14 +138,14 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
     }
 
     @Override
-    public void afterAlarmCreated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent) {
+    public void afterAlarmCreated(OnmsAlarm alarm, Event event) {
         // Update *some* alarm property to help validate that the resulting object gets saved
         alarm.setManagedObjectInstance(alarm.getNodeLabel());
         alarm.setManagedObjectType("create");
     }
 
     @Override
-    public void afterAlarmUpdated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent) {
+    public void afterAlarmUpdated(OnmsAlarm alarm, Event event) {
         // Update *some* alarm property to help validate that the resulting object gets saved
         alarm.setManagedObjectType("update");
     }

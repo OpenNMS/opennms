@@ -32,11 +32,9 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MemoDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -63,9 +61,6 @@ public class MemoDaoIT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;
-
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -98,28 +93,17 @@ public class MemoDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testAddStickyMemoToExistingAlarm() {
-        OnmsEvent event = new OnmsEvent();
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        event.setEventCreateTime(new Date());
-        event.setDistPoller(m_distPollerDao.whoami());
-        event.setEventTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        event.setEventUei("uei://org/opennms/test/EventDaoTest");
-        event.setEventSource("test");
-        m_eventDao.save(event);
-
         OnmsNode node = m_nodeDao.findAll().iterator().next();
 
         OnmsAlarm alarm = new OnmsAlarm();
 
         alarm.setNode(node);
-        alarm.setUei(event.getEventUei());
-        alarm.setSeverityId(event.getEventSeverity());
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm.setEventUei(event.getEventUei());
+        alarm.setUei("uei://org/opennms/test/EventDaoTest");
+        alarm.setSeverityId(OnmsSeverity.CRITICAL.getId());
+        alarm.setFirstEventTime(new Date());
+        alarm.setLastEventTime(new Date());
+        alarm.setEventTsid(1L);
+        alarm.setEventUei("uei://org/opennms/test/EventDaoTest");
         alarm.setCounter(1);
         alarm.setDistPoller(m_distPollerDao.whoami());
         alarm.setReductionKey("fristReductionKey");

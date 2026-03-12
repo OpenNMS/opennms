@@ -41,7 +41,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -140,22 +139,9 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
             m_dbPopulator.getMonitoredServiceDao().save(monitoredService);
         }
 
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
-        event.setEventUei("uei.opennms.org/" + location + "/" + label);
-        event.setEventTime(new Date());
-        event.setEventSource(location + "/" + label);
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(OnmsSeverity.CLEARED.getId());
-        event.setEventLog("Y");
-        event.setEventDisplay("N");
-
-        m_dbPopulator.getEventDao().save(event);
-        m_dbPopulator.getEventDao().flush();
-
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
-        outage.setSvcLostEventTsid(event.getId());
-        outage.setSvcLostEventUei(event.getEventUei());
+        outage.setSvcLostEventTsid(1L);
+        outage.setSvcLostEventUei("uei.opennms.org/" + location + "/" + label);
 
         m_dbPopulator.getOutageDao().save(outage);
     }
@@ -165,11 +151,10 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         m_dbPopulator.populateDatabase();
         
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.2.1"), "ICMP");
-        OnmsEvent event = m_dbPopulator.getEventDao().get(1L);
-        
+
         OnmsOutage unresolved2 = new OnmsOutage(new Date(), svc2);
-        unresolved2.setSvcLostEventTsid(event.getId());
-        unresolved2.setSvcLostEventUei(event.getEventUei());
+        unresolved2.setSvcLostEventTsid(1L);
+        unresolved2.setSvcLostEventUei("uei.opennms.org/test/outage");
         m_dbPopulator.getOutageDao().save(unresolved2);
         m_dbPopulator.getOutageDao().flush();
     }

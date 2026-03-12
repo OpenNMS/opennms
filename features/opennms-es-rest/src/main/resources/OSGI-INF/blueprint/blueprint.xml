@@ -176,8 +176,5 @@
     <argument ref="indexSettings" />
   </bean>
 
-  <bean id="onmsHistoryEventstoEs" class="org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs">
-    <property name="eventForwarder" ref="eventForwarder" />
-  </bean>
 
 </blueprint>

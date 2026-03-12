@@ -177,7 +177,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, null));
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);
@@ -194,7 +194,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmUpdated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, null));
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks, instanceId={}, alarmId={}",
                     SystemInfoUtils.getInstanceId(), alarm.getId(), ex);

@@ -46,7 +46,6 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -102,8 +101,6 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
             private OnmsOutage unresolvedOutage;
 
-            private OnmsEvent outageEvent;
-
             private OnmsApplication application;
 
             @Override
@@ -113,14 +110,6 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
             @Override
             public void onPopulate(DatabasePopulator populator, ApplicationDao dao) {
-                OnmsDistPoller distPoller = populator.getDistPollerDao().whoami();
-                outageEvent = populator.buildEvent(distPoller);
-                outageEvent.setEventSeverity(OnmsSeverity.MINOR.getId());
-                outageEvent.setEventCreateTime(new Date(1436881548292L));
-                outageEvent.setEventTime(new Date(1436881548292L));
-                populator.getEventDao().save(outageEvent);
-                populator.getEventDao().flush();
-
                 // create the application
                 application = new OnmsApplication();
                 application.setName("Awesome Application");
@@ -135,8 +124,8 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
                 // create a unresolved outage
                 unresolvedOutage = new OnmsOutage(new Date(1436881548292L), svc);
-                unresolvedOutage.setSvcLostEventTsid(outageEvent.getId());
-                unresolvedOutage.setSvcLostEventUei(outageEvent.getEventUei());
+                unresolvedOutage.setSvcLostEventTsid(1L);
+                unresolvedOutage.setSvcLostEventUei("uei.opennms.org/nodes/nodeDown");
                 populator.getOutageDao().save(unresolvedOutage);
                 populator.getOutageDao().flush();
             }

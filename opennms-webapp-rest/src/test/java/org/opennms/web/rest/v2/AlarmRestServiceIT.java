@@ -58,7 +58,6 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -742,33 +741,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private OnmsAlarm createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
         final OnmsIpInterface alarmNode = node.getIpInterfaces().iterator().next();
 
-        final OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
-        event.setEventCreateTime(new Date(epoch));
-        event.setEventDisplay("Y");
-        event.setEventHost("127.0.0.1");
-        event.setEventLog("Y");
-        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
-        event.setEventSource("JUnit");
-        event.setEventTime(new Date(epoch));
-        event.setEventUei(eventUei);
-        if (ALARM_COUNTER.getAndIncrement() % 2 == 0) {
-            event.addEventParameter(new OnmsEventParameter("testParm1", "This is an awesome parm!", "string"));
-        } else {
-            event.addEventParameter(new OnmsEventParameter("testParm2", "This is a weird parm", "string"));
-        }
-        event.addEventParameter(new OnmsEventParameter("testParm3", "Here's another parm", "string"));
-        event.setIpAddr(alarmNode.getIpAddress());
-        event.setNode(node);
-        event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName(ICMP_SERVICE));
-        event.setEventSeverity(severity.getId());
-        event.setIfIndex(alarmNode.getIfIndex());
-        m_databasePopulator.getEventDao().save(event);
-        m_databasePopulator.getEventDao().flush();
+        ALARM_COUNTER.getAndIncrement();
 
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
-        alarm.setUei(event.getEventUei());
+        alarm.setUei(eventUei);
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(node);
         alarm.setDescription("This is a test alarm");
@@ -776,10 +753,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setCounter(1);
         alarm.setIpAddr(alarmNode.getIpAddress());
         alarm.setSeverity(severity);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm.setEventUei(event.getEventUei());
+        alarm.setFirstEventTime(new Date(epoch));
+        alarm.setLastEventTime(new Date(epoch));
+        alarm.setEventTsid((long) ALARM_COUNTER.get());
+        alarm.setEventUei(eventUei);
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName(ICMP_SERVICE));
         alarm.setReductionKey(getReductionKey(eventUei, node, alarmNode.getIpAddressAsString(), ICMP_SERVICE));
         alarm.setIfIndex(alarmNode.getIfIndex());

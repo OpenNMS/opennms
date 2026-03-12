@@ -42,7 +42,6 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -51,7 +50,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -96,8 +94,6 @@ public class PathOutageStatusProviderIT {
 
 	@Autowired
 	private NodeDao nodeDao;
-	@Autowired
-	private EventDao eventDao;
 	@Autowired
 	private OutageDao outageDao;
 	@Autowired
@@ -280,46 +276,19 @@ public class PathOutageStatusProviderIT {
 	 * @return Resulting event
 	 * @throws UnknownHostException
 	 */
-	private OnmsEvent createEvent(String eventUei, String address, OnmsNode node, OnmsSeverity severity)
-			throws UnknownHostException {
-		OnmsEvent event = new OnmsEvent();
-		event.setEventUei(eventUei);
-		event.setEventTime(new Date());
-		event.setEventHost("eventhost");
-		event.setEventSource("eventsource");
-		event.setIpAddr(InetAddress.getByName(address));
-		event.setDistPoller(distPollerDao.whoami());
-		event.setEventSnmpHost("eventssnmphost");
-		event.setEventSnmp("eventsnmp");
-		event.setEventCreateTime(new Date());
-		event.setEventDescr("eventdescr");
-		event.setEventLogGroup("eventloggroup");
-		event.setEventLogMsg("eventlogmsg");
-		event.setEventSeverity(severity.getId());
-		event.setEventSuppressedCount(0);
-		event.setEventOperInstruct("operinstruct");
-		event.setEventTTicket("tticketid");
-		event.setEventTTicketState(1);
-		event.setEventLog("Y");
-		event.setEventDisplay("Y");
-		event.setNode(node);
-		return event;
-	}
-
 	/**
 	 * This method creates an outage with a given parameters for the specified node
-	 * @param uie Event UIE
+	 * @param uie Event UEI
 	 * @param ipaddress IP-address (in dot-format)
 	 * @param node Node
 	 * @param severity Severity
+	 * @param service Monitored service
 	 * @return Resulting outage
-	 * @throws UnknownHostException
 	 */
-	private OnmsOutage createOutage(String uie, String ipaddress, OnmsNode node, OnmsSeverity severity, OnmsMonitoredService service)
-			throws UnknownHostException {
-		OnmsEvent event = createEvent(uie, ipaddress, node, severity);
-		eventDao.save(event);
-		OnmsOutage outage = new OnmsOutage(new Date(), event, service);
+	private OnmsOutage createOutage(String uie, String ipaddress, OnmsNode node, OnmsSeverity severity, OnmsMonitoredService service) {
+		OnmsOutage outage = new OnmsOutage(new Date(), service);
+		outage.setSvcLostEventTsid(1L);
+		outage.setSvcLostEventUei(uie);
 		return outage;
 	}
 

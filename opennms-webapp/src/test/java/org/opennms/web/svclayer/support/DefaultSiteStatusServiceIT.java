@@ -40,14 +40,12 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -80,8 +78,6 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
 
     @Autowired
     private OutageDao m_outageDao;
-    @Autowired
-    private EventDao m_eventDao;
     @Autowired
     private NodeDao m_nodeDao;
     @Autowired
@@ -145,21 +141,9 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
     }
 
     protected void createOutageForService(OnmsMonitoredService monSvc) {
-        OnmsEvent outageEvent = new OnmsEvent();
-        outageEvent.setEventUei("TEST_UEI");
-        outageEvent.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
-        outageEvent.setEventTime(new Date());
-        outageEvent.setEventSource("Me");
-        outageEvent.setEventCreateTime(new Date());
-        outageEvent.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
-        outageEvent.setEventLog("L");
-        outageEvent.setEventDisplay("D");
-        m_eventDao.save(outageEvent);
-        m_eventDao.flush();
-
         OnmsOutage outage = new OnmsOutage(new Date(), monSvc);
-        outage.setSvcLostEventTsid(outageEvent.getId());
-        outage.setSvcLostEventUei(outageEvent.getEventUei());
+        outage.setSvcLostEventTsid(1L);
+        outage.setSvcLostEventUei("TEST_UEI");
         m_outageDao.save(outage);
         m_outageDao.flush();
     }

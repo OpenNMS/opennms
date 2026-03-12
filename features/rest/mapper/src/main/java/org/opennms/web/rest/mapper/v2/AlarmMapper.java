@@ -43,7 +43,7 @@ import org.opennms.web.rest.model.v2.AlarmSummaryDTO;
 import org.opennms.web.rest.model.v2.EventParameterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring", uses = {EventMapper.class})
+@Mapper(componentModel = "spring")
 public abstract class AlarmMapper {
 
     private String ticketUrlTemplate = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");

@@ -37,7 +37,6 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,6 +74,7 @@ public class NMS15448_IT implements InitializingBean {
     }
 
     private static final Date EVENT_DATE = new Date();
+    private int alarmCounter = 0;
 
     @Before
     public void setUp() {
@@ -82,10 +82,11 @@ public class NMS15448_IT implements InitializingBean {
         distPoller = databasePopulator.getDistPollerDao().whoami();
     }
 
-    private OnmsAlarm buildAlarm(final OnmsEvent event, boolean acknowledged) {
+    private OnmsAlarm buildAlarm(boolean acknowledged) {
+        alarmCounter++;
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(distPoller);
-        alarm.setUei(event.getEventUei());
+        alarm.setUei("uei.opennms.org/test/NMS15448");
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
@@ -93,10 +94,11 @@ public class NMS15448_IT implements InitializingBean {
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(OnmsSeverity.NORMAL);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm.setEventUei(event.getEventUei());
+        alarm.setFirstEventTime(EVENT_DATE);
+        alarm.setLastEventTime(EVENT_DATE);
+        alarm.setReductionKey("uei.opennms.org/test/NMS15448:" + alarmCounter);
+        alarm.setEventTsid((long) alarmCounter);
+        alarm.setEventUei("uei.opennms.org/test/NMS15448");
         alarm.setServiceType(databasePopulator.getServiceTypeDao().findByName("ICMP"));
         if (acknowledged) {
             alarm.setAlarmAckUser("foobar");
@@ -121,33 +123,15 @@ public class NMS15448_IT implements InitializingBean {
         Assert.assertEquals(1, alarmsBefore.size());
 
         // we add two unacknowledged and one acknowledged alarms, so we have three unacknowledged alarms in total
-        final OnmsEvent event1 = databasePopulator.buildEvent(distPoller);
-        event1.setEventCreateTime(EVENT_DATE);
-        event1.setEventTime(EVENT_DATE);
-        databasePopulator.getEventDao().save(event1);
-        databasePopulator.getEventDao().flush();
-
-        final OnmsAlarm alarm1 = buildAlarm(event1, false);
+        final OnmsAlarm alarm1 = buildAlarm(false);
         databasePopulator.getAlarmDao().save(alarm1);
         databasePopulator.getAlarmDao().flush();
 
-        final OnmsEvent event2 = databasePopulator.buildEvent(distPoller);
-        event2.setEventCreateTime(EVENT_DATE);
-        event2.setEventTime(EVENT_DATE);
-        databasePopulator.getEventDao().save(event2);
-        databasePopulator.getEventDao().flush();
-
-        final OnmsAlarm alarm2 = buildAlarm(event2, true);
+        final OnmsAlarm alarm2 = buildAlarm(true);
         databasePopulator.getAlarmDao().save(alarm2);
         databasePopulator.getAlarmDao().flush();
 
-        final OnmsEvent event3 = databasePopulator.buildEvent(distPoller);
-        event3.setEventCreateTime(EVENT_DATE);
-        event3.setEventTime(EVENT_DATE);
-        databasePopulator.getEventDao().save(event3);
-        databasePopulator.getEventDao().flush();
-
-        final OnmsAlarm alarm3 = buildAlarm(event3, false);
+        final OnmsAlarm alarm3 = buildAlarm(false);
         databasePopulator.getAlarmDao().save(alarm3);
         databasePopulator.getAlarmDao().flush();
 

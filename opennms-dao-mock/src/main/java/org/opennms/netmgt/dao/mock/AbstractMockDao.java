@@ -36,7 +36,6 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LegacyOnmsDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -70,7 +69,6 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
     private ServiceTypeDao m_serviceTypeDao;
     private AlarmDao m_alarmDao;
     private AlarmAssociationDao m_alarmAssociationDao;
-    private EventDao m_eventDao;
     private NodeDao m_nodeDao;
 
     protected abstract K getId(final T entity);
@@ -275,14 +273,6 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Lega
             Assert.notNull(m_serviceTypeDao);
         }
         return m_serviceTypeDao;
-    }
-
-    protected EventDao getEventDao() {
-        if (m_eventDao == null) {
-            m_eventDao = getServiceRegistry().findProvider(EventDao.class);
-            Assert.notNull(m_eventDao);
-        }
-        return m_eventDao;
     }
 
     protected AlarmDao getAlarmDao() {

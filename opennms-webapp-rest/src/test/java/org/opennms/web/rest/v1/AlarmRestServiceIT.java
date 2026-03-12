@@ -48,9 +48,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.api.Authentication;
@@ -252,11 +250,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     private OnmsAlarm createAlarm(final OnmsSeverity severity) {
-        final OnmsEvent event = getEventDao().findAll().get(0);
-
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().whoami());
-        alarm.setUei(event.getEventUei());
+        alarm.setUei("uei.opennms.org/test/alarm");
         alarm.setAlarmType(OnmsAlarm.PROBLEM_TYPE);
         alarm.setNode(m_databasePopulator.getNode1());
         alarm.setDescription("This is a test alarm");
@@ -264,10 +260,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setCounter(1);
         alarm.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
         alarm.setSeverity(severity);
-        alarm.setFirstEventTime(event.getEventTime());
-        alarm.setLastEventTime(event.getEventTime());
-        alarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
-        alarm.setEventUei(event.getEventUei());
+        alarm.setFirstEventTime(new Date());
+        alarm.setLastEventTime(new Date());
+        alarm.setEventTsid(1L);
+        alarm.setEventUei("uei.opennms.org/test/alarm");
         alarm.setAlarmAckTime(new Date());
         alarm.setAlarmAckUser("admin");
 
@@ -323,10 +319,6 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         setUser("ranger", new String[]{ "ROLE_MOBILE", "ROLE_READONLY" });
         final OnmsAlarm alarm = createAlarm(OnmsSeverity.MAJOR);
         sendRequest(PUT, "/alarms/" + alarm.getId(), parseParamData("clear=true"), 403);
-    }
-
-    private EventDao getEventDao() {
-        return m_databasePopulator.getEventDao();
     }
 
     private AlarmDao getAlarmDao() {

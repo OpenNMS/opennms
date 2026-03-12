@@ -48,7 +48,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -58,7 +57,6 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -125,8 +123,6 @@ public class OutageDaoIT implements InitializingBean {
     @Autowired
     private ServiceTypeDao m_serviceTypeDao;
 
-    @Autowired
-    private EventDao m_eventDao;
 
     @Autowired
     TransactionTemplate m_transTemplate;
@@ -163,11 +159,9 @@ public class OutageDaoIT implements InitializingBean {
 
         OnmsMonitoredService monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
 
-        OnmsEvent event = new OnmsEvent();
-
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
-        outage.setSvcLostEventTsid(event.getId() != null ? event.getId().longValue() : 0L);
-        outage.setSvcLostEventUei(event.getEventUei());
+        outage.setSvcLostEventTsid(1L);
+        outage.setSvcLostEventUei("uei.opennms.org/test/outage");
         m_outageDao.save(outage);
 
         //it works we're so smart! hehe
@@ -534,36 +528,19 @@ public class OutageDaoIT implements InitializingBean {
         OnmsIpInterface ipInterface = getIpInterface(ipAddr, node);
         OnmsServiceType serviceType = getServiceType(serviceName);
         OnmsMonitoredService monitoredService = getMonitoredService(ipInterface, serviceType);
-        
-        OnmsEvent event = getEvent();
 
-        OnmsOutage outage = getOutage(monitoredService, event);
-        
+        OnmsOutage outage = getOutage(monitoredService);
+
         return outage;
     }
 
-    private OnmsOutage getOutage(OnmsMonitoredService monitoredService, OnmsEvent event) {
+    private OnmsOutage getOutage(OnmsMonitoredService monitoredService) {
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
-        outage.setSvcLostEventTsid(event.getId() != null ? event.getId().longValue() : 0L);
-        outage.setSvcLostEventUei(event.getEventUei());
+        outage.setSvcLostEventTsid(1L);
+        outage.setSvcLostEventUei("foo!");
         m_outageDao.save(outage);
         m_outageDao.flush();
         return outage;
-    }
-
-    private OnmsEvent getEvent() {
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(getLocalHostDistPoller());
-        event.setEventUei("foo!");
-        event.setEventTime(new Date());
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
-        event.setEventSource("your mom");
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        m_eventDao.save(event);
-        m_eventDao.flush();
-        return event;
     }
 
     private OnmsMonitoredService getMonitoredService(OnmsIpInterface ipInterface, OnmsServiceType serviceType) {

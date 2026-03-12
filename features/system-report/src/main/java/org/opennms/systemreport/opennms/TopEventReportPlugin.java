@@ -22,26 +22,13 @@
 package org.opennms.systemreport.opennms;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.CountedObject;
-import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-public class TopEventReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
-    @Autowired
-    public EventCountDao m_eventCountDao;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+public class TopEventReportPlugin extends AbstractSystemReportPlugin {
 
     @Override
     public String getName() {
@@ -50,7 +37,7 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
 
     @Override
     public String getDescription() {
-        return "Top 20 most reported events";
+        return "Top 20 most reported events (N/A - events in Kafka)";
     }
 
     @Override
@@ -63,14 +50,8 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
 
     @Override
     public Map<String, Resource> getEntries() {
-        final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-
-        if (m_eventCountDao != null) {
-            final Set<CountedObject<String>> objs = m_eventCountDao.getUeiCounts(20);
-            for (final CountedObject<String> obj : objs) {
-                map.put(obj.getObject(), new ByteArrayResource(obj.getCount().toString().getBytes()));
-            }
-        }
+        final TreeMap<String,Resource> map = new TreeMap<>();
+        map.put("N/A", new ByteArrayResource("Events are no longer stored in PostgreSQL".getBytes()));
         return map;
     }
 
