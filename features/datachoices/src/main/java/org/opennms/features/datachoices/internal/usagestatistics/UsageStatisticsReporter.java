@@ -73,7 +73,6 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -136,8 +135,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private SnmpInterfaceDao m_snmpInterfaceDao;
 
     private MonitoredServiceDao m_monitoredServiceDao;
-
-    private EventDao m_eventDao;
 
     private AlarmDao m_alarmDao;
 
@@ -270,8 +267,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
-        usageStatisticsReport.setEvents(m_eventDao.countAll());
-        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(DEFAULT_EVENTS_LAST_HOURS));
+        usageStatisticsReport.setEvents(0L);
+        usageStatisticsReport.setEventsLastHours(0L);
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
         usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(DEFAULT_ALERTS_LAST_HOURS));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
@@ -581,10 +578,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         m_monitoredServiceDao = monitoredServiceDao;
-    }
-
-    public void setEventDao(EventDao eventDao) {
-        m_eventDao = eventDao;
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {

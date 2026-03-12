@@ -21,7 +21,6 @@
     </cm:property-placeholder>
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
-    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" availability="mandatory"/>
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
     <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
@@ -63,7 +62,6 @@
         <property name="interval" value="${interval}"/>
         <property name="stateManager" ref="stateManager"/>
         <property name="alarmDao" ref="alarmDao"/>
-        <property name="eventDao" ref="eventDao"/>
         <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
         <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
         <property name="nodeDao" ref="nodeDao"/>

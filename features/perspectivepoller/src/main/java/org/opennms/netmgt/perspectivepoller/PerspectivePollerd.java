@@ -50,7 +50,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -61,7 +60,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -115,7 +113,6 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
     private final ThresholdingService thresholdingService;
-    private final EventDao eventDao;
     private final OutageDao outageDao;
     private final TracerRegistry tracerRegistry;
 
@@ -137,7 +134,6 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
                               final PersisterFactory persisterFactory,
                               final EventForwarder eventForwarder,
                               final ThresholdingService thresholdingService,
-                              final EventDao eventDao,
                               final OutageDao outageDao,
                               final TracerRegistry tracerRegistry,
                               final PerspectiveServiceTracker tracker) {
@@ -151,7 +147,6 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
-        this.eventDao = Objects.requireNonNull(eventDao);
         this.outageDao = Objects.requireNonNull(outageDao);
 
         this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
@@ -447,18 +442,22 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
     @EventHandler(uei = EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI)
     public void handlePerspectiveNodeLostService(final IEvent e) {
         if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
-            final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
-            final OnmsMonitoredService service = this.monitoredServiceDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final int nodeId = e.getNodeid().intValue();
+            final InetAddress ipAddr = e.getInterfaceAddress();
+            final Date eventTime = e.getTime() != null ? e.getTime() : new Date();
+            final OnmsMonitoredService service = this.monitoredServiceDao.get(nodeId, ipAddr, e.getService());
             final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
-            final OnmsOutage onmsOutage = new OnmsOutage(onmsEvent.getEventCreateTime(), onmsEvent, service);
+            final OnmsOutage onmsOutage = new OnmsOutage(eventTime, service);
+            onmsOutage.setSvcLostEventTsid(e.getDbid());
+            onmsOutage.setSvcLostEventUei(e.getUei());
             onmsOutage.setPerspective(perspective);
             outageDao.save(onmsOutage);
 
             final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, NAME)
-                    .setNodeid(onmsEvent.getNodeId())
-                    .setInterface(onmsEvent.getIpAddr())
+                    .setNodeid(nodeId)
+                    .setInterface(ipAddr)
                     .setService(service.getServiceName())
-                    .setTime(onmsEvent.getEventCreateTime())
+                    .setTime(eventTime)
                     .setParam("perspective", perspective.getLocationName())
                     .getEvent();
             eventForwarder.sendNow(outageEvent);
@@ -470,13 +469,14 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
     @EventHandler(uei = EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI)
     public void handlePerspectiveNodeGainedService(final IEvent e) {
         if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
-            final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
-            final OnmsMonitoredService service = this.monitoredServiceDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final int nodeId = e.getNodeid().intValue();
+            final InetAddress ipAddr = e.getInterfaceAddress();
+            final Date eventTime = e.getTime() != null ? e.getTime() : new Date();
+            final OnmsMonitoredService service = this.monitoredServiceDao.get(nodeId, ipAddr, e.getService());
             final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
 
             final Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
                     .eq("perspective", perspective)
-                    .isNull("serviceRegainedEvent")
                     .isNull("ifRegainedService")
                     .eq("monitoredService", service).toCriteria();
 
@@ -484,15 +484,16 @@ public class PerspectivePollerd implements SpringServiceDaemon, PerspectiveServi
 
             if (onmsOutages.size() == 1) {
                 final OnmsOutage onmsOutage = onmsOutages.get(0);
-                onmsOutage.setIfRegainedService(onmsEvent.getEventCreateTime());
-                onmsOutage.setServiceRegainedEvent(onmsEvent);
+                onmsOutage.setIfRegainedService(eventTime);
+                onmsOutage.setSvcRegainedEventTsid(e.getDbid());
+                onmsOutage.setSvcRegainedEventUei(e.getUei());
                 outageDao.update(onmsOutage);
 
                 final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, NAME)
-                        .setNodeid(onmsEvent.getNodeId())
-                        .setInterface(onmsEvent.getIpAddr())
+                        .setNodeid(nodeId)
+                        .setInterface(ipAddr)
                         .setService(service.getServiceName())
-                        .setTime(onmsEvent.getEventCreateTime())
+                        .setTime(eventTime)
                         .setParam("perspective", perspective.getLocationName())
                         .getEvent();
                 eventForwarder.sendNow(outageEvent);

@@ -26,7 +26,6 @@
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
   <onmsgi:reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
-  <onmsgi:reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao"/>
   <onmsgi:reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao"/>
   <bean id="tracker" class="org.opennms.netmgt.perspectivepoller.PerspectiveServiceTracker">
   </bean>
