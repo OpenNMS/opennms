@@ -159,6 +159,7 @@ services:
       - ./webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/default/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
     ports:
       - "8301:8201"
+      - "11162:1162/udp"
     healthcheck:
       test: ["CMD", "/health.sh"]
       interval: 30s
