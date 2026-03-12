@@ -67,9 +67,12 @@
     <onmsgi:reference id="monitoringSystemDao"
                       interface="org.opennms.netmgt.dao.api.MonitoringSystemDao"/>
 
-    <!-- Transaction management -->
-    <onmsgi:reference id="transactionManager"
-                      interface="org.springframework.transaction.PlatformTransactionManager"/>
+    <!-- Transaction management — use osgi:reference (not onmsgi:reference) to BLOCK
+         context startup until PlatformTransactionManager is registered by dao-impl.
+         Without this, Provisioner.start() → @Transactional fails because the onmsgi
+         proxy resolves to nothing (dao-impl hasn't finished creating HibernateTransactionManager). -->
+    <osgi:reference id="transactionManager"
+                    interface="org.springframework.transaction.PlatformTransactionManager"/>
 
     <!-- Entity scope provider (MATE engine) -->
     <onmsgi:reference id="entityScopeProvider"

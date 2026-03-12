@@ -22,6 +22,7 @@
 package org.opennms.core.daemon.loader;
 
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,20 +30,34 @@ import org.slf4j.LoggerFactory;
 /**
  * In-process MessageConsumerManager for standalone daemon containers.
  *
- * Messages dispatched via {@link LocalMessageDispatcherFactory} are delivered
- * directly to consumers registered here — no remote transport needed.
+ * <p>Messages dispatched via {@link LocalMessageDispatcherFactory} are delivered
+ * directly to consumers registered here — no remote transport needed.</p>
+ *
+ * <p>When a {@link KafkaSinkBridge} is configured, this manager also notifies
+ * it with the registered module so it can start consuming from the Kafka Sink
+ * topic and dispatch Minion-forwarded messages.</p>
  */
 public class LocalMessageConsumerManager extends AbstractMessageConsumerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(LocalMessageConsumerManager.class);
 
-    @Override
-    protected void startConsumingForModule(org.opennms.core.ipc.sink.api.SinkModule<?, Message> module) {
-        LOG.info("Local sink consumer started for module: {}", module.getId());
+    private KafkaSinkBridge kafkaSinkBridge;
+
+    public void setKafkaSinkBridge(KafkaSinkBridge kafkaSinkBridge) {
+        this.kafkaSinkBridge = kafkaSinkBridge;
     }
 
     @Override
-    protected void stopConsumingForModule(org.opennms.core.ipc.sink.api.SinkModule<?, Message> module) {
+    @SuppressWarnings("unchecked")
+    protected void startConsumingForModule(SinkModule<?, Message> module) {
+        LOG.info("Local sink consumer started for module: {}", module.getId());
+        if (kafkaSinkBridge != null) {
+            kafkaSinkBridge.setModule(module);
+        }
+    }
+
+    @Override
+    protected void stopConsumingForModule(SinkModule<?, Message> module) {
         LOG.info("Local sink consumer stopped for module: {}", module.getId());
     }
 }

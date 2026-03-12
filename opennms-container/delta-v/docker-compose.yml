@@ -14,7 +14,7 @@ services:
 
   postgres:
     image: postgres:15
-    command: ["-c", "max_connections=300"]
+    command: ["-c", "max_connections=500"]
     environment:
       POSTGRES_DB: opennms
       POSTGRES_USER: opennms
@@ -125,11 +125,15 @@ services:
       - ./webapp-overlay/etc/:/opt/opennms-etc-overlay/:ro
       - ./webapp-overlay/system/:/opt/opennms-overlay/system/:ro
       - ./webapp-jetty-webinf-overlay/:/opt/opennms-jetty-webinf-overlay/
+      # Fix: updated system-report JAR (removed EventCountDaoHibernate bean)
+      - ./webapp-overlay/lib/opennms_system_report.jar:/opt/opennms/lib/opennms_system_report.jar:ro
+      # Fix: web.xml with notification servlets removed (Notifd eliminated)
+      - ./webapp-jetty-webinf-overlay/web.xml:/opt/opennms/jetty-webapps/opennms/WEB-INF/web.xml:ro
     ports:
       - "8980:8980"
       - "8102:8101"
     healthcheck:
-      test: ["CMD", "curl", "-f", "-I", "http://localhost:8980/opennms/login.jsp"]
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8980/opennms/rest/info || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -153,10 +157,11 @@ services:
         -Djava.security.egd=file:/dev/./urandom
     volumes:
       - minion-data:/opt/minion/data
-      - ./webapp-overlay/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:/opt/minion/repositories/core/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
-      - ./webapp-overlay/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:/opt/minion/repositories/default/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ./webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/core/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
       - ./webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/default/org/opennms/org.opennms.core.messagebus.api/36.0.0-SNAPSHOT/org.opennms.core.messagebus.api-36.0.0-SNAPSHOT.jar:ro
+      - ./webapp-overlay/system/org/opennms/org.opennms.core.tsid/36.0.0-SNAPSHOT/org.opennms.core.tsid-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/core/org/opennms/org.opennms.core.tsid/36.0.0-SNAPSHOT/org.opennms.core.tsid-36.0.0-SNAPSHOT.jar:ro
+      - ./webapp-overlay/system/org/opennms/org.opennms.core.tsid/36.0.0-SNAPSHOT/org.opennms.core.tsid-36.0.0-SNAPSHOT.jar:/opt/minion/repositories/default/org/opennms/org.opennms.core.tsid/36.0.0-SNAPSHOT/org.opennms.core.tsid-36.0.0-SNAPSHOT.jar:ro
+      - ./minion-overlay/features.boot:/opt/minion/repositories/default/features.boot:ro
     ports:
       - "8301:8201"
       - "11162:1162/udp"
@@ -330,6 +335,7 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=10
+        -Dorg.opennms.interface-node-cache.refresh-timer=15000
     volumes:
       - trapd-data:/opt/sentinel/data
       - ./trapd-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -621,6 +627,7 @@ services:
       - ./alarmd-overlay/etc:/opt/sentinel-etc-overlay:ro
       - ../../core/daemon-loader-alarmd/target/org.opennms.core.daemon-loader-alarmd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-alarmd/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-alarmd-36.0.0-SNAPSHOT.jar:ro
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../opennms-alarms/daemon/target/opennms-alarmd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/opennms-alarmd/36.0.0-SNAPSHOT/opennms-alarmd-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
