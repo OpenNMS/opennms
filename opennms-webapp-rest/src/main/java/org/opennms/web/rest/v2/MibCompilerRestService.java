@@ -99,10 +99,16 @@ public class MibCompilerRestService implements MibCompilerRestApi {
                     ));
                 }
             } catch (Exception e) {
+                String message = e.getMessage();
+                if (message == null || message.isBlank()) {
+                    message = "Unexpected error while processing MIB file.";
+                }
+                String detailedError = e.getClass().getSimpleName() + ": " + message;
                 errorList.add(Map.of(
                         "filename", originalFilename,
                         "basename", baseName,
-                        "error", e.getMessage()
+                        "error", detailedError,
+                        "exception", e.getClass().getName()
                 ));
             }
         }
@@ -148,22 +154,5 @@ public class MibCompilerRestService implements MibCompilerRestApi {
             return filename.substring(dot); // includes the "."
         }
         return defaultExt;
-    }
-
-    /**
-     * Checks if any file in dir has the given basename (basename comparison, not full filename).
-     * Requirement: "Base file names (without extension) must not already exist in either compiled or pending."
-     */
-    private static boolean baseNameExists(final File dir, final String baseName) throws Exception {
-        if (dir == null || !dir.exists() || !dir.isDirectory()) {
-            return false;
-        }
-        try (var stream = Files.list(dir.toPath())) {
-            return stream.anyMatch(p -> {
-                String name = p.getFileName().toString();
-                String otherBase = stripPathAndExtension(name);
-                return baseName.equals(otherBase);
-            });
-        }
     }
 }
