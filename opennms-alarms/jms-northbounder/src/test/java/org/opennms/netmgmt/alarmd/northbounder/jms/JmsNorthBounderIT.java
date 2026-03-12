@@ -216,10 +216,10 @@ public class JmsNorthBounderIT {
                              // testing NMS-6383
                     OnmsEvent event = new OnmsEvent();
                     event.setEventParameters(Lists.newArrayList(
-                            new OnmsEventParameter(event, "foreignSource", "fabric", "string"),
-                            new OnmsEventParameter(event, "foreignId", "space-0256012012000038", "string"),
-                            new OnmsEventParameter(event, "reason", "Aborting node scan : Agent timed out while scanning the system table", "string"),
-                            new OnmsEventParameter(event, ".1.3.6.1.4.1.2636.3.18.1.7.1.2.732", "207795895", "TimeTicks")));
+                            new OnmsEventParameter("foreignSource", "fabric", "string"),
+                            new OnmsEventParameter("foreignId", "space-0256012012000038", "string"),
+                            new OnmsEventParameter("reason", "Aborting node scan : Agent timed out while scanning the system table", "string"),
+                            new OnmsEventParameter(".1.3.6.1.4.1.2636.3.18.1.7.1.2.732", "207795895", "TimeTicks")));
                     onmsAlarm.setLastEventTime(event.getEventTime());
                     onmsAlarm.setEventTsid(event.getId() != null ? (long) event.getId() : null);
                     onmsAlarm.setEventUei(event.getEventUei());
@@ -427,11 +427,11 @@ public class JmsNorthBounderIT {
             event.setServiceType(null);
             event.setEventSnmp("eventsnmp");
             event.setEventParameters(Lists.newArrayList(
-                    new OnmsEventParameter(event, "syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
-                    new OnmsEventParameter(event, "severity", "Error", "string"),
-                    new OnmsEventParameter(event, "timestamp", "Dec 22 14:13:21", "string"),
-                    new OnmsEventParameter(event, "process", "229250", "string"),
-                    new OnmsEventParameter(event, "service", "local7", "string")));
+                    new OnmsEventParameter("syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
+                    new OnmsEventParameter("severity", "Error", "string"),
+                    new OnmsEventParameter("timestamp", "Dec 22 14:13:21", "string"),
+                    new OnmsEventParameter("process", "229250", "string"),
+                    new OnmsEventParameter("service", "local7", "string")));
             event.setEventCreateTime(new Date());
             event.setEventDescr("eventdescr");
             event.setEventLogGroup("eventloggroup");
@@ -553,11 +553,11 @@ public class JmsNorthBounderIT {
             event.setServiceType(null);
             event.setEventSnmp("eventsnmp");
             event.setEventParameters(Lists.newArrayList(
-                    new OnmsEventParameter(event, "syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
-                    new OnmsEventParameter(event, "severity", "Error", "string"),
-                    new OnmsEventParameter(event, "timestamp", "Dec 22 14:13:21", "string"),
-                    new OnmsEventParameter(event, "process", "229250", "string"),
-                    new OnmsEventParameter(event, "service", "local7", "string")));
+                    new OnmsEventParameter("syslogmessage", "Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed", "string"),
+                    new OnmsEventParameter("severity", "Error", "string"),
+                    new OnmsEventParameter("timestamp", "Dec 22 14:13:21", "string"),
+                    new OnmsEventParameter("process", "229250", "string"),
+                    new OnmsEventParameter("service", "local7", "string")));
             event.setEventCreateTime(date2);
             event.setEventDescr("eventdescr");
             event.setEventLogGroup("eventloggroup");

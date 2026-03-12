@@ -375,10 +375,10 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         event1.setNode(m_dbPopulator.getNode1());
         event1.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
         event1.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event1, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter(event1, "user", "rtc", "string"),
-                new OnmsEventParameter(event1, "passwd", "rtc", "string"),
-                new OnmsEventParameter(event1, "catlabel", "Network Interfaces", "string")));
+                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter("user", "rtc", "string"),
+                new OnmsEventParameter("passwd", "rtc", "string"),
+                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
         m_dbPopulator.getEventDao().saveOrUpdate(event1);
         m_dbPopulator.getEventDao().flush();
 
@@ -400,11 +400,11 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         event2.setNode(m_dbPopulator.getNode1());
         event2.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
         event2.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event2, "componentType", "serviceElement", "string"),
-                new OnmsEventParameter(event2, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter(event2, "user", "rtcbomb", "string"),
-                new OnmsEventParameter(event2, "passwd", "rtc", "string"),
-                new OnmsEventParameter(event2, "catlabel", "Network Interfaces", "string")));
+                new OnmsEventParameter("componentType", "serviceElement", "string"),
+                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter("user", "rtcbomb", "string"),
+                new OnmsEventParameter("passwd", "rtc", "string"),
+                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
         m_dbPopulator.getEventDao().saveOrUpdate(event2);
         m_dbPopulator.getEventDao().flush();
         
@@ -465,10 +465,10 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         event1.setNode(m_dbPopulator.getNode1());
         event1.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
         event1.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event1, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter(event1, "user", "rtc", "string"),
-                new OnmsEventParameter(event1, "passwd", "rtc", "string"),
-                new OnmsEventParameter(event1, "catlabel", "Network Interfaces", "string")));
+                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter("user", "rtc", "string"),
+                new OnmsEventParameter("passwd", "rtc", "string"),
+                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
         m_dbPopulator.getEventDao().saveOrUpdate(event1);
         m_dbPopulator.getEventDao().flush();
 
@@ -490,11 +490,11 @@ public class AlarmRepositoryFilterIT implements InitializingBean {
         event2.setNode(m_dbPopulator.getNode1());
         event2.setServiceType(m_dbPopulator.getServiceTypeDao().findByName("ICMP"));
         event2.setEventParameters(Lists.newArrayList(
-                new OnmsEventParameter(event2, "componentType", "serviceElement", "string"),
-                new OnmsEventParameter(event2, "url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
-                new OnmsEventParameter(event2, "user", "rtcbomb", "string"),
-                new OnmsEventParameter(event2, "passwd", "rtc", "string"),
-                new OnmsEventParameter(event2, "catlabel", "Network Interfaces", "string")));
+                new OnmsEventParameter("componentType", "serviceElement", "string"),
+                new OnmsEventParameter("url", "http://localhost:8980/opennms/rtc/post/Network+Interfaces", "string"),
+                new OnmsEventParameter("user", "rtcbomb", "string"),
+                new OnmsEventParameter("passwd", "rtc", "string"),
+                new OnmsEventParameter("catlabel", "Network Interfaces", "string")));
         m_dbPopulator.getEventDao().saveOrUpdate(event2);
         m_dbPopulator.getEventDao().flush();
         

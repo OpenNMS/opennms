@@ -210,7 +210,7 @@ public class AlarmMapperTest {
         event.setEventDisplay("Y");
         event.setNode(node);
         event.setDistPoller(monitoringSystem);
-        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "testVal", "string")));
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter("test", "testVal", "string")));
         event.setServiceType(serviceType);
         return event;
     }

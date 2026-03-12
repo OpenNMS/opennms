@@ -753,11 +753,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventTime(new Date(epoch));
         event.setEventUei(eventUei);
         if (ALARM_COUNTER.getAndIncrement() % 2 == 0) {
-            event.addEventParameter(new OnmsEventParameter(event, "testParm1", "This is an awesome parm!", "string"));
+            event.addEventParameter(new OnmsEventParameter("testParm1", "This is an awesome parm!", "string"));
         } else {
-            event.addEventParameter(new OnmsEventParameter(event, "testParm2", "This is a weird parm", "string"));
+            event.addEventParameter(new OnmsEventParameter("testParm2", "This is a weird parm", "string"));
         }
-        event.addEventParameter(new OnmsEventParameter(event, "testParm3", "Here's another parm", "string"));
+        event.addEventParameter(new OnmsEventParameter("testParm3", "Here's another parm", "string"));
         event.setIpAddr(alarmNode.getIpAddress());
         event.setNode(node);
         event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName(ICMP_SERVICE));

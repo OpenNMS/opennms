@@ -291,7 +291,7 @@ public class AlarmStatsRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventLog("Y");
         event.setEventHost("es-with-the-most-es");
         event.setEventLogMsg("Test event " + m_eventCount + " (log)");
-        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter(event, "test", "parm", "string")));
+        event.setEventParameters(Lists.newArrayList(new OnmsEventParameter("test", "parm", "string")));
         event.setEventSeverity(OnmsSeverity.MAJOR.getId());
         event.setEventSource("AlarmStatsRestServiceTest");
         event.setIpAddr(InetAddressUtils.UNPINGABLE_ADDRESS);

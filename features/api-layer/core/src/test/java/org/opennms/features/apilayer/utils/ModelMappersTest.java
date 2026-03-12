@@ -250,7 +250,7 @@ public class ModelMappersTest {
         event.setId(1L);
         String eventName = "test.name";
         String eventValue = "test.value";
-        event.setEventParameters(Collections.singletonList(new OnmsEventParameter(null, eventName, eventValue, null)));
+        event.setEventParameters(Collections.singletonList(new OnmsEventParameter(eventName, eventValue, null)));
 
         DatabaseEvent databaseEvent = ModelMappers.toEvent(event);
         assertThat(databaseEvent.getUei(), equalTo(event.getEventUei()));
