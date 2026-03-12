@@ -1,9 +1,9 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (16 services)
+# Delta-V: OpenNMS microservice-mode deployment (17 services)
 # db-init (schema migration, runs once) + Webapp + Minion
 # + Alarmd + Pollerd + Collectd + Rtcd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
-# + Provisiond + Bsmd
+# + Provisiond + Bsmd + PerspectivePollerd
 #
 # Usage:
 #   docker compose up -d
@@ -601,6 +601,46 @@ services:
       retries: 20
       start_period: 90s
 
+  perspectivepollerd:
+    profiles: [full]
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-perspectivepollerd
+    hostname: perspectivepollerd
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=7
+      KAFKA_IPC_BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - perspectivepollerd-data:/opt/sentinel/data
+      - ./perspectivepollerd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      # daemon-loader JAR
+      - ../../core/daemon-loader-perspectivepoller/target/org.opennms.core.daemon-loader-perspectivepoller-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-perspectivepoller/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-perspectivepoller-36.0.0-SNAPSHOT.jar:ro
+      # event-forwarder-kafka JAR
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      # features.xml
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      # events daemon JAR
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+
   alarmd:
     profiles: [lite, passive, full]
     image: opennms/daemon:${VERSION}
@@ -654,4 +694,5 @@ volumes:
   scriptd-data:
   provisiond-data:
   bsmd-data:
+  perspectivepollerd-data:
   alarmd-data:
