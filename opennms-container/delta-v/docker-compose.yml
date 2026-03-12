@@ -1,5 +1,5 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (17 services)
+# Delta-V: OpenNMS microservice-mode deployment (18 services)
 # db-init (schema migration, runs once) + Webapp + Minion
 # + Alarmd + Pollerd + Collectd + Rtcd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
