@@ -147,9 +147,6 @@ services:
     environment:
       MINION_ID: minion-default-01
       MINION_LOCATION: Default
-      OPENNMS_HTTP_URL: http://webapp:8980/opennms
-      OPENNMS_HTTP_USER: admin
-      OPENNMS_HTTP_PASS: admin
       KAFKA_IPC_BOOTSTRAP_SERVERS: kafka:9092
       JAVA_OPTS: >-
         -Xms256m -Xmx512m
