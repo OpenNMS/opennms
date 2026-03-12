@@ -50,12 +50,10 @@ public class SnmpV3UserTwinPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpV3UserTwinPublisher.class);
 
     private final TwinPublisher twinPublisher;
-    private final SnmpPeerFactory snmpPeerFactory;
     private TwinPublisher.Session<SnmpV3UserConfig> twinSession;
 
-    public SnmpV3UserTwinPublisher(TwinPublisher twinPublisher, SnmpPeerFactory snmpPeerFactory) {
+    public SnmpV3UserTwinPublisher(TwinPublisher twinPublisher) {
         this.twinPublisher = twinPublisher;
-        this.snmpPeerFactory = snmpPeerFactory;
     }
 
     public void init() {
@@ -103,7 +101,7 @@ public class SnmpV3UserTwinPublisher {
      * A definition is considered v3 if it has a non-empty securityName.
      */
     private SnmpV3UserConfig buildConfigFromSnmpPeerFactory() {
-        SnmpConfig snmpConfig = snmpPeerFactory.getSnmpConfig();
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
         Set<SnmpV3User> uniqueUsers = new LinkedHashSet<>();
 
         if (snmpConfig != null && snmpConfig.getDefinitions() != null) {
