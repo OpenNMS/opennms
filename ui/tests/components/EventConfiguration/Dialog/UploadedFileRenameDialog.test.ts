@@ -49,17 +49,24 @@ describe('UploadedFileRenameDialog.vue', () => {
     })
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    // vi.useFakeTimers()
     wrapper = createWrapper()
   })
 
   afterEach(async () => {
     // Advance timers before unmounting to clear pending focus management timers
-    vi.advanceTimersByTime(1000)
+    // vi.advanceTimersByTime(1000)
+    if (vi.isFakeTimers()) {
+      vi.advanceTimersByTime(1000)
+    }
+
     if (wrapper) {
       await wrapper.unmount()
     }
-    vi.useRealTimers()
+
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+    }
   })
 
   // Rendering Tests
@@ -114,6 +121,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('shows validation error when new name matches original name', async () => {
+    vi.useFakeTimers()
+
     // First initialize originalFileName via watch
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
@@ -129,9 +138,12 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('shows validation error when file exists in current upload list', async () => {
+    vi.useFakeTimers()
+
     wrapper.vm.renameFile = true
     wrapper.vm.newFileName = 'another.events.xml'
     wrapper.vm.validateName()
+
     await flushPromises()
     
     expect(wrapper.vm.error).toBe('A file with this name already exists in the current upload list.')
@@ -236,6 +248,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('sets new file name to original when overwrite is selected', async () => {
+    vi.useFakeTimers()
+
     // Initialize originalFileName via watch
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
@@ -340,6 +354,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('resets state when index is invalid', async () => {
+    vi.useFakeTimers()
+
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 999 })
     await flushPromises()
