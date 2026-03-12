@@ -207,7 +207,6 @@
         <property name="applicationDao" ref="applicationDao"/>
     </bean>
 
-
     <alias name="/outage/list.htm" alias="/outage/list"/>
     <bean name="/outage/list.htm" class="org.opennms.web.controller.outage.OutageFilterController">
         <property name="successView" value="outage/list"/>
