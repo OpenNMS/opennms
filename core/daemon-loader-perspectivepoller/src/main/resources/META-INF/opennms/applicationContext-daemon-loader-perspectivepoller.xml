@@ -50,13 +50,15 @@
     <alias name="eventIpcManager" alias="eventForwarder"/>
     <alias name="eventIpcManager" alias="eventSubscriptionService"/>
 
-    <!-- Kafka RPC (from opennms-core-ipc-rpc-kafka blueprint).
-         Provides RpcClientFactory for LocationAwarePollerClientImpl to
-         dispatch polls to Minions at perspective locations. -->
-    <osgi:reference id="rpcClientFactory"
-                    interface="org.opennms.core.rpc.api.RpcClientFactory"/>
+    <!-- FilterDao: osgi:reference blocks context initialization until dao-impl
+         completes and publishes FilterDao. This ensures FilterDaoFactory.setInstance()
+         runs before PollerConfigFactory.init() calls FilterDaoFactory.getInstance(). -->
+    <osgi:reference id="filterDao"
+                    interface="org.opennms.netmgt.filter.api.FilterDao"/>
 
     <!-- DAOs (from opennms-distributed-core-impl via SOA ServiceRegistry) -->
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <onmsgi:reference id="sessionUtils"
                       interface="org.opennms.netmgt.dao.api.SessionUtils"/>
     <onmsgi:reference id="monitoringLocationDao"
@@ -121,6 +123,27 @@
     <!-- RPC target helper: routes RPC calls to the right Minion location -->
     <bean id="rpcTargetHelper"
           class="org.opennms.core.rpc.utils.RpcTargetHelper"/>
+
+    <!-- Kafka RPC client factory: dispatches RPC calls to Minions via Kafka.
+         KafkaRpcClientFactory.start() reads bootstrap.servers from system property
+         org.opennms.core.ipc.rpc.kafka.bootstrap.servers (set via JAVA_OPTS).
+         The core/ipc/rpc/kafka bundle has no Spring-Context header, so we create
+         the factory directly here instead of using osgi:reference. -->
+    <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="distPollerDao"/>
+        <property name="targetMethod" value="whoami"/>
+    </bean>
+    <bean id="location" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="identity"/>
+        <property name="targetMethod" value="getLocation"/>
+    </bean>
+    <bean id="kafkaRpcMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="rpcClientFactory"
+          class="org.opennms.core.ipc.rpc.kafka.KafkaRpcClientFactory"
+          init-method="start" destroy-method="stop">
+        <property name="location" ref="location"/>
+        <property name="metrics" ref="kafkaRpcMetricRegistry"/>
+    </bean>
 
     <!-- The real LocationAwarePollerClient that delegates to Minions via Kafka RPC.
          afterPropertiesSet() creates the RPC delegate from rpcClientFactory + pollerClientRpcModule.

@@ -622,7 +622,7 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=7
-      KAFKA_IPC_BOOTSTRAP_SERVERS: kafka:9092
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
     volumes:
       - perspectivepollerd-data:/opt/sentinel/data
       - ./perspectivepollerd-overlay/etc:/opt/sentinel-etc-overlay:ro

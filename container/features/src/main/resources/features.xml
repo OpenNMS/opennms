@@ -2147,6 +2147,8 @@
         <feature>opennms-core-daemon</feature>
         <!-- Kafka RPC (provides RpcClientFactory for LocationAwarePollerClient) -->
         <feature>opennms-core-ipc-rpc-kafka</feature>
+        <!-- Quartz scheduler (PerspectivePollerd uses Quartz for poll job scheduling) -->
+        <feature>quartz</feature>
         <!-- API bundles needed by onmsgi:reference proxies (class loading) -->
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
