@@ -157,7 +157,9 @@ public class DefaultSiteStatusServiceIT implements InitializingBean {
         m_eventDao.save(outageEvent);
         m_eventDao.flush();
 
-        OnmsOutage outage = new OnmsOutage(new Date(), outageEvent, monSvc); 
+        OnmsOutage outage = new OnmsOutage(new Date(), monSvc);
+        outage.setSvcLostEventTsid(outageEvent.getId());
+        outage.setSvcLostEventUei(outageEvent.getEventUei());
         m_outageDao.save(outage);
         m_outageDao.flush();
     }

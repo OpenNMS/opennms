@@ -101,7 +101,9 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         // This requires every test method to have a new database instance :/
         OnmsEvent event = m_dbPopulator.getEventDao().get(1L);
         
-        OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
+        OnmsOutage unresolved2 = new OnmsOutage(new Date(), svc2);
+        unresolved2.setSvcLostEventTsid(event.getId());
+        unresolved2.setSvcLostEventUei(event.getEventUei());
         m_dbPopulator.getOutageDao().save(unresolved2);
         m_dbPopulator.getOutageDao().flush();
     }
@@ -160,7 +162,11 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
 
         // Put a resolved outage into the database so that one will match the
         // filter below
-        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), event, event, svc2, null, null);
+        OnmsOutage resolvedToday = new OnmsOutage(new Date(), new Date(), svc2);
+        resolvedToday.setSvcLostEventTsid(event.getId());
+        resolvedToday.setSvcLostEventUei(event.getEventUei());
+        resolvedToday.setSvcRegainedEventTsid(event.getId());
+        resolvedToday.setSvcRegainedEventUei(event.getEventUei());
         m_dbPopulator.getOutageDao().save(resolvedToday);
         m_dbPopulator.getOutageDao().flush();
 

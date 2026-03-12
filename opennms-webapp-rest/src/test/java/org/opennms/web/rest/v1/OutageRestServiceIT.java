@@ -134,7 +134,9 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 populator.getMonitoredServiceDao().flush();
 
                 // create a unresolved outage
-                unresolvedOutage = new OnmsOutage(new Date(1436881548292L), outageEvent, svc);
+                unresolvedOutage = new OnmsOutage(new Date(1436881548292L), svc);
+                unresolvedOutage.setSvcLostEventTsid(outageEvent.getId());
+                unresolvedOutage.setSvcLostEventUei(outageEvent.getEventUei());
                 populator.getOutageDao().save(unresolvedOutage);
                 populator.getOutageDao().flush();
             }

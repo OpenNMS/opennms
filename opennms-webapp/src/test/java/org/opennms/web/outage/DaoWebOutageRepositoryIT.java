@@ -153,8 +153,9 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         m_dbPopulator.getEventDao().save(event);
         m_dbPopulator.getEventDao().flush();
 
-        OnmsOutage outage = new OnmsOutage(new Date(), event, monitoredService);
-        outage.setServiceLostEvent(event);
+        OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
+        outage.setSvcLostEventTsid(event.getId());
+        outage.setSvcLostEventUei(event.getEventUei());
 
         m_dbPopulator.getOutageDao().save(outage);
     }
@@ -166,7 +167,9 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         OnmsMonitoredService svc2 = m_dbPopulator.getMonitoredServiceDao().get(2, InetAddressUtils.addr("192.168.2.1"), "ICMP");
         OnmsEvent event = m_dbPopulator.getEventDao().get(1L);
         
-        OnmsOutage unresolved2 = new OnmsOutage(new Date(), event, svc2);
+        OnmsOutage unresolved2 = new OnmsOutage(new Date(), svc2);
+        unresolved2.setSvcLostEventTsid(event.getId());
+        unresolved2.setSvcLostEventUei(event.getEventUei());
         m_dbPopulator.getOutageDao().save(unresolved2);
         m_dbPopulator.getOutageDao().flush();
     }
