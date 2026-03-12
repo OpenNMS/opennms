@@ -54,18 +54,6 @@
             <attrib name="V2cTrapsReceived" alias="V2cTrapsReceived" type="counter"/>
             <attrib name="V3TrapsReceived" alias="V3TrapsReceived" type="counter"/>
          </mbean>
-         <mbean name="OpenNMS.Notifd" objectname="OpenNMS:Name=Notifd">
-            <attrib name="NotificationTasksQueued" alias="NotificTasksQueued" type="counter"/>
-            <attrib name="BinaryNoticesAttempted" alias="BinaryNoticeAttemp" type="counter"/>
-            <attrib name="JavaNoticesAttempted" alias="JavaNoticesAttempt" type="counter"/>
-            <attrib name="BinaryNoticesSucceeded" alias="BinaryNoticeSuccee" type="counter"/>
-            <attrib name="JavaNoticesSucceeded" alias="JavaNoticesSucceed" type="counter"/>
-            <attrib name="BinaryNoticesFailed" alias="BinaryNoticeFailed" type="counter"/>
-            <attrib name="JavaNoticesFailed" alias="JavaNoticesFailed" type="counter"/>
-            <attrib name="BinaryNoticesInterrupted" alias="BinaryNoticeInterr" type="counter"/>
-            <attrib name="JavaNoticesInterrupted" alias="JavaNoticesInterru" type="counter"/>
-            <attrib name="UnknownNoticesInterrupted" alias="UnknowNoticeInterr" type="counter"/>
-         </mbean>
          <mbean name="OpenNMS.Manager" objectname="OpenNMS:Name=Manager">
             <attrib name="onmsUptime" alias="Uptime" type="gauge"/>
          </mbean>
