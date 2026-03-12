@@ -528,11 +528,6 @@
         <property name="resourceService" ref="resourceService"/>
     </bean>
 
-    <bean name="/admin/notification/noticeWizard/chooseUeis.htm"
-          class="org.opennms.web.controller.admin.notifications.ChooseUeisController">
-        <property name="eventConfDao" ref="eventConfDao"/>
-    </bean>
-
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">
            <property name="entityService" ref="entityService" />

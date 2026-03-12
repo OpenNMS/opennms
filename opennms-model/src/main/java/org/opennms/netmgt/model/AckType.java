@@ -35,8 +35,7 @@ import java.util.Map;
  */
 public enum AckType {
     UNSPECIFIED(1, "Unspecified"),
-    ALARM(2, "Alarm"),
-    NOTIFICATION(3, "Notification");
+    ALARM(2, "Alarm");
     
     /** Constant <code>m_idMap</code> */
     private static final Map<Integer, AckType> m_idMap; 
