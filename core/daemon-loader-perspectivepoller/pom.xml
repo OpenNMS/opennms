@@ -180,9 +180,25 @@
 
         <!-- Tracing API (TracerRegistry) -->
         <dependency>
-            <groupId>org.opennms.core</groupId>
-            <artifactId>org.opennms.core.tracing-api</artifactId>
+            <groupId>org.opennms.core.tracing</groupId>
+            <artifactId>org.opennms.core.tracing.api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OpenTracing API (for Span, Tracer, GlobalTracer) -->
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+            <version>${opentracingVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OpenTracing Util (for GlobalTracer used by NoOpTracerRegistry) -->
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
+            <version>${opentracingVersion}</version>
             <scope>provided</scope>
         </dependency>
 
