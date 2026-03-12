@@ -273,9 +273,20 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         if (nodeId == null) {
             return EmptyScope.EMPTY;
         }
+        return buildScopeForSnmpInterface(() -> this.snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex));
+    }
 
+    @Override
+    public Scope getScopeForInterfaceByIfName(final Integer nodeId, final String ifName) {
+        if (nodeId == null || Strings.isNullOrEmpty(ifName)) {
+            return EmptyScope.EMPTY;
+        }
+        return buildScopeForSnmpInterface(() -> this.snmpInterfaceDao.findByNodeIdAndIfName(nodeId, ifName));
+    }
+
+    private Scope buildScopeForSnmpInterface(final java.util.function.Supplier<OnmsSnmpInterface> snmpInterfaceLookup) {
         return this.sessionUtils.withReadOnlyTransaction(() -> {
-            final OnmsSnmpInterface snmpInterface = this.snmpInterfaceDao.findByNodeIdAndIfIndex(nodeId, ifIndex);
+            final OnmsSnmpInterface snmpInterface = snmpInterfaceLookup.get();
             if (snmpInterface == null) {
                 return EmptyScope.EMPTY;
             }
@@ -286,7 +297,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             scopes.add(new ObjectScope<>(Scope.ScopeName.INTERFACE, snmpInterface)
                     .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
                     .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
-                    .map(INTERFACE, "if-name", (i) -> Optional.ofNullable(i.getIfName())) 
+                    .map(INTERFACE, "if-name", (i) -> Optional.ofNullable(i.getIfName()))
                     .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
 
             // IP interface facts w/ meta-data extracted from IP interface
