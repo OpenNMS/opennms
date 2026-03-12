@@ -20,7 +20,8 @@
             <GeneralConfiguration />
         </FeatherTabPanel>
         <FeatherTabPanel>
-            <SnmpV3UserManagement />
+          <SnmpV3UserManagement />
+          <CreateSnmpV3User />
         </FeatherTabPanel>
       </FeatherTabContainer>
     </div>
@@ -29,6 +30,7 @@
 
 <script setup lang="ts">
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
 import GeneralConfiguration from '@/components/TrapConfiguration/GeneralConfiguration.vue'
 import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
 import { useMenuStore } from '@/stores/menuStore'

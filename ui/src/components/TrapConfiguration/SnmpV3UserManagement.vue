@@ -1,5 +1,9 @@
 <template>
-  <TableCard class="snmp-v3-user-management">
+  <TableCard
+    class="snmp-v3-user-management"
+    data-test="snmpv3-user-management"
+    v-if="!store.createUserDrawerState.visible"
+  >
     <div class="header">
       <div class="section-left">
         <h3>SNMPv3 User Management</h3>
@@ -9,6 +13,7 @@
         <FeatherButton
           primary
           data-test="add-user-button"
+          @click="store.openCreateUserDrawer(CreateEditMode.Create)"
         >
           Add User
         </FeatherButton>
@@ -73,13 +78,17 @@
 </template>
 
 <script setup lang="ts">
+import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from '@featherds/icon/action/Edit'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import TableCard from '../Common/TableCard.vue'
 import EmptyList from '../Common/EmptyList.vue'
+import TableCard from '../Common/TableCard.vue'
+
+const store = useTrapConfigStore()
 
 interface User {
   username: string
