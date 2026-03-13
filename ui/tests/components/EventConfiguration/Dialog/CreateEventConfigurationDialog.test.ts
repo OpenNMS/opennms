@@ -45,6 +45,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(async () => {
+    vi.clearAllMocks()
     vi.useFakeTimers()
     const pinia = createTestingPinia({ createSpy: vi.fn })
     setActivePinia(pinia)
@@ -63,9 +64,11 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   afterEach(() => {
-    vi.runAllTimers()
-    wrapper.unmount()
+    if (wrapper) {
+      wrapper.unmount()
+    }
     document.body.innerHTML = ''
+    vi.clearAllTimers()
     vi.useRealTimers()
   })
 

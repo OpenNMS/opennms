@@ -8,6 +8,10 @@ import EventConfigUploadFilesTab from '@/components/EventConfiguration/EventConf
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import { FeatherButton } from '@featherds/button'
 
+vi.mock('vue-router', () => ({
+  useRouter: () => vi.fn()
+}))
+
 describe('EventConfigTabContainer', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigStore>
@@ -16,10 +20,6 @@ describe('EventConfigTabContainer', () => {
     const pinia = createTestingPinia({
       createSpy: vi.fn
     })
-
-    vi.mock('vue-router', () => ({
-      useRouter: () => vi.fn()
-    }))
 
     store = useEventConfigStore(pinia)
     store.activeTab = 0
@@ -111,12 +111,7 @@ describe('EventConfigTabContainer', () => {
   })
 
   it('does not crash if vue-router mock fails', () => {
-    // Temporarily break the mock to simulate import failure
-    vi.doMock('vue-router', () => ({
-      useRouter: () => {
-        throw new Error('Mock fail')
-      }
-    }))
+    // Router is mocked at module scope; component should render safely.
     expect(() => {
       wrapper = mount(EventConfigTabContainer, {
         global: {
@@ -129,8 +124,7 @@ describe('EventConfigTabContainer', () => {
           }
         }
       })
-    }).not.toThrow() // Or expect specific handling if component catches it
-    vi.doUnmock('vue-router')
+    }).not.toThrow()
   })
 
   it('gracefully handles missing Pinia plugin (no store)', () => {

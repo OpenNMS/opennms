@@ -95,6 +95,11 @@ describe('EventConfigEventTable.vue', () => {
   })
 
   afterEach(() => {
+    if (wrapper) {
+      wrapper.unmount()
+    }
+    document.body.innerHTML = ''
+    vi.clearAllTimers()
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
