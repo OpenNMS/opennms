@@ -46,6 +46,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jasypt.digest.StandardStringDigester;
+import org.jasypt.exceptions.EncryptionInitializationException;
 import org.jasypt.salt.RandomSaltGenerator;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.opennms.core.xml.JaxbUtils;
@@ -60,6 +61,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract UserManager class.</p>
@@ -70,6 +73,7 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public abstract class UserManager implements UserConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
     private final boolean m_allowUnsalted;
 
@@ -86,7 +90,8 @@ public abstract class UserManager implements UserConfig {
             this.digester.setSaltSizeBytes(16);
             try {
                 this.digester.setSaltGenerator(new RandomSaltGenerator(RandomSaltGenerator.DEFAULT_SECURE_RANDOM_ALGORITHM));
-            } catch (RuntimeException e) {
+            } catch (EncryptionInitializationException e) {
+                LOG.info("Could not initialize random salt generator with algorithm {}, using PKCS11", RandomSaltGenerator.DEFAULT_SECURE_RANDOM_ALGORITHM, e);
                 this.digester.setSaltGenerator(new RandomSaltGenerator("PKCS11"));
             }
             this.digester.initialize();
