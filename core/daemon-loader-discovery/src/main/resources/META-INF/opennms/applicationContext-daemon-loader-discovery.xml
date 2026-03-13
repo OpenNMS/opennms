@@ -28,6 +28,9 @@
     <!-- Enable @Autowired processing for Discovery and DiscoveryTaskExecutorImpl -->
     <context:annotation-config />
 
+    <!-- Shared KafkaRpcClientFactory wiring -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- ServiceRegistry: import the shared instance from OSGi (registered by
          service-registry module) rather than creating a local one with
          <onmsgi:default-registry/> which would be a different, empty instance -->
@@ -52,15 +55,30 @@
     <onmsgi:reference id="interfaceToNodeCache"
                       interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
 
-    <!-- ICMP ping client — local implementation using InetAddress.isReachable()
-         (the RPC-based LocationAwarePingClientImpl requires the full ICMP+RPC stack
-         which is not available in standalone daemon containers) -->
-    <bean id="locationAwarePingClient"
-          class="org.opennms.core.daemon.loader.LocalLocationAwarePingClient"/>
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <onmsgi:reference id="entityScopeProvider"
+                      interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
-    <!-- Detector client (from provisioning feature, optional — not all deployments have it) -->
-    <onmsgi:reference id="locationAwareDetectorClient"
-                      interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+    <!-- Ping client — real RPC via KafkaRpcClientFactory to Minion -->
+    <bean id="pingerFactory"
+          class="org.opennms.netmgt.icmp.best.BestMatchPingerFactory"/>
+    <bean id="pingProxyRpcModule"
+          class="org.opennms.netmgt.icmp.proxy.PingProxyRpcModule"/>
+    <bean id="pingSweepRpcModule"
+          class="org.opennms.netmgt.icmp.proxy.PingSweepRpcModule"/>
+    <bean id="locationAwarePingClient"
+          class="org.opennms.netmgt.icmp.proxy.LocationAwarePingClientImpl"/>
+
+    <!-- Detector client — real RPC via KafkaRpcClientFactory to Minion -->
+    <bean id="serviceDetectorRegistry"
+          class="org.opennms.core.daemon.loader.LocalServiceDetectorRegistry"/>
+    <bean id="scanExecutor" class="java.util.concurrent.Executors"
+          factory-method="newCachedThreadPool"/>
+    <bean id="detectorClientRpcModule"
+          class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule"/>
+    <bean id="locationAwareDetectorClient"
+          class="org.opennms.netmgt.provision.detector.client.rpc.LocationAwareDetectorClientRpcImpl"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans (from discovery context)                           -->
