@@ -1022,7 +1022,6 @@
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
@@ -1046,7 +1045,6 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-bmp-adapter</feature>
@@ -1183,7 +1181,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
 
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
@@ -2429,6 +2426,21 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
         <!-- Daemon loader (creates Alarmd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-alarmd/${project.version}</bundle>
+    </feature>
+
+    <!-- Karaf-only Telemetryd: loads Telemetryd daemon without Manager/Eventd.
+         Consumes telemetry data from Kafka Sink topics (one per protocol queue).
+         Spawns a KafkaSinkBridge per registered TelemetrySinkModule. -->
+    <feature name="opennms-daemon-telemetryd" version="${project.version}"
+             description="OpenNMS :: Daemon Loader :: Telemetryd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-core-daemon</feature>
+        <feature>opennms-telemetry-daemon</feature>
+        <!-- Daemon loader (creates Telemetryd, starts it, spawns per-module Kafka bridges) -->
+        <bundle>mvn:org.opennms.core/daemon-loader-telemetryd/${project.version}</bundle>
     </feature>
 
 </features>

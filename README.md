@@ -6,7 +6,7 @@
 
 ## Plan Status Dashboard
 
-### Complete (22 docs)
+### Complete (24 docs)
 
 | Date | Plan | Key Achievement |
 |------|------|-----------------|
@@ -14,6 +14,7 @@
 | 03-05 | KafkaEventForwarder (design + impl + OSGi) | Per-daemon event enrichment + Kafka publish, no centralized Eventd |
 | 03-05 | Karaf-Only Daemon Assembly | Daemon-loader bundle pattern established |
 | 03-07 | Strike Fighter Completion (design + impl) | **18/18 tasks**, 4 dead daemons deleted, 8 daemons extracted |
+| 03-08 | Feature Removal (design + impl) | Tl1d, Charts, Device Config Backup, Database Reports/Jasper all deleted |
 | 03-08 | Enlinkd & Scriptd Extraction | Both running as standalone containers |
 | 03-10 | E2E Integration Test | `test-e2e.sh` — 11 tests, 3 phases all passing |
 | 03-10 | Project Status Analysis | Snapshot: 100% Strike Fighter, 100% Phase A |
@@ -28,12 +29,6 @@
 |------|------|---------------|
 | 03-02 | EventBus Follow-ups | Later phases (Vacuumd deleted, not migrated) |
 | 03-07 | Strike Fighter Design | Exceeded — 17 services achieved vs. 15 planned |
-
-### Planned / Not Started (2 docs)
-
-| Date | Plan | Notes |
-|------|------|-------|
-| 03-08 | **Feature Removal** (design + impl) | Delete Tl1d, Charts, Device Config Backup, Database Reports — deferred |
 
 ### In Progress / Partial (3 docs)
 
@@ -57,10 +52,11 @@
 4. **18 standalone daemon containers** running on `opennms/daemon` image
 5. **Minion RPC mandatory** — all 6 polling/collection daemons use real Kafka RPC
 6. **End-to-end validated** — both direct (11 tests) and Minion (13 tests) pipelines passing
+7. **Legacy features removed** — Tl1d, Charts, Device Config Backup, Database Reports/Jasper all deleted
 
 ### Remaining Work
 
-The main unfinished work is the **Feature Removal plan** (03-08) — deleting Tl1d, Charts, Device Config Backup, and Database Reports. Everything else is either complete or deferred by design.
+All planned feature work is complete or deferred by design. The deferred Minion-Mandatory Architecture requires prerequisite work on non-distributable ServiceMonitors and collector delegation.
 
 All plan documents are in [`docs/plans/`](docs/plans/).
 

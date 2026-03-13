@@ -1022,7 +1022,6 @@
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/36.0.0-SNAPSHOT</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/36.0.0-SNAPSHOT</bundle>
@@ -1046,7 +1045,6 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/36.0.0-SNAPSHOT</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp" start-level="60" version="36.0.0-SNAPSHOT" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-bmp-adapter</feature>
@@ -1183,7 +1181,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/36.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/36.0.0-SNAPSHOT</bundle>
 
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java/3.25.5</bundle>
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/3.25.5$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
@@ -2429,6 +2426,21 @@
         <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT</bundle>
         <!-- Daemon loader (creates Alarmd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-alarmd/36.0.0-SNAPSHOT</bundle>
+    </feature>
+
+    <!-- Karaf-only Telemetryd: loads Telemetryd daemon without Manager/Eventd.
+         Consumes telemetry data from Kafka Sink topics (one per protocol queue).
+         Spawns a KafkaSinkBridge per registered TelemetrySinkModule. -->
+    <feature name="opennms-daemon-telemetryd" version="36.0.0-SNAPSHOT"
+             description="OpenNMS :: Daemon Loader :: Telemetryd">
+        <feature>opennms-spring-extender</feature>
+        <feature>opennms-event-forwarder-kafka</feature>
+        <feature>opennms-distributed-core-impl</feature>
+        <feature>opennms-persistence</feature>
+        <feature>opennms-core-daemon</feature>
+        <feature>opennms-telemetry-daemon</feature>
+        <!-- Daemon loader (creates Telemetryd, starts it, spawns per-module Kafka bridges) -->
+        <bundle>mvn:org.opennms.core/daemon-loader-telemetryd/36.0.0-SNAPSHOT</bundle>
     </feature>
 
 </features>

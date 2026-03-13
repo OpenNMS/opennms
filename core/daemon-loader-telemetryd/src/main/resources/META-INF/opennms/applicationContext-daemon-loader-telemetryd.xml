@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Karaf-only Telemetryd loader context.
+
+  In a Karaf-only container (no Manager, no Eventd), this context replaces the
+  multi-level Spring hierarchy with a flat context that wires Telemetryd beans
+  directly to OSGi services.
+
+  Telemetryd consumes telemetry data from Kafka Sink topics (one per protocol queue).
+  Unlike Trapd/Syslogd which use a single KafkaSinkBridge, Telemetryd spawns a
+  separate bridge per registered module (Netflow-5, IPFIX, sFlow, etc.) via the
+  TelemetryMessageConsumerManager.
+
+  IMPORTANT: The daemon container's telemetryd-configuration.xml must contain
+  NO <listener> elements — only <queue> elements with adapters. Listener factories
+  are not available (listeners bundle removed from daemon-side features).
+
+  All dependencies come from the OSGi service registry:
+  - EventIpcManager from KafkaEventIpcManagerAdapter (event-forwarder-kafka feature)
+  - TelemetryRegistry from telemetry registry blueprint
+  - MessageConsumerManager/MessageDispatcherFactory from local beans (multi-module bridge)
+  - DAOs from distributed DAO feature
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <!-- Enable @Autowired processing for Telemetryd, ConnectorManager, etc. -->
+    <context:annotation-config />
+
+    <!-- ServiceRegistry: import the shared instance from OSGi (registered by
+         service-registry module) rather than creating a local one with
+         <onmsgi:default-registry/> which would be a different, empty instance -->
+    <osgi:reference id="serviceRegistry"
+                    interface="org.opennms.core.soa.ServiceRegistry"/>
+
+    <!-- ============================================================== -->
+    <!-- OSGi Service References (from other Karaf features)            -->
+    <!-- ============================================================== -->
+
+    <!-- Event infrastructure (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventIpcManager"
+                    interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+
+    <!-- EventSubscriptionService (from opennms-event-forwarder-kafka blueprint) -->
+    <osgi:reference id="eventSubscriptionService"
+                    interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+    <!-- DAOs (from distributed DAO feature) -->
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+    <!-- TelemetryRegistry (from telemetry registry blueprint) -->
+    <osgi:reference id="telemetryRegistry"
+                    interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry"/>
+
+    <!-- ServiceTracker (from events daemon onmsgi:service) -->
+    <onmsgi:reference id="serviceTracker"
+                      interface="org.opennms.netmgt.dao.api.ServiceTracker"/>
+
+    <!-- EntityScopeProvider (from core mate model onmsgi:service) -->
+    <onmsgi:reference id="entityScopeProvider"
+                      interface="org.opennms.core.mate.api.EntityScopeProvider"/>
+
+    <!-- TwinPublisher (from IPC Twin feature) -->
+    <onmsgi:reference id="twinPublisher"
+                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
+
+    <!-- ============================================================== -->
+    <!-- Multi-module Sink API with per-module Kafka bridges            -->
+    <!-- ============================================================== -->
+
+    <!-- TelemetryMessageConsumerManager spawns a KafkaSinkBridge per registered
+         TelemetrySinkModule. When Telemetryd.start() creates modules for each
+         queue (Netflow-5, IPFIX, etc.), startConsumingForModule() fires per module. -->
+    <bean id="messageConsumerManager"
+          class="org.opennms.core.daemon.loader.TelemetryMessageConsumerManager"/>
+
+    <bean id="messageDispatcherFactory"
+          class="org.opennms.core.daemon.loader.LocalMessageDispatcherFactory">
+        <constructor-arg ref="messageConsumerManager"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Telemetryd Configuration                                       -->
+    <!-- ============================================================== -->
+
+    <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
+        <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml"/>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Telemetryd Support Beans (from applicationContext-telemetryDaemon.xml) -->
+    <!-- ============================================================== -->
+
+    <!-- LocationPublisherManager + OpenConfigTwinPublisher are needed by
+         ConnectorManager which is @Autowired into Telemetryd. Even though
+         the daemon container has no connectors, the beans must exist for
+         @Autowired resolution. -->
+    <bean id="locationPublisherManager"
+          class="org.opennms.netmgt.telemetry.daemon.LocationPublisherManager"/>
+
+    <bean id="openConfigTwinPublisher"
+          class="org.opennms.netmgt.telemetry.daemon.OpenConfigTwinPublisherImpl">
+        <constructor-arg ref="locationPublisherManager"/>
+    </bean>
+
+    <bean id="connectorManager"
+          class="org.opennms.netmgt.telemetry.daemon.ConnectorManager"/>
+
+    <!-- ============================================================== -->
+    <!-- Telemetryd Daemon (SpringServiceDaemon)                        -->
+    <!-- ============================================================== -->
+
+    <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd"/>
+
+    <!-- Register as TelemetryManager in OSGi -->
+    <onmsgi:service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="daemon">
+        <onmsgi:service-properties>
+            <entry key="registration.export" value="true"/>
+        </onmsgi:service-properties>
+    </onmsgi:service>
+
+    <!-- ============================================================== -->
+    <!-- Daemon Lifecycle (SpringServiceDaemon — calls start/destroy)   -->
+    <!-- ============================================================== -->
+
+    <bean name="daemonLifecycleManager"
+          class="org.opennms.core.daemon.loader.SpringDaemonLifecycleManager">
+        <constructor-arg ref="daemon"/>
+        <constructor-arg value="Telemetryd"/>
+    </bean>
+
+</beans>
