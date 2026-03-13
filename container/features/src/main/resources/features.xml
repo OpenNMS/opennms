@@ -2129,6 +2129,8 @@
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
         <!-- Daemon loader (creates Poller, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only PerspectivePollerd: polls from multiple locations via Minion RPC -->
@@ -2165,6 +2167,7 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
         <!-- Daemon loader (creates PerspectivePollerd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-perspectivepoller/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Collectd: loads Collectd daemon without Manager/Eventd -->
@@ -2191,6 +2194,8 @@
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
         <!-- Daemon loader (creates Collectd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-collectd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Rtcd: loads RTCManager daemon without Manager/Eventd -->
@@ -2225,6 +2230,8 @@
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-discovery/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Trapd: loads Trapd daemon (UDP :1162) without Manager/Eventd -->
@@ -2315,6 +2322,8 @@
         <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Scriptd: loads Scriptd daemon (BSF script execution on events) without Manager/Eventd -->
@@ -2356,6 +2365,8 @@
         <bundle>mvn:org.opennms/opennms-provisiond/${project.version}</bundle>
         <!-- Daemon loader (creates Provisioner, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-provisiond/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Bsmd: loads Bsmd daemon without Manager/Eventd.
