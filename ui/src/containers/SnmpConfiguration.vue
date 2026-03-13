@@ -121,7 +121,6 @@ const initiateUpload = async (isXml: boolean) => {
     input.accept = isXml ? '.xml' : '.json'
     input.onchange = () => {
       const selectedFile = input.files ? input.files[0] : null
-      input.remove()
       resolve(selectedFile)
     }
     input.click()

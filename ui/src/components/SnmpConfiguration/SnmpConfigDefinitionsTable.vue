@@ -366,7 +366,7 @@ const updateDebouncedSearchTerm = debounce((value: string) => {
 }, 200)
 
 const onSearchChange = (value: string | number | undefined) => {
-  updateDebouncedSearchTerm(String(value || ''))
+  updateDebouncedSearchTerm(String(value ?? ''))
 }
 </script>
 

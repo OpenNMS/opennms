@@ -173,7 +173,6 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const isLoading = ref(false)
   const activeTab = ref(0)
   const activeViewConfigurationsTab = ref(0)
-  const activeAdvancedTab = ref(0)
 
   // current definition being editing or deleted
   const currentDefinition = ref<SnmpDefinition>()
@@ -192,10 +191,6 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
 
   const setActiveViewConfigurationsTab = (tabIndex: number) => {
     activeViewConfigurationsTab.value = tabIndex
-  }
-
-  const setActiveAdvancedTab = (tabIndex: number) => {
-    activeAdvancedTab.value = tabIndex
   }
 
   const setDefinitionCreateEditMode = (mode: SnmpConfigEditMode) => {
@@ -222,7 +217,6 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     isLoading.value = false
     setActiveTab(0)
     setActiveViewConfigurationsTab(0)
-    setActiveAdvancedTab(0)
     resetCurrentDefinition()
     setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
     setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
@@ -299,7 +293,6 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   return {
     activeTab,
     activeViewConfigurationsTab,
-    activeAdvancedTab,
     config,
     currentDefinition,
     definitionCreateEditMode,
@@ -315,7 +308,6 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     saveProfile,
     setActiveTab,
     setActiveViewConfigurationsTab,
-    setActiveAdvancedTab,
     resetCurrentDefinition,
     resetState,
     setCurrentDefinition,

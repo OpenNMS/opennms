@@ -2,7 +2,7 @@
   <div class="snmp-config-view-tab">
     <FeatherTabContainer
       class="nested-tabs"
-      v-model="store.activeViewConfigurationsTab"
+      v-model="activeViewConfigurationsTab"
     >
       <template v-slot:tabs>
         <FeatherTab>Definitions</FeatherTab>
@@ -25,6 +25,11 @@ import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
 import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
 
 const store = useSnmpConfigStore()
+
+const activeViewConfigurationsTab = computed({
+  get: () => store.activeViewConfigurationsTab,
+  set: (val) => store.setActiveViewConfigurationsTab(val)
+})
 </script>
 
 <style lang="scss" scoped>

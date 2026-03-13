@@ -2,7 +2,7 @@
   <div class="snmp-config-tab-container">
     <FeatherTabContainer
       class="tabs"
-      v-model="store.activeTab"
+      v-model="activeTab"
     >
       <template v-slot:tabs>
         <FeatherTab>Lookup</FeatherTab>
@@ -31,6 +31,10 @@ import SnmpConfigAdvancedTab from './SnmpConfigAdvancedTab.vue'
 
 const store = useSnmpConfigStore()
 
+const activeTab = computed({
+  get: () => store.activeTab,
+  set: (val) => store.setActiveTab(val)
+})
 </script>
 
 <style lang="scss" scoped>

@@ -50,7 +50,7 @@
         >
           <tr
             v-for="profile of profiles"
-            :key="`${profile.label ?? ''}-${profile.label}`"
+            :key="profile.label"
           >
             <td>{{ profile.label }}</td>
             <td>{{ profile.filter }}</td>
@@ -246,7 +246,7 @@ const updateDebouncedSearchTerm = debounce((value: string) => {
 }, 200)
 
 const onSearchChange = (value: string | number | undefined) => {
-  updateDebouncedSearchTerm(String(value || ''))
+  updateDebouncedSearchTerm(String(value ?? ''))
 }
 </script>
 
