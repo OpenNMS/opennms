@@ -115,7 +115,7 @@ Replace `LocalSnmpClient`, `LocalDetectorClient`, `LocalDnsLookupClient` with re
 
 **Additional context changes**:
 - Add `<import resource="classpath:kafka-rpc-client-factory.xml"/>` (shared fragment)
-- Provisiond already has `distPollerDao` — verify it's an `onmsgi:reference`
+- Add `<onmsgi:reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>` (required by shared fragment — **not currently present**)
 - Remove the now-redundant `tracerRegistry` bean (provided by shared fragment)
 
 **Cleanup**: Delete `LocalSnmpClient.java`, `LocalDetectorClient.java`, `LocalDnsLookupClient.java` from `daemon-loader-provisiond`.
@@ -156,7 +156,7 @@ Replace `LocalPollerClient` with `LocationAwarePollerClientImpl`.
 | Bean | Class | Satisfies |
 |------|-------|-----------|
 | `pollerClientRpcModule` | `PollerClientRpcModule` | `@Autowired ServiceMonitorRegistry` (existing) + `@Autowired @Qualifier("pollerExecutor") Executor` (existing) |
-| `locationAwarePollerClient` | `LocationAwarePollerClientImpl` | `@Autowired RpcClientFactory` (from shared fragment) + `@Autowired RpcTargetHelper` (from shared fragment) + `@Autowired EntityScopeProvider` (existing) |
+| `locationAwarePollerClient` | `LocationAwarePollerClientImpl` | `@Autowired RpcClientFactory` (from shared fragment) + `@Autowired RpcTargetHelper` (from shared fragment) + `@Autowired EntityScopeProvider` |
 
 **Beans to remove**: `locationAwarePollerClient` (LocalPollerClient)
 
@@ -164,6 +164,7 @@ Replace `LocalPollerClient` with `LocationAwarePollerClientImpl`.
 - Add `<import resource="classpath:kafka-rpc-client-factory.xml"/>` (shared fragment)
 - Add `<onmsgi:reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>` (required by shared fragment — **not currently present**)
 - Add `<osgi:reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao"/>` (FilterDaoFactory/PollerConfigFactory race guard — **not currently present**)
+- Add `<onmsgi:reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>` (**not currently present** — needed by LocationAwarePollerClientImpl for MATE variable interpolation)
 - Remove the now-redundant `tracerRegistry` bean if present (provided by shared fragment)
 - Keep `<onmsgi:service interface="LocationAwarePollerClient" ref="locationAwarePollerClient"/>` — the new bean implements the same interface
 
