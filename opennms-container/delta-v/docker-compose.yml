@@ -144,8 +144,6 @@ services:
     container_name: delta-v-minion
     hostname: minion-default-01
     depends_on:
-      webapp:
-        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
