@@ -75,6 +75,20 @@
           </tr>
         </TransitionGroup>
       </table>
+      <div
+        class="snmp-profiles-pagination"
+        v-if="profiles.length"
+      >
+        <FeatherPagination
+          :modelValue="currentPage"
+          :pageSize="pageSize"
+          :total="pageTotal"
+          :pageSizes="[20, 50, 100, 200]"
+          @update:modelValue="(val: any) => currentPage = Number(val)"
+          @update:pageSize="(val: any) => pageSize = Number(val)"
+          data-test="FeatherPagination"
+        />
+      </div>
       <div v-if="!profiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -116,6 +130,7 @@ import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import IconSearch from '@featherds/icon/action/Search'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
@@ -134,6 +149,8 @@ const displayDeleteDialog = ref(false)
 const selectedProfileLabel = ref<string | null>(null)
 const searchTerm = ref('')
 const debouncedSearchTerm = ref('')
+const currentPage = ref(1)
+const pageSize = ref(50)
 
 const deleteDialogLabels = {
   title: 'Delete SNMP Configuration Profile'
@@ -175,26 +192,34 @@ const matchesSearchTerm = (profile: SnmpProfile, search: string) => {
   return false
 }
 
-const profiles = computed(() => {
+const filteredProfiles = computed<SnmpProfile[]>(() => {
   if (!store.config.profiles?.profile) {
     return []
   }
 
-  let profileList = store.config.profiles.profile
-
-  // Filter by search term
-  if (debouncedSearchTerm.value) {
-    profileList = profileList.filter(profile => 
-      matchesSearchTerm(profile, debouncedSearchTerm.value)
-    )
+  if (!debouncedSearchTerm.value) {
+    return store.config.profiles.profile
   }
 
-  const items = profileList.map(profile => {
+  return store.config.profiles.profile.filter(profile =>
+    matchesSearchTerm(profile, debouncedSearchTerm.value)
+  )
+})
+
+const pageTotal = computed(() => filteredProfiles.value.length)
+
+const profiles = computed(() => {
+  const items = filteredProfiles.value.map(profile => {
     return {
       label: profile.label ?? '--',
       filter: createFilterExpressionLabel(profile)
     }
   }).sort((a, b) => sortPredicate(a, b, currentSort.value))
+
+  if (pageSize.value > 0) {
+    const start = (currentPage.value - 1) * pageSize.value
+    return items.slice(start, start + pageSize.value)
+  }
 
   return items
 })
@@ -243,6 +268,7 @@ const onCreateProfile = () => {
 
 const updateDebouncedSearchTerm = debounce((value: string) => {
   debouncedSearchTerm.value = value
+  currentPage.value = 1 // Reset to first page when searching
 }, 200)
 
 const onSearchChange = (value: string | number | undefined) => {
