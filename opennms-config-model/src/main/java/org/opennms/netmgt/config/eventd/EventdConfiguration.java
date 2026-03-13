@@ -48,44 +48,7 @@ public class EventdConfiguration implements Serializable {
     private static final int QUEUE_SIZE = 10000;
 
     /**
-     * The IP address on which eventd listens for TCP connections.
-     *  If "" is specified, eventd will bind to all addresses. The default
-     *  address is 127.0.0.1.
-     */
-    @XmlAttribute(name = "TCPAddress")
-    private String m_tcpAddress = "127.0.0.1";
-
-    /**
-     * The port on which eventd listens for TCP connections.
-     *  The default port is 5817.
-     */
-    @XmlAttribute(name = "TCPPort", required = true)
-    private Integer m_tcpPort;
-
-    /**
-     * The IP address on which eventd listens for UDP packets.
-     *  If "" is specified, eventd will bind to all addresses. The default
-     *  address is 127.0.0.1.
-     */
-    @XmlAttribute(name = "UDPAddress")
-    private String m_udpAddress = "127.0.0.1";
-
-    /**
-     * The port on which eventd listens for UDP packets. The
-     *  default port is 5817.
-     */
-    @XmlAttribute(name = "UDPPort", required = true)
-    private Integer m_udpPort;
-
-    /**
-     * The maximum number of threads used for reading and
-     *  processing of incoming events.
-     */
-    @XmlAttribute(name = "receivers", required = true)
-    private Integer m_receivers;
-
-    /**
-     * The maximum number of incoming events that can be 
+     * The maximum number of incoming events that can be
      *  queued inside eventd for processing.
      */
     @XmlAttribute(name = "queueLength")
@@ -100,23 +63,6 @@ public class EventdConfiguration implements Serializable {
     private String m_getNextEventID;
 
     /**
-     * Set the socket timeout value. In Linux, the close()
-     *  system call is not preemptive. Setting this attribute to to 'yes'
-     *  causes the socketSoTimeoutPeriod attribute to be set on sockets to
-     *  mimic non-blocking socket I/O.
-     */
-    @XmlAttribute(name = "socketSoTimeoutRequired", required = true)
-    private String m_socketSoTimeoutRequired;
-
-    /**
-     * Socket timeout, in milliseconds. This is only set on
-     *  eventd's sockets if socketSoTimeoutRequired is set to
-     *  'yes'.
-     */
-    @XmlAttribute(name = "socketSoTimeoutPeriod")
-    private Integer m_socketSoTimeoutPeriod;
-
-    /**
      * Whether or not to log a simple event summary. By default, OpenNMS
      *  logs detailed event information at DEBUG level. If this option is enabled,
      *  it will additionally log a simple summary of events received at INFO.
@@ -126,15 +72,15 @@ public class EventdConfiguration implements Serializable {
 
     @XmlValue
     private String m_contents;
-    
-    
+
+
     /**
      * Number of threads used for consuming/dispatching messages.
      * Defaults to 2 x the number of available processors.
      */
     @XmlAttribute(name = "sink-threads", required=false)
     private Integer m_threads;
-    
+
     /**
      * Maximum number of messages to keep in memory while waiting
      to be dispatched.
@@ -160,52 +106,12 @@ public class EventdConfiguration implements Serializable {
     public EventdConfiguration() {
     }
 
-    public Optional<String> getTCPAddress() {
-        return Optional.ofNullable(m_tcpAddress);
-    }
-
-    public void setTCPAddress(final String TCPAddress) {
-        m_tcpAddress = ConfigUtils.normalizeString(TCPAddress);
-    }
-
-    public Integer getTCPPort() {
-        return m_tcpPort;
-    }
-
-    public void setTCPPort(final Integer TCPPort) {
-        m_tcpPort = ConfigUtils.assertNotNull(TCPPort, "TCPPort");
-    }
-
-    public Optional<String> getUDPAddress() {
-        return Optional.ofNullable(m_udpAddress);
-    }
-
-    public void setUDPAddress(final String UDPAddress) {
-        m_udpAddress = ConfigUtils.normalizeString(UDPAddress);
-    }
-
-    public Integer getUDPPort() {
-        return m_udpPort;
-    }
-
-    public void setUDPPort(final Integer UDPPort) {
-        m_udpPort = ConfigUtils.assertNotNull(UDPPort, "UDPPort");
-    }
-    
     public Integer getNumThreads() {
     	return m_threads == null ? NUM_THREADS : m_threads;
     }
 
     public void setNumThreads(final Integer numThreads) {
         m_threads = numThreads;
-    }
-
-    public Integer getReceivers() {
-        return m_receivers;
-    }
-
-    public void setReceivers(final Integer receivers) {
-        m_receivers = ConfigUtils.assertNotNull(receivers, "receivers");
     }
 
     public Optional<Integer> getQueueLength() {
@@ -224,22 +130,6 @@ public class EventdConfiguration implements Serializable {
         m_getNextEventID = ConfigUtils.normalizeString(getNextEventID);
     }
 
-    public String getSocketSoTimeoutRequired() {
-        return m_socketSoTimeoutRequired;
-    }
-
-    public void setSocketSoTimeoutRequired(final String socketSoTimeoutRequired) {
-        m_socketSoTimeoutRequired = ConfigUtils.assertNotNull(socketSoTimeoutRequired, "socketSoTimeoutRequired");
-    }
-
-    public Optional<Integer> getSocketSoTimeoutPeriod() {
-        return Optional.ofNullable(m_socketSoTimeoutPeriod);
-    }
-
-    public void setSocketSoTimeoutPeriod(final Integer socketSoTimeoutPeriod) {
-        m_socketSoTimeoutPeriod = socketSoTimeoutPeriod;
-    }
-
     public Boolean getLogEventSummaries() {
         return m_logEventSummaries != null ? m_logEventSummaries : true;
     }
@@ -247,7 +137,7 @@ public class EventdConfiguration implements Serializable {
     public void setLogEventSummaries(final Boolean logEventSummaries) {
         m_logEventSummaries = logEventSummaries;
     }
-    
+
     public int getQueueSize() {
         return m_queueSize == null ? QUEUE_SIZE : m_queueSize;
     }
@@ -275,15 +165,8 @@ public class EventdConfiguration implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                            m_tcpAddress, 
-                            m_tcpPort, 
-                            m_udpAddress, 
-                            m_udpPort, 
-                            m_receivers, 
-                            m_queueLength, 
-                            m_getNextEventID, 
-                            m_socketSoTimeoutRequired, 
-                            m_socketSoTimeoutPeriod, 
+                            m_queueLength,
+                            m_getNextEventID,
                             m_logEventSummaries,
                             m_threads,
                             m_queueSize,
@@ -299,15 +182,8 @@ public class EventdConfiguration implements Serializable {
 
         if (obj instanceof EventdConfiguration) {
             final EventdConfiguration that = (EventdConfiguration)obj;
-            return Objects.equals(this.m_tcpAddress, that.m_tcpAddress)
-                    && Objects.equals(this.m_tcpPort, that.m_tcpPort)
-                    && Objects.equals(this.m_udpAddress, that.m_udpAddress)
-                    && Objects.equals(this.m_udpPort, that.m_udpPort)
-                    && Objects.equals(this.m_receivers, that.m_receivers)
-                    && Objects.equals(this.m_queueLength, that.m_queueLength)
+            return Objects.equals(this.m_queueLength, that.m_queueLength)
                     && Objects.equals(this.m_getNextEventID, that.m_getNextEventID)
-                    && Objects.equals(this.m_socketSoTimeoutRequired, that.m_socketSoTimeoutRequired)
-                    && Objects.equals(this.m_socketSoTimeoutPeriod, that.m_socketSoTimeoutPeriod)
                     && Objects.equals(this.m_logEventSummaries, that.m_logEventSummaries)
                     && Objects.equals(this.m_threads, that.m_threads)
                     && Objects.equals(this.m_queueSize, that.m_queueSize)

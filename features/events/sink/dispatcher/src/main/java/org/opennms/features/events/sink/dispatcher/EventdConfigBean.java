@@ -25,7 +25,6 @@ import org.opennms.netmgt.config.api.EventdConfig;
 
 /**
  *  This is used to initialize sink module on Minion.
- *  Doesn't support listening events on TCP/UDP.
  */
 public class EventdConfigBean implements EventdConfig {
 
@@ -35,48 +34,8 @@ public class EventdConfigBean implements EventdConfig {
     private int batchIntervalMs;
 
     @Override
-    public String getTCPIpAddress() {
-        return null;
-    }
-
-    @Override
-    public int getTCPPort() {
-        return 0;
-    }
-
-    @Override
-    public String getUDPIpAddress() {
-        return null;
-    }
-
-    @Override
-    public int getUDPPort() {
-        return 0;
-    }
-
-    @Override
-    public int getReceivers() {
-        return 0;
-    }
-
-    @Override
     public int getQueueLength() {
         return 0;
-    }
-
-    @Override
-    public String getSocketSoTimeoutRequired() {
-        return null;
-    }
-
-    @Override
-    public int getSocketSoTimeoutPeriod() {
-        return 0;
-    }
-
-    @Override
-    public boolean hasSocketSoTimeoutPeriod() {
-        return false;
     }
 
     @Override
