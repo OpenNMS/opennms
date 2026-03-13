@@ -160,23 +160,6 @@ watch(() => props.visible, (val) => {
     error.value = undefined
   }
 })
-
-defineExpose({
-  labels,
-  dialogVisible,
-  renameFile,
-  overwriteFile,
-  error,
-  newFileName,
-  originalFileName,
-  shouldRemainDisabled,
-  validateName,
-  onChangeFileName,
-  saveChanges,
-  handleDialogHidden,
-  onChangeRenameFile,
-  onChangeOverwriteFile
-})
 </script>
 
 <style scoped lang="scss">
