@@ -165,6 +165,7 @@ services:
     ports:
       - "8301:8201"
       - "11162:1162/udp"
+      - "1514:10514/udp"
     healthcheck:
       test: ["CMD", "/health.sh"]
       interval: 30s
@@ -379,14 +380,15 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
+        -Dorg.opennms.core.ipc.sink.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.sink.kafka.group.id=opennms-syslogd-sink
     volumes:
       - syslogd-data:/opt/sentinel/data
       - ./syslogd-overlay/etc:/opt/sentinel-etc-overlay:ro
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
-    ports:
-      - "10514:10514/udp"
+      - ../../core/daemon-loader-syslogd/target/daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/daemon-loader-syslogd/36.0.0-SNAPSHOT/daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
