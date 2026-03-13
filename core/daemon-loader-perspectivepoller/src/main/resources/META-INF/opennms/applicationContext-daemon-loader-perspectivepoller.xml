@@ -32,6 +32,9 @@
     <context:annotation-config />
     <tx:annotation-driven />
 
+    <!-- Shared KafkaRpcClientFactory wiring -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- ServiceRegistry: import the shared instance from OSGi (registered by
          service-registry module) rather than creating a local one with
          <onmsgi:default-registry/> which would be a different, empty instance -->
@@ -122,31 +125,6 @@
     <bean id="pollerClientRpcModule"
           class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule"/>
 
-    <!-- RPC target helper: routes RPC calls to the right Minion location -->
-    <bean id="rpcTargetHelper"
-          class="org.opennms.core.rpc.utils.RpcTargetHelper"/>
-
-    <!-- Kafka RPC client factory: dispatches RPC calls to Minions via Kafka.
-         KafkaRpcClientFactory.start() reads bootstrap.servers from system property
-         org.opennms.core.ipc.rpc.kafka.bootstrap.servers (set via JAVA_OPTS).
-         The core/ipc/rpc/kafka bundle has no Spring-Context header, so we create
-         the factory directly here instead of using osgi:reference. -->
-    <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="distPollerDao"/>
-        <property name="targetMethod" value="whoami"/>
-    </bean>
-    <bean id="location" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="identity"/>
-        <property name="targetMethod" value="getLocation"/>
-    </bean>
-    <bean id="kafkaRpcMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <bean id="rpcClientFactory"
-          class="org.opennms.core.ipc.rpc.kafka.KafkaRpcClientFactory"
-          init-method="start" destroy-method="stop">
-        <property name="location" ref="location"/>
-        <property name="metrics" ref="kafkaRpcMetricRegistry"/>
-    </bean>
-
     <!-- The real LocationAwarePollerClient that delegates to Minions via Kafka RPC.
          afterPropertiesSet() creates the RPC delegate from rpcClientFactory + pollerClientRpcModule.
          All 5 @Autowired fields are resolved by <context:annotation-config/>:
@@ -164,9 +142,7 @@
     <bean id="collectionAgentFactory"
           class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory"/>
 
-    <!-- No-op tracer (same as provisiond standalone) -->
-    <bean id="tracerRegistry"
-          class="org.opennms.core.daemon.loader.NoOpTracerRegistry"/>
+    <!-- tracerRegistry provided by shared fragment import -->
 
     <!-- ============================================================== -->
     <!-- PerspectiveServiceTracker + PerspectivePollerd                 -->
