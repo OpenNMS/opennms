@@ -4,6 +4,11 @@ import { XMLValidator } from 'fast-xml-parser'
 export const MAX_FILES_UPLOAD = 10
 
 export const validateEventConfigFile = async (file: File) => {
+  // eventconf.xml is a special ordering file, not a regular event config file
+  if (file.name.toLowerCase() === 'eventconf.xml') {
+    return { isValid: true, errors: [] }
+  }
+
   const validationErrors: string[] = []
 
   try {

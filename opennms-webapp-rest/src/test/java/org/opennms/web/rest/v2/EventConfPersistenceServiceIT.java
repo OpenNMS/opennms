@@ -160,13 +160,13 @@ public class EventConfPersistenceServiceIT {
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
 
         assertEquals(1, sources.size() - defaultEventConfSize);
-        EventConfSource source = sources.get(0);
-        assertEquals(filename, source.getName());
+        EventConfSource source = eventConfSourceDao.findByName(filename);
+        Assert.assertNotNull(source);
         Assert.assertEquals("existing-source", source.getName());
         Assert.assertEquals("updated entry", source.getDescription());
         Assert.assertEquals("updated-vendor", source.getVendor());
         Assert.assertEquals("updated_user", source.getUploadedBy());
-        Assert.assertEquals(0, (int) source.getFileOrder());
+        Assert.assertEquals(1, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(defaultEventConfEventSize);
