@@ -1,0 +1,23 @@
+# Delta-V webapp image — layers modified JARs, config overlays, and
+# Jetty WEB-INF overrides on top of the base opennms/horizon image.
+#
+# After this image is built, docker-compose only needs named volumes
+# for mutable state (webapp-etc, webapp-data) — no bind mounts.
+
+ARG VERSION
+FROM opennms/horizon:${VERSION}
+
+# ── etc overlay (config files for webapp) ────────────────────────
+COPY webapp-overlay/etc/ /opt/opennms-etc-overlay/
+
+# ── system overlay (patched features.xml, bundles) ───────────────
+COPY webapp-overlay/system/ /opt/opennms-overlay/system/
+
+# ── Jetty WEB-INF overlay (dispatcher-servlet.xml, jetty-web.xml) ─
+COPY webapp-jetty-webinf-overlay/ /opt/opennms-jetty-webinf-overlay/
+
+# ── Fixed system-report JAR (EventCountDaoHibernate bean removed) ─
+COPY webapp-overlay/lib/opennms_system_report.jar /opt/opennms/lib/opennms_system_report.jar
+
+# ── Fixed web.xml (notification servlets removed — Notifd eliminated) ─
+COPY webapp-jetty-webinf-overlay/web.xml /opt/opennms/jetty-webapps/opennms/WEB-INF/web.xml
