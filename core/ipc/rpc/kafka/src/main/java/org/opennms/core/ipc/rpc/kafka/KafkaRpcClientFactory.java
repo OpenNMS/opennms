@@ -161,13 +161,17 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
             @Override
             public CompletableFuture<T> execute(S request) {
-                if (request.getLocation() == null || request.getLocation().equals(location)) {
+                boolean forceRemote = Boolean.getBoolean("org.opennms.core.ipc.rpc.force-remote");
+                if (!forceRemote && (request.getLocation() == null || request.getLocation().equals(location))) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
                 }
 
+                // Default null location to daemon's own location for Kafka topic routing
+                final String effectiveLocation = request.getLocation() != null ? request.getLocation() : location;
+
                 Span span = buildAndStartSpan(request);
-                String requestTopic = topicProvider.getRequestTopicAtLocation(request.getLocation(), module.getId());
+                String requestTopic = topicProvider.getRequestTopicAtLocation(effectiveLocation, module.getId());
                 String marshalRequest = module.marshalRequest(request);
                 // Generate RPC Id for every request to track request/response.
                 String rpcId = UUID.randomUUID().toString();
@@ -180,7 +184,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 final Map<String, String> loggingContext = Logging.getCopyOfContextMap();
                 ResponseHandler<S, T> responseHandler = new ResponseHandler<S, T>(future, module, rpcId,
-                        expirationTime, loggingContext, request.getLocation(), span);
+                        expirationTime, loggingContext, effectiveLocation, span);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
@@ -218,7 +222,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             future.completeExceptionally(e);
                         } else {
                             if (LOG.isTraceEnabled()) {
-                                LOG.trace("RPC Request {} with id {} chunk {} sent to minion at location {}", request, rpcId, chunkNum, request.getLocation());
+                                LOG.trace("RPC Request {} with id {} chunk {} sent to minion at location {}", request, rpcId, chunkNum, effectiveLocation);
                             }
                         }
                     };
@@ -239,14 +243,14 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         producer.send(record, sendCallback);
                     }
                 }
-                addMetrics(request, messageInBytes.length);
+                addMetrics(effectiveLocation, module.getId(), messageInBytes.length);
                 return future;
             }
 
-            private void addMetrics(RpcRequest request, int messageLen) {
-                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SENT));
+            private void addMetrics(String location, String moduleId, int messageLen) {
+                final Meter requestSentMeter = getMetrics().meter(MetricRegistry.name(location, moduleId, RPC_REQUEST_SENT));
                 requestSentMeter.mark();
-                final Histogram rpcRequestSize = getMetrics().histogram(MetricRegistry.name(request.getLocation(), module.getId(), RPC_REQUEST_SIZE));
+                final Histogram rpcRequestSize = getMetrics().histogram(MetricRegistry.name(location, moduleId, RPC_REQUEST_SIZE));
                 rpcRequestSize.update(messageLen);
             }
 
