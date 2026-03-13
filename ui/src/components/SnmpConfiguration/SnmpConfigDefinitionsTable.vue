@@ -237,33 +237,23 @@ const matchesSearchTerm = (def: SnmpDefinition, search: string) => {
   return false
 }
 
-const pageTotal = computed(() => {
-  if (!store.config.definition) {
-    return 0
-  }
-
-  // Return filtered count if there's a search term
-  if (debouncedSearchTerm.value) {
-    return store.config.definition.filter(def => 
-      matchesSearchTerm(def, debouncedSearchTerm.value)
-    ).length
-  }
-
-  return store.config.definition.length
-})
-
-const definitionsView = computed<SnmpDefinition[]>(() => {
+const filteredDefinitions = computed<SnmpDefinition[]>(() => {
   if (!store.config.definition) {
     return []
   }
 
-  // Copy the definitions array
-  let items: SnmpDefinition[] = [...store.config.definition]
-
-  // Filter by search term
-  if (debouncedSearchTerm.value) {
-    items = items.filter(def => matchesSearchTerm(def, debouncedSearchTerm.value))
+  if (!debouncedSearchTerm.value) {
+    return store.config.definition
   }
+
+  return store.config.definition.filter(def => matchesSearchTerm(def, debouncedSearchTerm.value))
+})
+
+const pageTotal = computed(() => filteredDefinitions.value.length)
+
+const definitionsView = computed<SnmpDefinition[]>(() => {
+  // Copy the filtered definitions array
+  let items: SnmpDefinition[] = [...filteredDefinitions.value]
 
   // Sort by the active sort property
   const sortProperty = Object.keys(sort).find(key => sort[key] !== SORT.NONE)
