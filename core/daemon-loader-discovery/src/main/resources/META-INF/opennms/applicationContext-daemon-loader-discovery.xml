@@ -55,8 +55,8 @@
     <onmsgi:reference id="interfaceToNodeCache"
                       interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache"/>
 
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 

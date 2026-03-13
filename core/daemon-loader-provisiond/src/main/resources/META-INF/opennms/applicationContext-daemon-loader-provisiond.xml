@@ -81,8 +81,8 @@
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
     <!-- ============================================================== -->
     <!-- ForeignSourceRepository (local filesystem-based)               -->

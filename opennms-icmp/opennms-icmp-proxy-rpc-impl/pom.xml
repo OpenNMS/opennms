@@ -25,8 +25,7 @@
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               *
             </Import-Package>
-            <!--  don't export anything this is implementation only -->
-            <Export-Package></Export-Package>
+            <Export-Package>org.opennms.netmgt.icmp.proxy</Export-Package>
           </instructions>
         </configuration>
       </plugin>

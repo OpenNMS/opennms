@@ -71,8 +71,8 @@
     <onmsgi:reference id="onmsTopologyDao"
                       interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao"/>
 
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
     <!-- SNMP client — real RPC via KafkaRpcClientFactory to Minion.
          SnmpProxyRpcModule.INSTANCE is a static singleton — no bean needed. -->

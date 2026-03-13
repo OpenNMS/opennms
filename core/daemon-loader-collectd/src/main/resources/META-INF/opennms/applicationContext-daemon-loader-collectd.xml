@@ -63,8 +63,8 @@
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
-    <onmsgi:reference id="distPollerDao"
-                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
     <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence via SOA ServiceRegistry) -->
     <onmsgi:reference id="nodeDao"
@@ -79,6 +79,10 @@
     <!-- Poll outages DAO (optional — not in minimal daemon) -->
     <onmsgi:reference id="pollOutagesDao"
                       interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
+
+    <!-- Resource types DAO (needed by DefaultResourceTypeMapper @Autowired) -->
+    <onmsgi:reference id="resourceTypesDao"
+                      interface="org.opennms.netmgt.config.api.ResourceTypesDao"/>
 
     <!-- Transaction management (from opennms-persistence via SOA ServiceRegistry) -->
     <onmsgi:reference id="platformTransactionManager"
