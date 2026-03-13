@@ -53,12 +53,13 @@ describe('UploadedFileRenameDialog.vue', () => {
     wrapper = createWrapper()
   })
 
-  afterEach(async () => {
-    // Advance timers before unmounting to clear pending focus management timers
-    vi.advanceTimersByTime(1000)
+  afterEach(() => {
     if (wrapper) {
-      await wrapper.unmount()
+      wrapper.unmount()
+      wrapper = null
     }
+    document.body.innerHTML = ''
+    vi.clearAllTimers()
     vi.useRealTimers()
   })
 
