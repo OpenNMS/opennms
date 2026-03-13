@@ -16,6 +16,8 @@ MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
+MINION_OVERLAY_DEPLOY_DIR="${MINION_OVERLAY_ETC}/deploy"
+MINION_OVERLAY_FEATURES_DIR="${MINION_OVERLAY_ETC}/features.d"
 CUSTOM_SYSTEM_PROPERTIES="${MINION_HOME}/etc/custom.system.properties"
 INSTANCE_ID_CFG="${MINION_HOME}/etc/instance-id.properties"
 KARAF_SHELL_CFG="${MINION_HOME}/etc/org.apache.karaf.shell.cfg"
@@ -30,7 +32,6 @@ IPC_GRPC_CFG="${MINION_HOME}/etc/org.opennms.core.ipc.grpc.client.cfg"
 DOMINION_GRPC_CFG="${MINION_HOME}/etc/org.opennms.features.minion.dominion.grpc.cfg"
 SYSLOG_CFG="${MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg"
 TRAPD_CFG="${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg"
-TELEMETRY_FEATURE_XML="${MINION_HOME}/deploy/confd-telemetry-feature.xml"
 PROM_JMX_EXPORTER_CONFIG_PATH="/opt/prom-jmx-exporter/config.yaml"
 FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
 KAFKA_IPC_BOOT="${FEATURES_BOOT_DIR}/kafka-ipc.boot"
@@ -66,7 +67,8 @@ if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
 fi
 
 export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
-export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
+MODULE_OPTS="$("${MINION_HOME}/bin/_module_opts.sh")"
+export JAVA_OPTS="$JAVA_OPTS $MODULE_OPTS"
 export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${MINION_HOME}"
 export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
@@ -327,15 +329,6 @@ EOF
     } > "$PROM_JMX_EXPORTER_CONFIG_PATH"
   }
 
-  function writeTelemetryFeatureXml() {
-    if [ -n "${TELEMETRY_FEATURES_XML}" ]; then
-      mkdir -p "$(dirname "$TELEMETRY_FEATURE_XML")"
-      printf "%s\n" "$TELEMETRY_FEATURES_XML" > "$TELEMETRY_FEATURE_XML"
-    else
-      rm -f "$TELEMETRY_FEATURE_XML"
-    fi
-  }
-
 function parseEnvironment() {
     # Configure additional features
   IFS=$'\n'
@@ -477,7 +470,6 @@ function parseEnvironment() {
   writeProcessEnv
   writeServerCerts
   writePromJmxConfig
-  # writeTelemetryFeatureXml
 
   if [ -n "$kafka_ipc_bootstrap" ]; then
     writeBootFile "$KAFKA_IPC_BOOT" "!minion-jms" "!opennms-core-ipc-jms" "opennms-core-ipc-kafka"
@@ -562,6 +554,18 @@ applyOverlayConfig() {
   if [ -d "${MINION_OVERLAY_ETC}" ] && [ -n "$(ls -A ${MINION_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${MINION_OVERLAY_ETC}."
     rsync -Lr --out-format="%n %C" ${MINION_OVERLAY_ETC}/* ${MINION_HOME}/etc/. || exit ${E_INIT_CONFIG}
+
+    # Overlay deploy content directly to Karaf deploy directory.
+    if [ -d "${MINION_OVERLAY_DEPLOY_DIR}" ] && [ -n "$(ls -A ${MINION_OVERLAY_DEPLOY_DIR})" ]; then
+      echo "Apply custom deploy content from ${MINION_OVERLAY_DEPLOY_DIR}."
+      rsync -Lr --out-format="%n %C" ${MINION_OVERLAY_DEPLOY_DIR}/* ${MINION_HOME}/deploy/. || exit ${E_INIT_CONFIG}
+    fi
+
+    # Feature descriptors must be placed in deploy for Karaf hot deployment.
+    if [ -d "${MINION_OVERLAY_FEATURES_DIR}" ] && [ -n "$(ls -A ${MINION_OVERLAY_FEATURES_DIR})" ]; then
+      echo "Apply custom feature XMLs from ${MINION_OVERLAY_FEATURES_DIR}."
+      rsync -Lr --out-format="%n %C" ${MINION_OVERLAY_FEATURES_DIR}/* ${MINION_HOME}/deploy/. || exit ${E_INIT_CONFIG}
+    fi
   else
     echo "No custom config found in ${MINION_OVERLAY_ETC}. Use default configuration."
   fi
