@@ -1,0 +1,20 @@
+# Delta-V minion image — layers patched messagebus-api, tsid JARs, and
+# features.boot on top of the base opennms/minion image.
+
+ARG VERSION
+FROM opennms/minion:${VERSION}
+
+# ── messagebus-api JAR (needed in both core and default repos) ───
+COPY webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/${VERSION}/org.opennms.core.messagebus.api-${VERSION}.jar \
+     /opt/minion/repositories/core/org/opennms/org.opennms.core.messagebus.api/${VERSION}/org.opennms.core.messagebus.api-${VERSION}.jar
+COPY webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/${VERSION}/org.opennms.core.messagebus.api-${VERSION}.jar \
+     /opt/minion/repositories/default/org/opennms/org.opennms.core.messagebus.api/${VERSION}/org.opennms.core.messagebus.api-${VERSION}.jar
+
+# ── tsid JAR (needed in both core and default repos) ─────────────
+COPY webapp-overlay/system/org/opennms/org.opennms.core.tsid/${VERSION}/org.opennms.core.tsid-${VERSION}.jar \
+     /opt/minion/repositories/core/org/opennms/org.opennms.core.tsid/${VERSION}/org.opennms.core.tsid-${VERSION}.jar
+COPY webapp-overlay/system/org/opennms/org.opennms.core.tsid/${VERSION}/org.opennms.core.tsid-${VERSION}.jar \
+     /opt/minion/repositories/default/org/opennms/org.opennms.core.tsid/${VERSION}/org.opennms.core.tsid-${VERSION}.jar
+
+# ── features.boot (Delta-V feature set) ──────────────────────────
+COPY minion-overlay/features.boot /opt/minion/repositories/default/features.boot

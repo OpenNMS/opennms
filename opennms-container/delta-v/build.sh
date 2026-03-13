@@ -3,10 +3,11 @@
 # build.sh — Build all Docker images for OpenNMS Delta-V
 #
 # Usage:
-#   ./build.sh              Build everything (compile + assemble + images)
-#   ./build.sh images       Build Docker images only (skip Maven)
+#   ./build.sh              Build everything (compile + assemble + images + deltav)
+#   ./build.sh images       Build base Docker images only (skip Maven)
+#   ./build.sh deltav       Build Delta-V layered images only (requires base images)
 #   ./build.sh compile      Compile only (skip assembly and images)
-#   ./build.sh push         Build and push images to a registry
+#   ./build.sh push         Build and push images to registry
 #
 # Environment:
 #   DOCKER_REGISTRY   Docker registry (default: docker.io)
@@ -115,6 +116,89 @@ do_images() {
     docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel|db-init)" | head -15
 }
 
+do_stage_daemon_jars() {
+    log "Staging daemon JARs for Delta-V image..."
+    local staging="$SCRIPT_DIR/staging/daemon"
+    rm -rf "$staging"
+    mkdir -p "$staging"
+
+    # Common JARs (all daemon containers)
+    # NOTE: features.xml is copied directly from webapp-overlay/ in Dockerfile.daemon,
+    # not staged here. The patched features.xml must come from the image extraction,
+    # not from container/features/target/classes/features.xml (which is only one input).
+    local pairs=(
+        "core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-$VERSION.jar:event-forwarder-kafka.jar"
+        "features/events/daemon/target/org.opennms.features.events.daemon-$VERSION.jar:events.daemon.jar"
+        # Daemon-loader JARs
+        "core/daemon-loader-trapd/target/org.opennms.core.daemon-loader-trapd-$VERSION.jar:daemon-loader-trapd.jar"
+        "core/daemon-loader-syslogd/target/org.opennms.core.daemon-loader-syslogd-$VERSION.jar:daemon-loader-syslogd.jar"
+        "core/daemon-loader-provisiond/target/org.opennms.core.daemon-loader-provisiond-$VERSION.jar:daemon-loader-provisiond.jar"
+        "core/daemon-loader-bsmd/target/org.opennms.core.daemon-loader-bsmd-$VERSION.jar:daemon-loader-bsmd.jar"
+        "core/daemon-loader-perspectivepoller/target/org.opennms.core.daemon-loader-perspectivepoller-$VERSION.jar:daemon-loader-perspectivepoller.jar"
+        "core/daemon-loader-alarmd/target/org.opennms.core.daemon-loader-alarmd-$VERSION.jar:daemon-loader-alarmd.jar"
+        "core/daemon-loader-telemetryd/target/daemon-loader-telemetryd-$VERSION.jar:daemon-loader-telemetryd.jar"
+        # Special JARs (EventTranslator split-package fix, Alarmd)
+        "opennms-config/target/opennms-config-$VERSION.jar:opennms-config.jar"
+        "opennms-util/target/opennms-util-$VERSION.jar:opennms-util.jar"
+        "opennms-alarms/daemon/target/opennms-alarmd-$VERSION.jar:opennms-alarmd.jar"
+    )
+
+    local missing=0
+    for pair in "${pairs[@]}"; do
+        local src="${pair%%:*}"
+        local dst="${pair##*:}"
+        if [ -f "$REPO_ROOT/$src" ]; then
+            cp "$REPO_ROOT/$src" "$staging/$dst"
+        else
+            log "WARNING: $src not found — run './build.sh compile' first"
+            missing=$((missing + 1))
+        fi
+    done
+
+    log "Staged $(ls "$staging" | wc -l | tr -d ' ') files ($missing missing)"
+    [ "$missing" -gt 0 ] && [ "$missing" -gt 3 ] && err "Too many missing JARs — run './build.sh compile' first"
+}
+
+do_deltav_images() {
+    log "Building Delta-V layered images..."
+
+    do_stage_daemon_jars
+
+    # Daemon image (all 15 daemon services share one image)
+    log "Building opennms/daemon-deltav:$VERSION..."
+    cd "$SCRIPT_DIR"
+    docker build \
+        --build-arg "VERSION=$VERSION" \
+        -f Dockerfile.daemon \
+        -t "opennms/daemon-deltav:$VERSION" \
+        -t "opennms/daemon-deltav:latest" \
+        .
+
+    # Webapp image
+    log "Building opennms/horizon-deltav:$VERSION..."
+    docker build \
+        --build-arg "VERSION=$VERSION" \
+        -f Dockerfile.webapp \
+        -t "opennms/horizon-deltav:$VERSION" \
+        -t "opennms/horizon-deltav:latest" \
+        .
+
+    # Minion image
+    log "Building opennms/minion-deltav:$VERSION..."
+    docker build \
+        --build-arg "VERSION=$VERSION" \
+        -f Dockerfile.minion \
+        -t "opennms/minion-deltav:$VERSION" \
+        -t "opennms/minion-deltav:latest" \
+        .
+
+    # Clean up staging
+    rm -rf "$SCRIPT_DIR/staging"
+
+    log "Delta-V images built:"
+    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "deltav" | head -10
+}
+
 do_webapp_overlay() {
     log "Preparing webapp overlay..."
     local overlay_dir="$SCRIPT_DIR/webapp-jetty-webinf-overlay"
@@ -149,10 +233,11 @@ usage() {
 Usage: ./build.sh [command]
 
 Commands:
-  (none)    Full build: compile + assemble + images
+  (none)    Full build: compile + assemble + images + deltav
   compile   Compile only (Maven)
   assemble  Assemble distributions (Horizon + Daemon + Alarmd)
-  images    Build Docker images only (requires prior assembly)
+  images    Build base Docker images only (requires prior assembly)
+  deltav    Build Delta-V layered images (stages JARs into derived images)
   overlay   Prepare webapp overlay files
   push      Build and push images to registry
   clean     Remove named Docker volumes (fresh start)
@@ -188,6 +273,7 @@ main() {
             do_assemble
             do_webapp_overlay
             do_images
+            do_deltav_images
             log "Build complete! Run: cd $SCRIPT_DIR && docker compose up -d"
             ;;
         compile)
@@ -199,6 +285,9 @@ main() {
         images)
             do_images
             ;;
+        deltav)
+            do_deltav_images
+            ;;
         overlay)
             do_webapp_overlay
             ;;
@@ -207,6 +296,7 @@ main() {
             do_assemble
             do_webapp_overlay
             do_images push
+            do_deltav_images
             ;;
         clean)
             do_clean

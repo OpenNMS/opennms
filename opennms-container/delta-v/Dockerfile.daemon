@@ -1,0 +1,56 @@
+# Delta-V daemon image — layers modified JARs and features.xml on top of
+# the base opennms/daemon image so that no bind mounts to ../../target/ are
+# needed at runtime.  Build with:
+#   ./build.sh deltav   (stages JARs, then builds this Dockerfile)
+#
+# The per-service config overlay (./xxx-overlay/etc) is still bind-mounted
+# at runtime via docker-compose — that's lightweight and expected.
+
+ARG VERSION
+FROM opennms/daemon:${VERSION}
+
+# ── Common JARs (all daemon containers) ──────────────────────────
+COPY staging/daemon/event-forwarder-kafka.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/${VERSION}/org.opennms.core.event-forwarder-kafka-${VERSION}.jar
+
+# Use the patched features.xml from webapp-overlay (extracted from image + Delta-V patches).
+# NOT container/features/target/classes/features.xml which is only one input to assembly.
+COPY webapp-overlay/system/org/opennms/karaf/opennms/${VERSION}/opennms-${VERSION}-features.xml \
+     /opt/sentinel/system/org/opennms/karaf/opennms/${VERSION}/opennms-${VERSION}-features.xml
+
+COPY staging/daemon/events.daemon.jar \
+     /opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/${VERSION}/org.opennms.features.events.daemon-${VERSION}.jar
+
+# ── Daemon-loader JARs (service-specific, all baked into single image) ──
+COPY staging/daemon/daemon-loader-trapd.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-trapd/${VERSION}/org.opennms.core.daemon-loader-trapd-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-syslogd.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-syslogd/${VERSION}/org.opennms.core.daemon-loader-syslogd-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-provisiond.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-provisiond/${VERSION}/org.opennms.core.daemon-loader-provisiond-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-bsmd.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-bsmd/${VERSION}/org.opennms.core.daemon-loader-bsmd-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-perspectivepoller.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-perspectivepoller/${VERSION}/org.opennms.core.daemon-loader-perspectivepoller-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-alarmd.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-alarmd/${VERSION}/org.opennms.core.daemon-loader-alarmd-${VERSION}.jar
+
+COPY staging/daemon/daemon-loader-telemetryd.jar \
+     /opt/sentinel/system/org/opennms/core/daemon-loader-telemetryd/${VERSION}/daemon-loader-telemetryd-${VERSION}.jar
+
+# ── Special JARs (service-specific but harmless to include in all) ──
+# EventTranslator: split-package fix for opennms-config + opennms-util
+COPY staging/daemon/opennms-config.jar \
+     /opt/sentinel/system/org/opennms/opennms-config/${VERSION}/opennms-config-${VERSION}.jar
+
+COPY staging/daemon/opennms-util.jar \
+     /opt/sentinel/system/org/opennms/opennms-util/${VERSION}/opennms-util-${VERSION}.jar
+
+# Alarmd: patched alarmd daemon JAR
+COPY staging/daemon/opennms-alarmd.jar \
+     /opt/sentinel/system/org/opennms/opennms-alarmd/${VERSION}/opennms-alarmd-${VERSION}.jar
