@@ -26,6 +26,9 @@
     <!-- Enable @Autowired processing for EnhancedLinkd and collaborators -->
     <context:annotation-config />
 
+    <!-- Shared KafkaRpcClientFactory wiring -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- ServiceRegistry: import the shared instance from OSGi (registered by
          service-registry module) rather than creating a local one with
          <onmsgi:default-registry/> which would be a different instance -->
@@ -68,9 +71,13 @@
     <onmsgi:reference id="onmsTopologyDao"
                       interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao"/>
 
-    <!-- SNMP client (from SNMP proxy feature) -->
-    <onmsgi:reference id="locationAwareSnmpClient"
-                      interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient"/>
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+    <!-- SNMP client — real RPC via KafkaRpcClientFactory to Minion.
+         SnmpProxyRpcModule.INSTANCE is a static singleton — no bean needed. -->
+    <bean id="locationAwareSnmpClient"
+          class="org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl"/>
 
     <!-- ============================================================== -->
     <!-- Local Beans: Enlinkd Configuration                             -->

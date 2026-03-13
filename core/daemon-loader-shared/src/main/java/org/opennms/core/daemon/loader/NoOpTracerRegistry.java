@@ -21,15 +21,14 @@
  */
 package org.opennms.core.daemon.loader;
 
-import org.opennms.core.tracing.api.TracerRegistry;
-
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import org.opennms.core.tracing.api.TracerRegistry;
 
 /**
- * A no-op implementation of {@link TracerRegistry} that returns the
- * {@link io.opentracing.noop.NoopTracer} from {@link GlobalTracer}.
- * Used in standalone daemon containers where distributed tracing is not configured.
+ * No-op TracerRegistry for standalone daemon containers.
+ * Returns the GlobalTracer (which defaults to NoopTracer).
+ * Satisfies KafkaRpcClientFactory's @Autowired TracerRegistry.
  */
 public class NoOpTracerRegistry implements TracerRegistry {
 
@@ -40,6 +39,6 @@ public class NoOpTracerRegistry implements TracerRegistry {
 
     @Override
     public void init(String serviceName) {
-        // No-op: no tracer to initialize
+        // No-op — standalone daemon containers don't use distributed tracing
     }
 }

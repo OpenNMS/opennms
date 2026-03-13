@@ -193,6 +193,8 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=4
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - pollerd-data:/opt/sentinel/data
       - ./pollerd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -230,6 +232,8 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=5
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - collectd-data:/opt/sentinel/data
       - ./collectd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -301,6 +305,8 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=9
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - discovery-data:/opt/sentinel/data
       - ./discovery-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -479,6 +485,8 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=14
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - enlinkd-data:/opt/sentinel/data
       - ./enlinkd-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -547,6 +555,8 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=16
+        -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - provisiond-data:/opt/sentinel/data
       - ./provisiond-overlay/etc:/opt/sentinel-etc-overlay:ro
@@ -623,6 +633,7 @@ services:
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=7
         -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.rpc.force-remote=true
     volumes:
       - perspectivepollerd-data:/opt/sentinel/data
       - ./perspectivepollerd-overlay/etc:/opt/sentinel-etc-overlay:ro

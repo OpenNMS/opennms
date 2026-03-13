@@ -170,6 +170,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Shared KafkaRpcClientFactory wiring -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.daemon-loader-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- RPC API (RpcClientFactory) -->
         <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Shared KafkaRpcClientFactory wiring for standalone daemon containers.
+
+  CONTRACT: The importing daemon-loader context MUST provide:
+    - distPollerDao (onmsgi:reference to DistPollerDao)
+    - <context:annotation-config/> (for @Autowired processing)
+
+  This fragment provides:
+    - rpcIdentity, rpcLocation (from distPollerDao.whoami())
+    - kafkaRpcMetricRegistry (MetricRegistry for RPC monitoring)
+    - rpcTargetHelper (routes RPC calls to correct Minion location)
+    - tracerRegistry (NoOpTracerRegistry for KafkaRpcClientFactory's @Autowired)
+    - rpcClientFactory (KafkaRpcClientFactory with start/stop lifecycle)
+
+  KafkaRpcClientFactory reads bootstrap.servers from system property:
+    -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       ">
+
+    <!-- Identity resolution from DistPollerDao -->
+    <bean id="rpcIdentity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="distPollerDao"/>
+        <property name="targetMethod" value="whoami"/>
+    </bean>
+    <bean id="rpcLocation" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="rpcIdentity"/>
+        <property name="targetMethod" value="getLocation"/>
+    </bean>
+
+    <!-- Shared infrastructure -->
+    <bean id="kafkaRpcMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="rpcTargetHelper" class="org.opennms.core.rpc.utils.RpcTargetHelper"/>
+
+    <!-- No-op tracer (KafkaRpcClientFactory has @Autowired TracerRegistry) -->
+    <bean id="tracerRegistry"
+          class="org.opennms.core.daemon.loader.NoOpTracerRegistry"/>
+
+    <!-- KafkaRpcClientFactory: reads bootstrap.servers from system property
+         org.opennms.core.ipc.rpc.kafka.bootstrap.servers -->
+    <bean id="rpcClientFactory"
+          class="org.opennms.core.ipc.rpc.kafka.KafkaRpcClientFactory"
+          init-method="start" destroy-method="stop">
+        <property name="location" ref="rpcLocation"/>
+        <property name="metrics" ref="kafkaRpcMetricRegistry"/>
+    </bean>
+
+</beans>

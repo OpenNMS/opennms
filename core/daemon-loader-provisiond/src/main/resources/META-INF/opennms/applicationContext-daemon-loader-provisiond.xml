@@ -25,6 +25,9 @@
     <context:annotation-config />
     <tx:annotation-driven />
 
+    <!-- Shared KafkaRpcClientFactory wiring (provides rpcClientFactory, rpcTargetHelper, tracerRegistry) -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- Property placeholder for filesystem paths -->
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
@@ -78,6 +81,9 @@
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
 
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
     <!-- ============================================================== -->
     <!-- ForeignSourceRepository (local filesystem-based)               -->
     <!-- ============================================================== -->
@@ -126,17 +132,31 @@
     <bean id="snmpPeerFactoryInitializer" class="org.opennms.core.daemon.loader.SnmpPeerFactoryInitializer"/>
     <bean id="snmpPeerFactory" factory-bean="snmpPeerFactoryInitializer" factory-method="getInstance"/>
 
-    <!-- LocationAware clients - local implementations for standalone container -->
+    <!-- LocationAware clients - real RPC implementations via KafkaRpcClientFactory -->
+
+    <!-- SNMP: SnmpProxyRpcModule.INSTANCE is a static singleton, no bean needed -->
     <bean id="locationAwareSnmpClient"
-          class="org.opennms.core.daemon.loader.LocalSnmpClient"/>
-    <bean id="locationAwareDnsLookupClient"
-          class="org.opennms.core.daemon.loader.LocalDnsLookupClient"/>
+          class="org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl"/>
+
+    <!-- Detector: requires ServiceDetectorRegistry + scanExecutor -->
+    <bean id="serviceDetectorRegistry"
+          class="org.opennms.core.daemon.loader.LocalServiceDetectorRegistry"/>
+    <bean id="detectorClientRpcModule"
+          class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule"/>
     <bean id="locationAwareDetectorClient"
-          class="org.opennms.core.daemon.loader.LocalDetectorClient"/>
+          class="org.opennms.netmgt.provision.detector.client.rpc.LocationAwareDetectorClientRpcImpl"/>
+
+    <!-- DNS: DnsLookupClientRpcModule with 4-thread pool -->
+    <bean id="dnsLookupClientRpcModule"
+          class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule">
+        <constructor-arg value="4"/>
+    </bean>
+    <bean id="locationAwareDnsLookupClient"
+          class="org.opennms.netmgt.provision.dns.client.rpc.LocationAwareDnsLookupClientRpcImpl"/>
+
     <bean id="snmpProfileMapper"
           class="org.opennms.core.daemon.loader.NoOpSnmpProfileMapper"/>
-    <bean id="tracerRegistry"
-          class="org.opennms.core.daemon.loader.NoOpTracerRegistry"/>
+    <!-- tracerRegistry provided by shared fragment import -->
 
     <!-- Delegating EventForwarder with @Qualifier("transactionAware") for DefaultProvisionService.
          In standalone container, events go straight to Kafka — no JPA transaction deferral needed. -->

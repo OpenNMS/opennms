@@ -30,6 +30,9 @@
     <!-- Enable @Autowired processing for Poller and QueryManagerDaoImpl -->
     <context:annotation-config />
 
+    <!-- Shared KafkaRpcClientFactory wiring -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- ServiceRegistry: import the shared instance from OSGi (registered by
          service-registry module) rather than creating a local one with
          <onmsgi:default-registry/> which would be a different, empty instance -->
@@ -84,6 +87,13 @@
     <!-- Transaction management (from opennms-persistence via SOA ServiceRegistry) -->
     <onmsgi:reference id="platformTransactionManager"
                       interface="org.springframework.transaction.PlatformTransactionManager"/>
+
+    <osgi:reference id="distPollerDao"
+                    interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <onmsgi:reference id="entityScopeProvider"
+                      interface="org.opennms.core.mate.api.EntityScopeProvider"/>
+    <osgi:reference id="filterDao"
+                    interface="org.opennms.netmgt.filter.api.FilterDao"/>
     <bean id="transactionTemplate"
           class="org.springframework.transaction.support.TransactionTemplate">
         <constructor-arg ref="platformTransactionManager"/>
@@ -103,12 +113,13 @@
     <bean id="pollerExecutor" class="java.util.concurrent.Executors"
           factory-method="newCachedThreadPool"/>
 
-    <!-- Local poller client: executes polls directly in-process (no RPC to Minion) -->
+    <!-- Poller RPC module: serializes/deserializes poller request/response DTOs -->
+    <bean id="pollerClientRpcModule"
+          class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule"/>
+
+    <!-- Real LocationAwarePollerClient — delegates polls to Minions via Kafka RPC -->
     <bean id="locationAwarePollerClient"
-          class="org.opennms.core.daemon.loader.LocalPollerClient">
-        <constructor-arg ref="serviceMonitorRegistry"/>
-        <constructor-arg ref="pollerExecutor"/>
-    </bean>
+          class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient"
                     ref="locationAwarePollerClient"/>
 

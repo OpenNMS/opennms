@@ -2127,8 +2127,13 @@
         <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <!-- Poller daemon classes -->
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
+        <!-- Poller RPC client (LocationAwarePollerClientImpl, PollerClientRpcModule) -->
+        <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
         <!-- Daemon loader (creates Poller, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only PerspectivePollerd: polls from multiple locations via Minion RPC -->
@@ -2165,6 +2170,7 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
         <!-- Daemon loader (creates PerspectivePollerd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-perspectivepoller/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Collectd: loads Collectd daemon without Manager/Eventd -->
@@ -2191,6 +2197,8 @@
         <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
         <!-- Daemon loader (creates Collectd, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-collectd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Rtcd: loads RTCManager daemon without Manager/Eventd -->
@@ -2220,11 +2228,21 @@
         <feature>opennms-distributed-core-impl</feature>
         <feature>opennms-persistence</feature>
         <feature>opennms-config</feature>
+        <feature>opennms-core-tracing</feature>
         <!-- API bundles needed by onmsgi:reference proxies -->
         <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-provision-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
+        <!-- RPC implementation bundles (ICMP proxy, detector client, ICMP pinger) -->
+        <bundle>mvn:org.opennms/org.opennms.icmp.proxy.rpc-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-icmp-best/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-discovery/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Trapd: loads Trapd daemon (UDP :1162) without Manager/Eventd -->
@@ -2291,6 +2309,7 @@
         <feature>opennms-event-forwarder-kafka</feature>
         <feature>opennms-distributed-core-impl</feature>
         <feature>opennms-persistence</feature>
+        <feature>opennms-core-tracing</feature>
         <!-- Config model (provides org.opennms.netmgt.config.utils needed by enlinkd.config at runtime) -->
         <bundle dependency="true">mvn:org.opennms/opennms-config-model/${project.version}</bundle>
         <!-- Enlinkd service API (provides persistence API, service API, criteria, guava, jung) -->
@@ -2314,7 +2333,12 @@
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.config/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.topologies/org.opennms.features.topologies.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+        <!-- SNMP RPC implementation (LocationAwareSnmpClientRpcImpl) -->
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-enlinkd/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Scriptd: loads Scriptd daemon (BSF script execution on events) without Manager/Eventd -->
@@ -2343,6 +2367,7 @@
         <feature>opennms-distributed-core-impl</feature>
         <feature>opennms-persistence</feature>
         <feature>opennms-config</feature>
+        <feature>opennms-core-tracing</feature>
         <feature>quartz</feature>
         <!-- Task coordinator (DefaultTaskCoordinator for import/scan/write lifecycles) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.tasks/${project.version}</bundle>
@@ -2354,8 +2379,14 @@
         <bundle>mvn:org.opennms.core.tracing/org.opennms.core.tracing.api/${project.version}</bundle>
         <!-- Provisiond classes -->
         <bundle>mvn:org.opennms/opennms-provisiond/${project.version}</bundle>
+        <!-- RPC implementation bundles (SNMP proxy, detector client, DNS lookup) -->
+        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
+        <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
         <!-- Daemon loader (creates Provisioner, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-provisiond/${project.version}</bundle>
+        <feature>opennms-core-ipc-rpc-kafka</feature>
+        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
     <!-- Karaf-only Bsmd: loads Bsmd daemon without Manager/Eventd.

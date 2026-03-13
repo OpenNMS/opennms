@@ -30,6 +30,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-17</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Import-Package>*;resolution:=optional</Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <Spring-Context>
                             META-INF/opennms/*.xml;publish-context:=false;create-asynchronously:=true
@@ -109,6 +110,55 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Shared KafkaRpcClientFactory wiring -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.daemon-loader-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- ICMP RPC implementation (LocationAwarePingClientImpl) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Detector RPC implementation -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-detectorclient-rpc</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- ICMP best-match pinger (JNA, pure Java) -->
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-icmp-best</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Kafka RPC -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.kafka</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- MATE engine (EntityScopeProvider for LocationAwareDetectorClientRpcImpl) -->
+        <dependency>
+            <groupId>org.opennms.core.mate</groupId>
+            <artifactId>org.opennms.core.mate.api</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
