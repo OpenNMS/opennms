@@ -28,6 +28,9 @@
     <!-- Enable @Autowired processing for Collectd -->
     <context:annotation-config />
 
+    <!-- Shared KafkaRpcClientFactory wiring -->
+    <import resource="classpath:kafka-rpc-client-factory.xml"/>
+
     <!-- ServiceRegistry: import the shared instance from OSGi (registered by
          service-registry module) rather than creating a local one with
          <onmsgi:default-registry/> which would be a different, empty instance -->
@@ -59,6 +62,9 @@
     <!-- Entity scope provider (optional — MATE engine) -->
     <onmsgi:reference id="entityScopeProvider"
                       interface="org.opennms.core.mate.api.EntityScopeProvider"/>
+
+    <onmsgi:reference id="distPollerDao"
+                      interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
     <!-- DAOs (from opennms-distributed-core-impl / opennms-persistence via SOA ServiceRegistry) -->
     <onmsgi:reference id="nodeDao"
@@ -95,12 +101,13 @@
     <bean id="collectorExecutor" class="java.util.concurrent.Executors"
           factory-method="newCachedThreadPool"/>
 
-    <!-- Local collector client: executes collections directly in-process (no RPC to Minion) -->
+    <!-- Collector RPC module: serializes/deserializes collector request/response DTOs -->
+    <bean id="collectorClientRpcModule"
+          class="org.opennms.netmgt.collection.client.rpc.CollectorClientRpcModule"/>
+
+    <!-- Real LocationAwareCollectorClient — delegates collections to Minions via Kafka RPC -->
     <bean id="locationAwareCollectorClient"
-          class="org.opennms.core.daemon.loader.LocalCollectorClient">
-        <constructor-arg ref="serviceCollectorRegistry"/>
-        <constructor-arg ref="collectorExecutor"/>
-    </bean>
+          class="org.opennms.netmgt.collection.client.rpc.LocationAwareCollectorClientImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient"
                     ref="locationAwareCollectorClient"/>
 
