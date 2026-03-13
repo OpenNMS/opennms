@@ -2751,4 +2751,27 @@ INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabl
    <alarm-data reduction-key="%source%:%snmphost%:%id%:%generic%:%specific%" alarm-type="3" auto-clean="true"/>
 </event>', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration');
 
-ALTER SEQUENCE eventconf_events_id_seq RESTART WITH 158;
+INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (158, 24, 'uei.opennms.org/syslogd/cisco/linkDown', 'Cisco Syslog LINK-3-UPDOWN: Interface Down', '<p>A Cisco IOS LINK-3-UPDOWN syslog message indicates that an interface has changed state to down.</p>
+            <p>Interface: %parm[ifDescr]%</p>', true, '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <uei>uei.opennms.org/syslogd/cisco/linkDown</uei>
+   <event-label>Cisco Syslog LINK-3-UPDOWN: Interface Down</event-label>
+   <descr>&lt;p>A Cisco IOS LINK-3-UPDOWN syslog message indicates that an interface has changed state to down.&lt;/p>
+            &lt;p>Interface: %parm[ifDescr]%&lt;/p></descr>
+   <logmsg dest="logndisplay">Cisco interface %parm[ifDescr]% is down (LINK-3-UPDOWN)</logmsg>
+   <severity>Minor</severity>
+   <alarm-data reduction-key="uei.opennms.org/syslogd/cisco/linkDown:%dpname%:%nodeid%:%parm[ifDescr]%" alarm-type="1" auto-clean="false">
+      <update-field field-name="severity" update-on-reduction="true"/>
+   </alarm-data>
+</event>', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration');
+INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (159, 24, 'uei.opennms.org/syslogd/cisco/linkUp', 'Cisco Syslog LINK-3-UPDOWN: Interface Up', '<p>A Cisco IOS LINK-3-UPDOWN syslog message indicates that an interface has changed state to up.</p>
+            <p>Interface: %parm[ifDescr]%</p>', true, '<event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <uei>uei.opennms.org/syslogd/cisco/linkUp</uei>
+   <event-label>Cisco Syslog LINK-3-UPDOWN: Interface Up</event-label>
+   <descr>&lt;p>A Cisco IOS LINK-3-UPDOWN syslog message indicates that an interface has changed state to up.&lt;/p>
+            &lt;p>Interface: %parm[ifDescr]%&lt;/p></descr>
+   <logmsg dest="logndisplay">Cisco interface %parm[ifDescr]% is up (LINK-3-UPDOWN)</logmsg>
+   <severity>Normal</severity>
+   <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[ifDescr]%" alarm-type="2" clear-key="uei.opennms.org/syslogd/cisco/linkDown:%dpname%:%nodeid%:%parm[ifDescr]%"/>
+</event>', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'system-migration');
+
+ALTER SEQUENCE eventconf_events_id_seq RESTART WITH 160;

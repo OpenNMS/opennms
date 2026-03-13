@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<!--
+Cisco IOS syslog event matching rules for Delta-V.
+
+Matches Cisco LINK-3-UPDOWN messages for interface link state changes.
+The "3" in LINK-3-UPDOWN is the Cisco IOS severity level (error).
+
+Example raw syslog messages sent by Cisco IOS:
+  %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to down
+  %LINK-3-UPDOWN: Interface GigabitEthernet0/1, changed state to up
+
+The RadixTreeSyslogParser extracts "%LINK-3-UPDOWN" as the process name
+and "Interface GigabitEthernet0/1, changed state to down" as the message body.
+Therefore:
+  - <process-match> filters on the process name (uses find(), partial match)
+  - <match> regex runs against the message body only (not the process name)
+
+These rules extract the interface name as the "ifDescr" parameter, which is
+used in the alarm reduction key for alarm creation and clearing.
+-->
+
+<syslogd-configuration-group>
+    <ueiList>
+
+        <!-- Cisco LINK-3-UPDOWN: Interface changed state to down -->
+        <ueiMatch>
+            <process-match expression="LINK-\d+-UPDOWN" />
+            <match type="regex" expression="Interface ([^,\s]+),?\s+changed state to down" />
+            <uei>uei.opennms.org/syslogd/cisco/linkDown</uei>
+            <parameter-assignment matching-group="1" parameter-name="ifDescr" />
+        </ueiMatch>
+
+        <!-- Cisco LINK-3-UPDOWN: Interface changed state to up -->
+        <ueiMatch>
+            <process-match expression="LINK-\d+-UPDOWN" />
+            <match type="regex" expression="Interface ([^,\s]+),?\s+changed state to up" />
+            <uei>uei.opennms.org/syslogd/cisco/linkUp</uei>
+            <parameter-assignment matching-group="1" parameter-name="ifDescr" />
+        </ueiMatch>
+
+    </ueiList>
+</syslogd-configuration-group>
