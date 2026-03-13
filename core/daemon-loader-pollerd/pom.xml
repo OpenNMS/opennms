@@ -160,6 +160,34 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Shared KafkaRpcClientFactory wiring -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.daemon-loader-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Poller RPC implementation -->
+        <dependency>
+            <groupId>org.opennms.features.poller</groupId>
+            <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Kafka RPC -->
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.kafka</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
