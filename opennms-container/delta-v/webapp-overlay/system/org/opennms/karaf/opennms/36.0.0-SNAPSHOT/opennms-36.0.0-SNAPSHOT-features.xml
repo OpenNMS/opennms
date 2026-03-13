@@ -1039,10 +1039,12 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-util</feature>
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/3.25.5</bundle>
+        <bundle dependency="true">mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/36.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/36.0.0-SNAPSHOT</bundle>
     </feature>
