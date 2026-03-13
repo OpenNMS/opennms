@@ -43,5 +43,6 @@ INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled
 INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by) VALUES (21, 'opennms.ticketd.events', '', 'opennms', 3, true, 5, CURRENT_TIMESTAMP , CURRENT_TIMESTAMP , 'system-migration');
 INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by) VALUES (22, 'opennms.tl1d.events', '', 'opennms', 2, true, 1, CURRENT_TIMESTAMP , CURRENT_TIMESTAMP , 'system-migration');
 INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by) VALUES (23, 'opennms.catch-all.events', '', 'opennms', 1, true, 4, CURRENT_TIMESTAMP , CURRENT_TIMESTAMP , 'system-migration');
+INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by) VALUES (24, 'cisco.syslog.events', 'Cisco IOS syslog events (LINK-3-UPDOWN)', 'cisco', 24, true, 2, CURRENT_TIMESTAMP , CURRENT_TIMESTAMP , 'system-migration');
 
-ALTER SEQUENCE eventconf_sources_id_seq RESTART WITH 24;
+ALTER SEQUENCE eventconf_sources_id_seq RESTART WITH 25;

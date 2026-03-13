@@ -11,6 +11,7 @@
             timezone=""
             />
 
+    <import-file>syslog/Cisco.syslog.xml</import-file>
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
     <import-file>syslog/NetgearProsafeSmartSwitch.syslog.xml</import-file>
