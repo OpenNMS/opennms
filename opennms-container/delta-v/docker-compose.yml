@@ -1,5 +1,5 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (18 services)
+# Delta-V: OpenNMS microservice-mode deployment (19 services)
 # db-init (schema migration, runs once) + Webapp + Minion
 # + Alarmd + Pollerd + Collectd + Rtcd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
@@ -165,7 +165,7 @@ services:
     ports:
       - "8301:8201"
       - "11162:1162/udp"
-      - "1514:10514/udp"
+      - "1514:1514/udp"
     healthcheck:
       test: ["CMD", "/health.sh"]
       interval: 30s
@@ -388,7 +388,7 @@ services:
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
-      - ../../core/daemon-loader-syslogd/target/daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/daemon-loader-syslogd/36.0.0-SNAPSHOT/daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:ro
+      - ../../core/daemon-loader-syslogd/target/org.opennms.core.daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-syslogd/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
