@@ -477,7 +477,7 @@ function parseEnvironment() {
   writeProcessEnv
   writeServerCerts
   writePromJmxConfig
-  writeTelemetryFeatureXml
+  # writeTelemetryFeatureXml
 
   if [ -n "$kafka_ipc_bootstrap" ]; then
     writeBootFile "$KAFKA_IPC_BOOT" "!minion-jms" "!opennms-core-ipc-jms" "opennms-core-ipc-kafka"

@@ -154,7 +154,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withEnv("TRAPD_CFG_TRAPD_LISTEN_INTERFACE", "0.0.0.0")
                 .withEnv("TRAPD_CFG_TRAPD_USEADDRESSFROMVARBIND", "true")
                 .withEnv("KARAF_SSH_HOST", "0.0.0.0")
-                .withEnv("TELEMETRY_FEATURES_XML", TELEMETRY_FEATURES_XML)
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
                 .withEnv("JAVA_OPTS", "-Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom")
                 .withEnv("MINION_ID",profile.getId())
