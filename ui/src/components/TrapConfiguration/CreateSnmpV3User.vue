@@ -120,6 +120,7 @@
       <FeatherButton
         primary
         data-test="text-button"
+        @click="createUser"
       >
         Create New User
       </FeatherButton>
@@ -139,6 +140,11 @@ import TableCard from '../Common/TableCard.vue'
 import SearchExistingCredential from './SearchExistingCredential.vue'
 
 const store = useTrapConfigStore()
+
+const createUser = () => {
+  // Logic to create SNMPv3 user goes here
+  console.log('Creating SNMPv3 user...')  
+}
 </script>
 
 <style lang="scss" scoped>
