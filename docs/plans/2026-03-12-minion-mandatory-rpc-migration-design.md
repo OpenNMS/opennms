@@ -186,7 +186,7 @@ Replace `LocalCollectorClient` with `LocationAwareCollectorClientImpl`.
 **Additional context changes**:
 - Add `<import resource="classpath:kafka-rpc-client-factory.xml"/>` (shared fragment)
 - Add `<onmsgi:reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>` (required by shared fragment — **not currently present**)
-- Add `<onmsgi:reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>` (**not currently present** — needed by LocationAwareCollectorClientImpl)
+- Verify `<onmsgi:reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider"/>` is present (already exists in Collectd's XML — needed by LocationAwareCollectorClientImpl)
 - Keep `<onmsgi:service interface="LocationAwareCollectorClient" ref="locationAwareCollectorClient"/>` — the new bean implements the same interface
 
 **Cleanup**: Delete `LocalCollectorClient.java`, `LocalCollectorRequestBuilder.java` from `daemon-loader-collectd`.
@@ -249,7 +249,7 @@ Daemons that do NOT use RPC (alarmd, trapd, syslogd, eventtranslator, ticketer, 
 | Class | Module | Purpose |
 |-------|--------|---------|
 | `NoOpTracerRegistry` | `daemon-loader-shared` | Moved from daemon-loader-perspectivepoller and daemon-loader-provisiond (consolidate duplicates) |
-| `LocalServiceDetectorRegistry` | `daemon-loader-provisiond` (also used by daemon-loader-discovery) | Discovers ServiceDetector implementations via ServiceLoader (same pattern as LocalServiceMonitorRegistry) |
+| `LocalServiceDetectorRegistry` | `daemon-loader-shared` (used by both daemon-loader-provisiond and daemon-loader-discovery) | Discovers ServiceDetector implementations via ServiceLoader (same pattern as LocalServiceMonitorRegistry) |
 
 ## Karaf Feature Assembly Changes
 
