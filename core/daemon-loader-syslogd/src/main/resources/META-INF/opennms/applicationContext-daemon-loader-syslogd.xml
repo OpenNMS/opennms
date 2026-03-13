@@ -53,9 +53,16 @@
     <osgi:reference id="distPollerDao"
                     interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
-    <!-- Sink API: local in-process implementations (no remote transport needed) -->
+    <!-- Sink API: local in-process dispatch + Kafka Sink bridge for Minion-forwarded syslog -->
     <bean id="messageConsumerManager"
-          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager"/>
+          class="org.opennms.core.daemon.loader.LocalMessageConsumerManager">
+        <property name="kafkaSinkBridge" ref="kafkaSinkBridge"/>
+    </bean>
+    <bean id="kafkaSinkBridge"
+          class="org.opennms.core.daemon.loader.KafkaSinkBridge"
+          init-method="afterPropertiesSet" destroy-method="destroy">
+        <constructor-arg ref="messageConsumerManager"/>
+    </bean>
     <bean id="messageDispatcherFactory"
           class="org.opennms.core.daemon.loader.LocalMessageDispatcherFactory">
         <constructor-arg ref="messageConsumerManager"/>
@@ -77,24 +84,8 @@
         <constructor-arg ref="syslogdMetricRegistry"/>
     </bean>
 
-    <!-- Listen for Syslog UDP messages and dispatch to the Sink API -->
-    <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl"
-          destroy-method="stop">
-        <constructor-arg ref="syslogdConfig"/>
-    </bean>
-
-    <!-- The Syslogd daemon -->
-    <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
-        <property name="syslogReceiver" ref="syslogReceiverCamelNetty"/>
-    </bean>
-
-    <!-- ============================================================== -->
-    <!-- Daemon Lifecycle (replaces Manager)                            -->
-    <!-- ============================================================== -->
-
-    <bean name="daemonLifecycleManager"
-          class="org.opennms.core.daemon.loader.DaemonLifecycleManager">
-        <constructor-arg ref="daemon"/>
-    </bean>
+    <!-- No UDP listener or Syslogd daemon bean — syslog messages arrive
+         via Kafka Sink topic (OpenNMS.Sink.Syslog) from Minion, consumed
+         by KafkaSinkBridge and dispatched to SyslogSinkConsumer. -->
 
 </beans>

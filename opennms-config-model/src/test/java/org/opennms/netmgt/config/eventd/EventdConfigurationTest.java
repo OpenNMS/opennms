@@ -36,35 +36,21 @@ public class EventdConfigurationTest extends XmlTestNoCastor<EventdConfiguration
     @Parameters
     public static Collection<Object[]> data() throws Exception {
         final EventdConfiguration config = new EventdConfiguration();
-        config.setTCPAddress("127.0.0.1");
-        config.setTCPPort(5817);
-        config.setUDPAddress("127.0.0.1");
-        config.setUDPPort(5817);
-        config.setReceivers(5);
         config.setGetNextEventID("SELECT nextval('eventsNxtId')");
-        config.setSocketSoTimeoutRequired("yes");
-        config.setSocketSoTimeoutPeriod(3000);
         config.setNumThreads(0);
         config.setBatchInterval(500);
         config.setBatchSize(1000);
         config.setQueueSize(10000);
-        
+
         return Arrays.asList(new Object[][] {
             {
                 config,
-                "<EventdConfiguration\n" + 
-                        "        TCPAddress=\"127.0.0.1\"\n" + 
-                        "        TCPPort=\"5817\"\n" + 
-                        "        UDPAddress=\"127.0.0.1\"\n" + 
-                        "        UDPPort=\"5817\"\n" + 
-                        "        receivers=\"5\"\n" + 
-                        "        getNextEventID=\"SELECT nextval('eventsNxtId')\"\n" + 
-                        "        socketSoTimeoutRequired=\"yes\"\n" + 
-                        "        socketSoTimeoutPeriod=\"3000\"\n"+
-                        "        sink-threads=\"0\"\n"+ 
-                        "        sink-queue-size=\"10000\"\n"+
-                        "        sink-batch-size=\"1000\"\n"+
-                        "        sink-batch-interval=\"500\"\n>"+
+                "<EventdConfiguration\n" +
+                        "        getNextEventID=\"SELECT nextval('eventsNxtId')\"\n" +
+                        "        sink-threads=\"0\"\n" +
+                        "        sink-queue-size=\"10000\"\n" +
+                        "        sink-batch-size=\"1000\"\n" +
+                        "        sink-batch-interval=\"500\"\n>" +
                         "</EventdConfiguration>"
             }
         });

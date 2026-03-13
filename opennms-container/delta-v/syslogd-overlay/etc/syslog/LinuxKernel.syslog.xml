@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!-- Syslog message match definitions for the Linux kernel -->
+
+<syslogd-configuration-group>
+    <ueiList>
+
+        <!-- OOM killer circa 2.6.18 - 2.6.35 -->
+        <ueiMatch>
+            <facility>kernel</facility>
+            <severity>Error</severity>
+            <match type="regex" expression="^(?:(.*):\s*)?Killed process (\d+) \((.*)\).*$" />
+            <uei>uei.opennms.org/vendor/linux/syslog/kernel/oomKilledProcess</uei>
+            <parameter-assignment matching-group="1" parameter-name="oomMessage" />
+            <parameter-assignment matching-group="2" parameter-name="killedProcID" />
+            <parameter-assignment matching-group="3" parameter-name="killedProcName" />
+        </ueiMatch>
+
+        <!-- OOM killer from 2.6.36 -->
+        <ueiMatch>
+            <facility>kernel</facility>
+            <severity>Error</severity>
+            <match type="regex" expression="^Killed process (\d+) \((.*)\) total-vm:(\d+)kB, anon-rss:(\d+)kB, file-rss:(\d+)kB.*$" />
+            <uei>uei.opennms.org/vendor/linux/syslog/kernel/oomKilledProcess</uei>
+            <parameter-assignment matching-group="1" parameter-name="killedProcID" />
+            <parameter-assignment matching-group="2" parameter-name="killedProcName" />
+            <parameter-assignment matching-group="3" parameter-name="killedProcTotalVM" />
+            <parameter-assignment matching-group="4" parameter-name="killedProcAnonRSS" />
+            <parameter-assignment matching-group="5" parameter-name="killedProcFileRSS" />
+        </ueiMatch>
+
+    </ueiList>
+</syslogd-configuration-group>

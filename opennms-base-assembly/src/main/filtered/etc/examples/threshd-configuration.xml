@@ -40,10 +40,6 @@
                         <parameter key="thresholding-group" value="dns-latency"/>
                 </service>
 
-                <service name="DHCP" interval="300000" user-defined="false" status="on">
-                        <parameter key="thresholding-group" value="dhcp-latency"/>
-                </service>
-
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 	</package>
 	

@@ -30,33 +30,13 @@ import org.opennms.netmgt.config.EventdConfigManager;
 /**
  * Customizable {@link EventdConfigManager} for test purposes.
  * It allows to override the default configuration by providing a map with custom values.
- * If now value is provided, the one from {@link EventdConfigManager} is used.
+ * If no value is provided, the one from {@link EventdConfigManager} is used.
  */
 public class CustomEventdConfigManager extends EventdConfigManager {
     private final Map<String, Object> properties;
 
     public CustomEventdConfigManager(final Map<String, Object> properties) throws IOException {
         this.properties = Objects.requireNonNull(properties);
-    }
-
-    @Override
-    public String getTCPIpAddress() {
-        return getValue("tcpIpAddress", super.getTCPIpAddress());
-    }
-
-    @Override
-    public int getTCPPort() {
-        return getValue("tcpPort", super.getTCPPort());
-    }
-
-    @Override
-    public String getUDPIpAddress() {
-        return getValue("udpIpAddress", super.getUDPIpAddress());
-    }
-
-    @Override
-    public int getUDPPort() {
-        return getValue("udpPort", super.getUDPPort());
     }
 
     private <T> T getValue(String key, T defaultValue) {

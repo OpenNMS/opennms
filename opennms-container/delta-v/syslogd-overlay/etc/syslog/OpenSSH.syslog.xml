@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Syslog message match definitions for OpenSSH -->
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="regex" expression="^Failed (.*?) for invalid user (\S+) from (.*?) port (\d+) ssh(\d)$"/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/invalidUser</uei>
+            <parameter-assignment matching-group="1" parameter-name="authMethod"/>
+            <parameter-assignment matching-group="2" parameter-name="user"/>
+            <parameter-assignment matching-group="3" parameter-name="remoteHost"/>
+            <parameter-assignment matching-group="4" parameter-name="remotePort"/>
+            <parameter-assignment matching-group="5" parameter-name="protocolVersion"/>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="regex" expression="^Failed (.*?) for (\S+) from (.*?) port (\d+) ssh(\d)$"/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/passwordFailure</uei>
+            <parameter-assignment matching-group="1" parameter-name="authMethod"/>
+            <parameter-assignment matching-group="2" parameter-name="user"/>
+            <parameter-assignment matching-group="3" parameter-name="remoteHost"/>
+            <parameter-assignment matching-group="4" parameter-name="remotePort"/>
+            <parameter-assignment matching-group="5" parameter-name="protocolVersion"/>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="regex" expression="^Bind to port (\d+) on (.*?) failed: (.*)\.$"/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/bindFailure</uei>
+            <parameter-assignment matching-group="1" parameter-name="bindPort"/>
+            <parameter-assignment matching-group="2" parameter-name="bindAddress"/>
+            <parameter-assignment matching-group="3" parameter-name="errorMessage"/>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="regex" expression="^Authentication refused: (.*)$"/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/authenticationRefused</uei>
+            <parameter-assignment matching-group="1" parameter-name="errorMessage"/>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="substr" expression="Cannot bind any address."/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/totalBindFailure</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^sshd$"/>
+            <match type="regex" expression=".*"/>
+            <uei>uei.opennms.org/vendor/openssh/syslog/sshd/unknownMessage</uei>
+        </ueiMatch>
+    </ueiList>
+</syslogd-configuration-group>

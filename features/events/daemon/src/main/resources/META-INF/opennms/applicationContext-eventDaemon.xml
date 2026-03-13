@@ -73,7 +73,7 @@
     </property>
   </bean>
 
-  <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
+  <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getNumThreads"/>
   <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
   <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
 
@@ -173,16 +173,6 @@
         factory-method="build"
         init-method="start"
         destroy-method="stop" />
-
-  <bean id="tcpListener" class="org.opennms.netmgt.eventd.listener.TcpListener" init-method="start" destroy-method="stop">
-    <constructor-arg ref="eventdConfigManager" />
-    <constructor-arg ref="eventIpcManagerImpl" />
-  </bean>
-
-  <bean id="udpListener" class="org.opennms.netmgt.eventd.listener.UdpListener" init-method="start" destroy-method="stop">
-    <constructor-arg ref="eventdConfigManager" />
-    <constructor-arg ref="eventIpcManagerImpl" />
-  </bean>
 
   <!-- Consume events from sink component -->
   <bean id="eventSinkConsumer" class="org.opennms.netmgt.eventd.sink.EventSinkConsumer">

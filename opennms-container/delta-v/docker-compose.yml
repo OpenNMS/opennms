@@ -1,5 +1,5 @@
 ---
-# Delta-V: OpenNMS microservice-mode deployment (18 services)
+# Delta-V: OpenNMS microservice-mode deployment (19 services)
 # db-init (schema migration, runs once) + Webapp + Minion
 # + Alarmd + Pollerd + Collectd + Rtcd
 # + Discovery + Trapd + Syslogd + Ticketer + EventTranslator + Enlinkd + Scriptd
@@ -144,8 +144,6 @@ services:
     container_name: delta-v-minion
     hostname: minion-default-01
     depends_on:
-      webapp:
-        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
@@ -165,6 +163,7 @@ services:
     ports:
       - "8301:8201"
       - "11162:1162/udp"
+      - "1514:1514/udp"
     healthcheck:
       test: ["CMD", "/health.sh"]
       interval: 30s
@@ -379,14 +378,15 @@ services:
         -XX:MaxMetaspaceSize=256m
         -Djava.security.egd=file:/dev/./urandom
         -Dorg.opennms.tsid.node-id=11
+        -Dorg.opennms.core.ipc.sink.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.sink.kafka.group.id=opennms-syslogd-sink
     volumes:
       - syslogd-data:/opt/sentinel/data
       - ./syslogd-overlay/etc:/opt/sentinel-etc-overlay:ro
       - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
       - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
       - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
-    ports:
-      - "10514:10514/udp"
+      - ../../core/daemon-loader-syslogd/target/org.opennms.core.daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-syslogd/36.0.0-SNAPSHOT/org.opennms.core.daemon-loader-syslogd-36.0.0-SNAPSHOT.jar:ro
     healthcheck:
       test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
       interval: 15s
@@ -687,6 +687,43 @@ services:
       retries: 20
       start_period: 60s
 
+  telemetryd:
+    profiles: [full]
+    image: opennms/daemon:${VERSION}
+    container_name: delta-v-telemetryd
+    hostname: telemetryd
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: opennms
+      POSTGRES_PASSWORD: opennms
+      POSTGRES_DB: opennms
+      JAVA_OPTS: >-
+        -Xms256m -Xmx512m
+        -XX:MaxMetaspaceSize=256m
+        -Djava.security.egd=file:/dev/./urandom
+        -Dorg.opennms.tsid.node-id=18
+        -Dorg.opennms.core.ipc.sink.kafka.bootstrap.servers=kafka:9092
+        -Dorg.opennms.core.ipc.sink.kafka.group.id=opennms-telemetryd-sink
+    volumes:
+      - telemetryd-data:/opt/sentinel/data
+      - ./telemetryd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      - ../../core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/36.0.0-SNAPSHOT/org.opennms.core.event-forwarder-kafka-36.0.0-SNAPSHOT.jar:ro
+      - ../../container/features/target/classes/features.xml:/opt/sentinel/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml:ro
+      - ../../features/events/daemon/target/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/36.0.0-SNAPSHOT/org.opennms.features.events.daemon-36.0.0-SNAPSHOT.jar:ro
+      - ../../core/daemon-loader-telemetryd/target/daemon-loader-telemetryd-36.0.0-SNAPSHOT.jar:/opt/sentinel/system/org/opennms/core/daemon-loader-telemetryd/36.0.0-SNAPSHOT/daemon-loader-telemetryd-36.0.0-SNAPSHOT.jar:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
 volumes:
   pgdata:
   kafkadata:
@@ -707,3 +744,4 @@ volumes:
   bsmd-data:
   perspectivepollerd-data:
   alarmd-data:
+  telemetryd-data:

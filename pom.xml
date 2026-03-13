@@ -1781,7 +1781,6 @@
     <curatorVersion>5.6.0</curatorVersion>
     <cxfVersion>3.6.8</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
-    <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
     <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
@@ -2723,11 +2722,6 @@
         <artifactId>org.opennms.core.test-api.xml</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.dhcpd</artifactId>
-        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
@@ -3981,11 +3975,6 @@
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
         <version>2.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>dhcp4java</artifactId>
-        <version>${dhcp4javaVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.mchange</groupId>
