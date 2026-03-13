@@ -1,12 +1,12 @@
 # OpenNMS Delta-V
 
-**Delta-V** is a microservice decomposition of [OpenNMS Horizon][], transforming the monolithic Java application into 17+ independently deployable Kafka-connected containers.
+**Delta-V** is a microservice decomposition of [OpenNMS Horizon][], transforming the monolithic Java application into 19+ independently deployable Kafka-connected containers.
 
 > For the original OpenNMS Horizon project description, see [OPENNMS.md](OPENNMS.md).
 
 ## Plan Status Dashboard
 
-### Complete (24 docs)
+### Complete (26 docs)
 
 | Date | Plan | Key Achievement |
 |------|------|-----------------|
@@ -22,6 +22,7 @@
 | 03-12 | Minion E2E Pipeline Report | 13/13 tests passing, 3 race-condition bugs fixed |
 | 03-12 | Minion-Mandatory RPC Migration | **All 6 daemons migrated** to real KafkaRpcClientFactory (PR #17) |
 | 03-12 | PerspectivePollerd Cleanup | Standalone container running healthy (TSID=7, PR #15) |
+| 03-13 | Minion-Only Listeners (design + impl) | Eventd/DHCP deleted, Syslogd KafkaSinkBridge, Telemetryd container (TSID=18) |
 
 ### Superseded (2 docs)
 
@@ -49,10 +50,11 @@
 1. **Events table eliminated** — events never touch PostgreSQL
 2. **ActiveMQ eliminated** — all IPC via Kafka
 3. **Core container eliminated** — replaced by lightweight `db-init` Spring Boot app
-4. **18 standalone daemon containers** running on `opennms/daemon` image
+4. **19 standalone daemon containers** running on `opennms/daemon` image
 5. **Minion RPC mandatory** — all 6 polling/collection daemons use real Kafka RPC
 6. **End-to-end validated** — both direct (11 tests) and Minion (13 tests) pipelines passing
-7. **Legacy features removed** — Tl1d, Charts, Device Config Backup, Database Reports/Jasper all deleted
+7. **Legacy features removed** — Tl1d, Charts, Device Config Backup, Database Reports/Jasper, DHCP monitor all deleted
+8. **Minion-only network ingress** — Eventd listeners deleted, Syslogd/Telemetryd consume via KafkaSinkBridge from Minion
 
 ### Remaining Work
 
@@ -100,14 +102,15 @@ Minion → Kafka Sink → Trapd/Syslogd
 | collectd | opennms/daemon | 5 | Performance data collection |
 | rtcd | opennms/daemon | 6 | Response time collection daemon |
 | discovery | opennms/daemon | 9 | Network discovery |
-| trapd | opennms/daemon | 10 | SNMP trap reception (UDP 1162) |
-| syslogd | opennms/daemon | 11 | Syslog reception (UDP 10514) |
+| trapd | opennms/daemon | 10 | SNMP trap reception (via Minion Kafka Sink) |
+| syslogd | opennms/daemon | 11 | Syslog reception (via Minion Kafka Sink) |
 | ticketer | opennms/daemon | 12 | Trouble ticket integration |
 | eventtranslator | opennms/daemon | 13 | Event translation rules |
 | enlinkd | opennms/daemon | 14 | Enhanced link discovery |
 | scriptd | opennms/daemon | 15 | Script-based event automation |
 | provisiond | opennms/daemon | 16 | Node provisioning and scanning |
 | bsmd | opennms/daemon | 17 | Business service monitoring |
+| telemetryd | opennms/daemon | 18 | Telemetry/flow reception (via Minion Kafka Sink) |
 | minion | opennms/minion | — | Distributed data collection agent |
 | db-init | opennms/db-init | — | One-shot Liquibase schema migration |
 | postgres | postgres:16 | — | PostgreSQL database (alarms only) |
@@ -120,6 +123,8 @@ Minion → Kafka Sink → Trapd/Syslogd
 | `opennms-fault-events` | Alarm-bearing events (traps, syslog, translated events with alarm-data) |
 | `opennms-ipc-events` | Daemon-to-daemon internal events (newSuspect, nodeScanCompleted, reloadDaemonConfig) |
 | `OpenNMS.Sink.Trap` | Minion → Trapd raw trap forwarding |
+| `OpenNMS.Sink.Syslog` | Minion → Syslogd raw syslog forwarding |
+| `OpenNMS.Sink.Telemetry-*` | Minion → Telemetryd per-protocol flow forwarding |
 
 ## Quick Start
 
@@ -172,13 +177,15 @@ See [BUILD.md](BUILD.md) for detailed build instructions.
 
 4. **Producer-side event enrichment** — Each daemon's `KafkaEventForwarder` loads 157 event definitions from the database via `EventConfInitializer` and applies severity + alarm-data to events before publishing to Kafka.
 
-5. **Minion communicates via Kafka only** — No REST dependency. SNMPv3 user config distributed via Twin API. Traps forwarded via Kafka Sink topic.
+5. **Minion communicates via Kafka only** — No REST dependency. SNMPv3 user config distributed via Twin API. Traps, syslog, and telemetry forwarded via Kafka Sink topics.
+
+6. **Minion is sole network ingress** — No daemon container binds external UDP/TCP monitoring ports. All protocol data (traps, syslog, flows) enters via Minion → Kafka Sink → KafkaSinkBridge → daemon container.
 
 ## Project Status
 
 See [DELTA-V_Status.md](DELTA-V_Status.md) for detailed progress tracking.
 
-**Current state:** 17 services running, all E2E tests passing (direct + Minion paths). PerspectivePollerd extraction (service #18) is designed and pending implementation.
+**Current state:** 19 services running (Telemetryd TSID=18 added), Minion is sole network ingress. Eventd listeners and DHCP monitor deleted. Syslogd and Telemetryd consume via KafkaSinkBridge from Minion.
 
 ## Documentation
 
