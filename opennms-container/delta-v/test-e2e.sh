@@ -185,6 +185,16 @@ else
     exit 1
 fi
 
+# Wait for Trapd's InterfaceToNodeCache to refresh so the newly provisioned
+# node (192.168.65.1) is mapped. The cache refresh interval is configured
+# to 15s via org.opennms.interface-node-cache.refresh-timer in Trapd's JAVA_OPTS.
+# Without this, the linkDown event gets nodeId=0 in the reduction key, which
+# prevents alarm clearing when linkUp arrives with the correct nodeId.
+CACHE_WAIT=20
+log ""
+log "Waiting ${CACHE_WAIT}s for Trapd InterfaceToNodeCache to refresh..."
+sleep "$CACHE_WAIT"
+
 # ══════════════════════════════════════════════════════════════════
 # Phase 2: Alarm Creation via linkDown Trap
 # ══════════════════════════════════════════════════════════════════
