@@ -4,6 +4,68 @@
 
 > For the original OpenNMS Horizon project description, see [OPENNMS.md](OPENNMS.md).
 
+## Plan Status Dashboard
+
+### Complete (22 docs)
+
+| Date | Plan | Key Achievement |
+|------|------|-----------------|
+| 03-02 | EventBus Redesign (design + impl + phase2) | Kafka-backed fault events, TSID generation, Alarmd extraction |
+| 03-05 | KafkaEventForwarder (design + impl + OSGi) | Per-daemon event enrichment + Kafka publish, no centralized Eventd |
+| 03-05 | Karaf-Only Daemon Assembly | Daemon-loader bundle pattern established |
+| 03-07 | Strike Fighter Completion (design + impl) | **18/18 tasks**, 4 dead daemons deleted, 8 daemons extracted |
+| 03-08 | Enlinkd & Scriptd Extraction | Both running as standalone containers |
+| 03-10 | E2E Integration Test | `test-e2e.sh` — 11 tests, 3 phases all passing |
+| 03-10 | Project Status Analysis | Snapshot: 100% Strike Fighter, 100% Phase A |
+| 03-11 | Db-Init Extraction | Spring Boot 4.0.3 app, 312 MB image (vs 35.6 GB Horizon) |
+| 03-12 | Minion E2E Pipeline Report | 13/13 tests passing, 3 race-condition bugs fixed |
+| 03-12 | Minion-Mandatory RPC Migration | **All 6 daemons migrated** to real KafkaRpcClientFactory (PR #17) |
+| 03-12 | PerspectivePollerd Cleanup | Standalone container running healthy (TSID=7, PR #15) |
+
+### Superseded (2 docs)
+
+| Date | Plan | Superseded By |
+|------|------|---------------|
+| 03-02 | EventBus Follow-ups | Later phases (Vacuumd deleted, not migrated) |
+| 03-07 | Strike Fighter Design | Exceeded — 17 services achieved vs. 15 planned |
+
+### Planned / Not Started (2 docs)
+
+| Date | Plan | Notes |
+|------|------|-------|
+| 03-08 | **Feature Removal** (design + impl) | Delete Tl1d, Charts, Device Config Backup, Database Reports — deferred |
+
+### In Progress / Partial (3 docs)
+
+| Date | Plan | Remaining Work |
+|------|------|----------------|
+| 03-11 | EventDao/Notifd/Minion REST Elimination | EventDao removed, Notifd eliminated, Minion REST eliminated |
+| 03-09 | Microservice Event Architecture | Two-topic Kafka design working; full IPC flow documented |
+
+### Deferred (2 docs)
+
+| Date | Plan | Reason |
+|------|------|--------|
+| 03-09 | Minion-Mandatory Architecture | Non-distributable monitors, collector delegation gaps |
+| 03-12 | Next-session prompts (×2) | Handoff docs for future sessions |
+
+### Architectural Milestones Achieved
+
+1. **Events table eliminated** — events never touch PostgreSQL
+2. **ActiveMQ eliminated** — all IPC via Kafka
+3. **Core container eliminated** — replaced by lightweight `db-init` Spring Boot app
+4. **18 standalone daemon containers** running on `opennms/daemon` image
+5. **Minion RPC mandatory** — all 6 polling/collection daemons use real Kafka RPC
+6. **End-to-end validated** — both direct (11 tests) and Minion (13 tests) pipelines passing
+
+### Remaining Work
+
+The main unfinished work is the **Feature Removal plan** (03-08) — deleting Tl1d, Charts, Device Config Backup, and Database Reports. Everything else is either complete or deferred by design.
+
+All plan documents are in [`docs/plans/`](docs/plans/).
+
+---
+
 ## What Is Delta-V?
 
 OpenNMS Horizon is an enterprise-grade open-source network monitoring platform. Delta-V restructures it from a single 35.6 GB monolith into lean, focused microservices:
