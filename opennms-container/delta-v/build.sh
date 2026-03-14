@@ -39,8 +39,12 @@ check_prereqs() {
             export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
         fi
     fi
-    java_version=$(java -version 2>&1 | head -1 | sed 's/.*"\([0-9]*\)\..*/\1/')
-    [ "$java_version" = "21" ] || err "Java 21 required (found: $java_version)"
+    if [ -z "${JAVA_HOME:-}" ]; then
+        err "JAVA_HOME not set and temurin-21 not found. Set JAVA_HOME to a JDK 21 installation."
+    fi
+    java_version=$("${JAVA_HOME}/bin/java" -version 2>&1 | head -1 | sed 's/.*"\([0-9]*\)\..*/\1/')
+    [ "$java_version" = "21" ] || err "Java 21 required (JAVA_HOME=$JAVA_HOME reports: $java_version)"
+    export PATH="${JAVA_HOME}/bin:${PATH}"
 
     # Ensure Docker buildx uses the "default" builder instance.
     # Docker Desktop sets the active builder to "desktop-linux", which the
