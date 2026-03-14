@@ -215,6 +215,7 @@
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
         <feature>health-api</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/${jettyVersion}</bundle>
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 

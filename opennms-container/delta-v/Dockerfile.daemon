@@ -8,14 +8,15 @@
 
 ARG VERSION
 FROM opennms/daemon:${VERSION}
+ARG VERSION
 
 # ── Common JARs (all daemon containers) ──────────────────────────
 COPY staging/daemon/event-forwarder-kafka.jar \
      /opt/sentinel/system/org/opennms/core/org.opennms.core.event-forwarder-kafka/${VERSION}/org.opennms.core.event-forwarder-kafka-${VERSION}.jar
 
-# Use the patched features.xml from webapp-overlay (extracted from image + Delta-V patches).
-# NOT container/features/target/classes/features.xml which is only one input to assembly.
-COPY webapp-overlay/system/org/opennms/karaf/opennms/${VERSION}/opennms-${VERSION}-features.xml \
+# Use the Karaf 4.4.9 features.xml extracted from the daemon base image.
+# This is separate from webapp-overlay/ which stays on Karaf 4.3.10 for the webapp.
+COPY daemon-overlay/system/org/opennms/karaf/opennms/${VERSION}/opennms-${VERSION}-features.xml \
      /opt/sentinel/system/org/opennms/karaf/opennms/${VERSION}/opennms-${VERSION}-features.xml
 
 COPY staging/daemon/events.daemon.jar \
