@@ -23,29 +23,26 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
- /**
- * <p>PassiveServiceMonitor class.</p>
+/**
+ * Monitors service status using externally-reported passive status values.
  *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
+ * <p>On Pollerd, the {@link PassiveStatusKeeper} singleton is populated from
+ * {@code passiveServiceStatus} events. On Minion, the singleton is populated
+ * by {@code PassiveStatusTwinSubscriber} which receives status via Twin API.</p>
+ *
+ * <p>This monitor is distributable — it inherits the default
+ * {@code getEffectiveLocation()} which passes location through unchanged,
+ * allowing it to execute on Minion.</p>
  */
-// this retrieves data from the deamon so it is not Distributable
 public class PassiveServiceMonitor extends AbstractServiceMonitor {
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-    	return PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
-    }
-
-    @Override
-    public String getEffectiveLocation(String location) {
-        // Always run the PSK in the same JVM
-        return MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+        return PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
     }
 }

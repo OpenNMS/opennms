@@ -184,6 +184,20 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <!-- Publish passive status to Minion via Twin API so PassiveServiceMonitor
+         can execute on Minion instead of forcing Default location -->
+    <osgi:reference id="twinPublisher"
+                    interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
+
+    <bean id="passiveStatusTwinPublisher"
+          class="org.opennms.netmgt.passive.PassiveStatusTwinPublisher"
+          init-method="init" destroy-method="close"
+          depends-on="passiveStatusKeeper">
+        <constructor-arg ref="twinPublisher"/>
+        <constructor-arg ref="passiveStatusKeeper"/>
+        <constructor-arg ref="eventIpcManager"/>
+    </bean>
+
     <!-- ============================================================== -->
     <!-- Daemon Lifecycle (replaces Manager)                            -->
     <!-- ============================================================== -->

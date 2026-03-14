@@ -183,6 +183,27 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     }
 
     /**
+     * Returns a snapshot of the current status table for Twin API publishing.
+     */
+    public Map<PassiveStatusKey, PollStatus> getStatusTable() {
+        if (m_statusTable == null) {
+            return new HashMap<>();
+        }
+        return new HashMap<>(m_statusTable);
+    }
+
+    /**
+     * Creates a PassiveStatusKeeper pre-populated with a status map.
+     * Used on Minion to create a read-only instance from Twin API data.
+     */
+    public static PassiveStatusKeeper fromStatusMap(Map<PassiveStatusKey, PollStatus> statusMap) {
+        PassiveStatusKeeper psk = new PassiveStatusKeeper();
+        psk.m_statusTable = new HashMap<>(statusMap);
+        psk.m_initialized = true;
+        return psk;
+    }
+
+    /**
      * <p>getStatus</p>
      *
      * @param nodeLabel a {@link java.lang.String} object.

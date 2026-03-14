@@ -83,6 +83,12 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin</groupId>
+      <artifactId>org.opennms.core.ipc.twin.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.sysprops</artifactId>
       <version>${project.version}</version>
