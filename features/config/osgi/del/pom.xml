@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
-            <version>2.0.9</version><!-- version must match the one from startup.properties -->
+            <version>2.3.0</version><!-- version must match the one from startup.properties -->
             <scope>provided</scope>
         </dependency>
     </dependencies>
