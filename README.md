@@ -6,7 +6,7 @@
 
 ## Plan Status Dashboard
 
-### Complete (26 docs)
+### Complete (28 docs)
 
 | Date | Plan | Key Achievement |
 |------|------|-----------------|
@@ -23,6 +23,8 @@
 | 03-12 | Minion-Mandatory RPC Migration | **All 6 daemons migrated** to real KafkaRpcClientFactory (PR #17) |
 | 03-12 | PerspectivePollerd Cleanup | Standalone container running healthy (TSID=7, PR #15) |
 | 03-13 | Minion-Only Listeners (design + impl) | Eventd/DHCP deleted, Syslogd KafkaSinkBridge, Telemetryd container (TSID=18) |
+| 03-14 | Java 21 Runtime Upgrade (design + impl) | Karaf 4.4.9, Felix 7.0.5, OSGi R8, Pax Web 8.0 — all daemons + Minion on JRE 21 |
+| 03-14 | Webapp Elimination from Test Pipeline | E2E tests use SQL-only verification, webapp removed from docker-compose |
 
 ### Superseded (2 docs)
 
@@ -55,6 +57,8 @@
 6. **End-to-end validated** — both direct (11 tests) and Minion (13 tests) pipelines passing
 7. **Legacy features removed** — Tl1d, Charts, Device Config Backup, Database Reports/Jasper, DHCP monitor all deleted
 8. **Minion-only network ingress** — Eventd listeners deleted, Syslogd/Telemetryd consume via KafkaSinkBridge from Minion
+9. **Java 21 runtime** — all daemon + Minion containers run JRE 21 with Karaf 4.4.9, Felix 7.0.5, OSGi R8, Pax Web 8.0
+10. **Webapp eliminated from test pipeline** — E2E tests verify via PostgreSQL directly, no 43GB Horizon image needed
 
 ### Remaining Work
 
@@ -71,7 +75,7 @@ OpenNMS Horizon is an enterprise-grade open-source network monitoring platform. 
 - **Each daemon runs in its own container** — independent scaling, isolation, and restartability
 - **Kafka-only event transport** — no ActiveMQ, no shared event bus
 - **Events never touch PostgreSQL** — only alarms are persisted to the database
-- **3 Docker images** serve all roles — `opennms/horizon` (webapp), `opennms/daemon` (all 14 daemon types), `opennms/minion` (distributed collection)
+- **2 Docker images** serve all daemon roles — `opennms/daemon` (all 17 daemon types, JRE 21), `opennms/minion` (distributed collection, JRE 21)
 - **One-shot database initialization** — `opennms/db-init` (312 MB) replaces the Core container for schema setup
 
 ## Architecture
@@ -96,11 +100,11 @@ Minion → Kafka Sink → Trapd/Syslogd
 
 | Service | Image | TSID | Purpose |
 |---------|-------|------|---------|
-| webapp | opennms/horizon | 3 | Web UI, REST API, Karaf console |
 | alarmd | opennms/daemon | 2 | Kafka → alarm creation/reduction → PostgreSQL |
 | pollerd | opennms/daemon | 4 | Service availability polling |
 | collectd | opennms/daemon | 5 | Performance data collection |
 | rtcd | opennms/daemon | 6 | Response time collection daemon |
+| perspectivepollerd | opennms/daemon | 7 | Perspective (remote location) polling |
 | discovery | opennms/daemon | 9 | Network discovery |
 | trapd | opennms/daemon | 10 | SNMP trap reception (via Minion Kafka Sink) |
 | syslogd | opennms/daemon | 11 | Syslog reception (via Minion Kafka Sink) |
@@ -134,35 +138,39 @@ cd opennms-container/delta-v
 # Start core infrastructure + all daemons
 COMPOSE_PROFILES=full docker compose up -d
 
-# Start minimal set (webapp, alarmd, pollerd, trapd, provisiond)
+# Start minimal set (alarmd, pollerd, trapd, provisiond)
 COMPOSE_PROFILES=lite docker compose up -d
 
 # Check service health
 docker compose ps
 
-# Run end-to-end integration test
-./test-e2e.sh
-
-# Run Minion end-to-end test
-./test-minion-e2e.sh
+# Run all E2E tests (no webapp required — SQL-only verification)
+./test-e2e.sh          # 11 tests: trap → provision → alarm lifecycle
+./test-minion-e2e.sh   # 13 tests: Minion → Kafka Sink → alarm lifecycle
+./test-syslog-e2e.sh   # 15 tests: syslog → Minion → Cisco alarm lifecycle
 ```
 
 ### Prerequisites
 
+- **JDK 21** (daemon/minion build and runtime)
 - Docker Desktop with **16 GB memory** (17+ JVM containers)
 - `snmptrap` (net-snmp) for E2E tests
 
 ## Building
 
+Requires **JDK 21** (`jenv`, `JAVA_HOME`, or temurin-21 auto-detected).
+
 ```bash
-# Full compile (skip tests)
-./compile.pl -DskipTests
+cd opennms-container/delta-v
 
-# Build daemon assembly
-cd opennms-assemblies/daemon && ../../maven/bin/mvn -DskipTests install
+# Full build: compile → assemble → images → deltav
+./build.sh
 
-# Build Docker images
-cd opennms-container/delta-v && ./build.sh
+# Or individual steps:
+./build.sh compile    # Maven compile with JDK 21
+./build.sh assemble   # Build Karaf assemblies (sentinel, minion, daemon, alarmd)
+./build.sh images     # Build base Docker images (sentinel, minion, db-init)
+./build.sh deltav     # Build Delta-V layered images (daemon-deltav, minion-deltav)
 ```
 
 See [BUILD.md](BUILD.md) for detailed build instructions.

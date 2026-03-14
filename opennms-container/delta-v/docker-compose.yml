@@ -79,63 +79,6 @@ services:
       OPENNMS_DBINIT_CREATE_USER: "false"
       JAVA_TOOL_OPTIONS: -Xms256m -Xmx512m
 
-  webapp:
-    image: opennms/horizon-deltav:${VERSION}
-    container_name: delta-v-webapp
-    hostname: webapp
-    command: ["-f"]
-    depends_on:
-      db-init:
-        condition: service_completed_successfully
-    environment:
-      TZ: America/New_York
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: opennms
-      POSTGRES_PASSWORD: opennms
-      OPENNMS_DBNAME: opennms
-      OPENNMS_DBUSER: opennms
-      OPENNMS_DBPASS: opennms
-      JAVA_OPTS: >-
-        -Xms512m -Xmx1536m
-        -XX:MaxMetaspaceSize=512m
-        -Djava.security.egd=file:/dev/./urandom
-        -Dorg.opennms.tsid.node-id=3
-      # Disable ALL daemons except JettyServer (Manager + Eventd are always on)
-      CORE_SERVICE_ALARMD_ENABLED: "false"
-      CORE_SERVICE_BSMD_ENABLED: "false"
-      CORE_SERVICE_TICKETER_ENABLED: "false"
-      CORE_SERVICE_QUEUED_ENABLED: "false"
-      CORE_SERVICE_ACTIOND_ENABLED: "false"
-      CORE_SERVICE_SCRIPTD_ENABLED: "false"
-      CORE_SERVICE_RTCD_ENABLED: "false"
-      CORE_SERVICE_POLLERD_ENABLED: "false"
-      CORE_SERVICE_ENHANCEDLINKD_ENABLED: "false"
-      CORE_SERVICE_COLLECTD_ENABLED: "false"
-      CORE_SERVICE_DISCOVERY_ENABLED: "false"
-      CORE_SERVICE_VACUUMD_ENABLED: "false"
-      CORE_SERVICE_EVENTTRANSLATOR_ENABLED: "false"
-      CORE_SERVICE_STATSD_ENABLED: "false"
-      CORE_SERVICE_PROVISIOND_ENABLED: "false"
-      CORE_SERVICE_ACKD_ENABLED: "false"
-      CORE_SERVICE_SYSLOGD_ENABLED: "false"
-      CORE_SERVICE_TELEMETRYD_ENABLED: "false"
-      CORE_SERVICE_TRAPD_ENABLED: "false"
-      CORE_SERVICE_PERSPECTIVEPOLLER_ENABLED: "false"
-      # JettyServer + KarafStartupMonitor stay enabled (defaults)
-    volumes:
-      - webapp-etc:/opt/opennms/etc
-      - webapp-data:/opennms-data
-    ports:
-      - "8980:8980"
-      - "8102:8101"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8980/opennms/rest/info || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 120s
-
   minion:
     image: opennms/minion-deltav:${VERSION}
     container_name: delta-v-minion
@@ -655,8 +598,6 @@ services:
 volumes:
   pgdata:
   kafkadata:
-  webapp-etc:
-  webapp-data:
   minion-data:
   pollerd-data:
   collectd-data:

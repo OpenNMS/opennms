@@ -78,9 +78,9 @@ do_assemble() {
     cd "$REPO_ROOT"
     ./maven/bin/mvn -DskipTests -pl container/shared,container/karaf,container/features clean install
 
-    log "Building Sentinel features module..."
+    log "Building Sentinel and Minion features modules..."
     cd "$REPO_ROOT"
-    ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
+    ./maven/bin/mvn -DskipTests -pl features/container/sentinel,features/container/minion,features/minion/core/repository,features/minion/repository clean install
 
     log "Building Sentinel assembly..."
     cd "$REPO_ROOT/opennms-assemblies/sentinel"
@@ -208,19 +208,6 @@ do_deltav_images() {
         -t "opennms/minion-deltav:$VERSION" \
         -t "opennms/minion-deltav:latest" \
         .
-
-    # Webapp image (requires Horizon base image built with Java 17)
-    if docker image inspect "opennms/horizon:$VERSION" >/dev/null 2>&1; then
-        log "Building opennms/horizon-deltav:$VERSION..."
-        docker build \
-            --build-arg "VERSION=$VERSION" \
-            -f Dockerfile.webapp \
-            -t "opennms/horizon-deltav:$VERSION" \
-            -t "opennms/horizon-deltav:latest" \
-            .
-    else
-        log "Skipping horizon-deltav (no opennms/horizon:$VERSION base image)"
-    fi
 
     # Clean up staging
     rm -rf "$SCRIPT_DIR/staging"

@@ -39,9 +39,7 @@ SYSLOG_HOST="localhost"
 SYSLOG_PORT="1514"                   # Minion's mapped syslog port (1514 → 1514/udp)
 NODE_SCAN_TIMEOUT=90                 # Longer timeout — extra Kafka hop via Minion
 ALARM_TIMEOUT=45
-REST_URL="http://localhost:8980/opennms/rest"
-REST_USER="admin"
-REST_PASS="admin"
+# Alarm verification uses PostgreSQL directly (no webapp dependency)
 IFDESCR="eth0"                       # Interface name for Cisco LINK-3-UPDOWN messages
 
 # ── Usage ─────────────────────────────────────────────────────────
@@ -170,12 +168,7 @@ done
 if ! docker ps --format '{{.Names}}' 2>/dev/null | grep -qw "delta-v-minion"; then
     err "Minion container is not running. Start with: docker start delta-v-minion"
 fi
-# Webapp is optional (REST API checks are non-critical)
-WEBAPP_AVAILABLE=false
-if docker compose ps --status running --format '{{.Name}}' 2>/dev/null | grep -qw "webapp"; then
-    WEBAPP_AVAILABLE=true
-fi
-ok "All required services running (including Minion)${WEBAPP_AVAILABLE:+, webapp available for REST checks}"
+ok "All required services running (including Minion)"
 
 # ── Ensure Cisco syslog eventconf is in the database ──────────────
 # The Cisco linkDown/linkUp events need alarm-data in the eventconf DB so that
@@ -358,17 +351,11 @@ else
     fail "No cisco/linkDown alarm found in PostgreSQL"
 fi
 
-if $WEBAPP_AVAILABLE; then
-    REST_RESPONSE=$(curl -sf -u "${REST_USER}:${REST_PASS}" \
-        "${REST_URL}/alarms?comparator=eq&uei=uei.opennms.org/syslogd/cisco/linkDown" \
-        -H 'Accept: application/json' 2>/dev/null || echo "")
-    if echo "$REST_RESPONSE" | grep -q '"totalCount"' && ! echo "$REST_RESPONSE" | grep -q '"totalCount":0'; then
-        ok "Alarm visible via REST API"
-    else
-        fail "Alarm not visible via REST API"
-    fi
+ALARM_COUNT=$(psql_query "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cisco/linkDown'")
+if [ "${ALARM_COUNT:-0}" -gt 0 ]; then
+    ok "Alarm verified in PostgreSQL ($ALARM_COUNT alarm(s))"
 else
-    log "  (Skipping REST API check — webapp not running)"
+    fail "No Cisco linkDown alarm found in PostgreSQL"
 fi
 
 # ══════════════════════════════════════════════════════════════════
@@ -405,17 +392,11 @@ else
     fi
 fi
 
-if $WEBAPP_AVAILABLE; then
-    REST_CLEARED=$(curl -sf -u "${REST_USER}:${REST_PASS}" \
-        "${REST_URL}/alarms?comparator=eq&uei=uei.opennms.org/syslogd/cisco/linkDown" \
-        -H 'Accept: application/json' 2>/dev/null || echo "")
-    if echo "$REST_CLEARED" | grep -qi '"severity".*:"CLEARED"'; then
-        ok "Alarm shows CLEARED via REST API"
-    else
-        fail "Alarm not showing CLEARED via REST API"
-    fi
+CLEARED_COUNT=$(psql_query "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cisco/linkDown' AND severity = 2")
+if [ "${CLEARED_COUNT:-0}" -gt 0 ]; then
+    ok "Alarm CLEARED verified in PostgreSQL"
 else
-    log "  (Skipping REST CLEARED check — webapp not running)"
+    fail "Alarm not showing CLEARED in PostgreSQL"
 fi
 
 # ══════════════════════════════════════════════════════════════════
