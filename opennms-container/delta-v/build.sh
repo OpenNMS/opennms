@@ -67,9 +67,12 @@ do_compile() {
 }
 
 do_assemble() {
-    log "Assembling Horizon distribution..."
-    cd "$REPO_ROOT"
-    ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests -p dir
+    log "Assembling Horizon distribution (webapp — skipped, use Java 17 if needed)..."
+    # NOTE: assemble.pl builds opennms-full-assembly which is the webapp container.
+    # The webapp stays on Java 17 and is out of scope for the Java 21 daemon upgrade.
+    # Build it separately with Java 17 if needed: JAVA_HOME=<jdk17> ./assemble.pl -p dir -DskipTests
+    # cd "$REPO_ROOT"
+    # ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests -p dir
 
     log "Building container/features module..."
     cd "$REPO_ROOT"
@@ -100,9 +103,15 @@ do_images() {
     local make_args="DOCKER_REGISTRY=$DOCKER_REGISTRY DOCKER_ORG=$DOCKER_ORG"
     [ "${1:-}" = "push" ] && make_args="$make_args DOCKER_FLAGS=--push"
 
-    log "Building Horizon image (opennms/horizon:$VERSION)..."
-    cd "$REPO_ROOT/opennms-container/core"
-    make image $make_args
+    # NOTE: Horizon image (webapp) requires full assembly built with Java 17.
+    # Build separately if needed: JAVA_HOME=<jdk17> ./assemble.pl -p dir && make -C opennms-container/core image
+    if [ -f "$REPO_ROOT/opennms-full-assembly/target/opennms-full-assembly-$VERSION-core.tar.gz" ]; then
+        log "Building Horizon image (opennms/horizon:$VERSION)..."
+        cd "$REPO_ROOT/opennms-container/core"
+        make image $make_args
+    else
+        log "Skipping Horizon image (no full assembly found — build with Java 17 if needed)"
+    fi
 
     # The sentinel Makefile tags as opennms/sentinel, but the Delta-V
     # docker-compose expects opennms/daemon. Build then re-tag.
