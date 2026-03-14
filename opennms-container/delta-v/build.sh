@@ -78,9 +78,9 @@ do_assemble() {
     cd "$REPO_ROOT"
     ./maven/bin/mvn -DskipTests -pl container/shared,container/karaf,container/features clean install
 
-    log "Building Sentinel features module..."
+    log "Building Sentinel and Minion features modules..."
     cd "$REPO_ROOT"
-    ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
+    ./maven/bin/mvn -DskipTests -pl features/container/sentinel,features/container/minion clean install
 
     log "Building Sentinel assembly..."
     cd "$REPO_ROOT/opennms-assemblies/sentinel"
