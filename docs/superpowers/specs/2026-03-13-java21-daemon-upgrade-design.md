@@ -104,6 +104,9 @@ Same websocket-api addition in `minion-health-check` feature:
 #### 3d. `features/minion/repository/.../features.boot`
 - `pax-war` → `pax-web-war`
 
+#### 3e. `opennms-container/delta-v/minion-overlay/features.boot`
+- `pax-war` → `pax-web-war` (delta-v overlay copy — without this, Minion container fails to boot because `pax-war` is blacklisted)
+
 ### 4. Drools/MVEL Fix and Other Module Changes
 
 #### 4a. `dependencies/drools/pom.xml`
@@ -129,12 +132,14 @@ Same websocket-api addition in `minion-health-check` feature:
 - `BASE_IMAGE` → `opennms/deploy-base:ubi9-3.6.3.b335-jre-21`
 
 #### 5d. `opennms-container/delta-v/build.sh`
-- Temurin detection: `temurin-17` → `temurin-21`
-- Version check: `"17"` → `"21"`
-- db-init special-case may simplify since main build is now also Java 21
+- Lines 38-39: Temurin auto-detection path `temurin-17` → `temurin-21`
+- Line 43: Version check `[ "$java_version" = "17" ]` → `[ "$java_version" = "21" ]`
+- Lines 88-95: db-init special-case — since the main build is now also Java 21, the separate `JAVA_HOME` override for db-init may no longer be needed. Simplify or remove if both use the same JDK.
 
 #### 5e. Post-build: webapp-overlay features.xml
-After rebuild with Karaf 4.4, re-extract the patched `features.xml` from the rebuilt image and commit to `webapp-overlay/system/`.
+After rebuild with Karaf 4.4, re-extract the patched `features.xml` from the rebuilt image and update `opennms-container/delta-v/webapp-overlay/system/org/opennms/karaf/opennms/36.0.0-SNAPSHOT/opennms-36.0.0-SNAPSHOT-features.xml`. This file currently contains Karaf 4.3.10 references that must be updated to reflect the 4.4.9 feature resolution.
+
+**Note:** `config.properties` already has `eecap-21` capability declarations — no change needed there, confirming Java 21 EE readiness.
 
 ### 6. Verification
 
@@ -161,6 +166,7 @@ Single commit (or small series) on `eventbus-redesign` — `git revert` returns 
 2. **Pax Web 8 API changes** — CXF health endpoint registration may differ
 3. **MVEL/Drools on Java 21** — alarm correlation engine uses Drools rules; MVEL 2.5.2.Final pin is the mitigation
 4. **Webapp compile-time impact** — POM version bumps are global; webapp compiles with new dependency versions but runs on Java 17 — should be fine but watch for compile errors
+5. **`karafSshdVersion` derived property** — `${karafVersion}.ONMS_1` automatically becomes `4.4.9.ONMS_1`. This is safe — it's only a feature version label on a locally-defined SSH feature in `features-core.xml`, not a Maven artifact. The actual bundles use `${karafVersion}` and `${minaSshdVersion}` which are standard Maven Central artifacts.
 
 ## Files Changed (Complete List)
 
@@ -183,3 +189,4 @@ Single commit (or small series) on `eventbus-redesign` — `git revert` returns 
 17. `opennms-container/minion/Dockerfile` — jre-21
 18. `opennms-container/common.mk` — jre-21
 19. `opennms-container/delta-v/build.sh` — accept Java 21
+20. `opennms-container/delta-v/minion-overlay/features.boot` — pax-web-war
