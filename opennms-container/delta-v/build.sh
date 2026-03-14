@@ -121,10 +121,15 @@ do_images() {
     docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:$VERSION"
     docker image tag "opennms/sentinel:$VERSION" "opennms/daemon:latest"
 
+    # Build Minion base image
+    log "Building Minion image (opennms/minion:$VERSION)..."
+    cd "$REPO_ROOT/opennms-container/minion"
+    make image $make_args
+
     do_db_init_image
 
     log "Docker images built:"
-    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel|db-init)" | head -15
+    docker images --format "  {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep -E "(horizon|daemon|sentinel|minion|db-init)" | head -20
 }
 
 do_stage_daemon_jars() {
