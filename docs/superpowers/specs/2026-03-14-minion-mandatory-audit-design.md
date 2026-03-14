@@ -21,7 +21,7 @@ A Minion at the Default location is always deployed in the container environment
 - **Default Minion:** Already in docker-compose, E2E tests pass through Minion path
 
 ### Remaining Work
-- Full audit of ~30+ monitors and ~10+ collectors
+- Full audit of ~65+ monitors and ~13+ collectors across multiple modules
 - Refactoring of non-distributable implementations (at minimum PassiveServiceMonitor)
 - Deletion of dead and self-monitoring monitors
 - Documentation of Minion-mandatory architecture
@@ -39,15 +39,29 @@ Static code analysis of every ServiceMonitor and ServiceCollector implementation
 
 **Signals in code:**
 - `PassiveStatusKeeper.getInstance()` or similar static singletons → non-distributable
-- `getEffectiveLocation()` override returning `"Default"` → explicitly non-distributable
-- `@Distributable` annotation → already marked distributable
-- Direct `java.net.Socket`, `DatagramSocket`, HTTP client, ICMP, SNMP usage → distributable (this IS the network I/O that runs on Minion)
+- `getEffectiveLocation()` override returning `"Default"` or `DEFAULT_MONITORING_LOCATION_ID` → explicitly non-distributable
+- Default `AbstractServiceMonitor.getEffectiveLocation()` passes location through unchanged → inherently distributable
+- Direct socket, datagram, HTTP client, ICMP, SNMP usage → distributable (this IS the network I/O that runs on Minion)
+- Process execution (e.g., `SystemExecuteMonitor`) → distributable but runs on Minion host, not managed node
+- Arbitrary script execution (e.g., `BSFMonitor`) → distributable but behavior depends on script content
+- Synthetic/no-op monitors (e.g., `LoopMonitor`) → distributable (no network I/O, no local state)
 - References to deleted tables/features → dead
 - `MinionHeartbeatMonitor`, `MinionRpcMonitor` → self-monitoring anti-pattern
 
+**Source locations to scan:**
+- `features/poller/monitors/core/` (~57 monitors registered via ServiceLoader)
+- `opennms-services/src/main/java/.../poller/monitors/` (PassiveServiceMonitor, etc.)
+- `integrations/opennms-vmware/` (VmwareMonitor, VmwareCimMonitor)
+- `protocols/*/` (Selenium, NSClient, CIFS, RADIUS monitors)
+- `opennms-wmi/` (WmiMonitor)
+- `opennms-asterisk/` (AsteriskSIPPeerMonitor)
+- `features/wsman/` (WsManMonitor)
+- All `META-INF/services/org.opennms.netmgt.poller.ServiceMonitor` registration files
+- All `META-INF/services/org.opennms.netmgt.collection.api.ServiceCollector` registration files
+
 **Deliverables:**
-1. Classification table for every monitor and collector
-2. Deletion list (dead + self-monitoring)
+1. Classification table for every monitor and collector — saved to `docs/superpowers/specs/2026-03-14-minion-mandatory-audit-results.md`
+2. Deletion list (dead + self-monitoring), including config cleanup (e.g., Minion package in `poller-configuration.xml`)
 3. Refactoring list with proposed fix for each non-distributable implementation
 
 ### Phase 2: Implementation (Follow-Up)
