@@ -6,6 +6,7 @@
 
 ARG VERSION
 FROM opennms/horizon:${VERSION}
+ARG VERSION
 
 # ── etc overlay (config files for webapp) ────────────────────────
 COPY webapp-overlay/etc/ /opt/opennms-etc-overlay/

@@ -8,6 +8,7 @@
 
 ARG VERSION
 FROM opennms/daemon:${VERSION}
+ARG VERSION
 
 # ── Common JARs (all daemon containers) ──────────────────────────
 COPY staging/daemon/event-forwarder-kafka.jar \

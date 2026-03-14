@@ -3,6 +3,7 @@
 
 ARG VERSION
 FROM opennms/minion:${VERSION}
+ARG VERSION
 
 # ── messagebus-api JAR (needed in both core and default repos) ───
 COPY webapp-overlay/system/org/opennms/org.opennms.core.messagebus.api/${VERSION}/org.opennms.core.messagebus.api-${VERSION}.jar \
