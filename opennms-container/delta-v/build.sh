@@ -161,10 +161,13 @@ do_stage_daemon_jars() {
         "core/daemon-loader-perspectivepoller/target/org.opennms.core.daemon-loader-perspectivepoller-$VERSION.jar:daemon-loader-perspectivepoller.jar"
         "core/daemon-loader-alarmd/target/org.opennms.core.daemon-loader-alarmd-$VERSION.jar:daemon-loader-alarmd.jar"
         "core/daemon-loader-telemetryd/target/daemon-loader-telemetryd-$VERSION.jar:daemon-loader-telemetryd.jar"
-        # Special JARs (EventTranslator split-package fix, Alarmd)
+        # Special JARs (EventTranslator split-package fix, Alarmd, Passive status)
         "opennms-config/target/opennms-config-$VERSION.jar:opennms-config.jar"
         "opennms-util/target/opennms-util-$VERSION.jar:opennms-util.jar"
         "opennms-alarms/daemon/target/opennms-alarmd-$VERSION.jar:opennms-alarmd.jar"
+        "opennms-services/target/opennms-services-$VERSION.jar:opennms-services.jar"
+        "opennms-provision/opennms-provisiond/target/opennms-provisiond-$VERSION.jar:opennms-provisiond.jar"
+        "features/minion/core/impl/target/core-impl-$VERSION.jar:minion-core-impl.jar"
     )
 
     local missing=0

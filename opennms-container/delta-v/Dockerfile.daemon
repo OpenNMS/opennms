@@ -55,3 +55,10 @@ COPY staging/daemon/opennms-util.jar \
 # Alarmd: patched alarmd daemon JAR
 COPY staging/daemon/opennms-alarmd.jar \
      /opt/sentinel/system/org/opennms/opennms-alarmd/${VERSION}/opennms-alarmd-${VERSION}.jar
+
+# Passive status: updated opennms-services (PassiveStatusKeeper Twin support) + Provisiond
+COPY staging/daemon/opennms-services.jar \
+     /opt/sentinel/system/org/opennms/opennms-services/${VERSION}/opennms-services-${VERSION}.jar
+
+COPY staging/daemon/opennms-provisiond.jar \
+     /opt/sentinel/system/org/opennms/opennms-provisiond/${VERSION}/opennms-provisiond-${VERSION}.jar
