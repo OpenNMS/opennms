@@ -76,7 +76,7 @@ do_assemble() {
 
     log "Building Karaf container modules (shared + karaf + features)..."
     cd "$REPO_ROOT"
-    ./maven/bin/mvn -DskipTests -pl container/shared,container/karaf,container/features install
+    ./maven/bin/mvn -DskipTests -pl container/shared,container/karaf,container/features clean install
 
     log "Building Sentinel features module..."
     cd "$REPO_ROOT"
@@ -84,19 +84,19 @@ do_assemble() {
 
     log "Building Sentinel assembly..."
     cd "$REPO_ROOT/opennms-assemblies/sentinel"
-    ../../maven/bin/mvn -DskipTests install
+    ../../maven/bin/mvn -DskipTests clean install
 
     log "Building Minion assembly..."
     cd "$REPO_ROOT/opennms-assemblies/minion"
-    ../../maven/bin/mvn -DskipTests install
+    ../../maven/bin/mvn -DskipTests clean install
 
     log "Building Daemon assembly..."
     cd "$REPO_ROOT/opennms-assemblies/daemon"
-    ../../maven/bin/mvn -DskipTests install
+    ../../maven/bin/mvn -DskipTests clean install
 
     log "Building Alarmd assembly..."
     cd "$REPO_ROOT/opennms-assemblies/alarmd"
-    ../../maven/bin/mvn -DskipTests install
+    ../../maven/bin/mvn -DskipTests clean install
 }
 
 do_db_init_image() {
