@@ -31,8 +31,6 @@ org.opennms.netmgt.poller.monitors.LoopMonitor
 org.opennms.netmgt.poller.monitors.MailTransportMonitor
 org.opennms.netmgt.poller.monitors.MemcachedMonitor
 org.opennms.netmgt.poller.monitors.MinaSshMonitor
-org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor
-org.opennms.netmgt.poller.monitors.MinionRpcMonitor
 org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor
 org.opennms.netmgt.poller.monitors.NrpeMonitor
 org.opennms.netmgt.poller.monitors.NtpMonitor
