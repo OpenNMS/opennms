@@ -4,16 +4,13 @@
 #
 # Validates the full passive status pipeline through Minion:
 #
-#   Phase 0: coldStart trap → Minion → Trapd → newSuspect → Provisiond (pipeline validation)
-#            Then SQL-based provisioning adds passive services + sets node label
+#   Phase 0: Requisition import provisions "The Internet" node with 3 passive
+#            services (GoogleCloud, Azure, AWS). coldStart trap validates the
+#            Minion trap pipeline.
 #   Phase 1: syslog "AWS Down" → Minion → Syslogd → EventTranslator →
-#            passiveServiceStatus → Outage + Alarm in PostgreSQL
+#            passiveServiceStatus → PassiveStatusKeeper → Twin API → Minion →
+#            PassiveServiceMonitor → Outage + Alarm in PostgreSQL
 #   Phase 2: syslog "AWS Up" → same pipeline → Outage closed + Alarm cleared
-#
-# Usage:
-#   ./test-passive-e2e.sh              Run the test
-#   ./test-passive-e2e.sh --verbose    Show full Kafka event trace
-#   ./test-passive-e2e.sh --cleanup    Delete test data after run
 #
 set -euo pipefail
 
@@ -27,8 +24,8 @@ TRAP_COMMUNITY="public"
 SYSLOG_HOST="localhost"
 SYSLOG_PORT="1514"
 NODE_LABEL="The Internet"
-NODE_SCAN_TIMEOUT=120
-CACHE_WAIT=20
+FOREIGN_SOURCE="cloud-services"
+PROVISION_TIMEOUT=120
 ALARM_TIMEOUT=60
 OUTAGE_TIMEOUT=120
 
@@ -86,8 +83,6 @@ send_syslog() {
     local msg="$3"
     local timestamp
     timestamp=$(date '+%b %d %H:%M:%S')
-    # Use the node IP as the syslog hostname so Syslogd's InterfaceToNodeCache
-    # can resolve it to a node (critical for getting the correct nodeid in events)
     echo "<${pri}>${timestamp} ${syslog_host} ${msg}" | nc -u -w1 "$SYSLOG_HOST" "$SYSLOG_PORT"
 }
 
@@ -133,6 +128,18 @@ wait_for_db() {
     return 1
 }
 
+wait_for_healthy() {
+    local container="$1"
+    local elapsed=0
+    while [ $elapsed -lt 60 ]; do
+        HEALTH=$(docker inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo "unknown")
+        if [ "$HEALTH" = "healthy" ]; then return 0; fi
+        sleep 5
+        elapsed=$((elapsed + 5))
+    done
+    return 1
+}
+
 # ── Prerequisite Checks ───────────────────────────────────────────
 log "Checking prerequisites..."
 
@@ -155,13 +162,11 @@ log "Ensuring cloud status event definitions exist in eventconf DB..."
 
 CLOUD_SOURCE_EXISTS=$(psql_query "SELECT count(*) FROM eventconf_sources WHERE name = 'cloud.status.events'")
 if [ "${CLOUD_SOURCE_EXISTS:-0}" -eq 0 ]; then
-    log "  Inserting cloud.status.events source..."
     psql_query "INSERT INTO eventconf_sources(id, name, description, vendor, file_order, enabled, event_count, created_time, last_modified, uploaded_by) VALUES (30, 'cloud.status.events', 'Cloud service status events (passive monitoring)', 'cloud', 30, true, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'test-passive-e2e')"
 fi
 
 SVCDOWN_EXISTS=$(psql_query "SELECT count(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/syslogd/cloud/serviceDown'")
 if [ "${SVCDOWN_EXISTS:-0}" -eq 0 ]; then
-    log "  Inserting cloud/serviceDown event definition..."
     psql_query "INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (200, 30, 'uei.opennms.org/syslogd/cloud/serviceDown', 'Cloud Service Down', 'Cloud service down via syslog', true, '<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">
    <uei>uei.opennms.org/syslogd/cloud/serviceDown</uei>
    <event-label>Cloud Service Down</event-label>
@@ -176,7 +181,6 @@ fi
 
 SVCUP_EXISTS=$(psql_query "SELECT count(*) FROM eventconf_events WHERE uei = 'uei.opennms.org/syslogd/cloud/serviceUp'")
 if [ "${SVCUP_EXISTS:-0}" -eq 0 ]; then
-    log "  Inserting cloud/serviceUp event definition..."
     psql_query "INSERT INTO eventconf_events(id, source_id, uei, event_label, description, enabled, xml_content, created_time, last_modified, modified_by) VALUES (201, 30, 'uei.opennms.org/syslogd/cloud/serviceUp', 'Cloud Service Up', 'Cloud service up via syslog', true, '<event xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">
    <uei>uei.opennms.org/syslogd/cloud/serviceUp</uei>
    <event-label>Cloud Service Up</event-label>
@@ -189,18 +193,124 @@ fi
 
 ok "Cloud status event definitions present in DB"
 
-# Restart syslogd to pick up new eventconf definitions
-log "Restarting syslogd to load new event definitions..."
-docker compose restart syslogd
-SYSLOGD_WAIT=0
-while [ $SYSLOGD_WAIT -lt 60 ]; do
-    HEALTH=$(docker inspect --format='{{.State.Health.Status}}' delta-v-syslogd 2>/dev/null || echo "unknown")
-    if [ "$HEALTH" = "healthy" ]; then break; fi
-    sleep 5
-    SYSLOGD_WAIT=$((SYSLOGD_WAIT + 5))
-done
-[ $SYSLOGD_WAIT -ge 60 ] && err "Syslogd did not become healthy within 60s"
-ok "Syslogd restarted and healthy"
+# ── Discover Docker Host Gateway IP ──────────────────────────────
+# The gateway IP is the source address Minion sees for syslog/trap packets
+# from the host. We need this for the requisition and syslog hostname.
+# Parse gateway from /proc/net/route (works in minimal containers without iproute2)
+GW_HEX=$(docker compose exec -T minion cat /proc/net/route 2>/dev/null | awk '$2=="00000000" {print $3}')
+if [ -n "$GW_HEX" ]; then
+    NODE_IP=$(printf "%d.%d.%d.%d" "0x${GW_HEX:6:2}" "0x${GW_HEX:4:2}" "0x${GW_HEX:2:2}" "0x${GW_HEX:0:2}")
+fi
+if [ -z "$NODE_IP" ]; then
+    # Fallback: check if a node already exists from prior run
+    NODE_IP=$(psql_query "SELECT ip.ipaddr FROM ipinterface ip JOIN node n ON ip.nodeid = n.nodeid LIMIT 1")
+fi
+if [ -z "$NODE_IP" ]; then
+    err "Could not determine Docker host gateway IP"
+fi
+log "Docker host gateway IP: ${NODE_IP}"
+
+# ══════════════════════════════════════════════════════════════════
+# Phase 0: Provision "The Internet" via Requisition Import
+# ══════════════════════════════════════════════════════════════════
+log ""
+log "Phase 0: Provisioning '${NODE_LABEL}' via requisition import..."
+
+# Check if node already exists with correct services from prior run
+EXISTING_SVC=$(psql_query "SELECT count(*) FROM ifservices s JOIN service svc ON s.serviceid = svc.serviceid JOIN ipinterface ip ON s.ipinterfaceid = ip.id JOIN node n ON ip.nodeid = n.nodeid WHERE n.nodelabel = '${NODE_LABEL}' AND svc.servicename IN ('GoogleCloud', 'Azure', 'AWS')")
+if [ "${EXISTING_SVC:-0}" -ge 3 ]; then
+    log "  Node '${NODE_LABEL}' with 3 passive services already exists"
+    ok "Node provisioned (prior run)"
+else
+    # Write the foreign source (no detectors — services declared in requisition)
+    cat > "$TEST_TMPDIR/cloud-services-fs.xml" <<FSEOF
+<?xml version="1.0" encoding="UTF-8"?>
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="${FOREIGN_SOURCE}">
+    <scan-interval>1d</scan-interval>
+    <detectors/>
+    <policies/>
+</foreign-source>
+FSEOF
+
+    # Write the requisition with the dynamic node IP and explicit services
+    cat > "$TEST_TMPDIR/cloud-services-req.xml" <<REQEOF
+<?xml version="1.0" encoding="UTF-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
+              foreign-source="${FOREIGN_SOURCE}"
+              date-stamp="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)">
+    <node foreign-id="the-internet" node-label="${NODE_LABEL}">
+        <interface ip-addr="${NODE_IP}" status="1" managed="true" snmp-primary="N">
+            <monitored-service service-name="GoogleCloud"/>
+            <monitored-service service-name="Azure"/>
+            <monitored-service service-name="AWS"/>
+        </interface>
+    </node>
+</model-import>
+REQEOF
+
+    log "  Requisition: ${NODE_LABEL} at ${NODE_IP} with GoogleCloud, Azure, AWS"
+
+    # Write files to the HOST overlay directory (mounted read-only into the container).
+    # On restart, the container entrypoint copies from overlay → /opt/sentinel/etc/.
+    mkdir -p provisiond-overlay/etc/foreign-sources provisiond-overlay/etc/imports
+    cp "$TEST_TMPDIR/cloud-services-fs.xml" "provisiond-overlay/etc/foreign-sources/${FOREIGN_SOURCE}.xml"
+    cp "$TEST_TMPDIR/cloud-services-req.xml" "provisiond-overlay/etc/imports/${FOREIGN_SOURCE}.xml"
+
+    # Add a requisition-def so Provisiond auto-imports the requisition on startup
+    cat > provisiond-overlay/etc/provisiond-configuration.xml <<PROVEOF
+<?xml version="1.0" encoding="UTF-8"?>
+<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+  foreign-source-dir="/opt/sentinel/etc/foreign-sources"
+  requistion-dir="/opt/sentinel/etc/imports"
+  importThreads="4" scanThreads="4" rescanThreads="4" writeThreads="4" >
+  <requisition-def import-name="${FOREIGN_SOURCE}"
+                   import-url-resource="file:///opt/sentinel/etc/imports/${FOREIGN_SOURCE}.xml">
+    <cron-schedule>0 0 0 * * ? 2099</cron-schedule>
+  </requisition-def>
+</provisiond-configuration>
+PROVEOF
+    ok "Requisition, foreign source, and provisiond config written to host overlay"
+
+    # Restart Provisiond to trigger the import
+    log "  Restarting Provisiond to import requisition..."
+    docker compose restart provisiond
+    wait_for_healthy delta-v-provisiond || err "Provisiond not healthy after restart"
+    ok "Provisiond restarted"
+
+    # Wait for node to appear in database
+    if wait_for_db "SELECT count(*) FROM node WHERE nodelabel = '${NODE_LABEL}'" "$PROVISION_TIMEOUT" "node '${NODE_LABEL}' in database"; then
+        ok "Node '${NODE_LABEL}' provisioned"
+    else
+        fail "Node '${NODE_LABEL}' not found after ${PROVISION_TIMEOUT}s"
+        log ""
+        log "Results: $PASS passed, $FAIL failed"
+        exit 1
+    fi
+
+    # Verify services
+    SVC_COUNT=$(psql_query "SELECT count(*) FROM ifservices s JOIN service svc ON s.serviceid = svc.serviceid JOIN ipinterface ip ON s.ipinterfaceid = ip.id JOIN node n ON ip.nodeid = n.nodeid WHERE n.nodelabel = '${NODE_LABEL}' AND svc.servicename IN ('GoogleCloud', 'Azure', 'AWS')")
+    if [ "${SVC_COUNT:-0}" -ge 3 ]; then
+        ok "All 3 passive services provisioned (GoogleCloud, Azure, AWS)"
+    else
+        fail "Expected 3 services, found ${SVC_COUNT:-0}"
+    fi
+fi
+
+# Restart daemons to pick up the new node:
+# - Syslogd: InterfaceToNodeCache needs the new node IP
+# - EventTranslator: needs cloud→passiveServiceStatus translation specs
+# - Pollerd: needs to schedule polls for the new passive services
+log ""
+log "Restarting syslogd, eventtranslator, pollerd for new node..."
+docker compose restart syslogd eventtranslator pollerd
+
+wait_for_healthy delta-v-syslogd && ok "Syslogd healthy" || fail "Syslogd not healthy"
+wait_for_healthy delta-v-eventtranslator && ok "EventTranslator healthy" || fail "EventTranslator not healthy"
+wait_for_healthy delta-v-pollerd && ok "Pollerd healthy" || fail "Pollerd not healthy"
+
+# Give Pollerd time to schedule polls and Twin API to sync
+log "Waiting 15s for Pollerd service discovery and Twin API sync..."
+sleep 15
 
 # ── Start Kafka Consumers ─────────────────────────────────────────
 log "Starting Kafka event consumers..."
@@ -219,17 +329,9 @@ IPC_CONSUMER_PID=$!
 
 sleep 8
 
-# ══════════════════════════════════════════════════════════════════
-# Phase 0a: Validate Minion Trap Pipeline (coldStart trap)
-# ══════════════════════════════════════════════════════════════════
+# ── Validate Minion Trap Pipeline (coldStart) ─────────────────────
 log ""
-log "Phase 0a: Validate Minion trap pipeline (coldStart trap)..."
-
-# Check if a node already exists (from prior test runs)
-EXISTING_NODE=$(psql_query "SELECT nodeid FROM node ORDER BY nodeid DESC LIMIT 1")
-if [ -n "$EXISTING_NODE" ]; then
-    log "  Node already exists (id=${EXISTING_NODE}) — sending coldStart to validate pipeline only"
-fi
+log "Validating Minion trap pipeline (coldStart trap)..."
 
 snmptrap -v 2c -c "$TRAP_COMMUNITY" "${TRAP_HOST}:${TRAP_PORT}" '' \
     1.3.6.1.6.3.1.1.5.1 \
@@ -238,145 +340,69 @@ snmptrap -v 2c -c "$TRAP_COMMUNITY" "${TRAP_HOST}:${TRAP_PORT}" '' \
 ok "coldStart trap sent to Minion at ${TRAP_HOST}:${TRAP_PORT}"
 
 if wait_for_kafka_event "$FAULT_LOG" "Cold_Start" 30 "coldStart event in fault-events"; then
-    ok "coldStart event processed by Trapd (via Minion pipeline)"
+    ok "coldStart event processed by Trapd (Minion pipeline validated)"
 else
     fail "coldStart event not seen in fault-events"
 fi
-
-if [ -z "$EXISTING_NODE" ]; then
-    # First run — wait for Provisiond to create the node
-    if wait_for_kafka_event "$IPC_LOG" "nodeScanCompleted" "$NODE_SCAN_TIMEOUT" "nodeScanCompleted"; then
-        ok "nodeScanCompleted — Provisiond created node from coldStart trap"
-    else
-        fail "nodeScanCompleted not received within ${NODE_SCAN_TIMEOUT}s"
-        log ""
-        log "Results: $PASS passed, $FAIL failed"
-        exit 1
-    fi
-else
-    ok "Node exists from prior run — skipping provisioning wait"
-fi
-
-# Discover the node's IP (Docker host gateway, varies by platform)
-NODE_IP=$(psql_query "SELECT ip.ipaddr FROM ipinterface ip JOIN node n ON ip.nodeid = n.nodeid ORDER BY n.nodeid DESC LIMIT 1")
-NODE_ID=$(psql_query "SELECT nodeid FROM node ORDER BY nodeid DESC LIMIT 1")
-log "  Node: id=${NODE_ID}, ip=${NODE_IP}"
-
-# ══════════════════════════════════════════════════════════════════
-# Phase 0b: Add Passive Services + Set Node Label via SQL
-# ══════════════════════════════════════════════════════════════════
-log ""
-log "Phase 0b: Adding passive services and setting node label via SQL..."
-
-# Set node label to "The Internet"
-psql_query "UPDATE node SET nodelabel = '${NODE_LABEL}' WHERE nodeid = ${NODE_ID}"
-ok "Node label set to '${NODE_LABEL}'"
-
-# Create service name records
-for SVC in GoogleCloud Azure AWS; do
-    psql_query "INSERT INTO service (serviceid, servicename) SELECT nextval('servicenxtid'), '${SVC}' WHERE NOT EXISTS (SELECT 1 FROM service WHERE servicename = '${SVC}')"
-done
-ok "Service name records created (GoogleCloud, Azure, AWS)"
-
-# Get the interface ID for this node
-IFACE_ID=$(psql_query "SELECT id FROM ipinterface WHERE nodeid = ${NODE_ID} LIMIT 1")
-
-# Link passive services to the interface
-for SVC in GoogleCloud Azure AWS; do
-    SVC_ID=$(psql_query "SELECT serviceid FROM service WHERE servicename = '${SVC}'")
-    ALREADY=$(psql_query "SELECT count(*) FROM ifservices WHERE ipinterfaceid = ${IFACE_ID} AND serviceid = ${SVC_ID}")
-    if [ "${ALREADY:-0}" -eq 0 ]; then
-        psql_query "INSERT INTO ifservices (id, ipinterfaceid, serviceid, status) VALUES (nextval('opennmsnxtid'), ${IFACE_ID}, ${SVC_ID}, 'A')"
-    fi
-done
-ok "Passive services linked to interface ${NODE_IP}"
-
-# Verify
-SVC_COUNT=$(psql_query "SELECT count(*) FROM ifservices s JOIN service svc ON s.serviceid = svc.serviceid WHERE s.ipinterfaceid = ${IFACE_ID} AND svc.servicename IN ('GoogleCloud', 'Azure', 'AWS')")
-if [ "${SVC_COUNT:-0}" -ge 3 ]; then
-    ok "Verified: 3 passive services on node '${NODE_LABEL}' at ${NODE_IP}"
-else
-    fail "Expected 3 services, found ${SVC_COUNT:-0}"
-fi
-
-# Restart syslogd to refresh InterfaceToNodeCache with the new node
-log ""
-log "Restarting syslogd to refresh InterfaceToNodeCache..."
-docker compose restart syslogd
-SYSLOGD_WAIT=0
-while [ $SYSLOGD_WAIT -lt 60 ]; do
-    HEALTH=$(docker inspect --format='{{.State.Health.Status}}' delta-v-syslogd 2>/dev/null || echo "unknown")
-    if [ "$HEALTH" = "healthy" ]; then break; fi
-    sleep 5
-    SYSLOGD_WAIT=$((SYSLOGD_WAIT + 5))
-done
-ok "Syslogd restarted with updated node cache"
-
-sleep 5
 
 # ══════════════════════════════════════════════════════════════════
 # Phase 1: AWS Down — Syslog → EventTranslator → Alarm + Outage
 # ══════════════════════════════════════════════════════════════════
 log ""
-log "Phase 1: AWS service down (syslog → passiveServiceStatus → outage + alarm)..."
+log "Phase 1: AWS service down..."
 log "  Sending: CLOUD-STATUS: Service AWS is Down (host=${NODE_IP})"
 
-# PRI 129 = local0.alert — use NODE_IP as syslog hostname so Syslogd resolves it
 send_syslog 129 "$NODE_IP" "CLOUD-STATUS: Service AWS is Down"
-
-ok "Syslog AWS Down sent to Minion (source host=${NODE_IP})"
+ok "Syslog AWS Down sent to Minion"
 
 if wait_for_kafka_event "$FAULT_LOG" "syslogd/cloud/serviceDown" "$ALARM_TIMEOUT" "cloud/serviceDown event"; then
     ok "cloud/serviceDown event seen in Kafka"
 else
-    fail "cloud/serviceDown event not seen in Kafka within ${ALARM_TIMEOUT}s"
+    fail "cloud/serviceDown not seen in Kafka within ${ALARM_TIMEOUT}s"
 fi
 
 if wait_for_kafka_event "$FAULT_LOG" "passiveServiceStatus" "$ALARM_TIMEOUT" "passiveServiceStatus event"; then
-    ok "passiveServiceStatus event seen in Kafka (EventTranslator working)"
+    ok "passiveServiceStatus event seen (EventTranslator working)"
 else
-    fail "passiveServiceStatus event not seen in Kafka within ${ALARM_TIMEOUT}s"
+    fail "passiveServiceStatus not seen in Kafka within ${ALARM_TIMEOUT}s"
 fi
 
 if wait_for_db "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cloud/serviceDown' AND alarmtype = 1" "$ALARM_TIMEOUT" "serviceDown alarm"; then
     ALARM_ROW=$(psql_query "SELECT alarmid, severity, reductionkey FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cloud/serviceDown' AND alarmtype = 1 LIMIT 1")
-    ok "Alarm created in PostgreSQL: $ALARM_ROW"
+    ok "Alarm created: $ALARM_ROW"
 else
-    fail "No cloud/serviceDown alarm found in PostgreSQL"
+    fail "No serviceDown alarm in PostgreSQL"
 fi
 
 if wait_for_db "SELECT count(*) FROM outages o JOIN ifservices s ON o.ifserviceid = s.id JOIN service svc ON s.serviceid = svc.serviceid WHERE svc.servicename = 'AWS' AND o.ifregainedservice IS NULL" "$OUTAGE_TIMEOUT" "AWS outage"; then
     ok "Outage created for AWS service"
 else
-    fail "No AWS outage found within ${OUTAGE_TIMEOUT}s"
+    fail "No AWS outage within ${OUTAGE_TIMEOUT}s"
 fi
 
 # ══════════════════════════════════════════════════════════════════
 # Phase 2: AWS Up — Syslog → Alarm Cleared + Outage Closed
 # ══════════════════════════════════════════════════════════════════
 log ""
-log "Phase 2: AWS service up (syslog → outage closed + alarm cleared)..."
+log "Phase 2: AWS service up..."
 
-# PRI 134 = local0.info
 send_syslog 134 "$NODE_IP" "CLOUD-STATUS: Service AWS is Up"
-
 ok "Syslog AWS Up sent to Minion"
 
 if wait_for_kafka_event "$FAULT_LOG" "syslogd/cloud/serviceUp" "$ALARM_TIMEOUT" "cloud/serviceUp event"; then
     ok "cloud/serviceUp event seen in Kafka"
 else
-    fail "cloud/serviceUp event not seen in Kafka within ${ALARM_TIMEOUT}s"
+    fail "cloud/serviceUp not seen in Kafka within ${ALARM_TIMEOUT}s"
 fi
 
-CLEARED_TIMEOUT=90
-if wait_for_db "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cloud/serviceDown' AND severity = 2" "$CLEARED_TIMEOUT" "alarm CLEARED"; then
+if wait_for_db "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cloud/serviceDown' AND severity = 2" 90 "alarm CLEARED"; then
     ok "Alarm CLEARED in PostgreSQL"
 else
     STILL=$(psql_query "SELECT alarmid, severity FROM alarms WHERE eventuei = 'uei.opennms.org/syslogd/cloud/serviceDown' LIMIT 1")
     if [ -n "$STILL" ]; then
-        fail "Alarm exists but NOT cleared (still: $STILL)"
+        fail "Alarm not cleared (still: $STILL)"
     else
-        fail "No alarm found in PostgreSQL"
+        fail "No alarm found"
     fi
 fi
 
@@ -393,8 +419,8 @@ log ""
 log "Results: $PASS passed, $FAIL failed"
 log ""
 log "Validated:"
-log "  Phase 0a: coldStart trap → Minion → Trapd → Provisiond (pipeline ✓)"
-log "  Phase 0b: SQL provisioning → '${NODE_LABEL}' + GoogleCloud/Azure/AWS"
-log "  Phase 1:  syslog Down → EventTranslator → passiveServiceStatus → Alarm + Outage"
-log "  Phase 2:  syslog Up → Alarm cleared + Outage closed"
+log "  Phase 0: Requisition import → '${NODE_LABEL}' + GoogleCloud/Azure/AWS"
+log "           coldStart trap → Minion → Trapd (pipeline ✓)"
+log "  Phase 1: syslog Down → EventTranslator → passiveServiceStatus → Alarm + Outage"
+log "  Phase 2: syslog Up → Alarm cleared + Outage closed"
 [ "$FAIL" -eq 0 ] && exit 0 || exit 1

@@ -3,4 +3,8 @@
   foreign-source-dir="/opt/sentinel/etc/foreign-sources"
   requistion-dir="/opt/sentinel/etc/imports"
   importThreads="4" scanThreads="4" rescanThreads="4" writeThreads="4" >
+  <requisition-def import-name="cloud-services"
+                   import-url-resource="file:///opt/sentinel/etc/imports/cloud-services.xml">
+    <cron-schedule>0 0 0 * * ? 2099</cron-schedule>
+  </requisition-def>
 </provisiond-configuration>

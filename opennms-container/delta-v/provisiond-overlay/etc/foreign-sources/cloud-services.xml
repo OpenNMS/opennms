@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="cloud-services">
+    <scan-interval>1d</scan-interval>
+    <detectors/>
+    <policies/>
+</foreign-source>
