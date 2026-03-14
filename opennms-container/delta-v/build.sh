@@ -187,15 +187,6 @@ do_deltav_images() {
         -t "opennms/daemon-deltav:latest" \
         .
 
-    # Webapp image
-    log "Building opennms/horizon-deltav:$VERSION..."
-    docker build \
-        --build-arg "VERSION=$VERSION" \
-        -f Dockerfile.webapp \
-        -t "opennms/horizon-deltav:$VERSION" \
-        -t "opennms/horizon-deltav:latest" \
-        .
-
     # Minion image
     log "Building opennms/minion-deltav:$VERSION..."
     docker build \
@@ -204,6 +195,19 @@ do_deltav_images() {
         -t "opennms/minion-deltav:$VERSION" \
         -t "opennms/minion-deltav:latest" \
         .
+
+    # Webapp image (requires Horizon base image built with Java 17)
+    if docker image inspect "opennms/horizon:$VERSION" >/dev/null 2>&1; then
+        log "Building opennms/horizon-deltav:$VERSION..."
+        docker build \
+            --build-arg "VERSION=$VERSION" \
+            -f Dockerfile.webapp \
+            -t "opennms/horizon-deltav:$VERSION" \
+            -t "opennms/horizon-deltav:latest" \
+            .
+    else
+        log "Skipping horizon-deltav (no opennms/horizon:$VERSION base image)"
+    fi
 
     # Clean up staging
     rm -rf "$SCRIPT_DIR/staging"
