@@ -1,20 +1,22 @@
 <?xml version="1.0"?>
 <!--
   Syslog match rules for cloud service status messages.
-  Matches: CLOUD-STATUS: Service <name> is <Down|Up>
-  The source IP is determined by Syslogd from the UDP packet, not from the message.
-  Used by the passive status E2E test pipeline.
+  The RadixTreeSyslogParser extracts "CLOUD-STATUS" as the process name
+  (from the colon in the syslog format), so we match on process-match
+  and then match the message body for the service name and status.
 -->
 <syslogd-configuration-group>
   <ueiList>
     <ueiMatch>
-      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) is (Down)$"/>
+      <process-match expression="^CLOUD-STATUS$"/>
+      <match type="regex" expression="^.*Service (\S+) is (Down)$"/>
       <uei>uei.opennms.org/syslogd/cloud/serviceDown</uei>
       <parameter-assignment matching-group="1" parameter-name="cloudService"/>
       <parameter-assignment matching-group="2" parameter-name="cloudStatus"/>
     </ueiMatch>
     <ueiMatch>
-      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) is (Up)$"/>
+      <process-match expression="^CLOUD-STATUS$"/>
+      <match type="regex" expression="^.*Service (\S+) is (Up)$"/>
       <uei>uei.opennms.org/syslogd/cloud/serviceUp</uei>
       <parameter-assignment matching-group="1" parameter-name="cloudService"/>
       <parameter-assignment matching-group="2" parameter-name="cloudStatus"/>
