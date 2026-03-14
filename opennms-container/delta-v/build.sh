@@ -74,13 +74,13 @@ do_assemble() {
     # cd "$REPO_ROOT"
     # ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests -p dir
 
-    log "Building container/features module..."
+    log "Building Karaf container modules (shared + karaf + features)..."
     cd "$REPO_ROOT"
-    JAVA_HOME="${JAVA_HOME:-}" ./maven/bin/mvn -DskipTests -pl container/features install
+    ./maven/bin/mvn -DskipTests -pl container/shared,container/karaf,container/features install
 
     log "Building Sentinel features module..."
     cd "$REPO_ROOT"
-    JAVA_HOME="${JAVA_HOME:-}" ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
+    ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
 
     log "Building Sentinel assembly..."
     cd "$REPO_ROOT/opennms-assemblies/sentinel"
