@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Requisition for the "The Internet" node with cloud services.
+  Services are auto-detected by LoopDetector in the cloud-services foreign source.
+-->
+<model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import"
+              foreign-source="cloud-services"
+              date-stamp="2026-03-14T00:00:00.000Z"
+              last-import="2026-03-14T00:00:00.000Z">
+    <node foreign-id="the-internet" node-label="The Internet">
+        <interface ip-addr="10.0.0.1" status="1" managed="true" snmp-primary="N"/>
+    </node>
+</model-import>
