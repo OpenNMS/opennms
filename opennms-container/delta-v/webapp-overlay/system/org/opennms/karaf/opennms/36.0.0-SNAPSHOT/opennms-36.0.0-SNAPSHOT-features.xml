@@ -8,9 +8,9 @@
     <repository>mvn:org.apache.activemq/activemq-karaf/5.16.8/xml/features</repository>
     <repository>mvn:org.opennms.integration.api/karaf-features/2.0.0/xml</repository>
     <repository>mvn:com.eclipsesource.jaxrs/features/1.1.0.ONMS/xml/features</repository>
-    <repository>mvn:org.apache.karaf.features/framework/4.3.10/xml/features</repository>
-    <repository>mvn:org.apache.karaf.features/standard/4.3.10/xml/features</repository>
-    <repository>mvn:org.apache.karaf.features/enterprise/4.3.10/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/framework/4.4.9/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/standard/4.4.9/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/enterprise/4.4.9/xml/features</repository>
 
     <!-- Newts Features -->
     <repository>mvn:org.opennms.newts/newts-karaf/3.0.0/xml/features</repository>
@@ -952,7 +952,7 @@
 
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="36.0.0-SNAPSHOT">
         <feature>jax-rs-connector</feature>
-        <feature>pax-http</feature>
+        <feature>pax-web-http-jetty</feature>
         <feature>opennms-alarm-history-api</feature>
         <feature>opennms-es-rest</feature>
         <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/36.0.0-SNAPSHOT</bundle>
@@ -1232,8 +1232,8 @@
     <feature name="opennms-jaas-login-module" version="36.0.0-SNAPSHOT" description="OpenNMS :: OSGi Container :: Karaf JAAS Login Module">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <bundle>mvn:org.opennms.container/org.opennms.container.jaas-login-module/36.0.0-SNAPSHOT</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/4.3.10</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/4.3.10</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.modules/4.4.9</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.jaas/org.apache.karaf.jaas.config/4.4.9</bundle>
     </feature>
     <feature name="jmxconfiggenerator" version="36.0.0-SNAPSHOT" description="OpenNMS JMX Configuration Generator">
         <feature version="31.1">guava</feature>
@@ -1274,7 +1274,7 @@
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature>org.opennms.features.bsm.service.api</feature>
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/36.0.0-SNAPSHOT</bundle>
-        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/4.3.10</bundle>
+        <bundle start-level="30">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/4.4.9</bundle>
     </feature>
     <feature name="vaadin-adminpage" version="36.0.0-SNAPSHOT" description="OpenNMS :: Features :: BSM :: Vaadin Adminpage">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1899,10 +1899,10 @@
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="36.0.0.SNAPSHOT">
         <bundle dependency="true" start-level="30">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle start-level="30">mvn:org.apache.felix/org.apache.felix.http.bridge/4.1.6</bundle>
-        <capability>http-service;provider:=pax-http</capability>
+        <capability>http-service;provider:=pax-web-http-jetty</capability>
         <conditional>
             <condition>webconsole</condition>
-            <bundle start-level="60">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.3.10</bundle>
+            <bundle start-level="60">mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.http/4.4.9</bundle>
         </conditional>
     </feature>
 
