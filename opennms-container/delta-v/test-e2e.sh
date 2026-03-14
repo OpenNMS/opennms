@@ -30,9 +30,7 @@ TRAP_PORT="1162"
 TRAP_COMMUNITY="public"
 NODE_SCAN_TIMEOUT=180
 ALARM_TIMEOUT=30
-REST_URL="http://localhost:8980/opennms/rest"
-REST_USER="admin"
-REST_PASS="admin"
+# Alarm verification uses PostgreSQL directly (no webapp dependency)
 IFINDEX=1
 
 # ── Usage ─────────────────────────────────────────────────────────
@@ -130,7 +128,7 @@ log "Checking prerequisites..."
 
 command -v snmptrap >/dev/null 2>&1 || err "snmptrap not found. Install net-snmp."
 
-REQUIRED_SERVICES="postgres kafka trapd eventtranslator alarmd provisiond webapp"
+REQUIRED_SERVICES="postgres kafka trapd eventtranslator alarmd provisiond"
 for svc in $REQUIRED_SERVICES; do
     if ! docker compose ps --status running --format '{{.Name}}' 2>/dev/null | grep -qw "$svc"; then
         err "Service '$svc' is not running. Deploy with: ./deploy.sh up passive"
@@ -223,13 +221,11 @@ else
     fail "No linkDown alarm found in PostgreSQL"
 fi
 
-REST_RESPONSE=$(curl -sf -u "${REST_USER}:${REST_PASS}" \
-    "${REST_URL}/alarms?comparator=eq&uei=uei.opennms.org/translator/traps/SNMP_Link_Down" \
-    -H 'Accept: application/json' 2>/dev/null || echo "")
-if echo "$REST_RESPONSE" | grep -q '"totalCount"' && ! echo "$REST_RESPONSE" | grep -q '"totalCount":0'; then
-    ok "Alarm visible via REST API"
+ALARM_COUNT=$(psql_query "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/translator/traps/SNMP_Link_Down'")
+if [ "${ALARM_COUNT:-0}" -gt 0 ]; then
+    ok "Alarm verified in PostgreSQL ($ALARM_COUNT alarm(s))"
 else
-    fail "Alarm not visible via REST API"
+    fail "No linkDown alarm found in PostgreSQL"
 fi
 
 # ══════════════════════════════════════════════════════════════════
@@ -265,13 +261,11 @@ else
     fi
 fi
 
-REST_CLEARED=$(curl -sf -u "${REST_USER}:${REST_PASS}" \
-    "${REST_URL}/alarms?comparator=eq&uei=uei.opennms.org/translator/traps/SNMP_Link_Down" \
-    -H 'Accept: application/json' 2>/dev/null || echo "")
-if echo "$REST_CLEARED" | grep -qi '"severity".*:"CLEARED"'; then
-    ok "Alarm shows CLEARED via REST API"
+CLEARED_COUNT=$(psql_query "SELECT count(*) FROM alarms WHERE eventuei = 'uei.opennms.org/translator/traps/SNMP_Link_Down' AND severity = 2")
+if [ "${CLEARED_COUNT:-0}" -gt 0 ]; then
+    ok "Alarm CLEARED verified in PostgreSQL"
 else
-    fail "Alarm not showing CLEARED via REST API"
+    fail "Alarm not showing CLEARED in PostgreSQL"
 fi
 
 # ══════════════════════════════════════════════════════════════════
