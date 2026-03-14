@@ -13,7 +13,7 @@
 #   DOCKER_REGISTRY   Docker registry (default: docker.io)
 #   DOCKER_ORG        Docker org/user (default: opennms)
 #   SKIP_TESTS        Set to "false" to run tests (default: true)
-#   JAVA_HOME         JDK 17 path (auto-detected if unset)
+#   JAVA_HOME         JDK 21 path (auto-detected if unset)
 #
 set -euo pipefail
 
@@ -33,14 +33,14 @@ check_prereqs() {
     command -v docker >/dev/null 2>&1 || err "docker not found"
     command -v perl >/dev/null 2>&1   || err "perl not found (needed by compile.pl)"
 
-    # Verify Java 17
+    # Verify Java 21
     if [ -z "${JAVA_HOME:-}" ]; then
-        if [ -d "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home" ]; then
-            export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
+        if [ -d "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home" ]; then
+            export JAVA_HOME="/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home"
         fi
     fi
     java_version=$(java -version 2>&1 | head -1 | sed 's/.*"\([0-9]*\)\..*/\1/')
-    [ "$java_version" = "17" ] || err "Java 17 required (found: $java_version)"
+    [ "$java_version" = "21" ] || err "Java 21 required (found: $java_version)"
 
     # Ensure Docker buildx uses the "default" builder instance.
     # Docker Desktop sets the active builder to "desktop-linux", which the
@@ -59,8 +59,7 @@ do_compile() {
     local test_flag=""
     [ "$SKIP_TESTS" = "true" ] && test_flag="-DskipTests"
     cd "$REPO_ROOT"
-    # Exclude core/db-init (requires Java 21) — built separately in do_db_init_image()
-    ./compile.pl $test_flag -pl '!core/db-init'
+    ./compile.pl $test_flag
 }
 
 do_assemble() {
@@ -88,8 +87,7 @@ do_assemble() {
 do_db_init_image() {
     log "Building db-init image (opennms/db-init:$VERSION)..."
     cd "$REPO_ROOT"
-    JAVA_HOME="${JAVA_HOME_21:-/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home}" \
-        ./maven/bin/mvn -f core/db-init/pom.xml -DskipTests package
+    ./maven/bin/mvn -f core/db-init/pom.xml -DskipTests package
     cd "$REPO_ROOT/core/db-init"
     docker build -t "opennms/db-init:$VERSION" -t "opennms/db-init:latest" .
 }
@@ -247,7 +245,7 @@ Environment variables:
   DOCKER_REGISTRY   Registry (default: docker.io)
   DOCKER_ORG        Organization (default: opennms)
   SKIP_TESTS        Skip tests (default: true)
-  JAVA_HOME         JDK 17 path
+  JAVA_HOME         JDK 21 path
 
 Examples:
   ./build.sh                                    # Full build
