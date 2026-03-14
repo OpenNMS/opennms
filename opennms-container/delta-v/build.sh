@@ -167,7 +167,9 @@ do_stage_daemon_jars() {
     done
 
     log "Staged $(ls "$staging" | wc -l | tr -d ' ') files ($missing missing)"
-    [ "$missing" -gt 0 ] && [ "$missing" -gt 3 ] && err "Too many missing JARs — run './build.sh compile' first"
+    if [ "$missing" -gt 3 ]; then
+        err "Too many missing JARs ($missing) — run './build.sh compile' first"
+    fi
 }
 
 do_deltav_images() {
