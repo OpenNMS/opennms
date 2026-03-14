@@ -82,6 +82,14 @@ do_assemble() {
     cd "$REPO_ROOT"
     JAVA_HOME="${JAVA_HOME:-}" ./maven/bin/mvn -DskipTests -pl features/container/sentinel install
 
+    log "Building Sentinel assembly..."
+    cd "$REPO_ROOT/opennms-assemblies/sentinel"
+    ../../maven/bin/mvn -DskipTests install
+
+    log "Building Minion assembly..."
+    cd "$REPO_ROOT/opennms-assemblies/minion"
+    ../../maven/bin/mvn -DskipTests install
+
     log "Building Daemon assembly..."
     cd "$REPO_ROOT/opennms-assemblies/daemon"
     ../../maven/bin/mvn -DskipTests install
