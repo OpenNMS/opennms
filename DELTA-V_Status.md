@@ -37,6 +37,19 @@ Provisiond, Bsmd extracted. Alarmd migrated to daemon image. ActiveMQ eliminated
 - Implementation pending — will bring service count from 17 → 18
 - Dead Notifd mbean cleanup included in scope
 
+## Minion-Mandatory Architecture (Mar 14) — DONE
+
+Audited all 78 ServiceMonitor/ServiceCollector implementations. 73 were already distributable.
+
+- **Deleted** self-monitoring anti-patterns: MinionHeartbeatMonitor, MinionRpcMonitor
+- **Deleted** deprecated monitors: GpMonitor (→SystemExecuteMonitor), JschSshMonitor (→SshMonitor)
+- **Refactored** PassiveServiceMonitor via Twin API (PassiveStatusKeeper state synced to Minion)
+- **Removed** Minion self-monitoring package from poller-configuration.xml (all 3 copies)
+- **Removed** OpenNMS-JVM, JMX-Minion, JMX-Kafka self-monitoring service registrations
+- All 60 remaining monitors are distributable (execute on Minion via Kafka RPC)
+- All 14 collectors are distributable (11 collector-level RPC, 3 protocol-level RPC)
+- Audit results: `docs/superpowers/specs/2026-03-14-minion-mandatory-audit-results.md`
+
 ---
 
 ## Architectural Milestones Achieved
@@ -50,6 +63,7 @@ Provisiond, Bsmd extracted. Alarmd migrated to daemon image. ActiveMQ eliminated
 7. 6 dead daemons deleted (Vacuumd, Statsd, Actiond, Ackd, Queued, Notifd)
 8. Minion REST dependency eliminated (Twin API)
 9. Full Minion E2E pipeline proven (trap → Minion → Kafka → alarm → PostgreSQL)
+10. **Minion-mandatory** — daemons schedule, Minion executes all network I/O
 
 ## Current Architecture
 
