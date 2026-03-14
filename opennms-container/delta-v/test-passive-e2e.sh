@@ -265,7 +265,7 @@ REQEOF
   importThreads="4" scanThreads="4" rescanThreads="4" writeThreads="4" >
   <requisition-def import-name="${FOREIGN_SOURCE}"
                    import-url-resource="file:///opt/sentinel/etc/imports/${FOREIGN_SOURCE}.xml">
-    <cron-schedule>0 0 0 * * ? 2099</cron-schedule>
+    <cron-schedule>0/30 * * * * ?</cron-schedule>
   </requisition-def>
 </provisiond-configuration>
 PROVEOF
