@@ -80,7 +80,7 @@ do_assemble() {
 
     log "Building Sentinel and Minion features modules..."
     cd "$REPO_ROOT"
-    ./maven/bin/mvn -DskipTests -pl features/container/sentinel,features/container/minion,features/minion/core/repository clean install
+    ./maven/bin/mvn -DskipTests -pl features/container/sentinel,features/container/minion,features/minion/core/repository,features/minion/repository clean install
 
     log "Building Sentinel assembly..."
     cd "$REPO_ROOT/opennms-assemblies/sentinel"
