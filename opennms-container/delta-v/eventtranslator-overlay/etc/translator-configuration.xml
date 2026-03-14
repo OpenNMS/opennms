@@ -135,7 +135,7 @@
             </value>
           </assignment>
           <assignment name="passiveIpAddr" type="parameter">
-            <value type="parameter" name="cloudIpAddr" matches=".*" result="${0}"/>
+            <value type="field" name="interface" matches=".*" result="${0}"/>
           </assignment>
           <assignment name="passiveServiceName" type="parameter">
             <value type="parameter" name="cloudService" matches=".*" result="${0}"/>
@@ -159,7 +159,7 @@
             </value>
           </assignment>
           <assignment name="passiveIpAddr" type="parameter">
-            <value type="parameter" name="cloudIpAddr" matches=".*" result="${0}"/>
+            <value type="field" name="interface" matches=".*" result="${0}"/>
           </assignment>
           <assignment name="passiveServiceName" type="parameter">
             <value type="parameter" name="cloudService" matches=".*" result="${0}"/>

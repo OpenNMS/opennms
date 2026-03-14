@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Default foreign source for Delta-V.
+
+  Discovered nodes (from newSuspect events triggered by coldstart traps or syslog)
+  are provisioned using this definition.
+
+  - LoopDetector entries auto-assign passive cloud services to all interfaces
+  - ScriptPolicy sets node label to "The Internet" for passive monitoring demo
+-->
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="default">
+    <scan-interval>1d</scan-interval>
+    <detectors>
+        <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector"/>
+        <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
+        <detector name="GoogleCloud" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+            <parameter key="ipMatch" value="*.*.*.*"/>
+            <parameter key="is-supported" value="true"/>
+        </detector>
+        <detector name="Azure" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+            <parameter key="ipMatch" value="*.*.*.*"/>
+            <parameter key="is-supported" value="true"/>
+        </detector>
+        <detector name="AWS" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+            <parameter key="ipMatch" value="*.*.*.*"/>
+            <parameter key="is-supported" value="true"/>
+        </detector>
+    </detectors>
+    <policies>
+        <policy name="SetInternetLabel" class="org.opennms.netmgt.provision.persist.policies.ScriptPolicy">
+            <parameter key="script" value="set-internet-label.groovy"/>
+        </policy>
+    </policies>
+</foreign-source>

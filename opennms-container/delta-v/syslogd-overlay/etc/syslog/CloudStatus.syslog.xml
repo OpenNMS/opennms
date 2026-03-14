@@ -1,24 +1,23 @@
 <?xml version="1.0"?>
 <!--
   Syslog match rules for cloud service status messages.
-  Matches: CLOUD-STATUS: Service <name> on <ip> is <Down|Up>
+  Matches: CLOUD-STATUS: Service <name> is <Down|Up>
+  The source IP is determined by Syslogd from the UDP packet, not from the message.
   Used by the passive status E2E test pipeline.
 -->
 <syslogd-configuration-group>
   <ueiList>
     <ueiMatch>
-      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) on (\S+) is (Down)$"/>
+      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) is (Down)$"/>
       <uei>uei.opennms.org/syslogd/cloud/serviceDown</uei>
       <parameter-assignment matching-group="1" parameter-name="cloudService"/>
-      <parameter-assignment matching-group="2" parameter-name="cloudIpAddr"/>
-      <parameter-assignment matching-group="3" parameter-name="cloudStatus"/>
+      <parameter-assignment matching-group="2" parameter-name="cloudStatus"/>
     </ueiMatch>
     <ueiMatch>
-      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) on (\S+) is (Up)$"/>
+      <match type="regex" expression="^.*CLOUD-STATUS: Service (\S+) is (Up)$"/>
       <uei>uei.opennms.org/syslogd/cloud/serviceUp</uei>
       <parameter-assignment matching-group="1" parameter-name="cloudService"/>
-      <parameter-assignment matching-group="2" parameter-name="cloudIpAddr"/>
-      <parameter-assignment matching-group="3" parameter-name="cloudStatus"/>
+      <parameter-assignment matching-group="2" parameter-name="cloudStatus"/>
     </ueiMatch>
   </ueiList>
 </syslogd-configuration-group>
