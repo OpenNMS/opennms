@@ -6,7 +6,7 @@
 
 ## Plan Status Dashboard
 
-### Complete (28 docs)
+### Complete (29 docs)
 
 | Date | Plan | Key Achievement |
 |------|------|-----------------|
@@ -25,6 +25,7 @@
 | 03-13 | Minion-Only Listeners (design + impl) | Eventd/DHCP deleted, Syslogd KafkaSinkBridge, Telemetryd container (TSID=18) |
 | 03-14 | Java 21 Runtime Upgrade (design + impl) | Karaf 4.4.9, Felix 7.0.5, OSGi R8, Pax Web 8.0 — all daemons + Minion on JRE 21 |
 | 03-14 | Webapp Elimination from Test Pipeline | E2E tests use SQL-only verification, webapp removed from docker-compose |
+| 03-11 | EventDao/Notifd/Minion REST Elimination | EventDao/OnmsEvent deleted, Notifd eliminated, Minion REST replaced with Twin API, SNMPv3 Twin publisher |
 
 ### Superseded (2 docs)
 
@@ -33,11 +34,10 @@
 | 03-02 | EventBus Follow-ups | Later phases (Vacuumd deleted, not migrated) |
 | 03-07 | Strike Fighter Design | Exceeded — 17 services achieved vs. 15 planned |
 
-### In Progress / Partial (3 docs)
+### In Progress / Partial (1 doc)
 
 | Date | Plan | Remaining Work |
 |------|------|----------------|
-| 03-11 | EventDao/Notifd/Minion REST Elimination | EventDao removed, Notifd eliminated, Minion REST eliminated |
 | 03-09 | Microservice Event Architecture | Two-topic Kafka design working; full IPC flow documented |
 
 ### Deferred (2 docs)
