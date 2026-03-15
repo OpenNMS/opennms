@@ -152,6 +152,58 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!--
+            jakarta-transform profile: produces a secondary JAR artifact
+            with classifier "jakarta" where all javax.* bytecode references
+            are rewritten to jakarta.* using the Eclipse Transformer.
+
+            This is the bridge mechanism for the Spring Boot 4 migration:
+            - Shared modules (opennms-model, opennms-dao, etc.) keep javax.*
+              in source so Karaf / Hibernate 3.6 consumers are unaffected.
+            - Spring Boot daemon fat JARs activate this profile to get
+              jakarta.* bytecode that Hibernate 6.x / Spring 7 require.
+
+            Usage:
+              mvn package -Pjakarta-transform
+
+            The consuming daemon module (daemon-boot-alarmd) activates this
+            profile and uses the transformer-maven-plugin on its fat JAR to
+            rewrite embedded javax.* classes in one pass.
+        -->
+        <profile>
+            <id>jakarta-transform</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.transformer</groupId>
+                        <artifactId>transformer-maven-plugin</artifactId>
+                        <version>0.5.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <rules>
+                                <jakartaDefaults>true</jakartaDefaults>
+                                <renames>${project.basedir}/src/main/resources/META-INF/jakarta-rename.properties</renames>
+                            </rules>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>transform-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>jakarta</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
