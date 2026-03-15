@@ -26,7 +26,7 @@ Migrate the 15 Delta-V daemon containers (14 active + RTCd which is deleted) fro
 | App structure | Independent app per daemon | Small, independently manageable projects |
 | Repo strategy | Monorepo now, separate repos later | Discover shared boundaries before extracting |
 | Prototype daemon | Alarmd | Simplest daemon-loader, fewest workaround classes |
-| `javax → jakarta` | Migrate shared source in-place | Webapp is dead, all daemons migrating anyway |
+| `javax → jakarta` | Incremental per-daemon scoping | Un-migrated Karaf daemons must keep running for E2E tests |
 | Hibernate | Per-daemon scoped migration | Only migrate DAOs each daemon needs |
 | Docker image | Single image during migration | Matches current model, split to per-daemon later |
 | RTCd | Delete | Dead code, no longer needed without webapp |
@@ -182,19 +182,26 @@ logging:
 - `javax.validation.*` → `jakarta.validation.*`
 - `javax.inject.*` → `jakarta.inject.*`
 
-### Approach
+### Approach: Incremental Per-Daemon Scoping
 
-The `javax → jakarta` rename and the Alarmd Spring Boot migration must land together. Running OpenRewrite across the entire source tree before any daemon is on Spring Boot would leave the system uncompilable — Karaf bundles expect `javax.*` packages.
+The `javax → jakarta` rename is scoped **per-daemon**, not applied globally. Un-migrated Karaf daemons must continue to compile and run so the full E2E test suite (`test-e2e.sh`, `test-passive-e2e.sh`, `test-syslog-e2e.sh`, `test-minion-e2e.sh`) can validate migrated daemons alongside un-migrated ones.
 
-**Execution plan:**
+**Execution plan for each daemon migration:**
 
-1. Run OpenRewrite `org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta` recipe across the entire source tree
-2. Simultaneously, create the `daemon-common` and `daemon-boot-alarmd` modules with Spring Boot 4.0.3
-3. Remove or update Karaf daemon-loader modules so they compile against `jakarta.*` (even though they'll be migrated next — they must still compile for `./compile.pl -DskipTests` to pass)
-4. Fix any compilation errors from API changes beyond simple renames
-5. Validate the full build compiles: `./compile.pl -DskipTests`
+1. Identify the modules the daemon depends on (its DAOs, API modules, config modules)
+2. Run OpenRewrite `org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta` recipe **only on those modules**
+3. Where a shared module is used by both migrated and un-migrated daemons, create a `jakarta`-flavored copy or use build-time transformation for the Spring Boot consumer — the original `javax` source stays intact for Karaf consumers
+4. Create the daemon's `daemon-boot-*` Spring Boot module
+5. Validate: `./compile.pl -DskipTests` passes (all modules compile), full E2E suite passes (all daemons run together)
 
-This is the largest single commit/PR in the migration. After this, each subsequent daemon migration is incremental.
+**Trade-off:** The codebase will have a mixed `javax`/`jakarta` period. This is temporary and scoped — each daemon migration converts its dependency chain, and once all daemons are migrated, any remaining `javax` imports are cleaned up in the final pass.
+
+**Shared module strategy:** When a shared module (e.g., `opennms-dao-api`, `opennms-model`) is first needed by a Spring Boot daemon, it gets a parallel `jakarta` artifact. Options per module:
+- **Dual-publish:** The module builds twice — once with `javax` (for Karaf), once with `jakarta` (for Spring Boot) using Maven profiles or classifier
+- **Eclipse Transformer at build time:** Spring Boot daemon POMs apply bytecode transformation on `javax` artifacts at dependency resolution
+- **Fork-and-rename:** Copy the module as `opennms-model-jakarta`, migrate it, delete the original when all consumers are migrated
+
+The best option per module depends on its size and how many consumers it has. This will be determined during implementation.
 
 ### Java Version Requirement
 
