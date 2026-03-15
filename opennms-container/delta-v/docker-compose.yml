@@ -504,6 +504,7 @@ services:
   alarmd:
     profiles: [lite, passive, full]
     image: opennms/daemon-deltav:${VERSION}
+    command: ["java", "-Xms512m", "-Xmx1g", "-jar", "/opt/daemon-boot-alarmd.jar"]
     container_name: delta-v-alarmd
     hostname: alarmd
     depends_on:
@@ -512,25 +513,17 @@ services:
       kafka:
         condition: service_healthy
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: opennms
-      POSTGRES_PASSWORD: opennms
-      POSTGRES_DB: opennms
-      JAVA_OPTS: >-
-        -Xms512m -Xmx1g
-        -XX:MaxMetaspaceSize=512m
-        -Djava.security.egd=file:/dev/./urandom
-        -Dorg.opennms.tsid.node-id=2
-    volumes:
-      - alarmd-data:/opt/sentinel/data
-      - ./alarmd-overlay/etc:/opt/sentinel-etc-overlay:ro
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/opennms
+      SPRING_DATASOURCE_USERNAME: opennms
+      SPRING_DATASOURCE_PASSWORD: opennms
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OPENNMS_HOME: /opt/sentinel
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/actuator/health || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 30s
 
   telemetryd:
     profiles: [full]
@@ -581,5 +574,4 @@ volumes:
   provisiond-data:
   bsmd-data:
   perspectivepollerd-data:
-  alarmd-data:
   telemetryd-data:

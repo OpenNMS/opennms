@@ -47,6 +47,9 @@ COPY staging/daemon/daemon-loader-alarmd.jar \
 COPY staging/daemon/daemon-loader-telemetryd.jar \
      /opt/sentinel/system/org/opennms/core/daemon-loader-telemetryd/${VERSION}/daemon-loader-telemetryd-${VERSION}.jar
 
+# Spring Boot fat JARs (migrated daemons — run directly with java -jar)
+COPY staging/daemon/daemon-boot-alarmd.jar /opt/daemon-boot-alarmd.jar
+
 # ── Special JARs (service-specific but harmless to include in all) ──
 # EventTranslator: split-package fix for opennms-config + opennms-util
 COPY staging/daemon/opennms-config.jar \
