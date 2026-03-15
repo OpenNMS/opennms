@@ -504,6 +504,7 @@ services:
   alarmd:
     profiles: [lite, passive, full]
     image: opennms/daemon-deltav:${VERSION}
+    entrypoint: []
     command: ["java", "-Xms512m", "-Xmx1g", "-jar", "/opt/daemon-boot-alarmd.jar"]
     container_name: delta-v-alarmd
     hostname: alarmd

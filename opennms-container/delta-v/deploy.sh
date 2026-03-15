@@ -32,8 +32,8 @@ declare -A KARAF_PORTS=(
 do_up() {
     log "Starting Delta-V (version $VERSION)..."
 
-    # Check images exist
-    for img in "opennms/horizon:$VERSION" "opennms/daemon:$VERSION" "opennms/minion:$VERSION"; do
+    # Check images exist (Delta-V layered images, not base images)
+    for img in "opennms/daemon-deltav:$VERSION" "opennms/minion-deltav:$VERSION"; do
         docker image inspect "$img" >/dev/null 2>&1 || err "Image $img not found. Run ./build.sh first."
     done
 
