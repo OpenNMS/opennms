@@ -27,7 +27,7 @@ NODE_LABEL="The Internet"
 FOREIGN_SOURCE="cloud-services"
 PROVISION_TIMEOUT=120
 ALARM_TIMEOUT=60
-OUTAGE_TIMEOUT=120
+OUTAGE_TIMEOUT=180
 
 # ── Parse flags ────────────────────────────────────────────────────
 VERBOSE=false
@@ -296,21 +296,21 @@ PROVEOF
     fi
 fi
 
-# Restart daemons to pick up the new node:
-# - Syslogd: InterfaceToNodeCache needs the new node IP
-# - EventTranslator: needs cloud→passiveServiceStatus translation specs
-# - Pollerd: needs to schedule polls for the new passive services
+# Restart syslogd and eventtranslator to pick up new eventconf definitions
+# and refresh InterfaceToNodeCache. Do NOT restart Pollerd — it needs its
+# Twin publisher (KafkaTwinPublisher) which only works on a fresh Karaf volume.
+# Pollerd discovers new services via nodeGainedService events from Provisiond.
 log ""
-log "Restarting syslogd, eventtranslator, pollerd for new node..."
-docker compose restart syslogd eventtranslator pollerd
+log "Restarting syslogd, eventtranslator for new node..."
+docker compose restart syslogd eventtranslator
 
 wait_for_healthy delta-v-syslogd && ok "Syslogd healthy" || fail "Syslogd not healthy"
 wait_for_healthy delta-v-eventtranslator && ok "EventTranslator healthy" || fail "EventTranslator not healthy"
-wait_for_healthy delta-v-pollerd && ok "Pollerd healthy" || fail "Pollerd not healthy"
 
-# Give Pollerd time to schedule polls and Twin API to sync
-log "Waiting 15s for Pollerd service discovery and Twin API sync..."
-sleep 15
+# Give Pollerd time to discover services from nodeGainedService events
+# and for the Twin API to sync initial state to Minion
+log "Waiting 30s for Pollerd service discovery and Twin API sync..."
+sleep 30
 
 # ── Start Kafka Consumers ─────────────────────────────────────────
 log "Starting Kafka event consumers..."

@@ -21,6 +21,10 @@ COPY webapp-overlay/system/org/opennms/org.opennms.core.tsid/${VERSION}/org.open
 COPY staging/daemon/poller-api.jar \
      /opt/minion/repositories/default/org/opennms/features/poller/org.opennms.features.poller.api/${VERSION}/org.opennms.features.poller.api-${VERSION}.jar
 
+# ── Poller RPC client (EntityScopeProvider graceful fallback) ──
+COPY staging/daemon/poller-client-rpc.jar \
+     /opt/minion/repositories/default/org/opennms/features/poller/org.opennms.features.poller.client-rpc/${VERSION}/org.opennms.features.poller.client-rpc-${VERSION}.jar
+
 # ── Passive status: updated minion-core-impl (uses PassiveStatusHolder from poller-api) ──
 COPY staging/daemon/minion-core-impl.jar \
      /opt/minion/repositories/core/org/opennms/features/minion/core-impl/${VERSION}/core-impl-${VERSION}.jar

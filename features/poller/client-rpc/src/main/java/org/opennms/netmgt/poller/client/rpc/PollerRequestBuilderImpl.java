@@ -132,6 +132,15 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         return Interpolator.interpolateObjects(this.attributes, getScope());
     }
 
+    private Map<String, Object> safeGetInterpolatedAttributes() {
+        try {
+            return getInterpolatedAttributes();
+        } catch (Exception e) {
+            // EntityScopeProvider may not be available in standalone daemon containers.
+            return this.attributes;
+        }
+    }
+
     @Override
     public CompletableFuture<PollerResponse> execute() {
         if (className == null) {
@@ -145,7 +154,7 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
             throw new IllegalArgumentException("Monitor not found: " + className);
         }
 
-        final Map<String, Object> interpolatedAttributes = this.getInterpolatedAttributes();
+        final Map<String, Object> interpolatedAttributes = safeGetInterpolatedAttributes();
 
         final RpcTarget target = client.getRpcTargetHelper().target()
                 .withNodeId(service.getNodeId())
@@ -177,7 +186,12 @@ public class PollerRequestBuilderImpl implements PollerRequestBuilder {
         // such as the agent details and other state related attributes
         // which should be included in the request
         final Map<String, Object> parameters = request.getMonitorParameters();
-        request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
+        try {
+            request.addAttributes(Interpolator.interpolateAttributes(serviceMonitor.getRuntimeAttributes(request, parameters), getScope()));
+        } catch (Exception e) {
+            // EntityScopeProvider may not be available in standalone daemon containers.
+            request.addAttributes(serviceMonitor.getRuntimeAttributes(request, parameters));
+        }
 
         // Execute the request
         return client.getDelegate().execute(request).thenApply(results -> {
