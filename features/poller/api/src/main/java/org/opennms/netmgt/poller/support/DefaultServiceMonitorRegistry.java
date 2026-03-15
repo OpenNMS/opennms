@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,28 +64,16 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 
     public DefaultServiceMonitorRegistry() {
-        // Scan from the static ServiceLoader (uses defining classloader)
+        // Scan from ServiceLoader (works in non-OSGi environments)
         for (ServiceMonitor serviceMonitor : s_serviceMonitorLoader) {
             Map<String, String> props = new HashMap<>(1);
             props.put(TYPE, serviceMonitor.getClass().getCanonicalName());
             onBind(serviceMonitor, props);
         }
-        // In OSGi, the static ServiceLoader may not see all bundles.
-        // Also scan using this class's classloader to find monitors
-        // registered in the same bundle (e.g., PassiveServiceMonitor in poller-api).
-        try {
-            ServiceLoader<ServiceMonitor> bundleLoader = ServiceLoader.load(ServiceMonitor.class, DefaultServiceMonitorRegistry.class.getClassLoader());
-            for (ServiceMonitor serviceMonitor : bundleLoader) {
-                String className = serviceMonitor.getClass().getCanonicalName();
-                if (!m_monitorsByClassName.containsKey(className)) {
-                    Map<String, String> props = new HashMap<>(1);
-                    props.put(TYPE, className);
-                    onBind(serviceMonitor, props);
-                }
-            }
-        } catch (Exception e) {
-            LOG.debug("Bundle classloader ServiceLoader scan failed (expected in non-OSGi): {}", e.getMessage());
-        }
+        // In Karaf OSGi, ServiceLoader can't see across bundle boundaries.
+        // Explicitly register monitors that are in the same JAR (poller-api)
+        // but not discoverable via ServiceLoader from other bundles.
+        register(PassiveServiceMonitor.class.getCanonicalName(), new PassiveServiceMonitor());
     }
 
     @SuppressWarnings({ "rawtypes" })

@@ -154,6 +154,7 @@ do_stage_daemon_jars() {
         "core/event-forwarder-kafka/target/org.opennms.core.event-forwarder-kafka-$VERSION.jar:event-forwarder-kafka.jar"
         "features/events/daemon/target/org.opennms.features.events.daemon-$VERSION.jar:events.daemon.jar"
         # Daemon-loader JARs
+        "core/daemon-loader-pollerd/target/org.opennms.core.daemon-loader-pollerd-$VERSION.jar:daemon-loader-pollerd.jar"
         "core/daemon-loader-trapd/target/org.opennms.core.daemon-loader-trapd-$VERSION.jar:daemon-loader-trapd.jar"
         "core/daemon-loader-syslogd/target/org.opennms.core.daemon-loader-syslogd-$VERSION.jar:daemon-loader-syslogd.jar"
         "core/daemon-loader-provisiond/target/org.opennms.core.daemon-loader-provisiond-$VERSION.jar:daemon-loader-provisiond.jar"

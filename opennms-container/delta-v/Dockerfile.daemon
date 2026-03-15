@@ -23,6 +23,9 @@ COPY staging/daemon/events.daemon.jar \
      /opt/sentinel/system/org/opennms/features/events/org.opennms.features.events.daemon/${VERSION}/org.opennms.features.events.daemon-${VERSION}.jar
 
 # ── Daemon-loader JARs (service-specific, all baked into single image) ──
+COPY staging/daemon/daemon-loader-pollerd.jar \
+     /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-pollerd/${VERSION}/org.opennms.core.daemon-loader-pollerd-${VERSION}.jar
+
 COPY staging/daemon/daemon-loader-trapd.jar \
      /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-trapd/${VERSION}/org.opennms.core.daemon-loader-trapd-${VERSION}.jar
 
