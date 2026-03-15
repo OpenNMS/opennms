@@ -2,7 +2,7 @@
 
 ## Overview
 
-Migrate the 16 Delta-V daemon containers from Apache Karaf (OSGi) to Spring Boot 4.0.3. This eliminates OSGi classloader isolation, Karaf bundle caching, ServiceLoader failures, Spring-DM Extender, `features.xml`, Blueprint XML, and 12+ workaround classes that exist solely to bridge OSGi gaps.
+Migrate the 15 Delta-V daemon containers (14 active + RTCd which is deleted) from Apache Karaf (OSGi) to Spring Boot 4.0.3. This eliminates OSGi classloader isolation, Karaf bundle caching, ServiceLoader failures, Spring-DM Extender, `features.xml`, Blueprint XML, and 12+ workaround classes that exist solely to bridge OSGi gaps.
 
 ## Goals
 
@@ -59,8 +59,8 @@ core/daemon-boot-alarmd/                    ← Alarmd Spring Boot application (
 | Module | Created When | Contents |
 |--------|-------------|----------|
 | `daemon-common` | Alarmd (daemon 1) | DataSource, Kafka event transport, health, `DaemonSmartLifecycle` |
-| `daemon-sink-kafka` | Trapd (daemon 5) | `KafkaSinkBridge`, `LocalMessageConsumerManager`, `LocalMessageDispatcherFactory` |
-| `daemon-rpc-kafka` | Discovery (daemon 8) | `KafkaRpcClientFactory`, `RpcTargetHelper`, `NoOpTracerRegistry` |
+| `core/daemon-sink-kafka` | Trapd (daemon 5) | `KafkaSinkBridge`, `LocalMessageConsumerManager`, `LocalMessageDispatcherFactory` |
+| `core/daemon-rpc-kafka` | Discovery (daemon 8) | `KafkaRpcClientFactory`, `RpcTargetHelper`, `NoOpTracerRegistry` |
 
 ### daemon-common Auto-Configuration
 
@@ -134,6 +134,42 @@ public class AlarmdConfiguration {
 
 These DAOs and their entity annotations need `javax.persistence → jakarta.persistence` and Hibernate 3.6 → 6.x API updates.
 
+#### application.yml (Skeleton)
+
+```yaml
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/opennms}
+    username: ${SPRING_DATASOURCE_USERNAME:opennms}
+    password: ${SPRING_DATASOURCE_PASSWORD:opennms}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none  # Liquibase manages schema
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+opennms:
+  home: ${OPENNMS_HOME:/opt/opennms}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    event-topic: ${KAFKA_EVENT_TOPIC:opennms-fault-events}
+
+logging:
+  level:
+    org.opennms: INFO
+    org.hibernate: WARN
+```
+
 ## javax → jakarta Migration
 
 ### Affected Namespaces
@@ -148,11 +184,21 @@ These DAOs and their entity annotations need `javax.persistence → jakarta.pers
 
 ### Approach
 
-1. Run OpenRewrite `org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta` recipe across entire source tree — one mechanical commit
-2. Fix compilation errors from API changes beyond simple renames
-3. Validate with `./compile.pl -DskipTests`
+The `javax → jakarta` rename and the Alarmd Spring Boot migration must land together. Running OpenRewrite across the entire source tree before any daemon is on Spring Boot would leave the system uncompilable — Karaf bundles expect `javax.*` packages.
 
-Un-migrated Karaf daemons will break after this rename. This is acceptable — the webapp is dead and all daemons are being migrated to Spring Boot.
+**Execution plan:**
+
+1. Run OpenRewrite `org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta` recipe across the entire source tree
+2. Simultaneously, create the `daemon-common` and `daemon-boot-alarmd` modules with Spring Boot 4.0.3
+3. Remove or update Karaf daemon-loader modules so they compile against `jakarta.*` (even though they'll be migrated next — they must still compile for `./compile.pl -DskipTests` to pass)
+4. Fix any compilation errors from API changes beyond simple renames
+5. Validate the full build compiles: `./compile.pl -DskipTests`
+
+This is the largest single commit/PR in the migration. After this, each subsequent daemon migration is incremental.
+
+### Java Version Requirement
+
+Spring Boot 4.0.x depends on Spring Framework 7, which may require Java 21 as baseline. The current project enforces Java 17 (`[17,18)`). Verify the exact requirement for Spring Boot 4.0.3 GA and update the enforced range in the parent POM if needed (e.g., `[21,22)`).
 
 ## Hibernate 3.6 → 6.x Migration
 
@@ -167,7 +213,9 @@ Un-migrated Karaf daemons will break after this rename. This is acceptable — t
 ### Compatibility Base Class
 
 ```java
-public abstract class AbstractDaoHibernate<T, K extends Serializable> {
+public abstract class AbstractDaoHibernate<T, K extends Serializable>
+        implements OnmsDao<T, K> {
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -175,9 +223,14 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> {
         return entityManager.unwrap(Session.class);
     }
 
-    public T get(K id) { ... }
-    public void save(T entity) { ... }
-    public void delete(T entity) { ... }
+    // Implements all 16 OnmsDao<T, K> methods.
+    // Key translations:
+    //   - findMatching(Criteria) → translates OpenNMS Criteria to JPA CriteriaBuilder
+    //   - countMatching(Criteria) → CriteriaBuilder count query
+    //   - lock() → SELECT ... FOR UPDATE via EntityManager
+    //   - load(K) → entityManager.getReference(entityClass, id)
+    //   - flush(), clear() → delegate to entityManager
+    // See OnmsDao interface for full 16-method contract.
 
     protected CriteriaBuilder criteriaBuilder() {
         return entityManager.getCriteriaBuilder();
@@ -185,7 +238,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> {
 }
 ```
 
-Replaces existing `AbstractDaoHibernate` (which extends `HibernateDaoSupport`). Exposes `Session` for DAOs with complex HQL, while providing JPA-native CRUD. Individual DAOs can be incrementally modernized from HQL → CriteriaBuilder.
+Replaces existing `AbstractDaoHibernate` (which extends `HibernateDaoSupport`). Must implement the full `OnmsDao<T, K>` interface contract, including `findAll()`, `countAll()`, and `findMatching(Criteria)`. Note: the `Criteria` parameter in `findMatching` is the OpenNMS `org.opennms.core.criteria.Criteria` wrapper, not `org.hibernate.Criteria` — this wrapper must be translated to JPA `CriteriaBuilder` queries. Exposes `Session` for DAOs with complex HQL. Individual DAOs can be incrementally modernized from HQL → CriteriaBuilder.
 
 ### Per-Daemon Scoping
 
@@ -218,7 +271,7 @@ Only need `daemon-common`:
 | Order | Daemon | Notes |
 |-------|--------|-------|
 | 8 | **Discovery** | Simple RPC — ping sweeps via Minion |
-| 9 | **Enlinkd** | RPC for LLDP/CDP/OSPF topology discovery |
+| 9 | **Enlinkd** | RPC for LLDP/CDP/OSPF topology discovery. No Java workaround classes — only Spring XML + RPC, making it simpler than other Tier 3 daemons. |
 | 10 | **Collectd** | RPC + `LocalServiceCollectorRegistry` + PersisterFactory |
 | 11 | **Provisiond** | RPC + most workaround classes |
 
@@ -232,7 +285,53 @@ Only need `daemon-common`:
 
 ### REST API Migration
 
-As each daemon is migrated, its corresponding REST APIs move from the dead webapp into the daemon's Spring Boot app as `@RestController` classes. Example: Alarmd gets alarm REST endpoints, Provisiond gets provisioning/requisition endpoints.
+As each daemon is migrated, its corresponding REST APIs move from the dead webapp into the daemon's Spring Boot app. The existing REST endpoints use CXF/JAX-RS annotations (`@Path`, `@GET`, `@POST`, etc.). These will be rewritten as Spring MVC `@RestController` classes — Spring Boot 4 does not embed CXF, and Spring MVC is the native REST framework.
+
+**Daemon-to-endpoint mapping (major endpoints):**
+
+| Daemon | REST Endpoints |
+|--------|---------------|
+| Alarmd | `/api/v2/alarms`, `/api/v2/alarm-acknowledges` |
+| Provisiond | `/api/v2/requisitions`, `/api/v2/foreign-sources`, `/api/v2/nodes` |
+| Pollerd | `/api/v2/outages`, `/api/v2/monitors` |
+| Collectd | `/api/v2/graphs`, `/api/v2/resources`, `/api/v2/measurements` |
+| Discovery | `/api/v2/discovery` |
+| Enlinkd | `/api/v2/topology` |
+| BSMd | `/api/v2/business-services` |
+| Trapd | `/api/v2/snmp-traps` (if applicable) |
+
+This mapping will be refined during implementation as the full set of webapp REST endpoints is cataloged.
+
+## Logging
+
+Current daemons inherit Karaf's Pax Logging (Log4j2). Spring Boot defaults to Logback.
+
+**Strategy:** Use Spring Boot's default Logback. Each daemon runs in its own container, so per-daemon log files are unnecessary — logs go to stdout (standard container practice). Log level configuration via `application.yml` or `LOGGING_LEVEL_*` environment variables.
+
+If Log4j2 is preferred (e.g., for async appender performance), Spring Boot supports it via `spring-boot-starter-log4j2` exclusion/replacement.
+
+## Testing Strategy
+
+### Unit Tests
+
+Existing unit tests for DAO and service classes migrate with their source. `javax → jakarta` renames apply to test imports. Hibernate 6.x DAO tests may need `SessionFactory` configuration updates.
+
+### Integration Tests
+
+Each daemon boot module includes an integration test that:
+- Starts the Spring Boot application context
+- Uses Testcontainers for PostgreSQL and Kafka
+- Verifies the daemon starts, processes a test event, and shuts down cleanly
+
+### Smoke Tests (Hybrid Period)
+
+During the hybrid period, the Docker compose stack must pass end-to-end tests with a mix of Karaf and Spring Boot daemons. The existing passive status E2E test suite validates cross-daemon event flow.
+
+## Port Allocation
+
+Each daemon runs in its own Docker container. All daemons expose Actuator on port `8080` (container-internal) — no conflicts since containers are isolated. Docker compose maps no host ports for Actuator; healthchecks use container-internal URLs.
+
+For REST API endpoints (post-migration), each daemon serves its REST APIs on the same `8080` port. An API gateway or reverse proxy (e.g., nginx) routes external requests to the appropriate daemon container by path prefix.
 
 ## Docker and Deployment
 
