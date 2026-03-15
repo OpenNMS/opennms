@@ -72,7 +72,7 @@ cleanup() {
         psql_query "DELETE FROM alarms WHERE eventuei LIKE '%syslogd/cloud/%'" 2>/dev/null || true
     fi
 
-    docker compose exec -T kafka pkill -f 'kafka-console-consumer' 2>/dev/null || true
+    docker exec "$(docker compose ps -q kafka 2>/dev/null)" pkill -f 'kafka-console-consumer' 2>/dev/null || true
     rm -rf "$TEST_TMPDIR"
 }
 trap cleanup EXIT
@@ -315,19 +315,22 @@ sleep 15
 # ── Start Kafka Consumers ─────────────────────────────────────────
 log "Starting Kafka event consumers..."
 
-docker compose exec -T kafka /opt/kafka/bin/kafka-console-consumer.sh \
+# Use 'docker exec' (not 'docker compose exec') to avoid compose client overhead
+# that can cause background consumers to silently fail after service restarts.
+KAFKA_CONTAINER=$(docker compose ps -q kafka)
+docker exec "$KAFKA_CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
     --bootstrap-server localhost:9092 \
     --topic opennms-fault-events \
     > "$FAULT_LOG" 2>/dev/null &
 FAULT_CONSUMER_PID=$!
 
-docker compose exec -T kafka /opt/kafka/bin/kafka-console-consumer.sh \
+docker exec "$KAFKA_CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
     --bootstrap-server localhost:9092 \
     --topic opennms-ipc-events \
     > "$IPC_LOG" 2>/dev/null &
 IPC_CONSUMER_PID=$!
 
-sleep 8
+sleep 15
 
 # ── Validate Minion Trap Pipeline (coldStart) ─────────────────────
 log ""
