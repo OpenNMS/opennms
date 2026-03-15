@@ -2129,8 +2129,10 @@
         <!-- Daemon loader (creates Poller, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/36.0.0-SNAPSHOT</bundle>
         <feature>opennms-core-ipc-rpc-kafka</feature>
-        <!-- Twin API publisher (for PassiveStatus sync to Minion) -->
-        <feature>opennms-core-ipc-twin-kafka-publisher</feature>
+        <!-- Twin API common bundles (loaded by daemon-loader-pollerd Spring context, not as a Karaf feature) -->
+        <feature>opennms-core-ipc-twin-kafka-common</feature>
+        <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.publisher/36.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.opennms-identity/36.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/36.0.0-SNAPSHOT</bundle>
     </feature>
 

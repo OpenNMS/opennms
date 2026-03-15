@@ -84,6 +84,10 @@ RUN for jar in \
     fi; \
   done
 
+# OpenNMS Identity (for Twin publisher's LocalTwinSubscriber)
+COPY staging/daemon/opennms-identity.jar \
+     /opt/sentinel/system/org/opennms/features/distributed/org.opennms.features.distributed.opennms-identity/${VERSION}/org.opennms.features.distributed.opennms-identity-${VERSION}.jar
+
 # Passive status: updated poller-api (adds PassiveStatusHolder/Config/Key + PassiveServiceMonitor)
 COPY staging/daemon/poller-api.jar \
      /opt/sentinel/system/org/opennms/features/poller/org.opennms.features.poller.api/${VERSION}/org.opennms.features.poller.api-${VERSION}.jar

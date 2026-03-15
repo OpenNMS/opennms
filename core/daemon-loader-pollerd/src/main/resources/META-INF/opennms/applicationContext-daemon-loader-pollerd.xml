@@ -192,19 +192,49 @@
           init-method="init"
           depends-on="daemon"/>
 
-    <!-- Twin API publisher for passive status sync to Minion.
-         Uses onmsgi:reference (non-blocking lazy proxy) so Pollerd starts even if
-         the Twin Kafka publisher feature isn't installed. The Twin sync is optional:
-         without it, PassiveServiceMonitor works on Pollerd via local PassiveStatusHolder,
-         but won't get status updates on Minion (polls return UP by default). -->
-    <onmsgi:reference id="twinPublisher"
-                      interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
+    <!-- ============================================================== -->
+    <!-- Twin API Publisher (syncs passive status to Minion)           -->
+    <!-- ============================================================== -->
 
+    <!-- Identity for the local Twin subscriber (inline to avoid cross-bundle classloader issues) -->
+    <bean id="twinIdentity" class="org.opennms.core.daemon.loader.InlineIdentity"/>
+
+    <!-- Metric registries for Twin publisher/subscriber -->
+    <bean id="twinPublisherMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="twinSubscriberMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+
+    <!-- Local Twin subscriber (manages twin state, feeds the Kafka publisher) -->
+    <bean id="localTwinSubscriber"
+          class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+        <constructor-arg ref="twinIdentity"/>
+        <constructor-arg ref="tracerRegistry"/>
+        <constructor-arg ref="twinSubscriberMetricRegistry"/>
+    </bean>
+
+    <!-- Kafka Twin publisher (sends twin updates to Minion via Kafka) -->
+    <bean id="kafkaTwinPublisher"
+          class="org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher"
+          init-method="init" destroy-method="close">
+        <constructor-arg ref="localTwinSubscriber"/>
+        <constructor-arg ref="tracerRegistry"/>
+        <constructor-arg ref="twinPublisherMetricRegistry"/>
+    </bean>
+
+    <!-- Export TwinPublisher as OSGi service so other bundles can use it -->
+    <onmsgi:service ref="kafkaTwinPublisher"
+                    interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
+
+    <!-- Also export LocalTwinSubscriber as TwinSubscriber for local consumers -->
+    <onmsgi:service ref="localTwinSubscriber"
+                    interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>
+
+    <!-- Passive status Twin publisher (listens for passiveServiceStatus events,
+         publishes status map to Minion via the Twin API) -->
     <bean id="passiveStatusTwinPublisher"
           class="org.opennms.netmgt.passive.PassiveStatusTwinPublisher"
           init-method="init" destroy-method="close"
           depends-on="passiveStatusKeeper">
-        <constructor-arg ref="twinPublisher"/>
+        <constructor-arg ref="kafkaTwinPublisher"/>
         <constructor-arg ref="passiveStatusKeeper"/>
         <constructor-arg ref="eventIpcManager"/>
     </bean>

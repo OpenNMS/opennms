@@ -174,6 +174,7 @@ do_stage_daemon_jars() {
         "core/ipc/twin/kafka/common/target/org.opennms.core.ipc.twin.kafka.common-$VERSION.jar:twin-kafka-common.jar"
         "core/ipc/twin/kafka/publisher/target/org.opennms.core.ipc.twin.kafka.publisher-$VERSION.jar:twin-kafka-publisher.jar"
         "core/ipc/common/kafka/target/org.opennms.core.ipc.common.kafka-$VERSION.jar:ipc-common-kafka.jar"
+        "features/distributed/opennms-identity/target/org.opennms.features.distributed.opennms-identity-$VERSION.jar:opennms-identity.jar"
     )
 
     local missing=0
