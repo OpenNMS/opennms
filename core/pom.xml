@@ -33,6 +33,7 @@
     <module>config</module>
     <module>criteria</module>
     <module>daemon</module>
+    <module>daemon-common</module>
     <module>db</module>
     <module>db-install</module>
     <module>health</module>
