@@ -66,9 +66,10 @@ public class PassiveStatusTwinPublisher implements EventListener {
             eventIpcManager.addEventListener(this, PASSIVE_STATUS_UEI);
             publishCurrentStatus();
             LOG.info("Passive status Twin publisher initialized");
-        } catch (IOException e) {
-            LOG.error("Failed to register passive status Twin publisher", e);
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // Twin publisher may not be available if the Kafka Twin feature isn't installed.
+            // PassiveServiceMonitor still works on Pollerd via local PassiveStatusHolder.
+            LOG.warn("Twin publisher not available — passive status sync to Minion disabled: {}", e.getMessage());
         }
     }
 

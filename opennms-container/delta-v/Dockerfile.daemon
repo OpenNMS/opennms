@@ -60,6 +60,7 @@ COPY staging/daemon/opennms-alarmd.jar \
      /opt/sentinel/system/org/opennms/opennms-alarmd/${VERSION}/opennms-alarmd-${VERSION}.jar
 
 # Twin Kafka publisher + dependencies (for PassiveStatus sync from Pollerd to Minion)
+# Each JAR needs a .sha1 checksum for Karaf's Pax URL Maven resolver to find it.
 COPY staging/daemon/twin-common.jar \
      /opt/sentinel/system/org/opennms/core/ipc/twin/org.opennms.core.ipc.twin.common/${VERSION}/org.opennms.core.ipc.twin.common-${VERSION}.jar
 COPY staging/daemon/twin-kafka-common.jar \
@@ -68,6 +69,20 @@ COPY staging/daemon/twin-kafka-publisher.jar \
      /opt/sentinel/system/org/opennms/core/ipc/twin/kafka/org.opennms.core.ipc.twin.kafka.publisher/${VERSION}/org.opennms.core.ipc.twin.kafka.publisher-${VERSION}.jar
 COPY staging/daemon/ipc-common-kafka.jar \
      /opt/sentinel/system/org/opennms/core/ipc/common/org.opennms.core.ipc.common.kafka/${VERSION}/org.opennms.core.ipc.common.kafka-${VERSION}.jar
+
+RUN for jar in \
+      /opt/sentinel/system/org/opennms/core/ipc/twin/org.opennms.core.ipc.twin.common/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/core/ipc/twin/kafka/org.opennms.core.ipc.twin.kafka.common/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/core/ipc/twin/kafka/org.opennms.core.ipc.twin.kafka.publisher/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/core/ipc/common/org.opennms.core.ipc.common.kafka/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/opennms-services/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/opennms-provisiond/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/features/poller/org.opennms.features.poller.api/${VERSION}/*.jar \
+      /opt/sentinel/system/org/opennms/core/org.opennms.core.daemon-loader-pollerd/${VERSION}/*.jar; do \
+    if [ -f "$jar" ] && [ ! -f "$jar.sha1" ]; then \
+      sha1sum "$jar" | awk '{print $1}' > "$jar.sha1"; \
+    fi; \
+  done
 
 # Passive status: updated poller-api (adds PassiveStatusHolder/Config/Key + PassiveServiceMonitor)
 COPY staging/daemon/poller-api.jar \
