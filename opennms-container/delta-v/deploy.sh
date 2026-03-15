@@ -58,7 +58,14 @@ do_down() {
 
 do_reset() {
     log "Stopping Delta-V and removing all data volumes..."
-    docker compose down -v
+    docker compose down --remove-orphans 2>/dev/null || true
+    # docker compose down -v only removes volumes for active profile services.
+    # Explicitly remove ALL delta-v volumes to ensure clean Karaf bundle caches.
+    local stale_vols
+    stale_vols=$(docker volume ls --format '{{.Name}}' | grep "^delta-v_" || true)
+    if [ -n "$stale_vols" ]; then
+        echo "$stale_vols" | xargs docker volume rm 2>/dev/null || true
+    fi
     log "Clean slate. Run './deploy.sh up' to start fresh."
 }
 
