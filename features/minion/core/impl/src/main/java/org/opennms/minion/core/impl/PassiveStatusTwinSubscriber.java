@@ -25,18 +25,16 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.netmgt.passive.PassiveStatusConfig;
-import org.opennms.netmgt.passive.PassiveStatusKeeper;
+import org.opennms.netmgt.poller.passive.PassiveStatusConfig;
+import org.opennms.netmgt.poller.passive.PassiveStatusHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Receives passive service status from Pollerd via Twin API and populates
- * the local {@link PassiveStatusKeeper} singleton so that
+ * the shared {@link PassiveStatusHolder} so that
  * {@link org.opennms.netmgt.poller.monitors.PassiveServiceMonitor} can
  * execute on Minion.
- *
- * <p>Follows the proven {@code SnmpV3UserTwinSubscriber} pattern.</p>
  */
 public class PassiveStatusTwinSubscriber {
 
@@ -74,8 +72,7 @@ public class PassiveStatusTwinSubscriber {
             return;
         }
         LOG.info("Received passive status update with {} entries", config.getEntries().size());
-        PassiveStatusKeeper psk = PassiveStatusKeeper.fromStatusMap(config.toStatusMap());
-        PassiveStatusKeeper.setInstance(psk);
+        PassiveStatusHolder.updateFromConfig(config);
     }
 
     public void close() {

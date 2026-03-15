@@ -56,10 +56,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
+            <groupId>org.opennms.features.poller</groupId>
+            <artifactId>org.opennms.features.poller.api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
