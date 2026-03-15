@@ -2396,28 +2396,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-bsmd/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only Alarmd: loads Alarmd daemon without Manager/Eventd.
-         Receives events from Kafka and persists alarms to PostgreSQL.
-         NOTE: Drools rules engine not yet available (jars not OSGi-ready). -->
-    <feature name="opennms-daemon-alarmd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: Alarmd">
-        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
-        <feature>opennms-spring-extender</feature>
-        <!-- Event transport (Kafka-based, replaces Eventd) -->
-        <feature>opennms-event-forwarder-kafka</feature>
-        <!-- DAO infrastructure -->
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <!-- Alarm API -->
-        <bundle>mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
-        <!-- Alarmd daemon classes -->
-        <bundle>mvn:org.opennms/opennms-alarmd/${project.version}</bundle>
-        <!-- Event daemon (provides EventUtilDaoImpl, used by AlarmPersisterImpl) -->
-        <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
-        <!-- Daemon loader (creates Alarmd, starts it) -->
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-alarmd/${project.version}</bundle>
-    </feature>
-
     <!-- Karaf-only Telemetryd: loads Telemetryd daemon without Manager/Eventd.
          Consumes telemetry data from Kafka Sink topics (one per protocol queue).
          Spawns a KafkaSinkBridge per registered TelemetrySinkModule. -->

@@ -65,7 +65,6 @@
     <module>grpc</module>
     <module>encrypt-util</module>
     <module>daemon-loader-shared</module>
-    <module>daemon-loader-alarmd</module>
     <module>daemon-loader-collectd</module>
     <module>daemon-loader-discovery</module>
     <module>daemon-loader-eventtranslator</module>

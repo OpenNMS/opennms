@@ -160,7 +160,6 @@ do_stage_daemon_jars() {
         "core/daemon-loader-provisiond/target/org.opennms.core.daemon-loader-provisiond-$VERSION.jar:daemon-loader-provisiond.jar"
         "core/daemon-loader-bsmd/target/org.opennms.core.daemon-loader-bsmd-$VERSION.jar:daemon-loader-bsmd.jar"
         "core/daemon-loader-perspectivepoller/target/org.opennms.core.daemon-loader-perspectivepoller-$VERSION.jar:daemon-loader-perspectivepoller.jar"
-        "core/daemon-loader-alarmd/target/org.opennms.core.daemon-loader-alarmd-$VERSION.jar:daemon-loader-alarmd.jar"
         "core/daemon-loader-telemetryd/target/daemon-loader-telemetryd-$VERSION.jar:daemon-loader-telemetryd.jar"
         # Spring Boot fat JARs (migrated daemons)
         "core/daemon-boot-alarmd/target/org.opennms.core.daemon-boot-alarmd-$VERSION.jar:daemon-boot-alarmd.jar"
