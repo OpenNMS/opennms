@@ -68,7 +68,6 @@
     <module>daemon-loader-discovery</module>
     <module>daemon-loader-eventtranslator</module>
     <module>daemon-loader-pollerd</module>
-    <module>daemon-loader-rtcd</module>
     <module>daemon-loader-syslogd</module>
     <module>daemon-loader-ticketer</module>
     <module>daemon-loader-trapd</module>

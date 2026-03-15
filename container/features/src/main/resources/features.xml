@@ -2199,24 +2199,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/${project.version}</bundle>
     </feature>
 
-    <!-- Karaf-only Rtcd: loads RTCManager daemon without Manager/Eventd -->
-    <feature name="opennms-daemon-rtcd" version="${project.version}"
-             description="OpenNMS :: Daemon Loader :: Rtcd">
-        <!-- Spring DM Extender (processes Spring-Context manifest headers) -->
-        <feature>opennms-spring-extender</feature>
-        <!-- Event transport (Kafka-based, replaces Eventd) -->
-        <feature>opennms-event-forwarder-kafka</feature>
-        <!-- DAO infrastructure -->
-        <feature>opennms-distributed-core-impl</feature>
-        <feature>opennms-persistence</feature>
-        <!-- RTC config -->
-        <feature>opennms-config</feature>
-        <!-- RTC daemon classes -->
-        <bundle>mvn:org.opennms/opennms-services/${project.version}</bundle>
-        <!-- Daemon loader (creates RTCManager, starts it) -->
-        <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-rtcd/${project.version}</bundle>
-    </feature>
-
 
     <!-- Karaf-only Discovery: loads Discovery daemon without Manager/Eventd -->
     <feature name="opennms-daemon-discovery" version="${project.version}"

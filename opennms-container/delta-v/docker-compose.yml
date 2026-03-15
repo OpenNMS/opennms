@@ -177,37 +177,6 @@ services:
       retries: 20
       start_period: 60s
 
-  rtcd:
-    profiles: [lite, full]
-    image: opennms/daemon-deltav:${VERSION}
-    container_name: delta-v-rtcd
-    hostname: rtcd
-    depends_on:
-      db-init:
-        condition: service_completed_successfully
-      kafka:
-        condition: service_healthy
-    environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: opennms
-      POSTGRES_PASSWORD: opennms
-      POSTGRES_DB: opennms
-      JAVA_OPTS: >-
-        -Xms256m -Xmx512m
-        -XX:MaxMetaspaceSize=256m
-        -Djava.security.egd=file:/dev/./urandom
-        -Dorg.opennms.tsid.node-id=6
-    volumes:
-      - rtcd-data:/opt/sentinel/data
-      - ./rtcd-overlay/etc:/opt/sentinel-etc-overlay:ro
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8181/sentinel/rest/health/probe || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 60s
-
   discovery:
     profiles: [lite, full]
     image: opennms/daemon-deltav:${VERSION}
@@ -602,7 +571,6 @@ volumes:
   minion-data:
   pollerd-data:
   collectd-data:
-  rtcd-data:
   discovery-data:
   trapd-data:
   syslogd-data:
