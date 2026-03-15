@@ -266,6 +266,10 @@
          <parameter key="username" value="${requisition:username|detector:username|admin}" />
          <parameter key="password" value="${requisition:password|detector:password|admin}" />
       </service>
+      <!-- Passive cloud service monitors — status driven by syslog → Event Translator → passiveServiceStatus -->
+      <service name="GoogleCloud" interval="30000" user-defined="true" status="on"/>
+      <service name="Azure" interval="30000" user-defined="true" status="on"/>
+      <service name="AWS" interval="30000" user-defined="true" status="on"/>
       <downtime begin="0" end="300000" interval="30000" /><!-- 30s, 0, 5m -->
       <downtime begin="300000" end="43200000" interval="300000" /><!-- 5m, 5m, 12h -->
       <downtime begin="43200000" end="432000000" interval="600000" /><!-- 10m, 12h, 5d -->
@@ -331,4 +335,7 @@
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
    <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
    <monitor service="MinaSSH" class-name="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
+   <monitor service="GoogleCloud" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+   <monitor service="Azure" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+   <monitor service="AWS" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
 </poller-configuration>
