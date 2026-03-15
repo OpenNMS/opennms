@@ -121,6 +121,11 @@
 
         <!-- OpenNMS APIs (consumed as-is during hybrid period) -->
         <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.daemon</artifactId>
             <version>${project.version}</version>
