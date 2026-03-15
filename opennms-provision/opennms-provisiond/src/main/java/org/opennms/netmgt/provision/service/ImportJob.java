@@ -67,7 +67,13 @@ public class ImportJob implements Job {
     }
 
     public String interpolate(String url) {
-        return Interpolator.interpolate(url, entityScopeProvider.getScopeForScv()).output;
+        try {
+            return Interpolator.interpolate(url, entityScopeProvider.getScopeForScv()).output;
+        } catch (Exception e) {
+            // EntityScopeProvider may not be available in standalone daemon containers.
+            // If the URL doesn't contain MATE expressions, return it as-is.
+            return url;
+        }
     }
     
     /**

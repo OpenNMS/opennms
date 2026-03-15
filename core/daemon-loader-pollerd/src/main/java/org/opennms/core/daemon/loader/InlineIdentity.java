@@ -19,27 +19,27 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.passive;
+package org.opennms.core.daemon.loader;
 
-import org.opennms.netmgt.poller.passive.PassiveStatusKey;
+import org.opennms.distributed.core.api.Identity;
 
-import junit.framework.TestCase;
-
-public class PassiveStatusTest extends TestCase {
-
-    /*
-     * Test method for 'org.opennms.netmgt.config.PassiveStatus.equals(Object)'
-     */
-    public void testEqualsObject() {
-        PassiveStatusKey ps = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
-        PassiveStatusKey ps2 = new PassiveStatusKey("node1", "2.1.1.1", "HTTP");
-        PassiveStatusKey ps3 = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
-        
-        assertEquals(ps, ps3);
-        assertFalse(ps.equals(ps2));
-        assertFalse(ps2.equals(ps3));
-
-
+/**
+ * Simple Identity implementation for standalone daemon containers.
+ * Returns "pollerd" as the system ID and "Default" as the location.
+ */
+public class InlineIdentity implements Identity {
+    @Override
+    public String getId() {
+        return "pollerd";
     }
 
+    @Override
+    public String getLocation() {
+        return "Default";
+    }
+
+    @Override
+    public String getType() {
+        return "OpenNMS";
+    }
 }

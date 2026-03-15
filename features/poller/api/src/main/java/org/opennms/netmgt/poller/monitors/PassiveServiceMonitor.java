@@ -21,50 +21,24 @@
  */
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.passive.PassiveStatusHolder;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
 /**
- * <P>
- * This class is designed to be used by the service poller framework to test the
- * availability of SSH remote interfaces. The class implements the ServiceMonitor
- * interface that allows it to be used along with other plug-ins by the service
- * poller framework.
- * </P>
- * <P>
- * This plugin is just an exact copy of the {@link SshMonitor} now.
- * </P>
+ * Monitors service status using externally-reported passive status values.
  *
- * @deprecated use {@link SshMonitor} instead
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- * @version $Id: $
+ * <p>Reads from {@link PassiveStatusHolder}, a shared static singleton populated by
+ * {@code PassiveStatusKeeper} (on Pollerd) or {@code PassiveStatusTwinSubscriber}
+ * (on Minion via Twin API).</p>
  */
-final public class JschSshMonitor extends AbstractServiceMonitor {
-    private SshMonitor m_monitor;
-    
-    /**
-     * <p>Constructor for JschSshMonitor.</p>
-     */
-    public JschSshMonitor() {
-        m_monitor = new SshMonitor();
-    }
-    
-    /** {@inheritDoc} */
-    public PollStatus poll(InetAddress address, Map<String, Object> parameters) {
-        return m_monitor.poll(address, parameters);
-    }
+public class PassiveServiceMonitor extends AbstractServiceMonitor {
 
-    /** {@inheritDoc} */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        return m_monitor.poll(svc, parameters);
+        return PassiveStatusHolder.getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
     }
-
 }

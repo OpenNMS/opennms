@@ -119,6 +119,58 @@
       </mappings>
     </event-translation-spec>
 
+    <!-- Cloud service status → passiveServiceStatus translations.
+         Syslog messages matching CLOUD-STATUS produce cloud/serviceDown or cloud/serviceUp
+         events. These are translated into passiveServiceStatus events consumed by
+         PassiveStatusKeeper, which drives PassiveServiceMonitor on Minion. -->
+    <event-translation-spec uei="uei.opennms.org/syslogd/cloud/serviceDown">
+      <mappings>
+        <mapping>
+          <assignment name="uei" type="field">
+            <value type="constant" result="uei.opennms.org/services/passiveServiceStatus"/>
+          </assignment>
+          <assignment name="passiveNodeLabel" type="parameter">
+            <value type="sql" result="SELECT nodelabel FROM node WHERE nodeid = ?::integer">
+              <value type="field" name="nodeid" matches=".*" result="${0}"/>
+            </value>
+          </assignment>
+          <assignment name="passiveIpAddr" type="parameter">
+            <value type="field" name="interface" matches=".*" result="${0}"/>
+          </assignment>
+          <assignment name="passiveServiceName" type="parameter">
+            <value type="parameter" name="cloudService" matches=".*" result="${0}"/>
+          </assignment>
+          <assignment name="passiveStatus" type="parameter">
+            <value type="constant" result="Down"/>
+          </assignment>
+        </mapping>
+      </mappings>
+    </event-translation-spec>
+
+    <event-translation-spec uei="uei.opennms.org/syslogd/cloud/serviceUp">
+      <mappings>
+        <mapping>
+          <assignment name="uei" type="field">
+            <value type="constant" result="uei.opennms.org/services/passiveServiceStatus"/>
+          </assignment>
+          <assignment name="passiveNodeLabel" type="parameter">
+            <value type="sql" result="SELECT nodelabel FROM node WHERE nodeid = ?::integer">
+              <value type="field" name="nodeid" matches=".*" result="${0}"/>
+            </value>
+          </assignment>
+          <assignment name="passiveIpAddr" type="parameter">
+            <value type="field" name="interface" matches=".*" result="${0}"/>
+          </assignment>
+          <assignment name="passiveServiceName" type="parameter">
+            <value type="parameter" name="cloudService" matches=".*" result="${0}"/>
+          </assignment>
+          <assignment name="passiveStatus" type="parameter">
+            <value type="constant" result="Up"/>
+          </assignment>
+        </mapping>
+      </mappings>
+    </event-translation-spec>
+
   </translation>
 
 </event-translator-configuration>

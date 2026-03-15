@@ -29,13 +29,14 @@ import java.util.Set;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Local ServiceMonitorRegistry for standalone daemon containers.
  * Discovers ServiceMonitor implementations via Java ServiceLoader
- * (META-INF/services/org.opennms.netmgt.poller.ServiceMonitor).
+ * and explicitly registers monitors that can't be discovered in OSGi.
  */
 public class LocalServiceMonitorRegistry implements ServiceMonitorRegistry {
 
@@ -49,7 +50,10 @@ public class LocalServiceMonitorRegistry implements ServiceMonitorRegistry {
             LOG.info("Registered service monitor: {}", className);
             monitorsByClassName.put(className, monitor);
         }
-        LOG.info("Loaded {} service monitors via ServiceLoader", monitorsByClassName.size());
+        // In Karaf OSGi, ServiceLoader can't discover monitors across bundle boundaries.
+        // Explicitly register monitors from poller-api that aren't in the monitors-core JAR.
+        monitorsByClassName.putIfAbsent(PassiveServiceMonitor.class.getCanonicalName(), new PassiveServiceMonitor());
+        LOG.info("Loaded {} service monitors (ServiceLoader + explicit)", monitorsByClassName.size());
     }
 
     @Override

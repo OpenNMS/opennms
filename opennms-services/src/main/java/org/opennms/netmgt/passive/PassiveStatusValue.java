@@ -22,6 +22,7 @@
 package org.opennms.netmgt.passive;
 
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.passive.PassiveStatusKey;
 
 /**
  * <p>PassiveStatusValue class.</p>

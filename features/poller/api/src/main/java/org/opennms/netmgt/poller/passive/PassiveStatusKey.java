@@ -19,61 +19,27 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.passive;
+package org.opennms.netmgt.poller.passive;
 
 /**
- * <p>PassiveStatusKey class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * Immutable key for passive service status lookup: (nodeLabel, ipAddr, serviceName).
  */
 public class PassiveStatusKey {
-    
-    private String m_nodeLabel;
-    private String m_ipAddr;
-    private String m_serviceName;
 
-    /**
-     * <p>Constructor for PassiveStatusKey.</p>
-     *
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     */
+    private final String m_nodeLabel;
+    private final String m_ipAddr;
+    private final String m_serviceName;
+
     public PassiveStatusKey(String nodeLabel, String ipAddr, String serviceName) {
         m_nodeLabel = nodeLabel;
         m_ipAddr = ipAddr;
         m_serviceName = serviceName;
     }
 
-    /**
-     * <p>getIpAddr</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getIpAddr() {
-        return m_ipAddr;
-    }
+    public String getNodeLabel() { return m_nodeLabel; }
+    public String getIpAddr() { return m_ipAddr; }
+    public String getServiceName() { return m_serviceName; }
 
-    /**
-     * <p>getNodeLabel</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getNodeLabel() {
-        return m_nodeLabel;
-    }
-
-    /**
-     * <p>getServiceName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getServiceName() {
-        return m_serviceName;
-    }
-
-    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
         if (o instanceof PassiveStatusKey) {
@@ -85,25 +51,13 @@ public class PassiveStatusKey {
         return false;
     }
 
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
     @Override
     public int hashCode() {
         return getNodeLabel().hashCode() ^ getIpAddr().hashCode() ^ getServiceName().hashCode();
     }
 
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     @Override
     public String toString() {
-        return getNodeLabel()+':'+getIpAddr()+':'+getServiceName();
+        return getNodeLabel() + ':' + getIpAddr() + ':' + getServiceName();
     }
-
-
 }

@@ -36,6 +36,9 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.passive.PassiveStatusConfig;
+import org.opennms.netmgt.poller.passive.PassiveStatusHolder;
+import org.opennms.netmgt.poller.passive.PassiveStatusKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,11 +178,33 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     public void setStatus(PassiveStatusKey key, PollStatus pollStatus) {
         checkInit();
         m_statusTable.put(key, pollStatus);
+        PassiveStatusHolder.setStatus(key.getNodeLabel(), key.getIpAddr(), key.getServiceName(), pollStatus);
     }
 
     private void checkInit() {
         if (!m_initialized)
             throw new IllegalStateException("the service has not been intialized");
+    }
+
+    /**
+     * Returns a snapshot of the current status table for Twin API publishing.
+     */
+    public Map<PassiveStatusKey, PollStatus> getStatusTable() {
+        if (m_statusTable == null) {
+            return new HashMap<>();
+        }
+        return new HashMap<>(m_statusTable);
+    }
+
+    /**
+     * Creates a PassiveStatusKeeper pre-populated with a status map.
+     * Used on Minion to create a read-only instance from Twin API data.
+     */
+    public static PassiveStatusKeeper fromStatusMap(Map<PassiveStatusKey, PollStatus> statusMap) {
+        PassiveStatusKeeper psk = new PassiveStatusKeeper();
+        psk.m_statusTable = new HashMap<>(statusMap);
+        psk.m_initialized = true;
+        return psk;
     }
 
     /**

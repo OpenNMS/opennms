@@ -129,6 +129,7 @@ services:
         -Dorg.opennms.tsid.node-id=4
         -Dorg.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka:9092
         -Dorg.opennms.core.ipc.rpc.force-remote=true
+        -Dorg.opennms.core.ipc.twin.kafka.bootstrap.servers=kafka:9092
     volumes:
       - pollerd-data:/opt/sentinel/data
       - ./pollerd-daemon-overlay/etc:/opt/sentinel-etc-overlay:ro

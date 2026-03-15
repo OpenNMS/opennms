@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
+import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +64,16 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 
     public DefaultServiceMonitorRegistry() {
+        // Scan from ServiceLoader (works in non-OSGi environments)
         for (ServiceMonitor serviceMonitor : s_serviceMonitorLoader) {
             Map<String, String> props = new HashMap<>(1);
             props.put(TYPE, serviceMonitor.getClass().getCanonicalName());
             onBind(serviceMonitor, props);
         }
+        // In Karaf OSGi, ServiceLoader can't see across bundle boundaries.
+        // Explicitly register monitors that are in the same JAR (poller-api)
+        // but not discoverable via ServiceLoader from other bundles.
+        register(PassiveServiceMonitor.class.getCanonicalName(), new PassiveServiceMonitor());
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -106,6 +112,15 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     @Override
     public Set<String> getMonitorClassNames() {
         return ImmutableSet.copyOf(m_monitorsByClassName.keySet());
+    }
+
+    /**
+     * Registers a monitor by class name. Used for explicit registration in
+     * environments where ServiceLoader can't discover across OSGi bundle boundaries.
+     */
+    public synchronized void register(String className, ServiceMonitor monitor) {
+        LOG.info("Explicitly registering monitor: {}", className);
+        m_monitorsByClassName.put(className, monitor);
     }
 
     private static String getClassName(Map<?, ?> properties) {

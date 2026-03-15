@@ -47,7 +47,13 @@
     <bean id="snmpV3UserTwinSubscriber" class="org.opennms.minion.core.impl.SnmpV3UserTwinSubscriber"
           destroy-method="close"/>
 
+    <!-- Passive status Twin subscriber — receives passive service status from Pollerd via Twin API
+         so PassiveServiceMonitor can execute on Minion -->
+    <bean id="passiveStatusTwinSubscriber" class="org.opennms.minion.core.impl.PassiveStatusTwinSubscriber"
+          destroy-method="close"/>
+
     <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
         <reference-listener bind-method="bind" unbind-method="unbind" ref="snmpV3UserTwinSubscriber"/>
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="passiveStatusTwinSubscriber"/>
     </reference-list>
 </blueprint>

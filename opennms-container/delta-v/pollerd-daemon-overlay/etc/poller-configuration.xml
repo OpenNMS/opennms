@@ -266,46 +266,16 @@
          <parameter key="username" value="${requisition:username|detector:username|admin}" />
          <parameter key="password" value="${requisition:password|detector:password|admin}" />
       </service>
+      <!-- Passive cloud service monitors — status driven by syslog → Event Translator → passiveServiceStatus -->
+      <service name="GoogleCloud" interval="30000" user-defined="true" status="on"/>
+      <service name="Azure" interval="30000" user-defined="true" status="on"/>
+      <service name="AWS" interval="30000" user-defined="true" status="on"/>
       <downtime begin="0" end="300000" interval="30000" /><!-- 30s, 0, 5m -->
       <downtime begin="300000" end="43200000" interval="300000" /><!-- 5m, 5m, 12h -->
       <downtime begin="43200000" end="432000000" interval="600000" /><!-- 10m, 12h, 5d -->
       <downtime begin="432000000" interval="3600000" /><!-- 1h, 5d -->
    </package>
 
-   <!--
-      This package is defined for Minion nodes. Don't alter/remove this. If minions are not getting used, it is safe to remove below pkg.
-   -->
-   <package name="Minion">
-      <filter>foreignSource == 'Minions' AND IPADDR != '0.0.0.0'</filter>
-      <rrd step="30">
-         <rra>RRA:AVERAGE:0.5:1:2016</rra>
-         <rra>RRA:AVERAGE:0.5:12:1488</rra>
-         <rra>RRA:AVERAGE:0.5:288:366</rra>
-         <rra>RRA:MAX:0.5:288:366</rra>
-         <rra>RRA:MIN:0.5:288:366</rra>
-      </rrd>
-      <service name="Minion-Heartbeat" interval="30000" user-defined="false" status="on">
-         <parameter key="period" value="${requisition:period|detector:period|30000}" /><!-- Service interval should be same as period -->
-      </service>
-      <service name="Minion-RPC" interval="30000" user-defined="false" status="on">
-         <parameter key="ttl" value="${requisition:ttl|detector:ttl|30000}" /><!-- TTL should be same as period -->
-         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-         <parameter key="ds-name" value="minion-rpc" />
-      </service>
-      <service name="JMX-Minion" interval="30000" user-defined="false" status="on">
-         <parameter key="port" value="${requisition:port|detector:port|18980}" />
-         <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|2}" />
-         <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
-         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-         <parameter key="ds-name" value="jmx-minion" />
-         <parameter key="use-foreign-id-as-system-id" value="${requisition:use-foreign-id-as-system-id|detector:use-foreign-id-as-system-id|true}" />
-      </service>
-      <service name="SNMP" interval="300000" user-defined="false" status="on">
-         <parameter key="oid" value="${requisition:oid|detector:oid|.1.3.6.1.2.1.1.2.0}" />
-      </service>
-      <!-- Query every 30secs always -->
-      <downtime begin="0" interval="30000" /><!-- 30s -->
-   </package>
    <!--
       Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces
       will have StrafePing statistical analysis rather than being on for or off for all interfaces.  Change
@@ -351,8 +321,6 @@
    <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
    <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
    <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-   <monitor service="Minion-Heartbeat" class-name="org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor" />
-   <monitor service="Minion-RPC" class-name="org.opennms.netmgt.poller.monitors.MinionRpcMonitor" />
    <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
    <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
    <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
@@ -361,13 +329,13 @@
    <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
    <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
    <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
-   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
-   <monitor service="JMX-Minion" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
-   <monitor service="JMX-Kafka" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
    <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor" />
    <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor" />
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
    <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
    <monitor service="MinaSSH" class-name="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
+   <monitor service="GoogleCloud" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+   <monitor service="Azure" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
+   <monitor service="AWS" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
 </poller-configuration>
