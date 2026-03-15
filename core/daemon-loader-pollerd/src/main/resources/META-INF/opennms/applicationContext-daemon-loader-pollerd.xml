@@ -184,6 +184,14 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <!-- Register PassiveServiceMonitor in the ServiceMonitorRegistry.
+         In OSGi, ServiceLoader can't discover monitors across bundle boundaries.
+         This explicit registration bridges that gap. -->
+    <bean id="passiveServiceMonitorRegistrar"
+          class="org.opennms.core.daemon.loader.PassiveServiceMonitorRegistrar"
+          init-method="init"
+          depends-on="daemon"/>
+
     <!-- Publish passive status to Minion via Twin API so PassiveServiceMonitor
          can execute on Minion instead of forcing Default location -->
     <osgi:reference id="twinPublisher"

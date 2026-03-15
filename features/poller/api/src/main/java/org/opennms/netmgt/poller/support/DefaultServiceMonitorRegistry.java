@@ -63,10 +63,27 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     private final Map<String, ServiceMonitor> m_monitorsByClassName = new HashMap<>();
 
     public DefaultServiceMonitorRegistry() {
+        // Scan from the static ServiceLoader (uses defining classloader)
         for (ServiceMonitor serviceMonitor : s_serviceMonitorLoader) {
             Map<String, String> props = new HashMap<>(1);
             props.put(TYPE, serviceMonitor.getClass().getCanonicalName());
             onBind(serviceMonitor, props);
+        }
+        // In OSGi, the static ServiceLoader may not see all bundles.
+        // Also scan using this class's classloader to find monitors
+        // registered in the same bundle (e.g., PassiveServiceMonitor in poller-api).
+        try {
+            ServiceLoader<ServiceMonitor> bundleLoader = ServiceLoader.load(ServiceMonitor.class, DefaultServiceMonitorRegistry.class.getClassLoader());
+            for (ServiceMonitor serviceMonitor : bundleLoader) {
+                String className = serviceMonitor.getClass().getCanonicalName();
+                if (!m_monitorsByClassName.containsKey(className)) {
+                    Map<String, String> props = new HashMap<>(1);
+                    props.put(TYPE, className);
+                    onBind(serviceMonitor, props);
+                }
+            }
+        } catch (Exception e) {
+            LOG.debug("Bundle classloader ServiceLoader scan failed (expected in non-OSGi): {}", e.getMessage());
         }
     }
 
@@ -106,6 +123,15 @@ public class DefaultServiceMonitorRegistry implements ServiceMonitorRegistry {
     @Override
     public Set<String> getMonitorClassNames() {
         return ImmutableSet.copyOf(m_monitorsByClassName.keySet());
+    }
+
+    /**
+     * Registers a monitor by class name. Used for explicit registration in
+     * environments where ServiceLoader can't discover across OSGi bundle boundaries.
+     */
+    public synchronized void register(String className, ServiceMonitor monitor) {
+        LOG.info("Explicitly registering monitor: {}", className);
+        m_monitorsByClassName.put(className, monitor);
     }
 
     private static String getClassName(Map<?, ?> properties) {

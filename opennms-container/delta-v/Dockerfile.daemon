@@ -56,6 +56,10 @@ COPY staging/daemon/opennms-util.jar \
 COPY staging/daemon/opennms-alarmd.jar \
      /opt/sentinel/system/org/opennms/opennms-alarmd/${VERSION}/opennms-alarmd-${VERSION}.jar
 
+# Passive status: updated poller-api (adds PassiveStatusHolder/Config/Key + PassiveServiceMonitor)
+COPY staging/daemon/poller-api.jar \
+     /opt/sentinel/system/org/opennms/features/poller/org.opennms.features.poller.api/${VERSION}/org.opennms.features.poller.api-${VERSION}.jar
+
 # Passive status: updated opennms-services (PassiveStatusKeeper Twin support) + Provisiond
 COPY staging/daemon/opennms-services.jar \
      /opt/sentinel/system/org/opennms/opennms-services/${VERSION}/opennms-services-${VERSION}.jar

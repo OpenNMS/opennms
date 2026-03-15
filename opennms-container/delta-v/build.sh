@@ -168,6 +168,7 @@ do_stage_daemon_jars() {
         "opennms-services/target/opennms-services-$VERSION.jar:opennms-services.jar"
         "opennms-provision/opennms-provisiond/target/opennms-provisiond-$VERSION.jar:opennms-provisiond.jar"
         "features/minion/core/impl/target/core-impl-$VERSION.jar:minion-core-impl.jar"
+        "features/poller/api/target/org.opennms.features.poller.api-$VERSION.jar:poller-api.jar"
     )
 
     local missing=0
