@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.poller.passive.PassiveStatusConfig;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;

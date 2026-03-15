@@ -21,7 +21,7 @@
  */
 package org.opennms.netmgt.passive;
 
-import org.opennms.netmgt.passive.PassiveStatusKey;
+import org.opennms.netmgt.poller.passive.PassiveStatusKey;
 
 import junit.framework.TestCase;
 

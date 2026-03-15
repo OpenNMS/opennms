@@ -36,6 +36,9 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.passive.PassiveStatusConfig;
+import org.opennms.netmgt.poller.passive.PassiveStatusHolder;
+import org.opennms.netmgt.poller.passive.PassiveStatusKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +178,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     public void setStatus(PassiveStatusKey key, PollStatus pollStatus) {
         checkInit();
         m_statusTable.put(key, pollStatus);
+        PassiveStatusHolder.setStatus(key.getNodeLabel(), key.getIpAddr(), key.getServiceName(), pollStatus);
     }
 
     private void checkInit() {
