@@ -1957,6 +1957,10 @@
         <feature>opennms-core-ipc-twin-kafka-common</feature>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.subscriber/36.0.0-SNAPSHOT</bundle>
     </feature>
+    <feature name="opennms-core-ipc-twin-kafka-publisher" version="36.0.0-SNAPSHOT" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Publisher">
+        <feature>opennms-core-ipc-twin-kafka-common</feature>
+        <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.publisher/36.0.0-SNAPSHOT</bundle>
+    </feature>
 
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="36.0.0-SNAPSHOT">
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/36.0.0-SNAPSHOT</bundle>
@@ -2125,6 +2129,8 @@
         <!-- Daemon loader (creates Poller, starts it) -->
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-pollerd/36.0.0-SNAPSHOT</bundle>
         <feature>opennms-core-ipc-rpc-kafka</feature>
+        <!-- Twin API publisher (for PassiveStatus sync to Minion) -->
+        <feature>opennms-core-ipc-twin-kafka-publisher</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon-loader-shared/36.0.0-SNAPSHOT</bundle>
     </feature>
 

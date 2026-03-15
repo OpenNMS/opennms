@@ -170,6 +170,10 @@ do_stage_daemon_jars() {
         "opennms-provision/opennms-provisiond/target/opennms-provisiond-$VERSION.jar:opennms-provisiond.jar"
         "features/minion/core/impl/target/core-impl-$VERSION.jar:minion-core-impl.jar"
         "features/poller/api/target/org.opennms.features.poller.api-$VERSION.jar:poller-api.jar"
+        "core/ipc/twin/common/target/org.opennms.core.ipc.twin.common-$VERSION.jar:twin-common.jar"
+        "core/ipc/twin/kafka/common/target/org.opennms.core.ipc.twin.kafka.common-$VERSION.jar:twin-kafka-common.jar"
+        "core/ipc/twin/kafka/publisher/target/org.opennms.core.ipc.twin.kafka.publisher-$VERSION.jar:twin-kafka-publisher.jar"
+        "core/ipc/common/kafka/target/org.opennms.core.ipc.common.kafka-$VERSION.jar:ipc-common-kafka.jar"
     )
 
     local missing=0

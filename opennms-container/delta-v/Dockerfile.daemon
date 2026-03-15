@@ -59,6 +59,16 @@ COPY staging/daemon/opennms-util.jar \
 COPY staging/daemon/opennms-alarmd.jar \
      /opt/sentinel/system/org/opennms/opennms-alarmd/${VERSION}/opennms-alarmd-${VERSION}.jar
 
+# Twin Kafka publisher + dependencies (for PassiveStatus sync from Pollerd to Minion)
+COPY staging/daemon/twin-common.jar \
+     /opt/sentinel/system/org/opennms/core/ipc/twin/org.opennms.core.ipc.twin.common/${VERSION}/org.opennms.core.ipc.twin.common-${VERSION}.jar
+COPY staging/daemon/twin-kafka-common.jar \
+     /opt/sentinel/system/org/opennms/core/ipc/twin/kafka/org.opennms.core.ipc.twin.kafka.common/${VERSION}/org.opennms.core.ipc.twin.kafka.common-${VERSION}.jar
+COPY staging/daemon/twin-kafka-publisher.jar \
+     /opt/sentinel/system/org/opennms/core/ipc/twin/kafka/org.opennms.core.ipc.twin.kafka.publisher/${VERSION}/org.opennms.core.ipc.twin.kafka.publisher-${VERSION}.jar
+COPY staging/daemon/ipc-common-kafka.jar \
+     /opt/sentinel/system/org/opennms/core/ipc/common/org.opennms.core.ipc.common.kafka/${VERSION}/org.opennms.core.ipc.common.kafka-${VERSION}.jar
+
 # Passive status: updated poller-api (adds PassiveStatusHolder/Config/Key + PassiveServiceMonitor)
 COPY staging/daemon/poller-api.jar \
      /opt/sentinel/system/org/opennms/features/poller/org.opennms.features.poller.api/${VERSION}/org.opennms.features.poller.api-${VERSION}.jar
