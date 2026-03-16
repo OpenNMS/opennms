@@ -82,7 +82,6 @@ public class SnmpInterfaceDaoIT implements InitializingBean {
 			assertEquals("node1", snmpIf.getNode().getLabel());
 
 		}
-
 	}
 
 	@Test

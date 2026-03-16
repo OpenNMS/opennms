@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.opennms.core.mate.api.ContextKey;
@@ -284,7 +285,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         return buildScopeForSnmpInterface(() -> this.snmpInterfaceDao.findByNodeIdAndIfName(nodeId, ifName));
     }
 
-    private Scope buildScopeForSnmpInterface(final java.util.function.Supplier<OnmsSnmpInterface> snmpInterfaceLookup) {
+    private Scope buildScopeForSnmpInterface(final Supplier<OnmsSnmpInterface> snmpInterfaceLookup) {
         return this.sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsSnmpInterface snmpInterface = snmpInterfaceLookup.get();
             if (snmpInterface == null) {
