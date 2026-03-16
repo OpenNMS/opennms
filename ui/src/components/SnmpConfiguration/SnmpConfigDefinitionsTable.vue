@@ -1,10 +1,18 @@
 <template>
   <TableCard class="snmp-config-definitions-table">
     <div class="header">
-      <div class="title-container">
-        <!-- <span class="title"> SNMP Interfaces </span> -->
-      </div>
       <div class="action-container">
+        <div class="search-container">
+          <FeatherInput
+            v-model="searchTerm"
+            @update:modelValue="onSearchChange"
+            label="Search IP addresses or location"
+          >
+            <template #pre>
+              <FeatherIcon :icon="IconSearch" />
+            </template>
+          </FeatherInput>
+        </div>
       </div>
     </div>
     <div class="container">
@@ -134,12 +142,14 @@
 </template>
 
 <script lang="ts" setup>
-import { cloneDeep } from 'lodash'
+import { cloneDeep, debounce } from 'lodash'
 import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
+import IconSearch from '@featherds/icon/action/Search'
+import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
@@ -157,6 +167,8 @@ const currentPage = ref(1)
 const pageSize = ref(50)
 const showDeleteConfirmation = ref(false)
 const definitionToDelete = ref<SnmpDefinition | null>(null)
+const searchTerm = ref('')
+const debouncedSearchTerm = ref('')
 
 const emptyListContent = {
   msg: 'No results found.'
@@ -196,17 +208,52 @@ const createIpAddressLabel = (d: SnmpDefinition) => {
   return items
 }
 
-const pageTotal = computed(() => {
-  return store.config.definition?.length
-})
+const matchesSearchTerm = (def: SnmpDefinition, search: string) => {
+  const lowerSearch = search.toLowerCase()
 
-const definitionsView = computed<SnmpDefinition[]>(() => {
+  // Check location
+  if ((def.location ?? 'default').toLowerCase().includes(lowerSearch)) {
+    return true
+  }
+
+  // Check range (begin and end)
+  if (def.range?.some(r => 
+    r.begin.toLowerCase().includes(lowerSearch) || 
+    r.end.toLowerCase().includes(lowerSearch)
+  )) {
+    return true
+  }
+
+  // Check specific IPs
+  if (def.specific?.some(ip => ip.toLowerCase().includes(lowerSearch))) {
+    return true
+  }
+
+  // Check ipMatch
+  if (def.ipMatch?.some(match => match.toLowerCase().includes(lowerSearch))) {
+    return true
+  }
+
+  return false
+}
+
+const filteredDefinitions = computed<SnmpDefinition[]>(() => {
   if (!store.config.definition) {
     return []
   }
 
-  // Copy the definitions array
-  let items: SnmpDefinition[] = [...store.config.definition]
+  if (!debouncedSearchTerm.value) {
+    return store.config.definition
+  }
+
+  return store.config.definition.filter(def => matchesSearchTerm(def, debouncedSearchTerm.value))
+})
+
+const pageTotal = computed(() => filteredDefinitions.value.length)
+
+const definitionsView = computed<SnmpDefinition[]>(() => {
+  // Copy the filtered definitions array
+  let items: SnmpDefinition[] = [...filteredDefinitions.value]
 
   // Sort by the active sort property
   const sortProperty = Object.keys(sort).find(key => sort[key] !== SORT.NONE)
@@ -302,6 +349,15 @@ const cancelDelete = () => {
   showDeleteConfirmation.value = false
   definitionToDelete.value = null
 }
+
+const updateDebouncedSearchTerm = debounce((value: string) => {
+  debouncedSearchTerm.value = value
+  currentPage.value = 1 // Reset to first page when searching
+}, 200)
+
+const onSearchChange = (value: string | number | undefined) => {
+  updateDebouncedSearchTerm(String(value ?? ''))
+}
 </script>
 
 <style lang="scss" scoped>
@@ -311,32 +367,24 @@ const cancelDelete = () => {
 @use '@/styles/_transitionDataTable';
 
 .snmp-config-definitions-table {
-  margin-top: 10px;
-  padding: 25px;
+  margin-top: 0;
+  padding: 0;
 
   .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-
-    .title-container {
-      display: flex;
-      align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
-    }
+    margin-bottom: 0;
 
     .action-container {
       display: flex;
       align-items: flex-start;
-      justify-content: flex-end;
+      justify-content: flex-start;
       gap: 5px;
       width: 30%;
 
       .search-container {
         width: 80%;
+        min-width: 30em;
       }
     }
   }

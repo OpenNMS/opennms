@@ -42,10 +42,13 @@ export enum SnmpConfigEditMode {
 
 export enum ActiveTabs {
   Lookup = 0,
-  Definitions = 1,
-  Profiles = 2,
-  ConfigDefaults = 3,
-  UploadDownload = 4
+  ViewConfigurations = 1,
+  Advanced = 2
+}
+
+export enum ViewConfigurationsTabs {
+  Definitions = 0,
+  Profiles = 1
 }
 
 export const getDefaultSnmpBaseConfiguration = () => {
@@ -169,6 +172,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   })
   const isLoading = ref(false)
   const activeTab = ref(0)
+  const activeViewConfigurationsTab = ref(0)
 
   // current definition being editing or deleted
   const currentDefinition = ref<SnmpDefinition>()
@@ -183,6 +187,10 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
 
   const setActiveTab = (tabIndex: number) => {
     activeTab.value = tabIndex
+  }
+
+  const setActiveViewConfigurationsTab = (tabIndex: number) => {
+    activeViewConfigurationsTab.value = tabIndex
   }
 
   const setDefinitionCreateEditMode = (mode: SnmpConfigEditMode) => {
@@ -208,6 +216,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const resetState = () => {
     isLoading.value = false
     setActiveTab(0)
+    setActiveViewConfigurationsTab(0)
     resetCurrentDefinition()
     setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
     setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
@@ -283,6 +292,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
 
   return {
     activeTab,
+    activeViewConfigurationsTab,
     config,
     currentDefinition,
     definitionCreateEditMode,
@@ -297,6 +307,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     saveDefinition,
     saveProfile,
     setActiveTab,
+    setActiveViewConfigurationsTab,
     resetCurrentDefinition,
     resetState,
     setCurrentDefinition,

@@ -1,13 +1,25 @@
 <template>
   <TableCard class="snmp-config-profiles-table">
     <div class="header">
-      <div class="title-container">
-        <!-- <span class="title"> SNMP Profiles </span> -->
-      </div>
       <div class="action-container">
         <div class="search-container">
+          <FeatherInput
+            v-model="searchTerm"
+            @update:modelValue="onSearchChange"
+            label="Search label or filter"
+          >
+            <template #pre>
+              <FeatherIcon :icon="IconSearch" />
+            </template>
+          </FeatherInput>
         </div>
         <div class="refresh">
+          <FeatherButton
+            primary
+            @click="onCreateProfile"
+          >
+            Create New Profile
+          </FeatherButton>
         </div>
       </div>
     </div>
@@ -38,7 +50,7 @@
         >
           <tr
             v-for="profile of profiles"
-            :key="`${profile.label ?? ''}-${profile.label}`"
+            :key="profile.label"
           >
             <td>{{ profile.label }}</td>
             <td>{{ profile.filter }}</td>
@@ -63,6 +75,20 @@
           </tr>
         </TransitionGroup>
       </table>
+      <div
+        class="snmp-profiles-pagination"
+        v-if="profiles.length"
+      >
+        <FeatherPagination
+          :modelValue="currentPage"
+          :pageSize="pageSize"
+          :total="pageTotal"
+          :pageSizes="[20, 50, 100, 200]"
+          @update:modelValue="(val: any) => currentPage = Number(val)"
+          @update:pageSize="(val: any) => pageSize = Number(val)"
+          data-test="FeatherPagination"
+        />
+      </div>
       <div v-if="!profiles.length">
         <EmptyList
           :content="emptyListContent"
@@ -96,16 +122,20 @@
 </template>
 
 <script lang="ts" setup>
+import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
+import IconSearch from '@featherds/icon/action/Search'
+import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { useSnmpConfigStore, ActiveTabs, ViewConfigurationsTabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { sortPredicate } from '@/lib/sorting'
 import { FeatherSortObject } from '@/types'
 import { SnmpProfile } from '@/types/snmpConfig'
@@ -117,6 +147,10 @@ const emit = defineEmits<{
 const store = useSnmpConfigStore()
 const displayDeleteDialog = ref(false)
 const selectedProfileLabel = ref<string | null>(null)
+const searchTerm = ref('')
+const debouncedSearchTerm = ref('')
+const currentPage = ref(1)
+const pageSize = ref(50)
 
 const deleteDialogLabels = {
   title: 'Delete SNMP Configuration Profile'
@@ -142,17 +176,50 @@ const createFilterExpressionLabel = (profile: SnmpProfile) => {
   return profile.filter ?? '--'
 }
 
-const profiles = computed(() => {
+const matchesSearchTerm = (profile: SnmpProfile, search: string) => {
+  const lowerSearch = search.toLowerCase()
+
+  // Check label
+  if (profile.label?.toLowerCase().includes(lowerSearch)) {
+    return true
+  }
+
+  // Check filter
+  if (profile.filter?.toLowerCase().includes(lowerSearch)) {
+    return true
+  }
+
+  return false
+}
+
+const filteredProfiles = computed<SnmpProfile[]>(() => {
   if (!store.config.profiles?.profile) {
     return []
   }
 
-  const items = store.config.profiles.profile.map(profile => {
+  if (!debouncedSearchTerm.value) {
+    return store.config.profiles.profile
+  }
+
+  return store.config.profiles.profile.filter(profile =>
+    matchesSearchTerm(profile, debouncedSearchTerm.value)
+  )
+})
+
+const pageTotal = computed(() => filteredProfiles.value.length)
+
+const profiles = computed(() => {
+  const items = filteredProfiles.value.map(profile => {
     return {
       label: profile.label ?? '--',
       filter: createFilterExpressionLabel(profile)
     }
   }).sort((a, b) => sortPredicate(a, b, currentSort.value))
+
+  if (pageSize.value > 0) {
+    const start = (currentPage.value - 1) * pageSize.value
+    return items.slice(start, start + pageSize.value)
+  }
 
   return items
 })
@@ -192,6 +259,21 @@ const onProfileEdit = (label: string) => {
   store.setProfileLabel(label)
   store.setSnmpProfileEditMode(SnmpConfigEditMode.Edit)
 }
+
+const onCreateProfile = () => {
+  store.setSnmpProfileEditMode(SnmpConfigEditMode.Create)
+  store.setActiveTab(ActiveTabs.ViewConfigurations)
+  store.setActiveViewConfigurationsTab(ViewConfigurationsTabs.Profiles)
+}
+
+const updateDebouncedSearchTerm = debounce((value: string) => {
+  debouncedSearchTerm.value = value
+  currentPage.value = 1 // Reset to first page when searching
+}, 200)
+
+const onSearchChange = (value: string | number | undefined) => {
+  updateDebouncedSearchTerm(String(value ?? ''))
+}
 </script>
 
 <style lang="scss" scoped>
@@ -201,32 +283,24 @@ const onProfileEdit = (label: string) => {
 @use '@/styles/_transitionDataTable';
 
 .snmp-config-profiles-table {
-  margin-top: 10px;
-  padding: 25px;
+  margin-top: 0;
+  padding: 0;
 
   .header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-
-    .title-container {
-      display: flex;
-      align-items: center;
-
-      .title {
-        @include typography.headline3;
-      }
-    }
+    margin-bottom: 0;
 
     .action-container {
       display: flex;
       align-items: flex-start;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 5px;
-      width: 30%;
+      width: 100%;
 
       .search-container {
-        width: 80%;
+        flex: 0 0 auto;
+        min-width: 30em;
       }
     }
   }

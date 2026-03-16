@@ -40,7 +40,8 @@
     ],
     "@typescript-eslint/no-explicit-any": "off",
     "vue/multi-word-component-names": "off",
-    "comma-dangle": ["error", "never"]
+    "comma-dangle": ["error", "never"],
+    "curly": ["error", "all"]
   },
   "globals": {
     "defineProps": "readonly",
