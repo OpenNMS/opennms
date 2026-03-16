@@ -188,14 +188,17 @@ describe('EventConfigEventTable.vue', () => {
     })
   })
 
-  describe('Search Functionality', () => {
+  describe.skip('Search Functionality', () => {
     // skipping debounced search tests for now as they require handling timers and async updates in a more complex way.
     // These can be re-enabled and adjusted once the debounce implementation is finalized and stable in the component.
-    it.skip('updates search term on input and debounces call to store', async () => {
+    it('updates search term on input and debounces call to store', async () => {
       vi.useFakeTimers()
+
+      expect(store.eventsSearchTerm).toBe('')
 
       const searchInput = wrapper.findComponent(FeatherInput)
       await searchInput.vm.$emit('update:modelValue', 'test search')
+      await nextTick()
 
       // Advance timers for debounce
       vi.advanceTimersByTime(500)
@@ -205,7 +208,7 @@ describe('EventConfigEventTable.vue', () => {
       expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('test search')
     })
 
-    it.skip('trims search term on update', async () => {
+    it('trims search term on update', async () => {
       vi.useFakeTimers()
       const searchInput = wrapper.findComponent(FeatherInput)
       await searchInput.vm.$emit('update:modelValue', '  trimmed  ')
@@ -216,7 +219,7 @@ describe('EventConfigEventTable.vue', () => {
       expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('trimmed')
     })
 
-    it.skip('does not call store immediately on input (debounce)', async () => {
+    it('does not call store immediately on input (debounce)', async () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       await searchInput.vm.$emit('update:modelValue', 'test')
       await nextTick()
@@ -224,7 +227,7 @@ describe('EventConfigEventTable.vue', () => {
       expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
     })
 
-    it.skip('calls store on empty search after debounce', async () => {
+    it('calls store on empty search after debounce', async () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       await searchInput.vm.$emit('update:modelValue', '')
       await nextTick()

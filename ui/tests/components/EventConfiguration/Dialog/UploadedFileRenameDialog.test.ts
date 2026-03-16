@@ -49,13 +49,12 @@ describe('UploadedFileRenameDialog.vue', () => {
     })
 
   beforeEach(() => {
-    // vi.useFakeTimers()
+    vi.useFakeTimers()
     wrapper = createWrapper()
   })
 
   afterEach(async () => {
     // Advance timers before unmounting to clear pending focus management timers
-    // vi.advanceTimersByTime(1000)
     if (vi.isFakeTimers()) {
       vi.advanceTimersByTime(1000)
     }
@@ -120,7 +119,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     expect(wrapper.vm.error).toBe('File name must end with .xml')
   })
 
-  it.skip('shows validation error when new name matches original name', async () => {
+  it('shows validation error when new name matches original name', async () => {
     vi.useFakeTimers()
 
     // First initialize originalFileName via watch
@@ -137,7 +136,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     expect(wrapper.vm.error).toBeDefined()
   })
 
-  it.skip('shows validation error when file exists in current upload list', async () => {
+  it('shows validation error when file exists in current upload list', async () => {
     vi.useFakeTimers()
 
     wrapper.vm.renameFile = true
@@ -247,7 +246,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     expect(wrapper.vm.error).toBeUndefined()
   })
 
-  it.skip('sets new file name to original when overwrite is selected', async () => {
+  it('sets new file name to original when overwrite is selected', async () => {
     vi.useFakeTimers()
 
     // Initialize originalFileName via watch
@@ -353,7 +352,7 @@ describe('UploadedFileRenameDialog.vue', () => {
     expect(wrapper.vm.newFileName).toBe('')
   })
 
-  it.skip('resets state when index is invalid', async () => {
+  it('resets state when index is invalid', async () => {
     vi.useFakeTimers()
 
     await wrapper.setProps({ visible: false })

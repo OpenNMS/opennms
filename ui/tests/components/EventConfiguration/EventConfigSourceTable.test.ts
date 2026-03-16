@@ -101,6 +101,9 @@ describe('EventConfigSourceTable.vue', () => {
     await nextTick()
     
     // Restore mocks and timers
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+    }
     vi.restoreAllMocks()
   })
 

@@ -62,9 +62,9 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   afterEach(() => {
-    // if (vi.isFakeTimers()) {
-    //   vi.runAllTimers()
-    // }
+    if (vi.isFakeTimers()) {
+      vi.runAllTimers()
+    }
 
     wrapper.unmount()
     document.body.innerHTML = ''
@@ -208,7 +208,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     expect(inputComp.props('modelValue')).toBe('Persist')
   })
 
-  it.skip('visibility reactive (v-model)', async () => {
+  it('visibility reactive (v-model)', async () => {
     vi.useFakeTimers()
     expect(document.body.querySelector('.modal-body-form')).not.toBeNull()
     store.createEventConfigSourceDialogState.visible = false
@@ -259,7 +259,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     expect(createBtn.attributes('aria-disabled') === 'true' || createBtn.attributes('disabled')).toBeTruthy()
   })
 
-  describe.skip('Vendor Field', () => {
+  describe('Vendor Field', () => {
     it('renders vendor input field with correct label', () => {
       const inputs = wrapper.findAllComponents(FeatherInput)
       expect(inputs.length).toBeGreaterThanOrEqual(2)
@@ -291,7 +291,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Form Validation', () => {
+  describe('Form Validation', () => {
     it('requires both configName and vendor to enable Create button', async () => {
       await setWrapperRefs('Test', '', '')
       const createBtn = wrapper.findAllComponents(FeatherButton)[1]
@@ -323,7 +323,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Success Message State', () => {
+  describe('Success Message State', () => {
     const mockSource = {
       id: 123,
       vendor: 'TestVendor',
@@ -387,7 +387,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Service Integration', () => {
+  describe('Service Integration', () => {
     it('calls addEventConfigSource with correct parameters', async () => {
       await setWrapperRefs('TestConfig', 'TestVendor', 'Test Description')
       const func = addEventConfigSource as any
@@ -422,7 +422,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Navigation', () => {
+  describe('Navigation', () => {
     it('navigates to Event Configuration Detail after clicking View Source', async () => {
       await setWrapperRefs('TestConfig', 'TestVendor', '')
       const func = addEventConfigSource as any
@@ -481,7 +481,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Form Reset', () => {
+  describe('Form Reset', () => {
     it('resets all form fields after successful creation', async () => {
       await setWrapperRefs('TestConfig', 'TestVendor', 'Test Description')
       const func = addEventConfigSource as any
@@ -506,7 +506,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('HTTP Status Code 409 (Duplicate Name)', () => {
+  describe('HTTP Status Code 409 (Duplicate Name)', () => {
     it('shows snackbar error on 409 duplicate source name', async () => {
       await setWrapperRefs('ExistingSource', 'Vendor', '')
       const func = addEventConfigSource as any
@@ -559,7 +559,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('HTTP Status Code 400 (Bad Request)', () => {
+  describe('HTTP Status Code 400 (Bad Request)', () => {
     it('shows snackbar error on 400 validation error', async () => {
       await setWrapperRefs('Invalid@Name', 'Vendor', '')
       const func = addEventConfigSource as any
@@ -605,7 +605,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('HTTP Status Code 500 (Server Error)', () => {
+  describe('HTTP Status Code 500 (Server Error)', () => {
     it('shows snackbar error on 500 server error', async () => {
       await setWrapperRefs('TestSource', 'Vendor', '')
       const func = addEventConfigSource as any
@@ -666,7 +666,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Exception Handling', () => {
+  describe('Exception Handling', () => {
     it('catches and logs exceptions from service call', async () => {
       await setWrapperRefs('TestSource', 'Vendor', '')
       const testError = new Error('Network error') as any
@@ -703,7 +703,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('NewId State Management', () => {
+  describe('NewId State Management', () => {
     it('captures the new source ID from response after creation', async () => {
       await setWrapperRefs('TestConfig', 'Vendor', '')
       const func = addEventConfigSource as any
@@ -740,7 +740,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Dialog Visibility and State Transitions', () => {
+  describe('Dialog Visibility and State Transitions', () => {
     it('toggles from form view to success view', async () => {
       await setWrapperRefs('Test', 'Vendor', '')
       const func = addEventConfigSource as any
@@ -777,8 +777,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Input Field Model Binding', () => {
-    it.skip('updates configName on input', async () => {
+  describe('Input Field Model Binding', () => {
+    it('updates configName on input', async () => {
       vi.useFakeTimers()
 
       const inputs = wrapper.findAllComponents(FeatherInput)
@@ -806,8 +806,8 @@ describe('CreateEventConfigurationDialog.vue', () => {
     })
   })
 
-  describe.skip('Edge Cases and Additional Scenarios', () => {
-    it.skip('cancel button works from success view', async () => {
+  describe('Edge Cases and Additional Scenarios', () => {
+    it('cancel button works from success view', async () => {
       await setWrapperRefs('Test', 'Vendor', '')
       const func = addEventConfigSource as any
       func.mockResolvedValue(mockSuccessResponse(123, 'TestConfig', 0))
@@ -822,7 +822,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
       expect(store.hideCreateEventConfigSourceDialog).toHaveBeenCalled()
     })
 
-    it.skip('resets success state when dialog is closed and reopened', async () => {
+    it('resets success state when dialog is closed and reopened', async () => {
       await setWrapperRefs('Test', 'Vendor', '')
       const func = addEventConfigSource as any
       func.mockResolvedValue(mockSuccessResponse(123, 'TestConfig', 0))
