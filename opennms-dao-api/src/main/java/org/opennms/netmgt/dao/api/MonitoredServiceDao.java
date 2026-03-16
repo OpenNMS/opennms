@@ -113,4 +113,12 @@ public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService,
     OnmsMonitoredService getPrimaryService(Integer nodeId, String svcName);
 
     List<OnmsMonitoredService> findByNode(final int nodeId);
+
+    /**
+     * Find all services eligible for poller scheduling (status 'A' or 'N')
+     * with eager-fetched associations to avoid N+1 lazy loading during bulk init.
+     *
+     * @return a {@link java.util.List} object.
+     */
+    List<OnmsMonitoredService> findAllServicesForScheduling();
 }

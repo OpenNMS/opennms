@@ -1,7 +1,7 @@
 <template>
   <div
     class="feather-drawer-custom-padding"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
+    v-if="store.eventModificationState.isEditMode !== CreateEditMode.None"
   >
     <BasicInformation />
   </div>
@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import BasicInformation from '@/components/EventConfigEventCreate/BasicInformation.vue'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
+import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
 
 const router = useRouter()

@@ -235,6 +235,9 @@ This list is not exhaustive and only covers the most commonly used commands.
 |opennms:activemq-stats
 |Show statistics for the embedded ActiveMQ broker
 |Enabled By Default
+|opennms:alarm-clear
+|Clears current alarms meeting certain criteria
+|Enabled By Default
 |opennms:alarm-list
 |Lists current alarms meeting certain criteria
 |Enabled By Default

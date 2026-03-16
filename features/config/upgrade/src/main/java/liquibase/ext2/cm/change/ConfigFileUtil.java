@@ -36,6 +36,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.config.exception.ConfigIOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
@@ -44,10 +46,14 @@ import liquibase.exception.ValidationErrors;
 import liquibase.util.file.FilenameUtils;
 
 class ConfigFileUtil {
-    public static String OPENNMS_HOME = System.getProperty("opennms.home", "");
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigFileUtil.class);
+
+    static String getOpennmsHome() {
+        return System.getProperty("opennms.home", "");
+    }
 
     static Path validateAndGetArchiveDir(ValidationErrors validationErrors) {
-        Path archivePath = Paths.get(OPENNMS_HOME, "etc_archive");
+        Path archivePath = Paths.get(getOpennmsHome(), "etc_archive");
         try {
             if (!Files.exists(archivePath)) {
                 Files.createDirectory(archivePath);
@@ -72,8 +78,17 @@ class ConfigFileUtil {
         allConfigFiles.putAll(findFiles(resourcePattern));
 
         // find config files in etc (might override default)
-        resourcePattern = String.format("file:%s/etc/%s", OPENNMS_HOME, fileName);
+        resourcePattern = String.format("file:%s/etc/%s", getOpennmsHome(), fileName);
         allConfigFiles.putAll(findFiles(resourcePattern));
+
+        // fallback: check etc_archive for previously imported configs (e.g., after database reset)
+        if (allConfigFiles.isEmpty()) {
+            resourcePattern = String.format("file:%s/etc_archive/%s.*", getOpennmsHome(), fileName);
+            allConfigFiles.putAll(findFiles(resourcePattern));
+            if (!allConfigFiles.isEmpty()) {
+                LOG.info("Configuration file '{}' not found in etc/ or classpath defaults, using archived version from etc_archive/", fileName);
+            }
+        }
 
         return allConfigFiles.values();
     }

@@ -1,23 +1,48 @@
 <template>
-  <div
-    class="main-content"
-    v-if="store.selectedSource && store.eventModificationState.eventConfigEvent"
-  >
-    <div class="header">
-      <div>
-        <FeatherBackButton
-          data-test="back-button"
-          @click="handleCancel"
-        >
-          Go Back
-        </FeatherBackButton>
+  <div class="main-content">
+    <div class="title">
+      <div class="header">
+        <div>
+          <FeatherBackButton
+            data-test="back-button"
+            @click="handleCancel(store.selectedSource?.id)"
+          >
+            Go Back
+          </FeatherBackButton>
+        </div>
+        <div>
+          <h3>
+            {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event Configuration' :
+              'Edit Event Configuration Details' }}
+          </h3>
+        </div>
       </div>
-      <div>
-        <h3>
-          {{ store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Create New Event Configuration' : 'Edit Event Configuration Details' }}
-        </h3>
+      <div class="action">
+        <FeatherButton
+          primary
+          @click="showSourceCreationDialog"
+          data-test="create-new-event-source-button"
+          :disabled="store.selectedSource?.name && store.selectedSource?.id ? true : false"
+        >
+          Create New Event Source
+        </FeatherButton>
       </div>
     </div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+    <FeatherAutocomplete
+      class="my-autocomplete"
+      :disabled="store.selectedSource?.name && store.selectedSource?.id ? true : false"
+      :model-value="selectedSource"
+      @update:model-value="(item: any) => setSelectedSource(item)"
+      label="Source Name"
+      data-test="source-name"
+      :results="results"
+      type="single"
+      @search="search"
+    ></FeatherAutocomplete>
     <div class="spacer"></div>
     <div class="spacer"></div>
     <div class="basic-info">
@@ -163,7 +188,7 @@
         <div class="action-container">
           <FeatherButton
             secondary
-            @click="handleCancel"
+            @click="handleCancel(store.selectedSource?.id)"
             data-test="cancel-event-button"
           >
             Cancel
@@ -179,17 +204,61 @@
         </div>
       </div>
     </div>
+    <FeatherDialog
+      v-model="sourceCreationDialogState"
+      :labels="labels"
+      hide-close
+      @hidden="handleSourceCreationCancel"
+    >
+      <div class="modal-body-form">
+        <div>
+          <FeatherInput
+            label="Event Configuration Source Name"
+            v-model="configName"
+            :error="sourceCreationErrors?.name"
+            data-test="source-name"
+          />
+        </div>
+        <div>
+          <FeatherInput
+            label="Vendor"
+            v-model="vendor"
+            :error="sourceCreationErrors?.vendor"
+            data-test="vendor"
+          />
+        </div>
+      </div>
+      <template v-slot:footer>
+        <FeatherButton
+          @click="handleSourceCreationCancel"
+          data-test="cancel-source-button"
+        >
+          Cancel
+        </FeatherButton>
+        <FeatherButton
+          primary
+          @click="handleSourceCreationSave"
+          :disabled="Object.keys(sourceCreationErrors || {}).length > 0"
+          data-test="create-source-button"
+        >
+          Create Source
+        </FeatherButton>
+      </template>
+    </FeatherDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
+import { addEventConfigSource, createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
+import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { useEventModificationStore } from '@/stores/eventModificationStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent, EventFormErrors } from '@/types/eventConfig'
+import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
@@ -203,8 +272,14 @@ import MaskElements from './MaskElements.vue'
 import MaskVarbinds from './MaskVarbinds.vue'
 import VarbindsDecode from './VarbindsDecode.vue'
 
+const loading = ref(false)
+const timeout = ref<number>(-1)
+const results = ref<Array<IAutocompleteItemType>>([])
+const selectedSource = ref<IAutocompleteItemType>()
+const createSourceDialog = ref(false)
 const router = useRouter()
 const store = useEventModificationStore()
+const eventConfigStore = useEventConfigStore()
 const eventUei = ref('')
 const eventLabel = ref('')
 const eventDescription = ref('')
@@ -216,6 +291,9 @@ const snackbar = useSnackbar()
 const destination = ref<ISelectItemType>({ _text: '', _value: '' })
 const severity = ref<ISelectItemType>({ _text: '', _value: '' })
 const alarmType = ref<ISelectItemType>({ _text: '', _value: '' })
+const configName = ref('')
+const vendor = ref('')
+const sourceCreationDialogState = ref(false)
 const maskElements = ref<Array<{ name: ISelectItemType; value: string }>>([
   { name: { _text: '', _value: '' }, value: '' }
 ])
@@ -227,6 +305,19 @@ const varbinds = ref<Array<{ index: string; value: string, type: ISelectItemType
   { index: '0', value: '', type: { _text: MaskVarbindsTypeText.vbNumber, _value: MaskVarbindsTypeValue.vbNumber } }
 ])
 const varbindsDecode = ref<Array<{ parmId: string; decode: Array<{ key: string; value: string }> }>>([])
+const labels = {
+  title: 'Create New Event Source'
+}
+const sourceCreationErrors = computed(() => {
+  let error: any = {}
+  if (configName.value.trim() === '') {
+    error.name = 'Configuration name is required.'
+  }
+  if (vendor.value && vendor.value.length > 128) {
+    error.vendor = 'Vendor must be less than 128 characters.'
+  }
+  return Object.keys(error).length > 0 ? error : null
+})
 
 const xmlContent = computed(() => {
   return vkbeautify.xml(
@@ -282,9 +373,17 @@ const resetValues = () => {
   maskElements.value = []
   varbinds.value = []
   varbindsDecode.value = []
+  selectedSource.value = { _text: '', _value: '' }
+  createSourceDialog.value = false
 }
 
 const loadInitialValues = (val: EventConfigEvent | null) => {
+  if (store.selectedSource) {
+    const source = eventConfigStore.uploadedSources?.find((s) => s.id === store.selectedSource?.id)
+    selectedSource.value = { _text: source?.name, _value: source?.id }
+  } else {
+    selectedSource.value = { _text: '', _value: -1 }
+  }
   if (val) {
     const parser = new DOMParser()
     const xmlDoc = parser.parseFromString(val.xmlContent || '', 'application/xml')
@@ -506,31 +605,41 @@ const setVarbindsDecode = (key: string, value: any, index: number, decodeIndex: 
 }
 
 const handleSaveEvent = async () => {
-  if (!store.eventModificationState.eventConfigEvent || !store.selectedSource) {
+  if (!isValid.value) {
     return
   }
 
-  if (!isValid.value) {
+  if (selectedSource.value?._value === -1) {
+    snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
+    return
+  }
+
+  const sourceId = selectedSource.value?._value as number
+  if (!sourceId) {
+    snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
     return
   }
 
   try {
     let response = null
-    if (store.eventModificationState.isEditMode === CreateEditMode.Edit) {
+    const isEditMode = store.eventModificationState.isEditMode === CreateEditMode.Edit
+
+    if (isEditMode && store.eventModificationState.eventConfigEvent) {
       response = await updateEventConfigEventById(
         xmlContent.value,
-        store.selectedSource.id,
+        sourceId,
         store.eventModificationState.eventConfigEvent.id,
         store.eventModificationState.eventConfigEvent.enabled
       )
     }
     if (store.eventModificationState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEvent(xmlContent.value, store.selectedSource.id)
+      response = await createEventConfigEvent(xmlContent.value, sourceId)
     }
 
     if (response) {
-      snackbar.showSnackBar({ msg: store.eventModificationState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
-      handleCancel()
+      const msg = isEditMode ? 'Event updated successfully' : 'Event created successfully'
+      snackbar.showSnackBar({ msg, error: false })
+      handleCancel(sourceId)
     } else {
       snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
     }
@@ -540,11 +649,10 @@ const handleSaveEvent = async () => {
   }
 }
 
-const handleCancel = () => {
+const handleCancel = (id?: number) => {
   resetValues()
-  const id = store.selectedSource?.id
   store.resetEventModificationState()
-  if (id) {
+  if (id && id > 0) {
     router.push({
       name: 'Event Configuration Detail',
       params: { id }
@@ -552,6 +660,59 @@ const handleCancel = () => {
   } else {
     router.push({ name: 'Event Configuration' })
   }
+}
+
+const showSourceCreationDialog = () => {
+  configName.value = ''
+  vendor.value = ''
+  sourceCreationDialogState.value = true
+}
+
+const handleSourceCreationSave = async () => {
+  try {
+    const response = await addEventConfigSource(
+      configName.value,
+      vendor.value,
+      ''
+    )
+    if (response && typeof response === 'object' && response.status === 201) {
+      // Success: response contains { id, name, fileOrder, status: 201 }
+      await eventConfigStore.fetchAllSourcesNames()
+      selectedSource.value = { _text: response.name, _value: response.id }
+      configName.value = ''
+      vendor.value = ''
+      sourceCreationDialogState.value = false
+    } else if (response === 409) {
+      // Conflict: duplicate name
+      snackbar.showSnackBar({
+        msg: 'An event configuration source with this name already exists.',
+        error: true
+      })
+    } else if (response === 400) {
+      // Bad request: validation error
+      snackbar.showSnackBar({
+        msg: 'Invalid request. Please check your input and try again.',
+        error: true
+      })
+    } else {
+      // 500 or any other error
+      snackbar.showSnackBar({
+        msg: 'Failed to create event configuration source. Please try again.',
+        error: true
+      })
+    }
+  } catch (error) {
+    snackbar.showSnackBar({
+      msg: 'Failed to create event configuration source. Please try again.',
+      error: true
+    })
+  }
+}
+
+const handleSourceCreationCancel = () => {
+  configName.value = ''
+  vendor.value = ''
+  sourceCreationDialogState.value = false
 }
 
 watchEffect(() => {
@@ -575,7 +736,27 @@ watchEffect(() => {
   errors.value = currentErrors as EventFormErrors
 })
 
-onMounted(() => {
+const setSelectedSource = (item: any) => {
+  if (item) {
+    selectedSource.value = item
+  } else {
+    selectedSource.value = { _text: '', _value: -1 }
+  }
+}
+
+const search = (query: string) => {
+  loading.value = true
+  clearTimeout(timeout.value)
+  timeout.value = window.setTimeout(() => {
+    results.value = eventConfigStore.uploadedSources
+      .filter((s) => s.name.toLowerCase().includes(query.toLowerCase()))
+      .map((x) => ({ _text: x.name, _value: x.id }))
+    loading.value = false
+  }, 500)
+}
+
+onMounted(async () => {
+  await eventConfigStore.fetchAllSourcesNames()
   loadInitialValues(store.eventModificationState.eventConfigEvent)
 })
 </script>
@@ -591,10 +772,16 @@ onMounted(() => {
   border-radius: 8px;
   background-color: #ffffff;
 
-  .header {
+  .title {
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
   }
 
   .basic-info {
@@ -626,6 +813,11 @@ onMounted(() => {
     justify-content: flex-end;
     gap: 10px;
   }
+
+}
+
+.modal-body-form {
+  width: 50rem;
 }
 </style>
 

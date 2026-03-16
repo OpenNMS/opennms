@@ -84,6 +84,12 @@
                 "merge-poweredby-branch"
             ]
         },
+        "trivy-scan-analyze": {
+            "extends": [
+                "trivy-scan",
+                "trivy-analyze"
+            ]
+        },
         "weekly-coverage": {
             "extends": [
                 "build",
@@ -105,16 +111,11 @@
                 "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
-        "trivy-analyze": {
-            "extends": [
-                "horizon-image-single-arch-linux-amd64-trivy-analyze",
-                "sentinel-image-single-arch-linux-amd64-trivy-analyze",
-                "minion-image-single-arch-linux-amd64-trivy-analyze"
-            ]
-        },
         "experimental": {
             "extends": [
-                "empty"
+                "build",
+                "tarball-assembly-only",
+                "trivy-analyze"
             ]
         }
     },
@@ -333,7 +334,14 @@
             "requires": [
                 "tarball-assembly-only"
             ]
-        },
+        },       
+        "trivy-analyze":{
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        }, 
         "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
             "context": [
                 "CircleCI",

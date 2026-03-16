@@ -41,6 +41,7 @@ import org.opennms.web.rest.v2.model.AddEventConfSourceRequest;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.opennms.web.rest.v2.model.EventConfEventEditRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
+import org.opennms.web.rest.v2.model.SourceNameDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,6 +320,17 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
+    public Response getEventConfSourceNamesAndIds(SecurityContext securityContext) throws Exception {
+        try {
+            List<SourceNameDto> list = SourceNameDto.fromEntity(eventConfSourceDao.getIdToNameMap());
+            return Response.ok(list).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch EventConf source names and IDs: " + e.getMessage()).build();
+        }
+    }
+
+    @Override
     public Response addEventConfSourceEvent(Long sourceId, Event event, SecurityContext securityContext) throws Exception {
         try {
             validateAddEvent(sourceId,event);
@@ -478,6 +490,20 @@ public class EventConfRestService implements EventConfRestApi {
 
             final String username = getUsername(securityContext);
 
+            String vendor = request.getVendor();
+            if (vendor == null || vendor.isBlank()) {
+                vendor = StringUtils.substringBefore(request.getName(), ".");
+            } else {
+                vendor = request.getVendor();
+            }
+            if (vendor.length() > VENDOR_MAX_LENGTH) {
+                LOG.warn("Vendor validation failed for EventConfSource name='{}'. reason={}",
+                        request.getName(), "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters.");
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid vendor: " + "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters.")
+                        .build();
+            }
+
             int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
             int newOrder = maxFileOrder + 1;
 
@@ -487,7 +513,7 @@ public class EventConfRestService implements EventConfRestApi {
             EventConfSource eventConfSource = new EventConfSource();
             eventConfSource.setName(request.getName());
             eventConfSource.setDescription(request.getDescription());
-            eventConfSource.setVendor(request.getVendor());
+            eventConfSource.setVendor(vendor);
             eventConfSource.setEnabled(true);
             eventConfSource.setEventCount(0);
             eventConfSource.setCreatedTime(now);
@@ -540,18 +566,6 @@ public class EventConfRestService implements EventConfRestApi {
 
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Source name must not be null or blank.");
-        }
-
-        if (request.getVendor() == null || request.getVendor().isBlank()) {
-            throw new IllegalArgumentException("Vendor must not be null or blank.");
-        }
-
-        final String vendor = request.getVendor();
-
-        if (vendor.length() > VENDOR_MAX_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Vendor length must not exceed " + VENDOR_MAX_LENGTH + " characters."
-            );
         }
     }
 

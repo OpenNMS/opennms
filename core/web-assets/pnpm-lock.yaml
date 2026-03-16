@@ -442,7 +442,7 @@ importers:
         specifier: ^0.5.6
         version: 0.5.7
       uglify-js:
-        specifier: ~2.7.3
+        specifier: ~2.7.5
         version: 2.7.5
 
   src/main/assets/static/legacy/leaflet.markercluster:

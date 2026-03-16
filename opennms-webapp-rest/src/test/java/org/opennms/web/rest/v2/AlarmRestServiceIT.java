@@ -37,6 +37,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.opennms.api.integration.ticketing.Plugin;
+import org.opennms.api.integration.ticketing.PluginException;
+import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -113,6 +117,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
+
+    @Autowired
+    private Plugin m_ticketerPlugin;
 
     private OnmsNode node1;
     private OnmsNode node2;
@@ -573,26 +580,38 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 .findFirst().orElseThrow(() -> new IllegalStateException("No unacknowledged alarm with severity >= Normal found"));
         String url = "/alarms/";
 
-        // TroubleTicketerPlugin is disabled, therefore it should fail
-        sendPost(url + alarm.getId() + "/ticket/create", "", 501);
-        sendPost(url + alarm.getId() + "/ticket/update", "", 501);
-        sendPost(url + alarm.getId() + "/ticket/close", "", 501);
+        // Explicitly disable ticketing, then verify it should fail
+        System.setProperty("opennms.alarmTroubleTicketEnabled", "false");
 
-        // enable TroubleTicketeRPlugin and try again
-        System.setProperty("opennms.alarmTroubleTicketEnabled", "true");
-        verifyAnticipatedEvents();
+        // Register a no-op delegate so OSGiBasedTicketerPlugin doesn't throw PluginException
+        // Done after disabling so auto-enable is skipped (property is already non-null)
+        ((OSGiBasedTicketerPlugin) m_ticketerPlugin).registerTicketerPlugin(new Plugin() {
+            @Override public Ticket get(String ticketId) throws PluginException { return null; }
+            @Override public void saveOrUpdate(Ticket ticket) throws PluginException {}
+        }, Collections.emptyMap());
+        try {
+            sendPost(url + alarm.getId() + "/ticket/create", "", 501);
+            sendPost(url + alarm.getId() + "/ticket/update", "", 501);
+            sendPost(url + alarm.getId() + "/ticket/close", "", 501);
 
-        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, alarm, ImmutableMap.of("user", "ulf")));
-        sendPost(url + alarm.getId() + "/ticket/create", "", 202);
-        verifyAnticipatedEvents();
+            // Enable ticketing and try again
+            System.setProperty("opennms.alarmTroubleTicketEnabled", "true");
+            verifyAnticipatedEvents();
 
-        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_UPDATE_UEI, alarm, null));
-        sendPost(url + alarm.getId() + "/ticket/update", "", 202);
-        verifyAnticipatedEvents();
+            anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CREATE_UEI, alarm, ImmutableMap.of("user", "ulf")));
+            sendPost(url + alarm.getId() + "/ticket/create", "", 202);
+            verifyAnticipatedEvents();
 
-        anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, alarm, null));
-        sendPost(url + alarm.getId() + "/ticket/close", "", 202);
-        verifyAnticipatedEvents();
+            anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_UPDATE_UEI, alarm, null));
+            sendPost(url + alarm.getId() + "/ticket/update", "", 202);
+            verifyAnticipatedEvents();
+
+            anticipateEvent(createEventBuilder(EventConstants.TROUBLETICKET_CLOSE_UEI, alarm, null));
+            sendPost(url + alarm.getId() + "/ticket/close", "", 202);
+            verifyAnticipatedEvents();
+        } finally {
+            System.clearProperty("opennms.alarmTroubleTicketEnabled");
+        }
     }
 
     /**

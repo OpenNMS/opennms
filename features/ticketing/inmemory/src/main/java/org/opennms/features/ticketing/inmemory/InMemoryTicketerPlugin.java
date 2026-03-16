@@ -29,11 +29,9 @@ import org.opennms.api.integration.ticketing.Ticket;
 
 
 /**
- * This Plugin is used to test ticketing workflow.
- * Need to add below system properties.
- * opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
-   opennms.alarmTroubleTicketEnabled = true
-    and enable opennms-inmemory-ticketer feature.
+ * In-memory ticketing plugin for testing the ticketing workflow.
+ * Enable the {@code opennms-inmemory-ticketer} Karaf feature to use this plugin.
+ * Ticketing is automatically enabled when the feature is installed.
  */
 public class InMemoryTicketerPlugin implements Plugin {
 

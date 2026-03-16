@@ -23,6 +23,7 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -37,8 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultAlarmTicketerService implements AlarmTicketerService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmTicketerService.class);
 
-    private static final boolean ALARM_TROUBLE_TICKET_ENABLED = Boolean.getBoolean("opennms.alarmTroubleTicketEnabled");
-
     @Autowired
     private AlarmDao alarmDao;
 
@@ -50,7 +49,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
 
     @Override
     public boolean isTicketingEnabled() {
-        return ALARM_TROUBLE_TICKET_ENABLED;
+        return Boolean.getBoolean("opennms.alarmTroubleTicketEnabled");
     }
 
     @Override
@@ -129,7 +128,7 @@ public class DefaultAlarmTicketerService implements AlarmTicketerService {
     private void updateLastAutomationTime(OnmsAlarm alarm, Date now) {
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
-            LOG.warn("Alarm disappeared: {}. lastAutomationTime will not be updated.", alarm);
+            LOG.warn("Alarm disappeared: {}. lastAutomationTime will not be updated, instanceId={}, alarmId={}", alarm, SystemInfoUtils.getInstanceId(), alarm.getId());
             return;
         }
 

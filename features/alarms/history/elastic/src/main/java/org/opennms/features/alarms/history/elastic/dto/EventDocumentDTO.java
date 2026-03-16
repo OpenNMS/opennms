@@ -29,7 +29,7 @@ public class EventDocumentDTO {
     private String description;
 
     @SerializedName("id")
-    private Integer id;
+    private Long id;
 
     @SerializedName("log_message")
     private String logMessage;
@@ -45,11 +45,11 @@ public class EventDocumentDTO {
         this.description = description;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
