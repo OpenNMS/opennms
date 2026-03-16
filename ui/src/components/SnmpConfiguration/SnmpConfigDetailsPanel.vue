@@ -234,6 +234,7 @@ import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_V3_SECURITY_LEVEL } from '@/l
 import { getDefaultSnmpBaseConfiguration, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpFieldInfo } from '@/types/snmpConfig'
 import { validateDefinition, SecurityLevelSelectionOptions, SnmpAuthProtocols, SnmpPrivacyProtocols } from '@/lib/snmpValidator'
+import { withDefaultHints } from '@/lib/snmpConfigHelpers'
 import SnmpConfigPairedFieldInputs from './SnmpConfigPairedFieldInputs.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 import { ScvSearchItem } from '@/types/scv'
@@ -301,49 +302,53 @@ const displaySnmp3Params = computed(() => {
 })
 
 // Field metadata for v-for rendering using SnmpConfigPairedFieldInputs
-const generalParamFields: SnmpFieldInfo[] = [
+const generalParamFields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
   { key: 'timeout', label: 'Timeout', hint: 'Timeout in milliseconds', dataTest: 'snmp-definition-timeout', isNumeric: true },
   { key: 'retry', label: 'Retries', hint: 'Number of retries', dataTest: 'snmp-definition-retry', isNumeric: true }
-]
+], store.currentDefaults))
 
-const advancedConfigOptions: SnmpFieldInfo[] = [
-  { key: 'port', label: 'Port', hint: 'SNMP port (default: 161)', dataTest: 'snmp-definition-port', isNumeric: true },
+const advancedConfigOptions = computed<SnmpFieldInfo[]>(() => withDefaultHints([
+  { key: 'port', label: 'Port', hint: 'SNMP port', dataTest: 'snmp-definition-port', isNumeric: true },
   { key: 'proxyHost', label: 'Proxy Host', hint: 'Proxy host for SNMP communication', dataTest: 'snmp-definition-proxy-host' },
   { key: 'maxRequestSize', label: 'Max Request Size', hint: 'Maximum bytes per PDU request', dataTest: 'snmp-definition-max-request-size', isNumeric: true },
   { key: 'maxVarsPerPdu', label: 'Max Vars Per PDU', hint: 'Variables per SNMP request', dataTest: 'snmp-definition-max-vars-per-pdu', isNumeric: true },
   { key: 'maxRepetitions', label: 'Max Repetitions', hint: 'Repetitions per get-bulk request', dataTest: 'snmp-definition-max-repetitions', isNumeric: true },
   { key: 'ttl', label: 'TTL', hint: 'Time to live', dataTest: 'snmp-definition-ttl', isNumeric: true }
-]
+], store.currentDefaults))
 
-const snmpV2Fields: SnmpFieldInfo[] = [
+const snmpV2Fields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
   { key: 'readCommunity', label: 'Read Community String', hint: 'Read community string', dataTest: 'snmp-lookup-read-community', scvEnabled: true },
   { key: 'writeCommunity', label: 'Write Community String', hint: 'Write community string', dataTest: 'snmp-lookup-write-community', scvEnabled: true }
-]
+], store.currentDefaults))
 
-const snmpV3Fields: SnmpFieldInfo[] = [
+const snmpV3Fields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
   { key: 'securityName', label: 'Security Name', hint: 'SNMP v3 security name', dataTest: 'snmp-definition-security-name', scvEnabled: true },
   {
     key: 'securityLevel', label: 'Security Level', hint: 'SNMP v3 security level', dataTest: 'snmp-definition-security-level', isNumeric: true,
     isSelect: true, selectOptions: SecurityLevelSelectionOptions
   },
-  { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase', scvEnabled: true },
+  { key: 'authPassphrase', label: 'Auth Passphrase', hint: 'Authentication passphrase', dataTest: 'snmp-definition-auth-passphrase', scvEnabled: true,
+    skipDefaultHint: true
+  },
   {
     key: 'authProtocol', label: 'Auth Protocol', hint: 'Authentication protocol', dataTest: 'snmp-definition-auth-protocol',
     isSelect: true, selectOptions: SnmpAuthProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
   },
-  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true },
+  { key: 'privacyPassphrase', label: 'Privacy Passphrase', hint: 'Privacy passphrase', dataTest: 'snmp-definition-privacy-passphrase', scvEnabled: true, 
+    skipDefaultHint: true
+  },
   {
     key: 'privacyProtocol', label: 'Privacy Protocol', hint: 'Privacy protocol', dataTest: 'snmp-definition-privacy-protocol',
     isSelect: true, selectOptions: SnmpPrivacyProtocols.map(protocol => ({ _text: protocol, _value: protocol }))
   }
-]
+], store.currentDefaults))
 
-const snmpV3ContextFields: SnmpFieldInfo[] = [
+const snmpV3ContextFields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
   { key: 'engineId', label: 'Engine ID', hint: 'SNMP engine ID', dataTest: 'snmp-definition-engine-id' },
   { key: 'contextEngineId', label: 'Context Engine ID', hint: 'Context engine ID', dataTest: 'snmp-definition-context-engine-id' },
   { key: 'contextName', label: 'Context Name', hint: 'SNMP context name', dataTest: 'snmp-definition-context-name' },
   { key: 'enterpriseId', label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
-]
+], store.currentDefaults))
 
 const loadInitialValues = () => {
   const currentConfig: SnmpAgentConfig = props.config ?? getDefaultSnmpBaseConfiguration()

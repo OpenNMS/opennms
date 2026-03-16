@@ -21,7 +21,7 @@
 ///
 
 import { defineStore } from 'pinia'
-import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_MAX_REPETITIONS, DEFAULT_SNMP_MAX_REQUEST_SIZE, DEFAULT_SNMP_MAX_VARS_PER_PDU, DEFAULT_SNMP_PORT, DEFAULT_SNMP_RETRIES, DEFAULT_SNMP_TIMEOUT, DEFAULT_SNMP_TTL, DEFAULT_SNMP_V3_AUTH_PASSPHRASE, DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_LEVEL, DEFAULT_SNMP_V3_SECURITY_NAME, DEFAULT_SNMP_VERSION } from '@/lib/constants'
+import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_MAX_REPETITIONS, DEFAULT_SNMP_MAX_REQUEST_SIZE, DEFAULT_SNMP_MAX_VARS_PER_PDU, DEFAULT_SNMP_PORT, DEFAULT_SNMP_READ_COMMUNITY_STRING, DEFAULT_SNMP_RETRIES, DEFAULT_SNMP_TIMEOUT, DEFAULT_SNMP_TTL, DEFAULT_SNMP_V3_AUTH_PASSPHRASE, DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_LEVEL, DEFAULT_SNMP_V3_SECURITY_NAME, DEFAULT_SNMP_VERSION, DEFAULT_SNMP_WRITE_COMMUNITY_STRING } from '@/lib/constants'
 import { getDefaultSnmpSecurityLevel, isValidSnmpSecurityLevel } from '@/lib/snmpValidator'
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
 import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition, saveSnmpProfile } from '@/services/snmpConfigService'
@@ -290,6 +290,30 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     return resp
   }
 
+  const currentDefaults = computed<SnmpBaseConfiguration>(() => ({
+    readCommunity: config.value.readCommunity ?? DEFAULT_SNMP_READ_COMMUNITY_STRING,
+    writeCommunity: config.value.writeCommunity ?? DEFAULT_SNMP_WRITE_COMMUNITY_STRING,
+    timeout: config.value.timeout ?? DEFAULT_SNMP_TIMEOUT,
+    retry: config.value.retry ?? DEFAULT_SNMP_RETRIES,
+    port: config.value.port ?? DEFAULT_SNMP_PORT,
+    maxRequestSize: config.value.maxRequestSize ?? DEFAULT_SNMP_MAX_REQUEST_SIZE,
+    maxVarsPerPdu: config.value.maxVarsPerPdu ?? DEFAULT_SNMP_MAX_VARS_PER_PDU,
+    maxRepetitions: config.value.maxRepetitions ?? DEFAULT_SNMP_MAX_REPETITIONS,
+    ttl: config.value.ttl ?? DEFAULT_SNMP_TTL,
+    version: config.value.version ?? DEFAULT_SNMP_VERSION,
+    securityName: config.value.securityName ?? DEFAULT_SNMP_V3_SECURITY_NAME,
+    securityLevel: config.value.securityLevel ?? DEFAULT_SNMP_V3_SECURITY_LEVEL,
+    authPassphrase: config.value.authPassphrase ?? DEFAULT_SNMP_V3_AUTH_PASSPHRASE,
+    authProtocol: config.value.authProtocol ?? DEFAULT_SNMP_V3_AUTH_PROTOCOL,
+    privacyPassphrase: config.value.privacyPassphrase ?? DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE,
+    privacyProtocol: config.value.privacyProtocol ?? DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
+    proxyHost: config.value.proxyHost,
+    engineId: config.value.engineId,
+    contextEngineId: config.value.contextEngineId,
+    contextName: config.value.contextName,
+    enterpriseId: config.value.enterpriseId
+  }))
+
   return {
     activeTab,
     activeViewConfigurationsTab,
@@ -298,6 +322,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     definitionCreateEditMode,
     deleteProfile,
     fetchMonitoringLocations,
+    currentDefaults,
     isLoading,
     lookupIpAddress,
     monitoringLocations,
