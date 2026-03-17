@@ -182,10 +182,12 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     ATTEMPT=$((MAX_RETRIES - RETRIES_LEFT + 1))
     echo "#### Finding failed tests for re-run (attempt $ATTEMPT of $MAX_RETRIES)"
 
+    set +e +o pipefail
     FAILED_TESTS=$(find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
       | sed 's|.*/TEST-||;s|\.xml||' \
       | sort -u)
+    set -e -o pipefail
 
     if [ -z "$FAILED_TESTS" ]; then
         echo "#### No failed tests found in reports, skipping retry"
@@ -196,9 +198,11 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     RETRIED_TESTS="$FAILED_TESTS"
 
     # Clean failed test XML reports so fresh results are written
+    set +e +o pipefail
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
       | xargs rm -f
+    set -e -o pipefail
 
     # Split into ITs vs unit tests
     FAILED_ITS=$(echo "$FAILED_TESTS" | grep -E 'IT$' | paste -s -d, - || true)
