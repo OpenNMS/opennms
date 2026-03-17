@@ -147,6 +147,29 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             withEnv("KARAF_DEBUG", "true");
             withEnv("JAVA_DEBUG_PORT", "" + MINION_DEBUG_PORT);
         }
+
+        withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
+
+        if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
+            withEnv("MINION_IPC", "kafka");
+            withEnv("KAFKA_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
+        } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            withEnv("MINION_IPC", "grpc");
+            withEnv("GRPC_CLIENT_HOST", OpenNMSContainer.ALIAS);
+            withEnv("GRPC_CLIENT_PORT", "8990");
+        }
+
+        if (model.isJaegerEnabled()) {
+            withEnv("JAEGER_ENABLED", "true");
+            withEnv("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
+        }
+
+        if (!Strings.isNullOrEmpty(profile.getDominionGrpcScvClientSecret())) {
+            withEnv("DOMINION_SCV_ENABLED", "true");
+            withEnv("DOMINION_GRPC_HOST", OpenNMSContainer.ALIAS);
+            withEnv("DOMINION_GRPC_PORT", "8990");
+            withEnv("DOMINION_GRPC_CLIENT_SECRET", profile.getDominionGrpcScvClientSecret());
+        }
     }
 
     private Path writeMinionConfig(MinionProfile profile) {

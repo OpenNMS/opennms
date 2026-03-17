@@ -12,11 +12,12 @@ umask 002
 export MINION_HOME="/opt/minion"
 export KARAF_HOME="${MINION_HOME}"
 
-MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CACERTS="${MINION_HOME}/cacerts"
+FEATURES_BOOT_DIR="${MINION_HOME}/etc/featuresBoot.d"
+FEATURES_BOOT_TEMPLATES_DIR="${FEATURES_BOOT_DIR}/templates"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
 # Prometheus JMX Exporter Configuration
@@ -109,6 +110,39 @@ function updateConfig() {
     fi
 }
 
+function applyFeatureBootTemplates() {
+    # Clean any previously generated boot files; leave templates directory untouched
+    find "${FEATURES_BOOT_DIR}" -maxdepth 1 -name "*.boot" -delete
+
+    apply_template() {
+        local name="$1"
+        envsubst < "${FEATURES_BOOT_TEMPLATES_DIR}/${name}" > "${FEATURES_BOOT_DIR}/${name}"
+        echo "[Features] Enabled: ${name}"
+    }
+
+    # IPC strategy — kafka or grpc
+    case "${MINION_IPC:-}" in
+        kafka)
+            apply_template "kafka-ipc.boot"
+            apply_template "kafka-rpc.boot"
+            apply_template "kafka-sink.boot"
+            apply_template "kafka-twin.boot"
+            apply_template "disable-jms.boot"
+            ;;
+        grpc)
+            apply_template "grpc.boot"
+            apply_template "disable-jms.boot"
+            ;;
+        *)
+            echo "[Features] No IPC strategy set via MINION_IPC, using defaults."
+            ;;
+    esac
+
+    # Standalone optional features
+    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot"
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot"
+}
+
 function parseEnvironment() {
     # Configure additional features
     IFS=$'\n'
@@ -128,11 +162,6 @@ function parseEnvironment() {
         if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
             ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
             updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
-            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
-                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
-                echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-                echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
-            fi
         fi
     done
 }
@@ -159,12 +188,11 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Set Minion location and connection to OpenNMS instance
-        echo "location = ${MINION_LOCATION}" > ${MINION_CONFIG}
-        echo "id = ${MINION_ID}" >> ${MINION_CONFIG}
-        echo "broker-url = ${OPENNMS_BROKER_URL}" >> ${MINION_CONFIG}
+        # Preserve org.opennms.minion.controller.cfg as provided by the image/overlay.
+        # This allows Karaf/OpenNMS variable interpolation (for example ${env:...}) in that file.
 
         parseEnvironment
+        applyFeatureBootTemplates
 
         echo "Configured $(date)" > ${MINION_HOME}/etc/configured
     else
