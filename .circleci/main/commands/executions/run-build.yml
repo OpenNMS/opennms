@@ -55,6 +55,7 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Prun-expensive-tasks \
               -Psmoke \
+              -T 1C \
               --batch-mode \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
