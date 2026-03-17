@@ -158,7 +158,7 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -DskipITs=false \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
-           -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+           -Dorg.opennms.core.test-api.dbCreateThreads=8 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
