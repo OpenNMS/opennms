@@ -20,23 +20,24 @@
 /// License.
 ///
 
-import { createApp, h } from 'vue'
-import { createPinia } from 'pinia'
-import '@featherds/styles'
-import '@featherds/styles/themes/open-light.css'
-import '../styles/opennms-feather-styles.scss'
-import { setupPrimeVue } from '../theme/primevue-setup'
-import App from './App.vue'
+import PrimeVue from 'primevue/config'
+import OpenNMSPreset from './opennms-preset'
+import 'primeicons/primeicons.css'
 
-// id of div to mount this Vue app onto, expected to exist in the embedding web application
-const appMountId = import.meta.env.VITE_MENU_APP_MOUNT_ID?.toString() || 'opennms-sidemenu-container'
+import type { App } from 'vue'
 
-const app = createApp({
-  render: () => h(App)
-})
-
-setupPrimeVue(app)
-
-app
-  .use(createPinia())
-  .mount(`#${appMountId}`)
+export const setupPrimeVue = (app: App) => {
+  app.use(PrimeVue, {
+    theme: {
+      preset: OpenNMSPreset,
+      options: {
+        prefix: 'p',
+        darkModeSelector: '.open-dark',
+        cssLayer: {
+          name: 'primevue',
+          order: 'primevue'
+        }
+      }
+    }
+  })
+}

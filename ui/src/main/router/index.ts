@@ -346,6 +346,11 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
+      path: '/primevue-test',
+      name: 'PrimeVueTest',
+      component: () => import('@/components/PrimeVueTest.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

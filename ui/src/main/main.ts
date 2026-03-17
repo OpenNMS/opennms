@@ -41,6 +41,7 @@ import 'vue-diff/dist/index.css'
 
 import dateFormatDirective from '../directives/v-date'
 import { externalComponent, getJSPath } from '../components/Plugin/utils'
+import { setupPrimeVue } from '../theme/primevue-setup'
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
@@ -88,9 +89,13 @@ for (const plugin of plugins) {
   }
 }
 
-createApp({
+const app = createApp({
   render: () => h(App)
 })
+
+setupPrimeVue(app)
+
+app
   .use(VueDiff)
   .use(router)
   .use(createPinia())
