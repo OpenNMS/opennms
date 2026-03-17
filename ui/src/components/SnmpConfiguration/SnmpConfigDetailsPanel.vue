@@ -71,7 +71,7 @@
     <div class="feather-row">
       <div class="feather-col-6" v-if="!props.suppressMonitoringLocation">
         <FeatherSelect
-          label="Location"
+          label="Monitoring Location"
           data-test="snmp-monitoring-location-select"
           hint="Select a monitoring location"
           :options="monitoringLocations"

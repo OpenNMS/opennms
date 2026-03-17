@@ -123,7 +123,6 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px;
 
     .snmp-config-details {
       border-radius: 5px;

@@ -1,8 +1,9 @@
 <template>
   <div class="snmp-config-definitions-tab">
     <div class="main-section">
-      <div v-if="displayTable" class="info-section">
-        <div>
+      <h3>SNMP Configuration Definitions</h3>
+      <div class="info-section">
+        <div v-if="displayTable">
           <span>SNMP definitions display how IP addresses, ranges, or patterns are currently configured.</span>
           <FeatherIcon
             :icon="InfoIcon"
@@ -12,6 +13,12 @@
           />
         </div>
       </div>
+      <EmptyList
+        v-if="!store.config.definition.length && displayTable"
+        :content="emptyListContent"
+        data-test="empty-list"
+      />
+ 
       <SnmpConfigDefinitionsTable v-if="displayTable" />
 
       <div
@@ -53,6 +60,7 @@ import { SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
+import EmptyList from '../Common/EmptyList.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
@@ -61,6 +69,10 @@ const isMessageDialogVisible = ref(false)
 const displayTable = computed(() => {
   return store.definitionCreateEditMode === SnmpConfigEditMode.Table
 })
+
+const emptyListContent = {
+  msg: 'No definitions found.'
+}
 
 const handleBackButtonClick = () => {
   store.setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
@@ -114,7 +126,7 @@ const onSave = async (definition: SnmpDefinition) => {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 20px;
+    padding: 1.5em;
 
     .info-section {
       margin-bottom: 1em;
@@ -127,7 +139,6 @@ const onSave = async (definition: SnmpDefinition) => {
         cursor: pointer;
         font-size: 1.5em;
         margin-left: 0.5em;
-        vertical-align: middle;
         color: var(variables.$primary);
 
         &:hover {

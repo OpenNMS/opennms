@@ -157,9 +157,8 @@ onMounted(() => {
 .snmp-config-lookup-panel {
   background: var(variables.$surface);
   width: 100%;
-  padding: 25px;
+  padding: 1.5em;
   border-radius: 5px;
-  margin-top: 10px;
 
   .title-container {
     display: flex;

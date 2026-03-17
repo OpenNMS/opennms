@@ -43,6 +43,7 @@
           <div class="large-spacer"></div>
           <label class="label">Profile Label: </label>
           {{ currentDefinition?.profileLabel }}
+          <div class="large-spacer"></div>
         </div>
 
         <SnmpConfigDetailsPanel

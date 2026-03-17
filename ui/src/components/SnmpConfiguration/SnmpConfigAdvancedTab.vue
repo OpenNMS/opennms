@@ -1,15 +1,40 @@
 <template>
   <div class="snmp-config-advanced-tab">
-    <div class="main-section">
-      <SnmpConfigDefaultsPanel />
-    </div>
-  </div>
+    <FeatherTabContainer
+      class="nested-tabs"
+      v-model="activeAdvancedSubtab"
+    >
+      <template v-slot:tabs>
+        <FeatherTab>Default Overrides</FeatherTab>
+        <FeatherTab>Profiles</FeatherTab>
+        <FeatherTab>Upload/Download</FeatherTab>
+      </template>
+      <FeatherTabPanel>
+        <SnmpConfigDefaultsPanel />
+      </FeatherTabPanel>
+      <FeatherTabPanel>
+        <SnmpConfigProfilesTab />
+      </FeatherTabPanel>
+      <FeatherTabPanel>
+        <SnmpConfigUploadDownloadTab />
+      </FeatherTabPanel>
+    </FeatherTabContainer>
+   </div>
 </template>
 
 <script lang="ts" setup>
-
+import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpConfigDefaultsPanel from './SnmpConfigDefaultsPanel.vue'
+import SnmpConfigProfilesTab from './SnmpConfigProfilesTab.vue'
+import SnmpConfigUploadDownloadTab from './SnmpConfigUploadDownloadTab.vue'
 
+const store = useSnmpConfigStore()
+
+const activeAdvancedSubtab = computed({
+  get: () => store.activeAdvancedSubtab,
+  set: (val) => store.setActiveAdvancedSubtab(val)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -27,7 +52,15 @@ import SnmpConfigDefaultsPanel from './SnmpConfigDefaultsPanel.vue'
   border: 1px solid var(variables.$border-on-surface);
 
   .main-section {
-    padding: 16px;
+    padding: 1.5em;
+  }
+
+  .nested-tabs {
+    margin-top: 1em;
+
+    :deep(li .tab) {
+      height: 2.25rem;
+    }
   }
 }
 </style>

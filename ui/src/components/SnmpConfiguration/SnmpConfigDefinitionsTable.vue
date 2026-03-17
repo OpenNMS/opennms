@@ -13,7 +13,18 @@
             </template>
           </FeatherInput>
         </div>
-      </div>
+        <div class="refresh">
+          <FeatherButton
+            primary
+            @click="onCreateDefinition"
+          >
+            <template v-slot:icon>
+              <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-definition-icon" />
+              New Definition
+            </template>
+          </FeatherButton>
+        </div>
+       </div>
     </div>
     <div class="container">
       <table
@@ -146,6 +157,7 @@ import { cloneDeep, debounce } from 'lodash'
 import { FeatherTextBadge, BadgeTypes } from '@featherds/badge'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import IconAdd from '@featherds/icon/action/Add'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import IconSearch from '@featherds/icon/action/Search'
@@ -155,7 +167,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
-import { SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpDefinition } from '@/types/snmpConfig'
 import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
@@ -298,6 +310,12 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   sort[sortObj.property] = sortObj.value
 }
 
+const onCreateDefinition = () => {
+  store.setDefinitionCreateEditMode(SnmpConfigEditMode.Create)
+  store.resetCurrentDefinition()
+  store.setActiveTab(ActiveTabs.BrowseDefinitions)
+}
+
 const onDefinitionEdit = (definition?: SnmpDefinition) => {
   if (definition) {
     store.setCurrentDefinition(cloneDeep(definition))
@@ -341,7 +359,7 @@ const confirmDelete = async () => {
   definitionToDelete.value = null
 
   if (success) {
-    store.populateSnmpConfig()
+    await store.populateSnmpConfig()
   }
 }
 
@@ -378,12 +396,12 @@ const onSearchChange = (value: string | number | undefined) => {
     .action-container {
       display: flex;
       align-items: flex-start;
-      justify-content: flex-start;
+      justify-content: space-between;
       gap: 5px;
-      width: 30%;
+      width: 100%;
 
       .search-container {
-        width: 80%;
+        flex: 0 0 auto;
         min-width: 30em;
       }
     }
@@ -449,6 +467,10 @@ const onSearchChange = (value: string | number | undefined) => {
     .feather-pagination {
       border: none !important;
     }
+  }
+
+  button.btn.btn-icon .add-definition-icon {
+    font-size: 1.1rem;
   }
 }
 

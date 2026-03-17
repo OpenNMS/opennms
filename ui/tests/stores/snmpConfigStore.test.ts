@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useSnmpConfigStore, SnmpLookupEditMode, SnmpConfigEditMode, ActiveTabs, getDefaultSnmpBaseConfiguration, getDefaultSnmpDefinition, getDefaultSnmpProfile, getEmptySnmpConfig, getDefaultSnmpConfig, getMockSnmpConfiguration } from '@/stores/snmpConfigStore'
+import { useSnmpConfigStore, SnmpLookupEditMode, SnmpConfigEditMode, ActiveTabs, AdvancedSubtabs, getDefaultSnmpBaseConfiguration, getDefaultSnmpDefinition, getDefaultSnmpProfile, getEmptySnmpConfig, getDefaultSnmpConfig, getMockSnmpConfiguration } from '@/stores/snmpConfigStore'
 import {
   deleteSnmpDefinition,
   deleteSnmpProfile,
@@ -159,6 +159,7 @@ describe('useSnmpConfigStore', () => {
       })
       expect(store.isLoading).toBe(false)
       expect(store.activeTab).toBe(0)
+      expect(store.activeAdvancedSubtab).toBe(0)
       expect(store.currentDefinition).toBeUndefined()
       expect(store.definitionCreateEditMode).toBe(SnmpConfigEditMode.Table)
       expect(store.profileLabel).toBe('')
@@ -219,8 +220,8 @@ describe('useSnmpConfigStore', () => {
 
   describe('State Management', () => {
     it('should set active tab', () => {
-      store.setActiveTab(ActiveTabs.ViewConfigurations)
-      expect(store.activeTab).toBe(ActiveTabs.ViewConfigurations)
+      store.setActiveTab(ActiveTabs.BrowseDefinitions)
+      expect(store.activeTab).toBe(ActiveTabs.BrowseDefinitions)
 
       store.setActiveTab(ActiveTabs.Advanced)
       expect(store.activeTab).toBe(ActiveTabs.Advanced)
@@ -282,8 +283,20 @@ describe('useSnmpConfigStore', () => {
       expect(store.profileLabel).toBe('Test Label')
     })
 
+    it('should set active advanced subtab', () => {
+      store.setActiveAdvancedSubtab(AdvancedSubtabs.Profiles)
+      expect(store.activeAdvancedSubtab).toBe(AdvancedSubtabs.Profiles)
+
+      store.setActiveAdvancedSubtab(AdvancedSubtabs.UploadDownload)
+      expect(store.activeAdvancedSubtab).toBe(AdvancedSubtabs.UploadDownload)
+
+      store.setActiveAdvancedSubtab(AdvancedSubtabs.DefaultOverrides)
+      expect(store.activeAdvancedSubtab).toBe(AdvancedSubtabs.DefaultOverrides)
+    })
+
     it('should reset state', () => {
       store.setActiveTab(2)
+      store.setActiveAdvancedSubtab(AdvancedSubtabs.UploadDownload)
       store.setDefinitionCreateEditMode(SnmpConfigEditMode.Edit)
       store.setSnmpLookupEditMode(SnmpLookupEditMode.Edit)
       store.setProfileLabel('Test')
@@ -294,6 +307,7 @@ describe('useSnmpConfigStore', () => {
 
       expect(store.isLoading).toBe(false)
       expect(store.activeTab).toBe(0)
+      expect(store.activeAdvancedSubtab).toBe(0)
       expect(store.currentDefinition).toEqual(getDefaultSnmpDefinition())
       expect(store.definitionCreateEditMode).toBe(SnmpConfigEditMode.Table)
       expect(store.snmpLookupEditMode).toBe(SnmpLookupEditMode.Lookup)
@@ -772,7 +786,7 @@ describe('useSnmpConfigStore', () => {
 
     it('should have correct ActiveTabs values', () => {
       expect(ActiveTabs.Lookup).toBe(0)
-      expect(ActiveTabs.ViewConfigurations).toBe(1)
+      expect(ActiveTabs.BrowseDefinitions).toBe(1)
       expect(ActiveTabs.Advanced).toBe(2)
     })
   })

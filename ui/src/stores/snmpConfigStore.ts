@@ -42,13 +42,14 @@ export enum SnmpConfigEditMode {
 
 export enum ActiveTabs {
   Lookup = 0,
-  ViewConfigurations = 1,
+  BrowseDefinitions = 1,
   Advanced = 2
 }
 
-export enum ViewConfigurationsTabs {
-  Definitions = 0,
-  Profiles = 1
+export enum AdvancedSubtabs {
+  DefaultOverrides = 0,
+  Profiles = 1,
+  UploadDownload = 2
 }
 
 export const getDefaultSnmpBaseConfiguration = () => {
@@ -172,7 +173,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   })
   const isLoading = ref(false)
   const activeTab = ref(0)
-  const activeViewConfigurationsTab = ref(0)
+  const activeAdvancedSubtab = ref(0)
 
   // current definition being editing or deleted
   const currentDefinition = ref<SnmpDefinition>()
@@ -189,8 +190,8 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     activeTab.value = tabIndex
   }
 
-  const setActiveViewConfigurationsTab = (tabIndex: number) => {
-    activeViewConfigurationsTab.value = tabIndex
+  const setActiveAdvancedSubtab = (tabIndex: number) => {
+    activeAdvancedSubtab.value = tabIndex
   }
 
   const setDefinitionCreateEditMode = (mode: SnmpConfigEditMode) => {
@@ -216,7 +217,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
   const resetState = () => {
     isLoading.value = false
     setActiveTab(0)
-    setActiveViewConfigurationsTab(0)
+    setActiveAdvancedSubtab(0)
     resetCurrentDefinition()
     setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
     setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
@@ -316,7 +317,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
 
   return {
     activeTab,
-    activeViewConfigurationsTab,
+    activeAdvancedSubtab,
     config,
     currentDefinition,
     definitionCreateEditMode,
@@ -332,7 +333,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     saveDefinition,
     saveProfile,
     setActiveTab,
-    setActiveViewConfigurationsTab,
+    setActiveAdvancedSubtab,
     resetCurrentDefinition,
     resetState,
     setCurrentDefinition,
