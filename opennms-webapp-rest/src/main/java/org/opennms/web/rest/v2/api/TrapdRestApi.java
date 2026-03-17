@@ -26,6 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.QueryParam;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
@@ -34,6 +35,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.opennms.web.rest.v2.model.Snmpv3UserDto;
 import org.opennms.web.rest.v2.model.TrapdConfigDto;
 
 @Path("trapd")
@@ -71,7 +73,7 @@ public interface TrapdRestApi {
     })
     Response getTrapdConfiguration(@Context SecurityContext securityContext);
     
-    @POST
+    @PUT
     @Path("update-config")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -86,5 +88,53 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "500", description = "Failed to update trapd configuration")
     })
     Response updateTrapdConfiguration(TrapdConfigDto payload, @Context SecurityContext securityContext);
+
+    @POST
+    @Path("save-user")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Save SNMPv3 user",
+            description = "Save SNMPv3 user configuration with provided JSON payload.",
+            operationId = "saveTrapdUser"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User saved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user payload"),
+            @ApiResponse(responseCode = "500", description = "Failed to save user")
+    })
+    Response saveTrapdUser(Snmpv3UserDto user, @Context SecurityContext securityContext);
+
+    @PUT
+    @Path("update-user")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Update SNMPv3 user",
+            description = "Update SNMPv3 user configuration with provided JSON payload.",
+            operationId = "updateTrapdUser"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user payload"),
+            @ApiResponse(responseCode = "500", description = "Failed to update user")
+    })
+    Response updateTrapdUser(@QueryParam("index") Integer index, Snmpv3UserDto user, @Context SecurityContext securityContext);
+
+    @DELETE
+    @Path("delete-user")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Delete SNMPv3 user",
+            description = "Delete SNMPv3 user configuration with provided index.",
+            operationId = "deleteTrapdUser"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user index"),
+            @ApiResponse(responseCode = "500", description = "Failed to delete user")
+    })
+    Response deleteTrapdUser(@QueryParam("index") Integer index, @Context SecurityContext securityContext);
 }
 

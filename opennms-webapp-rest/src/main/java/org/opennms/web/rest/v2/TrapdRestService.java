@@ -22,6 +22,9 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -30,9 +33,11 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.exception.ValidationException;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.web.rest.v2.api.TrapdRestApi;
+import org.opennms.web.rest.v2.model.Snmpv3UserDto;
 import org.opennms.web.rest.v2.model.TrapdConfigDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +48,8 @@ import org.springframework.stereotype.Service;
 public class TrapdRestService implements TrapdRestApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrapdRestService.class);
+    private static final Set<String> AUTH_PROTOCOLS = new HashSet<>(Arrays.asList("MD5", "SHA", "SHA-224", "SHA-256", "SHA-512"));
+    private static final Set<String> PRIVACY_PROTOCOLS = new HashSet<>(Arrays.asList("DES", "AES", "AES192", "AES256"));
 
     @Autowired
     private TrapdConfigDao m_trapdConfigDao;
@@ -113,6 +120,128 @@ public class TrapdRestService implements TrapdRestApi {
         }
     }
 
+    @Override
+    public Response saveTrapdUser(Snmpv3UserDto user, SecurityContext securityContext) {
+        if (user == null) {
+            return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
+        }
+
+        final Snmpv3User snmpv3User;
+        try {
+            snmpv3User = toSnmpv3User(user);
+        } catch (Exception e) {
+            LOG.warn("Failed to map SNMPv3 user payload.", e);
+            return Response.status(Status.BAD_REQUEST).entity("Invalid SNMPv3 user payload.").build();
+        }
+
+        try {
+            TrapdConfiguration config = m_trapdConfigDao.getConfig();
+            if (config == null) {
+                config = new TrapdConfiguration();
+            }
+
+            final String validationMessage = validateSnmpv3UserPayload(user);
+            if (validationMessage != null) {
+                return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
+            }
+
+            // Ensure required attributes are present when persisting a newly-created config.
+            if (!config.hasSnmpTrapPort()) {
+                config.setSnmpTrapPort(162);
+            }
+            if (!config.hasNewSuspectOnTrap()) {
+                config.setNewSuspectOnTrap(false);
+            }
+
+            config.addSnmpv3User(snmpv3User);
+            m_trapdConfigDao.updateConfig(config);
+            return Response.ok(new Snmpv3UserDto().toDto(snmpv3User)).build();
+        } catch (ValidationException e) {
+            LOG.warn("Provided SNMPv3 user failed schema validation.", e);
+            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            LOG.error("Failed to persist provided SNMPv3 user.", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd user.").build();
+        }
+    }
+
+    @Override
+    public Response updateTrapdUser(Integer index, Snmpv3UserDto user, SecurityContext securityContext) {
+        if (index == null || index < 0) {
+            return Response.status(Status.BAD_REQUEST).entity("Valid user index is required.").build();
+        }
+
+        if (user == null) {
+            return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
+        }
+
+        final Snmpv3User snmpv3User;
+        try {
+            snmpv3User = toSnmpv3User(user);
+        } catch (Exception e) {
+            LOG.warn("Failed to map SNMPv3 user payload.", e);
+            return Response.status(Status.BAD_REQUEST).entity("Invalid SNMPv3 user payload.").build();
+        }
+
+        try {
+            final TrapdConfiguration config = m_trapdConfigDao.getConfig();
+            if (config == null) {
+                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
+            }
+
+            if (index >= config.getSnmpv3UserCount()) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("Index " + index + " is out of range. There are " + config.getSnmpv3UserCount() + " user(s) configured.")
+                        .build();
+            }
+
+            final String validationMessage = validateSnmpv3UserPayload(user);
+            if (validationMessage != null) {
+                return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
+            }
+
+            config.setSnmpv3User(index, snmpv3User);
+            m_trapdConfigDao.updateConfig(config);
+            return Response.ok(new Snmpv3UserDto().toDto(snmpv3User)).build();
+        } catch (ValidationException e) {
+            LOG.warn("Updating SNMPv3 user failed schema validation.", e);
+            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            LOG.error("Failed to update SNMPv3 user at index {}.", index, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to update trapd user.").build();
+        }
+    }
+
+    @Override
+    public Response deleteTrapdUser(Integer index, SecurityContext securityContext) {
+        if (index == null || index < 0) {
+            return Response.status(Status.BAD_REQUEST).entity("Valid user index is required.").build();
+        }
+
+        try {
+            final TrapdConfiguration config = m_trapdConfigDao.getConfig();
+            if (config == null) {
+                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
+            }
+
+            if (index >= config.getSnmpv3UserCount()) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("Index " + index + " is out of range. There are " + config.getSnmpv3UserCount() + " user(s) configured.")
+                        .build();
+            }
+
+            final Snmpv3User removed = config.removeSnmpv3UserAt(index);
+            m_trapdConfigDao.updateConfig(config);
+            return Response.ok(new Snmpv3UserDto().toDto(removed)).build();
+        } catch (ValidationException e) {
+            LOG.warn("Removing SNMPv3 user failed schema validation.", e);
+            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            LOG.error("Failed to delete SNMPv3 user at index {}.", index, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to delete trapd user.").build();
+        }
+    }
+
     private TrapdConfiguration mergeTrapdConfiguration(final TrapdConfigDto payload) {
         TrapdConfiguration config = m_trapdConfigDao.getConfig();
         if (config == null) {
@@ -147,6 +276,66 @@ public class TrapdRestService implements TrapdRestApi {
             config.setUseAddressFromVarbind(payload.getUseAddressFromVarbind());
         }
         return config;
+    }
+
+    private Snmpv3User toSnmpv3User(final Snmpv3UserDto userDto) {
+        final Snmpv3User user = new Snmpv3User();
+        user.setEngineId(userDto.getEngineId());
+        user.setSecurityName(userDto.getSecurityName());
+        user.setSecurityLevel(userDto.getSecurityLevel());
+        user.setAuthProtocol(userDto.getAuthProtocol());
+        user.setAuthPassphrase(userDto.getAuthPassphrase());
+        user.setPrivacyProtocol(userDto.getPrivacyProtocol());
+        user.setPrivacyPassphrase(userDto.getPrivacyPassphrase());
+        return user;
+    }
+
+    private String validateSnmpv3UserPayload(final Snmpv3UserDto user) {
+        if (isBlank(user.getSecurityName())) {
+            return "securityName is required.";
+        }
+
+        final Integer securityLevel = user.getSecurityLevel();
+        if (securityLevel != null && (securityLevel < 1 || securityLevel > 3)) {
+            return "securityLevel must be between 1 and 3.";
+        }
+
+        if (!isBlank(user.getAuthProtocol()) && !AUTH_PROTOCOLS.contains(user.getAuthProtocol())) {
+            return "Unsupported authProtocol.";
+        }
+        if (!isBlank(user.getPrivacyProtocol()) && !PRIVACY_PROTOCOLS.contains(user.getPrivacyProtocol())) {
+            return "Unsupported privacyProtocol.";
+        }
+
+        final boolean hasAuthProtocol = !isBlank(user.getAuthProtocol());
+        final boolean hasAuthPassphrase = !isBlank(user.getAuthPassphrase());
+        final boolean hasPrivacyProtocol = !isBlank(user.getPrivacyProtocol());
+        final boolean hasPrivacyPassphrase = !isBlank(user.getPrivacyPassphrase());
+
+        if (hasAuthProtocol != hasAuthPassphrase) {
+            return "authProtocol and authPassphrase must be provided together.";
+        }
+        if (hasPrivacyProtocol != hasPrivacyPassphrase) {
+            return "privacyProtocol and privacyPassphrase must be provided together.";
+        }
+
+        if (securityLevel != null) {
+            if (securityLevel == 1 && (hasAuthProtocol || hasPrivacyProtocol)) {
+                return "securityLevel 1 does not allow auth or privacy credentials.";
+            }
+            if (securityLevel == 2 && (!hasAuthProtocol || hasPrivacyProtocol)) {
+                return "securityLevel 2 requires auth credentials and does not allow privacy credentials.";
+            }
+            if (securityLevel == 3 && (!hasAuthProtocol || !hasPrivacyProtocol)) {
+                return "securityLevel 3 requires both auth and privacy credentials.";
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isBlank(final String value) {
+        return value == null || value.trim().isEmpty();
     }
 
 }
