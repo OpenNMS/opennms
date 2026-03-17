@@ -148,7 +148,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         }
 
         withEnv("OPENNMS_BROKER_URL", "failover:tcp://" + OpenNMSContainer.ALIAS + ":61616");
-        withEnv("MINION_IPC", "kafka");
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             withEnv("MINION_IPC", "kafka");
