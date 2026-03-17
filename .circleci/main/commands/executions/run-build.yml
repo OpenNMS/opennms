@@ -47,7 +47,7 @@ commands:
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+            ./compile.pl -DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               --no-transfer-progress \
@@ -55,7 +55,7 @@ commands:
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Prun-expensive-tasks \
               -Psmoke \
-              -T 1C \
+              -T1C \
               --batch-mode \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \

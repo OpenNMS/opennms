@@ -4,7 +4,7 @@
     "docs": false,
     "ui": false,
     "integration": true,
-    "smoke": false,
+    "smoke": true,
     "rpms": false,
     "debs": false,
     "oci": false,
