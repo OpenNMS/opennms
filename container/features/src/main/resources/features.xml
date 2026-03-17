@@ -2135,5 +2135,24 @@
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
+    <feature name="mib-compiler-rest"
+             version="${project.version}"
+             description="OpenNMS :: Features :: MIB Compiler REST">
+
+        <details>
+            REST interface for the OpenNMS MIB Compiler.
+        </details>
+
+        <!-- Parser bundle -->
+        <bundle>
+            mvn:org.opennms.features.mib-compiler-rest/org.opennms.features.mib-compiler-rest.parser/${project.version}
+        </bundle>
+
+        <!-- API bundle -->
+        <bundle>
+            mvn:org.opennms.features.mib-compiler-rest/org.opennms.features.mib-compiler-rest.api/${project.version}
+        </bundle>
+
+    </feature>
 
 </features>

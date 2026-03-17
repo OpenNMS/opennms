@@ -1,0 +1,59 @@
+CLAVISTER-SMI DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, enterprises
+        FROM SNMPv2-SMI;
+
+clavisterSmiMibModule MODULE-IDENTITY
+    LAST-UPDATED "201206270900Z"
+    ORGANIZATION 
+        "Clavister AB"
+    CONTACT-INFO 
+        "Clavister Support
+         
+         Clavister AB 
+         Sjogatan 6J
+         SE-891 60 ORNSKOLDSVIK
+         SWEDEN
+         
+         Tel: +46-660-299200
+         http://www.clavister.com"
+    DESCRIPTION 
+        "Smi Mib"
+    REVISION    "201206270900Z"
+    DESCRIPTION 
+        "Updated with regards to name change."
+    REVISION    "200605190900Z"
+    DESCRIPTION 
+        "Initial version."
+    ::= { clavister 0 }
+
+
+clavister OBJECT IDENTIFIER ::= { enterprises 5089 }
+
+clavisterOS OBJECT IDENTIFIER ::= { clavister 1 }
+
+clavisterOSTrap OBJECT IDENTIFIER ::= { clavisterOS 0 }
+
+clavisterOSTrapInfo OBJECT IDENTIFIER ::= { clavisterOS 1 }
+
+clavisterOSStats OBJECT IDENTIFIER ::= { clavisterOS 2 }
+
+clavisterReg OBJECT IDENTIFIER ::= { clavister 2 }
+
+clavisterMibModules OBJECT IDENTIFIER ::= { clavisterReg  1 }
+
+clavisterMibConfs OBJECT IDENTIFIER ::= { clavisterReg 2 }
+
+clavisterMibObjectGroups OBJECT IDENTIFIER ::= { clavisterReg 3 }
+
+clavisterSystem OBJECT IDENTIFIER ::= { clavister 3 }
+
+clavisterSystemTrap OBJECT IDENTIFIER ::= { clavisterSystem 0 }
+
+clavisterSystemTrapInfo OBJECT IDENTIFIER ::= { clavisterSystem 1 }
+
+clavisterSystemStats OBJECT IDENTIFIER ::= { clavisterSystem 2 }
+
+END -- end of module CLAVISTER-SMI.
+

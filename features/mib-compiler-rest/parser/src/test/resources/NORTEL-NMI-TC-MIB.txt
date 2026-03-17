@@ -1,0 +1,265 @@
+NORTEL-NMI-TC-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       MODULE-IDENTITY, Unsigned32
+           FROM SNMPv2-SMI
+       TEXTUAL-CONVENTION, DisplayString, TruthValue
+           FROM SNMPv2-TC
+       nortelNetworkManagementInterfaceMIBs 
+           FROM NORTEL-GENERIC-MIB;
+
+   nortelNMItextConvMIB MODULE-IDENTITY
+       LAST-UPDATED "9907190000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+               "   Jingdong Liu 
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+       DESCRIPTION
+               "This module contains the definitions of some proprietary
+                textual conventions for the Nortel generic 
+                NetworkManagementInterface (NMI) mibs. " 
+   
+
+       -- Revision history
+       REVISION "9907190000Z"
+       DESCRIPTION
+                " Change the description of NortelNMIneType.
+                  Revision introduced by Jingdong LIU."
+
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The fourth version of this MIB module. 
+                  Module-Identity OID assignment changed.
+                  Comments modified."
+
+       REVISION "9905310000Z"
+       DESCRIPTION
+                " The third version of this MIB module. 
+                  Contact info updated and Revision history added.
+                  Syntaxes changed to 
+
+                         - NortelNMIneType 
+                         - NortelNMIadminState 
+                         - NortelNMIoperState 
+
+
+                  Revisions introduced by Shobana Sundaram. "
+                           
+
+       REVISION "9904120000Z"
+       DESCRIPTION
+                " The second version of this MIB module. 
+                  Contact info updated and Revision history added.
+                  Comments modified."
+
+       REVISION "9903220000Z"
+       DESCRIPTION
+                " The first version of this MIB module."
+
+
+       ::= { nortelNetworkManagementInterfaceMIBs 3 }
+
+
+  -- Textual conventions
+
+
+   NortelNMItimeStampDef  ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the time in seconds since the reference epoch,
+               zero hours:zero minutes:zero seconds, 
+               Coordinated Universal Time (UTC),
+               January 1, 1970. This timestamp definition would be used to 
+               accurately reflect the time of occurrence of various 
+               events at the Nortel Network Management Interface (NMI)." 
+     SYNTAX        Unsigned32 
+
+ 
+
+   NortelNMIneType   ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the various possible NE types
+               that are monitored via the Nortel NMI MIBs.
+               The NeType string should be a single word, can only contain 
+               alphanumeric characters and underscores. No commas, spaces, 
+               slashes, hyphens, or dollar signs is allowed."
+
+     SYNTAX          DisplayString (SIZE(1..32)) 
+                      
+
+   NortelNMIadminState  ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the various possible administrative states 
+               (ITU-T X.731) that are monitored via the Nortel NMI MIBs."
+     SYNTAX         INTEGER
+                       {
+                        locked(1),
+                        shuttingDown(2),
+                        unlocked(3)
+                       }
+
+
+   NortelNMIoperState  ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the possible values of operational states 
+               (ITU-T X.731) that are monitored via the Nortel NMI MIBs."
+     SYNTAX         INTEGER
+                       {
+                        disabled(1),
+                        enabled(2)
+                       }
+
+
+   NortelNMIunknownStatusValue  ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the unknown status value to be true / false (ITU-T X.731). 
+               This indicates whether the  management system is able to
+               maintain OAM communications with the managed entity or not."
+     SYNTAX         TruthValue 
+                    --  INTEGER {true(1), false(2)} 
+
+
+
+   NortelNMIalarmProblemCategory  ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the alarm problem category values (ITU-T X.733)." 
+     SYNTAX         INTEGER
+                       {
+                        communications(1),
+                        qualityOfService(2),
+                        processingError(3),
+                        equipment(4),
+                        environmental(5)
+                       }
+
+
+
+  NortelNMInotificationTypes    ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the type of Notification to be traps or Informs. 
+               Inform PDUs get acknowledgements / responses while traps don't." 
+     SYNTAX         INTEGER
+                       {
+                         trap(1),
+                         inform(2)
+                       }                                                     
+
+
+
+   NortelNMIalarmProbableCause   ::=  TEXTUAL-CONVENTION
+     STATUS         current
+     DESCRIPTION
+             " Represents the probable cause values for the alarms as per
+               (ITU-T X.733, X.736)." 
+     SYNTAX         INTEGER
+                       {
+                        -- ITU-T X.733 probable causes 57 values 
+
+                        adapterError (1),
+                        applicationSubsystemFailure (2),
+                        bandwidthReduced (3),
+                        callEstablishmentError (4),
+                        communicationsProtocolError (5),
+                        communicationsSubsystemFailure (6),
+                        configurationOrCustomizationError (7),
+                        congestion (8),
+                        corruptData (9),
+                        cpuCyclesLimitExceeded (10),
+                        dataSetOrModemError (11),
+                        degradedSignal (12),
+                        dteDCEInterfaceError (13),
+                        enclosureDoorOpen (14),
+                        equipmentMalfunction (15),
+                        excessiveVibration (16),
+                        fileError (17),
+                        fireDetected (18),
+                        floodDetected (19),
+                        framingError (20),
+                        heatingOrVentilationOrCoolingSystemProblem (21),
+                        humidityUnacceptable (22),
+                        inputOutputDeviceError (23),
+                        inputDeviceError (24),
+                        lANError (25),
+                        leakDetected (26),
+                        localNodeTransmissionError (27),
+                        lossOfFrame (28),
+                        lossOfSignal (29),
+                        materialSupplyExhausted (30),
+                        multiplexerProblem (31),
+                        outOfMemory (32),
+                        ouputDeviceError (33),
+                        performanceDegraded (34),
+                        powerProblem (35),
+                        pressureUnacceptable (36),
+                        processorProblem (37),
+                        pumpFailure (38),
+                        queueSizeExceeded (39),
+                        receiveFailure (40),
+                        receiverFailure (41),
+                        remoteNodeTransmissionError (42),
+                        resourceAtOrNearingCapacity (43),
+                        responseTimeExecessive (44),
+                        retransmissionRateExcessive (45),
+                        softwareError (46),
+                        softwareProgramAbnormallyTerminated (47),
+                        softwareProgramError (48),
+                        storageCapacityProblem (49),
+                        temperatureUnacceptable (50),
+                        thresholdCrossed (51),
+                        timingProblem (52),
+                        toxicLeakDetected (53),
+                        transmitFailure (54),
+                        transmitterFailure (55),
+                        underlyingResourceUnavailable (56),
+                        versionMismatch (57),
+
+
+                        -- Probable cause values 58 to 100 are currently unused
+
+                        -- ITU-T X.736 probable causes 18 values
+
+                        authenticationFailure (101),
+                        breachOfConfidentiality (102),
+                        cableTamper (103),
+                        delayedInformation (104),
+                        denialOfService (105),
+                        duplicateInformation (106),
+                        informationMissing (107),
+                        informationModificationDetected (108),
+                        informationOutOfSequence (109),
+                        intrusionDetection (110),
+                        keyExpired (111),
+                        nonRepudiationFailure (112),
+                        outOfHoursActivity (113),
+                        outOfService (114),
+                        proceduralError (115),
+                        unauthorizedAccessAttempt (116),
+                        unexpectedInformation (117),
+                        unspecifiedReason (118)
+                        
+                       
+
+ 
+                       }                                                     
+
+
+
+END
+

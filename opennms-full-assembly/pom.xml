@@ -518,6 +518,7 @@
 
                 <!-- pulled in by a transient dependency, so be sure we get our newer one -->
                 <feature>zookeeper-dependencies</feature>
+                <feature>mib-compiler-rest</feature>
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>

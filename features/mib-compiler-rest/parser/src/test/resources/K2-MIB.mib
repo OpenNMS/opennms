@@ -1,0 +1,256 @@
+K2-EVENTS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+   MODULE-IDENTITY, NOTIFICATION-TYPE, NOTIFICATION-TYPE,
+   Integer32, enterprises                                             FROM SNMPv2-SMI
+   DisplayString, TruthValue                             FROM SNMPv2-TC
+   MODULE-COMPLIANCE, OBJECT-GROUP, NOTIFICATION-GROUP   FROM SNMPv2-CONF
+   SnmpAdminString                                       FROM SNMP-FRAMEWORK-MIB;
+
+kaminario OBJECT IDENTIFIER ::= { enterprises 36366 }
+
+k2Prod     OBJECT IDENTIFIER ::= { kaminario 1 }
+
+k2Event NOTIFICATION-TYPE
+   STATUS      mandatory
+   DESCRIPTION
+      "The Windows Event Log category."
+   ::= { k2Prod 1 }
+
+k2ErrorEvent NOTIFICATION-TYPE
+   STATUS      mandatory
+   DESCRIPTION
+      "The Windows Event Log category."
+   ::= { k2Prod 4 }
+
+ErrorEventEntry ::= SEQUENCE {
+                   errorEventCategory OCTET STRING,
+                   errorEventLevel OCTET STRING,
+                   errorEventMessage OCTET STRING,
+                   errorEventName OCTET STRING,
+                   errorEventTimeStamp OCTET STRING,
+                   errorK2MachineID OCTET STRING,
+                   errorK2MachineName OCTET STRING
+     }
+
+errorEventCategory NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Category"
+                   ::= { k2ErrorEvent 1 }
+
+errorEventLevel  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Level"
+                   ::= { k2ErrorEvent 2 }
+
+errorEventMessage  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Message"
+                   ::= { k2ErrorEvent 3 }
+
+errorEventName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Name"
+                   ::= { k2ErrorEvent 4 }
+
+errorK2MachineID  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine ID"
+                   ::= { k2ErrorEvent 5 }
+
+errorEventTimeStamp  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Timestamp"
+                   ::= { k2ErrorEvent 6 }
+
+errorK2MachineName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine Name"
+                   ::= { k2ErrorEvent 7 }
+
+k2WarningEvent NOTIFICATION-TYPE
+   STATUS      mandatory
+   DESCRIPTION
+      "The Windows Event Log category."
+   ::= { k2Prod 3 }
+
+WarningEventEntry ::= SEQUENCE {
+                   warningEventCategory OCTET STRING,
+                   warningEventLevel OCTET STRING,
+                   warningEventMessage OCTET STRING,
+                   warningEventName OCTET STRING,
+                   warningEventTimeStamp OCTET STRING,
+                   warningK2MachineID OCTET STRING,
+                   warningK2MachineName OCTET STRING
+     }
+
+warningEventCategory  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Category"
+                   ::= { k2WarningEvent 1 }
+
+warningEventLevel  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Level"
+                   ::= { k2WarningEvent 2 }
+
+warningEventMessage  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Message"
+                   ::= { k2WarningEvent 3 }
+
+warningEventName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Name"
+                   ::= { k2WarningEvent 4 }
+
+warningK2MachineID  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine ID"
+                   ::= { k2WarningEvent 5 }
+
+warningEventTimeStamp  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Timestamp"
+                   ::= { k2WarningEvent 6 }
+
+warningK2MachineName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine Name"
+                   ::= { k2WarningEvent 7 }
+
+k2InfoEvent NOTIFICATION-TYPE
+   STATUS      mandatory
+   DESCRIPTION
+      "The Windows Event Log category."
+   ::= { k2Prod 2 }
+
+InfoEventEntry ::= SEQUENCE {
+                   infoEventCategory OCTET STRING,
+                   infoEventLevel OCTET STRING,
+                   infoEventMessage OCTET STRING,
+                   infoEventName OCTET STRING,
+                   infoEventTimeStamp OCTET STRING,
+                   infoK2MachineID OCTET STRING,
+                   infoK2MachineName OCTET STRING
+     }
+
+infoEventCategory  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Category"
+                   ::= { k2InfoEvent 1 }
+
+infoEventLevel  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Level"
+                   ::= { k2InfoEvent 2 }
+
+infoEventMessage  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Message"
+                   ::= { k2InfoEvent 3 }
+
+infoEventName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Name"
+                   ::= { k2InfoEvent 4 }
+
+infoK2MachineID  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine ID"
+                   ::= { k2InfoEvent 5 }
+
+infoEventTimeStamp  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Timestamp"
+                   ::= { k2InfoEvent 6 }
+
+infoK2MachineName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine Name"
+                   ::= { k2InfoEvent 7 }
+
+k2CriticalEvent NOTIFICATION-TYPE
+   STATUS      mandatory
+   DESCRIPTION
+      "The Windows Event Log category."
+   ::= { k2Prod 5 }
+
+CriticalEventEntry ::= SEQUENCE {
+                   criticalEventCategory OCTET STRING,
+                   criticalEventLevel OCTET STRING,
+                   criticalEventMessage OCTET STRING,
+                   criticalEventName OCTET STRING,
+                   criticalEventTimeStamp OCTET STRING,
+                   criticalK2MachineID OCTET STRING,
+                   criticalK2MachineName OCTET STRING
+     }
+
+criticalEventCategory  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Category"
+                   ::= { k2CriticalEvent 1 }
+
+criticalEventLevel  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Level"
+                   ::= { k2CriticalEvent 2 }
+
+criticalEventMessage  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Message"
+                   ::= { k2CriticalEvent 3 }
+
+criticalEventName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Name"
+                   ::= { k2CriticalEvent 4 }
+
+criticalK2MachineID  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine ID"
+                   ::= { k2CriticalEvent 5 }
+
+criticalEventTimeStamp  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "Event Timestamp"
+                   ::= { k2CriticalEvent 6 }
+
+criticalK2MachineName  NOTIFICATION-TYPE
+                   STATUS  mandatory
+                   DESCRIPTION
+                   "K2 Machine Name"
+                   ::= { k2CriticalEvent 7 }
+
+END
+
+
+
+

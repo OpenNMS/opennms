@@ -1,0 +1,2434 @@
+-- ########################################################################
+-- #
+-- # CLAVISTER-MIB:  Clavister AB
+-- # 
+-- # Copyright (c) by Clavister AB
+-- # All rights reserved.
+-- #
+-- ########################################################################
+
+CLAVISTER-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    clavisterMibConfs, clavisterMibModules, clavisterMibObjectGroups, 
+    clavisterOSStats
+        FROM CLAVISTER-SMI
+    MODULE-COMPLIANCE, OBJECT-GROUP
+        FROM SNMPv2-CONF
+    Counter32, Counter64, Gauge32, Integer32, MODULE-IDENTITY, 
+    OBJECT-TYPE
+        FROM SNMPv2-SMI
+    DisplayString
+        FROM SNMPv2-TC;
+
+clavisterStatsMibModule MODULE-IDENTITY
+    LAST-UPDATED "201009021139Z"
+    ORGANIZATION 
+        "Clavister AB"
+    CONTACT-INFO 
+        "Clavister Support
+         
+         Clavister AB
+         Sjogatan 6J
+         SE-891 60 ORNSKOLDSVIK
+         SWEDEN
+         
+         Tel: +46-660-299200
+         E-mail: support@clavister.com
+         http://www.clavister.com"
+    DESCRIPTION 
+        "The MIB module for Clavister CorePlus products."
+    
+    REVISION  "201009021139Z"
+    DESCRIPTION 
+        "Added 64-bit counters"
+    REVISION  "200911091339Z"
+    DESCRIPTION 
+        "Updated contect info and added values for opened and closed connections per second"
+    REVISION  "200811181605Z"
+    DESCRIPTION 
+        "Added value for timer usage"
+    REVISION  "200810141227Z"
+    DESCRIPTION 
+        "Added values for memory usage and TCP buffer usage"
+    REVISION  "200803061018Z"
+    DESCRIPTION
+        "Added SMTP ALG statistics"
+    REVISION    "200708161019Z"
+    DESCRIPTION 
+        "Extending the mib by adding more statistics values"
+    REVISION    "200705280800Z"
+    DESCRIPTION 
+        "Added Clavister interface statistics table"
+    REVISION    "200702130900Z"
+    DESCRIPTION 
+        "Initial version."
+    ::= { clavisterMibModules 1 }
+
+
+clvSystem OBJECT IDENTIFIER
+    ::= { clavisterOSStats 1 }
+
+clvSysCpuLoad OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The system cpu load."
+    ::= { clvSystem 1 }
+
+clvSysForwardedBits OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The number of bits forwarded through the gateway."
+    ::= { clvSystem 2 }
+
+clvSysForwardedPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Total number of forwarded packets."
+    ::= { clvSystem 3 }
+
+clvSysBuffUse OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current number of buffers in use."
+    ::= { clvSystem 4 }
+
+clvSysConns OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of connections."
+    ::= { clvSystem 5 }
+
+clvSysPerStateCounters OBJECT IDENTIFIER
+    ::= { clvSystem 6 }
+
+clvSysPscTcpSyn OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of TCP connections in the SYN state."
+    ::= { clvSysPerStateCounters 1 }
+
+clvSysPscTcpOpen OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of TCP connections in the OPEN state."
+    ::= { clvSysPerStateCounters 2 }
+
+clvSysPscTcpFin OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of TCP connections in the FIN state."
+    ::= { clvSysPerStateCounters 3 }
+
+clvSysPscUdp OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of UDP connections."
+    ::= { clvSysPerStateCounters 4 }
+
+clvSysPscIcmp OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of ICMP connections."
+    ::= { clvSysPerStateCounters 5 }
+
+clvSysPscOther OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of other connections."
+    ::= { clvSysPerStateCounters 6 }
+
+clvIfStatsTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvIfStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A table of Clavister specific interfaces statistics"
+    ::= { clvSystem 7 }
+
+clvIfStatsEntry OBJECT-TYPE
+    SYNTAX      ClvIfStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The row in a table of Clavister specific interface statistics"
+    INDEX       { clvIfStatsIndex }
+    ::= { clvIfStatsTable 1 }
+
+ClvIfStatsEntry ::= SEQUENCE {
+    clvIfStatsIndex     Integer32,
+    clvIfName           DisplayString,
+    clvIfFragsIn        Counter32,
+    clvIfFragReassOk    Counter32,
+    clvIfFragReassFail  Counter32,
+    clvIfPktsInCnt      Counter32,
+    clvIfPktsOutCnt     Counter32,
+    clvIfBitsInCnt      Counter32,
+    clvIfBitsOutCnt     Counter32,
+    clvIfPktsTotCnt     Counter32,
+    clvIfBitsTotCnt     Counter32,
+    clvIfHCPktsInCnt    Counter64,
+    clvIfHCPktsOutCnt   Counter64,
+    clvIfHCBitsInCnt    Counter64,
+    clvIfHCBitsOutCnt   Counter64,
+    clvIfHCPktsTotCnt   Counter64,
+    clvIfHCBitsTotCnt   Counter64
+}
+
+clvIfStatsIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of a row in clvSysIfStatsTable"
+    ::= { clvIfStatsEntry 1 }
+
+clvIfName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the interface."
+    ::= { clvIfStatsEntry 2 }
+
+clvIfFragsIn OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of IP packet fragments received 
+         in the interface."
+    ::= { clvIfStatsEntry 3 }
+
+clvIfFragReassOk OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of complete IP packets successfully 
+         reassembled from the fragments received in 
+         the interface."
+    ::= { clvIfStatsEntry 4 }
+
+clvIfFragReassFail OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets that could not be reassembled, 
+         either due to resource starvation, illegal fragmentation, 
+         or just packet loss."
+    ::= { clvIfStatsEntry 5 }
+
+clvIfPktsInCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets received by the interface."
+    ::= { clvIfStatsEntry 6 }
+
+clvIfPktsOutCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets sent by the interface"
+    ::= { clvIfStatsEntry 7 }
+
+clvIfBitsInCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of bits received by the interface"
+    ::= { clvIfStatsEntry 8 }
+
+clvIfBitsOutCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of bits sent by the interface"
+    ::= { clvIfStatsEntry 9 }
+
+clvIfPktsTotCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Totat number of packets transmited by the interface"
+    ::= { clvIfStatsEntry 10 }
+
+clvIfBitsTotCnt OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Totat number of bits transmited by the interface"
+    ::= { clvIfStatsEntry 11 }
+
+clvIfHCPktsInCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets received by the interface.
+        This object is a 64-bit version of clvIfPktsInCnt."
+    ::= { clvIfStatsEntry 12 }
+
+clvIfHCPktsOutCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets sent by the interface.
+        This object is a 64-bit version of clvIfPktsOutCnt."
+    ::= { clvIfStatsEntry 13 }
+
+clvIfHCBitsInCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of bits received by the interface.
+        This object is a 64-bit version of clvIfBitsInCnt."
+    ::= { clvIfStatsEntry 14 }
+
+clvIfHCBitsOutCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of bits sent by the interface.
+        This object is a 64-bit version of clvIfBitsOutCnt."
+    ::= { clvIfStatsEntry 15 }
+
+clvIfHCPktsTotCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Totat number of packets transmited by the interface.
+        This object is a 64-bit version of clvIfPktsTotCnt."
+    ::= { clvIfStatsEntry 16 }
+
+clvIfHCBitsTotCnt OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Totat number of bits transmited by the interface. 
+        This object is a 64-bit version of clvIfBitsTotCnt."
+    ::= { clvIfStatsEntry 17 }
+
+clvIfRxRingTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvIfRxRingEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A table of Clavister specific interface Rx ring statistics"
+    ::= { clvSystem 8 }
+
+clvIfRxRingEntry OBJECT-TYPE
+    SYNTAX      ClvIfRxRingEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The row in a table of Clavister specific interface Rx ring 
+         statistics."
+    INDEX       { clvIfRxRingIndex }
+    ::= { clvIfRxRingTable 1 }
+
+ClvIfRxRingEntry ::= SEQUENCE {
+    clvIfRxRingIndex        Integer32,
+    clvIfRxRingFifoErrors   Counter32,
+    clvIfRxDespools         Gauge32,
+    clvIfRxAvgUse           Gauge32,
+    clvIfRxRingSaturation   Gauge32,
+    clvRxRingFlooded        Gauge32
+}
+
+clvIfRxRingIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of a row in clvIfRxRingTable."
+    ::= { clvIfRxRingEntry 1 }
+
+clvIfRxRingFifoErrors OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Rx Ring number of FIFO errors."
+    ::= { clvIfRxRingEntry 2 }
+
+clvIfRxDespools OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of despool events per second."
+    ::= { clvIfRxRingEntry 3 }
+
+clvIfRxAvgUse OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Rx Ring average usage."
+    ::= { clvIfRxRingEntry 4 }
+
+clvIfRxRingSaturation OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Rx Ring sturation. Percentage of ring use per despool 
+         event when the ring has been more than half full."
+    ::= { clvIfRxRingEntry 5 }
+
+clvRxRingFlooded OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Rx Ring number of despool events for which 
+         the ring has been completely flooded"
+    ::= { clvIfRxRingEntry 6 }
+
+clvIfTxRingTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvIfTxRingEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A table of Clavister specific interface Tx ring statistics"
+    ::= { clvSystem 9 }
+
+clvIfTxRingEntry OBJECT-TYPE
+    SYNTAX      ClvIfTxRingEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The row in a table of Clavister specific interface Tx ring 
+         statistics."
+    INDEX       { clvIfTxRingIndex }
+    ::= { clvIfTxRingTable 1 }
+
+ClvIfTxRingEntry ::= SEQUENCE {
+    clvIfTxRingIndex        Integer32,
+    clvIfTxDespools         Gauge32,
+    clvIfTxAvgUse           Gauge32,
+    clvIfTxRingSaturation   Gauge32,
+    clvRxTingFlooded        Gauge32
+}
+
+clvIfTxRingIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of a row in clvIfRxRingTable."
+    ::= { clvIfTxRingEntry 1 }
+
+clvIfTxDespools OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Tx Ring number of despool event per second (polls when 
+         there is at least one buffer in the ring)"
+    ::= { clvIfTxRingEntry 2 }
+
+clvIfTxAvgUse OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Tx Ring number of despool events when the ring has 
+         been completely flooded"
+    ::= { clvIfTxRingEntry 3 }
+
+clvIfTxRingSaturation OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Tx Ring percentage of use per despool event when the 
+         ring has been more than half full."
+    ::= { clvIfTxRingEntry 4 }
+
+clvRxTingFlooded OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Tx Ring number of despool events for in which the ring has 
+         been completely flooded"
+    ::= { clvIfTxRingEntry 5 }
+
+clvIfVlanStatsTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvIfVlanStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A table of Clavister VLAN statistics"
+    ::= { clvSystem 10 }
+
+clvIfVlanStatsEntry OBJECT-TYPE
+    SYNTAX      ClvIfVlanStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The row in a table of clvIfVlanStatsTable. Each has an index 
+         equal to the ifIndex of the corresponding physical interface"
+    INDEX       { clvIfVlanIndex }
+    ::= { clvIfVlanStatsTable 1 }
+
+ClvIfVlanStatsEntry ::= SEQUENCE {
+    clvIfVlanIndex              Integer32,
+    clvIfVlanUntaggedInPkts     Counter32,
+    clvIfVlanUntaggedOutPkts    Counter32,
+    clvIfVlanUntaggedTotPkts    Counter32,
+    clvIfVlanUntaggedInOctets   Counter32,
+    clvIfVlanUntaggedOutOctets  Counter32,
+    clvIfVlanUntaggedTotOctets  Counter32
+}
+
+clvIfVlanIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Extended index of a row in clvIfVlanStatsTable."
+    ::= { clvIfVlanStatsEntry 1 }
+
+clvIfVlanUntaggedInPkts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of untaged packets untagged packets received by the interface."
+    ::= { clvIfVlanStatsEntry 2 }
+
+clvIfVlanUntaggedOutPkts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of untagged packets sent by the interface."
+    ::= { clvIfVlanStatsEntry 3 }
+
+clvIfVlanUntaggedTotPkts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of untagged packets processed by the interface."
+    ::= { clvIfVlanStatsEntry 4 }
+
+clvIfVlanUntaggedInOctets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of octects in untagged packets received by the interface."
+    ::= { clvIfVlanStatsEntry 5 }
+
+clvIfVlanUntaggedOutOctets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of octects in untagged packets sent by the interface."
+    ::= { clvIfVlanStatsEntry 6 }
+
+clvIfVlanUntaggedTotOctets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of octects in untagged packets processed by the 
+         interface."
+    ::= { clvIfVlanStatsEntry 7 }
+
+clvHWSensorTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvHWSensorEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of hardware sensors."
+    ::= { clvSystem 11 }
+
+clvHWSensorEntry OBJECT-TYPE
+    SYNTAX      ClvHWSensorEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Entry  of table of hardware sensors."
+    INDEX       { clvHWSensorIndex }
+    ::= { clvHWSensorTable 1 }
+
+ClvHWSensorEntry ::= SEQUENCE {
+    clvHWSensorIndex    Integer32,
+    clvHWSensorName     DisplayString,
+    clvHWSensorValue    Gauge32,
+    clvHWSensorUnit     DisplayString
+}
+
+clvHWSensorIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of the entries of the sensor table."
+    ::= { clvHWSensorEntry 1 }
+
+clvHWSensorName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The description of the sensor."
+    ::= { clvHWSensorEntry 2 }
+
+clvHWSensorValue OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The value of the sensor."
+    ::= { clvHWSensorEntry 3 }
+
+clvHWSensorUnit OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The description of the unit of the value mesured by sensor."
+    ::= { clvHWSensorEntry 4 }
+
+clvSysMemUsage OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current memory usage."
+    ::= { clvSystem 12 }
+
+clvSysTCPUsage OBJECT IDENTIFIER
+    ::= { clvSystem 13 }
+    
+clvSysTCPRecvSmall OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Small TCP receive windows usage."
+    ::= { clvSysTCPUsage 1 }
+
+clvSysTCPRecvLarge OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Large TCP receive windows usage."
+    ::= { clvSysTCPUsage 2 }
+
+clvSysTCPSendSmall OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Small TCP send windows usage."
+    ::= { clvSysTCPUsage 3 }
+
+clvSysTCPSendLarge OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Large TCP send windows usage."
+    ::= { clvSysTCPUsage 4 }
+
+clvSysTimerUsage OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current number of timers in use."
+    ::= { clvSystem 14 }
+
+clvSysConnOPS OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of connections opened per second."
+    ::= { clvSystem 15 }
+    
+clvSysConnCPS OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of connections closed per second."
+    ::= { clvSystem 16 }
+    
+clvSysHCForwardedBits OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The number of bits forwarded through the gateway."
+    ::= { clvSystem 17 }
+    
+    
+clvVPN OBJECT IDENTIFIER
+    ::= { clavisterOSStats 2 }
+
+clvIPsec OBJECT IDENTIFIER
+    ::= { clvVPN 1 }
+
+clvIPsecGlobal OBJECT IDENTIFIER
+    ::= { clvIPsec 1 }
+
+clvIPsecPhaseOneActive OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of Phase-1 active negotiations"
+    ::= { clvIPsecGlobal 1 }
+
+clvIPsecPhaseOneAggrModeDone OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of Phase-1 aggressive mode negotiations."
+    ::= { clvIPsecGlobal 2 }
+
+clvIPsecQuickModeActive OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of quick mode active negotiations."
+    ::= { clvIPsecGlobal 3 }
+
+clvIPsecPhaseOneDone OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of Phase-1 negotiations done."
+    ::= { clvIPsecGlobal 4 }
+
+clvIPsecPhaseOneFailed OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of Phase-1 negotiations failed."
+    ::= { clvIPsecGlobal 5 }
+
+clvIPsecPhaseOneRekeyed OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of Phase-1 negotiations rekeyed."
+    ::= { clvIPsecGlobal 6 }
+
+clvIPsecQuickModeDone OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of quick mode  negotiations done."
+    ::= { clvIPsecGlobal 7 }
+
+clvIPsecQuickModeFailed OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of quick mode negotiations failed."
+    ::= { clvIPsecGlobal 8 }
+
+clvIPsecInfoDone OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of informational exchanges done.
+         (Not available in IKEv1 implementations)"
+    ::= { clvIPsecGlobal 9 }
+
+clvIPsecInfoFailed OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of informational exchanges failed.
+         (Not available in IKEv1 implementations)"
+    ::= { clvIPsecGlobal 10 }
+
+clvIPsecInOctetsComp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets in before decompression."
+    ::= { clvIPsecGlobal 11 }
+
+clvIPsecInOctetsUncomp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets in after decompression."
+    ::= { clvIPsecGlobal 12 }
+
+clvIPsecOutOctetsComp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets out after compression."
+    ::= { clvIPsecGlobal 13 }
+
+clvIPsecOutOctetsUncomp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets out before compression."
+    ::= { clvIPsecGlobal 14 }
+
+clvIPsecForwardedOctetsComp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets forwarded after compression."
+    ::= { clvIPsecGlobal 15 }
+
+clvIPsecForwardedOctetsUcomp OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total octets forwarded before compression."
+    ::= { clvIPsecGlobal 16 }
+
+clvIPsecInPackets OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total packets in."
+    ::= { clvIPsecGlobal 17 }
+
+clvIPsecOutPackets OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total packets Out."
+    ::= { clvIPsecGlobal 18 }
+
+clvIPsecForwardedPackets OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total packets forwarded."
+    ::= { clvIPsecGlobal 19 }
+
+clvIPsecActiveTransforms OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently active transforms."
+    ::= { clvIPsecGlobal 20 }
+
+clvIPsecTotalTransforms OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of transform records created."
+    ::= { clvIPsecGlobal 21 }
+
+clvIPsecOutOfTransforms OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets dropped due to no available transform object.
+         (Not available in IKEv1 implementations)"
+    ::= { clvIPsecGlobal 22 }
+
+clvIPsecTotalRekeys OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of rekeys performed."
+    ::= { clvIPsecGlobal 23 }
+
+clvRules OBJECT IDENTIFIER
+    ::= { clavisterOSStats 3 }
+
+clvRuleUseTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvRuleUseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A list of general rules usage statistics."
+    ::= { clvRules 2 }
+
+clvRuleUseEntry OBJECT-TYPE
+    SYNTAX      ClvRuleUseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The statistics over a rule usage."
+    INDEX       { clvRuleIndex }
+    ::= { clvRuleUseTable 1 }
+
+ClvRuleUseEntry ::= SEQUENCE {
+    clvRuleIndex    Integer32,
+    clvRuleName     DisplayString,
+    clvRuleUse      Counter32
+}
+
+clvRuleIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The rule usage index."
+    ::= { clvRuleUseEntry 1 }
+
+clvRuleName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the rule."
+    ::= { clvRuleUseEntry 2 }
+
+clvRuleUse OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of times o rule was used."
+    ::= { clvRuleUseEntry 3 }
+
+clvIPPools OBJECT IDENTIFIER
+    ::= { clavisterOSStats 4 }
+
+clvIPPoolsNumber OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of ip pools"
+    ::= { clvIPPools 1 }
+
+clvIPPoolTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvIPPoolEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A list of IP pools"
+    ::= { clvIPPools 2 }
+
+clvIPPoolEntry OBJECT-TYPE
+    SYNTAX      ClvIPPoolEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The attributes of an ip pool"
+    INDEX       { clvIPPoolIndex }
+    ::= { clvIPPoolTable 1 }
+
+ClvIPPoolEntry ::= SEQUENCE {
+    clvIPPoolIndex          Integer32,
+    clvIPPoolName           DisplayString,
+    clvIPPoolPrepare        Gauge32,
+    clvIPPoolFree           Gauge32,
+    clvIPPoolMisses         Gauge32,
+    clvIPPoolClientFails    Gauge32,
+    clvIPPoolUsed           Gauge32
+}
+
+clvIPPoolIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The ip pool index"
+    ::= { clvIPPoolEntry 1 }
+
+clvIPPoolName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The ip pool name"
+    ::= { clvIPPoolEntry 2 }
+
+clvIPPoolPrepare OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of IP pool objects in prepare mode."
+    ::= { clvIPPoolEntry 3 }
+
+clvIPPoolFree OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of available IPs in the pool."
+    ::= { clvIPPoolEntry 4 }
+
+clvIPPoolMisses OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Mumber of missed IP pool negotiations for other reasons
+         than lack of available IP numbers."
+    ::= { clvIPPoolEntry 5 }
+
+clvIPPoolClientFails OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of failed IP pool transactions."
+    ::= { clvIPPoolEntry 6 }
+
+clvIPPoolUsed OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of IP numbers in use from the pool."
+    ::= { clvIPPoolEntry 7 }
+
+clvDHCPServer OBJECT IDENTIFIER
+    ::= { clavisterOSStats 5 }
+
+clvDHCPTotalRejected OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of rejected packets (all rules)."
+    ::= { clvDHCPServer 1 }
+
+clvDHCPRuleTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvDHCPRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A list of all DHCP server rules usage statistics."
+    ::= { clvDHCPServer 2 }
+
+clvDHCPRuleEntry OBJECT-TYPE
+    SYNTAX      ClvDHCPRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The attributes of a DHCP server rule statistics."
+    INDEX       { clvDHCPRuleIndex }
+    ::= { clvDHCPRuleTable 1 }
+
+ClvDHCPRuleEntry ::= SEQUENCE {
+    clvDHCPRuleIndex                Integer32,
+    clvDHCPRuleName                 DisplayString,
+    clvDHCPRuleUsage                Gauge32,
+    clvDHCPRuleUsagePercent         Gauge32,
+    clvDHCPActiveClients            Gauge32,
+    clvDHCPActiveClientsPercent     Gauge32,
+    clvDHCPRejectedRequests         Gauge32,
+    clvDHCPTotalLeases              Gauge32
+}
+
+clvDHCPRuleIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The DHCP server rule  index"
+    ::= { clvDHCPRuleEntry 1 }
+
+clvDHCPRuleName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The DHCP server rule name."
+    ::= { clvDHCPRuleEntry 2 }
+
+clvDHCPRuleUsage OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of used IPs in the pool."
+    ::= { clvDHCPRuleEntry 3 }
+
+clvDHCPRuleUsagePercent OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The percentage of the used IPs in 
+         relation to the IP pool size."
+    ::= { clvDHCPRuleEntry 4 }
+
+clvDHCPActiveClients OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently active clients."
+    ::= { clvDHCPRuleEntry 5 }
+
+clvDHCPActiveClientsPercent OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of currently active clients 
+         as a percentage of the pool size."
+    ::= { clvDHCPRuleEntry 6 }
+
+clvDHCPRejectedRequests OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of rejected requests matching
+         the current rule."
+    ::= { clvDHCPRuleEntry 7 }
+
+clvDHCPTotalLeases OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of leases in the pool."
+    ::= { clvDHCPRuleEntry 8 }
+
+clvUserAuth OBJECT IDENTIFIER
+    ::= { clavisterOSStats 6 }
+
+clvUserAuthHTTPUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently  logged in HTTP users."
+    ::= { clvUserAuth 1 }
+
+clvUserAuthXAUTHUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently logged in XAUTH users."
+    ::= { clvUserAuth 2 }
+
+clvUserAuthHTTPSUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently logged in HTTPS users."
+    ::= { clvUserAuth 3 }
+
+clvUserAuthPPPUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently logged in PPP users."
+    ::= { clvUserAuth 4 }
+
+clvUserAuthEAPUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of currently logged in EAP users."
+    ::= { clvUserAuth 5 }
+
+clvUserAuthRuleUseTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvUserAuthRuleUseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of user authentication rule usage."
+    ::= { clvUserAuth 6 }
+
+clvUserAuthRuleUseEntry OBJECT-TYPE
+    SYNTAX      ClvUserAuthRuleUseEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The attributes of an authentication rule 
+         usage statistics."
+    INDEX       { clvUserAuthRuleIndex }
+    ::= { clvUserAuthRuleUseTable 1 }
+
+ClvUserAuthRuleUseEntry ::= SEQUENCE {
+    clvUserAuthRuleIndex    Integer32,
+    clvUserAuthRuleName     DisplayString,
+    clvUserAuthRuleUse      Counter32
+}
+
+clvUserAuthRuleIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The rule usage index."
+    ::= { clvUserAuthRuleUseEntry 1 }
+
+clvUserAuthRuleName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the rule."
+    ::= { clvUserAuthRuleUseEntry 2 }
+
+clvUserAuthRuleUse OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of times o rule was used."
+    ::= { clvUserAuthRuleUseEntry 3 }
+
+clvLinkMonitor OBJECT IDENTIFIER
+    ::= { clavisterOSStats 7 }
+
+clvLinkMonGrp OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of groups of monitored links"
+    ::= { clvLinkMonitor 1 }
+
+clvLinkMonGrpTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvLinkMonGrpEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of link monitor groups."
+    ::= { clvLinkMonitor 2 }
+
+clvLinkMonGrpEntry OBJECT-TYPE
+    SYNTAX      ClvLinkMonGrpEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The attributes of a link monitor group"
+    INDEX       { clvLinkMonGrpIndex }
+    ::= { clvLinkMonGrpTable 1 }
+
+ClvLinkMonGrpEntry ::= SEQUENCE {
+    clvLinkMonGrpIndex      Integer32,
+    clvLinkMonGrpName       DisplayString,
+    clvLinkMonGrpHostsUp    Gauge32
+}
+
+clvLinkMonGrpIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index row in the table of link monitor groups."
+    ::= { clvLinkMonGrpEntry 1 }
+
+clvLinkMonGrpName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The link monitor group name."
+    ::= { clvLinkMonGrpEntry 2 }
+
+clvLinkMonGrpHostsUp OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The percentage of monitored hosts available."
+    ::= { clvLinkMonGrpEntry 3 }
+
+clvLinkMonHostTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvLinkMonHostEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of link monitored hosts in a link monnitor group."
+    ::= { clvLinkMonitor 3 }
+
+clvLinkMonHostEntry OBJECT-TYPE
+    SYNTAX      ClvLinkMonHostEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The attributes of a monitored host."
+    INDEX       { clvLinkMonGrpIndex, clvLinkMonHostIndex }
+    ::= { clvLinkMonHostTable 1 }
+
+ClvLinkMonHostEntry ::= SEQUENCE {
+    clvLinkMonHostIndex             Integer32,
+    clvLinkMonHostId                DisplayString,
+    clvLinkMonHostShortTermLoss     Gauge32,
+    clvLinkMonHostPacketsLost       Counter32
+}
+
+clvLinkMonHostIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index an host in the table of link monitor hosts."
+    ::= { clvLinkMonHostEntry 1 }
+
+clvLinkMonHostId OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The monitored host identifier."
+    ::= { clvLinkMonHostEntry 2 }
+
+clvLinkMonHostShortTermLoss OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The percentage of short term losst packets."
+    ::= { clvLinkMonHostEntry 3 }
+
+clvLinkMonHostPacketsLost OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of lost monitoring packets."
+    ::= { clvLinkMonHostEntry 4 }
+
+clvPipes OBJECT IDENTIFIER
+    ::= { clavisterOSStats 8 }
+
+clvPipeUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current number of users, as defined by the grouping 
+         settings of each pipe, being tracked in the pipes system. 
+         Note that this value corresponds to the number of users 
+         active in each time slice of 1/20th of a second, and not 
+         to the number of users having open connections."
+    ::= { clvPipes 1 }
+
+clvPipeTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvPipeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of pipes"
+    ::= { clvPipes 2 }
+
+clvPipeEntry OBJECT-TYPE
+    SYNTAX      ClvPipeEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A entry of the pipes table"
+    INDEX       { clvPipeIndex }
+    ::= { clvPipeTable 1 }
+
+ClvPipeEntry ::= SEQUENCE {
+    clvPipeIndex            Integer32,
+    clvPipeName             DisplayString,
+    clvPipeMinPrec          Integer32,
+    clvPipeMaxPrec          Integer32,
+    clvPipeDefPrec          Integer32,
+    clvPipeNumPrec          Integer32,
+    clvPipeNumUsers         Gauge32,
+    clvPipeCurrentBps       Gauge32,
+    clvPipeCurrentPps       Gauge32,
+    clvPipeDelayedPackets   Counter32,
+    clvPipeDropedPackets    Counter32
+}
+
+clvPipeIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The pipe index"
+    ::= { clvPipeEntry 1 }
+
+clvPipeName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the pipe"
+    ::= { clvPipeEntry 2 }
+
+clvPipeMinPrec OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The minimum of the range of pipe precedences."
+    ::= { clvPipeEntry 3 }
+
+clvPipeMaxPrec OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The maximum of the range of pipe precedences."
+    ::= { clvPipeEntry 4 }
+
+clvPipeDefPrec OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The precedence assigned to a packet for which has not one
+         allready done by a Pipe Rule."
+    ::= { clvPipeEntry 5 }
+
+clvPipeNumPrec OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of pipe precedences"
+    ::= { clvPipeEntry 6 }
+
+clvPipeNumUsers OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current number of users, as defined by the grouping settings
+         of each pipe, being tracked in the pipes system. This value 
+         corresponds to the number of users active in each time slice 
+         and not to the number of users having  open connections."
+    ::= { clvPipeEntry 7 }
+
+clvPipeCurrentBps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current throughput of a pipe, in bits per second, as a sum of 
+         the corresponding values for all precedences."
+    ::= { clvPipeEntry 8 }
+
+clvPipeCurrentPps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current throughput of a pipe, in packets per second, as a sum of 
+         the corresponding values for all precedences."
+    ::= { clvPipeEntry 9 }
+
+clvPipeDelayedPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of times packets have been delayed as a result of a pipe, 
+         or pipe user having used up its allotted bandwidth. Note that one single
+         packet may be delayed several times; if a pipe is really full, this 
+         count may exceed the number of packets actually passing through the 
+         pipe."
+    ::= { clvPipeEntry 10 }
+
+clvPipeDropedPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of packets dropped by a pipe. Packets are dropped when 
+         unit is running out of packet buffers. This occurs when excessive 
+         amounts of packets need to be queued for later delivery. The packet 
+         dropped is always the one that has been queued the longest time 
+         globally, which means that the connection suffering from packet loss 
+         will be the one most overloading the system."
+    ::= { clvPipeEntry 11 }
+
+clvPipePrecTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvPipePrecEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "There is a one to many relation between a pipe and its precedences.
+         The number of precedences is a instance attribute of each pipe.
+         This table extends the pipes table in order to express the relation 
+         between a pipe and the respective precedences."
+    ::= { clvPipes 3 }
+
+clvPipePrecEntry OBJECT-TYPE
+    SYNTAX      ClvPipePrecEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "An entry of the table of pipe pecedences. These table entries 
+         are chracterized by been indexed by two values. The first index
+         the same as the pipe index of the corresponding row in table of 
+         pipes and the second index is the index of the set of precedences 
+         of the corresponding pipe."
+    INDEX       { clvPipeIndex, clvPipePrecIndex }
+    ::= { clvPipePrecTable 1 }
+
+ClvPipePrecEntry ::= SEQUENCE {
+    clvPipePrecIndex            Integer32,
+    clvPipePrec                 Integer32,
+    clvPipePrecBps              Gauge32,
+    clvPipePrecTotalPps         Gauge32,
+    clvPipePrecReservedBps      Gauge32,
+    clvPipePrecDynLimBps        Gauge32,
+    clvPipePrecDynUsrLimBps     Gauge32,
+    clvPipePrecDelayedPackets   Counter32,
+    clvPipePrecDropedPackets    Counter32
+}
+
+clvPipePrecIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of a precedence of a specific pipe. This is the second index 
+         of the entries of pipe precedence table described by object 
+         clvPipePrecEntry."
+    ::= { clvPipePrecEntry 1 }
+
+clvPipePrec OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The precedence value"
+    ::= { clvPipePrecEntry 2 }
+
+clvPipePrecBps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current throughput of the pipe, in bits per second, with 
+         the corresponding precedence."
+    ::= { clvPipePrecEntry 3 }
+
+clvPipePrecTotalPps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current throughput of the pipe precedence, in packets per second."
+    ::= { clvPipePrecEntry 4 }
+
+clvPipePrecReservedBps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current bandwidth allocated to the precedence."
+    ::= { clvPipePrecEntry 5 }
+
+clvPipePrecDynLimBps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current bandwidth limit limit applied the precedence."
+    ::= { clvPipePrecEntry 6 }
+
+clvPipePrecDynUsrLimBps OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The current precedence bandwidth limit per user of the pipe."
+    ::= { clvPipePrecEntry 7 }
+
+clvPipePrecDelayedPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of times packets have been delayed as a result of a 
+         precedence, or pipe user having used up its allotted bandwidth. 
+         Note that one single packet may be delayed several times; if a 
+         pipe is really full, this count may exceed the number of packets 
+         of this precedence actually passing through the pipe."
+    ::= { clvPipePrecEntry 8 }
+
+clvPipePrecDropedPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The number of pipe dropped packets with the corresponding precedence."
+    ::= { clvPipePrecEntry 9 }
+
+clvALG OBJECT IDENTIFIER
+    ::= { clavisterOSStats 9 }
+
+clvAlgSessions OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total ALG sessions"
+    ::= { clvALG 1 }
+
+clvAlgConnections OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total ALG connections"
+    ::= { clvALG 2 }
+
+clvAlgTCPStreams OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total ALG TCP streams"
+    ::= { clvALG 3 }
+
+clvHttpAlg OBJECT IDENTIFIER
+    ::= { clvALG 4 }
+
+clvHttpAlgTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvHttpAlgEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of HTTP ALG objects."
+    ::= { clvHttpAlg 1 }
+
+clvHttpAlgEntry OBJECT-TYPE
+    SYNTAX      ClvHttpAlgEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A row of the table of HTTP ALG objects."
+    INDEX       { clvHttpAlgIndex }
+    ::= { clvHttpAlgTable 1 }
+
+ClvHttpAlgEntry ::= SEQUENCE {
+    clvHttpAlgIndex             Integer32,
+    clvHttpAlgName              DisplayString,
+    clvHttpAlgTotalRequested    Gauge32,
+    clvHttpAlgTotalAllowed      Gauge32,
+    clvHttpAlgTotalBlocked      Gauge32
+}
+
+clvHttpAlgIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index of an entry of the  Table of HTTP ALG objects."
+    ::= { clvHttpAlgEntry 1 }
+
+clvHttpAlgName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of an HTTP ALG object."
+    ::= { clvHttpAlgEntry 2 }
+
+clvHttpAlgTotalRequested OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of URL requests."
+    ::= { clvHttpAlgEntry 3 }
+
+clvHttpAlgTotalAllowed OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of allowed URL requests."
+    ::= { clvHttpAlgEntry 4 }
+
+clvHttpAlgTotalBlocked OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of blocked URL requests."
+    ::= { clvHttpAlgEntry 5 }
+
+clvHttpAlgCntFltTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvHttpAlgCntFltEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of HTTP ALG content filtering rules."
+    ::= { clvHttpAlg 2 }
+
+clvHttpAlgCntFltEntry OBJECT-TYPE
+    SYNTAX      ClvHttpAlgCntFltEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Entry of the table of HTTP ALG content filtering rules."
+    INDEX       { clvHttpAlgIndex, clvHttpAlgCntFltIndex }
+    ::= { clvHttpAlgCntFltTable 1 }
+
+ClvHttpAlgCntFltEntry ::= SEQUENCE {
+    clvHttpAlgCntFltIndex       Integer32,
+    clvHttpAlgCntFltName        DisplayString,
+    clvHttpAlgCntFltRequests    Gauge32,
+    clvHttpAlgCntFltAllowed     Gauge32,
+    clvHttpAlgCntFltBlocked     Gauge32
+}
+
+clvHttpAlgCntFltIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index of an entry of the  Table of HTTP ALG 
+         content filtering objects."
+    ::= { clvHttpAlgCntFltEntry 1 }
+
+clvHttpAlgCntFltName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the a HTTP ALG content fitering."
+    ::= { clvHttpAlgCntFltEntry 2 }
+
+clvHttpAlgCntFltRequests OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of URLs intercepted by a content 
+         filtering object."
+    ::= { clvHttpAlgCntFltEntry 3 }
+
+clvHttpAlgCntFltAllowed OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of URLs intercepted and allowed 
+         by a content filtering object."
+    ::= { clvHttpAlgCntFltEntry 4 }
+
+clvHttpAlgCntFltBlocked OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total number of URLs intercepted and blocked 
+         by a content filtering object."
+    ::= { clvHttpAlgCntFltEntry 5 }
+
+clvSmtpAlg OBJECT IDENTIFIER
+    ::= { clvALG 5 }
+
+clvSmtpAlgTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF ClvSmtpAlgEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+  "Table of SMTP ALG objects."
+    ::= { clvSmtpAlg 1 }
+
+clvSmtpAlgEntry OBJECT-TYPE
+   SYNTAX  ClvSmtpAlgEntry
+   MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A row of the table of SMTP ALG objects."
+    INDEX       { clvSmtpAlgIndex }
+    ::= { clvSmtpAlgTable 1 }
+
+ClvSmtpAlgEntry ::= SEQUENCE {
+    clvSmtpAlgIndex           Integer32,
+    clvSmtpAlgName            DisplayString,
+    clvSmtpAlgTotCheckedSes   Gauge32,
+    clvSmtpAlgTotSpamSes      Gauge32,
+    clvSmtpAlgTotDroppedSes   Gauge32
+}
+
+clvSmtpAlgIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index of an entry of the  Table of SMTP ALG objects."
+    ::= { clvSmtpAlgEntry 1 }
+
+clvSmtpAlgName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of an SMTP ALG object."
+    ::= { clvSmtpAlgEntry 2 }
+
+clvSmtpAlgTotCheckedSes OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total sessions checked by the SMTP ALG of corresponding index."
+    ::= { clvSmtpAlgEntry 3 }
+
+clvSmtpAlgTotSpamSes OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total spam sessions detected by the SMTP ALG of corresponding index."
+    ::= { clvSmtpAlgEntry 4 }
+
+clvSmtpAlgTotDroppedSes OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total deroped sessions for the SMTP ALG of corresponding index."
+    ::= { clvSmtpAlgEntry 5 }
+
+
+clvSmtpAlgDnsBlTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF ClvSmtpAlgDnsBlEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+  "Table of SMTP ALG DNS balck list objects."
+    ::= { clvSmtpAlg 2 }
+
+
+clvSmtpAlgDnsBlEntry OBJECT-TYPE
+   SYNTAX  ClvSmtpAlgDnsBlEntry
+   MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A row of the table of SMTP ALG DNS black list objects."
+    INDEX       { clvSmtpAlgIndex, clvSmtpAlgDnsBlIndex }
+    ::= { clvSmtpAlgDnsBlTable 1 }
+
+
+ClvSmtpAlgDnsBlEntry ::= SEQUENCE {
+    clvSmtpAlgDnsBlIndex  Integer32,
+    clvSmtpAlgDnsBlName    DisplayString,
+    clvSmtpAlgDnsBlChecked      Gauge32,
+    clvSmtpAlgDnsBlMatched  Gauge32,
+    clvSmtpAlgDnsBlFailChecks  Gauge32
+}
+
+clvSmtpAlgDnsBlIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The index of an entry of the  SMTP ALG DNS black list objects." 
+    ::= { clvSmtpAlgDnsBlEntry 1 }
+
+clvSmtpAlgDnsBlName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+  "The SMTP DNS black list name."
+    ::= { clvSmtpAlgDnsBlEntry 2 }
+
+clvSmtpAlgDnsBlChecked OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+  "Total sessions checked againt SMTP ALG DNS black list of corresponding index"
+    ::= { clvSmtpAlgDnsBlEntry 3 }
+
+clvSmtpAlgDnsBlMatched OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+  "Total sessions that matched SMTP ALG DNS black list of corresponding index"
+    ::= { clvSmtpAlgDnsBlEntry 4 }
+
+clvSmtpAlgDnsBlFailChecks OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+  "Total failed checks for the SMTP ALG DNS black list of corresponding index"
+    ::= { clvSmtpAlgDnsBlEntry 5 }
+
+clvDHCPRelay OBJECT IDENTIFIER
+    ::= { clavisterOSStats 11 }
+
+clvDHCPRelayCurClients OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total DHCP relay active relayed clients."
+    ::= { clvDHCPRelay 1 }
+
+clvDHCPRelayCurTrans OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Ongoing DHCP relay transactions."
+    ::= { clvDHCPRelay 2 }
+
+clvDHCPRelayRejected OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Total DHCP relay packets rejected."
+    ::= { clvDHCPRelay 3 }
+
+clvDHCPRelayRuleTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvDHCPRelayRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Table of DHCP relay rules."
+    ::= { clvDHCPRelay 4 }
+
+clvDHCPRelayRuleEntry OBJECT-TYPE
+    SYNTAX      ClvDHCPRelayRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Entry of the table of DHCP relay rules"
+    INDEX       { clvDHCPRelayRuleIndex }
+    ::= { clvDHCPRelayRuleTable 1 }
+
+ClvDHCPRelayRuleEntry ::= SEQUENCE {
+    clvDHCPRelayRuleIndex       Integer32,
+    clvDHCPRelayRuleName        DisplayString,
+    clvDHCPRelayRuleHits        Gauge32,
+    clvDHCPRelayRuleCurClients  Gauge32,
+    clvDHCPRelayRuleRejCliPkts  Gauge32,
+    clvDHCPRelayRuleRejSrvPkts  Gauge32
+}
+
+clvDHCPRelayRuleIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of the table of DHCP relay rules."
+    ::= { clvDHCPRelayRuleEntry 1 }
+
+clvDHCPRelayRuleName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Display name of a DHCP relay rule"
+    ::= { clvDHCPRelayRuleEntry 2 }
+
+clvDHCPRelayRuleHits OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of the times the  DHCP relay rule with corresponding index was 
+         used."
+    ::= { clvDHCPRelayRuleEntry 3 }
+
+clvDHCPRelayRuleCurClients OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of ctive relayed clients by the DHCP relay rule with corresponding index."
+    ::= { clvDHCPRelayRuleEntry 4 }
+
+clvDHCPRelayRuleRejCliPkts OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of client packets rejected by a rule."
+    ::= { clvDHCPRelayRuleEntry 5 }
+
+clvDHCPRelayRuleRejSrvPkts OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of DHCP server packets rejected by the DHCP relay rule 
+         with the corresponding index."
+    ::= { clvDHCPRelayRuleEntry 6 }
+
+clvHA OBJECT IDENTIFIER
+    ::= { clavisterOSStats 12 }
+
+clvHASyncSendQueueLength OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Size of the queue used for the High Availability sync interface."
+    ::= { clvHA 1 }
+
+clvHASyncSendQueueUsagePkt OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "High Availability Sync interface queue usage in number of packets."
+    ::= { clvHA 2 }
+
+clvHASyncSendQueueUsageOct OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "High Availability Sync interface queue usage in number of octects."
+    ::= { clvHA 3 }
+
+clvHASyncSentPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number High Availability packets sent on Sync."
+    ::= { clvHA 4 }
+
+clvHASyncSendResentPackets OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of High Availability packets resent on Sync."
+    ::= { clvHA 5 }
+
+clvAppControlTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF ClvAppControlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "A table of Clavister specific application control statistics"
+    ::= { clavisterOSStats 13 }
+
+clvAppControlEntry OBJECT-TYPE
+    SYNTAX      ClvAppControlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "The row in a table of Clavister specific application control statistics"
+    INDEX       { clvAppCtrlIndex }
+    ::= { clvAppControlTable 1 }
+
+ClvAppControlEntry ::= SEQUENCE {
+    clvAppCtrlIndex         Integer32,
+    clvAppCtrlName          DisplayString,
+    clvAppCtrlBytesFwd      Counter64,
+    clvAppCtrlPacketsFwd    Counter64,
+    clvAppCtrlClassified    Counter64
+}
+
+clvAppCtrlIndex OBJECT-TYPE
+    SYNTAX      Integer32 (1..2147483647)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index of a row in clvAppControlTable"
+    ::= { clvAppControlEntry 1 }
+
+clvAppCtrlName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The name of the application."
+    ::= { clvAppControlEntry 2 }
+
+clvAppCtrlBytesFwd OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of bytes forwarded for this application."
+    ::= { clvAppControlEntry 3 }
+
+clvAppCtrlPacketsFwd OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of packets forwarded for this application."
+    ::= { clvAppControlEntry 4 }
+
+clvAppCtrlClassified OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Number of times this application has been classified."
+    ::= { clvAppControlEntry 5 }
+
+clavisterStatsConformance OBJECT IDENTIFIER
+    ::= { clavisterMibConfs 1 }
+
+clavisterStatsRegGroups OBJECT IDENTIFIER
+    ::= { clavisterMibObjectGroups 1 }
+
+clvSystemObjectGroup OBJECT-GROUP
+    OBJECTS     { clvSysCpuLoad, 
+                  clvSysForwardedBits, 
+                  clvSysForwardedPackets, 
+                  clvSysBuffUse, 
+                  clvSysConns, 
+                  clvHWSensorName, 
+                  clvHWSensorValue, 
+                  clvHWSensorUnit, 
+                  clvSysMemUsage, 
+                  clvSysTimerUsage, 
+                  clvSysConnOPS, 
+                  clvSysConnCPS,
+                  clvSysHCForwardedBits }
+    STATUS      current
+    DESCRIPTION 
+        "System statistics Group"
+    ::= { clavisterStatsRegGroups 1 }
+
+clvIPsecObjectGroup OBJECT-GROUP
+    OBJECTS     { clvIPsecPhaseOneActive, 
+                  clvIPsecPhaseOneAggrModeDone, 
+                  clvIPsecQuickModeActive, 
+                  clvIPsecPhaseOneDone, 
+                  clvIPsecPhaseOneFailed, 
+                  clvIPsecPhaseOneRekeyed, 
+                  clvIPsecQuickModeDone, 
+                  clvIPsecQuickModeFailed, 
+                  clvIPsecInfoDone, 
+                  clvIPsecInfoFailed, 
+                  clvIPsecInOctetsComp, 
+                  clvIPsecInOctetsUncomp, 
+                  clvIPsecOutOctetsComp, 
+                  clvIPsecOutOctetsUncomp, 
+                  clvIPsecForwardedOctetsComp, 
+                  clvIPsecForwardedOctetsUcomp, 
+                  clvIPsecInPackets, 
+                  clvIPsecOutPackets, 
+                  clvIPsecForwardedPackets, 
+                  clvIPsecActiveTransforms, 
+                  clvIPsecTotalTransforms, 
+                  clvIPsecOutOfTransforms, 
+                  clvIPsecTotalRekeys }
+    STATUS      current
+    DESCRIPTION 
+        "IPsec Group"
+    ::= { clavisterStatsRegGroups 2 }
+
+clvStateCountersGroup OBJECT-GROUP
+    OBJECTS     { clvSysPscTcpSyn, 
+                  clvSysPscTcpOpen, 
+                  clvSysPscTcpFin, 
+                  clvSysPscUdp, 
+                  clvSysPscIcmp, 
+                  clvSysPscOther }
+    STATUS      current
+    DESCRIPTION 
+        "Per state counters"
+    ::= { clavisterStatsRegGroups 3 }
+
+clvIPPoolGroup OBJECT-GROUP
+    OBJECTS     { clvIPPoolsNumber, 
+                  clvIPPoolName, 
+                  clvIPPoolPrepare, 
+                  clvIPPoolFree, 
+                  clvIPPoolMisses, 
+                  clvIPPoolClientFails, 
+                  clvIPPoolUsed }
+    STATUS      current
+    DESCRIPTION 
+        "IP pool entry objects group"
+    ::= { clavisterStatsRegGroups 4 }
+
+clvDHCPServerGroup OBJECT-GROUP
+    OBJECTS     { clvDHCPTotalRejected, 
+                  clvDHCPRuleName, 
+                  clvDHCPRuleUsage, 
+                  clvDHCPRuleUsagePercent, 
+                  clvDHCPActiveClients, 
+                  clvDHCPActiveClientsPercent, 
+                  clvDHCPRejectedRequests, 
+                  clvDHCPTotalLeases }
+    STATUS      current
+    DESCRIPTION 
+        "DHCP server rules objects."
+    ::= { clavisterStatsRegGroups 5 }
+
+clvRuleUseGroup OBJECT-GROUP
+    OBJECTS     { clvRuleName, clvRuleUse }
+    STATUS      current
+    DESCRIPTION 
+        "Rule use objects."
+    ::= { clavisterStatsRegGroups 6 }
+
+clvUserAuthGroup OBJECT-GROUP
+    OBJECTS     { clvUserAuthHTTPUsers, clvUserAuthXAUTHUsers, 
+                  clvUserAuthHTTPSUsers, clvUserAuthPPPUsers, 
+                  clvUserAuthEAPUsers, clvUserAuthRuleName, 
+                  clvUserAuthRuleUse }
+    STATUS      current
+    DESCRIPTION 
+        "User auth objects."
+    ::= { clavisterStatsRegGroups 7 }
+
+clvIfStatsGroup OBJECT-GROUP
+    OBJECTS     { clvIfName, 
+                  clvIfFragsIn, 
+                  clvIfFragReassOk, 
+                  clvIfFragReassFail, 
+                  clvIfPktsInCnt, 
+                  clvIfPktsOutCnt, 
+                  clvIfBitsInCnt, 
+                  clvIfBitsOutCnt, 
+                  clvIfPktsTotCnt, 
+                  clvIfBitsTotCnt, 
+                  clvIfHCPktsInCnt, 
+                  clvIfHCPktsOutCnt, 
+                  clvIfHCBitsInCnt, 
+                  clvIfHCBitsOutCnt, 
+                  clvIfHCPktsTotCnt, 
+                  clvIfHCBitsTotCnt,
+                  clvIfRxRingFifoErrors, 
+                  clvIfRxDespools, 
+                  clvIfRxAvgUse, 
+                  clvIfRxRingSaturation, 
+                  clvRxRingFlooded, 
+                  clvIfTxDespools, 
+                  clvIfTxAvgUse, 
+                  clvIfTxRingSaturation, 
+                  clvRxTingFlooded }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister interface statistics group."
+    ::= { clavisterStatsRegGroups 8 }
+
+clvLinkMonitorGroup OBJECT-GROUP
+    OBJECTS     { clvLinkMonGrp, 
+                  clvLinkMonGrpName, 
+                  clvLinkMonGrpHostsUp, 
+                  clvLinkMonHostId, 
+                  clvLinkMonHostShortTermLoss, 
+                  clvLinkMonHostPacketsLost }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister link monitor statistics group"
+    ::= { clavisterStatsRegGroups 9 }
+
+clvPipesObjectGroup OBJECT-GROUP
+    OBJECTS     { clvPipeUsers, 
+                  clvPipeName, 
+                  clvPipeMinPrec, 
+                  clvPipeMaxPrec, 
+                  clvPipeDefPrec, 
+                  clvPipeNumPrec, 
+                  clvPipeNumUsers, 
+                  clvPipeCurrentBps, 
+                  clvPipeCurrentPps, 
+                  clvPipeDelayedPackets, 
+                  clvPipeDropedPackets, 
+                  clvPipePrec, 
+                  clvPipePrecBps, 
+                  clvPipePrecTotalPps, 
+                  clvPipePrecReservedBps, 
+                  clvPipePrecDynLimBps, 
+                  clvPipePrecDynUsrLimBps, 
+                  clvPipePrecDelayedPackets, 
+                  clvPipePrecDropedPackets }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister pipes statistics group"
+    ::= { clavisterStatsRegGroups 10 }
+
+clvDHCPRelayObjectGroup OBJECT-GROUP
+    OBJECTS     { clvDHCPRelayCurClients, 
+                  clvDHCPRelayCurTrans, 
+                  clvDHCPRelayRejected, 
+                  clvDHCPRelayRuleName, 
+                  clvDHCPRelayRuleHits, 
+                  clvDHCPRelayRuleCurClients, 
+                  clvDHCPRelayRuleRejCliPkts, 
+                  clvDHCPRelayRuleRejSrvPkts }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister DHCP relay statistics group"
+    ::= { clavisterStatsRegGroups 12 }
+
+clvAlgGroup OBJECT-GROUP
+    OBJECTS     { clvAlgSessions, 
+                  clvAlgConnections, 
+                  clvAlgTCPStreams, 
+                  clvHttpAlgName, 
+                  clvHttpAlgTotalRequested, 
+                  clvHttpAlgTotalAllowed, 
+                  clvHttpAlgTotalBlocked, 
+                  clvHttpAlgCntFltName, 
+                  clvHttpAlgCntFltRequests, 
+                  clvHttpAlgCntFltAllowed, 
+                  clvHttpAlgCntFltBlocked }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister HTTP ALG statistics group"
+    ::= { clavisterStatsRegGroups 13 }
+
+clvHAGroup OBJECT-GROUP
+    OBJECTS     { clvHASyncSendQueueLength, 
+                  clvHASyncSendQueueUsagePkt, 
+                  clvHASyncSendQueueUsageOct, 
+                  clvHASyncSentPackets, 
+                  clvHASyncSendResentPackets }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister HA statistics group"
+    ::= { clavisterStatsRegGroups 14 }
+
+clvIfVlanGroup OBJECT-GROUP
+    OBJECTS     { clvIfVlanUntaggedInPkts, 
+                  clvIfVlanUntaggedOutPkts, 
+                  clvIfVlanUntaggedTotPkts, 
+                  clvIfVlanUntaggedInOctets, 
+                  clvIfVlanUntaggedOutOctets, 
+                  clvIfVlanUntaggedTotOctets }
+    STATUS      current
+    DESCRIPTION 
+        "Clavister VLAN statistics group"
+    ::= { clavisterStatsRegGroups 15 }
+
+
+clvSmtpAlgGroup OBJECT-GROUP 
+    OBJECTS { clvSmtpAlgName,
+              clvSmtpAlgTotCheckedSes,
+              clvSmtpAlgTotSpamSes,
+              clvSmtpAlgTotDroppedSes,
+              clvSmtpAlgDnsBlName,    
+              clvSmtpAlgDnsBlChecked,     
+              clvSmtpAlgDnsBlMatched,  
+              clvSmtpAlgDnsBlFailChecks }
+   STATUS current
+   DESCRIPTION
+       "Clavister SMTP ALG objects group"
+   ::= { clavisterStatsRegGroups 16 }
+   
+clvSysTCPGroup OBJECT-GROUP 
+    OBJECTS { clvSysTCPRecvSmall,
+              clvSysTCPRecvLarge,
+              clvSysTCPSendSmall,
+              clvSysTCPSendLarge }
+    STATUS current
+    DESCRIPTION
+      "Clavister TCP buffer usage group"
+    ::= { clavisterStatsRegGroups 17 }
+
+clvAppControlGroup OBJECT-GROUP 
+    OBJECTS { clvAppCtrlName,
+              clvAppCtrlBytesFwd,
+              clvAppCtrlPacketsFwd,
+              clvAppCtrlClassified }
+    STATUS current
+    DESCRIPTION
+      "Clavister TCP buffer usage group"
+    ::= { clavisterStatsRegGroups 18 }
+
+
+clavisterStatsCompliance MODULE-COMPLIANCE
+    STATUS      current
+    DESCRIPTION 
+        "Module Compliance"
+
+    MODULE      -- this module
+
+        MANDATORY-GROUPS        
+                { clvSystemObjectGroup, 
+                  clvIPsecObjectGroup, 
+                  clvStateCountersGroup, 
+                  clvIPPoolGroup, 
+                  clvDHCPServerGroup, 
+                  clvRuleUseGroup, 
+                  clvUserAuthGroup, 
+                  clvIfStatsGroup, 
+                  clvLinkMonitorGroup, 
+                  clvPipesObjectGroup, 
+                  clvDHCPRelayObjectGroup, 
+                  clvAlgGroup, 
+                  clvHAGroup, 
+                  clvIfVlanGroup, 
+                  clvSmtpAlgGroup, 
+                  clvSysTCPGroup,
+                  clvAppControlGroup }
+
+    ::= { clavisterStatsConformance 1 }
+
+END -- end of module CLAVISTER-MIB.
