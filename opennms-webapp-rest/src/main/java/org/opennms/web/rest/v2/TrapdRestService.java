@@ -70,7 +70,7 @@ public class TrapdRestService implements TrapdRestApi {
 
         try {
             m_trapdConfigDao.updateConfig(config);
-            return Response.ok(new TrapdConfigDto().toDto(config)).build();
+            return Response.ok(TrapdConfigDto.toDto(config)).build();
         } catch (ValidationException e) {
             LOG.warn("Uploaded trapd configuration failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -87,7 +87,7 @@ public class TrapdRestService implements TrapdRestApi {
             if (config == null) {
                 return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
             }
-            return Response.ok(new TrapdConfigDto().toDto(config)).build();
+            return Response.ok(TrapdConfigDto.toDto(config)).build();
         } catch (Exception e) {
             LOG.error("Failed to retrieve trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve trapd configuration.").build();
@@ -110,7 +110,7 @@ public class TrapdRestService implements TrapdRestApi {
 
         try {
             m_trapdConfigDao.updateConfig(updatedConfig);
-            return Response.ok(new TrapdConfigDto().toDto(m_trapdConfigDao.getConfig())).build();
+            return Response.ok(TrapdConfigDto.toDto(m_trapdConfigDao.getConfig())).build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -155,7 +155,7 @@ public class TrapdRestService implements TrapdRestApi {
 
             config.addSnmpv3User(snmpv3User);
             m_trapdConfigDao.updateConfig(config);
-            return Response.ok(new Snmpv3UserDto().toDto(snmpv3User)).build();
+            return Response.ok(Snmpv3UserDto.toDto(snmpv3User)).build();
         } catch (ValidationException e) {
             LOG.warn("Provided SNMPv3 user failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -202,7 +202,7 @@ public class TrapdRestService implements TrapdRestApi {
 
             config.setSnmpv3User(index, snmpv3User);
             m_trapdConfigDao.updateConfig(config);
-            return Response.ok(new Snmpv3UserDto().toDto(snmpv3User)).build();
+            return Response.ok(Snmpv3UserDto.toDto(snmpv3User)).build();
         } catch (ValidationException e) {
             LOG.warn("Updating SNMPv3 user failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -232,7 +232,7 @@ public class TrapdRestService implements TrapdRestApi {
 
             final Snmpv3User removed = config.removeSnmpv3UserAt(index);
             m_trapdConfigDao.updateConfig(config);
-            return Response.ok(new Snmpv3UserDto().toDto(removed)).build();
+            return Response.ok(Snmpv3UserDto.toDto(removed)).build();
         } catch (ValidationException e) {
             LOG.warn("Removing SNMPv3 user failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();

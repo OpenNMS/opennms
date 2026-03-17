@@ -89,7 +89,7 @@ public class Snmpv3UserDto {
         this.privacyPassphrase = privacyPassphrase;
     }
 
-    public Snmpv3UserDto toDto(Snmpv3User user) {
+    public static Snmpv3UserDto toDto(Snmpv3User user) {
         if (user == null) {
             return null;
         }
