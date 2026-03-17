@@ -33,7 +33,7 @@ import org.opennms.features.config.exception.ValidationException;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.web.rest.v2.api.TrapdRestApi;
-import org.opennms.web.rest.v2.model.TrapdConfigPayload;
+import org.opennms.web.rest.v2.model.TrapdConfigDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class TrapdRestService implements TrapdRestApi {
 
         try {
             m_trapdConfigDao.updateConfig(config);
-            return Response.ok(m_trapdConfigDao.getConfig()).build();
+            return Response.ok(new TrapdConfigDto().toDto(config)).build();
         } catch (ValidationException e) {
             LOG.warn("Uploaded trapd configuration failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -80,7 +80,7 @@ public class TrapdRestService implements TrapdRestApi {
             if (config == null) {
                 return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
             }
-            return Response.ok(config).build();
+            return Response.ok(new TrapdConfigDto().toDto(config)).build();
         } catch (Exception e) {
             LOG.error("Failed to retrieve trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve trapd configuration.").build();
@@ -88,7 +88,7 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     @Override
-    public Response updateTrapdConfiguration(TrapdConfigPayload config, SecurityContext securityContext) {
+    public Response updateTrapdConfiguration(TrapdConfigDto config, SecurityContext securityContext) {
         if (config == null) {
             return Response.status(Status.BAD_REQUEST).entity("Missing trapd configuration in request body.").build();
         }
@@ -103,7 +103,7 @@ public class TrapdRestService implements TrapdRestApi {
 
         try {
             m_trapdConfigDao.updateConfig(updatedConfig);
-            return Response.ok(m_trapdConfigDao.getConfig()).build();
+            return Response.ok(new TrapdConfigDto().toDto(m_trapdConfigDao.getConfig())).build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -113,7 +113,7 @@ public class TrapdRestService implements TrapdRestApi {
         }
     }
 
-    private TrapdConfiguration mergeTrapdConfiguration(final TrapdConfigPayload payload) {
+    private TrapdConfiguration mergeTrapdConfiguration(final TrapdConfigDto payload) {
         TrapdConfiguration config = m_trapdConfigDao.getConfig();
         if (config == null) {
             config = new TrapdConfiguration();
@@ -146,13 +146,6 @@ public class TrapdRestService implements TrapdRestApi {
         if (payload.getUseAddressFromVarbind() != null) {
             config.setUseAddressFromVarbind(payload.getUseAddressFromVarbind());
         }
-        if (payload.getSnmpv3Users() != null) {
-            config.setSnmpv3User(payload.getSnmpv3Users());
-        }
-
-        // Prevent generated helper flags from being persisted as schema properties.
-//        config.deleteNewSuspectOnTrap();
-//        config.deleteSnmpTrapPort();
         return config;
     }
 

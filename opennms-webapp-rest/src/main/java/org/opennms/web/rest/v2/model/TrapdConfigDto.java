@@ -1,10 +1,8 @@
 package org.opennms.web.rest.v2.model;
 
-import java.util.List;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
-import org.opennms.netmgt.config.trapd.Snmpv3User;
-
-public class TrapdConfigPayload {
+public class TrapdConfigDto {
     private String snmpTrapAddress;
     private Integer snmpTrapPort;
     private Boolean newSuspectOnTrap;
@@ -14,7 +12,6 @@ public class TrapdConfigPayload {
     private Integer batchSize;
     private Integer batchInterval;
     private Boolean useAddressFromVarbind;
-    private List<Snmpv3User> snmpv3Users;
 
     public String getSnmpTrapAddress() {
         return snmpTrapAddress;
@@ -88,11 +85,17 @@ public class TrapdConfigPayload {
         this.useAddressFromVarbind = useAddressFromVarbind;
     }
 
-    public List<Snmpv3User> getSnmpv3Users() {
-        return snmpv3Users;
-    }
-
-    public void setSnmpv3Users(final List<Snmpv3User> snmpv3Users) {
-        this.snmpv3Users = snmpv3Users;
+    public TrapdConfigDto toDto(final TrapdConfiguration config) {
+        TrapdConfigDto dto = new TrapdConfigDto();
+        dto.setSnmpTrapAddress(config.getSnmpTrapAddress());
+        dto.setSnmpTrapPort(config.getSnmpTrapPort());
+        dto.setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+        dto.setIncludeRawMessage(config.isIncludeRawMessage());
+        dto.setThreads(config.getThreads());
+        dto.setQueueSize(config.getQueueSize());
+        dto.setBatchSize(config.getBatchSize());
+        dto.setBatchInterval(config.getBatchInterval());
+        dto.setUseAddressFromVarbind(config.shouldUseAddressFromVarbind());
+        return dto;
     }
 }

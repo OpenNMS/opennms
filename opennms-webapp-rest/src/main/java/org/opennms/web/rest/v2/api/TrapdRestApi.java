@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.opennms.web.rest.v2.model.TrapdConfigPayload;
+import org.opennms.web.rest.v2.model.TrapdConfigDto;
 
 @Path("trapd")
 @Tag(name = "Trapd", description = "Trapd API V2")
@@ -85,6 +85,6 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid configuration payload"),
             @ApiResponse(responseCode = "500", description = "Failed to update trapd configuration")
     })
-    Response updateTrapdConfiguration(TrapdConfigPayload payload, @Context SecurityContext securityContext);
+    Response updateTrapdConfiguration(TrapdConfigDto payload, @Context SecurityContext securityContext);
 }
 
