@@ -5,6 +5,9 @@ commands:
       suite:
         default: core
         type: string
+      rerun-failtest-count:
+        default: 0
+        type: integer
     steps:
       - run:
           name: Enable swap
@@ -22,6 +25,7 @@ commands:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
+            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
