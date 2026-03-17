@@ -9,4 +9,4 @@
           at: ~/
       - run-smoke-tests:
           suite: sentinel
-          rerun-failtest-count: 1
+          rerun-failtest-count: 2
