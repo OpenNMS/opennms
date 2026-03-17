@@ -95,6 +95,9 @@ COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yam
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-base /opt /opt
+
+# Overlay container-specific etc files (config files and featuresBoot templates)
+COPY --chown=10001:0 container-fs/etc/ /opt/minion/etc/
 COPY --chown=10001:0 --from=minion-plugins /opt/usr-plugins /opt/minion/deploy
 
 # Create the directory for server certificates
