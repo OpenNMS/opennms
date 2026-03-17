@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.opennms.core.xml.ValidateUsing;
 
 
@@ -69,6 +70,7 @@ public class TrapdConfiguration implements  Serializable {
      * keeps track of state for field: _snmpTrapPort
      */
 	@XmlTransient
+    @JsonIgnore
     private boolean hasSnmpTrapPort;
 
     /**
@@ -114,6 +116,7 @@ public class TrapdConfiguration implements  Serializable {
      * keeps track of state for field: _newSuspectOnTrap
      */
 	@XmlTransient
+    @JsonIgnore
     private boolean hasNewSuspectOnTrap;
 
     /**
