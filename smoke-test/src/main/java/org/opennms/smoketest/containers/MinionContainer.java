@@ -156,6 +156,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             withEnv("MINION_IPC", "grpc");
             withEnv("GRPC_CLIENT_HOST", OpenNMSContainer.ALIAS);
             withEnv("GRPC_CLIENT_PORT", "8990");
+        } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
+            withEnv("MINION_IPC", "jms");
         }
 
         if (model.isJaegerEnabled()) {

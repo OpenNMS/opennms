@@ -120,8 +120,11 @@ function applyFeatureBootTemplates() {
         echo "[Features] Enabled: ${name}"
     }
 
-    # IPC strategy — kafka or grpc
+    # IPC strategy — jms, kafka, or grpc
     case "${MINION_IPC:-}" in
+      jms)
+        echo "[Features] IPC strategy set to JMS."
+        ;;
         kafka)
             apply_template "kafka-ipc.boot"
             apply_template "kafka-rpc.boot"
