@@ -50,12 +50,11 @@ commands:
             ./compile.pl -DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
-              --no-transfer-progress \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
               -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
               -DmaxCpus=<< parameters.number-vcpu >> \
               -Prun-expensive-tasks \
               -Psmoke \
-              -T1C \
               --batch-mode \
               $MAVEN_ARGS || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
