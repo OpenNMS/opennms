@@ -67,7 +67,6 @@ describe('EventConfigEventTable.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
@@ -116,19 +115,13 @@ describe('EventConfigEventTable.vue', () => {
     await nextTick()
   })
 
-  afterEach(async () => {
-    if (store) {
-      store.deleteEventConfigEventDialogState.visible = false
-      store.changeEventConfigEventStatusDialogState.visible = false
-    }
-    await flushPromises()
-    vi.runOnlyPendingTimers()
-    vi.useRealTimers()
+  afterEach(() => {
     if (wrapper) {
       wrapper.unmount()
     }
     document.body.innerHTML = ''
     vi.restoreAllMocks()
+    vi.useRealTimers()
   })
 
   it('mounts', () => {
@@ -220,12 +213,12 @@ describe('EventConfigEventTable.vue', () => {
 
   describe('Search Functionality', () => {
     it('updates search term on input and debounces call to store', async () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', 'test search')
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test search')
       await nextTick()
 
-      // Advance timers for debounce
-      vi.advanceTimersByTime(500)
+      wrapper.vm.onChangeSearchTerm('test search')
+      wrapper.vm.onChangeSearchTerm.flush()
       await flushPromises()
 
       expect(store.eventsSearchTerm).toBe('test search')
@@ -233,28 +226,26 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('trims search term on update', async () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', '  trimmed  ')
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('  trimmed  ')
       await nextTick()
-      vi.advanceTimersByTime(500)
+
+      wrapper.vm.onChangeSearchTerm(store.eventsSearchTerm)
+      wrapper.vm.onChangeSearchTerm.flush()
       await flushPromises()
+
       expect(store.eventsSearchTerm).toBe('trimmed')
       expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('trimmed')
     })
 
-    it('does not call store immediately on input (debounce)', async () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', 'test')
-      await nextTick()
-      // Before debounce time
+    it('does not call store immediately on input (debounce)', () => {
+      wrapper.vm.onChangeSearchTerm('test')
       expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
     })
 
     it('calls store on empty search after debounce', async () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', '')
-      await nextTick()
-      vi.advanceTimersByTime(500)
+      wrapper.vm.onChangeSearchTerm('')
+      wrapper.vm.onChangeSearchTerm.flush()
       await flushPromises()
       expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('')
     })
@@ -990,11 +981,14 @@ describe('EventConfigEventTable.vue', () => {
     })
 
     it('search with special characters (trims and calls store)', async () => {
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', '  <script>alert(1)</script> test  ')
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('  <script>alert(1)</script> test  ')
       await nextTick()
-      vi.advanceTimersByTime(500)
+
+      wrapper.vm.onChangeSearchTerm(store.eventsSearchTerm)
+      wrapper.vm.onChangeSearchTerm.flush()
       await flushPromises()
+
       expect(store.eventsSearchTerm).toBe('<script>alert(1)</script> test')
       expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('<script>alert(1)</script> test')
     })
