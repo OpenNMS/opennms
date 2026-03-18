@@ -1011,6 +1011,13 @@
       <artifactId>org.opennms.features.notifications.shell</artifactId>
       <version>${project.version}</version>
     </dependency>
+      <dependency>
+          <groupId>org.opennms.features</groupId>
+          <artifactId>mib-compiler-rest</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 
   <!-- override a bad repo that's causing issues -->

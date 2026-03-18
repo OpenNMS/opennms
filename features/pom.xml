@@ -195,5 +195,6 @@
     
     <module>grpc</module>
     <module>elastic</module>
+    <module>mib-compiler-rest</module>
   </modules>
 </project>

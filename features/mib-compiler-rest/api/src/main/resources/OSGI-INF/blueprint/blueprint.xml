@@ -1,0 +1,37 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0
+    http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!-- OpenNMS MibParser Service -->
+    <reference id="mibParser"
+               interface="org.opennms.features.mibcompiler.api.MibParser"
+               availability="mandatory"/>
+
+    <!-- Your Service -->
+    <bean id="mibCompilerFileService"
+          class="org.opennms.features.mibcompiler.rest.api.service.MibCompilerFileService">
+
+        <argument ref="mibParser"/>
+
+    </bean>
+
+    <!-- REST Service -->
+    <bean id="mibCompilerRestService"
+          class="org.opennms.features.mibcompiler.rest.api.impl.MibCompilerRestServiceImpl">
+        <argument ref="mibCompilerFileService"/>
+    </bean>
+
+    <!-- REST Export -->
+    <service interface="org.opennms.features.mibcompiler.rest.api.MibCompilerRestService"
+             ref="mibCompilerRestService">
+
+        <service-properties>
+            <entry key="application-path" value="/api/v2"/>
+        </service-properties>
+
+    </service>
+
+</blueprint>
