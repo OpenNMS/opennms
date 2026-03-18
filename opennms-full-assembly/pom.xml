@@ -517,6 +517,7 @@
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
                 <feature>opennms-scv-rest</feature>
+                <feature>opennms-mib-compiler-rest</feature>
 
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>

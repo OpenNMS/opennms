@@ -2784,8 +2784,13 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.mib-compiler</artifactId>
+        <groupId>org.opennms.features.mib-compiler</groupId>
+        <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.mib-compiler</groupId>
+        <artifactId>org.opennms.features.mib-compiler.rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

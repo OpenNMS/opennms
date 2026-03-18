@@ -1004,6 +1004,18 @@
       <artifactId>org.opennms.features.notifications.shell</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.mib-compiler</groupId>
+      <artifactId>org.opennms.features.mib-compiler.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <!-- override a bad repo that's causing issues -->
