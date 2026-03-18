@@ -26,28 +26,25 @@ import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
-import org.opennms.netmgt.snmp.TrapListenerConfig;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixDotD;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.AbstractInformationElementXmlProvider;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class TwinKeyCompleter implements Completer {
 
-    public final static Map<String, Class<?>> twinClazzMap = new HashMap<>();
+    public static final Map<String, String> TWIN_KEY_CLASS_MAP = new LinkedHashMap<>();
 
     static {
-        twinClazzMap.put(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
-        twinClazzMap.put(AbstractInformationElementXmlProvider.TWIN_KEY, IpfixDotD.class);
+        TWIN_KEY_CLASS_MAP.put("trapd.listener.config", "org.opennms.netmgt.snmp.TrapListenerConfig");
+        TWIN_KEY_CLASS_MAP.put("ipfix-dot-d.config", "org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixDotD");
     }
 
     @Override
     public int complete(Session session, CommandLine commandLine, List<String> list) {
         StringsCompleter keys = new StringsCompleter();
-        keys.getStrings().addAll(twinClazzMap.keySet());
+        keys.getStrings().addAll(TWIN_KEY_CLASS_MAP.keySet());
         return keys.complete(session, commandLine, list);
     }
 }

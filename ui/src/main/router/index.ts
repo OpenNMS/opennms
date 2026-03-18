@@ -287,6 +287,11 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
+      path: '/trap-config',
+      name: 'Trap Configuration',
+      component: () => import('@/containers/TrapConfiguration.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
