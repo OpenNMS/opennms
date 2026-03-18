@@ -33,8 +33,10 @@ import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.eventd.EventExpander;
 import org.opennms.netmgt.eventd.EventUtilDaoImpl;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import com.codahale.metrics.MetricRegistry;
@@ -52,7 +54,8 @@ public class NewSuspectLocationTest {
     public void setUp() throws Exception {
         m_eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/eventconf.xml"));
-        m_eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new ClassPathResource("etc/eventconf.xml"));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         m_eventExpander = new EventExpander(new MetricRegistry());
         m_eventExpander.setEventConfDao(m_eventConfDao);

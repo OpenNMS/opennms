@@ -24,6 +24,7 @@ package org.opennms.netmgt.config;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -32,15 +33,29 @@ import org.springframework.dao.DataRetrievalFailureException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public final class EventConfTestUtil {
 
     private static final AtomicLong sourceIdGenerator = new AtomicLong();
     private static final AtomicLong eventIdGenerator = new AtomicLong();
+
+    public static List<EventConfGlobalSecurity> parseResourcesAsEventConfGlobalSecurities(Resource configResource) throws IOException {
+        final Events unmarshalEvents = JaxbUtils.unmarshal(Events.class, configResource);
+        if (unmarshalEvents.getGlobal() != null && unmarshalEvents.getGlobal().getSecurity() != null) {
+            return unmarshalEvents.getGlobal().getSecurity().getDoNotOverrides().stream().map(e -> {
+                EventConfGlobalSecurity eventConfGlobalSecurity = new EventConfGlobalSecurity();
+                eventConfGlobalSecurity.setDoNotOverride(e);
+                return eventConfGlobalSecurity;
+            }).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
 
     public static List<EventConfEvent> parseResourcesAsEventConfEvents(Resource configResource) throws IOException {
         List<EventConfEvent> eventConfEventList = new ArrayList<>();

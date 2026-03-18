@@ -36,6 +36,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.xml.eventconf.Global;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -189,7 +190,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	@Override
-	public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+	public void loadEventsFromDB(List<EventConfEvent> dbEvents, List<EventConfGlobalSecurity> eventConfGlobalSecurities) {
 
 		// Group events by source and sort by source fileOrder
 		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()

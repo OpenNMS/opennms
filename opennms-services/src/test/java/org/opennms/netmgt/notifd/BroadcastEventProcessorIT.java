@@ -46,6 +46,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,9 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
     public void setUp() throws Exception {
         List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
                 new FileSystemResource("src/test/resources/org/opennms/netmgt/notifd/eventconf.xml"));
+        List<EventConfGlobalSecurity> globalSecurities = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource("src/test/resources/org/opennms/netmgt/notifd/eventconf.xml"));
         // Load into DB
-        eventConfDao.loadEventsFromDB(events);
+        eventConfDao.loadEventsFromDB(events, globalSecurities);
         super.setUp();
 
         m_anticipator.setExpectedDifference(3000);
