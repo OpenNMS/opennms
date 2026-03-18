@@ -4,7 +4,29 @@ import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherInput } from '@featherds/input'
 import { flushPromises, mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@featherds/dialog', () => ({
+  FeatherDialog: {
+    name: 'FeatherDialog',
+    props: {
+      modelValue: {
+        type: Boolean,
+        default: true
+      },
+      labels: {
+        type: Object,
+        default: () => ({})
+      },
+      hideClose: {
+        type: Boolean,
+        default: false
+      }
+    },
+    emits: ['update:modelValue', 'hidden'],
+    template: '<div v-if="modelValue !== false" class="feather-dialog-stub" role="dialog" aria-modal="true"><div data-ref-id="feather-dialog-header">{{ labels?.title }}</div><slot /><slot name="footer" /></div>'
+  }
+}))
 
 describe('UploadedFileRenameDialog.vue', () => {
   let wrapper: any
