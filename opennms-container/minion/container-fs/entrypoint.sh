@@ -6,7 +6,9 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
-set -e
+set -eE
+
+trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO}: ${BASH_COMMAND} (exit=${rc})"; exit ${rc}' ERR
 
 umask 002
 export MINION_HOME="/opt/minion"
@@ -269,6 +271,32 @@ printStartupDiagnostics() {
   print_cfg "org.opennms.core.ipc.kafka.cfg"
 }
 
+printKarafResolutionDiagnostics() {
+  local ver
+  local root="${MINION_HOME}/system/org/opennms/karaf/opennms"
+
+  ver="$(grep -E 'mvn:org\.opennms\.karaf/opennms/.*/xml/features' "${MINION_HOME}/etc/org.apache.karaf.features.cfg" \
+    | sed -E 's#.*mvn:org\.opennms\.karaf/opennms/([^/]+)/xml/features.*#\1#' \
+    | head -n1)"
+
+  echo "[Karaf] Repository diagnostics:"
+  echo "  configured-opennms-features-version=${ver:-<unknown>}"
+
+  if [[ -n "${ver}" && -d "${root}/${ver}" ]]; then
+    echo "  local-repo-path=${root}/${ver}"
+    find "${root}/${ver}" -maxdepth 1 -type f -name "*features*.xml" | sed 's/^/  found-feature-xml=/' || true
+  else
+    echo "  local-repo-path=${root}/${ver} (missing)"
+  fi
+
+  echo "[Karaf] org.ops4j.pax.url.mvn.cfg:"
+  if [[ -f "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" ]]; then
+    sed -n '1,200p' "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" | sed 's/^/  /'
+  else
+    echo "  (missing)"
+  fi
+}
+
 validateFeatureBootComposition() {
   local strict_validation="${MINION_VALIDATE_FEATURES_BOOT:-false}"
   local repair_missing="${MINION_REPAIR_FEATURES_BOOT:-true}"
@@ -357,6 +385,7 @@ configure() {
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
   printStartupDiagnostics
+  printKarafResolutionDiagnostics
   validateFeatureBootComposition
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target
