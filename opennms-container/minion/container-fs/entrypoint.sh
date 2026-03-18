@@ -182,54 +182,6 @@ function parseEnvironment() {
     done
 }
 
-function materializeEnvBackedConfigs() {
-  cat > "${MINION_HOME}/etc/org.opennms.minion.controller.cfg" <<EOF
-location = ${MINION_LOCATION:-MINION}
-id = ${MINION_ID:-MINION-01}
-broker-url = ${OPENNMS_BROKER_URL:-failover:tcp://horizon:61616}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.grpc.client.cfg" <<EOF
-host = ${GRPC_CLIENT_HOST:-horizon}
-port = ${GRPC_CLIENT_PORT:-8990}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.features.minion.dominion.grpc.cfg" <<EOF
-host = ${DOMINION_GRPC_HOST:-horizon}
-port = ${DOMINION_GRPC_PORT:-8990}
-clientSecret = ${DOMINION_GRPC_CLIENT_SECRET:-}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg" <<EOF
-syslog.listen.interface = ${SYSLOG_INTERFACE:-0.0.0.0}
-syslog.listen.port = ${SYSLOG_PORT:-1514}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg" <<EOF
-trapd.listen.interface = ${TRAPD_INTERFACE:-0.0.0.0}
-trapd.listen.port = ${TRAPD_PORT:-1162}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg" <<EOF
-bootstrap.servers=${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg" <<EOF
-acks = ${KAFKA_ACKS:-1}
-bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg" <<EOF
-acks = ${KAFKA_ACKS:-1}
-bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
-EOF
-
-  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.twin.kafka.cfg" <<EOF
-acks = ${KAFKA_ACKS:-1}
-bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
-EOF
-}
-
 initConfig() {
     if [ ! -d ${MINION_HOME} ]; then
         echo "OpenNMS Minion home directory doesn't exist in ${MINION_HOME}."
@@ -252,9 +204,7 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Materialize env-backed config files with concrete values so startup does not
-        # depend on placeholder interpolation support in every OSGi PID parser.
-        materializeEnvBackedConfigs
+        # Preserve env-based placeholders in cfg files (for example ${env:...}).
 
         parseEnvironment
         applyFeatureBootTemplates
@@ -283,6 +233,79 @@ applyOpennmsPropertiesD() {
   done
 }
 
+printFeatureBootInventory() {
+  echo "[Features] Active boot files in ${FEATURES_BOOT_DIR}:"
+  if compgen -G "${FEATURES_BOOT_DIR}/*.boot" > /dev/null; then
+    find "${FEATURES_BOOT_DIR}" -maxdepth 1 -name "*.boot" -type f | sort | sed "s#^${FEATURES_BOOT_DIR}/#  - #"
+  else
+    echo "  - (none)"
+  fi
+}
+
+validateFeatureBootComposition() {
+  local strict_validation="${MINION_VALIDATE_FEATURES_BOOT:-true}"
+  local repair_missing="${MINION_REPAIR_FEATURES_BOOT:-true}"
+  local missing=0
+
+  require_boot_file() {
+    local name="$1"
+    if [[ ! -f "${FEATURES_BOOT_DIR}/${name}" ]]; then
+      echo "[Features][ERROR] Missing required boot file: ${name}"
+      missing=1
+    fi
+  }
+
+  check_required_boot_files() {
+    missing=0
+
+    case "${MINION_IPC:-}" in
+      kafka)
+        require_boot_file "kafka-ipc.boot"
+        require_boot_file "kafka-rpc.boot"
+        require_boot_file "kafka-sink.boot"
+        require_boot_file "kafka-twin.boot"
+        require_boot_file "disable-jms.boot"
+        ;;
+      grpc)
+        require_boot_file "grpc.boot"
+        require_boot_file "disable-jms.boot"
+        ;;
+      jms|"")
+        # Default/package-provided feature boots are expected to cover JMS.
+        ;;
+      *)
+        echo "[Features][WARN] Unknown MINION_IPC='${MINION_IPC}', skipping strategy-specific checks."
+        ;;
+    esac
+
+    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot"
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot"
+  }
+
+  printFeatureBootInventory
+
+  if [[ "${strict_validation}" != "true" ]]; then
+    echo "[Features] MINION_VALIDATE_FEATURES_BOOT=${strict_validation}; skipping strict validation."
+    return 0
+  fi
+
+  check_required_boot_files
+
+  if [[ "$missing" -ne 0 && "${repair_missing}" == "true" ]]; then
+    echo "[Features][WARN] Missing boot files detected; attempting auto-repair from templates."
+    applyFeatureBootTemplates
+    printFeatureBootInventory
+    check_required_boot_files
+  fi
+
+  if [[ "$missing" -ne 0 ]]; then
+    echo "[Features][ERROR] Boot file validation failed; refusing to start with incomplete feature composition."
+    return 1
+  fi
+
+  echo "[Features] Boot file validation passed."
+}
+
 start() {
     export KARAF_EXEC="exec"
     cd ${MINION_HOME}/bin
@@ -297,6 +320,7 @@ configure() {
   initConfig
   applyOpennmsPropertiesD
   applyOverlayConfig
+  validateFeatureBootComposition
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
   fi
