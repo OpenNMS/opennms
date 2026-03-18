@@ -76,6 +76,14 @@ import {
   addZenithRegistration,
   getZenithRegistrations
 } from './zenithConnectService'
+import {
+  deleteTrapdUser,
+  getTrapdConfiguration,
+  saveTrapdUser,
+  updateTrapdConfiguration,
+  updateTrapdUser,
+  uploadTrapdConfiguration
+} from './trapdConfigurationService'
 
 export default {
   search,
@@ -135,5 +143,11 @@ export default {
   setUsageStatisticsStatus,
   addZenithRegistration,
   getZenithRegistrations,
+  uploadTrapdConfiguration,
+  getTrapdConfiguration,
+  updateTrapdConfiguration,
+  saveTrapdUser,
+  updateTrapdUser,
+  deleteTrapdUser,
   performLogout
 }

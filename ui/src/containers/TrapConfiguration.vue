@@ -9,6 +9,12 @@
       <div class="heading">
         <h1>TrapD Configuration</h1>
       </div>
+      <div class="action">
+        <input type="file" accept=".xml" single @change="handleConfigurationUpload" ref="fileInput" />
+        <FeatherButton secondary @click="openFileDialog">
+          Upload Configuration
+        </FeatherButton>
+      </div>
     </div>
     <div class="tab-container">
       <FeatherTabContainer v-model="store.activeTab">
@@ -17,7 +23,7 @@
           <FeatherTab>SNMPv3 User Management</FeatherTab>
         </template>
         <FeatherTabPanel>
-            <GeneralConfiguration />
+          <GeneralConfiguration />
         </FeatherTabPanel>
         <FeatherTabPanel>
           <SnmpV3UserManagement />
@@ -33,19 +39,60 @@ import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
 import GeneralConfiguration from '@/components/TrapConfiguration/GeneralConfiguration.vue'
 import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import { uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { BreadCrumb } from '@/types'
+import { FeatherButton } from '@featherds/button'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 
 const menuStore = useMenuStore()
 const store = useTrapConfigStore()
+const fileInput = ref<HTMLInputElement | null>(null)
+const { showSnackBar } = useSnackbar()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
   { label: 'Trap Configurations', to: '#', position: 'last' }
 ]))
+
+const openFileDialog = () => {
+  fileInput.value?.click()
+}
+
+const handleConfigurationUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) return
+
+  const file = input.files[0]
+
+  // Reset input so the same file can be re-uploaded
+  if (fileInput.value) fileInput.value.value = ''
+
+  if (!file.name.endsWith('.xml')) {
+    showSnackBar({ msg: 'Only .xml files are supported.', error: true })
+    return
+  }
+
+  try {
+    const response = await uploadTrapdConfiguration(file)
+    if (response) {
+      await store.fetchTrapConfig()
+      showSnackBar({ msg: 'Trap configuration uploaded successfully.' })
+    } else {
+      showSnackBar({ msg: 'Upload failed: server returned no configuration.', error: true })
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to upload trap configuration.'
+    showSnackBar({ msg, error: true })
+  }
+}
+
+onMounted(() => {
+  store.fetchTrapConfig()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -58,6 +105,12 @@ const breadcrumbs = computed<BreadCrumb[]>(() => ([
     align-items: center;
     margin-bottom: 20px;
     padding: 60px 40px 25px 40px;
+
+    .action {
+      input {
+        display: none;
+      }
+    }
   }
 
   .tab-container {
@@ -65,4 +118,3 @@ const breadcrumbs = computed<BreadCrumb[]>(() => ([
   }
 }
 </style>
-
