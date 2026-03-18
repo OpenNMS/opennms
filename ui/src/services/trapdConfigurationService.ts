@@ -3,6 +3,7 @@ import axios from 'axios'
 import type { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 
 import { v2 } from './axiosInstances'
+import { mapTrapdConfigFromServer } from '@/mappers/trapdConfig.mapper'
 
 const endpoint = '/trapd'
 
@@ -55,7 +56,7 @@ export const uploadTrapdConfiguration = async (file: File): Promise<TrapConfig |
     }
 
     if (response.status === 200) {
-      return response.data as TrapConfig
+      return mapTrapdConfigFromServer(response.data)
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -69,7 +70,7 @@ export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
     const response = await v2.get(`${endpoint}/get-config`)
 
     if (response.status === 200) {
-      return response.data as TrapConfig
+      return mapTrapdConfigFromServer(response.data) as TrapConfig
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -78,14 +79,12 @@ export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
   }
 }
 
-export const updateTrapdConfiguration = async (
-  payload: TrapdConfigurationUpdatePayload
-): Promise<TrapConfig> => {
+export const updateTrapdConfiguration = async (payload: TrapdConfigurationUpdatePayload): Promise<TrapConfig> => {
   try {
     const response = await v2.put(`${endpoint}/update-config`, payload)
 
     if (response.status === 200) {
-      return response.data as TrapConfig
+      return mapTrapdConfigFromServer(response.data) as TrapConfig
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)

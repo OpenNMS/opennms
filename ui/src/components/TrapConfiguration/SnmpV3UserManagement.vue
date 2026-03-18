@@ -13,7 +13,7 @@
         <FeatherButton
           primary
           data-test="add-user-button"
-          @click="store.openCreateUserDrawer(CreateEditMode.Create)"
+          @click="store.openCreateUserDrawer(CreateEditMode.Create, -1)"
         >
           Add User
         </FeatherButton>
@@ -47,21 +47,23 @@
             v-for="(user, index) in tableRecords"
             :key="index"
           >
-            <td>{{ user.username }}</td>
+            <td>{{ user.securityName }}</td>
             <td>{{ user.securityLevel }}</td>
-            <td>{{ user.authenticationProtocol }}</td>
+            <td>{{ user.authProtocol }}</td>
             <td>{{ user.privacyProtocol }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton
                   icon="Edit User"
                   data-test="edit-user-button"
+                  @click="store.openCreateUserDrawer(CreateEditMode.Edit, index)"
                 >
                   <FeatherIcon :icon="Edit"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherButton
                   icon="Delete User"
                   data-test="delete-user-button"
+                  @click="openDeleteUserDialog(index)"
                 >
                   <FeatherIcon :icon="Delete"> </FeatherIcon>
                 </FeatherButton>
@@ -74,12 +76,20 @@
         <EmptyList :content="{ msg: 'No SNMPv3 users found' }" />
       </div>
     </div>
+    <DeleteUserConfirmationDialog
+      :visible="deleteDialogVisible"
+      @close="cancelDeleteUser"
+      @confirm="confirmDeleteUser"
+    />
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { deleteTrapdUser } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
+import { SnmpV3User } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
@@ -87,21 +97,14 @@ import Edit from '@featherds/icon/action/Edit'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
 
 const store = useTrapConfigStore()
-
-interface User {
-  username: string
-  securityLevel: number
-  authenticationProtocol: string
-  privacyProtocol: string
-}
-
-const tableRecords = ref<User[]>([
-  { username: 'user1', securityLevel: 3, authenticationProtocol: 'SHA', privacyProtocol: 'AES' },
-  { username: 'user2', securityLevel: 2, authenticationProtocol: 'MD5', privacyProtocol: 'DES' },
-  { username: 'user3', securityLevel: 1, authenticationProtocol: 'MD5', privacyProtocol: 'DES' }
-])
+const { showSnackBar } = useSnackbar()
+const tableRecords = ref<SnmpV3User[]>([])
+const deleteUserIndex = ref<number | null>(null)
+const deleteDialogVisible = ref<boolean>(false)
+const isDeleting = ref(false)
 
 const columns = computed(() => [
   { id: 'username', label: 'SnmpV3 Username' },
@@ -123,6 +126,41 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   }
   sort[sortObj.property] = sortObj.value
 }
+
+const openDeleteUserDialog = (index: number) => {
+  deleteUserIndex.value = index
+  deleteDialogVisible.value = true
+}
+
+const cancelDeleteUser = () => {
+  deleteUserIndex.value = null
+  deleteDialogVisible.value = false
+}
+
+const confirmDeleteUser = async () => {
+  if (deleteUserIndex.value === null || isDeleting.value) {
+    return
+  }
+
+  try {
+    isDeleting.value = true
+    await deleteTrapdUser(deleteUserIndex.value)
+    await store.fetchTrapConfig()
+    cancelDeleteUser()
+    showSnackBar({ msg: 'SNMPv3 user deleted successfully.' })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to delete SNMPv3 user.'
+    showSnackBar({ msg, error: true })
+  } finally {
+    isDeleting.value = false
+  }
+}
+
+watch(
+  () => store.SnmpV3Users, () => {
+    tableRecords.value = store.SnmpV3Users || []
+  }, { immediate: true, deep: true }
+)
 </script>
 
 <style lang="scss" scoped>

@@ -11,6 +11,7 @@ export interface TrapConfigStoreState {
   createUserDrawerState: {
     visible: boolean
     mode: CreateEditMode
+    selectedUserIndex: number
   }
 }
 
@@ -45,4 +46,14 @@ export interface TrapdConfigurationError {
   batchSize?: string
   batchInterval?: string
   snmpv3User?: string
+}
+
+export interface SnmpV3UserError {
+  engineId?: string
+  securityName?: string
+  securityLevel?: string
+  authProtocol?: string
+  authPassphrase?: string
+  privacyProtocol?: string
+  privacyPassphrase?: string
 }

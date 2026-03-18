@@ -21,21 +21,19 @@
     <div class="content">
       <div class="username-version-row">
         <div class="left">
-          <FeatherSelect
-            label="Username"
-            :options="[
-            // { label: 'MD5', value: 'MD5' },
-            // { label: 'SHA', value: 'SHA' },
-          ]"
+          <FeatherInput
+            label="Secuirity Name"
+            data-test="security-name-input"
+            v-model="securityName"
+            :error="error.securityName"
           />
         </div>
         <div class="right">
-          <FeatherSelect
-            label="Version"
-            :options="[
-            // { label: 'DES', value: 'DES' },
-            // { label: 'AES', value: 'AES' },
-          ]"
+          <FeatherInput
+            label="Engine ID"
+            data-test="engine-id-input"
+            v-model="engineId"
+            :error="error.engineId"
           />
         </div>
       </div>
@@ -46,62 +44,68 @@
         <div class="left">
           <FeatherSelect
             label="Security Level"
-            :options="[
-            // { label: 'MD5', value: 'MD5' },
-            // { label: 'SHA', value: 'SHA' },
-          ]"
+            v-model="securityLevel"
+            :clear="'true'"
+            :options="SECURITY_LEVEL_OPTIONS"
+            :error="error.securityLevel"
           />
         </div>
         <div class="right"></div>
       </div>
-      <div class="row">
+      <div
+        class="row"
+        v-if="authProtocolVisible"
+      >
         <div class="left">
           <FeatherSelect
             label="Auth Protocol"
-            :options="[
-            // { label: 'MD5', value: 'MD5' },
-            // { label: 'SHA', value: 'SHA' },
-          ]"
+            v-model="authProtocol"
+            :clear="'true'"
+            :options="AUTH_PROTOCOLS_OPTIONS"
+            :error="error.authProtocol"
           />
         </div>
         <div class="right">
-          <FeatherSelect
+          <FeatherInput
             label="Auth Passphrase"
-            :options="[
-            // { label: 'DES', value: 'DES' },
-            // { label: 'AES', value: 'AES' },
-          ]"
+            type="password"
+            data-test="auth-passphrase-input"
+            v-model="authPassphrase"
+            :error="error.authPassphrase"
           />
           <FeatherButton
             icon="Save"
-            data-test="text-button"
+            data-test="auth-passphrase-save-button"
             @click="store.openCredentialDrawer"
           >
             <FeatherIcon :icon="Security"> </FeatherIcon>
           </FeatherButton>
         </div>
       </div>
-      <div class="row">
+      <div
+        class="row"
+        v-if="privacyProtocolVisible"
+      >
         <div class="left">
           <FeatherSelect
             label="Privacy Protocol"
-            :options="[
-            // { label: 'MD5', value: 'MD5' },
-            // { label: 'SHA', value: 'SHA' },
-          ]"
+            v-model="privacyProtocol"
+            :clear="'true'"
+            :options="PRIVACY_PROTOCOLS_OPTIONS"
+            :error="error.privacyProtocol"
           />
         </div>
         <div class="right">
-          <FeatherSelect
+          <FeatherInput
             label="Privacy Passphrase"
-            :options="[
-            // { label: 'DES', value: 'DES' },
-            // { label: 'AES', value: 'AES' },
-          ]"
+            type="password"
+            data-test="privacy-passphrase-input"
+            v-model="privacyPassphrase"
+            :error="error.privacyPassphrase"
           />
           <FeatherButton
             icon="Save"
-            data-test="text-button"
+            data-test="privacy-passphrase-save-button"
             @click="store.openCredentialDrawer"
           >
             <FeatherIcon :icon="Security"> </FeatherIcon>
@@ -112,17 +116,18 @@
     <div class="footer">
       <FeatherButton
         secondary
-        data-test="text-button"
+        data-test="cancel-button"
         @click="store.closeCreateUserDrawer"
       >
         Cancel
       </FeatherButton>
       <FeatherButton
         primary
-        data-test="text-button"
-        @click="createUser"
+        data-test="create-user-button"
+        @click="saveUser"
+        :disabled="isSaveDisabled || isSaving"
       >
-        Create New User
+        {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
       </FeatherButton>
     </div>
     <SearchExistingCredential />
@@ -130,21 +135,178 @@
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
+import { saveTrapdUser, updateTrapdUser } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { CreateEditMode } from '@/types'
+import { SnmpV3UserError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Security from '@featherds/icon/hardware/Security'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { FeatherSelect } from '@featherds/select'
+import { FeatherInput } from '@featherds/input'
+import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
-import SearchExistingCredential from './SearchExistingCredential.vue'
+import { AUTH_PROTOCOLS_OPTIONS, PRIVACY_PROTOCOLS_OPTIONS, SECURITY_LEVEL_OPTIONS } from './contants'
+import SearchExistingCredential from './Drawer/SearchExistingCredential.vue'
 
 const store = useTrapConfigStore()
+const { showSnackBar } = useSnackbar()
+const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as ISelectItemType)
+const securityName = ref<string>('')
+const engineId = ref<string>('')
+const securityLevel = ref<ISelectItemType>(createEmptySelectItem())
+const authProtocol = ref<ISelectItemType>(createEmptySelectItem())
+const privacyProtocol = ref<ISelectItemType>(createEmptySelectItem())
+const authPassphrase = ref<string>('')
+const privacyPassphrase = ref<string>('')
+const isSaveDisabled = ref<boolean>(true)
+const isSaving = ref<boolean>(false)
+const error = ref<SnmpV3UserError>({})
 
-const createUser = () => {
-  // Logic to create SNMPv3 user goes here
-  console.log('Creating SNMPv3 user...')  
+const authProtocolVisible = computed(() => {
+  const selectedSecurityLevel = securityLevel.value?._value
+
+  return selectedSecurityLevel === 2 || selectedSecurityLevel === 3
+})
+
+const privacyProtocolVisible = computed(() => {
+  return securityLevel.value?._value === 3
+})
+
+watch(securityLevel, (selectedSecurityLevel) => {
+  const levelValue = selectedSecurityLevel?._value
+
+  if (levelValue !== 2 && levelValue !== 3) {
+    authProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+  }
+
+  if (levelValue !== 3) {
+    authProtocol.value = createEmptySelectItem()
+    privacyProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+
+  error.value = validateInputs()
+  isSaveDisabled.value = Object.keys(error.value).length > 0
+})
+
+const saveUser = async () => {
+  const validationError = validateInputs()
+  if (Object.keys(validationError).length > 0) {
+    showSnackBar({ msg: 'Please fix validation errors before saving.', error: true })
+    return
+  }
+
+  if (isSaving.value) {
+    return
+  }
+
+  const payload = mapUserToServer({
+    securityName: securityName.value,
+    engineId: engineId.value,
+    securityLevel: Number(securityLevel.value?._value),
+    authProtocol: String(authProtocol.value?._value),
+    privacyProtocol: String(privacyProtocol.value?._value),
+    authPassphrase: authPassphrase.value,
+    privacyPassphrase: privacyPassphrase.value
+  })
+
+  try {
+    isSaving.value = true
+
+    let response
+    if (store.createUserDrawerState.mode === CreateEditMode.Create) {
+      response = await saveTrapdUser(payload)
+    } else if (store.createUserDrawerState.mode === CreateEditMode.Edit) {
+      response = await updateTrapdUser(store.createUserDrawerState.selectedUserIndex, payload)
+    }
+
+    if (response) {
+      await store.fetchTrapConfig()
+      store.closeCreateUserDrawer()
+      const successMsg = store.createUserDrawerState.mode === CreateEditMode.Create
+        ? 'SNMPv3 user created successfully.'
+        : 'SNMPv3 user updated successfully.'
+      showSnackBar({ msg: successMsg })
+    } else {
+      showSnackBar({ msg: 'Failed to save SNMPv3 user: Server returned no response.', error: true })
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to save SNMPv3 user.'
+    showSnackBar({ msg, error: true })
+  } finally {
+    isSaving.value = false
+  }
 }
+
+const validateInputs = () => {
+  const newError: SnmpV3UserError = {}
+
+  if (!securityName.value) {
+    newError.securityName = 'Security Name is required'
+  }
+
+  if (!securityLevel.value) {
+    newError.securityLevel = 'Security Level is required'
+  }
+
+  if (authProtocolVisible.value && !authProtocol.value) {
+    newError.authProtocol = 'Auth Protocol is required for selected security level'
+  }
+
+  if (privacyProtocolVisible.value && !privacyProtocol.value) {
+    newError.privacyProtocol = 'Privacy Protocol is required for selected security level'
+  }
+
+  if (authProtocolVisible.value && authProtocol.value && !authPassphrase.value) {
+    newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
+  }
+
+  if (privacyProtocolVisible.value && privacyProtocol.value && !privacyPassphrase.value) {
+    newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
+  }
+  return newError
+}
+
+const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
+  if (drawerState.mode === CreateEditMode.Edit && drawerState.selectedUserIndex > -1) {
+    const selectedUser = store.SnmpV3Users ? store.SnmpV3Users[drawerState.selectedUserIndex] : null
+
+    if (selectedUser) {
+      securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === selectedUser.securityLevel) || createEmptySelectItem()
+      authProtocol.value = AUTH_PROTOCOLS_OPTIONS.find(option => option._value === selectedUser.authProtocol) || createEmptySelectItem()
+      privacyProtocol.value = PRIVACY_PROTOCOLS_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) || createEmptySelectItem()
+      securityName.value = selectedUser.securityName
+      engineId.value = selectedUser.engineId || ''
+      authPassphrase.value = selectedUser.authPassphrase || ''
+      privacyPassphrase.value = selectedUser.privacyPassphrase || ''
+
+    }
+  } else {
+    securityLevel.value = createEmptySelectItem()
+    authProtocol.value = createEmptySelectItem()
+    privacyProtocol.value = createEmptySelectItem()
+    securityName.value = ''
+    engineId.value = ''
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+}
+
+watchEffect(() => {
+  error.value = validateInputs()
+  isSaveDisabled.value = Object.keys(error.value).length > 0
+})
+
+watch(
+  () => store.createUserDrawerState, () => {
+    loadUserData(store.createUserDrawerState)
+  }, { deep: true, immediate: true }
+)
 </script>
 
 <style lang="scss" scoped>

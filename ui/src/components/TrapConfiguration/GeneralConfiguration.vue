@@ -13,7 +13,7 @@
         v-model="port"
         :error="trapConfigError.port"
         type="number"
-        :hint="'Default: 162'"
+        :hint="'Default: 10162'"
       />
       <FeatherInput
         label="Bind Address"
@@ -128,9 +128,10 @@ import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
 import { SwitchRender } from '@featherds/switch'
 import TableCard from '../Common/TableCard.vue'
+import { isValidIP } from './contants'
 
 const status = ref(false)
-const port = ref<number>(162)
+const port = ref<number>(10162)
 const bindAddress = ref('*')
 const trapMessageStatus = ref(false)
 const trapSourceAddressStatus = ref(false)
@@ -139,7 +140,7 @@ const queueSize = ref<number>(10000)
 const batchSize = ref<number>(1000)
 const batchInterval = ref<number>(500)
 const trapConfigError = ref<TrapdConfigurationError>({})
-const isSaveDisabled = ref(false)
+const isSaveDisabled = ref(true)
 const isSaving = ref(false)
 const store = useTrapConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -188,18 +189,9 @@ const validateInputs = (): TrapdConfigurationError => {
   return trapConfigError
 }
 
-// Add this helper function
-const isValidIP = (ip: string): boolean => {
-  const parts = ip.split('.')
-  if (parts.length !== 4) return false
-  return parts.every(part => {
-    const num = parseInt(part, 10)
-    return !isNaN(num) && num >= 0 && num <= 255
-  })
-}
-
 const updateConfig = async () => {
-  if (isSaveDisabled.value || isSaving.value) {
+  const error = validateInputs()
+  if (Object.keys(error).length > 0) {
     return
   }
 
@@ -223,6 +215,7 @@ const updateConfig = async () => {
     store.SnmpV3Users = response.snmpv3User
 
     showSnackBar({ msg: 'Trap configuration updated successfully.' })
+    await store.fetchTrapConfig()
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to update trap configuration.'
     showSnackBar({ msg, error: true })
@@ -233,7 +226,7 @@ const updateConfig = async () => {
 
 const loadInitialConfig = () => {
   if (store.trapdConfig) {
-    port.value = store.trapdConfig.snmpTrapPort || 162
+    port.value = store.trapdConfig.snmpTrapPort || 10162
     bindAddress.value = store.trapdConfig.snmpTrapAddress || '*'
     status.value = store.trapdConfig.newSuspectOnTrap || false
     trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || false
@@ -250,10 +243,9 @@ watchEffect(() => {
   isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0
 })
 
-onMounted(() => {
+watch(() => store.trapdConfig, () => {
   loadInitialConfig()
-})
-
+}, { immediate: true, deep: true })
 </script>
 
 <style lang="scss" scoped>

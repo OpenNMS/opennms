@@ -14,7 +14,8 @@ export const useTrapConfigStore = defineStore('useTrapConfigStore', {
     },
     createUserDrawerState: {
       visible: false,
-      mode: CreateEditMode.None
+      mode: CreateEditMode.None,
+      selectedUserIndex: -1
     }
   }),
   actions: {
@@ -30,13 +31,15 @@ export const useTrapConfigStore = defineStore('useTrapConfigStore', {
     closeCredentialDrawer() {
       this.credentialDrawerState.visible = false
     },
-    openCreateUserDrawer(mode: CreateEditMode) {
+    openCreateUserDrawer(mode: CreateEditMode, selectedUserIndex: number) {
       this.createUserDrawerState.visible = true
       this.createUserDrawerState.mode = mode
+      this.createUserDrawerState.selectedUserIndex = selectedUserIndex
     },
     closeCreateUserDrawer() {
       this.createUserDrawerState.visible = false
       this.createUserDrawerState.mode = CreateEditMode.None
+      this.createUserDrawerState.selectedUserIndex = -1
     }
   }
 })

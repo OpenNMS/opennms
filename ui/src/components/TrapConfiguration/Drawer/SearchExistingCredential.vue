@@ -87,13 +87,13 @@
 </template>
 
 <script setup lang="ts">
+import EmptyList from '@/components/Common/EmptyList.vue'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import FeatherButton from '@featherds/button/src/components/FeatherButton.vue'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
 import Search from '@featherds/icon/action/Search'
 import { FeatherSelect } from '@featherds/select'
-import EmptyList from '../Common/EmptyList.vue'
 
 const store = useTrapConfigStore()
 const tableRecords = ref<{ alias: string; value: string }[]>([
