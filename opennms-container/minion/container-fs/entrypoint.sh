@@ -157,8 +157,8 @@ function applyFeatureBootTemplates() {
     esac
 
     # Standalone optional features
-    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot"
-    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot"
+    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot" || true
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot" || true
 }
 
 function parseEnvironment() {
@@ -333,8 +333,8 @@ validateFeatureBootComposition() {
         ;;
     esac
 
-    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot"
-    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot"
+    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot" || true
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot" || true
   }
 
   printFeatureBootInventory
