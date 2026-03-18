@@ -182,6 +182,54 @@ function parseEnvironment() {
     done
 }
 
+function materializeEnvBackedConfigs() {
+  cat > "${MINION_HOME}/etc/org.opennms.minion.controller.cfg" <<EOF
+location = ${MINION_LOCATION:-MINION}
+id = ${MINION_ID:-MINION-01}
+broker-url = ${OPENNMS_BROKER_URL:-failover:tcp://horizon:61616}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.grpc.client.cfg" <<EOF
+host = ${GRPC_CLIENT_HOST:-horizon}
+port = ${GRPC_CLIENT_PORT:-8990}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.features.minion.dominion.grpc.cfg" <<EOF
+host = ${DOMINION_GRPC_HOST:-horizon}
+port = ${DOMINION_GRPC_PORT:-8990}
+clientSecret = ${DOMINION_GRPC_CLIENT_SECRET:-}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg" <<EOF
+syslog.listen.interface = ${SYSLOG_INTERFACE:-0.0.0.0}
+syslog.listen.port = ${SYSLOG_PORT:-1514}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg" <<EOF
+trapd.listen.interface = ${TRAPD_INTERFACE:-0.0.0.0}
+trapd.listen.port = ${TRAPD_PORT:-1162}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg" <<EOF
+bootstrap.servers=${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg" <<EOF
+acks = ${KAFKA_ACKS:-1}
+bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg" <<EOF
+acks = ${KAFKA_ACKS:-1}
+bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
+EOF
+
+  cat > "${MINION_HOME}/etc/org.opennms.core.ipc.twin.kafka.cfg" <<EOF
+acks = ${KAFKA_ACKS:-1}
+bootstrap.servers = ${KAFKA_BOOTSTRAP_SERVERS:-kafka:29092}
+EOF
+}
+
 initConfig() {
     if [ ! -d ${MINION_HOME} ]; then
         echo "OpenNMS Minion home directory doesn't exist in ${MINION_HOME}."
@@ -204,8 +252,9 @@ initConfig() {
         sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
         sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
 
-        # Preserve org.opennms.minion.controller.cfg as provided by the image/overlay.
-        # This allows Karaf/OpenNMS variable interpolation (for example ${env:...}) in that file.
+        # Materialize env-backed config files with concrete values so startup does not
+        # depend on placeholder interpolation support in every OSGi PID parser.
+        materializeEnvBackedConfigs
 
         parseEnvironment
         applyFeatureBootTemplates
