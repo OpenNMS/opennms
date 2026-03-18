@@ -50,9 +50,17 @@ public class TwinSubscriberCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
-        final var clazz = TwinKeyCompleter.twinClazzMap.get(this.key);
-        if (clazz == null) {
+        final var className = TwinKeyCompleter.TWIN_KEY_CLASS_MAP.get(this.key);
+        if (className == null) {
             System.err.println("Unknown key: " + this.key);
+            return null;
+        }
+
+        final Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            System.err.println("Class not found: " + className);
             return null;
         }
 
