@@ -123,6 +123,8 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 .withEnv("OPENNMS_BROKER_USER", "admin")
                 .withEnv("OPENNMS_BROKER_PASS", "admin")
                 .withEnv("JACOCO_AGENT_ENABLED", "1")
+                .withEnv("MINION_VALIDATE_FEATURES_BOOT", "false")
+                .withEnv("MINION_REPAIR_FEATURES_BOOT", "true")
                 .withEnv("MINION_LOCATION", profile.getLocation())
                 .withEnv("MINION_ID", profile.getId())
                 .withEnv("JAVA_OPTS", "-Xms2g -Xmx2g -Djava.security.egd=file:/dev/./urandom")

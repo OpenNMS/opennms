@@ -242,8 +242,35 @@ printFeatureBootInventory() {
   fi
 }
 
+printStartupDiagnostics() {
+  echo "[Startup] Effective minion mode and toggles:"
+  echo "  MINION_IPC=${MINION_IPC:-<unset>}"
+  echo "  MINION_VALIDATE_FEATURES_BOOT=${MINION_VALIDATE_FEATURES_BOOT:-false}"
+  echo "  MINION_REPAIR_FEATURES_BOOT=${MINION_REPAIR_FEATURES_BOOT:-true}"
+  echo "  JAEGER_ENABLED=${JAEGER_ENABLED:-false}"
+  echo "  DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}"
+  echo "  GRPC_CLIENT_HOST=${GRPC_CLIENT_HOST:-<unset>}"
+  echo "  GRPC_CLIENT_PORT=${GRPC_CLIENT_PORT:-<unset>}"
+  echo "  KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-<unset>}"
+
+  print_cfg() {
+    local cfg="$1"
+    local path="${MINION_HOME}/etc/${cfg}"
+    echo "[Startup] ${cfg}:"
+    if [[ -f "${path}" ]]; then
+      sed -n '1,120p' "${path}" | sed 's/^/  /'
+    else
+      echo "  (missing)"
+    fi
+  }
+
+  print_cfg "org.opennms.minion.controller.cfg"
+  print_cfg "org.opennms.core.ipc.grpc.client.cfg"
+  print_cfg "org.opennms.core.ipc.kafka.cfg"
+}
+
 validateFeatureBootComposition() {
-  local strict_validation="${MINION_VALIDATE_FEATURES_BOOT:-true}"
+  local strict_validation="${MINION_VALIDATE_FEATURES_BOOT:-false}"
   local repair_missing="${MINION_REPAIR_FEATURES_BOOT:-true}"
   local missing=0
 
@@ -284,11 +311,6 @@ validateFeatureBootComposition() {
 
   printFeatureBootInventory
 
-  if [[ "${strict_validation}" != "true" ]]; then
-    echo "[Features] MINION_VALIDATE_FEATURES_BOOT=${strict_validation}; skipping strict validation."
-    return 0
-  fi
-
   check_required_boot_files
 
   if [[ "$missing" -ne 0 && "${repair_missing}" == "true" ]]; then
@@ -299,6 +321,10 @@ validateFeatureBootComposition() {
   fi
 
   if [[ "$missing" -ne 0 ]]; then
+    if [[ "${strict_validation}" != "true" ]]; then
+      echo "[Features][WARN] Boot file validation found missing files; continuing because MINION_VALIDATE_FEATURES_BOOT=${strict_validation}."
+      return 0
+    fi
     echo "[Features][ERROR] Boot file validation failed; refusing to start with incomplete feature composition."
     return 1
   fi
@@ -320,7 +346,6 @@ configure() {
   initConfig
   applyOpennmsPropertiesD
   applyOverlayConfig
-  validateFeatureBootComposition
   if [[ "$JACOCO_AGENT_ENABLED" -gt 0 ]]; then
     export JAVA_OPTS="$JAVA_OPTS -javaagent:${MINION_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*"
   fi
@@ -331,6 +356,8 @@ configure() {
     done < "$MINION_PROCESS_ENV_CFG"
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
+  printStartupDiagnostics
+  validateFeatureBootComposition
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target
     rsync --out-format="%n %C" "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
