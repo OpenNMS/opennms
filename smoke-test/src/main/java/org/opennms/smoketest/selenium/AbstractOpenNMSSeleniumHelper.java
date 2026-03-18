@@ -82,6 +82,7 @@ import org.junit.runner.Description;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -744,11 +745,31 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public WebElement clickElement(final By by) {
         return waitUntil(new Callable<WebElement>() {
             @Override public WebElement call() throws Exception {
-                final WebElement el = getElementImmediately(by);
+                final WebElement el = scrollToElement(by);
+                if (isCenterPointObscured(el)) {
+                    throw new ElementClickInterceptedException("Element is currently obscured: " + by);
+                }
                 el.click();
                 return el;
             }
         });
+    }
+
+    private boolean isCenterPointObscured(final WebElement element) {
+        final JavascriptExecutor executor = (JavascriptExecutor)getDriver();
+        final Object result = executor.executeScript(
+                "var el = arguments[0];"
+                + "if (!el) { return true; }"
+                + "var rect = el.getBoundingClientRect();"
+                + "if (rect.width === 0 || rect.height === 0) { return true; }"
+                + "var x = rect.left + (rect.width / 2);"
+                + "var y = rect.top + (rect.height / 2);"
+                + "var top = document.elementFromPoint(x, y);"
+                + "if (!top) { return true; }"
+                + "return top !== el && !el.contains(top);",
+                element);
+
+        return result instanceof Boolean && (Boolean)result;
     }
 
     /**
