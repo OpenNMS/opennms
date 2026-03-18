@@ -27,7 +27,6 @@ describe('EventConfigSourceTable.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
@@ -73,6 +72,16 @@ describe('EventConfigSourceTable.vue', () => {
     wrapper = mount(EventConfigSourceTable, {
       global: {
         plugins: [pinia],
+        stubs: {
+          DeleteEventConfigSourceDialog: {
+            name: 'DeleteEventConfigSourceDialog',
+            template: '<div data-test="delete-event-config-source-dialog-stub" />'
+          },
+          ChangeEventConfigSourceStatusDialog: {
+            name: 'ChangeEventConfigSourceStatusDialog',
+            template: '<div data-test="change-event-config-source-status-dialog-stub" />'
+          }
+        },
         components: {
           FeatherButton,
           FeatherDropdown,
@@ -88,7 +97,13 @@ describe('EventConfigSourceTable.vue', () => {
     await nextTick()
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    if (wrapper) {
+      wrapper.unmount()
+    }
+    document.body.innerHTML = ''
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
@@ -197,10 +212,9 @@ describe('EventConfigSourceTable.vue', () => {
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
-    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-    await searchInput.setValue('test')
-    vi.advanceTimersByTime(500)
-    await wrapper.vm.$nextTick()
+    wrapper.vm.onChangeSearchTerm('test')
+    wrapper.vm.onChangeSearchTerm.flush()
+    await flushPromises()
 
     expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
   })
@@ -385,9 +399,8 @@ describe('EventConfigSourceTable.vue', () => {
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
-    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-    await searchInput.setValue('nonexistent')
-    vi.advanceTimersByTime(500)
+    wrapper.vm.onChangeSearchTerm('nonexistent')
+    wrapper.vm.onChangeSearchTerm.flush()
     await flushPromises()
 
     store.sources = []

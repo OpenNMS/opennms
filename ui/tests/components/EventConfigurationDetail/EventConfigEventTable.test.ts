@@ -122,13 +122,13 @@ describe('EventConfigEventTable.vue', () => {
       store.changeEventConfigEventStatusDialogState.visible = false
     }
     await flushPromises()
-    await new Promise(resolve => setTimeout(resolve, 0))
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
     if (wrapper) {
       wrapper.unmount()
     }
     document.body.innerHTML = ''
     vi.restoreAllMocks()
-    vi.useRealTimers()
   })
 
   it('mounts', () => {
