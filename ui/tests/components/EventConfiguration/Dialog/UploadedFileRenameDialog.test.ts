@@ -54,6 +54,9 @@ describe('UploadedFileRenameDialog.vue', () => {
 
   afterEach(async () => {
     if (wrapper) {
+      await wrapper.setProps({ visible: false })
+      await flushPromises()
+      await new Promise(resolve => setTimeout(resolve, 0))
       wrapper.unmount()
       wrapper = null
     }

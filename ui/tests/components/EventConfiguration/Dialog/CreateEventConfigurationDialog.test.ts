@@ -60,7 +60,12 @@ describe('CreateEventConfigurationDialog.vue', () => {
     await flushPromises()
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    if (store) {
+      store.createEventConfigSourceDialogState.visible = false
+    }
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 0))
     wrapper.unmount()
     document.body.innerHTML = ''
   })
