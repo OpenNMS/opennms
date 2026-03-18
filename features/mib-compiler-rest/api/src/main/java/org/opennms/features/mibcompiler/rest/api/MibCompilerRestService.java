@@ -28,5 +28,6 @@ public interface MibCompilerRestService {
     @POST
     @Path("/compile-mib")
     @Consumes({MediaType.APPLICATION_JSON})
+    @Produces("application/json")
     Response compilePendingMib(CompileMibRequest compileMibRequest, @Context SecurityContext securityContext) throws Exception;
 }
