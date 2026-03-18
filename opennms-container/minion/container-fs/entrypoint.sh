@@ -111,8 +111,21 @@ function updateConfig() {
 }
 
 function applyFeatureBootTemplates() {
-    # Clean any previously generated boot files; leave templates directory untouched
-    find "${FEATURES_BOOT_DIR}" -maxdepth 1 -name "*.boot" -delete
+    # Clean only files managed by this script; keep baseline boot files from the image/package.
+    local managed_boot_files=(
+      "kafka-ipc.boot"
+      "kafka-rpc.boot"
+      "kafka-sink.boot"
+      "kafka-twin.boot"
+      "grpc.boot"
+      "disable-jms.boot"
+      "jaeger.boot"
+      "dominion-scv.boot"
+    )
+    local boot_file
+    for boot_file in "${managed_boot_files[@]}"; do
+      rm -f "${FEATURES_BOOT_DIR}/${boot_file}"
+    done
 
     apply_template() {
         local name="$1"
