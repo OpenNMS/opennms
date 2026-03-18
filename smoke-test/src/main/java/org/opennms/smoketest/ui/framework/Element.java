@@ -21,14 +21,19 @@
  */
 package org.opennms.smoketest.ui.framework;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,5 +90,39 @@ public abstract class Element {
         } finally {
             driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
+    }
+
+    protected void clickWithRetry(final By by) {
+        final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(200));
+        wait.ignoring(StaleElementReferenceException.class).until(webDriver -> {
+            final WebElement element = webDriver.findElement(by);
+            ((JavascriptExecutor)webDriver).executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
+
+            if (isCenterPointObscured(element)) {
+                return false;
+            }
+
+            try {
+                element.click();
+                return true;
+            } catch (final ElementClickInterceptedException e) {
+                return false;
+            }
+        });
+    }
+
+    private boolean isCenterPointObscured(final WebElement element) {
+        final Object result = ((JavascriptExecutor)driver).executeScript(
+                "var el = arguments[0];"
+                + "if (!el) { return true; }"
+                + "var rect = el.getBoundingClientRect();"
+                + "if (rect.width === 0 || rect.height === 0) { return true; }"
+                + "var x = rect.left + (rect.width / 2);"
+                + "var y = rect.top + (rect.height / 2);"
+                + "var top = document.elementFromPoint(x, y);"
+                + "if (!top) { return true; }"
+                + "return top !== el && !el.contains(top);",
+                element);
+        return result instanceof Boolean && (Boolean)result;
     }
 }
