@@ -49,7 +49,7 @@ import org.opennms.core.xml.ValidateUsing;
 public class TrapdConfiguration implements  Serializable {
 	private static final long serialVersionUID = 2;
 
-	public static final boolean DEFAULT_USE_ADDESS_FROM_VARBIND = false;
+	public static final boolean DEFAULT_USE_ADDRESS_FROM_VARBIND = false;
 
 	/**
      * The IP address on which trapd listens for connections.
@@ -132,7 +132,7 @@ public class TrapdConfiguration implements  Serializable {
      * SNMPv2 traps.
 	 */
 	@XmlAttribute(name="use-address-from-varbind", required=false)
-    private Boolean useAddessFromVarbind;
+    private Boolean useAddressFromVarbind;
 
     public TrapdConfiguration() {
         super();
@@ -205,7 +205,7 @@ public class TrapdConfiguration implements  Serializable {
 
     public int hashCode() {
         return Objects.hash(snmpTrapAddress, snmpTrapPort, hasSnmpTrapPort, newSuspectOnTrap, snmpv3User,
-                includeRawMessage, threads, queueSize, batchSize, batchInterval, useAddessFromVarbind);
+                includeRawMessage, threads, queueSize, batchSize, batchInterval, useAddressFromVarbind);
     }
 
     @Override()
@@ -225,7 +225,7 @@ public class TrapdConfiguration implements  Serializable {
                     && Objects.equals(queueSize, other.queueSize)
                     && Objects.equals(batchSize, other.batchSize)
                     && Objects.equals(batchInterval, other.batchInterval)
-                    && Objects.equals(useAddessFromVarbind, other.useAddessFromVarbind);
+                    && Objects.equals(useAddressFromVarbind, other.useAddressFromVarbind);
             return equals;
         }
         return false;
@@ -363,11 +363,11 @@ public class TrapdConfiguration implements  Serializable {
     }
 
     public boolean shouldUseAddressFromVarbind() {
-        return useAddessFromVarbind != null ? useAddessFromVarbind : DEFAULT_USE_ADDESS_FROM_VARBIND;
+        return useAddressFromVarbind != null ? useAddressFromVarbind : DEFAULT_USE_ADDRESS_FROM_VARBIND;
     }
 
-    public void setUseAddressFromVarbind(Boolean useAddessFromVarbind) {
-        this.useAddessFromVarbind = useAddessFromVarbind;
+    public void setUseAddressFromVarbind(Boolean useAddressFromVarbind) {
+        this.useAddressFromVarbind = useAddressFromVarbind;
     }
 
     /**

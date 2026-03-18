@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.v2.model;
 
-import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 import java.util.Arrays;
@@ -111,9 +110,13 @@ public class TrapdConfigDto {
         this.useAddressFromVarbind = useAddressFromVarbind;
     }
 
-    public List<Snmpv3UserDto> getSnmpv3User() { return snmpv3User; }
+    public List<Snmpv3UserDto> getSnmpv3User() {
+        return snmpv3User;
+    }
 
-    public void setSnmpv3User(List<Snmpv3UserDto> snmpv3Users) { this.snmpv3User = snmpv3Users; }
+    public void setSnmpv3User(List<Snmpv3UserDto> snmpv3Users) {
+        this.snmpv3User = snmpv3Users;
+    }
 
     public static TrapdConfigDto toDto(final TrapdConfiguration config) {
         TrapdConfigDto dto = new TrapdConfigDto();

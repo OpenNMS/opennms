@@ -122,6 +122,25 @@ public class TrapdRestServiceIT {
     }
 
     @Test
+    public void uploadShouldPersistUseAddressFromVarbindWhenProvidedInXml() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigXmlWithUseAddressFromVarbind().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = m_trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertTrue(response.getEntity() instanceof TrapdConfigDto);
+            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
+            assertEquals(Boolean.TRUE, dto.getUseAddressFromVarbind());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(m_trapdConfigDao).updateConfig(captor.capture());
+        assertTrue(captor.getValue().shouldUseAddressFromVarbind());
+    }
+
+    @Test
     public void uploadShouldReturnBadRequestWhenValidationFails() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
@@ -738,6 +757,29 @@ public class TrapdRestServiceIT {
     }
 
     @Test
+    public void updateShouldPersistUseAddressFromVarbindWhenProvided() {
+        TrapdConfiguration existing = new TrapdConfiguration();
+        existing.setSnmpTrapAddress("127.0.0.1");
+        existing.setSnmpTrapPort(1162);
+        existing.setNewSuspectOnTrap(false);
+        existing.setUseAddressFromVarbind(false);
+        when(m_trapdConfigDao.getConfig()).thenReturn(existing, existing);
+
+        TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setUseAddressFromVarbind(Boolean.TRUE);
+
+        try (Response response = m_trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
+            assertEquals(Boolean.TRUE, dto.getUseAddressFromVarbind());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(m_trapdConfigDao).updateConfig(captor.capture());
+        assertTrue(captor.getValue().shouldUseAddressFromVarbind());
+    }
+
+    @Test
     public void updateShouldReturnBadRequestWhenValidationFails() {
         when(m_trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
         whenValidationFailsOnUpdate("validation failed");
@@ -780,6 +822,13 @@ public class TrapdRestServiceIT {
                 + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
                 + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
                 + "batch-size=\"1000\" batch-interval=\"500\"/>";
+    }
+
+    private static String validTrapdConfigXmlWithUseAddressFromVarbind() {
+        return "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
+                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
+                + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
+                + "batch-size=\"1000\" batch-interval=\"500\" use-address-from-varbind=\"true\"/>";
     }
 }
 
