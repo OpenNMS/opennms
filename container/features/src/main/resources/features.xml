@@ -1313,8 +1313,14 @@
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.mib-compiler/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.mib-compiler/org.opennms.features.mib-compiler.parser/${project.version}</bundle>
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
+    </feature>
+    <feature name="opennms-mib-compiler-rest" version="${project.version}" description="OpenNMS :: Features :: MIB-Compiler :: Rest">
+        <details>REST interface for the OpenNMS MIB Compiler.</details>
+        <feature>opennms-osgi-core-rest</feature>
+        <bundle>mvn:org.opennms.features.mib-compiler/org.opennms.features.mib-compiler.parser/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.mib-compiler/org.opennms.features.mib-compiler.rest/${project.version}</bundle>
     </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
         <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>
