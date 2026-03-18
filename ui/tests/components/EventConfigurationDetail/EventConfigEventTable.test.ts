@@ -18,6 +18,28 @@ import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@featherds/dialog', () => ({
+  FeatherDialog: {
+    name: 'FeatherDialog',
+    props: {
+      modelValue: {
+        type: Boolean,
+        default: true
+      },
+      labels: {
+        type: Object,
+        default: () => ({})
+      },
+      hideClose: {
+        type: Boolean,
+        default: false
+      }
+    },
+    emits: ['update:modelValue', 'hidden'],
+    template: '<div v-if="modelValue !== false" class="feather-dialog-stub" role="dialog" aria-modal="true"><slot /><slot name="footer" /></div>'
+  }
+}))
+
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -94,7 +116,17 @@ describe('EventConfigEventTable.vue', () => {
     await nextTick()
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    if (store) {
+      store.deleteEventConfigEventDialogState.visible = false
+      store.changeEventConfigEventStatusDialogState.visible = false
+    }
+    await flushPromises()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    if (wrapper) {
+      wrapper.unmount()
+    }
+    document.body.innerHTML = ''
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
