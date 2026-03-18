@@ -45,7 +45,6 @@ describe('CreateEventConfigurationDialog.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(async () => {
-    vi.useFakeTimers()
     const pinia = createTestingPinia({ createSpy: vi.fn })
     setActivePinia(pinia)
     store = useEventConfigStore()
@@ -59,14 +58,11 @@ describe('CreateEventConfigurationDialog.vue', () => {
       }
     })
     await flushPromises()
-    vi.runAllTimers()
   })
 
   afterEach(() => {
-    vi.runAllTimers()
     wrapper.unmount()
     document.body.innerHTML = ''
-    vi.useRealTimers()
   })
 
   const setWrapperRefs = async (configName: string, vendor: string, description: string) => {
@@ -207,7 +203,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     expect(document.body.querySelector('.modal-body-form')).not.toBeNull()
     store.createEventConfigSourceDialogState.visible = false
     await wrapper.vm.$nextTick()
-    vi.runAllTimers()
+    await flushPromises()
     expect(document.body.querySelector('.modal-body-form')).toBeNull()
   })
 

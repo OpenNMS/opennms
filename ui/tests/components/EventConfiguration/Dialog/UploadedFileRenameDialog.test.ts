@@ -4,7 +4,7 @@ import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherInput } from '@featherds/input'
 import { flushPromises, mount } from '@vue/test-utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 describe('UploadedFileRenameDialog.vue', () => {
   let wrapper: any
@@ -49,17 +49,14 @@ describe('UploadedFileRenameDialog.vue', () => {
     })
 
   beforeEach(() => {
-    vi.useFakeTimers()
     wrapper = createWrapper()
   })
 
   afterEach(async () => {
-    // Advance timers before unmounting to clear pending focus management timers
-    vi.advanceTimersByTime(1000)
     if (wrapper) {
-      await wrapper.unmount()
+      wrapper.unmount()
+      wrapper = null
     }
-    vi.useRealTimers()
   })
 
   // Rendering Tests
