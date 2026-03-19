@@ -39,11 +39,16 @@
 %>
 
 <%
-	Outage outage = (Outage)request.getAttribute("outage");
+	  Outage outage = (Outage)request.getAttribute("outage");
 
-    if( outage == null ) {
+    if (outage == null) {
         throw new org.opennms.web.outage.OutageIdNotFoundException( "An outage with this ID was not found.", WebSecurityUtils.sanitizeString((String)request.getAttribute("id")) );
     }
+
+    long lostServiceAlarmId = (long) request.getAttribute("lostServiceAlarmId");
+    boolean hasActiveLostServiceAlarmId = (boolean) request.getAttribute("hasActiveLostServiceAlarmId");
+    Date lostServiceTime = outage.getLostServiceTime();
+    Date regainTime = outage.getRegainedServiceTime();
 %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -73,7 +78,7 @@
           </td>
           
           <th class="col-2">Lost&nbsp;Service&nbsp;Time</th>
-          <td class="col-2"><onms:datetime date="<%=outage.getLostServiceTime()%>" /></td>
+          <td class="col-2"><onms:datetime date="<%=lostServiceTime%>" /></td>
           
           <th class="col-2">Lost&nbsp;Service&nbsp;Event</th>
           <td class="col-2"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>
@@ -97,10 +102,8 @@
             <% } %>
           </td>
           
-          <th class="col-2">Regained&nbsp;Service&nbsp;Time</th>
+          <th class="col-2">Restored&nbsp;Service&nbsp;Time</th>
           <td class="col-2">
-            <% Date regainTime = outage.getRegainedServiceTime(); %>
-            
             <% if(regainTime != null) { %>
               <onms:datetime date="<%=regainTime%>" />
             <% } else { %>
@@ -109,7 +112,7 @@
             <% } %>
           </td>
 
-          <th class="col-2">Regained&nbsp;Service&nbsp;Event</th>
+          <th class="col-2">Restored&nbsp;Service&nbsp;Event</th>
           <td class="col-2">
             <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>
@@ -148,7 +151,7 @@
             &nbsp;
             <% } %>
           </td>
-          <th class="col-2">Node Location</th>
+          <th class="col-2">Monitoring Location</th>
           <td class="col-2">
             <% if( outage.getLocation() != null ) { %>
             <%=outage.getLocation()%>
@@ -160,10 +163,29 @@
         <tr class="d-flex">
           <th class="col-2">Polling Perspective</th>
           <td class="col-2"><%= OutageUtil.getPerspectiveLabel(outage.getPerspectiveLocation()) %></td>
-          <th class="col-2">&nbsp;</th>
-          <td class="col-2">&nbsp;</td>
-          <th class="col-2">&nbsp;</th>
-          <td class="col-2">&nbsp;</td>
+
+          <th class="col-2">Outage Duration</th>
+          <td class="col-2">
+            <% if (lostServiceTime != null && regainTime != null) { %>
+              <%=OutageUtil.formatDuration(lostServiceTime, regainTime)%>
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
+
+          <% if (lostServiceAlarmId > 0) { %>
+            <th class="col-2">Alarm ID</th>
+            <td class="col-2">
+              <% if (hasActiveLostServiceAlarmId) { %>
+                <a href="alarm/detail.htm?id=<%=lostServiceAlarmId%>"><%= lostServiceAlarmId %></a>
+              <% } else { %>
+                <%= lostServiceAlarmId %> (cleared)
+              <% } %>
+            </td>
+          <% } else { %>
+            <th class="col-2">&nbsp;</th>
+            <td class="col-2">&nbsp;</td>
+          <% } %>
         </tr>
       </table>
 </div>

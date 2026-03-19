@@ -65,8 +65,16 @@ public class OutageDetailController extends AbstractController implements Initia
 
         Outage outage = m_webOutageRepository.getOutage(outageId);
 
+        WebOutageRepository.AlarmIdInfo alarmIdInfo = m_webOutageRepository.getAlarmIdAndExistsForOutageLostServiceEvent(outage);
+
+        long lostServiceAlarmId = alarmIdInfo.alarmId;
+        boolean hasActiveLostServiceAlarmId = alarmIdInfo.alarmExists;
+
         ModelAndView modelAndView = new ModelAndView(getSuccessView());
         modelAndView.addObject("outage", outage);
+        modelAndView.addObject("lostServiceAlarmId", lostServiceAlarmId);
+        modelAndView.addObject("hasActiveLostServiceAlarmId", hasActiveLostServiceAlarmId);
+
         return modelAndView;
     }
 
@@ -102,5 +110,4 @@ public class OutageDetailController extends AbstractController implements Initia
     public void setWebOutageRepository(WebOutageRepository webOutageRepository) {
         m_webOutageRepository = webOutageRepository;
     }
-
 }
