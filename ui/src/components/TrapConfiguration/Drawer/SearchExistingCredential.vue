@@ -88,6 +88,7 @@
 
 <script setup lang="ts">
 import EmptyList from '@/components/Common/EmptyList.vue'
+import { useScvStore } from '@/stores/scvStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import FeatherButton from '@featherds/button/src/components/FeatherButton.vue'
 import { FeatherDrawer } from '@featherds/drawer'
@@ -96,10 +97,15 @@ import Search from '@featherds/icon/action/Search'
 import { FeatherSelect } from '@featherds/select'
 
 const store = useTrapConfigStore()
+const scvStore = useScvStore()
 const tableRecords = ref<{ alias: string; value: string }[]>([
   { alias: 'credential1', value: 'value1' },
   { alias: 'credential2', value: 'value2' }
 ])
+
+onMounted(() => {
+  scvStore.populate()
+})
 </script>
 
 <style lang="scss" scoped>
