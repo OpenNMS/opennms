@@ -32,11 +32,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsNode;
@@ -46,6 +51,8 @@ import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.outage.filter.OutageCriteria;
 import org.opennms.web.outage.filter.OutageCriteria.OutageCriteriaVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,13 +65,20 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 1.8.1
  */
 public class DaoWebOutageRepository implements WebOutageRepository, InitializingBean {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(DaoWebOutageRepository.class);
+
     @Autowired
     private OutageDao m_outageDao;
     
     @Autowired
     private NodeDao m_nodeDao;
-    
+
+    @Autowired
+    private EventDao m_eventDao;
+
+    @Autowired
+    private AlarmDao m_alarmDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -318,9 +332,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
         }
         
         return outages.toArray(new Outage[0]);
-
     }
-
 
     /* (non-Javadoc)
      * @see org.opennms.web.outage.WebOutageRepository#getOutage(int)
@@ -344,4 +356,38 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
         return m_outageDao.getNodeOutageSummaries(rows).toArray(new OutageSummary[0]);
     }
 
+    @Transactional
+    @Override
+    public AlarmIdInfo getAlarmIdAndExistsForOutageLostServiceEvent(final Outage outage) {
+        if (outage == null) {
+            return new AlarmIdInfo(0L, false);
+        }
+
+        long alarmId = 0L;
+        boolean alarmExists = false;
+
+        try {
+            final long eventId = outage.lostServiceEventId != null ? outage.lostServiceEventId : 0L;
+
+            if (eventId > 0L) {
+                OnmsEvent event = m_eventDao.get(eventId);
+
+                if (event != null) {
+                    alarmId = event.getAlarm() != null ? event.getAlarm().getId() : 0L;
+                }
+
+                int alarmIdInt = alarmId > 0L && alarmId < Integer.MAX_VALUE ? (int) alarmId : 0;
+
+                if (alarmIdInt > 0) {
+                    OnmsAlarm alarm = m_alarmDao.get(alarmIdInt);
+                    alarmExists = alarm != null;
+                }
+            }
+        } catch (HibernateObjectRetrievalFailureException | ObjectNotFoundException e) {
+            LOG.debug("Did not find event or alarm in getAlarmIdAndExistsForOutageLostServiceEvent. " +
+                   "This is expected if the alarm was already cleared and removed: {}", e.getMessage(), e);
+        }
+
+        return new AlarmIdInfo(alarmId, alarmExists);
+    }
 }
