@@ -1,13 +1,11 @@
 import axios from 'axios'
 
-import type { SnmpV3User, TrapConfig } from '@/types/trapConfig'
+import type { SnmpV3User, TrapConfig, TrapConfigPayload } from '@/types/trapConfig'
 
 import { v2 } from './axiosInstances'
 import { mapTrapdConfigFromServer } from '@/mappers/trapdConfig.mapper'
 
 const endpoint = '/trapd'
-
-export type TrapdConfigurationUpdatePayload = Partial<Omit<TrapConfig, 'snmpv3User'>>
 
 const getTrapdServiceErrorMessage = (error: unknown, fallbackMessage: string): string => {
   if (axios.isAxiosError(error)) {
@@ -79,7 +77,7 @@ export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
   }
 }
 
-export const updateTrapdConfiguration = async (payload: TrapdConfigurationUpdatePayload): Promise<TrapConfig> => {
+export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Promise<TrapConfig> => {
   try {
     const response = await v2.put(`${endpoint}/update-config`, payload)
 

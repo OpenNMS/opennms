@@ -20,11 +20,34 @@
 /// License.
 ///
 
-import { SecurityLevel, AuthProtocol, PrivacyProtocol } from '@/types/trapConfig'
+import { TrapConfig } from '@/types/trapConfig'
 import { ISelectItemType } from '@featherds/select'
+import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
 
 export const MIN_PORT = 1
 export const MAX_PORT = 65535
+
+export enum SecurityLevel {
+  None = 0,
+  NoAuthNoPriv = 1,
+  AuthNoPriv = 2,
+  AuthPriv = 3
+}
+
+export enum AuthProtocol {
+  MD5 = 'MD5',
+  SHA = 'SHA',
+  SHA224 = 'SHA224',
+  SHA256 = 'SHA256',
+  SHA512 = 'SHA512'
+}
+
+export enum PrivacyProtocol {
+  DES = 'DES',
+  AES = 'AES',
+  AES192 = 'AES192',
+  AES256 = 'AES256'
+}
 
 const VALID_SECURITY_LEVELS = [SecurityLevel.NoAuthNoPriv, SecurityLevel.AuthNoPriv, SecurityLevel.AuthPriv]
 
@@ -76,6 +99,16 @@ export const PRIVACY_PROTOCOL_OPTIONS: ISelectItemType[] = PrivacyProtocols.map(
   _value: protocol
 }))
 
-export const isEqual = (obj1: any, obj2: any): boolean => {
-  return JSON.stringify(obj1) === JSON.stringify(obj2)
-}
+export const getDefaultTrapdConfig = (): TrapConfig => ({
+  snmpTrapAddress: DEFAULT_TRAPD_BIND_ADDRESS,
+  snmpTrapPort: 10162,
+  newSuspectOnTrap: false,
+  includeRawMessage: false,
+  threads: 0,
+  queueSize: 10000,
+  batchSize: 1000,
+  batchInterval: 500,
+  useAddressFromVarbind: false,
+  snmpv3User: []
+})
+

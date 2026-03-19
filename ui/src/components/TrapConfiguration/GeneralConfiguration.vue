@@ -130,11 +130,12 @@ import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_B
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
-import { TrapdConfigurationError } from '@/types/trapConfig'
+import { TrapConfigPayload, TrapdConfigurationError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
 import { SwitchRender } from '@featherds/switch'
+import { isEqual } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
 
 const status = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
@@ -203,16 +204,16 @@ const updateConfig = async () => {
   }
 
   const newConfig = {
-    snmpTrapPort: port.value,
+    snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
     newSuspectOnTrap: status.value,
     useAddressFromVarbind: trapSourceAddressStatus.value,
     includeRawMessage: trapMessageStatus.value,
-    threads: threads.value,
-    queueSize: queueSize.value,
-    batchSize: batchSize.value,
-    batchInterval: batchInterval.value
-  }
+    threads: Number(threads.value),
+    queueSize: Number(queueSize.value),
+    batchSize: Number(batchSize.value),
+    batchInterval: Number(batchInterval.value)
+  } as TrapConfigPayload
 
   try {
     isSaving.value = true
@@ -247,7 +248,27 @@ const loadInitialConfig = () => {
 
 watchEffect(() => {
   trapConfigError.value = validateInputs()
-  isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0
+  isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0 || isEqual({
+    snmpTrapPort: Number(port.value),
+    snmpTrapAddress: bindAddress.value,
+    newSuspectOnTrap: status.value,
+    useAddressFromVarbind: trapSourceAddressStatus.value,
+    includeRawMessage: trapMessageStatus.value,
+    threads: Number(threads.value),
+    queueSize: Number(queueSize.value),
+    batchSize: Number(batchSize.value),
+    batchInterval: Number(batchInterval.value)
+  }, {
+    snmpTrapPort: store.trapdConfig?.snmpTrapPort,
+    snmpTrapAddress: store.trapdConfig?.snmpTrapAddress,
+    newSuspectOnTrap: store.trapdConfig?.newSuspectOnTrap,
+    useAddressFromVarbind: store.trapdConfig?.useAddressFromVarbind,
+    includeRawMessage: store.trapdConfig?.includeRawMessage,
+    threads: store.trapdConfig?.threads,
+    queueSize: store.trapdConfig?.queueSize,
+    batchSize: store.trapdConfig?.batchSize,
+    batchInterval: store.trapdConfig?.batchInterval
+  })
 })
 
 watch(() => store.trapdConfig, () => {

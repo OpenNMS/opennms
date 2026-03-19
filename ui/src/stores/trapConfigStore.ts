@@ -1,3 +1,4 @@
+import { getDefaultTrapdConfig } from '@/lib/trapdValidator'
 import { getTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { CreateEditMode } from '@/types'
 import { TrapConfigStoreState } from '@/types/trapConfig'
@@ -6,7 +7,7 @@ import { defineStore } from 'pinia'
 export const useTrapConfigStore = defineStore('useTrapConfigStore', {
   state: (): TrapConfigStoreState => ({
     isLoading: false,
-    trapdConfig: null,
+    trapdConfig: getDefaultTrapdConfig(),
     SnmpV3Users: [],
     activeTab: 0,
     credentialDrawerState: {
