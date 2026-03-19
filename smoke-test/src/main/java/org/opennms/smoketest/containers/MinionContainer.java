@@ -255,6 +255,13 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // Allow other users to read the folder
         OverlayUtils.setOverlayPermissions(home);
 
+        // Load classpath resources first (e.g., minion-overlay with trapd config)
+        try {
+            FileUtils.copyDirectory(MountableFile.forClasspathResource("minion-overlay").getResolvedPath().toFile(), home.toFile());
+        } catch (Exception e) {
+            // Classpath resource may not exist, which is fine
+        }
+
         // Copy the files from the profile *first*
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
