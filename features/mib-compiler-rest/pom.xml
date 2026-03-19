@@ -15,8 +15,8 @@
     <name>OpenNMS :: Features :: Mib Compiler Rest</name>
 
     <modules>
-        <module>api</module>
         <module>parser</module>
+        <module>api</module>
     </modules>
 
 </project>
