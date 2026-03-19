@@ -36,7 +36,6 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.opennms.smoketest.containers.MinionContainer;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.CommandTestUtils;
@@ -55,15 +54,15 @@ public abstract class AbstractKafkaCompressionRpcIT {
 
     @Test
     public void verifyKafkaRpcWithTcpServiceDetection() {
-        addRequisition(stack().opennms().getRestClient(), stack().minion().getLocation(), OpenNMSContainer.ALIAS);
+        addRequisition(stack().opennms().getRestClient(), stack().minion().getLocation(), LOCALHOST);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS)
-                .until(() -> detectTcpAtLocationMinion(stack()), containsString(String.format("'TCP' WAS detected on %s", OpenNMSContainer.ALIAS)));
+                .until(() -> detectTcpAtLocationMinion(stack()), containsString("'TCP' WAS detected on 127.0.0.1"));
     }
 
     static String detectTcpAtLocationMinion(OpenNMSStack stack) throws Exception {
         try (final SshClient sshClient = new SshClient(stack.opennms().getSshAddress(), "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println(String.format("detect -l %s TCP %s port=8201", stack.minion().getLocation(), OpenNMSContainer.ALIAS));
+            pipe.println(String.format("detect -l %s TCP 127.0.0.1 port=8201", stack.minion().getLocation()));
             pipe.println("logout");
             await().atMost(90, SECONDS).until(sshClient.isShellClosedCallable());
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
@@ -85,7 +84,7 @@ public abstract class AbstractKafkaCompressionRpcIT {
         try (final SshClient sshClient = stack().opennms().ssh()) {
             // Perform JDBC service detection on Minion
             final PrintStream pipe = sshClient.openShell();
-            pipe.println(String.format("detect -l %s JDBC %s url=%s user=opennms password=opennms", stack().minion().getLocation(), OpenNMSContainer.DB_ALIAS, jdbcUrl));
+            pipe.println(String.format("detect -l %s JDBC 127.0.0.1 url=%s user=opennms password=opennms", stack().minion().getLocation(), jdbcUrl));
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
             // Sanitize the output
