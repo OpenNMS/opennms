@@ -11,6 +11,8 @@
         label="Port"
         placeholder="Enter port number"
         v-model="port"
+        :min="MIN_PORT"
+        :max="MAX_PORT"
         :error="trapConfigError.port"
         type="number"
         :hint="'Default: 10162'"
@@ -64,6 +66,7 @@
             label="Threads"
             placeholder="Enter number of threads"
             v-model="threads"
+            :min="0"
             :error="trapConfigError.threads"
             type="number"
             :hint="'Default: 0'"
@@ -74,6 +77,7 @@
             label="Queue Size"
             placeholder="Enter queue size"
             v-model="queueSize"
+            :min="0"
             :error="trapConfigError.queueSize"
             type="number"
             :hint="'Default: 10000'"
@@ -84,6 +88,7 @@
             label="Batch Size"
             placeholder="Enter batch size"
             v-model="batchSize"
+            :min="0"
             :error="trapConfigError.batchSize"
             type="number"
             :hint="'Default: 1000'"
@@ -94,6 +99,7 @@
             label="Batch Interval"
             placeholder="Enter batch interval"
             v-model="batchInterval"
+            :min="0"
             :error="trapConfigError.batchInterval"
             type="number"
             :hint="'Default: 500'"
@@ -120,6 +126,8 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
+import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
+import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { TrapdConfigurationError } from '@/types/trapConfig'
@@ -128,17 +136,16 @@ import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
 import { SwitchRender } from '@featherds/switch'
 import TableCard from '../Common/TableCard.vue'
-import { isValidIP } from './contants'
 
-const status = ref(false)
-const port = ref<number>(10162)
-const bindAddress = ref('*')
-const trapMessageStatus = ref(false)
-const trapSourceAddressStatus = ref(false)
-const threads = ref<number>(0)
-const queueSize = ref<number>(10000)
-const batchSize = ref<number>(1000)
-const batchInterval = ref<number>(500)
+const status = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
+const port = ref<number>(DEFAULT_TRAPD_PORT)
+const bindAddress = ref(DEFAULT_TRAPD_BIND_ADDRESS)
+const trapMessageStatus = ref(DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE)
+const trapSourceAddressStatus = ref(DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND)
+const threads = ref<number>(DEFAULT_TRAPD_THREADS)
+const queueSize = ref<number>(DEFAULT_TRAPD_QUEUE_SIZE)
+const batchSize = ref<number>(DEFAULT_TRAPD_BATCH_SIZE)
+const batchInterval = ref<number>(DEFAULT_TRAPD_BATCH_INTERVAL)
 const trapConfigError = ref<TrapdConfigurationError>({})
 const isSaveDisabled = ref(true)
 const isSaving = ref(false)
@@ -159,33 +166,33 @@ const onChangeTrapSourceAddressStatus = () => {
 
 const validateInputs = (): TrapdConfigurationError => {
   const trapConfigError: TrapdConfigurationError = {}
-  
-  if (port.value < 1 || port.value > 65535) {
-    trapConfigError.port = 'Port must be between 1 and 65535.'
+
+  if (!isValidPort(port.value)) {
+    trapConfigError.port = `Port must be between ${MIN_PORT} and ${MAX_PORT}.`
   }
-  
+
   if (bindAddress.value === '') {
     trapConfigError.bindAddress = 'Bind Address cannot be empty.'
   } else if (bindAddress.value !== '*' && !isValidIP(bindAddress.value)) {
     trapConfigError.bindAddress = 'Bind Address must be * or a valid IP address.'
   }
-  
+
   if (threads.value < 0) {
     trapConfigError.threads = 'Threads cannot be negative.'
   }
-  
+
   if (queueSize.value < 0) {
     trapConfigError.queueSize = 'Queue Size cannot be negative.'
   }
-  
+
   if (batchSize.value < 0) {
     trapConfigError.batchSize = 'Batch Size cannot be negative.'
   }
-  
+
   if (batchInterval.value < 0) {
     trapConfigError.batchInterval = 'Batch Interval cannot be negative.'
   }
-  
+
   return trapConfigError
 }
 
@@ -226,15 +233,15 @@ const updateConfig = async () => {
 
 const loadInitialConfig = () => {
   if (store.trapdConfig) {
-    port.value = store.trapdConfig.snmpTrapPort || 10162
-    bindAddress.value = store.trapdConfig.snmpTrapAddress || '*'
-    status.value = store.trapdConfig.newSuspectOnTrap || false
-    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || false
-    trapMessageStatus.value = store.trapdConfig.includeRawMessage || false
-    threads.value = store.trapdConfig.threads || 0
-    queueSize.value = store.trapdConfig.queueSize || 10000
-    batchSize.value = store.trapdConfig.batchSize || 1000
-    batchInterval.value = store.trapdConfig.batchInterval || 500
+    port.value = store.trapdConfig.snmpTrapPort || DEFAULT_TRAPD_PORT
+    bindAddress.value = store.trapdConfig.snmpTrapAddress || DEFAULT_TRAPD_BIND_ADDRESS
+    status.value = store.trapdConfig.newSuspectOnTrap || DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
+    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
+    trapMessageStatus.value = store.trapdConfig.includeRawMessage || DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
+    threads.value = store.trapdConfig.threads || DEFAULT_TRAPD_THREADS
+    queueSize.value = store.trapdConfig.queueSize || DEFAULT_TRAPD_QUEUE_SIZE
+    batchSize.value = store.trapdConfig.batchSize || DEFAULT_TRAPD_BATCH_SIZE
+    batchInterval.value = store.trapdConfig.batchInterval || DEFAULT_TRAPD_BATCH_INTERVAL
   }
 }
 

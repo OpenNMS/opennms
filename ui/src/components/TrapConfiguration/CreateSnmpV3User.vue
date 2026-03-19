@@ -61,7 +61,7 @@
             label="Auth Protocol"
             v-model="authProtocol"
             :clear="'true'"
-            :options="AUTH_PROTOCOLS_OPTIONS"
+            :options="AUTH_PROTOCOL_OPTIONS"
             :error="error.authProtocol"
           />
         </div>
@@ -91,7 +91,7 @@
             label="Privacy Protocol"
             v-model="privacyProtocol"
             :clear="'true'"
-            :options="PRIVACY_PROTOCOLS_OPTIONS"
+            :options="PRIVACY_PROTOCOL_OPTIONS"
             :error="error.privacyProtocol"
           />
         </div>
@@ -148,8 +148,8 @@ import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
-import { AUTH_PROTOCOLS_OPTIONS, PRIVACY_PROTOCOLS_OPTIONS, SECURITY_LEVEL_OPTIONS } from './contants'
 import SearchExistingCredential from './Drawer/SearchExistingCredential.vue'
+import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
 const store = useTrapConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -278,8 +278,8 @@ const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
 
     if (selectedUser) {
       securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === selectedUser.securityLevel) || createEmptySelectItem()
-      authProtocol.value = AUTH_PROTOCOLS_OPTIONS.find(option => option._value === selectedUser.authProtocol) || createEmptySelectItem()
-      privacyProtocol.value = PRIVACY_PROTOCOLS_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) || createEmptySelectItem()
+      authProtocol.value = AUTH_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.authProtocol) || createEmptySelectItem()
+      privacyProtocol.value = PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) || createEmptySelectItem()
       securityName.value = selectedUser.securityName
       engineId.value = selectedUser.engineId || ''
       authPassphrase.value = selectedUser.authPassphrase || ''

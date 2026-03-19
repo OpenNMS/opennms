@@ -80,9 +80,24 @@ export interface SnmpV3UserError {
   privacyPassphrase?: string
 }
 
-export enum SnmpSecurityLevel {
+export enum SecurityLevel {
   None = 0,
   NoAuthNoPriv = 1,
   AuthNoPriv = 2,
   AuthPriv = 3
+}
+
+export enum AuthProtocol {
+  MD5 = 'MD5',
+  SHA = 'SHA',
+  SHA224 = 'SHA224',
+  SHA256 = 'SHA256',
+  SHA512 = 'SHA512'
+}
+
+export enum PrivacyProtocol {
+  DES = 'DES',
+  AES = 'AES',
+  AES192 = 'AES192',
+  AES256 = 'AES256'
 }

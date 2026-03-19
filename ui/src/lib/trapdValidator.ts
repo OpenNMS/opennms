@@ -20,22 +20,62 @@
 /// License.
 ///
 
-import { SnmpSecurityLevel } from '@/types/trapConfig'
+import { SecurityLevel, AuthProtocol, PrivacyProtocol } from '@/types/trapConfig'
+import { ISelectItemType } from '@featherds/select'
 
-const VALID_SECURITY_LEVELS = [SnmpSecurityLevel.NoAuthNoPriv, SnmpSecurityLevel.AuthNoPriv, SnmpSecurityLevel.AuthPriv]
-const MIN_PORT = 1
-const MAX_PORT = 65535
+export const MIN_PORT = 1
+export const MAX_PORT = 65535
 
-export const SecurityLevelSelectionOptions = [
-  { _text: 'No Auth (1)', _value: String(SnmpSecurityLevel.NoAuthNoPriv) },
-  { _text: 'Auth Only (2)', _value: String(SnmpSecurityLevel.AuthNoPriv) },
-  { _text: 'Auth and Privacy (3)', _value: String(SnmpSecurityLevel.AuthPriv) }
+const VALID_SECURITY_LEVELS = [SecurityLevel.NoAuthNoPriv, SecurityLevel.AuthNoPriv, SecurityLevel.AuthPriv]
+
+export const SECURITY_LEVEL_OPTIONS: ISelectItemType[] = [
+  { _text: 'No Auth (1)', _value: String(SecurityLevel.NoAuthNoPriv) },
+  { _text: 'Auth Only (2)', _value: String(SecurityLevel.AuthNoPriv) },
+  { _text: 'Auth and Privacy (3)', _value: String(SecurityLevel.AuthPriv) }
 ]
 
-export const SnmpAuthProtocols = ['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512']
+export const AuthProtocols = [
+  AuthProtocol.MD5,
+  AuthProtocol.SHA,
+  AuthProtocol.SHA224,
+  AuthProtocol.SHA256,
+  AuthProtocol.SHA512
+]
 
-export const SnmpPrivacyProtocols = ['DES', 'AES', 'AES192', 'AES256']
+export const PrivacyProtocols = [
+  PrivacyProtocol.DES,
+  PrivacyProtocol.AES,
+  PrivacyProtocol.AES192,
+  PrivacyProtocol.AES256
+]
 
 export const isValidSnmpSecurityLevel = (level: number | undefined): boolean => {
   return level !== undefined && VALID_SECURITY_LEVELS.includes(level)
+}
+
+export const isValidIP = (ip: string): boolean => {
+  const parts = ip.split('.')
+  if (parts.length !== 4) return false
+  return parts.every((part) => {
+    const num = parseInt(part, 10)
+    return !isNaN(num) && num >= 0 && num <= 255
+  })
+}
+
+export const isValidPort = (port: number | undefined): boolean => {
+  return port !== undefined && !isNaN(port) && port >= MIN_PORT && port <= MAX_PORT
+}
+
+export const AUTH_PROTOCOL_OPTIONS: ISelectItemType[] = AuthProtocols.map((protocol) => ({
+  _text: protocol,
+  _value: protocol
+}))
+
+export const PRIVACY_PROTOCOL_OPTIONS: ISelectItemType[] = PrivacyProtocols.map((protocol) => ({
+  _text: protocol,
+  _value: protocol
+}))
+
+export const isEqual = (obj1: any, obj2: any): boolean => {
+  return JSON.stringify(obj1) === JSON.stringify(obj2)
 }
