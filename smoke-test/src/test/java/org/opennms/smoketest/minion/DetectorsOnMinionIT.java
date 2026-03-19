@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.RestClient;
@@ -62,7 +63,7 @@ public class DetectorsOnMinionIT {
     @Test
     public void checkServicesDetectedOnMinion() throws ClientProtocolException, IOException, InterruptedException {
         RestClient client = stack.opennms().getRestClient();
-        addRequisition(client, "MINION", LOCALHOST);
+        addRequisition(client, "MINION", OpenNMSContainer.ALIAS);
         await().atMost(5, MINUTES).pollDelay(0, SECONDS).pollInterval(30, SECONDS)
                 .until(getnumberOfServicesDetected(client), greaterThan(0));
     }

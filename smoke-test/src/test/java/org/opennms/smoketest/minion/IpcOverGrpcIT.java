@@ -30,6 +30,7 @@ import static org.opennms.smoketest.minion.RpcOverKafkaIT.addRequisition;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -53,9 +54,9 @@ public class IpcOverGrpcIT {
     @Test
     public void verifyGrpcRpcWithTcpServiceDetection() {
         // Add node and interface with minion location.
-        addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), LOCALHOST);
+        addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), OpenNMSContainer.ALIAS);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS)
-                .until(() -> RpcOverKafkaIT.detectTcpAtLocationMinion(stack), containsString("'TCP' WAS detected on 127.0.0.1"));
+                .until(() -> RpcOverKafkaIT.detectTcpAtLocationMinion(stack), containsString(String.format("'TCP' WAS detected on %s", OpenNMSContainer.ALIAS)));
     }
 
 }

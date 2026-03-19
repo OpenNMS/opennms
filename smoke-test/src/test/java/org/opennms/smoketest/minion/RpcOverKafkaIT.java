@@ -64,15 +64,15 @@ public class RpcOverKafkaIT {
     @Test
     public void verifyKafkaRpcWithTcpServiceDetection() {
         // Add node and interface with minion location.
-        addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), LOCALHOST);
+        addRequisition(stack.opennms().getRestClient(), stack.minion().getLocation(), OpenNMSContainer.ALIAS);
         await().atMost(3, MINUTES).pollInterval(15, SECONDS)
-                .until(() -> detectTcpAtLocationMinion(stack), containsString("'TCP' WAS detected on 127.0.0.1"));
+                .until(() -> detectTcpAtLocationMinion(stack), containsString(String.format("'TCP' WAS detected on %s", OpenNMSContainer.ALIAS)));
     }
 
     static String detectTcpAtLocationMinion(OpenNMSStack stack) throws Exception {
         try (final SshClient sshClient = new SshClient(stack.opennms().getSshAddress(), "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println(String.format("detect -l %s TCP 127.0.0.1 port=8201", stack.minion().getLocation()));
+            pipe.println(String.format("detect -l %s TCP %s port=8201", stack.minion().getLocation(), OpenNMSContainer.ALIAS));
             pipe.println("logout");
             await().atMost(90, SECONDS).until(sshClient.isShellClosedCallable());
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
@@ -94,7 +94,7 @@ public class RpcOverKafkaIT {
         try (final SshClient sshClient = stack.opennms().ssh()) {
             // Perform JDBC service detection on Minion
             final PrintStream pipe = sshClient.openShell();
-            pipe.println(String.format("detect -l %s JDBC 127.0.0.1 url=%s user=opennms password=opennms", stack.minion().getLocation(), jdbcUrl));
+            pipe.println(String.format("detect -l %s JDBC %s url=%s user=opennms password=opennms", stack.minion().getLocation(), OpenNMSContainer.DB_ALIAS, jdbcUrl));
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
             // Sanitize the output
