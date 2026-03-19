@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -110,7 +111,7 @@ public class NxosTelemetryIT {
         Requisition requisition = new Requisition("telemetry");
         List<RequisitionInterface> interfaces = new ArrayList<>();
         RequisitionInterface requisitionInterface = new RequisitionInterface();
-        requisitionInterface.setIpAddr("192.168.0.1");
+        requisitionInterface.setIpAddr(OpenNMSContainer.ALIAS);
         requisitionInterface.setManaged(true);
         requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         interfaces.add(requisitionInterface);
