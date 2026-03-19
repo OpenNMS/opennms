@@ -5,7 +5,8 @@
 
 Beyond a basic flows setup, you may want to add a Minion to collect flows data from hard-to-reach or remote locations.
 
-To do so, you configure a listener on a Minion for specific protocols.
+Current Minion packages ship with a working multi-protocol flow listener configuration for v5, v9, IPFIX, and SFlow flow processing and should not require listener configuration changes to receive these protocols.
+Alternatively, you can configure a listener on a Minion for specific protocols.
 
 .Flow integration with Minion
 image::flows/flow_integration_minion.png[width=70%]
@@ -21,7 +22,7 @@ Make sure you do the following:
 
 This example enables a generic listener for the NetFlow v5 protocol on Minion.
 
-IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
+IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols may require a specific listener.
 See the examples in `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<reference:telemetryd/listeners/introduction.adoc#ref-listener, Telemetryd Listener Reference>> for details.
 
 To enable and configure a listener for NetFlow v5 on Minion, connect to the Karaf Console and set the following properties:
@@ -32,23 +33,26 @@ config:edit --alias udp-8877 --factory org.opennms.features.telemetry.listeners
 config:property-set name Netflow-5
 config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 config:property-set parameters.port 8877
-config:property-set parsers.0.name Netflow-5-Parser
+config:property-set parsers.0.name Netflow-5
 config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 config:update
 ----
 
 TIP: If using a configuration management, you can create and use the properties file as startup configuration in `$\{MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
 
+TIP: The `parsers.X.name` value is used as part of the queue or topic name on the message broker and it is therefore important for it to match the queue name defined in the core's `telemetryd-configuration.xml`
+
 [source, properties]
 ----
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
 parameters.port = 8877
-parsers.0.name = Netflow-5-Parser
+parsers.0.name = Netflow-5
 parsers.0.class-name = org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 ----
 
 NOTE: You must also enable the associated protocol, in this case `Netflow-5`, on {page-component-title} to process the messages.
+See the xref:reference:telemetryd/protocols/introduction.adoc[Telemetryd Protocol Reference] for more details.
 
 In some scenarios, the exporter's address is altered due to network address translation.
 In this case, use node metadata to identify the exporter.
