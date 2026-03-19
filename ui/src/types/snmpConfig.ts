@@ -180,4 +180,8 @@ export interface SnmpFieldInfo {
   // options for the select dropdown. _text is display label, _value is the underlying value.
   // _value should be a string even if isNumeric is true
   selectOptions?: ISelectItemType[]
+
+  // if true, just display the 'hint', do not display the default value.
+  // this is useful for fields that might display sensitive information, such as passwords or passphrases.
+  skipDefaultHint?: boolean
 }

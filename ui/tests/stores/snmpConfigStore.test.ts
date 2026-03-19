@@ -13,7 +13,25 @@ import { getMonitoringLocations } from '@/services/monitoringLocationService'
 import { IpAddressRange, SnmpAgentConfig, SnmpConfig, SnmpDefinition, SnmpProfile } from '@/types/snmpConfig'
 import { MonitoringLocationApiResponse } from '@/types'
 import { createSuccessResponse, createFailureResult } from '@/types/validation'
-import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_VERSION } from '@/lib/constants'
+import {
+  DEFAULT_MONITORING_LOCATION,
+  DEFAULT_SNMP_MAX_REPETITIONS,
+  DEFAULT_SNMP_MAX_REQUEST_SIZE,
+  DEFAULT_SNMP_MAX_VARS_PER_PDU,
+  DEFAULT_SNMP_PORT,
+  DEFAULT_SNMP_READ_COMMUNITY_STRING,
+  DEFAULT_SNMP_RETRIES,
+  DEFAULT_SNMP_TIMEOUT,
+  DEFAULT_SNMP_TTL,
+  DEFAULT_SNMP_V3_AUTH_PASSPHRASE,
+  DEFAULT_SNMP_V3_AUTH_PROTOCOL,
+  DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE,
+  DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
+  DEFAULT_SNMP_V3_SECURITY_LEVEL,
+  DEFAULT_SNMP_V3_SECURITY_NAME,
+  DEFAULT_SNMP_VERSION,
+  DEFAULT_SNMP_WRITE_COMMUNITY_STRING
+} from '@/lib/constants'
 
 vi.mock('@/services/snmpConfigService', () => ({
   deleteSnmpDefinition: vi.fn(),
@@ -632,6 +650,111 @@ describe('useSnmpConfigStore', () => {
 
       expect(result).toEqual(failureResponse)
       expect(result.success).toBe(false)
+    })
+  })
+
+  describe('currentDefaults', () => {
+    it('should return all SnmpBaseConfiguration fields', () => {
+      const defaults = store.currentDefaults
+      expect(defaults).toHaveProperty('readCommunity')
+      expect(defaults).toHaveProperty('writeCommunity')
+      expect(defaults).toHaveProperty('timeout')
+      expect(defaults).toHaveProperty('retry')
+      expect(defaults).toHaveProperty('port')
+      expect(defaults).toHaveProperty('maxRequestSize')
+      expect(defaults).toHaveProperty('maxVarsPerPdu')
+      expect(defaults).toHaveProperty('maxRepetitions')
+      expect(defaults).toHaveProperty('ttl')
+      expect(defaults).toHaveProperty('version')
+      expect(defaults).toHaveProperty('securityName')
+      expect(defaults).toHaveProperty('securityLevel')
+      expect(defaults).toHaveProperty('authPassphrase')
+      expect(defaults).toHaveProperty('authProtocol')
+      expect(defaults).toHaveProperty('privacyPassphrase')
+      expect(defaults).toHaveProperty('privacyProtocol')
+      expect(defaults).toHaveProperty('proxyHost')
+      expect(defaults).toHaveProperty('engineId')
+      expect(defaults).toHaveProperty('contextEngineId')
+      expect(defaults).toHaveProperty('contextName')
+      expect(defaults).toHaveProperty('enterpriseId')
+    })
+
+    it('should return hard-coded defaults when config fields are undefined', () => {
+      // Initial store.config has no base fields set — all should fall back to constants
+      const defaults = store.currentDefaults
+      expect(defaults.readCommunity).toBe(DEFAULT_SNMP_READ_COMMUNITY_STRING)
+      expect(defaults.writeCommunity).toBe(DEFAULT_SNMP_WRITE_COMMUNITY_STRING)
+      expect(defaults.timeout).toBe(DEFAULT_SNMP_TIMEOUT)
+      expect(defaults.retry).toBe(DEFAULT_SNMP_RETRIES)
+      expect(defaults.port).toBe(DEFAULT_SNMP_PORT)
+      expect(defaults.maxRequestSize).toBe(DEFAULT_SNMP_MAX_REQUEST_SIZE)
+      expect(defaults.maxVarsPerPdu).toBe(DEFAULT_SNMP_MAX_VARS_PER_PDU)
+      expect(defaults.maxRepetitions).toBe(DEFAULT_SNMP_MAX_REPETITIONS)
+      expect(defaults.ttl).toBe(DEFAULT_SNMP_TTL)
+      expect(defaults.version).toBe(DEFAULT_SNMP_VERSION)
+      expect(defaults.securityName).toBe(DEFAULT_SNMP_V3_SECURITY_NAME)
+      expect(defaults.securityLevel).toBe(DEFAULT_SNMP_V3_SECURITY_LEVEL)
+      expect(defaults.authPassphrase).toBe(DEFAULT_SNMP_V3_AUTH_PASSPHRASE)
+      expect(defaults.authProtocol).toBe(DEFAULT_SNMP_V3_AUTH_PROTOCOL)
+      expect(defaults.privacyPassphrase).toBe(DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE)
+      expect(defaults.privacyProtocol).toBe(DEFAULT_SNMP_V3_PRIVACY_PROTOCOL)
+    })
+
+    it('should return overridden values when defined in config', () => {
+      store.config.readCommunity = 'customRead'
+      store.config.writeCommunity = 'customWrite'
+      store.config.timeout = 9000
+      store.config.retry = 5
+      store.config.port = 162
+      store.config.maxRequestSize = 32768
+      store.config.maxVarsPerPdu = 20
+      store.config.maxRepetitions = 4
+      store.config.ttl = 600
+      store.config.version = 'v3'
+      store.config.securityName = 'myUser'
+      store.config.securityLevel = 3
+      store.config.authPassphrase = 'myAuthPass'
+      store.config.authProtocol = 'SHA'
+      store.config.privacyPassphrase = 'myPrivPass'
+      store.config.privacyProtocol = 'AES'
+      store.config.proxyHost = 'proxy.example.com'
+      store.config.engineId = 'myEngineId'
+      store.config.contextEngineId = 'myContextEngineId'
+      store.config.contextName = 'myContextName'
+      store.config.enterpriseId = 'myEnterpriseId'
+
+      const defaults = store.currentDefaults
+      expect(defaults.readCommunity).toBe('customRead')
+      expect(defaults.writeCommunity).toBe('customWrite')
+      expect(defaults.timeout).toBe(9000)
+      expect(defaults.retry).toBe(5)
+      expect(defaults.port).toBe(162)
+      expect(defaults.maxRequestSize).toBe(32768)
+      expect(defaults.maxVarsPerPdu).toBe(20)
+      expect(defaults.maxRepetitions).toBe(4)
+      expect(defaults.ttl).toBe(600)
+      expect(defaults.version).toBe('v3')
+      expect(defaults.securityName).toBe('myUser')
+      expect(defaults.securityLevel).toBe(3)
+      expect(defaults.authPassphrase).toBe('myAuthPass')
+      expect(defaults.authProtocol).toBe('SHA')
+      expect(defaults.privacyPassphrase).toBe('myPrivPass')
+      expect(defaults.privacyProtocol).toBe('AES')
+      expect(defaults.proxyHost).toBe('proxy.example.com')
+      expect(defaults.engineId).toBe('myEngineId')
+      expect(defaults.contextEngineId).toBe('myContextEngineId')
+      expect(defaults.contextName).toBe('myContextName')
+      expect(defaults.enterpriseId).toBe('myEnterpriseId')
+    })
+
+    it('should use hard-coded defaults for fields not overridden in config', () => {
+      store.config.timeout = 9000
+
+      const defaults = store.currentDefaults
+      expect(defaults.timeout).toBe(9000)
+      expect(defaults.retry).toBe(DEFAULT_SNMP_RETRIES)
+      expect(defaults.port).toBe(DEFAULT_SNMP_PORT)
+      expect(defaults.readCommunity).toBe(DEFAULT_SNMP_READ_COMMUNITY_STRING)
     })
   })
 
