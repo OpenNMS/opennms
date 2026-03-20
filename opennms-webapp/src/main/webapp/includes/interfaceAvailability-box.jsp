@@ -95,13 +95,24 @@
     Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
+<script type="text/javascript" language="javascript">
+    function copyText(text) {
+        navigator.clipboard.writeText(text);
+    }
+</script>
+
+<style type="text/css">
+    .copy-address-button { visibility: hidden; }
+    .address-block:hover .copy-address-button { visibility: visible; }
+</style>
+
 <div id="availability-box" class="card">
 <div class="card-header">
 <span>Availability</span>
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">
-    <td class="severity-Cleared nobright interface address" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright interface address address-block" colspan="2"><%=ipAddr%>&nbsp;<a class="copy-address-button" href="javascript:copyText('<%=ipAddr%>')"><i class="fa-regular fa-copy"></i></a></td>
     <td class="severity-Cleared nobright interface header"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
     <td class="severity-<%= overallStatus %> nobright interface percent"><%= overallStatusString %></td>
   </tr>
