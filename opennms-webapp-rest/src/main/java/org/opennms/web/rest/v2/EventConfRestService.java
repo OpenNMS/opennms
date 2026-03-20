@@ -64,6 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Date;
@@ -114,7 +115,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         // Detect and parse eventconf.xml for file ordering
-        Map<String, Integer> fileOrderMap = buildFileOrderFromEventConf(fileMap, maxFileOrder);
+        Map<String, Integer> fileOrderMap = buildFileOrderFromEventConf(fileMap);
 
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
@@ -181,18 +182,21 @@ public class EventConfRestService implements EventConfRestApi {
      * normal upload behavior where new files get highest priority.
      * Returns null if no eventconf.xml is present or parsing fails.
      */
-    private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap, final int currentMaxFileOrder) {
-        final Attachment eventConfAttachment = fileMap.remove("eventconf");
+    private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap) {
+        final Attachment eventConfAttachment = fileMap.get("eventconf");
         if (eventConfAttachment == null) {
             return null;
         }
+        // Remove eventconf from fileMap only after confirming it exists
+        fileMap.remove("eventconf");
 
         try (InputStream stream = eventConfAttachment.getObject(InputStream.class)) {
             final Events eventConfEvents = parseEventFile(new ByteArrayInputStream(stream.readAllBytes()));
             final List<String> eventConfOrder = new ArrayList<>();
+            final Set<String> eventConfOrderSet = new HashSet<>();
             for (String eventFile : eventConfEvents.getEventFiles()) {
                 String name = stripPathAndExtension(eventFile);
-                if (name != null && !name.isEmpty() && !eventConfOrder.contains(name)) {
+                if (name != null && !name.isEmpty() && eventConfOrderSet.add(name)) {
                     eventConfOrder.add(name);
                 }
             }
@@ -209,14 +213,16 @@ public class EventConfRestService implements EventConfRestApi {
             // Unreferenced sources: preserve their existing DB order
             final List<EventConfSource> existingByOrder = eventConfSourceDao.findAllByFileOrder();
             final List<String> unreferencedSorted = new ArrayList<>();
+            final Set<String> unreferencedSet = new HashSet<>();
             for (EventConfSource src : existingByOrder) {
-                if (!eventConfOrder.contains(src.getName())) {
+                if (!eventConfOrderSet.contains(src.getName())) {
                     unreferencedSorted.add(src.getName());
+                    unreferencedSet.add(src.getName());
                 }
             }
             // Add any newly uploaded unreferenced files (not in DB yet) at the end
             for (String name : fileMap.keySet()) {
-                if (!eventConfOrder.contains(name) && !unreferencedSorted.contains(name)) {
+                if (!eventConfOrderSet.contains(name) && !unreferencedSet.contains(name)) {
                     unreferencedSorted.add(name);
                 }
             }
@@ -249,6 +255,8 @@ public class EventConfRestService implements EventConfRestApi {
             return fileOrderMap;
         } catch (Exception e) {
             LOG.warn("Failed to parse eventconf.xml for file ordering, falling back to default order: {}", e.getMessage());
+            // Re-add eventconf to fileMap so it appears in the error list
+            fileMap.put("eventconf", eventConfAttachment);
             return null;
         }
     }
