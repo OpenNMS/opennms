@@ -134,13 +134,12 @@ public class EventUtilDaoImpl extends AbstractEventUtil {
     }
 
     @Override
-    public String getIfAliasByNodeAndIfIndex(long nodeId, long ifIndex) {
-        OnmsSnmpInterface snmpIface = snmpInterfaceDao.findByNodeIdAndIfIndex((int)nodeId, (int)ifIndex);
+    public String getIfAliasByNodeAndIfIndex(long nodeId, int ifIndex) {
+        OnmsSnmpInterface snmpIface = snmpInterfaceDao.findByNodeIdAndIfIndex((int)nodeId, ifIndex);
         if (snmpIface != null && snmpIface.getIfAlias() != null) {
             return snmpIface.getIfAlias();
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override

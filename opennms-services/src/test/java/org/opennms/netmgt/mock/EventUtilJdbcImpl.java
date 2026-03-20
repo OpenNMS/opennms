@@ -240,7 +240,7 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	}
 
     @Override
-    public String getIfAliasByNodeAndIfIndex(long nodeId, long ifIndex) throws SQLException {
+    public String getIfAliasByNodeAndIfIndex(long nodeId, int ifIndex) throws SQLException {
         // Not sure if this actually needs to be implemented?
         return "";
     }
