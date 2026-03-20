@@ -136,11 +136,12 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
+import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { saveTrapdUser, updateTrapdUser } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
-import { SnmpV3UserError } from '@/types/trapConfig'
+import type { SnmpV3UserError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Security from '@featherds/icon/hardware/Security'
@@ -149,7 +150,6 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
 import SearchExistingCredential from './Drawer/SearchExistingCredential.vue'
-import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
 const store = useTrapConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -166,24 +166,24 @@ const isSaving = ref<boolean>(false)
 const error = ref<SnmpV3UserError>({})
 
 const authProtocolVisible = computed(() => {
-  const selectedSecurityLevel = securityLevel.value?._value
-
-  return selectedSecurityLevel === 2 || selectedSecurityLevel === 3
+  const selectedSecurityLevel = Number(securityLevel.value?._value)
+  return selectedSecurityLevel === SecurityLevel.AuthNoPriv || selectedSecurityLevel === SecurityLevel.AuthPriv
 })
 
 const privacyProtocolVisible = computed(() => {
-  return securityLevel.value?._value === 3
+  const selectedSecurityLevel = Number(securityLevel.value?._value)
+  return selectedSecurityLevel === SecurityLevel.AuthPriv
 })
 
 watch(securityLevel, (selectedSecurityLevel) => {
-  const levelValue = selectedSecurityLevel?._value
+  const levelValue = Number(selectedSecurityLevel?._value)
 
-  if (levelValue !== 2 && levelValue !== 3) {
+  if (levelValue !== SecurityLevel.AuthNoPriv && levelValue !== SecurityLevel.AuthPriv) {
     authProtocol.value = createEmptySelectItem()
     authPassphrase.value = ''
   }
 
-  if (levelValue !== 3) {
+  if (levelValue !== SecurityLevel.AuthPriv) {
     authProtocol.value = createEmptySelectItem()
     privacyProtocol.value = createEmptySelectItem()
     authPassphrase.value = ''
@@ -294,7 +294,7 @@ const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
     engineId.value = ''
     authPassphrase.value = ''
     privacyPassphrase.value = ''
-  }
+  } 
 }
 
 watchEffect(() => {
