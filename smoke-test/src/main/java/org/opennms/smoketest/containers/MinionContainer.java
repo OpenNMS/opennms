@@ -189,8 +189,6 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
         // Allow other users to read the folder
         OverlayUtils.setOverlayPermissions(home);
 
-       
-
         // Copy the files from the profile *first*
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);

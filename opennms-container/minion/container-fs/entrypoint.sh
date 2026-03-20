@@ -200,11 +200,11 @@ initConfig() {
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
         # Expose Karaf Shell
-        sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
+        # sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
 
         # Expose the RMI registry and server
-        sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
-        sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
+        # sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
+        # sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
 
         # Preserve env-based placeholders in cfg files (for example ${env:...}).
 
@@ -333,8 +333,8 @@ validateFeatureBootComposition() {
         ;;
     esac
 
-    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot" || true
-    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot" || true
+    [[ "${JAEGER_ENABLED:-false}" == "true" ]] && require_boot_file "jaeger.boot" || echo "[Features][INFO] Jaeger boot file not required because JAEGER_ENABLED=${JAEGER_ENABLED:-false}."
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && require_boot_file "dominion-scv.boot" || echo "[Features][INFO] Dominion SCV boot file not required because DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}."
   }
 
   printFeatureBootInventory
@@ -368,7 +368,6 @@ start() {
 
 # Order of precedence is (later overwrites former):
 # 1. Config set via environment variable
-# 2. Config set via overlayed keystore file
 # 3. Config set via direct file overlay
 configure() {
   initConfig
@@ -384,8 +383,12 @@ configure() {
     done < "$MINION_PROCESS_ENV_CFG"
     export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
-  printStartupDiagnostics
-  printKarafResolutionDiagnostics
+  if [[ ${MINION_DEBUG_STARTUP_DIAGNOSTICS:-false} == "true" ]]; then
+    printStartupDiagnostics
+  fi
+  if [[ "${MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS:-false}" == "true" ]]; then
+    printKarafResolutionDiagnostics
+  fi
   validateFeatureBootComposition
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target
