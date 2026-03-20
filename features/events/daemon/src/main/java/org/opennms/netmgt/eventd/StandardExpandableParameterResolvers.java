@@ -785,7 +785,11 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.getNodeid() > 0 && event.getInterface() != null) {
                 try {
-                    return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
+                    if (event.hasIfIndex()) {
+                        return eventUtil.getIfAliasByNodeAndIfIndex(event.getNodeid(), event.getIfIndex());
+                    } else {
+                        return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
+                    }
                 } catch (SQLException e) {
                     // do nothing
                     LOG.info("ifAlias Unavailable for {}:{}, instanceId={}, eventId={}", event.getNodeid(), event.getInterface(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
