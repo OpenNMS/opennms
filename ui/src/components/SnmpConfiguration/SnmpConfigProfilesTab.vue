@@ -1,6 +1,7 @@
 <template>
   <div class="snmp-config-profiles-tab">
     <div class="main-section">
+      <h3>SNMP Configuration Profiles</h3>
       <div v-if="displayTable" class="info-section">
         <div>
           <span>SNMP profiles provide sets of SNMP configuration that can be applied to devices matching specific filter criteria.</span>
@@ -134,7 +135,6 @@ const onDeleteProfile = async (label: string) => {
         cursor: pointer;
         font-size: 1.5em;
         margin-left: 0.5em;
-        vertical-align: middle;
         color: var(variables.$primary);
 
         &:hover {

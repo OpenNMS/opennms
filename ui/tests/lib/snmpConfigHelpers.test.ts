@@ -46,14 +46,14 @@ describe('withDefaultHints', () => {
     const result = withDefaultHints([
       field({ key: 'timeout', hint: 'Timeout in milliseconds' })
     ], defaults)
-    expect(result[0].hint).toBe("Timeout in milliseconds. Current default value is: '3000'.")
+    expect(result[0].hint).toBe('Timeout in milliseconds. Current default value is: \'3000\'.')
   })
 
   it('sets hint when field has no existing hint', () => {
     const result = withDefaultHints([
       field({ key: 'port', hint: undefined })
     ], defaults)
-    expect(result[0].hint).toBe("Current default value is: '161'.")
+    expect(result[0].hint).toBe('Current default value is: \'161\'.')
   })
 
   it('does not modify hint when default value is undefined', () => {
@@ -120,8 +120,8 @@ describe('withDefaultHints', () => {
       field({ key: 'retry', hint: 'Number of retries' }),
       field({ key: 'authPassphrase', hint: 'Authentication passphrase', skipDefaultHint: true })
     ], defaults)
-    expect(result[0].hint).toBe("Timeout in milliseconds. Current default value is: '3000'.")
-    expect(result[1].hint).toBe("Number of retries. Current default value is: '1'.")
+    expect(result[0].hint).toBe('Timeout in milliseconds. Current default value is: \'3000\'.')
+    expect(result[1].hint).toBe('Number of retries. Current default value is: \'1\'.')
     expect(result[2].hint).toBe('Authentication passphrase')
   })
 })

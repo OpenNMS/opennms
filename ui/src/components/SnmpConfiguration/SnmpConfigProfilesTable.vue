@@ -18,7 +18,10 @@
             primary
             @click="onCreateProfile"
           >
-            Create New Profile
+            <template v-slot:icon>
+              <FeatherIcon :icon="IconAdd" aria-hidden="true" focusable="false" class="add-profile-icon" />
+              New Profile
+            </template>
           </FeatherButton>
         </div>
       </div>
@@ -126,6 +129,7 @@ import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
+import IconAdd from '@featherds/icon/action/Add'
 import IconDelete from '@featherds/icon/action/Delete'
 import IconEdit from '@featherds/icon/action/Edit'
 import IconSearch from '@featherds/icon/action/Search'
@@ -135,7 +139,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 
-import { useSnmpConfigStore, ActiveTabs, ViewConfigurationsTabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
+import { useSnmpConfigStore, ActiveTabs, AdvancedSubtabs, SnmpConfigEditMode } from '@/stores/snmpConfigStore'
 import { sortPredicate } from '@/lib/sorting'
 import { FeatherSortObject } from '@/types'
 import { SnmpProfile } from '@/types/snmpConfig'
@@ -262,8 +266,8 @@ const onProfileEdit = (label: string) => {
 
 const onCreateProfile = () => {
   store.setSnmpProfileEditMode(SnmpConfigEditMode.Create)
-  store.setActiveTab(ActiveTabs.ViewConfigurations)
-  store.setActiveViewConfigurationsTab(ViewConfigurationsTabs.Profiles)
+  store.setActiveTab(ActiveTabs.Advanced)
+  store.setActiveAdvancedSubtab(AdvancedSubtabs.Profiles)
 }
 
 const updateDebouncedSearchTerm = debounce((value: string) => {
@@ -358,6 +362,10 @@ const onSearchChange = (value: string | number | undefined) => {
 
     .feather-pagination {
       border: none !important;
+    }
+
+    button.btn.btn-icon .add-profile-icon {
+      font-size: 1.1rem;
     }
   }
 }

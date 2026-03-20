@@ -6,14 +6,14 @@
     >
       <template v-slot:tabs>
         <FeatherTab>Lookup</FeatherTab>
-        <FeatherTab>Browse Configurations</FeatherTab>
+        <FeatherTab>Browse Definitions</FeatherTab>
         <FeatherTab>Advanced</FeatherTab>
       </template>
       <FeatherTabPanel>
         <SnmpConfigLookupTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <SnmpConfigViewTab />
+        <SnmpConfigDefinitionsTab />
       </FeatherTabPanel>
       <FeatherTabPanel>
         <SnmpConfigAdvancedTab />
@@ -26,8 +26,8 @@
 import { useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import SnmpConfigLookupTab from './SnmpConfigLookupTab.vue'
-import SnmpConfigViewTab from './SnmpConfigViewTab.vue'
 import SnmpConfigAdvancedTab from './SnmpConfigAdvancedTab.vue'
+import SnmpConfigDefinitionsTab from './SnmpConfigDefinitionsTab.vue'
 
 const store = useSnmpConfigStore()
 

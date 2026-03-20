@@ -516,7 +516,7 @@ onMounted(() => {
 .snmp-config-defaults-panel {
   .main-section {
     max-width: 80em;
-    margin-top: 1em;
+    padding: 1.5em;
   }
   
   .large-spacer {
