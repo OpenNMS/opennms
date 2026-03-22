@@ -99,8 +99,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features</groupId>
-            <artifactId>org.opennms.features.mib-compiler</artifactId>
+            <groupId>org.opennms.features.mib-compiler</groupId>
+            <artifactId>org.opennms.features.mib-compiler.parser</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
