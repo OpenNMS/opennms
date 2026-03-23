@@ -79,6 +79,7 @@
       <div class="card-body">
         <ul class="list-unstyled mb-0">
           <li><a href="javascript:changePassword()">Change Password</a></li>
+          <li><a href="account/selfService/apiTokens.jsp">Manage API Tokens</a></li>
         </ul>
       </div> <!-- card-body -->
     </div> <!-- panel -->
@@ -91,9 +92,9 @@
       </div>
       <div class="card-body">
         <p>
-         Currently, account self-service is limited to password changes. Note that in environments using a
-         reduced sign-on system such as LDAP, changing your password here may have no effect and may not even be
-         possible.
+         Account self-service options include password changes and API token management. Note that in environments
+         using a reduced sign-on system such as LDAP, changing your password here may have no effect and may not
+         even be possible.
          </p>
          <p>
          If you require further changes to your account, please contact the person within your organization responsible for

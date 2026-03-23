@@ -52,6 +52,7 @@ import IconAccountCircle from '@featherds/icon/action/AccountCircle'
 import IconHelp from '@featherds/icon/action/Help'
 import IconLogout from '@featherds/icon/action/LogOut'
 import IconSecurity from '@featherds/icon/network/Security'
+import IconApiEndpoints from '@featherds/icon/network/ApiEndpoints'
 import { ellipsify } from '@/lib/utils'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -87,9 +88,10 @@ const showMenu = () => {
 const menuItems = computed<MenuItem[]>(() => {
   const helpMenu = mainMenu.value.helpMenu?.items?.find(m => m.id === 'helpMain')
   const changePasswordMenu = mainMenu.value.selfServiceMenu?.items?.find(m => m.id === 'changePassword')
+  const apiTokensMenu = mainMenu.value.selfServiceMenu?.items?.find(m => m.id === 'apiTokens')
   const logoutMenu = mainMenu.value.selfServiceMenu?.items?.find(m => m.id === 'logout')
 
-  return [helpMenu, changePasswordMenu, logoutMenu].map(m => m as MenuItem).filter(m => m !== undefined) || []
+  return [helpMenu, changePasswordMenu, apiTokensMenu, logoutMenu].map(m => m as MenuItem).filter(m => m !== undefined) || []
 })
 
 const createIcon = (menuItem: MenuItem) => {
@@ -102,6 +104,8 @@ const createIcon = (menuItem: MenuItem) => {
       icon = IconLogout; break
     case 'changePassword':
       icon = IconSecurity; break
+    case 'apiTokens':
+      icon = IconApiEndpoints; break
   }
 
   return (icon ?? IconHelp) as typeof FeatherIcon
