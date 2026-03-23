@@ -165,9 +165,9 @@ If an invalid or empty argument is provided, `v1` is used.
 | Integer > `0`. Must be at least `484`.
 
 | ttl
-| 1
+| _Blank_
 | _None_
-| Integer > `0`.
+| Integer > `0`. Time to live in milliseconds.
 
 | proxyHost
 | _Blank_
@@ -258,9 +258,7 @@ NOTE: In the JSON examples below, the commented sections are explanatory only an
 [source,json]
 ----
 {
-  // any fields from the table above, these are the default overrides, if any
-  // they can be omitted or `null` to use the system defaults
-  "maxRepetitions": 2,
+  "maxRepetitions": 2, <1>
   "maxRequestSize": 65535,
   "readCommunity": "public123",
   "definition": [
@@ -271,20 +269,19 @@ NOTE: In the JSON examples below, the commented sections are explanatory only an
           "end": "10.0.0.9"
         }
       ],
-      // any fields from the table above that you want to override for this definition, for example:
-      "readCommunity": "myReadCommunityFor10Net"
+      "readCommunity": "myReadCommunityFor10Net" <2>
     },
     {
       "specific": [
         "10.9.9.9", "10.11.12.13"
       ]
-      // any fields from the table above that you want to override for this definition
+      <2>
     },
     {
       "ipMatch": [
         "10.0.0.*", "192.168.*.*"
       ]
-      // any fields from the table above that you want to override for this definition
+      <2>
     }
   ],
   "profiles": {
@@ -292,29 +289,30 @@ NOTE: In the JSON examples below, the commented sections are explanatory only an
       {
         "label": "datacenter1",
         "filter": "filter expression 1"
-        // any fields from the table above that you want to override for this profile
+        <3>
       },
       {
         "label": "datacenter2",
         "filter": "filter expression 2"
-        // any fields from the table above that you want to override for this profile
+        <3>
       }
     ]
   }
 }
 ----
+<1> Any fields from the table above can go here, these are the default overrides, if any.
+They can be omitted or `null` to use the system defaults
+<2> Any fields from the table above can go here, to override the defaults for this definition, specific or ipMatch.
+<3> Any fields from the table above can go here, to override the defaults for this profile.
 
 
 When updating a Definition or Profile, use the JSON body that's inside the `definition` or `profile` array, respectively.
-
 
 .Example: PUT Definition, JSON Configuration
 [source,json]
 ----
 {
-  // any fields from the table above, these are the default overrides, if any
-  // they can be omitted or `null` to use the system defaults
-  "maxRepetitions": 2,
+  "maxRepetitions": 2, <1>
   "maxRequestSize": 65535,
   "readCommunity": "public123",
   "range": [
@@ -325,20 +323,21 @@ When updating a Definition or Profile, use the JSON body that's inside the `defi
   ]
 }
 ----
+<1> Any fields from the table above can go here, these are the overrides for this definition.
+
 
 .Example: POST Profile, JSON Configuration
 [source,json]
 ----
 {
-  // any fields from the table above, these are the default overrides, if any
-  // they can be omitted or `null` to use the system defaults
-  "maxRepetitions": 2,
+  "maxRepetitions": 2, <1>
   "maxRequestSize": 65535,
   "readCommunity": "public123",
   "label": "myProfileLabel",
   "filter": "myFilterExpression"
 }
 ----
+<1> Any fields from the table above can go here, these are the overrides for this profile.
 
 
 == curl Examples
