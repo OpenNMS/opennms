@@ -1,8 +1,8 @@
 jobs:
   integration-test-with-coverage:
     executor: integration-test-executor
-    parallelism: 4
-    resource_class: large
+    parallelism: 10
+    resource_class: xlarge
     steps:
       - cached-checkout
       - attach_workspace:
