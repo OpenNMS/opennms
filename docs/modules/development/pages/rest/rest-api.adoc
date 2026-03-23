@@ -14,6 +14,14 @@ For instance, `http://localhost:8980/opennms/rest/alarms/` will give you the cur
 Use HTTP basic authentication to provide a valid username and password.
 By default, you will not receive a challenge, so you must configure your REST client library to send basic authentication proactively.
 
+Alternatively, you can use xref:rest/api-tokens.adoc[API tokens] for programmatic access.
+API tokens are long-lived bearer tokens that avoid exposing your password:
+
+[source,bash]
+----
+curl -H "Authorization: Bearer onms_<token>" http://localhost:8980/opennms/api/v2/info
+----
+
 == Data format
 
 Jersey enables {page-component-title} to create REST calls using either XML or JSON.

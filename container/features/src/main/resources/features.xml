@@ -1215,6 +1215,12 @@
         <bundle>mvn:org.opennms.features.api-layer/org.opennms.features.api-layer.core/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/ui-extension/${project.version}</bundle>
     </feature>
+    <feature name="opennms-api-tokens" version="${project.version}" description="OpenNMS :: Features :: API Tokens">
+        <!-- api and impl are pulled in via lib directory -->
+        <!--<bundle>mvn:org.opennms.features/org.opennms.features.api-tokens.api/${project.version}</bundle>-->
+        <!--<bundle>mvn:org.opennms.features/org.opennms.features.api-tokens.impl/${project.version}</bundle>-->
+        <bundle>mvn:org.opennms.features/org.opennms.features.api-tokens.shell/${project.version}</bundle>
+    </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>
         <feature>opennms-core-daemon</feature>

@@ -189,4 +189,42 @@
                 constraintName="uk_eventconf_sources_name"/>
     </changeSet>
 
+    <changeSet author="cnewkirk" id="35.0.0-api-tokens-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_tokens"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="api_tokens">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token_hash" type="varchar(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(256)"/>
+            <column name="created_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_used_at" type="timestamp with time zone"/>
+        </createTable>
+
+        <createSequence sequenceName="api_tokens_id_seq" startValue="1" incrementBy="1"/>
+
+        <createIndex tableName="api_tokens" indexName="idx_api_tokens_token_hash">
+            <column name="token_hash"/>
+        </createIndex>
+
+        <createIndex tableName="api_tokens" indexName="idx_api_tokens_username">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

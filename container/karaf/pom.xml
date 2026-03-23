@@ -80,6 +80,7 @@
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
                         <feature>opennms-http-whiteboard</feature>
+                        <feature>opennms-api-tokens</feature>
                     </bootFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
@@ -283,6 +284,12 @@
             <artifactId>spring-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.api-tokens.shell</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
