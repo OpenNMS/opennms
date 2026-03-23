@@ -363,7 +363,7 @@ start() {
 
 # Order of precedence is (later overwrites former):
 # 1. Config set via environment variable
-# 3. Config set via direct file overlay
+# 2. Config set via direct file overlay
 configure() {
   initConfig
   applyOpennmsPropertiesD
