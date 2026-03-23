@@ -1,5 +1,5 @@
 .FIPS mode
-If your environment requires FIPS mode enabled, you must enable the `PKCS12` keystore type for the Secure Credentials Vault prior to creating the keystore:
+If your environment requires FIPS mode enabled, you must enable the `PKCS12` keystore type for the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] prior to creating the keystore:
 [source, console]
 ----
 echo "org.opennms.features.scv.keystore.type=PKCS12" | sudo tee -a /opt/opennms/etc/opennms.properties.d/scv.properties
