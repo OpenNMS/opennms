@@ -404,6 +404,13 @@
         "roles": null
       },
       {
+        "id": "apiTokens",
+        "name": "API Tokens",
+        "url": "account/selfService/apiTokens.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
         "id": "logout",
         "name": "Log Out",
         "url": "j_spring_security_logout",

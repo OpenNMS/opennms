@@ -80,6 +80,7 @@
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
                         <feature>opennms-http-whiteboard</feature>
+                        <feature>opennms-api-tokens</feature>
                     </bootFeatures>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->

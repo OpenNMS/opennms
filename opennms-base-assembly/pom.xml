@@ -829,6 +829,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.api-tokens.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.api</artifactId>
       <version>${project.version}</version>
