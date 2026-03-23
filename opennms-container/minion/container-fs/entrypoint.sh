@@ -200,7 +200,7 @@ initConfig() {
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
         # Expose Karaf Shell
-        sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
+        # sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
 
         # Expose the RMI registry and server
         # sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
