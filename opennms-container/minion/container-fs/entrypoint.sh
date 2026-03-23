@@ -199,15 +199,6 @@ initConfig() {
             echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${MINION_HOME}/etc/keys.properties && \
             chmod 600 "${MINION_HOME}/.ssh/id_rsa"
 
-        # Expose Karaf Shell
-        # sed -i "/^sshHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.shell.cfg
-
-        # Expose the RMI registry and server
-        # sed -i "/^rmiRegistryHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
-        # sed -i "/^rmiServerHost/s/=.*/= 0.0.0.0/" ${MINION_HOME}/etc/org.apache.karaf.management.cfg
-
-        # Preserve env-based placeholders in cfg files (for example ${env:...}).
-
         parseEnvironment
         applyFeatureBootTemplates
 
@@ -290,10 +281,14 @@ printKarafResolutionDiagnostics() {
   fi
 
   echo "[Karaf] org.ops4j.pax.url.mvn.cfg:"
-  if [[ -f "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" ]]; then
-    sed -n '1,200p' "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" | sed 's/^/  /'
-  else
-    echo "  (missing)"
+  if [[ "${MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS:-false}" == "true" ]]; then  
+    if [[ -f "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" ]]; then  
+      sed -n '1,200p' "${MINION_HOME}/etc/org.ops4j.pax.url.mvn.cfg" | sed 's/^/  /'  
+    else  
+      echo "  (missing)"  
+    fi  
+  else  
+    echo "  (redacted; set MINION_DEBUG_KARAF_RESOLUTION_DIAGNOSTICS=true to print contents)"
   fi
 }
 
