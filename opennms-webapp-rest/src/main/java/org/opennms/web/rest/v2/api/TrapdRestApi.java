@@ -41,8 +41,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.opennms.web.rest.v2.model.Snmpv3UserDto;
-import org.opennms.web.rest.v2.model.TrapdConfigDto;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
+import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 @Path("trapd")
 @Tag(name = "Trapd", description = "Trapd API V2")
@@ -93,7 +93,7 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid configuration payload"),
             @ApiResponse(responseCode = "500", description = "Failed to update trapd configuration")
     })
-    Response updateTrapdConfiguration(TrapdConfigDto payload, @Context SecurityContext securityContext);
+    Response updateTrapdConfiguration(TrapdConfiguration payload, @Context SecurityContext securityContext);
 
     @POST
     @Path("user")
@@ -110,7 +110,7 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "409", description = "SNMPv3 user with provided securityName already exists"),
             @ApiResponse(responseCode = "500", description = "Failed to save user")
     })
-    Response saveTrapdUser(Snmpv3UserDto user, @Context SecurityContext securityContext);
+    Response saveTrapdUser(Snmpv3User user, @Context SecurityContext securityContext);
 
     @PUT
     @Path("user/{securityName}")
@@ -127,7 +127,7 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "404", description = "SNMPv3 user with provided securityName was not found"),
             @ApiResponse(responseCode = "500", description = "Failed to update user")
     })
-    Response updateTrapdUser(@PathParam("securityName") String securityName, Snmpv3UserDto user, @Context SecurityContext securityContext);
+    Response updateTrapdUser(@PathParam("securityName") String securityName, Snmpv3User user, @Context SecurityContext securityContext);
 
     @DELETE
     @Path("user/{securityName}")

@@ -66,4 +66,13 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
     public Consumer getValidationCallback() {
         return super.getValidationCallback();
     }
+
+    @Override
+    public void updateConfigWithoutUsers(TrapdConfiguration config) {
+        TrapdConfiguration existingConfig = this.getConfig();
+        if (existingConfig != null) {
+            config.setSnmpv3User(existingConfig.getSnmpv3User());
+        }
+        this.updateConfig(config);
+    }
 }

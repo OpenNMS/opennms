@@ -38,8 +38,6 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.web.rest.v2.api.TrapdRestApi;
-import org.opennms.web.rest.v2.model.Snmpv3UserDto;
-import org.opennms.web.rest.v2.model.TrapdConfigDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +86,7 @@ public class TrapdRestService implements TrapdRestApi {
             if (config == null) {
                 return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
             }
-            return Response.ok(TrapdConfigDto.toDto(config)).build();
+            return Response.ok(config).build();
         } catch (Exception e) {
             LOG.error("Failed to retrieve trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve trapd configuration.").build();
@@ -96,21 +94,18 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     @Override
-    public Response updateTrapdConfiguration(TrapdConfigDto config, SecurityContext securityContext) {
+    public Response updateTrapdConfiguration(TrapdConfiguration config, SecurityContext securityContext) {
         if (config == null) {
             return Response.status(Status.BAD_REQUEST).entity("Missing trapd configuration in request body.").build();
         }
 
-        final TrapdConfiguration updatedConfig;
-        try {
-            updatedConfig = mergeTrapdConfiguration(config);
-        } catch (Exception e) {
-            LOG.warn("Failed to map trapd update payload.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid trapd configuration payload.").build();
+        final String validationMessage = validateTrapdConfigurationPayload(config);
+        if (validationMessage != null) {
+            return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
         }
 
         try {
-            trapdConfigDao.updateConfig(updatedConfig);
+            trapdConfigDao.updateConfigWithoutUsers(config);
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);
@@ -122,17 +117,9 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     @Override
-    public Response saveTrapdUser(Snmpv3UserDto user, SecurityContext securityContext) {
+    public Response saveTrapdUser(Snmpv3User user, SecurityContext securityContext) {
         if (user == null) {
             return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
-        }
-
-        final Snmpv3User snmpv3User;
-        try {
-            snmpv3User = toSnmpv3User(user);
-        } catch (Exception e) {
-            LOG.warn("Failed to map SNMPv3 user payload.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid SNMPv3 user payload.").build();
         }
 
         try {
@@ -160,7 +147,7 @@ public class TrapdRestService implements TrapdRestApi {
                 config.setNewSuspectOnTrap(false);
             }
 
-            config.addSnmpv3User(snmpv3User);
+            config.addSnmpv3User(user);
             trapdConfigDao.updateConfig(config);
             return Response.ok().build();
         } catch (ValidationException e) {
@@ -173,7 +160,7 @@ public class TrapdRestService implements TrapdRestApi {
     }
 
     @Override
-    public Response updateTrapdUser(String securityName, Snmpv3UserDto user, SecurityContext securityContext) {
+    public Response updateTrapdUser(String securityName, Snmpv3User user, SecurityContext securityContext) {
         if (StringUtils.isBlank(securityName)) {
             return Response.status(Status.BAD_REQUEST).entity("Valid security name is required.").build();
         }
@@ -182,12 +169,10 @@ public class TrapdRestService implements TrapdRestApi {
             return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
         }
 
-        final Snmpv3User snmpv3User;
-        try {
-            snmpv3User = toSnmpv3User(user);
-        } catch (Exception e) {
-            LOG.warn("Failed to map SNMPv3 user payload.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid SNMPv3 user payload.").build();
+        if (!StringUtils.equals(securityName, user.getSecurityName())) {
+            return Response.status(Status.BAD_REQUEST)
+                    .entity("Path securityName must match payload securityName.")
+                    .build();
         }
 
         try {
@@ -208,7 +193,7 @@ public class TrapdRestService implements TrapdRestApi {
                 return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
             }
 
-            config.setSnmpv3User(index, snmpv3User);
+            config.setSnmpv3User(index, user);
             trapdConfigDao.updateConfig(config);
             return Response.ok().build();
         } catch (ValidationException e) {
@@ -239,7 +224,7 @@ public class TrapdRestService implements TrapdRestApi {
                         .build();
             }
 
-            final Snmpv3User removed = config.removeSnmpv3UserAt(index);
+            config.removeSnmpv3UserAt(index);
             trapdConfigDao.updateConfig(config);
             return Response.noContent().build();
         } catch (ValidationException e) {
@@ -261,61 +246,27 @@ public class TrapdRestService implements TrapdRestApi {
         return -1;
     }
 
-    private TrapdConfiguration mergeTrapdConfiguration(final TrapdConfigDto payload) {
-        TrapdConfiguration config = trapdConfigDao.getConfig();
-        if (config == null) {
-            config = new TrapdConfiguration();
+    private String validateTrapdConfigurationPayload(final TrapdConfiguration config) {
+        if (!config.hasSnmpTrapPort()) {
+            return "snmpTrapPort is required.";
         }
-
-        if (payload.getSnmpTrapAddress() != null) {
-            config.setSnmpTrapAddress(payload.getSnmpTrapAddress());
+        if (!config.hasNewSuspectOnTrap()) {
+            return "newSuspectOnTrap is required.";
         }
-        if (payload.getSnmpTrapPort() != null) {
-            config.setSnmpTrapPort(payload.getSnmpTrapPort());
-        }
-        if (payload.getNewSuspectOnTrap() != null) {
-            config.setNewSuspectOnTrap(payload.getNewSuspectOnTrap());
-        }
-        if (payload.getIncludeRawMessage() != null) {
-            config.setIncludeRawMessage(payload.getIncludeRawMessage());
-        }
-        if (payload.getThreads() != null) {
-            config.setThreads(payload.getThreads());
-        }
-        if (payload.getQueueSize() != null) {
-            config.setQueueSize(payload.getQueueSize());
-        }
-        if (payload.getBatchSize() != null) {
-            config.setBatchSize(payload.getBatchSize());
-        }
-        if (payload.getBatchInterval() != null) {
-            config.setBatchInterval(payload.getBatchInterval());
-        }
-        if (payload.getUseAddressFromVarbind() != null) {
-            config.setUseAddressFromVarbind(payload.getUseAddressFromVarbind());
-        }
-        return config;
+        return null;
     }
 
-    private Snmpv3User toSnmpv3User(final Snmpv3UserDto userDto) {
-        final Snmpv3User user = new Snmpv3User();
-        user.setEngineId(userDto.getEngineId());
-        user.setSecurityName(userDto.getSecurityName());
-        user.setSecurityLevel(userDto.getSecurityLevel());
-        user.setAuthProtocol(userDto.getAuthProtocol());
-        user.setAuthPassphrase(userDto.getAuthPassphrase());
-        user.setPrivacyProtocol(userDto.getPrivacyProtocol());
-        user.setPrivacyPassphrase(userDto.getPrivacyPassphrase());
-        return user;
-    }
 
-    private String validateSnmpv3UserPayload(final Snmpv3UserDto user) {
+    private String validateSnmpv3UserPayload(final Snmpv3User user) {
         if (StringUtils.isBlank(user.getSecurityName())) {
             return "securityName is required.";
         }
 
         final Integer securityLevel = user.getSecurityLevel();
-        if (securityLevel != null && (securityLevel < 1 || securityLevel > 3)) {
+        if (securityLevel == null) {
+            return "securityLevel is required.";
+        }
+        if (securityLevel < 1 || securityLevel > 3) {
             return "securityLevel must be between 1 and 3.";
         }
 
@@ -338,16 +289,14 @@ public class TrapdRestService implements TrapdRestApi {
             return "privacyProtocol and privacyPassphrase must be provided together.";
         }
 
-        if (securityLevel != null) {
-            if (securityLevel == 1 && (hasAuthProtocol || hasPrivacyProtocol)) {
-                return "securityLevel 1 does not allow auth or privacy credentials.";
-            }
-            if (securityLevel == 2 && (!hasAuthProtocol || hasPrivacyProtocol)) {
-                return "securityLevel 2 requires auth credentials and does not allow privacy credentials.";
-            }
-            if (securityLevel == 3 && (!hasAuthProtocol || !hasPrivacyProtocol)) {
-                return "securityLevel 3 requires both auth and privacy credentials.";
-            }
+        if (securityLevel == 1 && (hasAuthProtocol || hasPrivacyProtocol)) {
+            return "securityLevel 1 does not allow auth or privacy credentials.";
+        }
+        if (securityLevel == 2 && (!hasAuthProtocol || hasPrivacyProtocol)) {
+            return "securityLevel 2 requires auth credentials and does not allow privacy credentials.";
+        }
+        if (securityLevel == 3 && (!hasAuthProtocol || !hasPrivacyProtocol)) {
+            return "securityLevel 3 requires both auth and privacy credentials.";
         }
 
         return null;

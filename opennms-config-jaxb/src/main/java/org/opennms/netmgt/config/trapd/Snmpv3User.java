@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.config.trapd;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -46,42 +48,49 @@ public class Snmpv3User implements java.io.Serializable {
      * SNMPv3 Application Engine ID
      */
 	@XmlAttribute(name="engine-id",required=false)
+    @JsonProperty("engineId")
     private java.lang.String engineId;
 
     /**
      * SNMPv3 Security Name (User Name)
      */
 	@XmlAttribute(name="security-name",required=false)
+    @JsonProperty("securityName")
     private java.lang.String securityName;
 
     /**
      * SNMPv3 Security Level (noAuthNoPriv, authNoPriv, authPriv)
      */
 	@XmlAttribute(name="security-level",required=false)
+    @JsonProperty("securityLevel")
     private Integer securityLevel;
 
     /**
      * SNMPv3 Authentication Protocol
      */
 	@XmlAttribute(name="auth-protocol",required=false)
+    @JsonProperty("authProtocol")
     private java.lang.String authProtocol;
 
     /**
      * SNMPv3 Authentication Password Phrase
      */
 	@XmlAttribute(name="auth-passphrase",required=false)
+    @JsonProperty("authPassphrase")
     private java.lang.String authPassphrase;
 
     /**
      * SNMPv3 Privacy Protocol
      */
 	@XmlAttribute(name="privacy-protocol",required=false)
+    @JsonProperty("privacyProtocol")
     private java.lang.String privacyProtocol;
 
     /**
      * SNMPv3 Privacy Password Phrase
      */
 	@XmlAttribute(name="privacy-passphrase",required=false)
+    @JsonProperty("privacyPassphrase")
     private java.lang.String privacyPassphrase;
 
 
