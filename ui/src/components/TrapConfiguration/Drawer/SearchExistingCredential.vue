@@ -25,15 +25,15 @@
             />
           </div>
           <div class="value">
-            <FeatherSelect
-              class="my-select"
-              label="Key Type"
-              clear="Clear Selection"
+            <FeatherInput
+              :modelValue="searchValue"
+              @update:modelValue="val => onSearch(val as string)"
+              label="Search for credentials"
             >
-              <template v-slot:pre>
+              <template v-slot:post>
                 <FeatherIcon :icon="Search" />
               </template>
-            </FeatherSelect>
+            </FeatherInput>
           </div>
         </div>
         <div class="search-row">
@@ -59,12 +59,25 @@
               name="data-table"
               tag="tbody"
             >
-              <tr
+              <!-- <tr
                 v-for="(user, index) in tableRecords"
                 :key="index"
               >
                 <td>{{ user.alias }}</td>
                 <td>{{ user.value }}</td>
+              </tr> -->
+              <tr
+                v-for="(item, index) of filteredResults"
+                :key="`${item.alias}-${item.key}-${index}`"
+                style="cursor: pointer;"
+              >
+                <td>
+                  {{ item.type === 'alias' ? item.alias : '' }}
+                </td>
+                <td v-if="item.type === 'key' && item.key">
+                  <a @click.prevent="onItemSelected(item)">{{ item.type === 'key' ? item.key : '' }}</a>
+                </td>
+                <td v-else></td>
               </tr>
             </TransitionGroup>
           </table>
@@ -90,18 +103,41 @@
 import EmptyList from '@/components/Common/EmptyList.vue'
 import { useScvStore } from '@/stores/scvStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { ScvSearchItem } from '@/types/scv'
 import FeatherButton from '@featherds/button/src/components/FeatherButton.vue'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
 import Search from '@featherds/icon/action/Search'
+import { FeatherInput } from '@featherds/input'
 import { FeatherSelect } from '@featherds/select'
+import { debounce } from 'lodash'
 
+const emit = defineEmits<{
+  (e: 'hidden'): void
+  (e: 'item-selected', item: ScvSearchItem): void
+}>()
+
+const DEBOUNCE_DELAY = 300
 const store = useTrapConfigStore()
 const scvStore = useScvStore()
+const credentialsLoading = ref(false)
+const filteredResults = ref<ScvSearchItem[]>([])
+const searchValue = ref<string>('')
 const tableRecords = ref<{ alias: string; value: string }[]>([
   { alias: 'credential1', value: 'value1' },
   { alias: 'credential2', value: 'value2' }
 ])
+
+const onSearch = debounce((query: string) => {
+  credentialsLoading.value = true
+  searchValue.value = query
+  filteredResults.value = scvStore.queryCredentials(query)
+  credentialsLoading.value = false
+}, DEBOUNCE_DELAY)
+
+const onItemSelected = (item: ScvSearchItem) => {
+  emit('item-selected', item)
+}
 
 onMounted(() => {
   scvStore.populate()
