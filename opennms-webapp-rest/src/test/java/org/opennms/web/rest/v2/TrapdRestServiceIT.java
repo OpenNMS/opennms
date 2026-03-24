@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -77,7 +78,7 @@ public class TrapdRestServiceIT {
     public void setUp() throws Exception {
         m_trapdRestService = new TrapdRestService();
         m_trapdConfigDao = mock(TrapdConfigDao.class);
-        setField(m_trapdRestService, "m_trapdConfigDao", m_trapdConfigDao);
+        setField(m_trapdRestService, "trapdConfigDao", m_trapdConfigDao);
     }
 
     @Test
@@ -102,7 +103,7 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void uploadShouldPersistValidXmlAndReturnDto() {
+    public void uploadShouldPersistValidXmlAndReturnOk() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
@@ -110,10 +111,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof TrapdConfigDto);
-            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
-            assertEquals(Integer.valueOf(10163), dto.getSnmpTrapPort());
-            assertEquals("*", dto.getSnmpTrapAddress());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -130,9 +128,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof TrapdConfigDto);
-            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
-            assertEquals(Boolean.TRUE, dto.getUseAddressFromVarbind());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -205,7 +201,7 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void saveUserShouldPersistUserAndReturnDto() {
+    public void saveUserShouldPersistUserAndReturnOk() {
         TrapdConfiguration existing = new TrapdConfiguration();
         existing.setSnmpTrapPort(1162);
         existing.setNewSuspectOnTrap(false);
@@ -222,11 +218,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.saveTrapdUser(user, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof Snmpv3UserDto);
-            Snmpv3UserDto dto = (Snmpv3UserDto) response.getEntity();
-            assertEquals("opennms-user", dto.getSecurityName());
-            assertEquals(Integer.valueOf(3), dto.getSecurityLevel());
-            assertEquals("AES", dto.getPrivacyProtocol());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -310,7 +302,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.saveTrapdUser(user, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof Snmpv3UserDto);
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -318,6 +310,28 @@ public class TrapdRestServiceIT {
         TrapdConfiguration persisted = captor.getValue();
         assertEquals(1, persisted.getSnmpv3UserCount());
         assertEquals(162, persisted.getSnmpTrapPort());
+    }
+
+    @Test
+    public void saveUserShouldReturnConflictWhenSecurityNameAlreadyExists() {
+        TrapdConfiguration existing = new TrapdConfiguration();
+        existing.setSnmpTrapPort(1162);
+        existing.setNewSuspectOnTrap(false);
+        Snmpv3User existingUser = new Snmpv3User();
+        existingUser.setSecurityName("duplicate-user");
+        existing.addSnmpv3User(existingUser);
+        when(m_trapdConfigDao.getConfig()).thenReturn(existing);
+
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("duplicate-user");
+        user.setSecurityLevel(1);
+
+        try (Response response = m_trapdRestService.saveTrapdUser(user, null)) {
+            assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+            assertEquals("SNMPv3 user with securityName 'duplicate-user' already exists.", response.getEntity());
+        }
+
+        verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     // --- validateSnmpv3UserPayload rule tests ---
@@ -458,19 +472,19 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void deleteUserShouldReturnBadRequestWhenIndexNull() {
+    public void deleteUserShouldReturnBadRequestWhenSecurityNameNull() {
         try (Response response = m_trapdRestService.deleteTrapdUser(null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Valid user index is required.", response.getEntity());
+            assertEquals("Valid security name is required.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
-    public void deleteUserShouldReturnBadRequestWhenIndexNegative() {
-        try (Response response = m_trapdRestService.deleteTrapdUser(-1, null)) {
+    public void deleteUserShouldReturnBadRequestWhenSecurityNameBlank() {
+        try (Response response = m_trapdRestService.deleteTrapdUser("   ", null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Valid user index is required.", response.getEntity());
+            assertEquals("Valid security name is required.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
@@ -479,7 +493,7 @@ public class TrapdRestServiceIT {
     public void deleteUserShouldReturnNotFoundWhenNoConfig() {
         when(m_trapdConfigDao.getConfig()).thenReturn(null);
 
-        try (Response response = m_trapdRestService.deleteTrapdUser(0, null)) {
+        try (Response response = m_trapdRestService.deleteTrapdUser("missing-user", null)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             assertEquals("Trapd configuration not found.", response.getEntity());
         }
@@ -487,21 +501,21 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void deleteUserShouldReturnBadRequestWhenIndexOutOfRange() {
+    public void deleteUserShouldReturnNotFoundWhenSecurityNameMissing() {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
         when(m_trapdConfigDao.getConfig()).thenReturn(config);
 
-        try (Response response = m_trapdRestService.deleteTrapdUser(5, null)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertTrue(((String) response.getEntity()).contains("out of range"));
+        try (Response response = m_trapdRestService.deleteTrapdUser("missing-user", null)) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("SNMPv3 user with securityName 'missing-user' was not found.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
-    public void deleteUserShouldRemoveUserAndReturnDto() {
+    public void deleteUserShouldRemoveUserAndReturnNoContent() {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
@@ -511,16 +525,37 @@ public class TrapdRestServiceIT {
         config.addSnmpv3User(user);
         when(m_trapdConfigDao.getConfig()).thenReturn(config);
 
-        try (Response response = m_trapdRestService.deleteTrapdUser(0, null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof Snmpv3UserDto);
-            Snmpv3UserDto dto = (Snmpv3UserDto) response.getEntity();
-            assertEquals("user-to-delete", dto.getSecurityName());
+        try (Response response = m_trapdRestService.deleteTrapdUser("user-to-delete", null)) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
         verify(m_trapdConfigDao).updateConfig(captor.capture());
         assertEquals(0, captor.getValue().getSnmpv3UserCount());
+    }
+
+    @Test
+    public void deleteUserShouldRemoveOnlyMatchingSecurityName() {
+        TrapdConfiguration config = new TrapdConfiguration();
+        config.setSnmpTrapPort(162);
+        config.setNewSuspectOnTrap(false);
+        Snmpv3User keep = new Snmpv3User();
+        keep.setSecurityName("keep-user");
+        Snmpv3User remove = new Snmpv3User();
+        remove.setSecurityName("remove-user");
+        config.addSnmpv3User(keep);
+        config.addSnmpv3User(remove);
+        when(m_trapdConfigDao.getConfig()).thenReturn(config);
+
+        try (Response response = m_trapdRestService.deleteTrapdUser("remove-user", null)) {
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(m_trapdConfigDao).updateConfig(captor.capture());
+        assertEquals(1, captor.getValue().getSnmpv3UserCount());
+        assertEquals("keep-user", captor.getValue().getSnmpv3User(0).getSecurityName());
     }
 
     @Test
@@ -534,7 +569,7 @@ public class TrapdRestServiceIT {
         when(m_trapdConfigDao.getConfig()).thenReturn(config);
         whenValidationFailsOnUpdate("delete validation error");
 
-        try (Response response = m_trapdRestService.deleteTrapdUser(0, null)) {
+        try (Response response = m_trapdRestService.deleteTrapdUser("test-user", null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertEquals("delete validation error", response.getEntity());
         }
@@ -551,39 +586,39 @@ public class TrapdRestServiceIT {
         when(m_trapdConfigDao.getConfig()).thenReturn(config);
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(m_trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
-        try (Response response = m_trapdRestService.deleteTrapdUser(0, null)) {
+        try (Response response = m_trapdRestService.deleteTrapdUser("test-user", null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
             assertEquals("Failed to delete trapd user.", response.getEntity());
         }
     }
 
     @Test
-    public void updateUserShouldReturnBadRequestWhenIndexNull() {
+    public void updateUserShouldReturnBadRequestWhenSecurityNameNull() {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
         try (Response response = m_trapdRestService.updateTrapdUser(null, user, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Valid user index is required.", response.getEntity());
+            assertEquals("Valid security name is required.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
-    public void updateUserShouldReturnBadRequestWhenIndexNegative() {
+    public void updateUserShouldReturnBadRequestWhenSecurityNameBlank() {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(-1, user, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("", user, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Valid user index is required.", response.getEntity());
+            assertEquals("Valid security name is required.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
     public void updateUserShouldReturnBadRequestWhenPayloadNull() {
-        try (Response response = m_trapdRestService.updateTrapdUser(0, null, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("existing-user", null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertEquals("Missing SNMPv3 user in request body.", response.getEntity());
         }
@@ -597,7 +632,7 @@ public class TrapdRestServiceIT {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(0, user, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("opennms-user", user, null)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             assertEquals("Trapd configuration not found.", response.getEntity());
         }
@@ -605,7 +640,7 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void updateUserShouldReturnBadRequestWhenIndexOutOfRange() {
+    public void updateUserShouldReturnNotFoundWhenSecurityNameMissing() {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
@@ -614,9 +649,9 @@ public class TrapdRestServiceIT {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(5, user, null)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertTrue(((String) response.getEntity()).contains("out of range"));
+        try (Response response = m_trapdRestService.updateTrapdUser("missing-user", user, null)) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("SNMPv3 user with securityName 'missing-user' was not found.", response.getEntity());
         }
         verify(m_trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
@@ -638,7 +673,7 @@ public class TrapdRestServiceIT {
         user.setAuthProtocol("SHA");
         user.setAuthPassphrase("auth-pass");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(0, user, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("existing-user", user, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertEquals("securityLevel 3 requires both auth and privacy credentials.", response.getEntity());
         }
@@ -646,7 +681,7 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void updateUserShouldReplaceUserAtIndexAndReturnDto() {
+    public void updateUserShouldReplaceUserBySecurityNameAndReturnOk() {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
@@ -664,13 +699,9 @@ public class TrapdRestServiceIT {
         updated.setPrivacyProtocol("AES");
         updated.setPrivacyPassphrase("priv-pass");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(0, updated, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("old-user", updated, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertTrue(response.getEntity() instanceof Snmpv3UserDto);
-            Snmpv3UserDto dto = (Snmpv3UserDto) response.getEntity();
-            assertEquals("new-user", dto.getSecurityName());
-            assertEquals(Integer.valueOf(3), dto.getSecurityLevel());
-            assertEquals("AES", dto.getPrivacyProtocol());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -693,7 +724,7 @@ public class TrapdRestServiceIT {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(0, user, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("existing-user", user, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertEquals("schema update error", response.getEntity());
         }
@@ -713,7 +744,7 @@ public class TrapdRestServiceIT {
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
 
-        try (Response response = m_trapdRestService.updateTrapdUser(0, user, null)) {
+        try (Response response = m_trapdRestService.updateTrapdUser("existing-user", user, null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
             assertEquals("Failed to update trapd user.", response.getEntity());
         }
@@ -742,11 +773,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
-            assertEquals(Integer.valueOf(10164), dto.getSnmpTrapPort());
-            assertEquals(Integer.valueOf(4), dto.getThreads());
-            assertEquals("127.0.0.1", dto.getSnmpTrapAddress());
-            assertEquals(Boolean.TRUE, dto.getIncludeRawMessage());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
@@ -770,8 +797,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = m_trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            TrapdConfigDto dto = (TrapdConfigDto) response.getEntity();
-            assertEquals(Boolean.TRUE, dto.getUseAddressFromVarbind());
+            assertNull(response.getEntity());
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
