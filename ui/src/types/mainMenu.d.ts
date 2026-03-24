@@ -1,5 +1,5 @@
 export interface MenuItem {
-  type?: string         // 'item', 'header', 'separator'. default is 'item'
+  type?: string         // 'item', 'header', 'separator', 'plugins'. default is 'item'
   id: string | null
   name: string | null
   url: string | null

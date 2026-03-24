@@ -213,6 +213,13 @@
         {
           "id": "resourceGraphs",
           "name": "Resource Graphs",
+          "url": "ui/index.html#/resource-graphs",
+          "locationMatch": "performance",
+          "roles": null
+        },
+        {
+          "id": "resourceGraphsOld",
+          "name": "Resource Graphs (Legacy)",
           "url": "graph/index.jsp",
           "locationMatch": "performance",
           "roles": null
@@ -481,6 +488,10 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pluginsMenu",
+      "type": "plugins"
     },
     {
       "id": "toolsMenu",
