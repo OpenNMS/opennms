@@ -153,11 +153,11 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             withEnv("MINION_IPC", "kafka");
-            withEnv("KAFKA_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
+            withEnv("KAFKA_IPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             withEnv("MINION_IPC", "grpc");
-            withEnv("GRPC_CLIENT_HOST", OpenNMSContainer.ALIAS);
-            withEnv("GRPC_CLIENT_PORT", "8990");
+            withEnv("IPC_GRPC_HOST", OpenNMSContainer.ALIAS);
+            withEnv("IPC_GRPC_PORT", "8990");
         } else if (IpcStrategy.JMS.equals(model.getIpcStrategy())) {
             withEnv("MINION_IPC", "jms");
         }

@@ -242,9 +242,9 @@ printStartupDiagnostics() {
   echo "  MINION_REPAIR_FEATURES_BOOT=${MINION_REPAIR_FEATURES_BOOT:-true}"
   echo "  JAEGER_ENABLED=${JAEGER_ENABLED:-false}"
   echo "  DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}"
-  echo "  GRPC_CLIENT_HOST=${GRPC_CLIENT_HOST:-<unset>}"
-  echo "  GRPC_CLIENT_PORT=${GRPC_CLIENT_PORT:-<unset>}"
-  echo "  KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-<unset>}"
+  echo "  GRPC_CLIENT_HOST=${IPC_GRPC_HOST:-<unset>}"
+  echo "  GRPC_CLIENT_PORT=${IPC_GRPC_PORT:-<unset>}"
+  echo "  KAFKA_BOOTSTRAP_SERVERS=${KAFKA_IPC_BOOTSTRAP_SERVERS:-<unset>}"
 
   print_cfg() {
     local cfg="$1"
