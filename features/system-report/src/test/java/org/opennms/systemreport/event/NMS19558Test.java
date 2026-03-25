@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -35,9 +36,13 @@ public class NMS19558Test {
             for (int i = 0; i < 310; i++) {
                 csvPrinter.printRecord("admin", "2025-01-01 20:00:00");
             }
-            csvPrinter.printRecord("admin", CsvUtils.DATE_FORMAT.format(new Date()));
-            csvPrinter.printRecord("admin", CsvUtils.DATE_FORMAT.format(new Date()));
-            csvPrinter.printRecord("admin", CsvUtils.DATE_FORMAT.format(new Date()));
+            final String nowFormatted = Instant.now()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime()
+                    .format(CsvUtils.DATE_FORMAT);
+            for (int i = 0; i < 3; i++) {
+                csvPrinter.printRecord("admin", nowFormatted);
+            }
             csvPrinter.flush();
         }
     }
@@ -45,7 +50,9 @@ public class NMS19558Test {
     @Test
     public void testEscape() throws IOException {
         CsvUtils.logUserDataToCsv("admin", Date.from(Instant.now()));
+        CsvUtils.removeOldRecordsFromCsv();
         assertFalse(systemOutRule.getLog().contains("java.text.ParseException"));
+        // 1 header + 3 "recent" setup rows + 1 appended by logUserDataToCsv; 310 Jan-2025 rows are pruned (>60 days).
         assertEquals(5, Files.readAllLines(Path.of(CsvUtils.USER_LOGINS_CSV_FILE_PATH)).size());
     }
 }

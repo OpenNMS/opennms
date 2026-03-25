@@ -47,11 +47,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,8 +64,7 @@ public class CsvUtils {
     private static final String  LOGIN_TIME_CSV_HEADERS = "Login Time";
     static final String  USER_LOGINS_CSV_HEADERS = String.join(",", USER_NAME_CSV_HEADERS, LOGIN_TIME_CSV_HEADERS);
     private static final Integer USER_LOGIN_THRESHOLD_DAYS= 60;
-    static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static Resource readCsvHeaders(String filePath) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -140,17 +139,17 @@ public class CsvUtils {
 
     public static void logUserDataToCsv(String userName, Date loginTime) {
         try {
-            String data = String.join(",",userName,DATE_FORMAT.format(loginTime));
+            String formatted = loginTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(DATE_FORMAT);
+            String data = String.join(",", userName, formatted);
             Resource csvHeaders = new ByteArrayResource(USER_LOGINS_CSV_HEADERS.getBytes());
             Resource csvData = new ByteArrayResource(data.getBytes());
             writeDataToFile(csvHeaders, csvData, USER_LOGINS_CSV_FILE_PATH);
-            removeOldRecordsFromCsv();
-        } catch (IOException | ParseException e ) {
-            LOG.error(e.getMessage(),e);
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
         }
     }
 
-    public static void removeOldRecordsFromCsv() throws IOException, ParseException {
+    public static void removeOldRecordsFromCsv() throws IOException {
         final File csvFile = new File(USER_LOGINS_CSV_FILE_PATH);
         if (!csvFile.exists() || csvFile.length() == 0) {
             throw new IOException("CSV file does not exist or is empty.");
@@ -158,16 +157,16 @@ public class CsvUtils {
 
         final List<Pair<String, String>> pairs = new ArrayList<>();
 
-        try (final CSVParser csvParser = new CSVParser(new FileReader(csvFile), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+        try (final CSVParser csvParser = new CSVParser(new FileReader(csvFile, StandardCharsets.UTF_8), CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
             for (CSVRecord record : csvParser) {
-                final Date recordDate = DATE_FORMAT.parse(record.get(LOGIN_TIME_CSV_HEADERS));
+                final LocalDateTime recordDate = LocalDateTime.parse(record.get(LOGIN_TIME_CSV_HEADERS), DATE_FORMAT);
                 if (!isOlderThanThreshold(recordDate, USER_LOGIN_THRESHOLD_DAYS)) {
                     pairs.add(new Pair(record.get(USER_NAME_CSV_HEADERS), record.get(LOGIN_TIME_CSV_HEADERS)));
                 }
             }
         }
 
-        try (final CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.withHeader(USER_LOGINS_CSV_HEADERS.split(",")))) {
+        try (final CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(csvFile, StandardCharsets.UTF_8), CSVFormat.DEFAULT.withHeader(USER_LOGINS_CSV_HEADERS.split(",")))) {
             for(final Pair<String, String> pair : pairs) {
                 csvPrinter.printRecord(pair.getA(), pair.getB());
             }
@@ -175,9 +174,9 @@ public class CsvUtils {
         }
     }
 
-    private static boolean isOlderThanThreshold(Date recordTime, Integer thresholdDays) {
+    private static boolean isOlderThanThreshold(LocalDateTime recordTime, Integer thresholdDays) {
         Instant now = Instant.now();
-        Instant recordInstant = recordTime.toInstant();
+        Instant recordInstant = recordTime.atZone(ZoneId.systemDefault()).toInstant();
         Duration duration = Duration.between(recordInstant, now);
         return duration.toDays() > thresholdDays;
     }
