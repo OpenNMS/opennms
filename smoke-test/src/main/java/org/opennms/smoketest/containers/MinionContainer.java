@@ -157,10 +157,10 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
             withEnv("KAFKA_RPC_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
             withEnv("KAFKA_SINK_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
             withEnv("KAFKA_TWIN_BOOTSTRAP_SERVERS", OpenNMSContainer.KAFKA_ALIAS + ":9092");
-            if (model.getKafkaCompressionType() != null) {
-                withEnv("KAFKA_IPC_COMPRESSION_TYPE", model.getKafkaCompressionType().getCodec());
-                withEnv("KAFKA_SINK_COMPRESSION_TYPE", model.getKafkaCompressionType().getCodec());
-                withEnv("KAFKA_TWIN_COMPRESSION_TYPE", model.getKafkaCompressionType().getCodec());
+            if (model.getKafkaCompressionStrategy() != null) {
+                withEnv("KAFKA_IPC_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
+                withEnv("KAFKA_SINK_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
+                withEnv("KAFKA_TWIN_COMPRESSION_TYPE", model.getKafkaCompressionStrategy().getCodec());
             }
         } else if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             withEnv("MINION_IPC", "grpc");
