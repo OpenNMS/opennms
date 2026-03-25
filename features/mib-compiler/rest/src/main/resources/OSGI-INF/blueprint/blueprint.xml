@@ -7,8 +7,12 @@
 
     <reference id="mibParser" interface="org.opennms.features.mibcompiler.api.MibParser" availability="mandatory"/>
 
-    <bean id="mibCompilerRestService" class="org.opennms.features.mibcompiler.rest.internal.MibCompilerRestServiceImpl">
+    <bean id="mibCompilerFileService" class="org.opennms.features.mibcompiler.rest.internal.MibCompilerFileService">
         <argument ref="mibParser"/>
+    </bean>
+
+    <bean id="mibCompilerRestService" class="org.opennms.features.mibcompiler.rest.internal.MibCompilerRestServiceImpl">
+        <argument ref="mibCompilerFileService"/>
     </bean>
 
     <service interface="org.opennms.features.mibcompiler.rest.MibCompilerRestService" ref="mibCompilerRestService">
