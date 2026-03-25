@@ -41,12 +41,20 @@ public class EnvironmentScope implements Scope {
             return Optional.empty();
         }
 
-        final String value = System.getenv(contextKey.key);
-        if (value == null) {
-            return Optional.empty();
+        // Primary: actual OS environment variable
+        final String envValue = System.getenv(contextKey.key);
+        if (envValue != null) {
+            return Optional.of(new ScopeValue(ScopeName.GLOBAL, envValue));
         }
 
-        return Optional.of(new ScopeValue(ScopeName.GLOBAL, value));
+        // Fallback: JVM system property (-D flags).  Allows database env vars forwarded
+        // by bin/install as -D options to survive sudo invocations that strip the environment.
+        final String propValue = System.getProperty(contextKey.key);
+        if (propValue != null) {
+            return Optional.of(new ScopeValue(ScopeName.GLOBAL, propValue));
+        }
+
+        return Optional.empty();
     }
 
     @Override

@@ -67,6 +67,34 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
+# Forward database-related environment variables as JVM system properties so that
+# ${env:VAR} patterns in opennms-datasources.xml resolve correctly even when sudo
+# strips the calling user's environment (sudo env_reset is on by default on most systems).
+# EnvironmentScope falls back to System.getProperty() when System.getenv() returns null.
+for _db_var in \
+	POSTGRES_HOST \
+	POSTGRES_PORT \
+	OPENNMS_DBNAME \
+	OPENNMS_DBUSER \
+	OPENNMS_DBPASS \
+	POSTGRES_USER \
+	POSTGRES_PASSWORD \
+	POSTGRES_SSL_MODE \
+	POSTGRES_SSL_FACTORY \
+	OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT \
+	OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT \
+	OPENNMS_DATABASE_CONNECTION_MINPOOL \
+	OPENNMS_DATABASE_CONNECTION_MAXPOOL \
+	OPENNMS_DATABASE_CONNECTION_MAXSIZE; do
+	# Use ${VAR+set} to detect whether the variable is set (including set-to-empty)
+	eval "_db_isset=\${${_db_var}+set}"
+	if [ "$_db_isset" = "set" ]; then
+		eval "_db_val=\"\${${_db_var}}\""
+		OPTIONS="$OPTIONS -D${_db_var}=${_db_val}"
+	fi
+done
+unset _db_var _db_isset _db_val
+
 RUN_FIX_KARAF=false;
 for i in ${@}; do
         if [ "$i" != "--help" -a "$i" != "-h" ]; then

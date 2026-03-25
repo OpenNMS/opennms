@@ -9,15 +9,75 @@ done
 
 export CLASSPATH=`echo $CLASSPATH | sed -e 's,^:*,,'`
 
-DATABASE_NAME=`grep 'database-name=' $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-DATABASE_USER=`grep 'user-name='     $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-DATABASE_PASS=`grep 'password='      $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-DATABASE_URL=`grep 'url='            $OPENNMS_HOME/etc/opennms-datasources.xml | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+# Resolve ${env:VAR|default} and ${scv:...|env:VAR|literal} patterns in a raw XML
+# attribute value.  SCV entries are not resolvable in shell and are skipped; the
+# function falls through to the next pipe-separated alternative (env: lookup or
+# literal default).  Iterates until no ${...} patterns remain (handles URLs with
+# multiple patterns such as ${env:HOST|localhost}:${env:PORT|5432}).
+resolve_attr() {
+	_ra_cur="$1"
+	_ra_iter=0
+	while printf '%s' "$_ra_cur" | grep -q '\${[^}]*}'; do
+		_ra_iter=$((_ra_iter + 1))
+		# Prevent infinite loops on pathological input
+		if [ "$_ra_iter" -gt 20 ]; then
+			break
+		fi
+		# Extract text before the first ${, the first ${...} pattern, and text after it.
+		# _ra_before: everything up to the first ${
+		_ra_before=$(printf '%s' "$_ra_cur" | sed 's/\${[^}]*}.*//')
+		# _ra_pattern: the first ${...} token
+		_ra_pattern=$(printf '%s' "$_ra_cur" | sed 's/[^$]*\(\${[^}]*}\).*/\1/')
+		# _ra_after: strip the known prefix+pattern via parameter expansion (handles $ in values)
+		_ra_after="${_ra_cur#"${_ra_before}${_ra_pattern}"}"
+		# Extract the content between ${ and }
+		_ra_inner="${_ra_pattern#\$\{}"
+		_ra_inner="${_ra_inner%\}}"
+		# Walk pipe-separated alternatives; first resolved value wins
+		_ra_resolved=""
+		_ra_rem="$_ra_inner"
+		while [ -n "$_ra_rem" ]; do
+			_ra_alt="${_ra_rem%%|*}"
+			if [ "$_ra_alt" = "$_ra_rem" ]; then
+				_ra_rem=""
+			else
+				_ra_rem="${_ra_rem#*|}"
+			fi
+			case "$_ra_alt" in
+				env:*)
+					_ra_vname="${_ra_alt#env:}"
+					eval "_ra_isset=\${${_ra_vname}+set}"
+					if [ "$_ra_isset" = "set" ]; then
+						eval "_ra_resolved=\"\${${_ra_vname}}\""
+						_ra_rem=""
+					fi
+					;;
+				scv:*)
+					# SCV is not accessible from shell; fall through to next alternative
+					;;
+				*)
+					# Literal default value
+					_ra_resolved="$_ra_alt"
+					_ra_rem=""
+					;;
+			esac
+		done
+		_ra_cur="${_ra_before}${_ra_resolved}${_ra_after}"
+	done
+	printf '%s' "$_ra_cur"
+}
 
-ADMIN_DATABASE_NAME=`grep 'database-name=' $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-ADMIN_DATABASE_USER=`grep 'user-name='     $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-ADMIN_DATABASE_PASS=`grep 'password='      $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
-ADMIN_DATABASE_URL=`grep 'url='            $OPENNMS_HOME/etc/opennms-datasources.xml | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,'`
+_xml=$OPENNMS_HOME/etc/opennms-datasources.xml
+
+DATABASE_NAME=$(resolve_attr "$(grep 'database-name=' "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+DATABASE_USER=$(resolve_attr "$(grep 'user-name='     "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+DATABASE_PASS=$(resolve_attr "$(grep 'password='      "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+DATABASE_URL=$(resolve_attr  "$(grep 'url='            "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+
+ADMIN_DATABASE_NAME=$(resolve_attr "$(grep 'database-name=' "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+ADMIN_DATABASE_USER=$(resolve_attr "$(grep 'user-name='     "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+ADMIN_DATABASE_PASS=$(resolve_attr "$(grep 'password='      "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+ADMIN_DATABASE_URL=$(resolve_attr  "$(grep 'url='            "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Dopennms.home="$OPENNMS_HOME" \
@@ -25,7 +85,7 @@ exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Dinstall.database.admin.user="$ADMIN_DATABASE_USER" \
 	-Dinstall.database.admin.password="$ADMIN_DATABASE_PASS" \
 	-Dinstall.database.user="$DATABASE_USER" \
-	-Dinstall.database.name="$DATABASE_PASS" \
+	-Dinstall.database.name="$DATABASE_NAME" \
 	-jar "$OPENNMS_HOME"/lib/liquibase*.jar \
 		--classpath="$CLASSPATH" \
 		--url="$DATABASE_URL" \

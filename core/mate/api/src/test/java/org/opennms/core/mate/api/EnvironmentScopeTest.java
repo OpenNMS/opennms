@@ -54,6 +54,9 @@ public class EnvironmentScopeTest {
 
     @Test
     public void testGetNonExistentEnvironmentVariable() {
+        // Guard: the fallback to System.getProperty() must also not resolve this key
+        Assume.assumeTrue("System property NONEXISTENT_VAR_12345 must not be set",
+                System.getProperty("NONEXISTENT_VAR_12345") == null);
         Optional<Scope.ScopeValue> result = envScope.get(new ContextKey("env", "NONEXISTENT_VAR_12345"));
         assertFalse("Should not find non-existent environment variable", result.isPresent());
     }
@@ -102,6 +105,8 @@ public class EnvironmentScopeTest {
 
     @Test
     public void testInterpolationWithNonExistentVariableAndDefault() {
+        Assume.assumeTrue("System property NONEXISTENT_VAR_12345 must not be set",
+                System.getProperty("NONEXISTENT_VAR_12345") == null);
         Interpolator.Result result = Interpolator.interpolate(
                 "Value: ${env:NONEXISTENT_VAR_12345|default_value}",
                 envScope
@@ -111,11 +116,62 @@ public class EnvironmentScopeTest {
 
     @Test
     public void testInterpolationWithNonExistentVariableNoDefault() {
+        Assume.assumeTrue("System property NONEXISTENT_VAR_12345 must not be set",
+                System.getProperty("NONEXISTENT_VAR_12345") == null);
         Interpolator.Result result = Interpolator.interpolate(
                 "Value: ${env:NONEXISTENT_VAR_12345}",
                 envScope
         );
         assertEquals("Should result in empty string", "Value: ", result.output);
+    }
+
+    @Test
+    public void testGetSystemPropertyFallback() {
+        final String testKey = "ONMS_TEST_SYSPROP_FALLBACK_99";
+        Assume.assumeTrue("Env var " + testKey + " must not be set for this test",
+                System.getenv(testKey) == null);
+        System.setProperty(testKey, "sysprop_value");
+        try {
+            Optional<Scope.ScopeValue> result = envScope.get(new ContextKey("env", testKey));
+            assertTrue("Should resolve via system property fallback", result.isPresent());
+            assertEquals("sysprop_value", result.get().value);
+            assertEquals(Scope.ScopeName.GLOBAL, result.get().scopeName);
+        } finally {
+            System.clearProperty(testKey);
+        }
+    }
+
+    @Test
+    public void testEnvVarTakesPriorityOverSystemProperty() {
+        // Use PATH which is reliably set in all environments
+        final String pathValue = System.getenv("PATH");
+        Assume.assumeNotNull("PATH environment variable must be set", pathValue);
+
+        System.setProperty("PATH", "should_not_win");
+        try {
+            Optional<Scope.ScopeValue> result = envScope.get(new ContextKey("env", "PATH"));
+            assertTrue(result.isPresent());
+            assertEquals("Env var must take priority over system property", pathValue, result.get().value);
+        } finally {
+            System.clearProperty("PATH");
+        }
+    }
+
+    @Test
+    public void testInterpolationWithSystemPropertyFallback() {
+        final String testKey = "ONMS_TEST_SYSPROP_INTERP_99";
+        Assume.assumeTrue("Env var " + testKey + " must not be set for this test",
+                System.getenv(testKey) == null);
+        System.setProperty(testKey, "db.example.com");
+        try {
+            Interpolator.Result result = Interpolator.interpolate(
+                    "jdbc:postgresql://${env:" + testKey + "|localhost}:5432/opennms",
+                    envScope
+            );
+            assertEquals("jdbc:postgresql://db.example.com:5432/opennms", result.output);
+        } finally {
+            System.clearProperty(testKey);
+        }
     }
 
     @Test
