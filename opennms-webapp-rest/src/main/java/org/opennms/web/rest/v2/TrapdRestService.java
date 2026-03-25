@@ -249,7 +249,7 @@ public class TrapdRestService implements TrapdRestApi {
             return "snmpTrapAddress is required.";
         }
         if (configDto.getSnmpTrapPort() == null || configDto.getSnmpTrapPort() < 1 || configDto.getSnmpTrapPort() > 65535) {
-            return "snmpTrapPort must be between 1 and 65535.";
+            return "snmpTrapPort is required and must be between 1 and 65535.";
         }
         if (configDto.getThreads() != null && configDto.getThreads() < 0) {
             return "threads must be non-negative.";

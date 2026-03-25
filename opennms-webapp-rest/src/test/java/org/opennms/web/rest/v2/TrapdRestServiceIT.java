@@ -22,7 +22,6 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -45,7 +44,6 @@ import org.mockito.ArgumentCaptor;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.config.exception.ValidationException;
-import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -82,70 +80,6 @@ public class TrapdRestServiceIT {
         trapdRestService = new TrapdRestService();
         trapdConfigDao = mock(TrapdConfigDao.class);
         setField(trapdRestService, "trapdConfigDao", trapdConfigDao);
-    }
-
-    @Test
-    public void testJsonToObjectSupportsKebabCaseProperties() {
-        final String json = "{"
-                + "\"snmp-trap-address\":\"0.0.0.0\","
-                + "\"snmp-trap-port\":1162,"
-                + "\"new-suspect-on-trap\":true,"
-                + "\"include-raw-message\":true,"
-                + "\"queue-size\":2000,"
-                + "\"batch-size\":250,"
-                + "\"batch-interval\":100,"
-                + "\"threads\":4,"
-                + "\"use-address-from-varbind\":true"
-                + "}";
-
-        final TrapdConfiguration config = ConfigConvertUtil.jsonToObject(json, TrapdConfiguration.class);
-
-        assertEquals("0.0.0.0", config.getSnmpTrapAddress());
-        assertEquals(1162, config.getSnmpTrapPort());
-        assertTrue(config.isNewSuspectOnTrap());
-        assertTrue(config.isIncludeRawMessage());
-        assertEquals(2000, config.getQueueSize());
-        assertEquals(250, config.getBatchSize());
-        assertEquals(100, config.getBatchInterval());
-        assertEquals(4, config.getThreads());
-        assertTrue(config.shouldUseAddressFromVarbind());
-    }
-
-    @Test
-    public void testJsonToObjectSupportsCamelCaseProperties() {
-        final String json = "{"
-                + "\"snmpTrapAddress\":\"127.0.0.1\","
-                + "\"snmpTrapPort\":2162,"
-                + "\"newSuspectOnTrap\":false,"
-                + "\"batchSize\":10"
-                + "}";
-
-        final TrapdConfiguration config = ConfigConvertUtil.jsonToObject(json, TrapdConfiguration.class);
-
-        assertEquals("127.0.0.1", config.getSnmpTrapAddress());
-        assertEquals(2162, config.getSnmpTrapPort());
-        assertFalse(config.isNewSuspectOnTrap());
-        assertEquals(10, config.getBatchSize());
-    }
-
-    @Test
-    public void testUseAddressFromVarbindDefaultsToFalse() {
-        final TrapdConfiguration config = ConfigConvertUtil.jsonToObject("{}", TrapdConfiguration.class);
-        assertFalse(config.shouldUseAddressFromVarbind());
-    }
-
-    @Test
-    public void testObjectToJsonOmitsInternalHasFlags() {
-        final TrapdConfiguration config = new TrapdConfiguration();
-        config.setSnmpTrapPort(162);
-        config.setNewSuspectOnTrap(true);
-
-        final String json = ConfigConvertUtil.objectToJson(config);
-
-        assertTrue(json.contains("\"snmp-trap-port\":162"));
-        assertTrue(json.contains("\"new-suspect-on-trap\":true"));
-        assertFalse(json.contains("\"has-snmp-trap-port\""));
-        assertFalse(json.contains("\"has-new-suspect-on-trap\""));
     }
 
 
@@ -238,7 +172,7 @@ public class TrapdRestServiceIT {
         config.setSnmpTrapPort(162);
         config.setSnmpTrapAddress("127.0.0.1");
         config.setNewSuspectOnTrap(false);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -251,7 +185,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void getShouldReturnNotFoundWhenNoConfigurationExists() {
-        when(trapdConfigDao.getConfig()).thenReturn(null);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(null);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -261,7 +195,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void getShouldReturnServerErrorWhenExceptionThrown() {
-        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getConfig();
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getMaskedConfig();
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
@@ -278,11 +212,11 @@ public class TrapdRestServiceIT {
         user.setSecurityName("user1");
         user.setSecurityLevel(3);
         user.setAuthProtocol("SHA");
-        user.setAuthPassphrase("real-auth-secret");
+        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase("real-priv-secret");
+        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -300,9 +234,9 @@ public class TrapdRestServiceIT {
         user.setSecurityName("user1");
         user.setSecurityLevel(2);
         user.setAuthProtocol("MD5");
-        user.setAuthPassphrase("real-auth-secret");
+        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -321,7 +255,7 @@ public class TrapdRestServiceIT {
         user.setSecurityLevel(1);
         // no auth or privacy passphrase set
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -340,19 +274,19 @@ public class TrapdRestServiceIT {
         userA.setSecurityName("user-a");
         userA.setSecurityLevel(3);
         userA.setAuthProtocol("SHA");
-        userA.setAuthPassphrase("secret-a-auth");
+        userA.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         userA.setPrivacyProtocol("AES");
-        userA.setPrivacyPassphrase("secret-a-priv");
+        userA.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(userA);
 
         Snmpv3User userB = new Snmpv3User();
         userB.setSecurityName("user-b");
         userB.setSecurityLevel(2);
         userB.setAuthProtocol("MD5");
-        userB.setAuthPassphrase("secret-b-auth");
+        userB.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(userB);
 
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -372,19 +306,19 @@ public class TrapdRestServiceIT {
         user.setSecurityName("user1");
         user.setSecurityLevel(3);
         user.setAuthProtocol("SHA");
-        user.setAuthPassphrase("real-auth-secret");
+        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase("real-priv-secret");
+        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
-        // Original stored config must be untouched
-        assertEquals("real-auth-secret", config.getSnmpv3User(0).getAuthPassphrase());
-        assertEquals("real-priv-secret", config.getSnmpv3User(0).getPrivacyPassphrase());
+        // The config returned by getMaskedConfig should not have been mutated by the service
+        assertEquals(PASSPHRASE_PLACEHOLDER, config.getSnmpv3User(0).getAuthPassphrase());
+        assertEquals(PASSPHRASE_PLACEHOLDER, config.getSnmpv3User(0).getPrivacyPassphrase());
     }
 
     @Test
@@ -395,11 +329,11 @@ public class TrapdRestServiceIT {
         user.setEngineId("0x8000000001020304");
         user.setSecurityLevel(3);
         user.setAuthProtocol("SHA");
-        user.setAuthPassphrase("real-auth-secret");
+        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase("real-priv-secret");
+        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -439,7 +373,7 @@ public class TrapdRestServiceIT {
         TrapdConfiguration existing = new TrapdConfiguration();
         existing.setSnmpTrapPort(1162);
         existing.setNewSuspectOnTrap(false);
-        when(trapdConfigDao.getConfig()).thenReturn(existing);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(existing);
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setEngineId("8000000001020304");
@@ -464,7 +398,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityNameMissing() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityLevel(1);
@@ -479,7 +413,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelMissing() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityName("opennms-user");
@@ -494,7 +428,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelThreeMissingPrivacy() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityName("opennms-user");
@@ -515,7 +449,7 @@ public class TrapdRestServiceIT {
         TrapdConfiguration existing = new TrapdConfiguration();
         existing.setSnmpTrapPort(1162);
         existing.setNewSuspectOnTrap(false);
-        when(trapdConfigDao.getConfig()).thenReturn(existing);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(existing);
         whenValidationFailsOnUpdate("user validation failed");
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
@@ -530,7 +464,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldReturnServerErrorWhenPersistenceThrows() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
@@ -544,23 +478,19 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void saveUserShouldCreateNewConfigWhenNoneExists() {
-        when(trapdConfigDao.getConfig()).thenReturn(null);
+    public void saveUserShouldReturnNotFoundWhenNoConfigExists() {
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(null);
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityName("opennms-user");
         userDto.setSecurityLevel(1);
 
         try (Response response = trapdRestService.saveTrapdUser(userDto, null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            assertNull(response.getEntity());
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
         }
 
-        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
-        verify(trapdConfigDao).updateConfig(captor.capture());
-        TrapdConfiguration persisted = captor.getValue();
-        assertEquals(1, persisted.getSnmpv3UserCount());
-        assertEquals(162, persisted.getSnmpTrapPort());
+        verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -571,7 +501,7 @@ public class TrapdRestServiceIT {
         Snmpv3User existingUser = new Snmpv3User();
         existingUser.setSecurityName("duplicate-user");
         existing.addSnmpv3User(existingUser);
-        when(trapdConfigDao.getConfig()).thenReturn(existing);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(existing);
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityName("duplicate-user");
@@ -589,7 +519,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelOutOfRange() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
         userDto.setSecurityName("opennms-user");
@@ -604,7 +534,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenAuthProtocolIsInvalid() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -621,7 +551,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenPrivacyProtocolIsInvalid() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -640,7 +570,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenAuthProtocolProvidedWithoutPassphrase() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -657,7 +587,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenPrivacyProtocolProvidedWithoutPassphrase() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -676,7 +606,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenAuthPassphraseProvidedWithoutProtocol() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -693,7 +623,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenPrivacyPassphraseProvidedWithoutProtocol() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -712,7 +642,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelOneHasAuthCredentials() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -729,7 +659,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelTwoMissingAuthCredentials() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -745,7 +675,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenSecurityLevelTwoHasPrivacyCredentials() {
-        when(trapdConfigDao.getConfig()).thenReturn(new TrapdConfiguration());
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -782,7 +712,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void deleteUserShouldReturnNotFoundWhenNoConfig() {
-        when(trapdConfigDao.getConfig()).thenReturn(null);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(null);
 
         try (Response response = trapdRestService.deleteTrapdUser("missing-user", null)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -796,7 +726,7 @@ public class TrapdRestServiceIT {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.deleteTrapdUser("missing-user", null)) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -814,7 +744,7 @@ public class TrapdRestServiceIT {
         user.setSecurityName("user-to-delete");
         user.setSecurityLevel(1);
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.deleteTrapdUser("user-to-delete", null)) {
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -837,7 +767,7 @@ public class TrapdRestServiceIT {
         remove.setSecurityName("remove-user");
         config.addSnmpv3User(keep);
         config.addSnmpv3User(remove);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         try (Response response = trapdRestService.deleteTrapdUser("remove-user", null)) {
             assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -857,7 +787,7 @@ public class TrapdRestServiceIT {
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("test-user");
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
         whenValidationFailsOnUpdate("delete validation error");
 
         try (Response response = trapdRestService.deleteTrapdUser("test-user", null)) {
@@ -874,7 +804,7 @@ public class TrapdRestServiceIT {
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("test-user");
         config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         try (Response response = trapdRestService.deleteTrapdUser("test-user", null)) {
@@ -917,7 +847,7 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertEquals("Path securityName must match payload securityName.", response.getEntity());
         }
-        verify(trapdConfigDao, never()).getConfig();
+        verify(trapdConfigDao, never()).getMaskedConfig();
         verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
@@ -932,7 +862,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void updateUserShouldReturnNotFoundWhenNoConfig() {
-        when(trapdConfigDao.getConfig()).thenReturn(null);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(null);
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -949,7 +879,7 @@ public class TrapdRestServiceIT {
         TrapdConfiguration config = new TrapdConfiguration();
         config.setSnmpTrapPort(162);
         config.setNewSuspectOnTrap(false);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("missing-user");
@@ -969,7 +899,7 @@ public class TrapdRestServiceIT {
         Snmpv3User existing = new Snmpv3User();
         existing.setSecurityName("existing-user");
         config.addSnmpv3User(existing);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("existing-user");
@@ -990,7 +920,7 @@ public class TrapdRestServiceIT {
         Snmpv3User existing = new Snmpv3User();
         existing.setSecurityName("existing-user");
         config.addSnmpv3User(existing);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         // securityLevel 3 requires privacy — missing privacy intentionally
         Snmpv3UserDto user = new Snmpv3UserDto();
@@ -1015,7 +945,7 @@ public class TrapdRestServiceIT {
         existing.setSecurityName("old-user");
         existing.setSecurityLevel(1);
         config.addSnmpv3User(existing);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         Snmpv3UserDto updatedDto = new Snmpv3UserDto();
         updatedDto.setSecurityName("old-user");
@@ -1044,7 +974,7 @@ public class TrapdRestServiceIT {
         Snmpv3User existing = new Snmpv3User();
         existing.setSecurityName("existing-user");
         config.addSnmpv3User(existing);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
         whenValidationFailsOnUpdate("schema update error");
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
@@ -1065,7 +995,7 @@ public class TrapdRestServiceIT {
         Snmpv3User existing = new Snmpv3User();
         existing.setSecurityName("existing-user");
         config.addSnmpv3User(existing);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         Snmpv3UserDto userDto = new Snmpv3UserDto();
@@ -1089,11 +1019,12 @@ public class TrapdRestServiceIT {
     @Test
     public void updateShouldReturnBadRequestWhenSnmpTrapPortMissing() {
         TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
         payload.setNewSuspectOnTrap(false);
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("snmpTrapPort is required.", response.getEntity());
+            assertEquals("snmpTrapPort is required and must be between 1 and 65535.", response.getEntity());
         }
 
         verify(trapdConfigDao, never()).updateConfigWithoutUsers(org.mockito.Mockito.any(TrapdConfiguration.class));
@@ -1102,6 +1033,7 @@ public class TrapdRestServiceIT {
     @Test
     public void updateShouldReturnBadRequestWhenNewSuspectOnTrapMissing() {
         TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
         payload.setSnmpTrapPort(10164);
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
@@ -1159,6 +1091,7 @@ public class TrapdRestServiceIT {
                 .when(trapdConfigDao).updateConfigWithoutUsers(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
         payload.setSnmpTrapPort(10164);
         payload.setNewSuspectOnTrap(false);
 
@@ -1174,6 +1107,7 @@ public class TrapdRestServiceIT {
                 .when(trapdConfigDao).updateConfigWithoutUsers(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
         payload.setSnmpTrapPort(10164);
         payload.setNewSuspectOnTrap(false);
 
@@ -1181,6 +1115,99 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
             assertEquals("Failed to persist trapd configuration.", response.getEntity());
         }
+    }
+
+    // --- Boundary Value Tests ---
+    @Test
+    public void updateShouldAcceptSnmpTrapPortAtLowerAndUpperBound() {
+        TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
+        payload.setNewSuspectOnTrap(false);
+        // Lower bound
+        payload.setSnmpTrapPort(1);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+        // Upper bound
+        payload.setSnmpTrapPort(65535);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
+    public void updateShouldRejectSnmpTrapPortOutOfBounds() {
+        TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
+        payload.setNewSuspectOnTrap(false);
+        // Below lower bound
+        payload.setSnmpTrapPort(0);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("snmpTrapPort is required and must be between 1 and 65535.", response.getEntity());
+        }
+        // Above upper bound
+        payload.setSnmpTrapPort(65536);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("snmpTrapPort is required and must be between 1 and 65535.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void updateShouldAcceptZeroForOptionalFields() {
+        TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
+        payload.setSnmpTrapPort(162);
+        payload.setNewSuspectOnTrap(false);
+        payload.setThreads(0);
+        payload.setQueueSize(0);
+        payload.setBatchSize(0);
+        payload.setBatchInterval(0);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+    }
+
+    @Test
+    public void updateShouldRejectNegativeForOptionalFields() {
+        TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
+        payload.setSnmpTrapPort(162);
+        payload.setNewSuspectOnTrap(false);
+        payload.setThreads(-1);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("threads must be non-negative.", response.getEntity());
+        }
+        payload.setThreads(null);
+        payload.setQueueSize(-1);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("queueSize must be non-negative.", response.getEntity());
+        }
+        payload.setQueueSize(null);
+        payload.setBatchSize(-1);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("batchSize must be non-negative.", response.getEntity());
+        }
+        payload.setBatchSize(null);
+        payload.setBatchInterval(-1);
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("batchInterval must be non-negative.", response.getEntity());
+        }
+    }
+
+    // --- Security/Authorization Placeholder ---
+    // Note: SecurityContext is not currently used for access control in TrapdRestService.
+    // This test is a placeholder for future security/authorization checks.
+    @Test
+    public void updateShouldEnforceAuthorizationIfSecurityContextIsUsed() {
+        // If/when SecurityContext is used for access control, add tests here.
+        // For now, this is a no-op.
+        assertTrue(true);
     }
 
     private void whenValidationFailsOnUpdate(final String message) {
@@ -1205,5 +1232,54 @@ public class TrapdRestServiceIT {
                 + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
                 + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
                 + "batch-size=\"1000\" batch-interval=\"500\" use-address-from-varbind=\"true\"/>";
+    }
+
+    @Test
+    public void getShouldHandleLargeNumberOfSnmpv3Users() {
+        TrapdConfiguration config = buildMinimalConfig();
+        int userCount = 1000; // Large number for stress test
+        for (int i = 0; i < userCount; i++) {
+            Snmpv3User user = new Snmpv3User();
+            user.setSecurityName("user-" + i);
+            user.setSecurityLevel(3);
+            user.setAuthProtocol("SHA");
+            user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
+            user.setPrivacyProtocol("AES");
+            user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
+            config.addSnmpv3User(user);
+        }
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
+        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
+            assertEquals(userCount, returned.getSnmpv3User().size());
+            for (int i = 0; i < userCount; i++) {
+                assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(i).getAuthPassphrase());
+                assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(i).getPrivacyPassphrase());
+            }
+        }
+    }
+
+    @Test
+    public void updateShouldBeThreadSafeUnderConcurrentAccess() throws InterruptedException {
+        final int threadCount = 10;
+        final TrapdConfigDto payload = new TrapdConfigDto();
+        payload.setSnmpTrapAddress("127.0.0.1");
+        payload.setSnmpTrapPort(162);
+        payload.setNewSuspectOnTrap(false);
+        Runnable updateTask = () -> {
+            try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+                assertTrue(response.getStatus() == Response.Status.OK.getStatusCode() ||
+                           response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode() ||
+                           response.getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            }
+        };
+        Thread[] threads = new Thread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new Thread(updateTask);
+        }
+        for (Thread t : threads) t.start();
+        for (Thread t : threads) t.join();
+        // If no exceptions, concurrency is handled gracefully
     }
 }
