@@ -1098,7 +1098,7 @@
           <licenseSets>
             <licenseSet>
               <header>src/main/resources/license-header.txt</header>
-              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics -->
               <excludes>
                 <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
                 <exclude>**/*.css</exclude>

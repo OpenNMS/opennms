@@ -31,8 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.opennms.core.xml.ValidateUsing;
 
 
@@ -58,7 +57,6 @@ public class TrapdConfiguration implements  Serializable {
      * default is .
      */
 	@XmlAttribute(name="snmp-trap-address")
-    @JsonProperty("snmpTrapAddress")
     private java.lang.String snmpTrapAddress = "*";
 
     /**
@@ -66,7 +64,6 @@ public class TrapdConfiguration implements  Serializable {
      *  standard port is 162.
      */
 	@XmlAttribute(name="snmp-trap-port", required=true)
-    @JsonProperty("snmpTrapPort")
     private int snmpTrapPort;
 
     /**
@@ -81,11 +78,9 @@ public class TrapdConfiguration implements  Serializable {
      *  generate newSuspect events.
      */
 	@XmlAttribute(name="new-suspect-on-trap", required=true)
-    @JsonProperty("newSuspectOnTrap")
     private boolean newSuspectOnTrap;
 
 	@XmlAttribute(name="include-raw-message", required=false)
-    @JsonProperty("includeRawMessage")
     private boolean includeRawMessage;
 
     /**
@@ -93,7 +88,6 @@ public class TrapdConfiguration implements  Serializable {
      * Defaults to 2 x the number of available processors.
      */
 	@XmlAttribute(name="threads", required=false)
-    @JsonProperty("threads")
     private int threads = 0;
 
     /**
@@ -101,7 +95,6 @@ public class TrapdConfiguration implements  Serializable {
      to be dispatched.
      */
 	@XmlAttribute(name="queue-size", required=false)
-    @JsonProperty("queueSize")
     private int queueSize = 10000;
 
     /**
@@ -109,7 +102,6 @@ public class TrapdConfiguration implements  Serializable {
      * When the batch reaches this size, it will be dispatched.
      */
 	@XmlAttribute(name="batch-size", required=false)
-    @JsonProperty("batchSize")
     private int batchSize = 1000;
 
     /**
@@ -118,7 +110,6 @@ public class TrapdConfiguration implements  Serializable {
      * it will be dispatched, regardless of the current size.
      */
 	@XmlAttribute(name="batch-interval", required=false)
-    @JsonProperty("batchInterval")
     private int batchInterval = 500;
 
     /**
@@ -132,7 +123,6 @@ public class TrapdConfiguration implements  Serializable {
      * SNMPv3 configuration.
      */
 	@XmlElement(name="snmpv3-user")
-    @JsonProperty("snmpv3User")
     private java.util.List<Snmpv3User> snmpv3User;
 
 	/**
@@ -142,7 +132,6 @@ public class TrapdConfiguration implements  Serializable {
      * SNMPv2 traps.
 	 */
 	@XmlAttribute(name="use-address-from-varbind", required=false)
-    @JsonProperty("useAddressFromVarbind")
     private Boolean useAddressFromVarbind;
 
     public TrapdConfiguration() {
