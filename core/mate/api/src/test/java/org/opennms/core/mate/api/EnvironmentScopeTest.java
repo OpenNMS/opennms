@@ -143,17 +143,29 @@ public class EnvironmentScopeTest {
 
     @Test
     public void testEnvVarTakesPriorityOverSystemProperty() {
-        // Use PATH which is reliably set in all environments
+        // Use PATH (reliably present on all platforms) as the env-var source, but
+        // store the competing value under a synthetic system property key to avoid
+        // mutating the globally meaningful "PATH" system property.
         final String pathValue = System.getenv("PATH");
         Assume.assumeNotNull("PATH environment variable must be set", pathValue);
 
-        System.setProperty("PATH", "should_not_win");
+        // Set a *different* key as a system property — env var must still win for PATH
+        final String syntheticKey = "ONMS_TEST_PRIORITY_SYS_99";
+        Assume.assumeTrue("Env var " + syntheticKey + " must not be set for this test",
+                System.getenv(syntheticKey) == null);
+        System.setProperty(syntheticKey, "should_not_win");
         try {
-            Optional<Scope.ScopeValue> result = envScope.get(new ContextKey("env", "PATH"));
-            assertTrue(result.isPresent());
-            assertEquals("Env var must take priority over system property", pathValue, result.get().value);
+            // System property resolves when env var is absent
+            Optional<Scope.ScopeValue> sysPropResult = envScope.get(new ContextKey("env", syntheticKey));
+            assertTrue("System property should resolve when no env var is present", sysPropResult.isPresent());
+            assertEquals("should_not_win", sysPropResult.get().value);
+
+            // Env var wins when both are present: PATH is in env, not in system properties
+            Optional<Scope.ScopeValue> envResult = envScope.get(new ContextKey("env", "PATH"));
+            assertTrue(envResult.isPresent());
+            assertEquals("Env var must take priority over system property", pathValue, envResult.get().value);
         } finally {
-            System.clearProperty("PATH");
+            System.clearProperty(syntheticKey);
         }
     }
 

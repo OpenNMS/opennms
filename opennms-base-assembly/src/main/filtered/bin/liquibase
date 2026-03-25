@@ -21,7 +21,8 @@ resolve_attr() {
 		_ra_iter=$((_ra_iter + 1))
 		# Prevent infinite loops on pathological input
 		if [ "$_ra_iter" -gt 20 ]; then
-			break
+			printf 'ERROR: resolve_attr exceeded iteration limit; unresolved patterns remain in: %s\n' "$_ra_cur" >&2
+			exit 1
 		fi
 		# Extract text before the first ${, the first ${...} pattern, and text after it.
 		# _ra_before: everything up to the first ${
@@ -46,11 +47,19 @@ resolve_attr() {
 			case "$_ra_alt" in
 				env:*)
 					_ra_vname="${_ra_alt#env:}"
-					eval "_ra_isset=\${${_ra_vname}+set}"
-					if [ "$_ra_isset" = "set" ]; then
-						eval "_ra_resolved=\"\${${_ra_vname}}\""
-						_ra_rem=""
-					fi
+					# Validate: only allow safe identifier characters to prevent eval injection
+					case "$_ra_vname" in
+						*[!A-Za-z0-9_]*|'')
+							# Unsafe variable name — skip this alternative
+							;;
+						*)
+							eval "_ra_isset=\${${_ra_vname}+set}"
+							if [ "$_ra_isset" = "set" ]; then
+								eval "_ra_resolved=\"\${${_ra_vname}}\""
+								_ra_rem=""
+							fi
+							;;
+					esac
 					;;
 				scv:*)
 					# SCV is not accessible from shell; fall through to next alternative
@@ -69,15 +78,34 @@ resolve_attr() {
 
 _xml=$OPENNMS_HOME/etc/opennms-datasources.xml
 
-DATABASE_NAME=$(resolve_attr "$(grep 'database-name=' "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-DATABASE_USER=$(resolve_attr "$(grep 'user-name='     "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-DATABASE_PASS=$(resolve_attr "$(grep 'password='      "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-DATABASE_URL=$(resolve_attr  "$(grep 'url='            "$_xml" | head -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+# Extract attributes for a named jdbc-data-source element.
+# Usage: _extract_ds_attr <xml-file> <ds-name> <attr-name>
+# Prints the raw attribute value (before env-var resolution) or empty string if not found.
+_extract_ds_attr() {
+	_eda_file="$1" _eda_ds="$2" _eda_attr="$3"
+	# Locate the line range for the named datasource, then extract the first matching attribute
+	awk -v ds="$_eda_ds" -v attr="$_eda_attr" '
+		/<jdbc-data-source/ && $0 ~ "name=\"" ds "\"" { in_ds=1 }
+		in_ds && $0 ~ (attr "=") {
+			match($0, attr "=\"[^\"]*\"")
+			val = substr($0, RSTART + length(attr) + 2, RLENGTH - length(attr) - 3)
+			print val
+			in_ds=0
+		}
+		/<\/jdbc-data-source>/ { in_ds=0 }
+	' "$_eda_file"
+	unset _eda_file _eda_ds _eda_attr
+}
 
-ADMIN_DATABASE_NAME=$(resolve_attr "$(grep 'database-name=' "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-ADMIN_DATABASE_USER=$(resolve_attr "$(grep 'user-name='     "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-ADMIN_DATABASE_PASS=$(resolve_attr "$(grep 'password='      "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
-ADMIN_DATABASE_URL=$(resolve_attr  "$(grep 'url='            "$_xml" | tail -n 1 | sed -e 's,^[^"]*",,' -e 's,".*$,,')")
+DATABASE_NAME=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms"       "database-name")")
+DATABASE_USER=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms"       "user-name")")
+DATABASE_PASS=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms"       "password")")
+DATABASE_URL=$(resolve_attr  "$(_extract_ds_attr "$_xml" "opennms"       "url")")
+
+ADMIN_DATABASE_NAME=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms-admin" "database-name")")
+ADMIN_DATABASE_USER=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms-admin" "user-name")")
+ADMIN_DATABASE_PASS=$(resolve_attr "$(_extract_ds_attr "$_xml" "opennms-admin" "password")")
+ADMIN_DATABASE_URL=$(resolve_attr  "$(_extract_ds_attr "$_xml" "opennms-admin" "url")")
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	-Dopennms.home="$OPENNMS_HOME" \

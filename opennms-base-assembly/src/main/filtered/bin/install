@@ -71,14 +71,15 @@ done
 # ${env:VAR} patterns in opennms-datasources.xml resolve correctly even when sudo
 # strips the calling user's environment (sudo env_reset is on by default on most systems).
 # EnvironmentScope falls back to System.getProperty() when System.getenv() returns null.
+# NOTE: credential variables (OPENNMS_DBPASS, POSTGRES_PASSWORD) are intentionally
+# excluded — passing passwords as -D JVM flags exposes them in `ps` output.
+# Credentials should be set via the SecureCredentialsVault or opennms-datasources.xml.
 for _db_var in \
 	POSTGRES_HOST \
 	POSTGRES_PORT \
 	OPENNMS_DBNAME \
 	OPENNMS_DBUSER \
-	OPENNMS_DBPASS \
 	POSTGRES_USER \
-	POSTGRES_PASSWORD \
 	POSTGRES_SSL_MODE \
 	POSTGRES_SSL_FACTORY \
 	OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT \

@@ -59,8 +59,13 @@ public class EnvironmentScope implements Scope {
 
     @Override
     public Set<ContextKey> keys() {
-        return System.getenv().entrySet().stream()
+        // Union env vars and system properties so that diagnostic tools (e.g. opennms:metadata-test)
+        // enumerate the same keys that get() can resolve, including -D flags forwarded by bin/install.
+        final Set<ContextKey> keys = System.getenv().entrySet().stream()
                 .map(entry -> new ContextKey(CONTEXT, entry.getKey()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(java.util.HashSet::new));
+        System.getProperties().stringPropertyNames()
+                .forEach(name -> keys.add(new ContextKey(CONTEXT, name)));
+        return keys;
     }
 }
