@@ -8,7 +8,8 @@
 
 set -eE
 
-trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO}: ${BASH_COMMAND} (exit=${rc})"; exit ${rc}' ERR
+trap 'rc=$?; echo "[Startup][ERROR] entrypoint failed at line ${LINENO} (exit=${rc})"; exit ${rc}' ERR  
+
 
 umask 002
 export MINION_HOME="/opt/minion"
@@ -96,7 +97,7 @@ function updateConfig() {
     value=$2
     file=$3
 
-    # Handling exceptions
+    # Handling exceptions for specific keys
     [ "$key" == "class.name" ]       && key="class-name"
     [ "$key" == "max.packet.size" ]  && key="maxPacketSize"
     [ "$key" == "template.timeout" ] && key="templateTimeout"
@@ -105,8 +106,8 @@ function updateConfig() {
     echo "[Configuring] '$key' in '$file'"
 
     # If config exists in file, replace it. Otherwise, append to file.
-    if grep -E -q "^#?$key=" "$file"; then
-        sed -r -i "s@^#?$key=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
+    if grep -E -q "^#?\s*$key\s*=" "$file"; then
+        sed -r -i "s@^#?\s*$key\s*=.*@$key=$value@g" "$file" #note that no config values may contain an '@' char
     else
         echo "$key=$value" >> "$file"
     fi
@@ -157,8 +158,8 @@ function applyFeatureBootTemplates() {
     esac
 
     # Standalone optional features
-    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot" || true
-    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot" || true
+    [[ "${JAEGER_ENABLED:-false}"       == "true" ]] && apply_template "jaeger.boot" || echo "[Features] Jaeger boot file not applied because JAEGER_ENABLED=${JAEGER_ENABLED:-false}."
+    [[ "${DOMINION_SCV_ENABLED:-false}" == "true" ]] && apply_template "dominion-scv.boot" || echo "[Features] Dominion SCV boot file not applied because DOMINION_SCV_ENABLED=${DOMINION_SCV_ENABLED:-false}."
 }
 
 function parseEnvironment() {
