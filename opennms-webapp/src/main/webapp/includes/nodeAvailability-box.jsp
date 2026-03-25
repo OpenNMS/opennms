@@ -87,6 +87,17 @@
     Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
+<script type="text/javascript" language="javascript">
+    function copyText(text) {
+        navigator.clipboard.writeText(text);
+    }
+</script>
+
+<style type="text/css">
+    .copy-address-button { visibility: hidden; }
+    .address-block:hover .copy-address-button { visibility: visible; }
+</style>
+
 <div id="availability-box" class="card">
   <div class="card-header">
     <span>Availability</span>
@@ -138,7 +149,7 @@
                   availValue = CategoryUtil.formatValue(intfValue) + "%";
                 }
               %>
-              <td class="severity-Cleared nobright interface address" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a></td>
+              <td class="severity-Cleared nobright interface address address-block" colspan="2"><a href="<c:out value="${interfaceLink}"/>"><%=ipAddr%></a>&nbsp;<a class="copy-address-button" href="javascript:copyText('<%=ipAddr%>')"><i class="fa-regular fa-copy"></i></a></td>
               <%
                   if ("Not Monitored".equals(availValue)) {
               %>
