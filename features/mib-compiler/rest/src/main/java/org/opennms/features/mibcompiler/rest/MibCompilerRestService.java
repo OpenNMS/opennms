@@ -27,7 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
@@ -71,10 +70,10 @@ public interface MibCompilerRestService {
     Response getFileText(@PathParam("location") String location,
                                 @PathParam("fileName") String fileName) throws Exception;
 
-    @PUT
-    @Path("/files/pending/{fileName:.+}/text")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/files/pending/text")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @Produces(MediaType.APPLICATION_JSON)
-    Response setFileText(@PathParam("fileName") String fileName,
-                         MibCompilerFileText body) throws Exception;
+    Response setFileText(@QueryParam("fileName") String fileName,
+                         byte[] mibContent) throws Exception;
 }

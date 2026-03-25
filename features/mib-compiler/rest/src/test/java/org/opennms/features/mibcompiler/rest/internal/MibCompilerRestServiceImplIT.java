@@ -21,7 +21,12 @@
  */
 package org.opennms.features.mibcompiler.rest.internal;
 
-import org.junit.*;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
+
 import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileInfo;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
@@ -43,7 +48,6 @@ import static org.mockito.Mockito.mock;
 public class MibCompilerRestServiceImplIT {
 
     private File tempHome;
-    private File mibsRoot;
     private File pendingDir;
     private File compiledDir;
     private static File classHome;
@@ -177,42 +181,24 @@ public class MibCompilerRestServiceImplIT {
         Files.writeString(new File(pendingDir, "edit.txt").toPath(),
                 "old", StandardCharsets.UTF_8);
 
-        MibCompilerFileText req = new MibCompilerFileText("edit.txt", "pending", "new\ntext");
+        byte[] content = "new\ntext".getBytes(StandardCharsets.UTF_8);
 
-        Response r = service.setFileText("edit.txt", req);
+        Response r = service.setFileText("edit.txt", content);
 
         assertEquals(200, r.getStatus());
         assertNotNull(r.getEntity());
-        assertTrue(r.getEntity() instanceof MibCompilerFileText);
-
         // Verify content changed on disk
         String updated = Files.readString(new File(pendingDir, "edit.txt").toPath(), StandardCharsets.UTF_8);
         assertEquals("new\ntext", updated);
 
-        // Verify response echoes updated content
-        MibCompilerFileText resp = (MibCompilerFileText) r.getEntity();
-        assertEquals("edit.txt", resp.getName());
-        assertEquals("pending", resp.getLocation());
-        assertEquals("new\ntext", resp.getContents());
     }
 
+
     @Test
-    public void setFileText_shouldReturn400WhenLocationIsCompiled() throws Exception {
-        Files.writeString(new File(compiledDir, "edit.mib").toPath(),
-                "old", StandardCharsets.UTF_8);
-
-        MibCompilerFileText req = new MibCompilerFileText("edit.mib", "compiled", "new");
-
-        Response r = service.setFileText("edit.mib", req);
-
+    public void setFileText_shouldReturn400WhenPendingFileMissing() {
+        byte[] content = "SOME MIB CONTENT".getBytes(StandardCharsets.UTF_8);
+        Response r = service.setFileText("missing.txt", content);
         assertEquals(400, r.getStatus());
-    }
-
-    @Test
-    public void setFileText_shouldReturn404WhenPendingFileMissing() {
-        MibCompilerFileText req = new MibCompilerFileText("missing.txt", "pending", "new");
-        Response r = service.setFileText("missing.txt", req);
-        assertEquals(404, r.getStatus());
     }
 
     @Test

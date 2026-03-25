@@ -256,25 +256,20 @@ public class MibCompilerFileService {
         return Files.readString(target, StandardCharsets.UTF_8);
     }
 
-    public boolean writeTextFile(final String location, final String fileName, final String contents) throws java.io.IOException {
-        if (contents == null) {
-            throw new IllegalArgumentException("contents must not be null.");
-        }
-
+    public void writeBinaryFile(final String location, final String fileName, final byte[] contents) throws IOException {
         final File dir = resolveLocationDir(location);
         ensureDirExists(dir);
 
         final Path target = new File(dir, fileName).toPath();
 
         if (!Files.exists(target)) {
-            return false;
+            throw new IllegalArgumentException("File does not exists: " + target);
         }
         if (!Files.isRegularFile(target)) {
-            throw new IllegalStateException("Target is not a regular file: " + fileName);
+            throw new IllegalArgumentException("Target is not a regular file: " + fileName);
         }
 
-        Files.writeString(target, contents, StandardCharsets.UTF_8);
-        return true;
+        Files.write(target, contents);
     }
 
     private static File resolveLocationDir(final String location) {

@@ -277,62 +277,45 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         }
     }
 
+
     @Override
-    public Response setFileText(final String fileName, final MibCompilerFileText body) {
-        LOG.debug("REST request: set mib compiler file text: location={}, fileName={}", body.getLocation(), fileName);
+    public Response setFileText(final String fileName, final byte[] mibContent) {
+        final String location = "pending";
+        LOG.debug("REST request: set mib compiler file text: location={}, fileName={}", location, fileName);
 
-        validateFileNameAndLocation(body.getLocation(), fileName);
+        validateFileNameAndLocation(location, fileName);
 
-        if (!"pending".equalsIgnoreCase(body.getLocation())) {
-            LOG.warn("Set file text rejected: location must be 'pending' (location={}, fileName={})", body.getLocation(), fileName);
+        if (mibContent == null) {
+            LOG.warn("Set file text rejected: null mibContent (location={}, fileName={})", location, fileName);
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Setting file contents is only allowed for location 'pending'.")
-                    .build();
-        }
-
-        if (body.getContents() == null) {
-            LOG.warn("Set file text rejected: null contents (location={}, fileName={})", body.getLocation(), fileName);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("contents must not be null.")
-                    .build();
-        }
-
-        if (body.getName() != null && !fileName.equals(body.getName())) {
-            LOG.warn("Set file text rejected: body.name mismatch (pathFileName={}, bodyName={})", fileName, body.getName());
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Body 'name' must match path fileName.")
+                    .entity("mibContent must not be null.")
                     .build();
         }
 
         try {
-            final boolean updated = mibCompilerFileService.writeTextFile(body.getLocation(), fileName, body.getContents());
-            if (!updated) {
-                LOG.info("Set file text: file not found (location={}, fileName={})", body.getLocation(), fileName);
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
+            mibCompilerFileService.writeBinaryFile(location, fileName, mibContent);
 
-            LOG.info("Set file text: updated successfully (location={}, fileName={})", body.getLocation(), fileName);
+            LOG.info("Set file text: updated successfully (location={}, fileName={})", location, fileName);
 
-            final MibCompilerFileText response = new MibCompilerFileText(fileName, "pending", body.getContents());
-            return Response.ok(response).build();
+            return Response.ok("Text updated successfully").build();
 
         } catch (IllegalArgumentException e) {
-            LOG.warn("Set file text failed (bad request): location={}, fileName={}, msg={}", body.getLocation(), fileName, e.getMessage());
+            LOG.warn("Set file text failed (bad request): location={}, fileName={}, msg={}", location, fileName, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
         } catch (IllegalStateException e) {
-            LOG.warn("Set file text failed (conflict): location={}, fileName={}, msg={}", body.getLocation(), fileName, e.getMessage(), e);
+            LOG.warn("Set file text failed (conflict): location={}, fileName={}, msg={}", location, fileName, e.getMessage(), e);
             return Response.status(Response.Status.CONFLICT)
                     .entity(e.getMessage())
                     .build();
         } catch (java.io.IOException e) {
-            LOG.error("Set file text failed (I/O): location={}, fileName={}", body.getLocation(), fileName, e);
+            LOG.error("Set file text failed (I/O): location={}, fileName={}", location, fileName, e);
             return Response.status(Response.Status.SERVICE_UNAVAILABLE)
                     .entity("Unable to write file.")
                     .build();
         } catch (Exception e) {
-            LOG.error("Set file text failed (unexpected): location={}, fileName={}", body.getLocation(), fileName, e);
+            LOG.error("Set file text failed (unexpected): location={}, fileName={}", location, fileName, e);
             return Response.serverError()
                     .entity("Unexpected error while writing file.")
                     .build();
