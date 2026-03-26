@@ -103,4 +103,16 @@ public class Snmpv3UserDto {
         dto.setPrivacyPassphrase(user.getPrivacyPassphrase());
         return dto;
     }
+
+    public Snmpv3User toEntity() {
+        Snmpv3User user = new Snmpv3User();
+        user.setEngineId(engineId);
+        user.setSecurityName(securityName);
+        if (securityLevel != null) user.setSecurityLevel(securityLevel);
+        user.setAuthProtocol(authProtocol);
+        user.setAuthPassphrase(authPassphrase);
+        user.setPrivacyProtocol(privacyProtocol);
+        user.setPrivacyPassphrase(privacyPassphrase);
+        return user;
+    }
 }

@@ -132,4 +132,21 @@ public class TrapdConfigDto {
         dto.setSnmpv3User(Arrays.stream(config.getSnmpv3User()).map(Snmpv3UserDto::toDto).toList());
         return dto;
     }
+
+    public TrapdConfiguration toEntity() {
+        TrapdConfiguration config = new TrapdConfiguration();
+        if (snmpTrapAddress != null) config.setSnmpTrapAddress(snmpTrapAddress);
+        if (snmpTrapPort != null) config.setSnmpTrapPort(snmpTrapPort);
+        if (newSuspectOnTrap != null) config.setNewSuspectOnTrap(newSuspectOnTrap);
+        if (includeRawMessage != null) config.setIncludeRawMessage(includeRawMessage);
+        if (threads != null) config.setThreads(threads);
+        if (queueSize != null) config.setQueueSize(queueSize);
+        if (batchSize != null) config.setBatchSize(batchSize);
+        if (batchInterval != null) config.setBatchInterval(batchInterval);
+        if (useAddressFromVarbind != null) config.setUseAddressFromVarbind(useAddressFromVarbind);
+        if (snmpv3User != null) {
+            config.setSnmpv3User(snmpv3User.stream().map(Snmpv3UserDto::toEntity).toArray(size -> new org.opennms.netmgt.config.trapd.Snmpv3User[size]));
+        }
+        return config;
+    }
 }
