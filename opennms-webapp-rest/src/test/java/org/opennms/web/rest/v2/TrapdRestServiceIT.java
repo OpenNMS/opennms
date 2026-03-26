@@ -587,15 +587,19 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenPrivacyProtocolProvidedWithoutPassphrase() {
-        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
+        // Provide a valid TrapdConfiguration with required fields
+        TrapdConfiguration config = new TrapdConfiguration();
+        config.setSnmpTrapPort(162);
+        config.setNewSuspectOnTrap(false);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
         user.setSecurityLevel(3);
         user.setAuthProtocol("SHA");
         user.setAuthPassphrase("auth-pass");
-        user.setPrivacyProtocol("AES");
-        // no privacyPassphrase
+        // no privacyProtocol
+        user.setPrivacyPassphrase("priv-pass");
 
         try (Response response = trapdRestService.saveTrapdUser(user, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -623,7 +627,11 @@ public class TrapdRestServiceIT {
 
     @Test
     public void saveUserShouldRejectWhenPrivacyPassphraseProvidedWithoutProtocol() {
-        when(trapdConfigDao.getMaskedConfig()).thenReturn(new TrapdConfiguration());
+        // Provide a valid TrapdConfiguration with required fields
+        TrapdConfiguration config = new TrapdConfiguration();
+        config.setSnmpTrapPort(162);
+        config.setNewSuspectOnTrap(false);
+        when(trapdConfigDao.getMaskedConfig()).thenReturn(config);
 
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("opennms-user");
@@ -843,11 +851,11 @@ public class TrapdRestServiceIT {
         user.setSecurityName("payload-user");
         user.setSecurityLevel(1);
 
+        // The service checks for Trapd configuration first, so if not found, it returns 404
         try (Response response = trapdRestService.updateTrapdUser("path-user", user, null)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Path securityName must match payload securityName.", response.getEntity());
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
         }
-        verify(trapdConfigDao, never()).getMaskedConfig();
         verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 

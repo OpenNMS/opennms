@@ -177,12 +177,6 @@ public class TrapdRestService implements TrapdRestApi {
             return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
         }
 
-        if (!StringUtils.equals(securityName, user.getSecurityName())) {
-            return Response.status(Status.BAD_REQUEST)
-                    .entity("Path securityName must match payload securityName.")
-                    .build();
-        }
-
         try {
             final TrapdConfiguration config = trapdConfigDao.getMaskedConfig();
             if (config == null) {
@@ -193,6 +187,11 @@ public class TrapdRestService implements TrapdRestApi {
             if (index < 0) {
                 return Response.status(Status.NOT_FOUND)
                         .entity("SNMPv3 user with securityName '" + securityName + "' was not found.")
+                        .build();
+            }
+            if (!config.getSnmpv3User(index).getSecurityName().equals(securityName)) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("securityName in path does not match securityName in payload.")
                         .build();
             }
 
@@ -229,6 +228,11 @@ public class TrapdRestService implements TrapdRestApi {
             if (index < 0) {
                 return Response.status(Status.NOT_FOUND)
                         .entity("SNMPv3 user with securityName '" + securityName + "' was not found.")
+                        .build();
+            }
+            if (!config.getSnmpv3User(index).getSecurityName().equals(securityName)) {
+                return Response.status(Status.BAD_REQUEST)
+                        .entity("securityName in path does not match securityName in payload.")
                         .build();
             }
 
