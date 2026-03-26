@@ -92,3 +92,13 @@ export interface SnmpV3UserError {
   privacyPassphrase?: string
 }
 
+export interface XmlValidationError {
+  field: string
+  message: string
+}
+
+export interface XmlValidationResult {
+  valid: boolean
+  errors: XmlValidationError[]
+}
+

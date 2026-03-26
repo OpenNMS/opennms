@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { TrapConfig } from '@/types/trapConfig'
+import { TrapConfig, XmlValidationError, XmlValidationResult } from '@/types/trapConfig'
 import { ISelectItemType } from '@featherds/select'
 import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
 
@@ -121,16 +121,6 @@ const VALID_AUTH_PROTOCOL_VALUES = new Set(AuthProtocols.map(normalizeAuthProtoc
 
 // All valid privacy protocol values
 const VALID_PRIVACY_PROTOCOL_VALUES = new Set(PrivacyProtocols as string[])
-
-export interface XmlValidationError {
-  field: string
-  message: string
-}
-
-export interface XmlValidationResult {
-  valid: boolean
-  errors: XmlValidationError[]
-}
 
 const addError = (errors: XmlValidationError[], field: string, message: string) =>
   errors.push({ field, message })
