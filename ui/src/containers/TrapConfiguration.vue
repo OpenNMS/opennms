@@ -77,21 +77,22 @@ const handleConfigurationUpload = async (event: Event) => {
   }
 
   try {
-    const response = await uploadTrapdConfiguration(file)
-    if (response) {
-      await store.fetchTrapConfig()
-      showSnackBar({ msg: 'Trap configuration uploaded successfully.' })
-    } else {
-      showSnackBar({ msg: 'Upload failed: server returned no configuration.', error: true })
-    }
+    await uploadTrapdConfiguration(file)
+    await store.fetchTrapConfig()
+    showSnackBar({ msg: 'Trap configuration uploaded successfully.' })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to upload trap configuration.'
     showSnackBar({ msg, error: true })
   }
 }
 
-onMounted(() => {
-  store.fetchTrapConfig()
+onMounted(async () => {
+  try {
+    await store.fetchTrapConfig()
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to retrieve trapd configuration.'
+    showSnackBar({ msg, error: true })
+  }
 })
 </script>
 

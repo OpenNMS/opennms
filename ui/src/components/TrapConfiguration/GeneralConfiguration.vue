@@ -218,10 +218,7 @@ const updateConfig = async () => {
   try {
     isSaving.value = true
 
-    const response = await updateTrapdConfiguration(newConfig)
-    store.trapdConfig = response
-    store.SnmpV3Users = response.snmpv3User
-
+    await updateTrapdConfiguration(newConfig)
     showSnackBar({ msg: 'Trap configuration updated successfully.' })
     await store.fetchTrapConfig()
   } catch (err) {

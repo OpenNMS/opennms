@@ -218,23 +218,23 @@ const saveUser = async () => {
   try {
     isSaving.value = true
 
-    let response
     if (store.createUserDrawerState.mode === CreateEditMode.Create) {
-      response = await saveTrapdUser(payload)
+      await saveTrapdUser(payload)
     } else if (store.createUserDrawerState.mode === CreateEditMode.Edit) {
-      response = await updateTrapdUser(store.createUserDrawerState.selectedUserIndex, payload)
+      const selectedUser = store.SnmpV3Users?.[store.createUserDrawerState.selectedUserIndex]
+      if (!selectedUser?.securityName) {
+        throw new Error('Unable to determine the selected SNMPv3 user to update.')
+      }
+
+      await updateTrapdUser(selectedUser.securityName, payload)
     }
 
-    if (response) {
-      await store.fetchTrapConfig()
-      store.closeCreateUserDrawer()
-      const successMsg = store.createUserDrawerState.mode === CreateEditMode.Create
-        ? 'SNMPv3 user created successfully.'
-        : 'SNMPv3 user updated successfully.'
-      showSnackBar({ msg: successMsg })
-    } else {
-      showSnackBar({ msg: 'Failed to save SNMPv3 user: Server returned no response.', error: true })
-    }
+    await store.fetchTrapConfig()
+    store.closeCreateUserDrawer()
+    const successMsg = store.createUserDrawerState.mode === CreateEditMode.Create
+      ? 'SNMPv3 user created successfully.'
+      : 'SNMPv3 user updated successfully.'
+    showSnackBar({ msg: successMsg })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to save SNMPv3 user.'
     showSnackBar({ msg, error: true })

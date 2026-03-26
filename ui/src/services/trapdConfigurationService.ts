@@ -42,19 +42,15 @@ const throwTrapdServiceError = (error: unknown, fallbackMessage: string): never 
   throw new Error(getTrapdServiceErrorMessage(error, fallbackMessage))
 }
 
-export const uploadTrapdConfiguration = async (file: File): Promise<TrapConfig | null> => {
+export const uploadTrapdConfiguration = async (file: File): Promise<void> => {
   const formData = new FormData()
   formData.append('upload', file)
 
   try {
     const response = await v2.post(`${endpoint}/upload`, formData)
 
-    if (response.status === 204) {
-      return null
-    }
-
     if (response.status === 200) {
-      return mapTrapdConfigFromServer(response.data)
+      return
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -65,7 +61,7 @@ export const uploadTrapdConfiguration = async (file: File): Promise<TrapConfig |
 
 export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
   try {
-    const response = await v2.get(`${endpoint}/get-config`)
+    const response = await v2.get(`${endpoint}/config`)
 
     if (response.status === 200) {
       return mapTrapdConfigFromServer(response.data) as TrapConfig
@@ -77,12 +73,12 @@ export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
   }
 }
 
-export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Promise<TrapConfig> => {
+export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Promise<void> => {
   try {
-    const response = await v2.put(`${endpoint}/update-config`, payload)
+    const response = await v2.put(`${endpoint}/config`, payload)
 
     if (response.status === 200) {
-      return mapTrapdConfigFromServer(response.data) as TrapConfig
+      return
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -91,12 +87,12 @@ export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Prom
   }
 }
 
-export const saveTrapdUser = async (user: SnmpV3User): Promise<SnmpV3User> => {
+export const saveTrapdUser = async (user: SnmpV3User): Promise<void> => {
   try {
-    const response = await v2.post(`${endpoint}/save-user`, user)
+    const response = await v2.post(`${endpoint}/user`, user)
 
     if (response.status === 200) {
-      return response.data as SnmpV3User
+      return
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -105,16 +101,12 @@ export const saveTrapdUser = async (user: SnmpV3User): Promise<SnmpV3User> => {
   }
 }
 
-export const updateTrapdUser = async (index: number, user: SnmpV3User): Promise<SnmpV3User> => {
+export const updateTrapdUser = async (securityName: string, user: SnmpV3User): Promise<void> => {
   try {
-    const response = await v2.put(`${endpoint}/update-user`, user, {
-      params: {
-        index
-      }
-    })
+    const response = await v2.put(`${endpoint}/user/${encodeURIComponent(securityName)}`, user)
 
     if (response.status === 200) {
-      return response.data as SnmpV3User
+      return
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
@@ -123,16 +115,12 @@ export const updateTrapdUser = async (index: number, user: SnmpV3User): Promise<
   }
 }
 
-export const deleteTrapdUser = async (index: number): Promise<SnmpV3User> => {
+export const deleteTrapdUser = async (securityName: string): Promise<void> => {
   try {
-    const response = await v2.delete(`${endpoint}/delete-user`, {
-      params: {
-        index
-      }
-    })
+    const response = await v2.delete(`${endpoint}/user/${encodeURIComponent(securityName)}`)
 
-    if (response.status === 200) {
-      return response.data as SnmpV3User
+    if (response.status === 204) {
+      return
     }
 
     throw new Error(`Unexpected response status: ${response.status}`)
