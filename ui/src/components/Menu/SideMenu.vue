@@ -18,17 +18,14 @@
 </template>
 
 <script setup lang="ts">
-import { DefineComponent, markRaw } from 'vue'
 import { FeatherSidenav } from '@featherds/sidebar'
-import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
-import { FeatherIcon } from '@featherds/icon'
-import IconHome from '@featherds/icon/action/Home'
+import { MenuListEntry } from '@featherds/menu'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
 import { Plugin } from '@/types'
-import { MainMenu, MenuItem } from '@/types/mainMenu'
-import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
+import { MainMenu } from '@/types/mainMenu'
+import { createTopMenuListEntry, updateWithPluginsMenuItems } from './utils'
 import useMenuIcons from './useMenuIcons'
 
 defineProps({
@@ -38,8 +35,6 @@ defineProps({
   }
 })
 
-const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
-
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
 const { getIcon } = useMenuIcons()
@@ -48,120 +43,8 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 const isExpanded = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
 
-const getMenuLink = (menuItem: MenuItem) => {
-  if (mainMenu.value?.baseHref && menuItem.url) {
-    if (menuItem.isExternalLink && menuItem.isExternalLink === true) {
-      return menuItem.url
-    }
-
-    return `${mainMenu.value.baseHref}${menuItem.url}`
-  }
-  
-  return '#'
-}
-
-const createMenuIcon = (menuItem: MenuItem) => {
-  const icon: (DefineComponent | null) = getIcon(menuItem.icon)
-
-  return (icon ?? IconHome) as typeof FeatherIcon
-}
-
 const onPerformLogout = async () => {
   await performLogout()
-}
-
-const createMenuListEntry = (menuItem: MenuItem) => {
-  let onClick = menuItem.onClick
-
-  if (menuItem.action === 'logout') {
-    onClick = onPerformLogout
-  }
-
-  const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
-
-  let icon: any
-
-  if (menuItem.icon) {
-    icon = createMenuIcon(menuItem)
-  }
-
-  return {
-    id: menuItem.id ?? menuItem.name,
-    type: 'item',
-    title: menuItem.name,
-    href: getMenuLink(menuItem),
-    icon: icon,
-    target,
-    onClick
-  } as MenuListEntry
-}
-
-const createMenuListSeparator = () => {
-  return {
-    id: '',
-    type: 'separator'
-  } as MenuListEntry
-}
-
-const createMenuListHeader = (item: MenuItem) => {
-  return {
-    id: '',
-    type: 'header',
-    title: item.name
-  } as MenuListEntry
-}
-
-const createTopMenuListEntry = (topMenuItem: MenuItem) => {
-  if (topMenuItem.type === 'separator') {
-    return createMenuListSeparator()
-  }
-
-  if (topMenuItem.type === 'header') {
-    return createMenuListHeader(topMenuItem)
-  }
-
-  // 'item'
-  let entry = {
-    id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
-    type: 'item',
-    title: topMenuItem.name,
-    content: '',
-    icon: createMenuIcon(topMenuItem),
-    component: markRaw(FeatherMenuList),
-    componentProps: {
-      items: topMenuItem.items?.map(createMenuListEntry) ?? []
-    }
-  } as MenuListEntry
-
-  if (topMenuItem.action && topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
-    const url = getMenuLink(topMenuItem)
-
-    entry = {
-      ...entry,
-      href: url,
-      onClick: () => window.location.assign(url)
-    } as any as MenuListEntry
-  }
-
-  return entry
-}
-
-const createPluginsMenu = (useFake: boolean) => {
-  const pluginsToUse = useFake ? [createFakePlugin()] : plugins.value ?? []  
-
-  const pluginsMenuItems = pluginsToUse.map(plugin => {
-    return {
-      ...createMenuItem(`plugins_${plugin.extensionId}`, plugin.menuEntry),
-      url: computePluginRelLink(plugin)
-    }
-  })
-
-  const topMenuItem = {
-    ...createTopMenuItem('pluginsMenu', 'Plugins', pluginsMenuItems),
-    icon: 'network/Connection'
-  } as MenuItem
-
-  return topMenuItem
 }
 
 const topPanels = computed<MenuListEntry[]>(() => {
@@ -170,17 +53,9 @@ const topPanels = computed<MenuListEntry[]>(() => {
     return []
   }
 
-  // Normal menus
-  const allMenus = [
-    ...mainMenu.value.menus ?? []
-  ]
+  const allMenus = updateWithPluginsMenuItems(mainMenu.value.menus ?? [], plugins.value)
 
-  // Plugins menu
-  if (plugins.value && plugins.value.length > 0) {
-    allMenus.push(createPluginsMenu(false))
-  }
-
-  return allMenus.map(i => createTopMenuListEntry(i) as MenuListEntry)
+  return allMenus.map(i => createTopMenuListEntry(i, mainMenu.value.baseHref, getIcon, onPerformLogout) as MenuListEntry)
 })
 </script>
 

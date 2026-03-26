@@ -497,6 +497,10 @@
       ]
     },
     {
+      "id": "pluginsMenu",
+      "type": "plugins"
+    },
+    {
       "id": "toolsMenu",
       "name": "Tools",
       "url": "#",

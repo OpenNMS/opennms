@@ -337,7 +337,6 @@
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
         <feature>atomikos</feature>
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-io</feature>
         <feature>postgresql</feature>
@@ -432,7 +431,6 @@
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
     </feature>
     <feature name="opennms-config" version="${project.version}" description="OpenNMS :: Configuration">
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>

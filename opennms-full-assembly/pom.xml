@@ -333,7 +333,6 @@
                 <feature>pax-web-http-jetty</feature>
                 <feature>atomikos</feature>
                 <feature>batik</feature>
-                <feature>c3p0</feature>
                 <feature>hikari-cp</feature>
                 <feature>commons-beanutils</feature>
                 <feature>commons-cli</feature>
