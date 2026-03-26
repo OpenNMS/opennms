@@ -12,13 +12,14 @@ export const mapTrapdConfigFromServer = (data: any): TrapConfig => {
     batchInterval: data.batchInterval,
     useAddressFromVarbind: data.useAddressFromVarbind,
     snmpv3User: (data.snmpv3User || []).map((user: any) => ({
+      engineId: user.engineId,
       securityName: user.securityName,
       securityLevel: user.securityLevel,
       authProtocol: user.authProtocol,
-      authPassword: user.authPassword,
+      authPassphrase: user.authPassphrase,
       privacyProtocol: user.privacyProtocol,
-      privacyPassword: user.privacyPassword
-    }))
+      privacyPassphrase: user.privacyPassphrase
+    } as SnmpV3User))
   }
 }
 

@@ -277,14 +277,18 @@ const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
     const selectedUser = store.SnmpV3Users ? store.SnmpV3Users[drawerState.selectedUserIndex] : null
 
     if (selectedUser) {
-      securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === selectedUser.securityLevel) || createEmptySelectItem()
-      authProtocol.value = AUTH_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.authProtocol) || createEmptySelectItem()
-      privacyProtocol.value = PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) || createEmptySelectItem()
+      const selectedSecurityLevel = Number(selectedUser.securityLevel)
+      securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(selectedSecurityLevel)) ?? createEmptySelectItem()
+      authProtocol.value = (selectedSecurityLevel === SecurityLevel.AuthNoPriv || selectedSecurityLevel === SecurityLevel.AuthPriv)
+        ? AUTH_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.authProtocol) ?? createEmptySelectItem()
+        : createEmptySelectItem()
+      privacyProtocol.value = selectedSecurityLevel === SecurityLevel.AuthPriv
+        ? PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.privacyProtocol) ?? createEmptySelectItem()
+        : createEmptySelectItem()
       securityName.value = selectedUser.securityName
       engineId.value = selectedUser.engineId || ''
       authPassphrase.value = selectedUser.authPassphrase || ''
       privacyPassphrase.value = selectedUser.privacyPassphrase || ''
-
     }
   } else {
     securityLevel.value = createEmptySelectItem()
@@ -294,9 +298,8 @@ const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
     engineId.value = ''
     authPassphrase.value = ''
     privacyPassphrase.value = ''
-  } 
+  }
 }
-
 watchEffect(() => {
   error.value = validateInputs()
   isSaveDisabled.value = Object.keys(error.value).length > 0

@@ -40,6 +40,7 @@ import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vu
 import GeneralConfiguration from '@/components/TrapConfiguration/GeneralConfiguration.vue'
 import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
 import useSnackbar from '@/composables/useSnackbar'
+import { validateTrapdXml } from '@/lib/trapdValidator'
 import { uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
@@ -73,6 +74,23 @@ const handleConfigurationUpload = async (event: Event) => {
 
   if (!file.name.endsWith('.xml')) {
     showSnackBar({ msg: 'Only .xml files are supported.', error: true })
+    return
+  }
+
+  let xmlContent = ''
+  try {
+    xmlContent = await file.text()
+  } catch {
+    showSnackBar({ msg: 'Failed to read XML file.', error: true })
+    return
+  }
+
+  const validationResult = validateTrapdXml(xmlContent)
+  if (!validationResult.valid) {
+    const errorList = validationResult.errors.slice(0, 3).map((error) => error.message).join(' | ')
+    const moreCount = validationResult.errors.length - 3
+    const suffix = moreCount > 0 ? ` (+${moreCount} more)` : ''
+    showSnackBar({ msg: `Invalid trap configuration XML: ${errorList}${suffix}`, error: true })
     return
   }
 
