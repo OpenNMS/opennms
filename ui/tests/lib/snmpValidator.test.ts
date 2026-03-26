@@ -275,6 +275,59 @@ describe('snmpValidator', () => {
       })
     })
 
+    describe('SCV expression validation', () => {
+      const scvEnabledKeys = new Set(['readCommunity'])
+      const ip = '192.168.1.1'
+
+      it('should pass when readCommunity is a valid SCV expression', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:my-key}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBeUndefined()
+      })
+
+      it('should pass when readCommunity is a valid two-subkey SCV expression', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:alias:key}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBeUndefined()
+      })
+
+      it('should return error when readCommunity starts with ${ but is not a valid SCV expression', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:key-}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBe('Invalid SCV expression')
+      })
+
+      it('should return error when readCommunity is a malformed SCV prefix with no key', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBe('Invalid SCV expression')
+      })
+
+      it('should pass when readCommunity is a valid SCV expression with underscores', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:_alias_:my_key}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBeUndefined()
+      })
+
+      it('should pass when readCommunity is a valid SCV expression with dots', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:group.name:item.key}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBeUndefined()
+      })
+
+      it('should not validate readCommunity as SCV when it does not start with ${', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: 'public' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '', scvEnabledKeys)
+        expect(errors.readCommunity).toBeUndefined()
+      })
+
+      it('should not validate readCommunity as SCV when scvEnabledKeys is empty', () => {
+        const config: SnmpBaseConfiguration = { ...validConfig, readCommunity: '${scv:key-}' }
+        const errors = validateDefinition(config, 'v2c', ip, '', '')
+        expect(errors.readCommunity).toBeUndefined()
+      })
+    })
+
     describe('Complete validation', () => {
       it('should return no errors for completely valid configuration', () => {
         const config: SnmpBaseConfiguration = {

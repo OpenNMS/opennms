@@ -152,6 +152,11 @@ export interface SnmpConfigFormErrors {
   retry?: string
   maxVarsPerPdu?: string
   maxRepetitions?: string
+  readCommunity?: string
+  writeCommunity?: string
+  securityName?: string
+  authPassphrase?: string
+  privacyPassphrase?: string
 }
 
 export interface SnmpProfileFormErrors extends SnmpConfigFormErrors {
