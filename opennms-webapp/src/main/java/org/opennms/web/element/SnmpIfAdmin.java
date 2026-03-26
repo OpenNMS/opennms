@@ -37,7 +37,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
 
 //import java.io.IOException;
 /**
