@@ -131,7 +131,6 @@ public interface TrapdRestApi {
 
     @DELETE
     @Path("user/{securityName}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Delete SNMPv3 user",
             description = "Delete SNMPv3 user configuration with provided securityName.",
