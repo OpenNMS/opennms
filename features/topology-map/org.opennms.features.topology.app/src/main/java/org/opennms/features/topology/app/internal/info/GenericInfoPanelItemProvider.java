@@ -48,6 +48,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
@@ -89,10 +90,13 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final MeasurementsService measurementsService;
 
-    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService) {
+    private final SnmpInterfaceDao snmpInterfaceDao;
+
+    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService, SnmpInterfaceDao snmpInterfaceDao) {
         this.jinjava = withClassLoaderFix(Jinjava::new);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.measurementsService = Objects.requireNonNull(measurementsService);
+        this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
 
         this.jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("System", "currentTimeMillis", System.class, "currentTimeMillis"));
     }
@@ -233,6 +237,7 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                 .ifPresent(context::putAll);
 
         context.put("measurements", new MeasurementsWrapper(measurementsService));
+        context.put("snmpInterfaceDao", snmpInterfaceDao);
 
         return context;
     }
