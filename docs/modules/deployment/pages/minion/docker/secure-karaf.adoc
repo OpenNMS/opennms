@@ -41,7 +41,7 @@ chmod 600 users.properties
 ----
 
 .Inject the configuration files
-[source, docker-compose.yml]
+[source, docker compose.yml]
 ----
 volumes:
   - ./minion-config.yaml:/opt/minion/minion-config.yaml
@@ -53,5 +53,5 @@ volumes:
 .Restart the Minion container
 [source, console]
 ----
-docker-compose restart minion
+docker compose restart minion
 ----

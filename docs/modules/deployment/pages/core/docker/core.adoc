@@ -3,15 +3,15 @@ ifeval::["{prerelease}" == "false"]
 :docker-version-tag: {full-display-version}
 endif::[]
 
-.Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
+.Create a project directory for {page-component-title} Core and create a `docker compose.yml` file.
 [source, console]
 ----
 mkdir horizon
 cd horizon
-vi docker-compose.yml
+vi docker compose.yml
 ----
 
-[source, docker-compose.yml]
+[source, docker compose.yml]
 [subs="verbatim,attributes"]
 ----
 ---
@@ -65,5 +65,5 @@ TIP: To run a release candidate or a different version, use the public image tag
 .Validate your Docker Compose file
 [source, console]
 ----
-docker-compose config -q
+docker compose config -q
 ----
