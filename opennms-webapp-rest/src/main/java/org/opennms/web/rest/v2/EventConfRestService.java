@@ -177,9 +177,11 @@ public class EventConfRestService implements EventConfRestApi {
     /**
      * If an eventconf.xml is present in the upload, parse its event-file entries
      * and build a fileOrder map for all sources (uploaded + existing in DB).
-     * Referenced sources follow eventconf.xml order (first entry = searched first among referenced).
-     * Unreferenced sources get higher fileOrder (searched before referenced), consistent with
-     * normal upload behavior where new files get highest priority.
+     * Referenced sources (explicitly listed in eventconf.xml) follow eventconf.xml order
+     * (first entry = searched first among referenced).
+     * Unreferenced sources (sources in DB but not in eventconf.xml, or files included in the
+     * upload but not explicitly listed in eventconf.xml) get higher fileOrder (searched before
+     * referenced), consistent with normal upload behavior where new files get highest priority.
      * Returns null if no eventconf.xml is present or parsing fails.
      */
     private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap) {
@@ -210,7 +212,7 @@ public class EventConfRestService implements EventConfRestApi {
             final Set<String> allSourceNames = new LinkedHashSet<>(fileMap.keySet());
             allSourceNames.addAll(eventConfSourceDao.findAllNames());
 
-            // Unreferenced sources: preserve their existing DB order
+            // Unreferenced sources (sources in DB but not in eventconf.xml): preserve their existing DB order
             final List<EventConfSource> existingByOrder = eventConfSourceDao.findAllByFileOrder();
             final List<String> unreferencedSorted = new ArrayList<>();
             final Set<String> unreferencedSet = new HashSet<>();
@@ -220,7 +222,7 @@ public class EventConfRestService implements EventConfRestApi {
                     unreferencedSet.add(src.getName());
                 }
             }
-            // Add any newly uploaded unreferenced files (not in DB yet) at the end
+            // Add any newly uploaded unreferenced files (not in eventconf.xml and not in DB yet) at the end
             for (String name : fileMap.keySet()) {
                 if (!eventConfOrderSet.contains(name) && !unreferencedSet.contains(name)) {
                     unreferencedSorted.add(name);

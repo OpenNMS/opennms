@@ -6,7 +6,6 @@ export const MAX_FILES_UPLOAD = 10
 export const validateEventConfigFile = async (file: File) => {
   // eventconf.xml is a special ordering file — validate XML and presence of <event-file> entries
   if (file.name.toLowerCase() === 'eventconf.xml') {
-    const validationErrors: string[] = []
     try {
       const text = await file.text()
       if (text.trim().length === 0) {
