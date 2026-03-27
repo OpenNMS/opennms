@@ -240,6 +240,12 @@ public final class EventUtilJdbcImpl extends AbstractEventUtil {
 	}
 
     @Override
+    public String getIfAliasByNodeAndIfIndex(long nodeId, int ifIndex) throws SQLException {
+        // Not sure if this actually needs to be implemented?
+        return "";
+    }
+
+    @Override
     public String getAssetFieldValue(String parm, long nodeId) {
         String retParmVal = null;
         int end = parm.lastIndexOf(ASSET_END_SUFFIX);

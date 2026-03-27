@@ -1,5 +1,11 @@
-.Configure PostgreSQL database access
+.FIPS mode
+If your environment requires FIPS mode enabled, you must enable the `PKCS12` keystore type for the xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] and xref:operation:deep-dive/admin/configuration/scv-configuration.adoc#configure-keystore-type-and-file-name[convert the existing keystore] to `PKCS12`, or create a fresh keystore.
+[source, console]
+----
+echo "org.opennms.features.scv.keystore.type=PKCS12" | sudo tee -a /opt/opennms/etc/opennms.properties.d/scv.properties
+----
 
+.Configure PostgreSQL database access
 You can store your PostgreSQL credentials in the secure credentials vault.
 To do this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`:
 
