@@ -8,6 +8,10 @@ commands:
       rerun-failtest-count:
         default: 0
         type: integer
+      allow-failures:
+        description: "Exit 0 regardless of test outcome (use for quarantined suites)"
+        default: false
+        type: boolean
     steps:
       - run:
           name: Enable swap
@@ -25,7 +29,12 @@ commands:
           no_output_timeout: 60m
           command: |
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            <<# parameters.allow-failures >>
+            .circleci/scripts/smoke.sh << parameters.suite >> || true
+            <</ parameters.allow-failures >>
+            <<^ parameters.allow-failures >>
             .circleci/scripts/smoke.sh << parameters.suite >>
+            <</ parameters.allow-failures >>
       - run:
           name: Gather system logs
           when: always
@@ -54,8 +63,22 @@ commands:
             cp -R ~/project/smoke-test/target/*.{flv,mp4} ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - run:
+          name: Collect flaky test evidence
+          when: always
+          command: |
+            if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
+              mkdir -p ~/test-results/flaky-evidence
+              find /tmp/flaky-evidence -name '*.xml' -exec cp {} ~/test-results/flaky-evidence/ \;
+              echo "#### Flaky tests detected (passed only after retry):"
+              find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
+            fi
       - store_test_results:
           path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: /tmp/flaky-evidence
+          destination: flaky-evidence
       - run:
           name: Copy artifacts on failure
           when: on_fail

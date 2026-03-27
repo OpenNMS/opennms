@@ -19,7 +19,8 @@
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-minion",
-                "smoke-test-sentinel"
+                "smoke-test-sentinel",
+                "smoke-test-flaky"
             ]
         },
         "rpms": {
@@ -243,6 +244,17 @@
             ]
         },
         "smoke-test-sentinel": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-flaky": {
             "context": [
                 "CircleCI",
                 "docker-publish-account"

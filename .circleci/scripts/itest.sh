@@ -202,8 +202,14 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     echo "#### Failed tests: $FAILED_TESTS"
     RETRIED_TESTS="$FAILED_TESTS"
 
-    # Clean failed test XML reports so fresh results are written
+    # Preserve failing XMLs as flaky evidence before overwriting with retry results
+    FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
+    mkdir -p "${FLAKY_EVIDENCE_DIR}"
     set +e +o pipefail
+    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | xargs -I{} cp {} "${FLAKY_EVIDENCE_DIR}/"
+    # Now delete originals so fresh results are written by the retry
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
       | xargs rm -f
