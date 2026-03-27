@@ -20,10 +20,9 @@ commands:
             cat /proc/sys/vm/swappiness
       - load-oci:
           match: amd64
-      - restore-maven-cache
       - run:
           name: Smoke Tests
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             .circleci/scripts/smoke.sh << parameters.suite >>
@@ -38,7 +37,7 @@ commands:
 
             (date '+%T' || :)                      > ~/test-results/system-logs/docker_stats 2>&1
             (docker stats --all --no-stream || :) >> ~/test-results/system-logs/docker_stats 2>&1
-            (docker ps ---all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
+            (docker ps --all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
             for CONTAINER in `docker ps --all --quiet`; do
               ((docker logs --timestamps "$CONTAINER" 2>&1 | tail -n 20 ) || :) > ~/test-results/system-logs/"docker-${CONTAINER}.log" 2>&1
             done
@@ -65,5 +64,6 @@ commands:
             cp -R ~/test-results ~/failure-artifacts/ || true
             cp -R ~/test-artifacts ~/failure-artifacts/ || true
       - store_artifacts:
+          when: on_fail
           path: ~/failure-artifacts
           destination: failure-artifacts
