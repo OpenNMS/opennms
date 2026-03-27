@@ -92,7 +92,7 @@
 
 <p>
   <a href="javascript:addNewGroup()">
-    <i class="fa fa-plus-circle fa-2x"></i> Add new group
+    <i class="fas fa-circle-plus fa-2x"></i> Add new group
   </a>
 </p>
 
@@ -116,15 +116,15 @@
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${fn:escapeXml(group.name) != "Admin"}'>
-                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fa fa-trash-o fa-2x"></i></a>
+                <a id="${group.name}.doDelete" href="javascript:deleteGroup('${fn:escapeXml(group.name)}')" onclick="return confirm('Are you sure you want to delete the group ${fn:escapeXml(group.name)}?')"><i class="fas fa-trash-can fa-2x"></i></a>
               </c:when>
               <c:otherwise>
-                <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
+                <i class="fas fa-trash-can fa-2x" style="color: var(--feather-clickable-normal);" onclick="alert('Sorry, the ${fn:escapeXml(group.name)} group cannot be deleted.')"></i>
               </c:otherwise>
             </c:choose>
           </td>
           <td width="5%" class="text-center">
-            <a id="${fn:escapeXml(group.name)}.doModify" href="javascript:modifyGroup('${fn:escapeXml(group.name)}')"><i class="fa fa-edit fa-2x"></i></a>
+            <a id="${fn:escapeXml(group.name)}.doModify" href="javascript:modifyGroup('${fn:escapeXml(group.name)}')"><i class="fas fa-pen-to-square fa-2x"></i></a>
           </td>
           <td width="5%" class="text-center">
             <c:choose>

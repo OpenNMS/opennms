@@ -23,10 +23,8 @@ require('../services/Requisitions');
 const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
 const MetaDataConstants = require('../model/MetaDataConstants');
 const Scope = MetaDataConstants.Scope;
-const _ = require('lodash');
 
 (function() {
-
   'use strict';
 
   angular.module('onms-requisitions')
@@ -97,7 +95,7 @@ const _ = require('lodash');
       $scope.availableScopes[Scope.INTERFACE] = 'Interface';
 
       // Now filter out the interfaces that have services
-      _.forEach($scope.node.interfaces, function(iff) {
+      $scope.node.interfaces.forEach(function(iff) {
         if (iff.services && iff.services.length > 0) {
           $scope.interfacesWithServices.push(iff);
         }
@@ -114,20 +112,27 @@ const _ = require('lodash');
 
     if ($scope.entry.scope === Scope.INTERFACE && $scope.entry.scoped_interface) {
       // Find the index of the associated interface
-      $scope.entry.interface_idx = _.findIndex($scope.node.interfaces, function(intf) { return intf.ipAddress === $scope.entry.scoped_interface.ipAddress; });
+      $scope.entry.interface_idx = $scope.node.interfaces ?
+         $scope.node.interfaces.findIndex(function(intf) { return intf.ipAddress === $scope.entry.scoped_interface.ipAddress; }) : 0;
+
       if ($scope.entry.interface_idx < 0) {
         // The referenced interface no longer exists
         $scope.entry.interface_idx = 0;
       }
     } else if ($scope.entry.scope === Scope.SERVICE && $scope.entry.scoped_service && $scope.interfacesWithServices.length > 0) {
       // Find the index of the associated interface
-      $scope.entry.interface_idx = _.findIndex($scope.interfacesWithServices, function(intf) { return intf.ipAddress === $scope.entry.scoped_interface.ipAddress; });
+      $scope.entry.interface_idx = $scope.interfacesWithServices ?
+       $scope.interfacesWithServices.findIndex(function(intf) { return intf.ipAddress === $scope.entry.scoped_interface.ipAddress; }) : 0;
+
       if ($scope.entry.interface_idx < 0) {
         // The referenced interface no longer exists
         $scope.entry.interface_idx = 0;
       }
       // Find the index of the associated service
-      $scope.entry.service_idx = _.findIndex($scope.interfacesWithServices[$scope.entry.interface_idx].services, function(svc) { return svc.name === $scope.entry.scoped_service.name; });
+      $scope.entry.service_idx =
+        $scope.interfacesWithServices && $scope.interfacesWithServices[$scope.entry.interface_idx] && $scope.interfacesWithServices[$scope.entry.interface_idx].services ?
+        $scope.interfacesWithServices[$scope.entry.interface_idx].services.findIndex(function(svc) { return svc.name === $scope.entry.scoped_service.name; }) : 0;
+
       if ($scope.entry.service_idx < 0) {
         // The referenced service no longer exists
         $scope.entry.service_idx = 0;

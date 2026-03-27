@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>35.0.4</version>
+    <version>36.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -330,10 +330,9 @@
                 <feature>war</feature>
                 <feature>wrap</feature>
                 <feature>wrapper</feature>
-                <feature>pax-http</feature>
+                <feature>pax-web-http-jetty</feature>
                 <feature>atomikos</feature>
                 <feature>batik</feature>
-                <feature>c3p0</feature>
                 <feature>hikari-cp</feature>
                 <feature>commons-beanutils</feature>
                 <feature>commons-cli</feature>

@@ -531,6 +531,7 @@ public class DatabasePopulator {
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfName("eth0")
+            .setIfAlias("if2 ifAlias value")
             .setIfType(6)
             .setPhysAddr("C9D2DFC7CB68")
             .addIpInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S");

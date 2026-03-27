@@ -112,7 +112,7 @@
     </select>
     <div class="btn-toolbar" role="toolbar">
       <span>Nodes</span>
-      <span class="btn-group mr-2 ml-4"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg" title="Toggle locations"></i></a> <c:if test="${anyFlows}">&nbsp;<a href="javascript:toggleClassDisplay('NLflows', '', 'inline');"><i class="fa fa-exchange fa-lg" title="Toggle flow data"></i></a></span></c:if>
+      <span class="btn-group mr-2 ml-4"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fas fa-database fa-lg" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fas fa-rectangle-list fa-lg" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fas fa-qrcode fa-lg" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fas fa-location-dot fa-lg" title="Toggle locations"></i></a> <c:if test="${anyFlows}">&nbsp;<a href="javascript:toggleClassDisplay('NLflows', '', 'inline');"><i class="fas fa-right-left fa-lg" title="Toggle flow data"></i></a></span></c:if>
     </div>
   </c:otherwise>
 </c:choose>

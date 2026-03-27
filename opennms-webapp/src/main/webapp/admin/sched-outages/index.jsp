@@ -85,7 +85,7 @@
 		<div class="input-group">
 			<input type="text" class="form-control" value="New Name" size="40" name="newName" />
 			<div class="input-group-append">
-				<button type="submit" class="btn btn-secondary" name="newOutage"><i class="fa fa-plus"></i></button>
+				<button type="submit" class="btn btn-secondary" name="newOutage"><i class="fas fa-plus"></i></button>
 			</div>
 		</div>
     </form>

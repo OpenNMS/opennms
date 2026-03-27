@@ -123,8 +123,8 @@
       </form>
   </div> <!-- card-body -->
   <div class="card-footer">
-      <a class="btn btn-secondary" href="javascript:rebuild()"><i class="fa fa-arrow-left"></i> Rebuild</a>
-      <a class="btn btn-secondary" href="javascript:next()">Next <i class="fa fa-arrow-right"></i></a>
+      <a class="btn btn-secondary" href="javascript:rebuild()"><i class="fas fa-arrow-left"></i> Rebuild</a>
+      <a class="btn btn-secondary" href="javascript:next()">Next <i class="fas fa-arrow-right"></i></a>
   </div> <!-- card-footer -->
 </div> <!-- panel -->
 

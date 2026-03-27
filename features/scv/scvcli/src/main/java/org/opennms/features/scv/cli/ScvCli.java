@@ -33,6 +33,7 @@ import org.kohsuke.args4j.spi.SubCommandHandler;
 import org.kohsuke.args4j.spi.SubCommands;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.cli.commands.GetCommand;
+import org.opennms.features.scv.cli.commands.GetAllCommand;
 import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
@@ -53,6 +54,7 @@ public class ScvCli {
     @SubCommands({@SubCommand(name = "list", impl = ListCommand.class),
             @SubCommand(name = "set", impl = SetCommand.class),
             @SubCommand(name = "get", impl = GetCommand.class),
+            @SubCommand(name = "get-all", impl = GetAllCommand.class),
             @SubCommand(name = "delete", impl = DeleteCommand.class)})
     private Function<ScvCli, Integer> command;
 
@@ -85,9 +87,9 @@ public class ScvCli {
     private  String lookupKeyStoreType() {
         String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
         try {
-
             // Try to get the OpenNMS home directory from the environment variable
             String opennmsHome = System.getenv("OPENNMS_HOME");
+
             // Get the keystore type from SCV properties, if specified
             Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
             keyStoreType = scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY);
@@ -105,11 +107,13 @@ public class ScvCli {
 
     private static String lookupDefaultPassword() {
         Properties properties = new Properties();
-        try{
-            String passowrd = lookupPasswordFromProperties();
-            if (passowrd != null && !passowrd.isEmpty()) {
-                return passowrd;
+
+        try {
+            String pwd = lookupPasswordFromProperties();
+            if (pwd != null && !pwd.isEmpty()) {
+                return pwd;
             }
+
             properties.load(ScvCli.class.getResourceAsStream("/scvcli.properties"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,12 +133,13 @@ public class ScvCli {
      */
     private static String lookupPasswordFromProperties(){
         String keyStoreKey = null;
+
         // Try to get the OpenNMS home directory from the environment variable
         String opennmsHome = System.getenv("OPENNMS_HOME");
         Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
         keyStoreKey = scvProps.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY);
-        return keyStoreKey;
 
+        return keyStoreKey;
     }
 
     public static void main(final String args[]) {
@@ -161,6 +166,7 @@ public class ScvCli {
 
             System.err.println("Usage: scvcli [--keystore KEYSTORE] [--password PASSWORD] set ALIAS USERNAME PASSWORD [--attribute key=value]...");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get ALIAS");
+            System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] get-all");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] list");
             System.err.println("       scvcli [--keystore KEYSTORE] [--password PASSWORD] delete ALIAS");
 

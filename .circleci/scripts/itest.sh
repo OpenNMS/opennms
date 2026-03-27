@@ -123,8 +123,13 @@ if [ ! -s /tmp/this_node_it_tests ]; then
   MAVEN_ARGS+=("-DskipFailsafe=true")
 fi
 
-if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
-  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
+# When retries are enabled, use --fail-at-end so all tests run before retrying
+if [ "${CCI_RERUN_FAILTEST:-0}" -gt 0 ]; then
+  CCI_FAILURE_OPTION="--fail-at-end"
+else
+  if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+    MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
+  fi
 fi
 
 MAVEN_COMMANDS=("install")
@@ -145,6 +150,7 @@ echo "#### Building Assembly Dependencies"
            install
 
 echo "#### Executing tests"
+set +e
 ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
@@ -164,3 +170,92 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
+TEST_EXIT=$?
+set -e
+
+# Retry failed tests if configured
+RETRIES_LEFT="${CCI_RERUN_FAILTEST:-0}"
+MAX_RETRIES="$RETRIES_LEFT"
+RETRIED_TESTS=""
+while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
+    ATTEMPT=$((MAX_RETRIES - RETRIES_LEFT + 1))
+    echo "#### Finding failed tests for re-run (attempt $ATTEMPT of $MAX_RETRIES)"
+
+    set +e +o pipefail
+    FAILED_TESTS=$(find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | sed 's|.*/TEST-||;s|\.xml||' \
+      | sort -u)
+    set -e -o pipefail
+
+    if [ -z "$FAILED_TESTS" ]; then
+        echo "#### No failed tests found in reports, skipping retry"
+        break
+    fi
+
+    echo "#### Failed tests: $FAILED_TESTS"
+    RETRIED_TESTS="$FAILED_TESTS"
+
+    # Clean failed test XML reports so fresh results are written
+    set +e +o pipefail
+    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | xargs rm -f
+    set -e -o pipefail
+
+    # Split into ITs vs unit tests
+    FAILED_ITS=$(echo "$FAILED_TESTS" | grep -E 'IT$' | paste -s -d, - || true)
+    FAILED_UNITS=$(echo "$FAILED_TESTS" | grep -vE 'IT$' | paste -s -d, - || true)
+
+    RERUN_ARGS=("${MAVEN_ARGS[@]}")
+    if [ -n "$FAILED_UNITS" ]; then
+      RERUN_ARGS+=("-Dtest=$FAILED_UNITS")
+    else
+      RERUN_ARGS+=("-DskipSurefire=true")
+    fi
+    if [ -n "$FAILED_ITS" ]; then
+      RERUN_ARGS+=("-Dit.test=$FAILED_ITS")
+    else
+      RERUN_ARGS+=("-DskipFailsafe=true")
+    fi
+
+    echo "#### Re-running failed tests (unit: ${FAILED_UNITS:-none}, IT: ${FAILED_ITS:-none})"
+    set +e
+    ionice nice ./compile.pl "${RERUN_ARGS[@]}" \
+               -P'!checkstyle' \
+               -P'!production' \
+               -Pbuild-bamboo \
+               -Pcoverage \
+               -Dbuild.skip.tarball=true \
+               -DfailIfNoTests=false \
+               -Dsurefire.failIfNoSpecifiedTests=false \
+               -Dfailsafe.failIfNoSpecifiedTests=false \
+               -DrunPingTests=false \
+               -DskipITs=false \
+               --batch-mode \
+               --fail-at-end \
+               -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+               -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
+               --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
+               install
+    TEST_EXIT=$?
+    set -e
+
+    RETRIES_LEFT=$((RETRIES_LEFT - 1))
+done
+
+# Print retry summary
+if [ -n "$RETRIED_TESTS" ]; then
+    echo ""
+    echo "========================================"
+    echo "#### Retry Summary"
+    echo "#### Retried tests: $(echo "$RETRIED_TESTS" | paste -s -d, -)"
+    if [ "$TEST_EXIT" -eq 0 ]; then
+        echo "#### Result: PASSED on retry (attempt $ATTEMPT)"
+    else
+        echo "#### Result: FAILED after $MAX_RETRIES retry attempt(s)"
+    fi
+    echo "========================================"
+fi
+
+exit $TEST_EXIT

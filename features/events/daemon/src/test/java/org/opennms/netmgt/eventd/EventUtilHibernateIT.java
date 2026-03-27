@@ -216,6 +216,13 @@ public class EventUtilHibernateIT {
     	String alias = eventUtilDaoImpl.getIfAlias(m_populator.getNode1().getId(), "192.168.1.1");
     	assertEquals("Initial ifAlias value", alias);
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetIfAliasByNodeIdAndIfIndex() {
+        String alias = eventUtilDaoImpl.getIfAliasByNodeAndIfIndex(m_populator.getNode1().getId(), 2);
+        assertEquals("if2 ifAlias value", alias);
+    }
     
     @Test
     @JUnitTemporaryDatabase

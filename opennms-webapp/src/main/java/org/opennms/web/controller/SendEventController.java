@@ -67,7 +67,6 @@ public class SendEventController extends AbstractController {
     private Map<String, Object> createModel() throws FileNotFoundException, IOException {
         // Make sure we have an up-to-date list of events
         m_eventConfDao.reload();
-
         Map<String, Object> model = Maps.newHashMap();
         model.put("vendorList", buildVendorSelect());
         model.put("eventSelect", buildEventSelect());

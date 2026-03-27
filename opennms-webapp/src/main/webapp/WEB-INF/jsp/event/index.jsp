@@ -60,7 +60,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" name="id" id="byeventid_id"/>
                   <div class="input-group-append">
-                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                      <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
                   </div>
               </div>
           </div>                
@@ -102,7 +102,7 @@
     					%>
                       
                           <li>
-                              <a href="event/list.htm?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="fa fa-remove text-danger"></span></a>
+                              <a href="event/list.htm?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="fas fa-xmark text-danger"></span></a>
                           </li>
                     </c:forEach>
                 </ul>

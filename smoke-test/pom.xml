@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>35.0.4</version>
+  <version>36.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -51,8 +51,8 @@
     <camelVersion>2.21.5</camelVersion>
     <groovyVersion>3.0.21</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.14.2</jackson2Version>
-    <jersey.version>2.42</jersey.version>
+    <jackson2Version>2.18.6</jackson2Version>
+    <jersey.version>2.46</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
     <karafVersion>4.3.6</karafVersion>
@@ -832,7 +832,7 @@
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
       <artifactId>jinjava</artifactId>
-      <version>2.6.0</version>
+      <version>2.7.6</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

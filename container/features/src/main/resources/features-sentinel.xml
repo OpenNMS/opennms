@@ -75,6 +75,7 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
 
         <!-- work around a startup race condition in jetty by way of pax-web -->
+        <bundle start-level="30">mvn:org.eclipse.jetty.websocket/websocket-api/${jettyVersion}</bundle>
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 

@@ -13,7 +13,7 @@
     <div class="btn-toolbar pull-right mb-2" role="toolbar">
         <div class="input-group" role="group" ng-show="group.ruleCount > 0">
             <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                <span class="input-group-text"><i class="fas fa-magnifying-glass"></i></span>
             </div>
             <input type="text"
                    id="action.search"
@@ -22,15 +22,15 @@
                    placeholder="search..."
                    class="form-control">
             <div class="input-group-append">
-                <button class="btn btn-secondary" title="Clear search" ng-click="clearSearch()" ng-show="query.search"><i class="fa fa-close"></i></button>
+                <button class="btn btn-secondary" title="Clear search" ng-click="clearSearch()" ng-show="query.search"><i class="fas fa-xmark"></i></button>
             </div>
         </div>
 
         <div class="btn-group ml-4" role="group">
-            <button id="action.refresh" class="btn btn-secondary" ng-click="refreshAll()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+            <button id="action.refresh" class="btn btn-secondary" ng-click="refreshAll()" title="Refresh list"><i class="fas fa-arrows-rotate"></i></button>
         </div>
         <div class="btn-group ml-2" role="group" ng-show="!group.readOnly">
-            <button id="action.addRule" class="btn btn-secondary" ng-click="addRule(group)" title="Add new classification rule"><i class="fa fa-plus"></i></button>
+            <button id="action.addRule" class="btn btn-secondary" ng-click="addRule(group)" title="Add new classification rule"><i class="fas fa-plus"></i></button>
             <button ng-if="rules.length > 0"
                     id="action.deleteAll"
                     class="btn btn-secondary"
@@ -42,12 +42,12 @@
                     confirm-button-type="danger"
                     cancel-button-type="secondary"
                     confirm-text="Yes"
-                    cancel-text="No"><i class="fa fa-trash-o"></i></button>
+                    cancel-text="No"><i class="fas fa-trash-can"></i></button>
         </div>
         <div class="btn-group ml-2" role="group" ng-show="!group.readOnly">
-            <button id="action.importCSV" class="btn btn-secondary" ng-click="importRules()" title="Import classification rules from CSV"><i class="fa fa-upload"></i></button>
+            <button id="action.importCSV" class="btn btn-secondary" ng-click="importRules()" title="Import classification rules from CSV"><i class="fas fa-upload"></i></button>
             <button id="action.exportCSV" class="btn btn-secondary" ng-click="showExportRulesDialog()" title="Export classification rules as CSV" >
-                <i class="fa fa-download"></i>
+                <i class="fas fa-download"></i>
             </button>
         </div>
     </div>
@@ -59,48 +59,48 @@
             <tr class="d-flex">
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('position')">Position</a>
-                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('name')">Application</a>
-                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('protocol')">Protocol</a>
-                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-2 text-nowrap">
                     <a ng-click="changeOrderBy('srcAddress')">Src. Address</a>
-                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('srcPort')">Src. Port</a>
-                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-2 text-nowrap">
                     <a ng-click="changeOrderBy('dstAddress')">Dst. Address</a>
-                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('dstPort')">Dst. Port</a>
-                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-nowrap">
                     <a ng-click="changeOrderBy('exporterFilter')">Exporter Filter</a>
-                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('omnidirectional')">Omnidirectional</a>
-                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                    <i ng-show="query.orderBy === 'omnidirectional' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                 </th>
                 <th class="col-md-1" ng-if="group.readOnly === false">
                     Actions
@@ -111,7 +111,7 @@
             <tbody ng-model="rules" ui-sortable="sortableRules">
             <tr ng-repeat="rule in rules" class="d-flex">
                 <td class="col-md-1 text-nowrap">
-                    <i class="fa fa-bars text-muted"
+                    <i class="fas fa-bars text-muted"
                        ng-show="!group.readOnly && query.orderBy === 'position' && query.order === 'asc'"
                        style="padding-right:1em"></i>{{rule['position']}}
                 </td>
@@ -126,11 +126,11 @@
                 <td ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-ellipsis">
                     <span title="{{rule['exporterFilter']}}">{{rule['exporterFilter']}}</span>
                 </td>
-                <td class="col-md-1 text-nowrap"><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
+                <td class="col-md-1 text-nowrap"><span class="fas fa-right-left" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
                 <td class="col-md-1" ng-if="group.readOnly === false">
                     <div class="pull-right">
-                        <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule, group)" title="edit rule"><i class="fa fa-edit"></i></button>
-                        <button id="action.{{rule.position}}.delete" class="btn btn-sm btn-secondary" ng-click="deleteRule(rule)" title="delete rule"><i class="fa fa-trash-o"></i></button>
+                        <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule, group)" title="edit rule"><i class="fas fa-pen-to-square"></i></button>
+                        <button id="action.{{rule.position}}.delete" class="btn btn-sm btn-secondary" ng-click="deleteRule(rule)" title="delete rule"><i class="fas fa-trash-can"></i></button>
                     </div>
                 </td>
             </tr>

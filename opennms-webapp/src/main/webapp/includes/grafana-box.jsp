@@ -138,18 +138,18 @@
                 }
                 if (showDashboard) {
                     if (limit < 1 || count++ < limit) {
-                        $('#dashboardlist').append('<a href="<%=grafanaLinkProtocol%>://<%=grafanaLinkHostname%>:<%=grafanaLinkPort%><%=grafanaLinkBasePath%>' + val['url'] + '"><span class="fa fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                        $('#dashboardlist').append('<a href="<%=grafanaLinkProtocol%>://<%=grafanaLinkHostname%>:<%=grafanaLinkPort%><%=grafanaLinkBasePath%>' + val['url'] + '"><span class="fas fa-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                     }
                 }
             };
             if (limit > 0 && count > limit) {
-                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="fa fa-th-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
+                $('#dashboardlist').append('<a href="graph/grafana.jsp"><span class="fas fa-table-list" aria-hidden="true"></span>&nbsp;View list of all Dashboards</a><br/>');
             }
         </script>
         <%
             } else {
         %>
-        <span class="fa fa-wrench" aria-hidden="true"></span>&nbsp;<%=errorMessage%><br/>
+        <span class="fas fa-wrench" aria-hidden="true"></span>&nbsp;<%=errorMessage%><br/>
         <%
             }
         %>

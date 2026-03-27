@@ -12,7 +12,7 @@
         <label class="col-form-label" for="group.position">Position</label>
         <button class="btn btn-link"
                 uib-popover-html="'<div>Groups on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
-                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"></i></button>
+                popover-trigger="'outsideClick'"><i class="fas fa-circle-question"></i></button>
         <input class="form-control" id="group.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="group.position"
                ng-class="{ 'is-invalid' : groupForm.position.$invalid || error.position }">
         <div ng-show="groupForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>

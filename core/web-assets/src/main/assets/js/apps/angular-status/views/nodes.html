@@ -13,13 +13,13 @@
                 <tr>
                     <th>
                         <a href ng-click="changeOrderBy('severity')">Severity</a>
-                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                     </th>
                     <th>
                         <a href ng-click="changeOrderBy('label')">Node Label</a>
-                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"></i>
-                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"></i>
+                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fas fa-sort-up"></i>
+                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fas fa-sort-down"></i>
                     </th>
                     <th>
                         Actions
@@ -37,10 +37,10 @@
                     </td>
                     <td>
                         <a href="outage/list?outtype=current&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'outages'">
-                            <i class="fa fa-external-link-square"></i> View Outages
+                            <i class="fas fa-square-up-right"></i> View Outages
                         </a>
                         <a href="alarm/list?sortby=lasteventtime&acktype=unack&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'alarms'">
-                            <i class="fa fa-external-link-square"></i> View Alarms
+                            <i class="fas fa-square-up-right"></i> View Alarms
                         </a>
                     </td>
                 </tr>

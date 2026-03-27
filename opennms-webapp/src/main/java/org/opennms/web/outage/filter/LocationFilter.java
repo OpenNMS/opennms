@@ -35,7 +35,7 @@ public class LocationFilter extends EqualsFilter<String> {
 
     @Override
     public String getTextDescription() {
-        return ("location=" + m_location);
+        return ("monitoring location=" + m_location);
     }
 
     @Override

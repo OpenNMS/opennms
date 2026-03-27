@@ -145,6 +145,23 @@ public class EntityScopeProviderIT {
     }
 
     @Test
+    public final void testInterfaceByIfName() throws Exception {
+        final Scope scope = this.provider.getScopeForInterfaceByIfName(this.populator.getNode1().getId(), "atm0");
+
+        assertThat(scope.get(new ContextKey("interface", "if-alias")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "Initial ifAlias value"))));
+        assertThat(scope.get(new ContextKey("interface", "if-description")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "ATM0"))));
+        assertThat(scope.get(new ContextKey("interface", "if-name")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "atm0"))));
+        assertThat(scope.get(new ContextKey("interface", "phy-addr")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "34E45604BB69"))));
+    }
+
+    @Test
+    public final void testInterfaceByIfNameNotFound() throws Exception {
+        final Scope scope = this.provider.getScopeForInterfaceByIfName(this.populator.getNode1().getId(), "nonexistent0");
+
+        assertThat(scope.get(new ContextKey("interface", "if-name")), Matchers.is(Optional.empty()));
+    }
+
+    @Test
     public final void testService() throws Exception {
         final Scope scope = this.provider.getScopeForService(this.populator.getNode1().getId(), InetAddressUtils.getInetAddress("192.168.1.1"), "ICMP");
 

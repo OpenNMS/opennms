@@ -6,4 +6,4 @@ jobs:
       - run:
           name: Build
           command: |
-            cd ui && yarn install && yarn build && yarn test
+            cd ui && pnpm install && pnpm build && pnpm test

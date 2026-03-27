@@ -20,6 +20,7 @@
  * License.
  */
 const bootbox = require('bootbox');
+const escape = require('lodash.escape');
 
 const Requisition = require('../model/Requisition');
 
@@ -230,7 +231,7 @@ require('../services/Synchronize');
     * @param {object} The node's object to delete
     */
     $scope.deleteNode = function(node) {
-      bootbox.confirm('Are you sure you want to remove the node ' + _.escape(node.nodeLabel) + '?', function(ok) {
+      bootbox.confirm('Are you sure you want to remove the node ' + escape(node.nodeLabel) + '?', function(ok) {
         if (ok) {
           RequisitionsService.startTiming();
           RequisitionsService.deleteNode(node).then(
@@ -244,7 +245,7 @@ require('../services/Synchronize');
               if (index > -1) {
                 $scope.filteredNodes.splice(index,1);
               }
-              growl.success('The node ' + _.escape(node.nodeLabel) + ' has been deleted.');
+              growl.success('The node ' + escape(node.nodeLabel) + ' has been deleted.');
             },
             $scope.errorHandler
           );
@@ -325,7 +326,7 @@ require('../services/Synchronize');
       if (value) {
         $scope.pageSize = value;
       }
-      growl.success('Retrieving requisition ' + _.escape($scope.foreignSource) + '...');
+      growl.success('Retrieving requisition ' + escape($scope.foreignSource) + '...');
       RequisitionsService.getRequisition($scope.foreignSource).then(
         function(requisition) { // success
           $scope.requisition = requisition;

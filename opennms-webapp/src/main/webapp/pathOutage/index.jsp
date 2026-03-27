@@ -83,7 +83,7 @@
 						.provider(TopologyProvider.PATH_OUTAGE)
 						.getLink();
 			%>
-			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i> View in Topology</a></td>
+			<td><a href="<%= topologyLink%>"><i class="fas fa-square-up-right"></i> View in Topology</a></td>
 		</tr>
 		<% } %>
 	</table>

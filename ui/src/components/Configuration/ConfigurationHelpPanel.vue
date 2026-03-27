@@ -33,13 +33,6 @@
     </div>
     <div class="config-help-hr"></div>
     <div class="config-help-footer">
-      <!-- TODO: What do we want to do with this info? -->
-      <!-- <div class="footer-title">HELP US IMPROVE</div>
-      <div class="footer-subtitle">Was this information helpful?</div>
-      <div class="footer-button" :class="getFooterClickClass()">
-        <div class="footer-yes" @click="footerYes">YES</div>
-        <div class="footer-no" @click="footerNo">NO</div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -73,7 +66,6 @@ const props = defineProps({
  * Local State
  */
 const chevronRight = computed(() => ChevronRight)
-const footerVals = reactive({ yes: false, no: false })
 
 /**
  * Get the copy for the help window based on the selected
@@ -177,42 +169,6 @@ const helpText = computed(() => {
   }
   return helpVals
 })
-
-/**
- * Gets the current class structure for the
- * two zone click box.
- */
-const getFooterClickClass = () => {
-  let vals = ''
-  if (footerVals.yes) {
-    vals = 'footer-wrap-yes'
-  }
-  if (footerVals.no) {
-    vals = 'footer-wrap-no'
-  }
-  return vals
-}
-
-/**
- * Stub for when the user clicks YES on two zone click box.
- * Functionality for this to be determined. Included in design from UX.
- *
- */
-const footerYes = () => {
-  footerVals.yes = true
-  footerVals.no = false
-  console.log('The User Has Selected Yes!', props.item)
-}
-
-/**
- * Stub for when the user clicks NO on the two zone click box.
- * Functionality for this to be determined. Included in design from UX.
- */
-const footerNo = () => {
-  console.log('The User Has Selected No!', props.item)
-  footerVals.no = true
-  footerVals.yes = false
-}
 </script>
 
 <style lang="scss">

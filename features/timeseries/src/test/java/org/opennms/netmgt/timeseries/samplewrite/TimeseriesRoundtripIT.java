@@ -248,6 +248,42 @@ public class TimeseriesRoundtripIT {
 
 
     @Test
+    public void verifyStreamingTelemetryInterfaceResource() {
+        // Streaming telemetry uses interface name (e.g. "en1/0") instead of numeric ifIndex
+        var collectionResource = mock(CollectionResource.class);
+        when(collectionResource.getResourceTypeName()).thenReturn(CollectionResource.RESOURCE_TYPE_IF);
+        when(collectionResource.getInstance()).thenReturn("en1/0"); // interface name, not ifIndex
+        when(collectionResource.getParent()).thenReturn(ResourcePath.get("1"));
+        when(collectionResource.getTags()).thenReturn(Collections.emptyMap());
+        when(collectionResource.getServiceParams()).thenReturn(Collections.emptyMap());
+        when(collectionResource.getInterfaceLabel()).thenReturn(null);
+
+        var tags = metaTagDataLoader.load(collectionResource);
+
+        // Should resolve interface scope via ifName fallback
+        assertTrue("if_name tag should be present", tags.stream().anyMatch(tag -> tag.getKey().equals("if_name") && tag.getValue().equals("en1/0")));
+        assertTrue("if_description tag should be present", tags.stream().anyMatch(tag -> tag.getKey().equals("if_description") && tag.getValue().equals("myDescription")));
+    }
+
+    @Test
+    public void verifySnmpInterfaceResource() {
+        // SNMP uses numeric ifIndex
+        var collectionResource = mock(CollectionResource.class);
+        when(collectionResource.getResourceTypeName()).thenReturn(CollectionResource.RESOURCE_TYPE_IF);
+        when(collectionResource.getInstance()).thenReturn("1"); // numeric ifIndex
+        when(collectionResource.getParent()).thenReturn(ResourcePath.get("1"));
+        when(collectionResource.getTags()).thenReturn(Collections.emptyMap());
+        when(collectionResource.getServiceParams()).thenReturn(Collections.emptyMap());
+        when(collectionResource.getInterfaceLabel()).thenReturn(null);
+
+        var tags = metaTagDataLoader.load(collectionResource);
+
+        // Should resolve interface scope via ifIndex
+        assertTrue("if_name tag should be present", tags.stream().anyMatch(tag -> tag.getKey().equals("if_name") && tag.getValue().equals("en1/0")));
+        assertTrue("if_description tag should be present", tags.stream().anyMatch(tag -> tag.getKey().equals("if_description") && tag.getValue().equals("myDescription")));
+    }
+
+    @Test
     public void verifyLatencyResourceTags() throws UnknownHostException {
 
         var collectionResource = mock(LatencyCollectionResource.class);

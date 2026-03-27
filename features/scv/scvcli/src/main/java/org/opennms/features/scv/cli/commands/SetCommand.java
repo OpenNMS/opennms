@@ -23,6 +23,7 @@ package org.opennms.features.scv.cli.commands;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.kohsuke.args4j.Argument;
@@ -57,6 +58,12 @@ public class SetCommand implements Function<ScvCli, Integer> {
 
     @Override
     public Integer apply(ScvCli scvCli) {
+        Objects.requireNonNull(alias);
+
+        if (alias.equalsIgnoreCase(Credentials.GET_ALL_ALIAS)) {
+            throw new IllegalArgumentException("Cannot set credentials using alias '" + Credentials.GET_ALL_ALIAS + "'.");
+        }
+
         scvCli.getSecureCredentialsVault().setCredentials(alias, new Credentials(username, password, attributes));
         return 0;
     }

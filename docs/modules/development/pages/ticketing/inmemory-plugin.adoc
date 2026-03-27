@@ -5,22 +5,7 @@ This can be installed by adding feature `opennms-inmemory-ticketer`.
 
 Once installed, use `opennms:inmemory-ticketer` karaf command to query/update ticket state.
 
-NOTE: Configurations has to be made in the {page-component-title} etc directory.
-      We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
-      Depending on your operating system the home directory is `/opt/opennms` for Debian/Ubuntu and for CentOS/RHEL.
-
-.Create a OpenNMS properties file to enable the ticketer plugin
-[source, console]
-----
-sudo vi etc/opennms.properties.d/inmemory-ticketer.properties
-----
-
-.Set OSGi based ticketer plugin and enable it
-[source, inmemory-ticketer.properties]
-----
-opennms.ticketer.plugin = org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
-opennms.alarmTroubleTicketEnabled = true
-----
+Ticketing is automatically enabled when the feature is installed. No additional property configuration is required.
 
 == Example
 

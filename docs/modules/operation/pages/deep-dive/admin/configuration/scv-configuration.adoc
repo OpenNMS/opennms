@@ -100,9 +100,25 @@ ARGUMENTS
         password
                 Password to store.
                 (required)
+
 ----
 
-** Access secure credentials vault entries:
+** List all aliases:
++
+[source, karaf]
+----
+admin@opennms()> scv-list --help
+DESCRIPTION
+        opennms:scv-list
+
+	Retrieves all alias names.
+
+SYNTAX
+        opennms:scv-list
+
+----
+
+** Access secure credentials vault entries by alias:
 +
 [source, karaf]
 ----
@@ -119,4 +135,18 @@ ARGUMENTS
         alias
                 Alias used to retrieve the credentials.
                 (required)
+----
+
+** Access secure credentials vault entries for any aliases:
++
+[source, karaf]
+----
+admin@opennms()> scv-get-all --help
+DESCRIPTION
+        opennms:scv-get-all
+
+	Retrieves the username and attributes for all aliases.
+
+SYNTAX
+        opennms:scv-get-all
 ----

@@ -614,13 +614,13 @@ const handleSaveEvent = async () => {
     return
   }
 
-  try {
-    const sourceId = selectedSource.value?._value as number
-    if (!sourceId) {
-      snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
-      return
-    }
+  const sourceId = selectedSource.value?._value as number
+  if (!sourceId) {
+    snackbar.showSnackBar({ msg: 'No source selected. Please select a source from the dropdown or create a new one.', error: true })
+    return
+  }
 
+  try {
     let response = null
     const isEditMode = store.eventModificationState.isEditMode === CreateEditMode.Edit
 

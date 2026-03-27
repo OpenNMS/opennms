@@ -78,10 +78,10 @@
             <div class="col">
               <div class="btn-toolbar mb-4" role="toolbar">
                   <button type="button" class="btn btn-secondary mr-2" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">
-                    <i class="fa fa-save"></i> Save
+                    <i class="fas fa-floppy-disk"></i> Save
                   </button>
                   <button type="button" class="btn btn-secondary" ng-click="reset()" id="reset-asset">
-                    <i class="fa fa-refresh"></i> Reset
+                    <i class="fas fa-arrows-rotate"></i> Reset
                   </button>
               </div>
             </div>
@@ -122,7 +122,7 @@
                                  ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}"
                                  ng-class="{ 'is-invalid': assetForm[field.model].$invalid && !assetForm[field.model].$pristine}" />
                           <div class="input-group-append">
-                            <button type="button" class="btn btn-secondary" ng-click="field.open=true"><i class="fa fa-calendar"></i></button>
+                            <button type="button" class="btn btn-secondary" ng-click="field.open=true"><i class="fas fa-calendar"></i></button>
                           </div>
                         </div>
                         <%-- List/Select fields --%>
