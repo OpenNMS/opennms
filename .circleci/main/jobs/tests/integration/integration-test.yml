@@ -2,10 +2,11 @@ jobs:
   integration-test:
     executor: integration-test-executor
     parallelism: 8
-    resource_class: large
+    resource_class: medium.gen2
     steps:
       - cached-checkout
       - attach_workspace:
           at: ~/
       - run-integration-tests:
           rerun-failtest-count: 1
+          changes-only: false
