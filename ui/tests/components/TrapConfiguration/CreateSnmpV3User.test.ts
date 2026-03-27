@@ -1,0 +1,294 @@
+import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
+import { AUTH_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
+import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
+import { saveTrapdUser, updateTrapdUser } from '@/services/trapdConfigurationService'
+import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { CreateEditMode } from '@/types'
+import type { SnmpV3User } from '@/types/trapConfig'
+import { createTestingPinia } from '@pinia/testing'
+import { flushPromises, mount } from '@vue/test-utils'
+import { setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { defineComponent, nextTick } from 'vue'
+
+const { showSnackBarMock } = vi.hoisted(() => ({
+  showSnackBarMock: vi.fn()
+}))
+
+vi.mock('@/composables/useSnackbar', () => ({
+  default: () => ({
+    showSnackBar: showSnackBarMock
+  })
+}))
+
+vi.mock('@/mappers/trapdConfig.mapper', () => ({
+  mapUserToServer: vi.fn()
+}))
+
+vi.mock('@/services/trapdConfigurationService', () => ({
+  saveTrapdUser: vi.fn(),
+  updateTrapdUser: vi.fn()
+}))
+
+const FeatherInputStub = defineComponent({
+  name: 'FeatherInput',
+  props: {
+    modelValue: {
+      type: String,
+      default: ''
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    dataTest: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['update:modelValue'],
+  template: '<input :data-test="dataTest || label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
+})
+
+describe('CreateSnmpV3User.vue', () => {
+  let store: ReturnType<typeof useTrapConfigStore>
+  const mapUserToServerMock = vi.mocked(mapUserToServer)
+  const saveTrapdUserMock = vi.mocked(saveTrapdUser)
+  const updateTrapdUserMock = vi.mocked(updateTrapdUser)
+
+  const selectedUser: SnmpV3User = {
+    engineId: null,
+    securityName: 'existing-user',
+    securityLevel: 2,
+    authProtocol: 'MD5',
+    authPassphrase: 'masked-auth',
+    privacyProtocol: null,
+    privacyPassphrase: null
+  }
+
+  const mountComponent = () => {
+    return mount(CreateSnmpV3User, {
+      global: {
+        stubs: {
+          TableCard: {
+            template: '<div><slot /></div>'
+          },
+          SearchExistingCredential: true,
+          FeatherIcon: true,
+          FeatherInput: FeatherInputStub,
+          'feather-input': FeatherInputStub,
+          FeatherSelect: true,
+          'feather-select': true,
+          ScvInputIcon: {
+            emits: ['click'],
+            template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'
+          },
+          FeatherButton: {
+            props: ['dataTest', 'disabled'],
+            emits: ['click'],
+            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
+          },
+          'feather-button': {
+            props: ['dataTest', 'disabled'],
+            emits: ['click'],
+            template: '<button :data-test="dataTest" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>'
+          }
+        }
+      }
+    })
+  }
+
+  const setInputValue = async (wrapper: ReturnType<typeof mountComponent>, dataTest: string, value: string) => {
+    const input = wrapper.find(`input[data-test="${dataTest}"]`)
+    expect(input.exists()).toBe(true)
+    await input.setValue(value)
+  }
+
+  const setBindingValue = async (wrapper: ReturnType<typeof mountComponent>, key: string, value: any) => {
+    ;(wrapper.vm as any)[key] = value
+    await nextTick()
+  }
+
+  const clickButton = async (wrapper: ReturnType<typeof mountComponent>, dataTest: string) => {
+    const button = wrapper.findComponent(`[data-test="${dataTest}"]`)
+    expect(button.exists()).toBe(true)
+    await (button as any).vm.$emit('click')
+    await flushPromises()
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setActivePinia(
+      createTestingPinia({
+        stubActions: false,
+        createSpy: vi.fn
+      })
+    )
+
+    store = useTrapConfigStore()
+    store.createUserDrawerState.visible = true
+    store.createUserDrawerState.mode = CreateEditMode.Create
+    store.createUserDrawerState.selectedUserIndex = -1
+    store.SnmpV3Users = [selectedUser]
+
+    store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
+    store.closeCreateUserDrawer = vi.fn()
+    store.openCredentialDrawer = vi.fn()
+
+    mapUserToServerMock.mockImplementation((payload) => payload as SnmpV3User)
+    saveTrapdUserMock.mockResolvedValue(undefined)
+    updateTrapdUserMock.mockResolvedValue(undefined)
+  })
+
+  it('does not render when drawer is hidden', () => {
+    store.createUserDrawerState.visible = false
+    const wrapper = mountComponent()
+
+    expect(wrapper.find('[data-test="create-snmpv3-user"]').exists()).toBe(false)
+  })
+
+  it('renders create mode with heading and action buttons', () => {
+    const wrapper = mountComponent()
+
+    expect(wrapper.find('h3').text()).toBe('New SNMPv3 User Management')
+    expect(wrapper.find('[data-test="create-user-button"]').text()).toContain('Create User')
+    expect(wrapper.find('[data-test="cancel-button"]').exists()).toBe(true)
+  })
+
+  it('renders update label and preloads security name in edit mode', async () => {
+    store.createUserDrawerState.mode = CreateEditMode.Edit
+    store.createUserDrawerState.selectedUserIndex = 0
+
+    const wrapper = mountComponent()
+    await nextTick()
+
+    expect(wrapper.find('[data-test="create-user-button"]').text()).toContain('Update User')
+    expect((wrapper.find('input[data-test="security-name-input"]').element as HTMLInputElement).value).toBe('existing-user')
+  })
+
+  it('calls closeCreateUserDrawer from back and cancel buttons', async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findAll('button')[0].trigger('click')
+    await wrapper.find('[data-test="cancel-button"]').trigger('click')
+
+    expect(store.closeCreateUserDrawer).toHaveBeenCalledTimes(2)
+  })
+
+  it('opens credential drawer from auth passphrase button in edit mode', async () => {
+    store.createUserDrawerState.mode = CreateEditMode.Edit
+    store.createUserDrawerState.selectedUserIndex = 0
+
+    const wrapper = mountComponent()
+    await nextTick()
+
+    await wrapper.find('[data-test="auth-passphrase-save-button"]').trigger('click')
+
+    expect(store.openCredentialDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('creates user successfully in create mode', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(mapUserToServerMock).toHaveBeenCalledWith(expect.objectContaining({
+      securityName: 'new-user',
+      securityLevel: expect.any(Number)
+    }))
+    expect(saveTrapdUserMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdUserMock).not.toHaveBeenCalled()
+    expect(store.fetchTrapConfig).toHaveBeenCalledTimes(1)
+    expect(store.closeCreateUserDrawer).toHaveBeenCalledTimes(1)
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user created successfully.' })
+  })
+
+  it('updates user successfully in edit mode', async () => {
+    store.createUserDrawerState.mode = CreateEditMode.Edit
+    store.createUserDrawerState.selectedUserIndex = 0
+
+    const wrapper = mountComponent()
+    await nextTick()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'masked-auth')
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(updateTrapdUserMock).toHaveBeenCalledWith('existing-user', expect.any(Object))
+    expect(saveTrapdUserMock).not.toHaveBeenCalled()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user updated successfully.' })
+  })
+
+  it('shows explicit edit error when selected user has missing securityName', async () => {
+    store.SnmpV3Users = [{ ...selectedUser, securityName: '' }]
+    store.createUserDrawerState.mode = CreateEditMode.Edit
+    store.createUserDrawerState.selectedUserIndex = 0
+
+    const wrapper = mountComponent()
+    await nextTick()
+
+    await setInputValue(wrapper, 'security-name-input', 'replacement-name')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'masked-auth')
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(updateTrapdUserMock).not.toHaveBeenCalled()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Unable to determine the selected SNMPv3 user to update.', error: true })
+  })
+
+  it('shows service error when saveTrapdUser throws Error', async () => {
+    saveTrapdUserMock.mockRejectedValue(new Error('save failed'))
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'save failed', error: true })
+  })
+
+  it('shows generic service error when saveTrapdUser throws non-Error', async () => {
+    saveTrapdUserMock.mockRejectedValue('boom')
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to save SNMPv3 user.', error: true })
+  })
+
+  it('prevents duplicate create requests while saving is in progress', async () => {
+    let resolveSave: () => void = () => undefined
+    saveTrapdUserMock.mockImplementation(
+      () => new Promise<void>((resolve) => {
+        resolveSave = resolve
+      })
+    )
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+
+    await clickButton(wrapper, 'create-user-button')
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(saveTrapdUserMock).toHaveBeenCalledTimes(1)
+
+    resolveSave()
+    await flushPromises()
+  })
+
+  it('shows validation message when trying to save with empty security name', async () => {
+    const wrapper = mountComponent()
+
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+    expect(saveTrapdUserMock).not.toHaveBeenCalled()
+  })
+})

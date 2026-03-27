@@ -73,13 +73,10 @@
             v-model="authPassphrase"
             :error="error.authPassphrase"
           />
-          <FeatherButton
-            icon="Save"
+          <ScvInputIcon
             data-test="auth-passphrase-save-button"
             @click="store.openCredentialDrawer"
-          >
-            <FeatherIcon :icon="Security"> </FeatherIcon>
-          </FeatherButton>
+          />
         </div>
       </div>
       <div
@@ -103,13 +100,10 @@
             v-model="privacyPassphrase"
             :error="error.privacyPassphrase"
           />
-          <FeatherButton
-            icon="Save"
+          <ScvInputIcon
             data-test="privacy-passphrase-save-button"
             @click="store.openCredentialDrawer"
-          >
-            <FeatherIcon :icon="Security"> </FeatherIcon>
-          </FeatherButton>
+          />
         </div>
       </div>
     </div>
@@ -144,11 +138,11 @@ import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import Security from '@featherds/icon/hardware/Security'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
+import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import SearchExistingCredential from './Drawer/SearchExistingCredential.vue'
 
 const store = useTrapConfigStore()
