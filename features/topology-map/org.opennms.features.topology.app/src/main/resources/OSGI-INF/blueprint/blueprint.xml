@@ -52,6 +52,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
     <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
 
 
     <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
@@ -407,6 +408,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
             <argument ref="nodeDao" />
             <argument ref="measurementsService"/>
             <argument ref="snmpInterfaceDao"/>
+            <argument ref="resourceDao"/>
         </bean>
     </service>
     <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
