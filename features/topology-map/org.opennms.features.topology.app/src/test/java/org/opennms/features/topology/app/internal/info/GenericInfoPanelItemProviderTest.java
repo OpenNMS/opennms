@@ -102,8 +102,8 @@ public class GenericInfoPanelItemProviderTest {
     private MeasurementsService m_measurementsService;
     private GenericInfoPanelItemProvider m_genericInfoPanelItemProvider;
     private OnmsNode m_onmsNode;
-    private SnmpInterfaceDao snmpInterfaceDao;
-    private ResourceDao resourceDao;
+    private SnmpInterfaceDao m_snmpInterfaceDao;
+    private ResourceDao m_resourceDao;
 
     private static final int NODE_ID = 10;
 
@@ -119,7 +119,9 @@ public class GenericInfoPanelItemProviderTest {
 
         m_nodeDao = mock(NodeDao.class);
         m_measurementsService = mock(MeasurementsService.class);
-        m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService, snmpInterfaceDao, resourceDao);
+        m_snmpInterfaceDao = mock(SnmpInterfaceDao.class);
+        m_resourceDao = mock(ResourceDao.class);
+        m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService, m_snmpInterfaceDao, m_resourceDao);
         m_onmsNode = new OnmsNode();
         m_onmsNode.setLabel("nodeLabel");
         m_onmsNode.setId(10);
