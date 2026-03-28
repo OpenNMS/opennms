@@ -54,7 +54,6 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
     <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
 
-
     <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
 
     <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
