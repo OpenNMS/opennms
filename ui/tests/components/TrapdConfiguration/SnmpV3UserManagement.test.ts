@@ -1,6 +1,6 @@
-import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
+import SnmpV3UserManagement from '@/components/TrapdConfiguration/SnmpV3UserManagement.vue'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -80,7 +80,7 @@ const DeleteDialogStub = defineComponent({
 })
 
 describe('SnmpV3UserManagement.vue', () => {
-  let store: ReturnType<typeof useTrapConfigStore>
+  let store: ReturnType<typeof useTrapdConfigStore>
   const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
 
   const users: SnmpV3User[] = [
@@ -146,7 +146,7 @@ describe('SnmpV3UserManagement.vue', () => {
       })
     )
 
-    store = useTrapConfigStore()
+    store = useTrapdConfigStore()
     store.createUserDrawerState.visible = false
     store.snmpV3Users = [...users]
     store.trapdConfig = {

@@ -29,15 +29,15 @@
 </template>
 
 <script setup lang="ts">
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
 
 const label = {
   title: 'Snmpv3 User Delete Confirmation'
 }
 const isVisible = ref(false)
-const store = useTrapConfigStore()
+const store = useTrapdConfigStore()
 
 const props = defineProps<{
   visible: boolean,

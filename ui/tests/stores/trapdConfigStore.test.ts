@@ -1,6 +1,6 @@
 import { getDefaultTrapdConfig } from '@/lib/trapdValidator'
 import { getTrapdConfiguration } from '@/services/trapdConfigurationService'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { TrapConfig } from '@/types/trapConfig'
 import { createPinia, setActivePinia } from 'pinia'
@@ -10,8 +10,8 @@ vi.mock('@/services/trapdConfigurationService', () => ({
   getTrapdConfiguration: vi.fn()
 }))
 
-describe('useTrapConfigStore', () => {
-  let store: ReturnType<typeof useTrapConfigStore>
+describe('useTrapdConfigStore', () => {
+  let store: ReturnType<typeof useTrapdConfigStore>
 
   const trapConfigResponse: TrapConfig = {
     snmpTrapAddress: '192.168.0.20',
@@ -39,7 +39,7 @@ describe('useTrapConfigStore', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createPinia())
-    store = useTrapConfigStore()
+    store = useTrapdConfigStore()
   })
 
   it('has the expected initial state', () => {

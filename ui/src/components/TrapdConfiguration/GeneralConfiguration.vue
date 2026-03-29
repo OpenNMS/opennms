@@ -129,7 +129,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
@@ -150,7 +150,7 @@ const batchInterval = ref<number>(DEFAULT_TRAPD_BATCH_INTERVAL)
 const trapConfigError = ref<TrapdConfigurationError>({})
 const isSaveDisabled = ref(true)
 const isSaving = ref(false)
-const store = useTrapConfigStore()
+const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
 
 const onChangeStatus = () => {

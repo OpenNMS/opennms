@@ -4,7 +4,7 @@ import { CreateEditMode } from '@/types'
 import { TrapConfigStoreState } from '@/types/trapConfig'
 import { defineStore } from 'pinia'
 
-export const useTrapConfigStore = defineStore('useTrapConfigStore', {
+export const useTrapdConfigStore = defineStore('useTrapdConfigStore', {
   state: (): TrapConfigStoreState => ({
     isLoading: false,
     trapdConfig: getDefaultTrapdConfig(),

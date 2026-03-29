@@ -139,7 +139,7 @@ import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
@@ -151,7 +151,7 @@ import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
 import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
-const store = useTrapConfigStore()
+const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
 const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as ISelectItemType)
 const securityName = ref<string>('')

@@ -1,4 +1,4 @@
-import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
+import CreateSnmpV3User from '@/components/TrapdConfiguration/CreateSnmpV3User.vue'
 import {
   AUTH_PROTOCOL_OPTIONS,
   getDefaultTrapdConfig,
@@ -8,7 +8,7 @@ import {
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
@@ -76,7 +76,7 @@ const ScvSearchDrawerStub = defineComponent({
 })
 
 describe('CreateSnmpV3User.vue', () => {
-  let store: ReturnType<typeof useTrapConfigStore>
+  let store: ReturnType<typeof useTrapdConfigStore>
   const useScvStoreMock = vi.mocked(useScvStore)
   const mapUserToServerMock = vi.mocked(mapUserToServer)
   const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
@@ -150,7 +150,7 @@ describe('CreateSnmpV3User.vue', () => {
       })
     )
 
-    store = useTrapConfigStore()
+    store = useTrapdConfigStore()
     store.createUserDrawerState.visible = true
     store.createUserDrawerState.mode = CreateEditMode.Create
     store.createUserDrawerState.selectedUserIndex = -1

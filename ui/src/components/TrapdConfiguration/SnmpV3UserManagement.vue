@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { CreateEditMode } from '@/types'
 import { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
@@ -100,7 +100,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
 
-const store = useTrapConfigStore()
+const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
 const tableRecords = ref<SnmpV3User[]>([])
 const deleteUserIndex = ref<number | null>(null)

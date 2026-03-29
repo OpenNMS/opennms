@@ -1,7 +1,7 @@
-import GeneralConfiguration from '@/components/TrapConfiguration/GeneralConfiguration.vue'
+import GeneralConfiguration from '@/components/TrapdConfiguration/GeneralConfiguration.vue'
 import { MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import type { TrapConfig } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
@@ -25,7 +25,7 @@ vi.mock('@/services/trapdConfigurationService', () => ({
 }))
 
 describe('GeneralConfiguration.vue', () => {
-  let store: ReturnType<typeof useTrapConfigStore>
+  let store: ReturnType<typeof useTrapdConfigStore>
   const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
 
   const baseTrapConfig: TrapConfig = {
@@ -81,7 +81,7 @@ describe('GeneralConfiguration.vue', () => {
       })
     )
 
-    store = useTrapConfigStore()
+    store = useTrapdConfigStore()
     store.trapdConfig = cloneDeep(baseTrapConfig)
     store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
 

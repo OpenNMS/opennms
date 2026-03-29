@@ -36,20 +36,20 @@
 
 <script setup lang="ts">
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
-import GeneralConfiguration from '@/components/TrapConfiguration/GeneralConfiguration.vue'
-import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
+import CreateSnmpV3User from '@/components/TrapdConfiguration/CreateSnmpV3User.vue'
+import GeneralConfiguration from '@/components/TrapdConfiguration/GeneralConfiguration.vue'
+import SnmpV3UserManagement from '@/components/TrapdConfiguration/SnmpV3UserManagement.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { validateTrapdXml } from '@/lib/trapdValidator'
 import { uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useMenuStore } from '@/stores/menuStore'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { BreadCrumb } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 
 const menuStore = useMenuStore()
-const store = useTrapConfigStore()
+const store = useTrapdConfigStore()
 const fileInput = ref<HTMLInputElement | null>(null)
 const { showSnackBar } = useSnackbar()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)

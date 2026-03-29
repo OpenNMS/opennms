@@ -1,9 +1,9 @@
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import TrapConfiguration from '@/containers/TrapConfiguration.vue'
+import TrapdConfiguration from '@/containers/TrapdConfiguration.vue'
 import { validateTrapdXml } from '@/lib/trapdValidator'
 import { uploadTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useMenuStore } from '@/stores/menuStore'
-import { useTrapConfigStore } from '@/stores/trapConfigStore'
+import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
@@ -31,15 +31,15 @@ vi.mock('@/services/trapdConfigurationService', () => ({
   uploadTrapdConfiguration: vi.fn()
 }))
 
-describe('TrapConfiguration.vue', () => {
-  let trapStore: ReturnType<typeof useTrapConfigStore>
+describe('TrapdConfiguration.vue', () => {
+  let trapStore: ReturnType<typeof useTrapdConfigStore>
   let menuStore: ReturnType<typeof useMenuStore>
 
   const validateTrapdXmlMock = vi.mocked(validateTrapdXml)
   const uploadTrapdConfigurationMock = vi.mocked(uploadTrapdConfiguration)
 
   const mountComponent = () => {
-    return mount(TrapConfiguration, {
+    return mount(TrapdConfiguration, {
       global: {
         stubs: {
           GeneralConfiguration: true,
@@ -81,7 +81,7 @@ describe('TrapConfiguration.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     setActivePinia(createTestingPinia({ stubActions: true }))
-    trapStore = useTrapConfigStore()
+    trapStore = useTrapdConfigStore()
     menuStore = useMenuStore()
     menuStore.mainMenu = { homeUrl: '/home' } as any
     trapStore.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
