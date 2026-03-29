@@ -447,6 +447,13 @@
           "roles": null
         },
         {
+          "id": "trapdConfiguration",
+          "name": "Trapd Configuration",
+          "url": "ui/index.html#/trapd-config",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
           "id": "externalRequisitions",
           "name": "External Requisitions",
           "url": "ui/index.html#/configuration",
