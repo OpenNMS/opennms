@@ -94,6 +94,14 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     }
 
     @Override
+    public OnmsSnmpInterface findByNodeIdAndIfName(Integer nodeId, String ifName) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(ifName, "ifName may not be null");
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifName = ?",
+            nodeId, ifName);
+    }
+
+    @Override
     public void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes) {
         getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set last_ingress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
                 .setParameter("nodeid", nodeId)
