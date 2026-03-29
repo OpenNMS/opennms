@@ -30,8 +30,10 @@
           aria-label="SCV Search Results Table"
         >
           <thead>
-            <th>Alias</th>
-            <th>Key</th>
+            <tr>
+              <th>Alias</th>
+              <th>Key</th>
+            </tr>
           </thead>
           <tbody v-if="filteredResults.length > 0">
             <tr

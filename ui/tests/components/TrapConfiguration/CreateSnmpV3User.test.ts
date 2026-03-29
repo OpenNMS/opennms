@@ -1,7 +1,13 @@
 import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
-import { AUTH_PROTOCOL_OPTIONS, getDefaultTrapdConfig, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
+import {
+  AUTH_PROTOCOL_OPTIONS,
+  getDefaultTrapdConfig,
+  PRIVACY_PROTOCOL_OPTIONS,
+  SECURITY_LEVEL_OPTIONS
+} from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
+import { useScvStore } from '@/stores/scvStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
@@ -11,8 +17,9 @@ import { setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
 
-const { showSnackBarMock } = vi.hoisted(() => ({
-  showSnackBarMock: vi.fn()
+const { showSnackBarMock, populateScvMock } = vi.hoisted(() => ({
+  showSnackBarMock: vi.fn(),
+  populateScvMock: vi.fn().mockResolvedValue(undefined)
 }))
 
 vi.mock('@/composables/useSnackbar', () => ({
@@ -27,6 +34,12 @@ vi.mock('@/mappers/trapdConfig.mapper', () => ({
 
 vi.mock('@/services/trapdConfigurationService', () => ({
   updateTrapdConfiguration: vi.fn()
+}))
+
+vi.mock('@/stores/scvStore', () => ({
+  useScvStore: vi.fn(() => ({
+    populate: populateScvMock
+  }))
 }))
 
 const FeatherInputStub = defineComponent({
@@ -46,11 +59,25 @@ const FeatherInputStub = defineComponent({
     }
   },
   emits: ['update:modelValue'],
-  template: '<input :data-test="dataTest || label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
+  template:
+    '<input :data-test="dataTest || label" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
+})
+
+const ScvSearchDrawerStub = defineComponent({
+  name: 'ScvSearchDrawer',
+  props: {
+    isOpen: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['hidden', 'itemSelected'],
+  template: '<div data-test="scv-search-drawer" :data-open="String(isOpen)" />'
 })
 
 describe('CreateSnmpV3User.vue', () => {
   let store: ReturnType<typeof useTrapConfigStore>
+  const useScvStoreMock = vi.mocked(useScvStore)
   const mapUserToServerMock = vi.mocked(mapUserToServer)
   const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
 
@@ -71,7 +98,6 @@ describe('CreateSnmpV3User.vue', () => {
           TableCard: {
             template: '<div><slot /></div>'
           },
-          SearchExistingCredential: true,
           FeatherIcon: true,
           FeatherInput: FeatherInputStub,
           'feather-input': FeatherInputStub,
@@ -81,6 +107,7 @@ describe('CreateSnmpV3User.vue', () => {
             emits: ['click'],
             template: '<button :data-test="$attrs[\'data-test\']" @click="$emit(\'click\')" />'
           },
+          ScvSearchDrawer: ScvSearchDrawerStub,
           FeatherButton: {
             props: ['dataTest', 'disabled'],
             emits: ['click'],
@@ -136,9 +163,17 @@ describe('CreateSnmpV3User.vue', () => {
     store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
     store.closeCreateUserDrawer = vi.fn()
     store.openCredentialDrawer = vi.fn()
+    store.closeCredentialDrawer = vi.fn()
 
     mapUserToServerMock.mockImplementation((payload) => payload as SnmpV3User)
     updateTrapdConfigurationMock.mockResolvedValue(undefined)
+  })
+
+  it('calls scvStore.populate on mount', () => {
+    mountComponent()
+
+    expect(useScvStoreMock).toHaveBeenCalledTimes(1)
+    expect(populateScvMock).toHaveBeenCalledTimes(1)
   })
 
   it('does not render when drawer is hidden', () => {
@@ -162,9 +197,12 @@ describe('CreateSnmpV3User.vue', () => {
 
     const wrapper = mountComponent()
     await nextTick()
+    await nextTick()
 
     expect(wrapper.find('[data-test="create-user-button"]').text()).toContain('Update User')
-    expect((wrapper.find('input[data-test="security-name-input"]').element as HTMLInputElement).value).toBe('existing-user')
+    expect((wrapper.find('input[data-test="security-name-input"]').element as HTMLInputElement).value).toBe(
+      'existing-user'
+    )
   })
 
   it('calls closeCreateUserDrawer from back and cancel buttons', async () => {
@@ -185,7 +223,69 @@ describe('CreateSnmpV3User.vue', () => {
 
     await wrapper.find('[data-test="auth-passphrase-save-button"]').trigger('click')
 
-    expect(store.openCredentialDrawer).toHaveBeenCalledTimes(1)
+    expect(store.openCredentialDrawer).toHaveBeenCalledWith('auth')
+  })
+
+  it('opens credential drawer from privacy passphrase button when privacy row is visible', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await wrapper.find('[data-test="privacy-passphrase-save-button"]').trigger('click')
+
+    expect(store.openCredentialDrawer).toHaveBeenCalledWith('privacy')
+  })
+
+  it('toggles auth/privacy rows based on security level', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+    expect(wrapper.find('[data-test="auth-passphrase-input"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="privacy-passphrase-input"]').exists()).toBe(false)
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    expect(wrapper.find('[data-test="auth-passphrase-input"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="privacy-passphrase-input"]').exists()).toBe(false)
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    expect(wrapper.find('[data-test="auth-passphrase-input"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="privacy-passphrase-input"]').exists()).toBe(true)
+  })
+
+  it('clears dependent values when security level is lowered to noAuthNoPriv', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'privacyProtocol', PRIVACY_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'auth-secret')
+    await setBindingValue(wrapper, 'privacyPassphrase', 'privacy-secret')
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
+
+    expect((wrapper.vm as any).authProtocol).toBeUndefined()
+    expect((wrapper.vm as any).privacyProtocol).toBeUndefined()
+    expect((wrapper.vm as any).authPassphrase).toBe('')
+    expect((wrapper.vm as any).privacyPassphrase).toBe('')
+  })
+
+  it('fills auth passphrase from SCV selection and closes SCV drawer', async () => {
+    const wrapper = mountComponent()
+    store.credentialDrawerState.key = 'auth'
+    ;(wrapper.vm as any).scvItemSelected({ alias: 'vault', key: 'auth-key' })
+    await nextTick()
+
+    expect((wrapper.vm as any).authPassphrase).toBe('${scv:vault:auth-key}')
+    expect(store.closeCredentialDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('fills privacy passphrase from SCV selection and closes SCV drawer', async () => {
+    const wrapper = mountComponent()
+    store.credentialDrawerState.key = 'privacy'
+    ;(wrapper.vm as any).scvItemSelected({ alias: 'vault', key: 'privacy-key' })
+    await nextTick()
+
+    expect((wrapper.vm as any).privacyPassphrase).toBe('${scv:vault:privacy-key}')
+    expect(store.closeCredentialDrawer).toHaveBeenCalledTimes(1)
   })
 
   it('creates user successfully in create mode', async () => {
@@ -195,16 +295,18 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[0])
     await clickButton(wrapper, 'create-user-button')
 
-    expect(mapUserToServerMock).toHaveBeenCalledWith(expect.objectContaining({
-      securityName: 'new-user',
-      securityLevel: expect.any(Number)
-    }))
+    expect(mapUserToServerMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        securityName: 'new-user',
+        securityLevel: expect.any(Number)
+      })
+    )
     expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
-    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
-      snmpv3User: expect.arrayContaining([
-        expect.objectContaining({ securityName: 'new-user' })
-      ])
-    }))
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        snmpv3User: expect.arrayContaining([expect.objectContaining({ securityName: 'new-user' })])
+      })
+    )
     expect(store.fetchTrapConfig).toHaveBeenCalledTimes(1)
     expect(store.closeCreateUserDrawer).toHaveBeenCalledTimes(1)
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user created successfully.' })
@@ -223,11 +325,11 @@ describe('CreateSnmpV3User.vue', () => {
     await clickButton(wrapper, 'create-user-button')
 
     expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
-    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
-      snmpv3User: expect.arrayContaining([
-        expect.objectContaining({ securityName: 'existing-user' })
-      ])
-    }))
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        snmpv3User: expect.arrayContaining([expect.objectContaining({ securityName: 'existing-user' })])
+      })
+    )
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user updated successfully.' })
   })
 
@@ -248,7 +350,10 @@ describe('CreateSnmpV3User.vue', () => {
     expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
     expect(store.fetchTrapConfig).not.toHaveBeenCalled()
     expect(store.closeCreateUserDrawer).not.toHaveBeenCalled()
-    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Unable to determine the selected SNMPv3 user to update.', error: true })
+    expect(showSnackBarMock).toHaveBeenCalledWith({
+      msg: 'Unable to determine the selected SNMPv3 user to update.',
+      error: true
+    })
   })
 
   it('requires auth protocol and auth passphrase for auth-only security level', async () => {
@@ -259,7 +364,10 @@ describe('CreateSnmpV3User.vue', () => {
     await clickButton(wrapper, 'create-user-button')
 
     expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
-    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+    expect(showSnackBarMock).toHaveBeenCalledWith({
+      msg: 'Please fix validation errors before saving.',
+      error: true
+    })
   })
 
   it('requires privacy protocol and privacy passphrase for auth-priv security level', async () => {
@@ -272,7 +380,10 @@ describe('CreateSnmpV3User.vue', () => {
     await clickButton(wrapper, 'create-user-button')
 
     expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
-    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+    expect(showSnackBarMock).toHaveBeenCalledWith({
+      msg: 'Please fix validation errors before saving.',
+      error: true
+    })
   })
 
   it('shows service error when updateTrapdConfiguration throws Error', async () => {
@@ -300,9 +411,10 @@ describe('CreateSnmpV3User.vue', () => {
   it('prevents duplicate create requests while saving is in progress', async () => {
     let resolveSave: () => void = () => undefined
     updateTrapdConfigurationMock.mockImplementation(
-      () => new Promise<void>((resolve) => {
-        resolveSave = resolve
-      })
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSave = resolve
+        })
     )
     const wrapper = mountComponent()
 
@@ -323,7 +435,10 @@ describe('CreateSnmpV3User.vue', () => {
 
     await clickButton(wrapper, 'create-user-button')
 
-    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+    expect(showSnackBarMock).toHaveBeenCalledWith({
+      msg: 'Please fix validation errors before saving.',
+      error: true
+    })
     expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
   })
 })
