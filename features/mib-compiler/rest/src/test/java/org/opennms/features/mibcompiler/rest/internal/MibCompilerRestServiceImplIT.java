@@ -30,6 +30,10 @@ import org.junit.AfterClass;
 import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileInfo;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.core.Response;
 import java.io.File;
@@ -82,9 +86,13 @@ public class MibCompilerRestServiceImplIT {
         deleteChildren(compiledDir);
 
         MibParser parser = mock(MibParser.class);
-        MibCompilerFileService fileService = new MibCompilerFileService(parser);
+        EventConfSourceDao eventConfSourceDao = mock(EventConfSourceDao.class);
+        EventConfEventDao eventConfEventDao = mock(EventConfEventDao.class);
+        EventConfDao eventConfDao = mock(EventConfDao.class);
+        TransactionOperations operations = mock(TransactionOperations.class);
 
-        service = new MibCompilerRestServiceImpl(fileService);
+
+        service = new MibCompilerRestServiceImpl(parser,eventConfSourceDao,eventConfEventDao,eventConfDao,operations);
     }
 
     @After
@@ -231,11 +239,8 @@ public class MibCompilerRestServiceImplIT {
 
     @Test
     public void uploadMib_shouldReturn409WhenBaseNameAlreadyExistsInPending() throws Exception {
-        // Create a file with same baseName IF-MIB in pending
         Files.writeString(new File(pendingDir, "IF-MIB.mib").toPath(), "existing", StandardCharsets.UTF_8);
-
         Response r = service.uploadMib("new".getBytes(StandardCharsets.UTF_8), "IF-MIB.txt");
-
         assertEquals(409, r.getStatus());
     }
 

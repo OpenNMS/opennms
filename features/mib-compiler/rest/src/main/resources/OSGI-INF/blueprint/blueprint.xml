@@ -6,13 +6,18 @@
 ">
 
     <reference id="mibParser" interface="org.opennms.features.mibcompiler.api.MibParser" availability="mandatory"/>
+    <reference id="eventConfSourceDao" interface="org.opennms.netmgt.dao.api.EventConfSourceDao" availability="mandatory"/>
+    <reference id="eventConfEventDao" interface="org.opennms.netmgt.dao.api.EventConfEventDao" availability="mandatory"/>
+    <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+    <reference id="operations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
-    <bean id="mibCompilerFileService" class="org.opennms.features.mibcompiler.rest.internal.MibCompilerFileService">
-        <argument ref="mibParser"/>
-    </bean>
 
     <bean id="mibCompilerRestService" class="org.opennms.features.mibcompiler.rest.internal.MibCompilerRestServiceImpl">
-        <argument ref="mibCompilerFileService"/>
+        <argument ref="mibParser"/>
+        <argument ref="eventConfSourceDao"/>
+        <argument ref="eventConfEventDao"/>
+        <argument ref="eventConfDao"/>
+        <argument ref="operations"/>
     </bean>
 
     <service interface="org.opennms.features.mibcompiler.rest.MibCompilerRestService" ref="mibCompilerRestService">

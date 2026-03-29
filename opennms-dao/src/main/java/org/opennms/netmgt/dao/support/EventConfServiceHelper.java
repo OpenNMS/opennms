@@ -25,10 +25,13 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +76,31 @@ public class EventConfServiceHelper {
         eventConfEvent.setLastModified(timestamp);
         eventConfEvent.setModifiedBy(username);
         return eventConfEventDao.save(eventConfEvent);
+    }
+
+
+    public static EventConfSource createOrUpdateSource(EventConfSourceDao eventConfSourceDao,final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
+        EventConfSource source = eventConfSourceDao.findByName(eventConfSourceMetadataDto.getFilename());
+        if (source == null) {
+            source = new EventConfSource();
+            source.setCreatedTime(eventConfSourceMetadataDto.getNow());
+            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
+        }
+        source.setName(eventConfSourceMetadataDto.getFilename());
+        source.setEventCount(eventConfSourceMetadataDto.getEventCount());
+        source.setEnabled(true);
+        source.setUploadedBy(eventConfSourceMetadataDto.getUsername());
+        source.setLastModified(eventConfSourceMetadataDto.getNow());
+        source.setVendor(eventConfSourceMetadataDto.getVendor());
+        source.setDescription(eventConfSourceMetadataDto.getDescription());
+        eventConfSourceDao.saveOrUpdate(source);
+        return eventConfSourceDao.get(source.getId());
+    }
+
+    public static  void saveEvents(EventConfEventDao eventConfEventDao,EventConfSource source, Events events, String username, Date now) {
+        List<EventConfEvent> eventEntities = EventConfServiceHelper.createEventConfEventEntities(
+                source, events.getEvents(), username, now);
+        eventConfEventDao.saveAll(eventEntities);
     }
 
     /**

@@ -22,8 +22,6 @@
 package org.opennms.features.mibcompiler.rest.internal;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.features.mibcompiler.api.MibParser;
-import org.opennms.features.mibcompiler.rest.model.CompileMibResult;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,11 +41,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class MibCompilerFileService {
+public class MibCompilerServiceUtil {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MibCompilerFileService.class);
-
-    private final MibParser mibParser;
+    private static final Logger LOG = LoggerFactory.getLogger(MibCompilerServiceUtil.class);
 
     public static final String DEFAULT_MIB_EXTENSION = ".mib";
 
@@ -62,18 +59,12 @@ public class MibCompilerFileService {
     /** The Constant MIBS_COMPILED_DIR. */
     private static final File MIBS_COMPILED_DIR = new File(MIBS_ROOT_DIR, COMPILED_DIR);
 
-    public MibCompilerFileService(MibParser mibParser) {
-        this.mibParser = mibParser;
-        mibParser.setMibDirectory(MIBS_COMPILED_DIR);
-
-        LOG.debug("Initialized {} with MIB directories: root={}, pending={}, compiled={}",
-                getClass().getSimpleName(),
-                MIBS_ROOT_DIR.getAbsolutePath(),
-                MIBS_PENDING_DIR.getAbsolutePath(),
-                MIBS_COMPILED_DIR.getAbsolutePath());
+    /** Expose compiled dir for consumers that need to configure parsers, etc. */
+    public static File getCompiledDir() {
+        return MIBS_COMPILED_DIR;
     }
 
-    public boolean baseNameExistsInPendingOrCompiled(final String baseName) throws Exception {
+    public static boolean baseNameExistsInPendingOrCompiled(final String baseName) throws Exception {
         final boolean existsPending = baseNameExists(MIBS_PENDING_DIR, baseName);
         final boolean existsCompiled = baseNameExists(MIBS_COMPILED_DIR, baseName);
         final boolean exists = existsPending || existsCompiled;
@@ -88,11 +79,11 @@ public class MibCompilerFileService {
      * Save a file to pending with a normalized name: {baseName}{extension}
      * Example: baseName="IF-MIB", extension=".mib" -> IF-MIB.mib
      */
-    public File saveToPending(final String baseName,
-                              final String extension,
-                              final InputStream content) throws Exception {
+    public static File saveToPending(final String baseName,
+                                     final String extension,
+                                     final InputStream content) throws Exception {
 
-        if (baseName == null || baseName.isBlank()) {
+        if (isBlank(baseName)) {
             LOG.warn("saveToPending called with blank baseName");
             throw new IllegalArgumentException("baseName must not be blank.");
         }
@@ -109,7 +100,7 @@ public class MibCompilerFileService {
                 baseName, ext, target.getAbsolutePath());
 
         try (FileOutputStream out = new FileOutputStream(target)) {
-            content.transferTo(out);
+            copy(content, out);
         }
 
         LOG.debug("Saved pending MIB: {}", target.getAbsolutePath());
@@ -117,69 +108,48 @@ public class MibCompilerFileService {
     }
 
     /**
-     * Compile (parse/validate) a file that already exists in the pending directory, then move it
-     * to the compiled directory, forcing a ".mib" extension.
+     * Find a single pending file by base name (no parsing/validation here).
+     * @return the pending File or null if not found
+     * @throws IllegalStateException if multiple matches exist
      */
-    public CompileMibResult compilePendingByBaseName(final String baseName) throws Exception {
-        if (baseName == null || baseName.isBlank()) {
-            LOG.warn("compilePendingByBaseName called with blank baseName");
-            return CompileMibResult.invalidRequest("baseName must not be blank.");
+    public static File findPendingByBaseName(final String baseName) throws Exception {
+        if (isBlank(baseName)) {
+            throw new IllegalArgumentException("baseName must not be blank.");
         }
 
         ensureDirExists(MIBS_PENDING_DIR);
+
+        final String normalizedBaseName = stripPathAndExtension(baseName);
+        if (isBlank(normalizedBaseName)) {
+            throw new IllegalArgumentException("baseName must not be blank.");
+        }
+
+        return findSingleByBaseName(MIBS_PENDING_DIR, normalizedBaseName);
+    }
+
+    /**
+     * Move a pending file to compiled directory, forcing ".mib" extension.
+     * This assumes validation/parsing has already happened elsewhere.
+     */
+    public static File movePendingToCompiled(final File pendingFile, final String baseName) throws Exception {
+        if (pendingFile == null) {
+            throw new IllegalArgumentException("pendingFile must not be null.");
+        }
+        if (isBlank(baseName)) {
+            throw new IllegalArgumentException("baseName must not be blank.");
+        }
+
         ensureDirExists(MIBS_COMPILED_DIR);
 
         final String normalizedBaseName = stripPathAndExtension(baseName);
-        if (normalizedBaseName == null || normalizedBaseName.isBlank()) {
-            LOG.warn("compilePendingByBaseName(baseName={}) resulted in blank normalized base name", baseName);
-            return CompileMibResult.invalidRequest("baseName must not be blank.");
+        if (isBlank(normalizedBaseName)) {
+            throw new IllegalArgumentException("baseName must not be blank.");
         }
 
-        LOG.info("Compiling pending MIB: requestedBaseName={}, normalizedBaseName={}", baseName, normalizedBaseName);
-
-        final File pendingFile;
-        try {
-            pendingFile = findSingleByBaseName(MIBS_PENDING_DIR, normalizedBaseName);
-        } catch (IllegalStateException e) {
-            LOG.error("Multiple pending files found for baseName={} in dir={}: {}",
-                    normalizedBaseName, MIBS_PENDING_DIR.getAbsolutePath(), e.getMessage(), e);
-            throw e;
-        }
-
-        if (pendingFile == null) {
-            LOG.warn("No pending file found for baseName={} in dir={}", normalizedBaseName, MIBS_PENDING_DIR.getAbsolutePath());
-            return CompileMibResult.notFound("No pending file found with base name '" + normalizedBaseName + "'.");
-        }
-
-        LOG.debug("Found pending file to compile: {}", pendingFile.getAbsolutePath());
-
-        final boolean parsed;
-        try {
-            parsed = mibParser.parseMib(pendingFile);
-        } catch (RuntimeException e) {
-            // If the parser can throw, treat as unexpected
-            LOG.error("Unexpected error while parsing MIB file: {}", pendingFile.getAbsolutePath(), e);
-            throw e;
-        }
-
-        if (!parsed) {
-            final var missingDeps = mibParser.getMissingDependencies();
-            if (missingDeps != null && !missingDeps.isEmpty()) {
-                LOG.warn("MIB compilation failed due to missing dependencies: baseName={}, file={}, missingDependencies={}",
-                        normalizedBaseName, pendingFile.getName(), missingDeps);
-                return CompileMibResult.missingDependencies("Missing dependencies: " + missingDeps, missingDeps);
-            }
-            final String errors = mibParser.getFormattedErrors();
-            LOG.warn("MIB validation failed: baseName={}, file={}, errors={}",
-                    normalizedBaseName, pendingFile.getName(), errors);
-            return CompileMibResult.validationFailed("MIB validation failed.", errors);
-        }
-
-        // Move to compiled and force .mib extension
         final File destFile = new File(MIBS_COMPILED_DIR, normalizedBaseName + DEFAULT_MIB_EXTENSION);
         if (destFile.exists()) {
             LOG.warn("Compilation conflict: destination file already exists: {}", destFile.getAbsolutePath());
-            return CompileMibResult.conflict("Compiled file already exists: " + destFile.getName());
+            throw new IllegalStateException("Compiled file already exists: " + destFile.getName());
         }
 
         LOG.info("Moving compiled MIB from pending to compiled: from={}, to={}",
@@ -187,17 +157,17 @@ public class MibCompilerFileService {
 
         Files.move(pendingFile.toPath(), destFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
 
-        LOG.info("MIB compiled successfully: baseName={}, compiledFile={}",
+        LOG.info("Moved MIB to compiled: baseName={}, compiledFile={}",
                 normalizedBaseName, destFile.getAbsolutePath());
 
-        return CompileMibResult.success(pendingFile, destFile);
+        return destFile;
     }
 
-    public List<MibCompilerFileInfo> listPendingAndCompiledFiles() throws IOException {
+    public static List<MibCompilerFileInfo> listPendingAndCompiledFiles() throws IOException {
         ensureDirExists(MIBS_PENDING_DIR);
         ensureDirExists(MIBS_COMPILED_DIR);
 
-        final List<MibCompilerFileInfo> results = new ArrayList<>();
+        final List<MibCompilerFileInfo> results = new ArrayList<MibCompilerFileInfo>();
         results.addAll(listFilesInDir(MIBS_PENDING_DIR, MibCompilerFileInfo.Location.PENDING));
         results.addAll(listFilesInDir(MIBS_COMPILED_DIR, MibCompilerFileInfo.Location.COMPILED));
 
@@ -211,11 +181,11 @@ public class MibCompilerFileService {
         return results;
     }
 
-    public boolean deleteFile(final String location, final String fileName) throws IOException {
-        if (location == null || location.isBlank()) {
+    public static boolean deleteFile(final String location, final String fileName) throws IOException {
+        if (isBlank(location)) {
             throw new IllegalArgumentException("location must not be blank.");
         }
-        if (fileName == null || fileName.isBlank()) {
+        if (isBlank(fileName)) {
             throw new IllegalArgumentException("fileName must not be blank.");
         }
 
@@ -240,7 +210,7 @@ public class MibCompilerFileService {
         return true;
     }
 
-    public String readTextFile(final String location, final String fileName) throws java.io.IOException {
+    public static String readTextFile(final String location, final String fileName) throws IOException {
         final File dir = resolveLocationDir(location);
         ensureDirExists(dir);
 
@@ -253,10 +223,11 @@ public class MibCompilerFileService {
             throw new IllegalStateException("Target is not a regular file: " + fileName);
         }
 
-        return Files.readString(target, StandardCharsets.UTF_8);
+        byte[] bytes = Files.readAllBytes(target);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public void writeBinaryFile(final String location, final String fileName, final byte[] contents) throws IOException {
+    public static void writeBinaryFile(final String location, final String fileName, final byte[] contents) throws IOException {
         final File dir = resolveLocationDir(location);
         ensureDirExists(dir);
 
@@ -272,8 +243,22 @@ public class MibCompilerFileService {
         Files.write(target, contents);
     }
 
+    /** Helper for REST: does file exist at location/fileName? */
+    public static boolean exists(final String location, final String fileName) throws IOException {
+        final File dir = resolveLocationDir(location);
+        ensureDirExists(dir);
+        final Path target = new File(dir, fileName).toPath();
+        return Files.exists(target) && Files.isRegularFile(target);
+    }
+
+    /** Helper for REST: get File handle for location/fileName (no existence guarantee). */
+    public static File getFile(final String location, final String fileName) {
+        final File dir = resolveLocationDir(location);
+        return new File(dir, fileName);
+    }
+
     private static File resolveLocationDir(final String location) {
-        if (location == null || location.isBlank()) {
+        if (isBlank(location)) {
             throw new IllegalArgumentException("location must not be blank.");
         }
         switch (location.toLowerCase()) {
@@ -291,7 +276,7 @@ public class MibCompilerFileService {
             return Collections.emptyList();
         }
 
-        final List<MibCompilerFileInfo> out = new ArrayList<>();
+        final List<MibCompilerFileInfo> out = new ArrayList<MibCompilerFileInfo>();
         try (Stream<Path> stream = Files.list(dir.toPath())) {
             stream.filter(Files::isRegularFile)
                     .sorted(Comparator.comparing(p -> p.getFileName().toString()))
@@ -310,8 +295,8 @@ public class MibCompilerFileService {
             return null;
         }
 
-        final List<Path> matches = new ArrayList<>();
-        try (var stream = Files.list(dir.toPath())) {
+        final List<Path> matches = new ArrayList<Path>();
+        try (Stream<Path> stream = Files.list(dir.toPath())) {
             stream.filter(Files::isRegularFile).forEach(p -> {
                 final String bn = stripPathAndExtension(p.getFileName().toString());
                 if (baseName.equals(bn)) {
@@ -351,25 +336,19 @@ public class MibCompilerFileService {
         LOG.debug("Created directory: {}", dir.getAbsolutePath());
     }
 
-    /**
-     * Checks if any file in {@code dir} has the given basename (basename comparison, not full filename).
-     */
     private static boolean baseNameExists(final File dir, final String baseName) throws Exception {
         if (dir == null || !dir.exists() || !dir.isDirectory()) {
             LOG.debug("baseNameExists: dir missing or not a directory: dir={}, baseName={}",
                     dir == null ? null : dir.getAbsolutePath(), baseName);
             return false;
         }
-        try (var stream = Files.list(dir.toPath())) {
+        try (Stream<Path> stream = Files.list(dir.toPath())) {
             final boolean found = stream.anyMatch(p -> baseName.equals(stripPathAndExtension(p.getFileName().toString())));
             LOG.debug("baseNameExists: dir={}, baseName={}, found={}", dir.getAbsolutePath(), baseName, found);
             return found;
         }
     }
 
-    /**
-     * Removes any path segments and strips the extension.
-     */
     public static String stripPathAndExtension(final String filename) {
         if (filename == null) return null;
 
@@ -393,7 +372,7 @@ public class MibCompilerFileService {
 
     public static String normalizeExtension(final String extension, final String defaultExt) {
         String ext = extension;
-        if (ext == null || ext.isBlank()) {
+        if (isBlank(ext)) {
             ext = defaultExt;
         }
         ext = ext.trim();
@@ -401,5 +380,20 @@ public class MibCompilerFileService {
             ext = "." + ext;
         }
         return ext;
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    private static long copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[8192];
+        long total = 0;
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+            total += read;
+        }
+        return total;
     }
 }

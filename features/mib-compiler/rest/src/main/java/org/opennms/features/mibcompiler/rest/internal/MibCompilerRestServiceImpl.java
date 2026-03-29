@@ -21,11 +21,23 @@
  */
 package org.opennms.features.mibcompiler.rest.internal;
 
+import org.apache.commons.lang.StringUtils;
+import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.mibcompiler.rest.MibCompilerRestService;
-import org.opennms.features.mibcompiler.rest.model.CompileMibResult;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
+import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequest;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -37,6 +49,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.Date;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 public class MibCompilerRestServiceImpl implements MibCompilerRestService {
 
@@ -45,10 +60,24 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
     private static final String UNKNOWN_FILENAME = "unknown";
     private static final int MAX_FILENAME_LENGTH = 255;
 
-    private final MibCompilerFileService mibCompilerFileService;
+    private final MibParser mibParser;
+    private final EventConfSourceDao eventConfSourceDao;
+    private final EventConfEventDao eventConfEventDao;
+    private final EventConfDao eventConfDao;
+    private final TransactionOperations operations;
 
-    public MibCompilerRestServiceImpl(final MibCompilerFileService mibCompilerFileService) {
-        this.mibCompilerFileService = Objects.requireNonNull(mibCompilerFileService, "mibCompilerFileService must not be null");
+    private final ExecutorService eventConfExecutor =
+            EventConfServiceHelper.createEventConfExecutor("load-eventConf-%d");
+
+    public MibCompilerRestServiceImpl(
+            final MibParser mibParser, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfDao eventConfDao, TransactionOperations operations) {
+        this.mibParser = Objects.requireNonNull(mibParser, "mibParser must not be null");
+        this.eventConfSourceDao = eventConfSourceDao;
+        this.eventConfEventDao = eventConfEventDao;
+        this.eventConfDao = eventConfDao;
+        this.operations = operations;
+
+        this.mibParser.setMibDirectory(MibCompilerServiceUtil.getCompiledDir());
     }
 
     @Override
@@ -57,7 +86,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         final List<Map<String, Object>> errorList = new ArrayList<>();
 
         final String originalFilename = safeFilename(filename);
-        final String baseName = MibCompilerFileService.stripPathAndExtension(originalFilename);
+        final String baseName = MibCompilerServiceUtil.stripPathAndExtension(originalFilename);
 
         if (isBlank(baseName)) {
             LOG.warn("Skipping upload with invalid filename: {}", originalFilename);
@@ -73,19 +102,19 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             return buildResponse(Response.Status.BAD_REQUEST, successList, errorList);
         }
 
-        if (mibCompilerFileService.baseNameExistsInPendingOrCompiled(baseName)) {
+        if (MibCompilerServiceUtil.baseNameExistsInPendingOrCompiled(baseName)) {
             errorList.add(error(originalFilename, baseName,
                     "A MIB with the same base name already exists in pending/ or compiled/."));
             return buildResponse(Response.Status.CONFLICT, successList, errorList);
         }
 
-        final String ext = MibCompilerFileService.normalizeExtension(
+        final String ext = MibCompilerServiceUtil.normalizeExtension(
                 getExtensionOrDefault(originalFilename),
-                MibCompilerFileService.DEFAULT_MIB_EXTENSION
+                MibCompilerServiceUtil.DEFAULT_MIB_EXTENSION
         );
 
         try (InputStream in = new ByteArrayInputStream(mibContent)) {
-            final File saved = mibCompilerFileService.saveToPending(baseName, ext, in);
+            final File saved = MibCompilerServiceUtil.saveToPending(baseName, ext, in);
 
             final Map<String, Object> success = new LinkedHashMap<>();
             success.put("filename", originalFilename);
@@ -105,87 +134,84 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
 
     @Override
     public Response compileMib(final String name) throws Exception {
-
-        final CompileMibResult result = mibCompilerFileService.compilePendingByBaseName(name);
-
-        switch (result.getStatus()) {
-
-            case SUCCESS: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("message", result.getMessage());
-                response.put("mibName", safeName(name));
-                response.put("compiledFile", fileNameOnly(result.getCompiledFile()));
-
-                return Response.ok(response).build();
-            }
-
-            case NOT_FOUND: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", result.getMessage());
-                response.put("mibName", safeName(name));
-
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(response)
-                        .build();
-            }
-
-            case INVALID_REQUEST: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", result.getMessage());
-                response.put("mibName", safeName(name));
-
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(response)
-                        .build();
-            }
-
-            case MISSING_DEPENDENCIES:
-            case CONFLICT: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", result.getMessage());
-                response.put("mibName", safeName(name));
-                response.put("missingDependencies", emptyToNull(result.getMissingDependencies()));
-
-                return Response.status(Response.Status.CONFLICT)
-                        .entity(response)
-                        .build();
-            }
-
-            case VALIDATION_FAILED: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", result.getMessage());
-                response.put("mibName", safeName(name));
-                response.put("errors", result.getFormattedErrors());
-
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(response)
-                        .build();
-            }
-
-            default: {
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", "Unexpected status: " + result.getStatus());
-                response.put("mibName", safeName(name));
-
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(response)
-                        .build();
-            }
+        // 1) Validate request
+        final String baseName = MibCompilerServiceUtil.stripPathAndExtension(safeName(name));
+        if (isBlank(baseName)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "baseName must not be blank.");
+            response.put("mibName", safeName(name));
+            return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
         }
-    }
 
+        // 2) Resolve pending file
+        final File pendingFile;
+        try {
+            pendingFile = MibCompilerServiceUtil.findPendingByBaseName(baseName);
+        } catch (IllegalStateException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            response.put("mibName", safeName(name));
+            return Response.status(Response.Status.CONFLICT).entity(response).build();
+        }
+
+        if (pendingFile == null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "No pending file found with base name '" + baseName + "'.");
+            response.put("mibName", safeName(name));
+            return Response.status(Response.Status.NOT_FOUND).entity(response).build();
+        }
+
+        // 3) Parse/validate using mibParser (now owned by REST)
+        final boolean parsed = mibParser.parseMib(pendingFile);
+        if (!parsed) {
+            final var missingDeps = mibParser.getMissingDependencies();
+            if (missingDeps != null && !missingDeps.isEmpty()) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", false);
+                response.put("message", "Missing dependencies: " + missingDeps);
+                response.put("mibName", safeName(name));
+                response.put("missingDependencies", missingDeps);
+                return Response.status(Response.Status.CONFLICT).entity(response).build();
+            }
+
+            final String errors = mibParser.getFormattedErrors();
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "MIB validation failed.");
+            response.put("mibName", safeName(name));
+            response.put("errors", errors);
+            return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+        }
+
+        // 4) Parsed OK: move to compiled
+        final File compiledFile;
+        try {
+            compiledFile = MibCompilerServiceUtil.movePendingToCompiled(pendingFile, baseName);
+        } catch (IllegalStateException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            response.put("mibName", safeName(name));
+            return Response.status(Response.Status.CONFLICT).entity(response).build();
+        }
+
+        // 5) Success response
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "MIB compiled successfully.");
+        response.put("mibName", safeName(name));
+        response.put("compiledFile", fileNameOnly(compiledFile));
+        return Response.ok(response).build();
+    }
     @Override
     public Response listPendingAndCompiledFiles() {
         LOG.debug("REST request: list mib compiler files");
 
         try {
-            final var files = mibCompilerFileService.listPendingAndCompiledFiles();
+            final var files = MibCompilerServiceUtil.listPendingAndCompiledFiles();
             return Response.ok(files).build();
         } catch (java.io.IOException e) {
             LOG.error("I/O error while listing mib compiler files", e);
@@ -207,7 +233,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         validateFileNameAndLocation(fileName, location);
 
         try {
-            final boolean deleted = mibCompilerFileService.deleteFile(location, fileName);
+            final boolean deleted = MibCompilerServiceUtil.deleteFile(location, fileName);
 
             if (!deleted) {
                 LOG.info("Mib compiler file not found for delete: location={}, fileName={}", location, fileName);
@@ -246,7 +272,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         try {
             validateFileNameAndLocation(fileName, location);
 
-            final String contents = mibCompilerFileService.readTextFile(location, fileName);
+            final String contents = MibCompilerServiceUtil.readTextFile(location, fileName);
             if (contents == null) {
                 LOG.info("Mib compiler file not found for text read: location={}, fileName={}", location, fileName);
                 return Response.status(Response.Status.NOT_FOUND).build();
@@ -293,7 +319,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         }
 
         try {
-            mibCompilerFileService.writeBinaryFile(location, fileName, mibContent);
+            MibCompilerServiceUtil.writeBinaryFile(location, fileName, mibContent);
 
             LOG.info("Set file text: updated successfully (location={}, fileName={})", location, fileName);
 
@@ -321,6 +347,114 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
                     .build();
         }
     }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Override
+    public Response generateEvents(final MibCompilerGenerateEventsRequest request) {
+        final String location = "compiled";
+        LOG.debug("REST request: generate events: location={}, file={}", location, request != null ? request.getName() : null);
+
+        if (request == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Request must not be null.")
+                    .build();
+        }
+
+        final String fileName = request.getName();
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("mibFileName must not be null/empty.")
+                    .build();
+        }
+
+        final Response validationError = validateFileNameAndLocation(location, fileName);
+        if (validationError != null) {
+            return validationError;
+        }
+
+        final String ueiBase = request.getUeiBase();
+        if (ueiBase == null || ueiBase.trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ueiBase must not be null/empty.")
+                    .build();
+        }
+
+        try {
+            final boolean exists = MibCompilerServiceUtil.exists(location, fileName);
+            if (!exists) {
+                LOG.info("Generate events: file not found (location={}, fileName={})", location, fileName);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("MIB file not found in compiled directory: " + fileName)
+                        .build();
+            }
+
+            final File mibFile = MibCompilerServiceUtil.getFile(location, fileName);
+
+            LOG.info("Parsing MIB before generating events (fileName={}, location={})", fileName, location);
+
+            if (!mibParser.parseMib(mibFile)) {
+                final List<String> dependencies = mibParser.getMissingDependencies();
+                if (dependencies != null && !dependencies.isEmpty()) {
+                    LOG.warn("Generate events rejected: missing dependencies (fileName={}, deps={})", fileName, dependencies);
+                    return Response.status(Response.Status.CONFLICT)
+                            .entity("Dependencies required: " + dependencies)
+                            .build();
+                }
+
+                final String formattedErrors = mibParser.getFormattedErrors();
+                LOG.warn("Generate events rejected: MIB parse errors (fileName={}, errors={})", fileName, formattedErrors);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(formattedErrors != null ? formattedErrors : "Problem found when compiling the MIB.")
+                        .build();
+            }
+
+            final Events events = mibParser.getEvents(ueiBase);
+            if (events == null) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("MIB parsed successfully but event generation returned null.")
+                        .build();
+            }
+
+            return operations.execute(status -> {
+                try {
+                    final Date now = new Date();
+                    final int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
+                    final int nextFileOrder = maxFileOrder + 1;
+                    final EventConfSourceMetadataDto meta =
+                            buildMetadata(fileName, "", events, nextFileOrder, now);
+
+                    final EventConfSource source = EventConfServiceHelper.createOrUpdateSource(eventConfSourceDao, meta);
+
+                    eventConfEventDao.deleteBySourceId(source.getId());
+                    EventConfServiceHelper.saveEvents(eventConfEventDao, source, events, meta.getUsername(), meta.getNow());
+                    EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
+
+                    final Map<String, Object> resp = new LinkedHashMap<>();
+                    resp.put("success", true);
+                    resp.put("message", "Events generated successfully.");
+                    resp.put("mibFile", fileName);
+                    resp.put("sourceId", source.getId());
+                    return Response.ok(resp).build();
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    LOG.error("Generate events failed during DB transaction", e);
+                    return Response.serverError()
+                            .entity("Unexpected error while generating events.")
+                            .build();
+                }
+            });
+
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Generate events failed (bad request): location={}, fileName={}, msg={}", location, fileName, e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            LOG.error("Generate events failed (unexpected): location={}, fileName={}", location, fileName, e);
+            return Response.serverError()
+                    .entity("Unexpected error while generating events.")
+                    .build();
+        }
+    }
+
 
     private static Response buildResponse(final Response.Status status,
                                           final List<Map<String, Object>> successList,
@@ -394,14 +528,14 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
 
     private static String getExtensionOrDefault(final String filename) {
         if (isBlank(filename)) {
-            return MibCompilerFileService.DEFAULT_MIB_EXTENSION;
+            return MibCompilerServiceUtil.DEFAULT_MIB_EXTENSION;
         }
 
         final int dot = filename.lastIndexOf('.');
         if (dot > 0 && dot < filename.length() - 1) {
             return filename.substring(dot);
         }
-        return MibCompilerFileService.DEFAULT_MIB_EXTENSION;
+        return MibCompilerServiceUtil.DEFAULT_MIB_EXTENSION;
     }
 
     private static String toDetailedErrorMessage(final Exception e) {
@@ -448,4 +582,24 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
 
         return null;
     }
+
+    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
+                                                     Date now) {
+
+        final String baseName = StringUtils.substringBeforeLast(fileName, ".");
+        final String base = StringUtils.isBlank(baseName) ? fileName : baseName;
+
+        final String eventsFileName = base + ".events";
+
+        return new EventConfSourceMetadataDto.Builder()
+                .filename(eventsFileName)
+                .eventCount(events.getEvents().size())
+                .fileOrder(fileOrder)
+                .username("system-generated")
+                .now(now)
+                .vendor(base)
+                .description(description)
+                .build();
+    }
+
 }
