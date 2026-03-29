@@ -112,6 +112,19 @@ public class MockLogger extends MarkerIgnoringBase {
     }
 
 
+    /**
+     * Clear per-package log level overrides loaded from mocklogger.properties.
+     * Called by MockLogAppender.setupLogging() so that the explicitly requested
+     * level takes effect for all loggers.
+     */
+    static void clearFileLogLevelOverrides() {
+        for (String key : new java.util.ArrayList<>(SIMPLE_LOGGER_PROPS.stringPropertyNames())) {
+            if (key.startsWith(LOG_KEY_PREFIX)) {
+                SIMPLE_LOGGER_PROPS.remove(key);
+            }
+        }
+    }
+
     // Initialize class attributes.
     // Load properties file, if found.
     // Override with system properties.

@@ -61,6 +61,7 @@ public class MeasurementApiConnectorIT {
     public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig()
             .keystorePath(System.getProperty("javax.net.ssl.keyStore"))
             .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword"))
+            .keyManagerPassword(System.getProperty("javax.net.ssl.keyStorePassword"))
             .dynamicPort().dynamicHttpsPort());
 
     @BeforeClass

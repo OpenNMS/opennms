@@ -126,6 +126,16 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     }
 
     @Override
+    public OnmsSnmpInterface findByNodeIdAndIfName(Integer nodeId, String ifName) {
+        for (final OnmsSnmpInterface iface : findAll()) {
+            if (iface.getNode() != null && nodeId.equals(iface.getNode().getId()) && ifName.equals(iface.getIfName())) {
+                return iface;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes) {
     }
 

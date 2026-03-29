@@ -89,7 +89,7 @@ public class HikariCPConnectionFactoryIT {
 
             if (t1 != null || t2 != null) {
                 final StringBuilder message = new StringBuilder();
-                message.append("Could not successfully close both C3P0 factories.  Future tests might fail.");
+                message.append("Could not successfully close factories.  Future tests might fail.");
 
                 Throwable choice;
                 if (t1 != null) {

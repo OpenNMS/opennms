@@ -66,6 +66,8 @@ public interface SnmpInterfaceDao extends LegacyOnmsDao<OnmsSnmpInterface, Integ
 
     OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description);
 
+    OnmsSnmpInterface findByNodeIdAndIfName(Integer nodeId, String ifName);
+
     void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes);
     void markHavingEgressFlows(final Integer nodeId, final Collection<Integer> egressSnmpIfIndexes);
 
