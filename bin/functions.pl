@@ -140,9 +140,9 @@ if (not $MAVEN_OPTS =~ /jdk.util.zip.disableZip64ExtraFieldValidation/) {
 my $result = GetOptions(
 	"help|h"                    => \$HELP,
 	"enable-tests|tests|test|t" => \$TESTS,
-	"single-test|T=s"            => \$SINGLE_TEST,
+	"single-test=s"              => \$SINGLE_TEST,
 	"maven-opts|m=s"            => \$MAVEN_OPTS,
-	"profile|p=s"               => \$BUILD_PROFILE,
+	"profile=s"                 => \$BUILD_PROFILE,
 	"java-home|java|j=s"        => \$JAVA_HOME,
 	"verbose|v"                 => \$VERBOSE,
 	"log-level|l=s"             => \$LOGLEVEL,
@@ -167,9 +167,9 @@ usage: $0 [-h] [-j \$JAVA_HOME] [-t] [-v]
 	-j/--java-home DIR     set \$JAVA_HOME to DIR
 	-m/--maven-opts OPTS   set \$MAVEN_OPTS to OPTS
 	                       (default: $MAVEN_OPTS)
-	-p/--profile PROFILE   default, dir, full, or fulldir
+	--profile PROFILE      default, dir, full, or fulldir
 	-t/--enable-tests      enable integration tests when building
-	-T/--single-test CLASS run a single unit/integration test
+	--single-test CLASS    run a single unit/integration test
 	-l/--log-level LEVEL   log level (error/warning/info/debug)
 	-v/--verbose           verbose mode (shorthand for "--log-level debug")
 END

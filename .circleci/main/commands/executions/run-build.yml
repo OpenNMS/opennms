@@ -47,7 +47,7 @@ commands:
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+            ./compile.pl -T4 -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
@@ -56,7 +56,13 @@ commands:
               -Prun-expensive-tasks \
               -Psmoke \
               --batch-mode \
+              --fail-at-end \
               $MAVEN_ARGS || exit 1
+            echo "Rebuilding assembly modules sequentially..."
+            ./compile.pl -pl features/container/minion,features/container/sentinel,features/minion/core/repository,features/minion/repository,container/karaf,container/shared,opennms-base-assembly \
+              -DskipTests=true \
+              --batch-mode \
+              install || exit 1
             ./compile.pl -s .circleci/scripts/structure-settings.xml \
               --batch-mode \
               --fail-at-end \
