@@ -1,0 +1,5 @@
+# Minimal Prometheus config for E2E testing.
+# No scrape targets needed - OpenNMS pushes via remote write.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
