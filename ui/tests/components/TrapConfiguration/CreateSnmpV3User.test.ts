@@ -1,7 +1,7 @@
 import CreateSnmpV3User from '@/components/TrapConfiguration/CreateSnmpV3User.vue'
-import { AUTH_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
+import { AUTH_PROTOCOL_OPTIONS, getDefaultTrapdConfig, SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
-import { saveTrapdUser, updateTrapdUser } from '@/services/trapdConfigurationService'
+import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
@@ -26,8 +26,7 @@ vi.mock('@/mappers/trapdConfig.mapper', () => ({
 }))
 
 vi.mock('@/services/trapdConfigurationService', () => ({
-  saveTrapdUser: vi.fn(),
-  updateTrapdUser: vi.fn()
+  updateTrapdConfiguration: vi.fn()
 }))
 
 const FeatherInputStub = defineComponent({
@@ -53,8 +52,7 @@ const FeatherInputStub = defineComponent({
 describe('CreateSnmpV3User.vue', () => {
   let store: ReturnType<typeof useTrapConfigStore>
   const mapUserToServerMock = vi.mocked(mapUserToServer)
-  const saveTrapdUserMock = vi.mocked(saveTrapdUser)
-  const updateTrapdUserMock = vi.mocked(updateTrapdUser)
+  const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
 
   const selectedUser: SnmpV3User = {
     engineId: null,
@@ -129,15 +127,18 @@ describe('CreateSnmpV3User.vue', () => {
     store.createUserDrawerState.visible = true
     store.createUserDrawerState.mode = CreateEditMode.Create
     store.createUserDrawerState.selectedUserIndex = -1
-    store.SnmpV3Users = [selectedUser]
+    store.snmpV3Users = [selectedUser]
+    store.trapdConfig = {
+      ...getDefaultTrapdConfig(),
+      snmpv3User: [selectedUser]
+    }
 
     store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
     store.closeCreateUserDrawer = vi.fn()
     store.openCredentialDrawer = vi.fn()
 
     mapUserToServerMock.mockImplementation((payload) => payload as SnmpV3User)
-    saveTrapdUserMock.mockResolvedValue(undefined)
-    updateTrapdUserMock.mockResolvedValue(undefined)
+    updateTrapdConfigurationMock.mockResolvedValue(undefined)
   })
 
   it('does not render when drawer is hidden', () => {
@@ -198,8 +199,12 @@ describe('CreateSnmpV3User.vue', () => {
       securityName: 'new-user',
       securityLevel: expect.any(Number)
     }))
-    expect(saveTrapdUserMock).toHaveBeenCalledTimes(1)
-    expect(updateTrapdUserMock).not.toHaveBeenCalled()
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
+      snmpv3User: expect.arrayContaining([
+        expect.objectContaining({ securityName: 'new-user' })
+      ])
+    }))
     expect(store.fetchTrapConfig).toHaveBeenCalledTimes(1)
     expect(store.closeCreateUserDrawer).toHaveBeenCalledTimes(1)
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user created successfully.' })
@@ -217,13 +222,17 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'authPassphrase', 'masked-auth')
     await clickButton(wrapper, 'create-user-button')
 
-    expect(updateTrapdUserMock).toHaveBeenCalledWith('existing-user', expect.any(Object))
-    expect(saveTrapdUserMock).not.toHaveBeenCalled()
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
+      snmpv3User: expect.arrayContaining([
+        expect.objectContaining({ securityName: 'existing-user' })
+      ])
+    }))
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user updated successfully.' })
   })
 
-  it('shows explicit edit error when selected user has missing securityName', async () => {
-    store.SnmpV3Users = [{ ...selectedUser, securityName: '' }]
+  it('shows explicit edit error when selected user cannot be found', async () => {
+    store.snmpV3Users = []
     store.createUserDrawerState.mode = CreateEditMode.Edit
     store.createUserDrawerState.selectedUserIndex = 0
 
@@ -236,12 +245,38 @@ describe('CreateSnmpV3User.vue', () => {
     await setBindingValue(wrapper, 'authPassphrase', 'masked-auth')
     await clickButton(wrapper, 'create-user-button')
 
-    expect(updateTrapdUserMock).not.toHaveBeenCalled()
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
+    expect(store.fetchTrapConfig).not.toHaveBeenCalled()
+    expect(store.closeCreateUserDrawer).not.toHaveBeenCalled()
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Unable to determine the selected SNMPv3 user to update.', error: true })
   })
 
-  it('shows service error when saveTrapdUser throws Error', async () => {
-    saveTrapdUserMock.mockRejectedValue(new Error('save failed'))
+  it('requires auth protocol and auth passphrase for auth-only security level', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'auth-only-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+  })
+
+  it('requires privacy protocol and privacy passphrase for auth-priv security level', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'auth-priv-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'auth-secret')
+    await clickButton(wrapper, 'create-user-button')
+
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
+  })
+
+  it('shows service error when updateTrapdConfiguration throws Error', async () => {
+    updateTrapdConfigurationMock.mockRejectedValue(new Error('save failed'))
     const wrapper = mountComponent()
 
     await setInputValue(wrapper, 'security-name-input', 'new-user')
@@ -251,8 +286,8 @@ describe('CreateSnmpV3User.vue', () => {
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'save failed', error: true })
   })
 
-  it('shows generic service error when saveTrapdUser throws non-Error', async () => {
-    saveTrapdUserMock.mockRejectedValue('boom')
+  it('shows generic service error when updateTrapdConfiguration throws non-Error', async () => {
+    updateTrapdConfigurationMock.mockRejectedValue('boom')
     const wrapper = mountComponent()
 
     await setInputValue(wrapper, 'security-name-input', 'new-user')
@@ -264,7 +299,7 @@ describe('CreateSnmpV3User.vue', () => {
 
   it('prevents duplicate create requests while saving is in progress', async () => {
     let resolveSave: () => void = () => undefined
-    saveTrapdUserMock.mockImplementation(
+    updateTrapdConfigurationMock.mockImplementation(
       () => new Promise<void>((resolve) => {
         resolveSave = resolve
       })
@@ -277,7 +312,7 @@ describe('CreateSnmpV3User.vue', () => {
     await clickButton(wrapper, 'create-user-button')
     await clickButton(wrapper, 'create-user-button')
 
-    expect(saveTrapdUserMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
 
     resolveSave()
     await flushPromises()
@@ -289,6 +324,6 @@ describe('CreateSnmpV3User.vue', () => {
     await clickButton(wrapper, 'create-user-button')
 
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Please fix validation errors before saving.', error: true })
-    expect(saveTrapdUserMock).not.toHaveBeenCalled()
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
   })
 })

@@ -63,7 +63,7 @@
                 <FeatherButton
                   icon="Delete User"
                   data-test="delete-user-button"
-                  @click="openDeleteUserDialog(user.securityName)"
+                  @click="openDeleteUserDialog(index)"
                 >
                   <FeatherIcon :icon="Delete"> </FeatherIcon>
                 </FeatherButton>
@@ -77,6 +77,7 @@
       </div>
     </div>
     <DeleteUserConfirmationDialog
+      :index="deleteUserIndex"
       :visible="deleteDialogVisible"
       @close="cancelDeleteUser"
       @confirm="confirmDeleteUser"
@@ -86,10 +87,10 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteTrapdUser } from '@/services/trapdConfigurationService'
+import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
-import { SnmpV3User } from '@/types/trapConfig'
+import { SnmpV3User, TrapConfig } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
@@ -102,7 +103,7 @@ import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.
 const store = useTrapConfigStore()
 const { showSnackBar } = useSnackbar()
 const tableRecords = ref<SnmpV3User[]>([])
-const deleteUserSecurityName = ref<string | null>(null)
+const deleteUserIndex = ref<number | null>(null)
 const deleteDialogVisible = ref<boolean>(false)
 const isDeleting = ref(false)
 
@@ -127,24 +128,33 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   sort[sortObj.property] = sortObj.value
 }
 
-const openDeleteUserDialog = (securityName: string) => {
-  deleteUserSecurityName.value = securityName
+const openDeleteUserDialog = (index: number) => {
+  deleteUserIndex.value = index
   deleteDialogVisible.value = true
 }
 
 const cancelDeleteUser = () => {
-  deleteUserSecurityName.value = null
+  deleteUserIndex.value = null
   deleteDialogVisible.value = false
 }
 
 const confirmDeleteUser = async () => {
-  if (!deleteUserSecurityName.value || isDeleting.value) {
+  if (deleteUserIndex.value === null || isDeleting.value) {
+    cancelDeleteUser()
+    return
+  }
+
+  if (!store.snmpV3Users[deleteUserIndex.value]) {
+    showSnackBar({ msg: 'SNMPv3 user not found.', error: true })
+    cancelDeleteUser()
     return
   }
 
   try {
     isDeleting.value = true
-    await deleteTrapdUser(deleteUserSecurityName.value)
+    const payload: TrapConfig = { ...store.trapdConfig }
+    payload.snmpv3User = payload.snmpv3User.filter((_, idx) => idx !== deleteUserIndex.value)
+    await updateTrapdConfiguration(payload)
     await store.fetchTrapConfig()
     cancelDeleteUser()
     showSnackBar({ msg: 'SNMPv3 user deleted successfully.' })
@@ -157,8 +167,8 @@ const confirmDeleteUser = async () => {
 }
 
 watch(
-  () => store.SnmpV3Users, () => {
-    tableRecords.value = store.SnmpV3Users || []
+  () => store.snmpV3Users, () => {
+    tableRecords.value = store.snmpV3Users || []
   }, { immediate: true, deep: true }
 )
 </script>

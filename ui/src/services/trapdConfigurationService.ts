@@ -1,9 +1,7 @@
-import axios from 'axios'
-
-import type { SnmpV3User, TrapConfig, TrapConfigPayload } from '@/types/trapConfig'
-
-import { v2 } from './axiosInstances'
 import { mapTrapdConfigFromServer } from '@/mappers/trapdConfig.mapper'
+import type { TrapConfig } from '@/types/trapConfig'
+import axios from 'axios'
+import { v2 } from './axiosInstances'
 
 const endpoint = '/trapd'
 
@@ -73,7 +71,7 @@ export const getTrapdConfiguration = async (): Promise<TrapConfig> => {
   }
 }
 
-export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Promise<void> => {
+export const updateTrapdConfiguration = async (payload: TrapConfig): Promise<void> => {
   try {
     const response = await v2.put(`${endpoint}/config`, payload)
 
@@ -87,44 +85,3 @@ export const updateTrapdConfiguration = async (payload: TrapConfigPayload): Prom
   }
 }
 
-export const saveTrapdUser = async (user: SnmpV3User): Promise<void> => {
-  try {
-    const response = await v2.post(`${endpoint}/user`, user)
-
-    if (response.status === 200) {
-      return
-    }
-
-    throw new Error(`Unexpected response status: ${response.status}`)
-  } catch (error) {
-    return throwTrapdServiceError(error, 'Failed to save trapd user.')
-  }
-}
-
-export const updateTrapdUser = async (securityName: string, user: SnmpV3User): Promise<void> => {
-  try {
-    const response = await v2.put(`${endpoint}/user/${encodeURIComponent(securityName)}`, user)
-
-    if (response.status === 200) {
-      return
-    }
-
-    throw new Error(`Unexpected response status: ${response.status}`)
-  } catch (error) {
-    return throwTrapdServiceError(error, 'Failed to update trapd user.')
-  }
-}
-
-export const deleteTrapdUser = async (securityName: string): Promise<void> => {
-  try {
-    const response = await v2.delete(`${endpoint}/user/${encodeURIComponent(securityName)}`)
-
-    if (response.status === 204) {
-      return
-    }
-
-    throw new Error(`Unexpected response status: ${response.status}`)
-  } catch (error) {
-    return throwTrapdServiceError(error, 'Failed to delete trapd user.')
-  }
-}

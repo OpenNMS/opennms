@@ -25,10 +25,11 @@ import { CreateEditMode } from '.'
 export interface TrapConfigStoreState {
   isLoading: boolean
   trapdConfig: TrapConfig
-  SnmpV3Users: SnmpV3User[]
+  snmpV3Users: SnmpV3User[]
   activeTab: number
   credentialDrawerState: {
-    visible: boolean
+    visible: boolean,
+    key: string | null
   }
   createUserDrawerState: {
     visible: boolean
@@ -48,18 +49,6 @@ export interface TrapConfig {
   batchInterval: number
   useAddressFromVarbind: boolean
   snmpv3User: SnmpV3User[]
-}
-
-export interface TrapConfigPayload {
-  snmpTrapAddress: string
-  snmpTrapPort: number
-  newSuspectOnTrap: boolean
-  includeRawMessage: boolean
-  threads: number
-  queueSize: number
-  batchSize: number
-  batchInterval: number
-  useAddressFromVarbind: boolean
 }
 
 export interface SnmpV3User {

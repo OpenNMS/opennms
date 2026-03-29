@@ -1,5 +1,5 @@
 <template>
-  <div class="delete-user-confirmation-dialog">
+  <div class="delete-user-confirmation-dialog" v-if="props.index !== null && store.snmpV3Users[props.index]">
     <FeatherDialog
       v-model="isVisible"
       :labels="label"
@@ -7,7 +7,7 @@
       @hidden="emit('close')"
     >
       <div>
-        <p>Are you sure you want to delete this SNMPv3 user?</p>
+        <p>Are you sure you want to delete this SNMPv3 user with security name "{{ store.snmpV3Users[props.index]?.securityName }}"?</p>
         <p><strong>Note:</strong> This action cannot be undone.</p>
       </div>
       <template #footer>
@@ -31,14 +31,17 @@
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
+import { useTrapConfigStore } from '@/stores/trapConfigStore'
 
 const label = {
   title: 'Snmpv3 User Delete Confirmation'
 }
 const isVisible = ref(false)
+const store = useTrapConfigStore()
 
 const props = defineProps<{
-  visible: boolean
+  visible: boolean,
+  index: number | null
 }>()
 
 const emit = defineEmits<{

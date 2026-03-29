@@ -130,7 +130,7 @@ import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_B
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
-import { TrapConfigPayload, TrapdConfigurationError } from '@/types/trapConfig'
+import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
@@ -203,7 +203,7 @@ const updateConfig = async () => {
     return
   }
 
-  const newConfig = {
+  const newConfig: TrapConfig = {
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
     newSuspectOnTrap: status.value,
@@ -212,8 +212,9 @@ const updateConfig = async () => {
     threads: Number(threads.value),
     queueSize: Number(queueSize.value),
     batchSize: Number(batchSize.value),
-    batchInterval: Number(batchInterval.value)
-  } as TrapConfigPayload
+    batchInterval: Number(batchInterval.value),
+    snmpv3User: store.snmpV3Users || []
+  }
 
   try {
     isSaving.value = true

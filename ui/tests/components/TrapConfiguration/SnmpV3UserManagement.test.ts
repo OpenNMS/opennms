@@ -1,5 +1,5 @@
 import SnmpV3UserManagement from '@/components/TrapConfiguration/SnmpV3UserManagement.vue'
-import { deleteTrapdUser } from '@/services/trapdConfigurationService'
+import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3User } from '@/types/trapConfig'
@@ -21,7 +21,7 @@ vi.mock('@/composables/useSnackbar', () => ({
 }))
 
 vi.mock('@/services/trapdConfigurationService', () => ({
-  deleteTrapdUser: vi.fn()
+  updateTrapdConfiguration: vi.fn()
 }))
 
 const FeatherButtonStub = defineComponent({
@@ -81,7 +81,7 @@ const DeleteDialogStub = defineComponent({
 
 describe('SnmpV3UserManagement.vue', () => {
   let store: ReturnType<typeof useTrapConfigStore>
-  const deleteTrapdUserMock = vi.mocked(deleteTrapdUser)
+  const updateTrapdConfigurationMock = vi.mocked(updateTrapdConfiguration)
 
   const users: SnmpV3User[] = [
     {
@@ -148,11 +148,23 @@ describe('SnmpV3UserManagement.vue', () => {
 
     store = useTrapConfigStore()
     store.createUserDrawerState.visible = false
-    store.SnmpV3Users = [...users]
+    store.snmpV3Users = [...users]
+    store.trapdConfig = {
+      snmpTrapAddress: '127.0.0.1',
+      snmpTrapPort: 162,
+      newSuspectOnTrap: false,
+      includeRawMessage: false,
+      threads: 0,
+      queueSize: 10000,
+      batchSize: 1000,
+      batchInterval: 500,
+      useAddressFromVarbind: false,
+      snmpv3User: [...users]
+    }
     store.fetchTrapConfig = vi.fn().mockResolvedValue(undefined)
     store.openCreateUserDrawer = vi.fn()
 
-    deleteTrapdUserMock.mockResolvedValue(undefined)
+    updateTrapdConfigurationMock.mockResolvedValue(undefined)
   })
 
   it('does not render when the create user drawer is visible', () => {
@@ -179,7 +191,7 @@ describe('SnmpV3UserManagement.vue', () => {
   })
 
   it('renders the empty state when there are no users', async () => {
-    store.SnmpV3Users = []
+    store.snmpV3Users = []
     const wrapper = mountComponent()
     await nextTick()
 
@@ -203,61 +215,64 @@ describe('SnmpV3UserManagement.vue', () => {
     expect(store.openCreateUserDrawer).toHaveBeenCalledWith(CreateEditMode.Edit, 1)
   })
 
-  it('opens the delete dialog with the selected security name', async () => {
+  it('opens the delete dialog with the selected index', async () => {
     const wrapper = mountComponent()
 
     await clickByDataTest(wrapper, 'delete-user-button', 1)
 
-    expect((wrapper.vm as any).deleteUserSecurityName).toBe('user-two')
+    expect((wrapper.vm as any).deleteUserIndex).toBe(1)
     expect((wrapper.vm as any).deleteDialogVisible).toBe(true)
     expect(wrapper.find('[data-test="delete-dialog-visible"]').text()).toBe('true')
   })
 
   it('cancels delete and resets dialog state', async () => {
     const wrapper = mountComponent()
-    ;(wrapper.vm as any).openDeleteUserDialog('user-one')
+    ;(wrapper.vm as any).openDeleteUserDialog(0)
     await nextTick()
 
     await clickByDataTest(wrapper, 'close-delete-dialog')
 
-    expect((wrapper.vm as any).deleteUserSecurityName).toBe(null)
+    expect((wrapper.vm as any).deleteUserIndex).toBe(null)
     expect((wrapper.vm as any).deleteDialogVisible).toBe(false)
   })
 
   it('deletes the selected user successfully, refreshes config, and closes the dialog', async () => {
     const wrapper = mountComponent()
-    ;(wrapper.vm as any).openDeleteUserDialog('user-one')
+    ;(wrapper.vm as any).openDeleteUserDialog(0)
     await nextTick()
 
     await clickByDataTest(wrapper, 'confirm-delete-dialog')
 
-    expect(deleteTrapdUserMock).toHaveBeenCalledWith('user-one')
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
+      snmpv3User: [expect.objectContaining({ securityName: 'user-two' })]
+    }))
     expect(store.fetchTrapConfig).toHaveBeenCalledTimes(1)
-    expect((wrapper.vm as any).deleteUserSecurityName).toBe(null)
+    expect((wrapper.vm as any).deleteUserIndex).toBe(null)
     expect((wrapper.vm as any).deleteDialogVisible).toBe(false)
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user deleted successfully.' })
     expect((wrapper.vm as any).isDeleting).toBe(false)
   })
 
   it('shows the service error when delete fails with an Error', async () => {
-    deleteTrapdUserMock.mockRejectedValue(new Error('delete failed'))
+    updateTrapdConfigurationMock.mockRejectedValue(new Error('delete failed'))
     const wrapper = mountComponent()
-    ;(wrapper.vm as any).openDeleteUserDialog('user-one')
+    ;(wrapper.vm as any).openDeleteUserDialog(0)
     await nextTick()
 
     await clickByDataTest(wrapper, 'confirm-delete-dialog')
 
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'delete failed', error: true })
     expect(store.fetchTrapConfig).not.toHaveBeenCalled()
-    expect((wrapper.vm as any).deleteUserSecurityName).toBe('user-one')
+    expect((wrapper.vm as any).deleteUserIndex).toBe(0)
     expect((wrapper.vm as any).deleteDialogVisible).toBe(true)
     expect((wrapper.vm as any).isDeleting).toBe(false)
   })
 
   it('shows a generic error when delete fails with a non-Error value', async () => {
-    deleteTrapdUserMock.mockRejectedValue('boom')
+    updateTrapdConfigurationMock.mockRejectedValue('boom')
     const wrapper = mountComponent()
-    ;(wrapper.vm as any).openDeleteUserDialog('user-one')
+    ;(wrapper.vm as any).openDeleteUserDialog(0)
     await nextTick()
 
     await clickByDataTest(wrapper, 'confirm-delete-dialog')
@@ -265,19 +280,21 @@ describe('SnmpV3UserManagement.vue', () => {
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to delete SNMPv3 user.', error: true })
   })
 
-  it('does not call delete when no selected security name exists', async () => {
+  it('does not call delete when no selected index exists', async () => {
     const wrapper = mountComponent()
 
     await (wrapper.vm as any).confirmDeleteUser()
     await flushPromises()
 
-    expect(deleteTrapdUserMock).not.toHaveBeenCalled()
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
+    expect((wrapper.vm as any).deleteUserIndex).toBe(null)
+    expect((wrapper.vm as any).deleteDialogVisible).toBe(false)
     expect(showSnackBarMock).not.toHaveBeenCalled()
   })
 
   it('does not call delete again while a delete request is already in progress', async () => {
     let resolveDelete: (() => void) | undefined
-    deleteTrapdUserMock.mockImplementation(
+    updateTrapdConfigurationMock.mockImplementation(
       () =>
         new Promise<void>((resolve) => {
           resolveDelete = resolve
@@ -285,14 +302,14 @@ describe('SnmpV3UserManagement.vue', () => {
     )
 
     const wrapper = mountComponent()
-    ;(wrapper.vm as any).openDeleteUserDialog('user-one')
+    ;(wrapper.vm as any).openDeleteUserDialog(0)
     await nextTick()
 
     const pendingDelete = (wrapper.vm as any).confirmDeleteUser()
     await nextTick()
     await (wrapper.vm as any).confirmDeleteUser()
 
-    expect(deleteTrapdUserMock).toHaveBeenCalledTimes(1)
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledTimes(1)
     expect((wrapper.vm as any).isDeleting).toBe(true)
 
     resolveDelete?.()
@@ -316,13 +333,37 @@ describe('SnmpV3UserManagement.vue', () => {
       }
     ]
 
-    store.SnmpV3Users = nextUsers
+    store.snmpV3Users = nextUsers
     await nextTick()
     await nextTick()
 
     expect((wrapper.vm as any).tableRecords).toEqual(nextUsers)
     expect(wrapper.text()).toContain('replacement-user')
     expect(wrapper.text()).not.toContain('user-one')
+  })
+
+  it('falls back to an empty records list when store users become undefined', async () => {
+    const wrapper = mountComponent()
+
+    ;(store as any).snmpV3Users = undefined
+    await nextTick()
+    await nextTick()
+
+    expect((wrapper.vm as any).tableRecords).toEqual([])
+  })
+
+  it('shows user-not-found error and closes dialog when selected index is out of range', async () => {
+    const wrapper = mountComponent()
+    ;(wrapper.vm as any).openDeleteUserDialog(99)
+    await nextTick()
+
+    await (wrapper.vm as any).confirmDeleteUser()
+    await flushPromises()
+
+    expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
+    expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'SNMPv3 user not found.', error: true })
+    expect((wrapper.vm as any).deleteUserIndex).toBe(null)
+    expect((wrapper.vm as any).deleteDialogVisible).toBe(false)
   })
 
   it('updates sort state when a sort header emits sort-changed', async () => {

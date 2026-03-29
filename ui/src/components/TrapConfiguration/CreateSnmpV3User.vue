@@ -75,7 +75,7 @@
           />
           <ScvInputIcon
             data-test="auth-passphrase-save-button"
-            @click="store.openCredentialDrawer"
+            @click="store.openCredentialDrawer('auth')"
           />
         </div>
       </div>
@@ -102,7 +102,7 @@
           />
           <ScvInputIcon
             data-test="privacy-passphrase-save-button"
-            @click="store.openCredentialDrawer"
+            @click="store.openCredentialDrawer('privacy')"
           />
         </div>
       </div>
@@ -124,7 +124,12 @@
         {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
       </FeatherButton>
     </div>
-    <SearchExistingCredential />
+    <!-- <SearchExistingCredential /> -->
+    <ScvSearchDrawer
+      :isOpen="store.credentialDrawerState.visible"
+      @hidden="store.closeCredentialDrawer"
+      @itemSelected="scvItemSelected"
+    />
   </TableCard>
 </template>
 
@@ -132,7 +137,8 @@
 import useSnackbar from '@/composables/useSnackbar'
 import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
-import { saveTrapdUser, updateTrapdUser } from '@/services/trapdConfigurationService'
+import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
+import { useScvStore } from '@/stores/scvStore'
 import { useTrapConfigStore } from '@/stores/trapConfigStore'
 import { CreateEditMode } from '@/types'
 import type { SnmpV3UserError } from '@/types/trapConfig'
@@ -143,7 +149,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import TableCard from '../Common/TableCard.vue'
 import ScvInputIcon from '../SCV/ScvInputIcon.vue'
-import SearchExistingCredential from './Drawer/SearchExistingCredential.vue'
+import ScvSearchDrawer from '../SCV/ScvSearchDrawer.vue'
 
 const store = useTrapConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -158,6 +164,7 @@ const privacyPassphrase = ref<string>('')
 const isSaveDisabled = ref<boolean>(true)
 const isSaving = ref<boolean>(false)
 const error = ref<SnmpV3UserError>({})
+const scvStore = useScvStore()
 
 const authProtocolVisible = computed(() => {
   const selectedSecurityLevel = Number(securityLevel.value?._value)
@@ -167,25 +174,6 @@ const authProtocolVisible = computed(() => {
 const privacyProtocolVisible = computed(() => {
   const selectedSecurityLevel = Number(securityLevel.value?._value)
   return selectedSecurityLevel === SecurityLevel.AuthPriv
-})
-
-watch(securityLevel, (selectedSecurityLevel) => {
-  const levelValue = Number(selectedSecurityLevel?._value)
-
-  if (levelValue !== SecurityLevel.AuthNoPriv && levelValue !== SecurityLevel.AuthPriv) {
-    authProtocol.value = createEmptySelectItem()
-    authPassphrase.value = ''
-  }
-
-  if (levelValue !== SecurityLevel.AuthPriv) {
-    authProtocol.value = createEmptySelectItem()
-    privacyProtocol.value = createEmptySelectItem()
-    authPassphrase.value = ''
-    privacyPassphrase.value = ''
-  }
-
-  error.value = validateInputs()
-  isSaveDisabled.value = Object.keys(error.value).length > 0
 })
 
 const saveUser = async () => {
@@ -213,14 +201,25 @@ const saveUser = async () => {
     isSaving.value = true
 
     if (store.createUserDrawerState.mode === CreateEditMode.Create) {
-      await saveTrapdUser(payload)
-    } else if (store.createUserDrawerState.mode === CreateEditMode.Edit) {
-      const selectedUser = store.SnmpV3Users?.[store.createUserDrawerState.selectedUserIndex]
-      if (!selectedUser?.securityName) {
-        throw new Error('Unable to determine the selected SNMPv3 user to update.')
+      const updatedConfig = {
+        ...store.trapdConfig,
+        snmpv3User: [...(store.trapdConfig.snmpv3User || []), payload]
       }
-
-      await updateTrapdUser(selectedUser.securityName, payload)
+      await updateTrapdConfiguration(updatedConfig)
+    }
+    if (store.createUserDrawerState.mode === CreateEditMode.Edit) {
+      const selectedUser = store.snmpV3Users?.[store.createUserDrawerState.selectedUserIndex]
+      if (!selectedUser) {
+        showSnackBar({ msg: 'Unable to determine the selected SNMPv3 user to update.', error: true })
+        return
+      }
+      const updatedUsers = [...(store.trapdConfig.snmpv3User || [])]
+      updatedUsers[store.createUserDrawerState.selectedUserIndex] = payload
+      const updatedConfig = {
+        ...store.trapdConfig,
+        snmpv3User: updatedUsers
+      }
+      await updateTrapdConfiguration(updatedConfig)
     }
 
     await store.fetchTrapConfig()
@@ -235,6 +234,16 @@ const saveUser = async () => {
   } finally {
     isSaving.value = false
   }
+}
+const scvItemSelected = (item: any) => {
+  const scvValue = '${scv:' + item.alias + ':' + item.key + '}'
+
+  if (store.credentialDrawerState.key === 'auth') {
+    authPassphrase.value = scvValue
+  } else if (store.credentialDrawerState.key === 'privacy') {
+    privacyPassphrase.value = scvValue
+  }
+  store.closeCredentialDrawer()
 }
 
 const validateInputs = () => {
@@ -266,13 +275,14 @@ const validateInputs = () => {
   return newError
 }
 
-const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
+const loadUserData = async (drawerState: typeof store.createUserDrawerState) => {
   if (drawerState.mode === CreateEditMode.Edit && drawerState.selectedUserIndex > -1) {
-    const selectedUser = store.SnmpV3Users ? store.SnmpV3Users[drawerState.selectedUserIndex] : null
+    const selectedUser = store.snmpV3Users ? store.snmpV3Users[drawerState.selectedUserIndex] : null
 
     if (selectedUser) {
       const selectedSecurityLevel = Number(selectedUser.securityLevel)
       securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(selectedSecurityLevel)) ?? createEmptySelectItem()
+      await nextTick()
       authProtocol.value = (selectedSecurityLevel === SecurityLevel.AuthNoPriv || selectedSecurityLevel === SecurityLevel.AuthPriv)
         ? AUTH_PROTOCOL_OPTIONS.find(option => option._value === selectedUser.authProtocol) ?? createEmptySelectItem()
         : createEmptySelectItem()
@@ -294,6 +304,26 @@ const loadUserData = (drawerState: typeof store.createUserDrawerState) => {
     privacyPassphrase.value = ''
   }
 }
+
+watch(securityLevel, (selectedSecurityLevel) => {
+  const levelValue = Number(selectedSecurityLevel?._value)
+
+  if (levelValue !== SecurityLevel.AuthNoPriv && levelValue !== SecurityLevel.AuthPriv) {
+    authProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+  }
+
+  if (levelValue !== SecurityLevel.AuthPriv) {
+    authProtocol.value = createEmptySelectItem()
+    privacyProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+
+  error.value = validateInputs()
+  isSaveDisabled.value = Object.keys(error.value).length > 0
+})
+
 watchEffect(() => {
   error.value = validateInputs()
   isSaveDisabled.value = Object.keys(error.value).length > 0
@@ -304,6 +334,10 @@ watch(
     loadUserData(store.createUserDrawerState)
   }, { deep: true, immediate: true }
 )
+
+onMounted(() => {
+  scvStore.populate()
+})
 </script>
 
 <style lang="scss" scoped>

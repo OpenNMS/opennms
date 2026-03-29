@@ -8,10 +8,11 @@ export const useTrapConfigStore = defineStore('useTrapConfigStore', {
   state: (): TrapConfigStoreState => ({
     isLoading: false,
     trapdConfig: getDefaultTrapdConfig(),
-    SnmpV3Users: [],
+    snmpV3Users: [],
     activeTab: 0,
     credentialDrawerState: {
-      visible: false
+      visible: false,
+      key: null
     },
     createUserDrawerState: {
       visible: false,
@@ -24,13 +25,15 @@ export const useTrapConfigStore = defineStore('useTrapConfigStore', {
       // Implementation for fetching trap configuration goes here
       const response = await getTrapdConfiguration()
       this.trapdConfig = response
-      this.SnmpV3Users = response.snmpv3User
+      this.snmpV3Users = response.snmpv3User
     },
-    openCredentialDrawer() {
+    openCredentialDrawer(key: string) {
       this.credentialDrawerState.visible = true
+      this.credentialDrawerState.key = key
     },
     closeCredentialDrawer() {
       this.credentialDrawerState.visible = false
+      this.credentialDrawerState.key = null
     },
     openCreateUserDrawer(mode: CreateEditMode, selectedUserIndex: number) {
       this.createUserDrawerState.visible = true

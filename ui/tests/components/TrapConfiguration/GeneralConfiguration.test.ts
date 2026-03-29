@@ -183,7 +183,8 @@ describe('GeneralConfiguration.vue', () => {
       threads: 2,
       queueSize: 6000,
       batchSize: 300,
-      batchInterval: 900
+      batchInterval: 900,
+      snmpv3User: []
     })
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Trap configuration updated successfully.' })
     expect(store.fetchTrapConfig).toHaveBeenCalledTimes(1)
@@ -212,6 +213,31 @@ describe('GeneralConfiguration.vue', () => {
     await flushPromises()
 
     expect(showSnackBarMock).toHaveBeenCalledWith({ msg: 'Failed to update trap configuration.', error: true })
+    expect(store.fetchTrapConfig).not.toHaveBeenCalled()
+    expect((wrapper.vm as any).isSaving).toBe(false)
+  })
+
+  it('includes store snmpV3Users in the update payload', async () => {
+    store.snmpV3Users = [{
+      securityName: 'sec-user-1',
+      securityLevel: 1,
+      authProtocol: null,
+      authPassphrase: null,
+      privacyProtocol: null,
+      privacyPassphrase: null,
+      engineId: null
+    }]
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'port', 163)
+    await (wrapper.vm as any).updateConfig()
+    await flushPromises()
+
+    expect(updateTrapdConfigurationMock).toHaveBeenCalledWith(expect.objectContaining({
+      snmpv3User: [
+        expect.objectContaining({ securityName: 'sec-user-1' })
+      ]
+    }))
   })
 
   it('sets isSaving during an in-flight request and clears it after completion', async () => {
