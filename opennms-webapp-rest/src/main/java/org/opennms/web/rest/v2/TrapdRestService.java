@@ -84,7 +84,7 @@ public class TrapdRestService implements TrapdRestApi {
     @Override
     public Response getTrapdConfiguration(final SecurityContext securityContext) {
         try {
-            TrapdConfiguration config = trapdConfigDao.getMaskedConfig();
+            TrapdConfiguration config = trapdConfigDao.getConfig();
             if (config == null) {
                 return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
             }
@@ -113,7 +113,7 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         try {
-            trapdConfigDao.updateConfigWithoutUsers(payload);
+            trapdConfigDao.updateConfig(payload);
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);
@@ -121,130 +121,6 @@ public class TrapdRestService implements TrapdRestApi {
         } catch (Exception e) {
             LOG.error("Failed to persist provided trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd configuration.").build();
-        }
-    }
-
-    @Override
-    public Response saveTrapdUser(Snmpv3UserDto user, SecurityContext securityContext) {
-        if (user == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
-        }
-
-        try {
-            TrapdConfiguration config = trapdConfigDao.getMaskedConfig();
-            if (config == null) {
-                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
-            }
-
-            if (findUserIndexBySecurityName(config, user.getSecurityName()) >= 0) {
-                return Response.status(Status.CONFLICT)
-                        .entity("SNMPv3 user with securityName '" + user.getSecurityName() + "' already exists.")
-                        .build();
-            }
-
-            final String validationMessage = validateSnmpv3UserPayload(user);
-            if (validationMessage != null) {
-                return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
-            }
-
-            // Ensure required attributes are present when persisting a newly-created config.
-            if (!config.hasSnmpTrapPort()) {
-                config.setSnmpTrapPort(162);
-            }
-            if (!config.hasNewSuspectOnTrap()) {
-                config.setNewSuspectOnTrap(false);
-            }
-
-            config.addSnmpv3User(user.toEntity());
-            trapdConfigDao.updateConfig(config);
-            return Response.ok().build();
-        } catch (ValidationException e) {
-            LOG.warn("Provided SNMPv3 user failed schema validation.", e);
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            LOG.error("Failed to persist provided SNMPv3 user.", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd user.").build();
-        }
-    }
-
-    @Override
-    public Response updateTrapdUser(String securityName, Snmpv3UserDto user, SecurityContext securityContext) {
-        if (StringUtils.isBlank(securityName)) {
-            return Response.status(Status.BAD_REQUEST).entity("Valid security name is required.").build();
-        }
-
-        if (user == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Missing SNMPv3 user in request body.").build();
-        }
-
-        try {
-            final TrapdConfiguration config = trapdConfigDao.getMaskedConfig();
-            if (config == null) {
-                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
-            }
-
-            final int index = findUserIndexBySecurityName(config, securityName);
-            if (index < 0) {
-                return Response.status(Status.NOT_FOUND)
-                        .entity("SNMPv3 user with securityName '" + securityName + "' was not found.")
-                        .build();
-            }
-            if (!config.getSnmpv3User(index).getSecurityName().equals(securityName)) {
-                return Response.status(Status.BAD_REQUEST)
-                        .entity("securityName in path does not match securityName in payload.")
-                        .build();
-            }
-
-            final String validationMessage = validateSnmpv3UserPayload(user);
-            if (validationMessage != null) {
-                return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
-            }
-
-            config.setSnmpv3User(index, user.toEntity());
-            trapdConfigDao.updateConfig(config);
-            return Response.ok().build();
-        } catch (ValidationException e) {
-            LOG.warn("Updating SNMPv3 user failed schema validation.", e);
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            LOG.error("Failed to update SNMPv3 user for securityName {}.", securityName, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to update trapd user.").build();
-        }
-    }
-
-    @Override
-    public Response deleteTrapdUser(String securityName, SecurityContext securityContext) {
-        if (StringUtils.isBlank(securityName)) {
-            return Response.status(Status.BAD_REQUEST).entity("Valid security name is required.").build();
-        }
-
-        try {
-            final TrapdConfiguration config = trapdConfigDao.getMaskedConfig();
-            if (config == null) {
-                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
-            }
-
-            final int index = findUserIndexBySecurityName(config, securityName);
-            if (index < 0) {
-                return Response.status(Status.NOT_FOUND)
-                        .entity("SNMPv3 user with securityName '" + securityName + "' was not found.")
-                        .build();
-            }
-            if (!config.getSnmpv3User(index).getSecurityName().equals(securityName)) {
-                return Response.status(Status.BAD_REQUEST)
-                        .entity("securityName in path does not match securityName in payload.")
-                        .build();
-            }
-
-            config.removeSnmpv3UserAt(index);
-            trapdConfigDao.updateConfig(config);
-            return Response.noContent().build();
-        } catch (ValidationException e) {
-            LOG.warn("Removing SNMPv3 user failed schema validation.", e);
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
-        } catch (Exception e) {
-            LOG.error("Failed to delete SNMPv3 user for securityName {}.", securityName, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to delete trapd user.").build();
         }
     }
 
@@ -267,17 +143,16 @@ public class TrapdRestService implements TrapdRestApi {
         if (configDto.getBatchInterval() != null && configDto.getBatchInterval() < 0) {
             return "batchInterval must be non-negative.";
         }
-        return null;
-    }
 
-    private int findUserIndexBySecurityName(final TrapdConfiguration config, final String securityName) {
-        for (int i = 0; i < config.getSnmpv3UserCount(); i++) {
-            final Snmpv3User existing = config.getSnmpv3User(i);
-            if (StringUtils.equals(existing.getSecurityName(), securityName)) {
-                return i;
+        if (configDto.getSnmpv3User() != null) {
+            for (Snmpv3UserDto user : configDto.getSnmpv3User()) {
+                String userValidation = validateSnmpv3UserPayload(user);
+                if (userValidation != null) {
+                    return "Invalid SNMPv3 user: " + user.getSecurityName() + ". " + userValidation;
+                }
             }
         }
-        return -1;
+        return null;
     }
 
     private String validateTrapdConfigurationPayload(final TrapdConfiguration config) {
