@@ -22,6 +22,7 @@
 package org.opennms.web.outage;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -41,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -221,7 +223,7 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
     }
     
     /**
-     * @see http://issues.opennms.org/browse/NMS-8275
+     * @see <a href="http://issues.opennms.org/browse/NMS-8275">NMS-8275</a>
      */
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
@@ -269,5 +271,53 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
         
         int count = m_daoOutageRepo.countMatchingOutageSummaries(new OutageCriteria());
         assertEquals(2, count);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAlarmIdAndExistsForOutageLostServiceEventWithNullOutage() {
+        WebOutageRepository.AlarmIdInfo alarmIdInfo = m_daoOutageRepo.getAlarmIdAndExistsForOutageLostServiceEvent(null);
+
+        assertEquals(0L, alarmIdInfo.alarmId());
+        assertFalse(alarmIdInfo.alarmExists());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAlarmIdAndExistsForOutageLostServiceEventWithMissingEventId() {
+        final Outage outage = new Outage();
+        outage.lostServiceEventId = null;
+
+        WebOutageRepository.AlarmIdInfo alarmIdInfo = m_daoOutageRepo.getAlarmIdAndExistsForOutageLostServiceEvent(outage);
+
+        assertEquals(0L, alarmIdInfo.alarmId());
+        assertFalse(alarmIdInfo.alarmExists());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetAlarmIdAndExistsForOutageLostServiceEventWithLinkedAlarm() {
+        final OnmsAlarm alarm = m_dbPopulator.getAlarmDao().get(1);
+
+        final OnmsEvent event = new OnmsEvent();
+        event.setDistPoller(m_dbPopulator.getDistPollerDao().whoami());
+        event.setEventUei("uei.opennms.org/test/alarm-link");
+        event.setEventTime(new Date());
+        event.setEventSource("test/alarm-link");
+        event.setEventCreateTime(new Date());
+        event.setEventSeverity(OnmsSeverity.CLEARED.getId());
+        event.setEventLog("Y");
+        event.setEventDisplay("N");
+        event.setAlarm(alarm);
+        m_dbPopulator.getEventDao().save(event);
+        m_dbPopulator.getEventDao().flush();
+
+        final Outage outage = new Outage();
+        outage.lostServiceEventId = event.getId();
+
+        WebOutageRepository.AlarmIdInfo alarmIdInfo = m_daoOutageRepo.getAlarmIdAndExistsForOutageLostServiceEvent(outage);
+
+        assertEquals(alarm.getId().longValue(), alarmIdInfo.alarmId());
+        assertTrue(alarmIdInfo.alarmExists());
     }
 }

@@ -115,13 +115,13 @@
     <table class="table table-bordered table-sm">
       <tr>
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>
-        <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Foreign Source" )%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.FOREIGNSOURCE,     SortStyle.REVERSE_FOREIGNSOURCE,     "foreignsource",             "Requisition" )%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.NODE,              SortStyle.REVERSE_NODE,              "node",                      "Node")%></th>
-        <th><%=this.makeSortLink(request, parms, SortStyle.LOCATION,          SortStyle.REVERSE_LOCATION,          "location",                  "Node Location")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.LOCATION,          SortStyle.REVERSE_LOCATION,          "location",                  "Monitoring Location")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.INTERFACE,         SortStyle.REVERSE_INTERFACE,         "interface",                 "Interface")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.SERVICE,           SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></th>
-        <th><%=this.makeSortLink(request, parms, SortStyle.IFLOSTSERVICE,     SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></th>
-        <th><%=this.makeSortLink(request, parms, SortStyle.IFREGAINEDSERVICE, SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.IFLOSTSERVICE,     SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down Since")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.IFREGAINEDSERVICE, SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was restored", "Restored")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.PERSPECTIVE,       SortStyle.REVERSE_PERSPECTIVE,       "location from where the outage was detected", "Perspective")%></th>
       </tr>      
       
@@ -145,8 +145,8 @@
               <%=WebSecurityUtils.sanitizeString(node.getForeignSource())%>
               <% Filter foreignSourceFilter = new ForeignSourceFilter(node.getForeignSource()); %>
               <% if( !parms.filters.contains(foreignSourceFilter) ) { %>
-                  <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this foreign source"><%=ZOOM_IN_ICON%></a>
-                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeForeignSourceFilter(node.getForeignSource()), true)%>" title="Do not show outages for this foreign source"><%=DISCARD_ICON%></a>
+                  <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this requisition"><%=ZOOM_IN_ICON%></a>
+                  <a href="<%=OutageUtil.makeLink( request, parms, new NegativeForeignSourceFilter(node.getForeignSource()), true)%>" title="Do not show outages for this requisition"><%=DISCARD_ICON%></a>
               <% } %>
               <% } else { %>
                 &nbsp;
@@ -175,8 +175,8 @@
               <%=location%></a>
               <% Filter locationFilter = new LocationFilter(location); %>
               <% if( !parms.filters.contains(locationFilter) ) { %>
-                <a href="<%=OutageUtil.makeLink( request, parms, locationFilter, true)%>" title="Show only outages for this node location"><%=ZOOM_IN_ICON%></a>
-                <a href="<%=OutageUtil.makeLink( request, parms, new NegativeLocationFilter(location), true)%>" title="Do not show outages for this node location"><%=DISCARD_ICON%></a>
+                <a href="<%=OutageUtil.makeLink( request, parms, locationFilter, true)%>" title="Show only outages for this monitoring location"><%=ZOOM_IN_ICON%></a>
+                <a href="<%=OutageUtil.makeLink( request, parms, new NegativeLocationFilter(location), true)%>" title="Do not show outages for this monitoring location"><%=DISCARD_ICON%></a>
               <% } %>
             <% } %>
           </td>
