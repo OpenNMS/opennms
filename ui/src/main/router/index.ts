@@ -287,8 +287,8 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
-      path: '/trap-config',
-      name: 'Trap Configuration',
+      path: '/trapd-config',
+      name: 'Trapd Configuration',
       component: () => import('@/containers/TrapConfiguration.vue')
     },
     {
