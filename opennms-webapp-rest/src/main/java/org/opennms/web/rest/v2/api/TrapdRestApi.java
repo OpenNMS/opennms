@@ -94,54 +94,5 @@ public interface TrapdRestApi {
             @ApiResponse(responseCode = "500", description = "Failed to update trapd configuration")
     })
     Response updateTrapdConfiguration(TrapdConfigDto payload, @Context SecurityContext securityContext);
-
-    @POST
-    @Path("user")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Save SNMPv3 user",
-            description = "Save SNMPv3 user configuration with provided JSON payload.",
-            operationId = "saveTrapdUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User saved successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid user payload"),
-            @ApiResponse(responseCode = "409", description = "SNMPv3 user with provided securityName already exists"),
-            @ApiResponse(responseCode = "500", description = "Failed to save user")
-    })
-    Response saveTrapdUser(Snmpv3UserDto user, @Context SecurityContext securityContext);
-
-    @PUT
-    @Path("user/{securityName}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(
-            summary = "Update SNMPv3 user",
-            description = "Update SNMPv3 user configuration for the provided securityName.",
-            operationId = "updateTrapdUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid user payload"),
-            @ApiResponse(responseCode = "404", description = "SNMPv3 user with provided securityName was not found"),
-            @ApiResponse(responseCode = "500", description = "Failed to update user")
-    })
-    Response updateTrapdUser(@PathParam("securityName") String securityName, Snmpv3UserDto user, @Context SecurityContext securityContext);
-
-    @DELETE
-    @Path("user/{securityName}")
-    @Operation(
-            summary = "Delete SNMPv3 user",
-            description = "Delete SNMPv3 user configuration with provided securityName.",
-            operationId = "deleteTrapdUser"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid securityName"),
-            @ApiResponse(responseCode = "404", description = "SNMPv3 user with provided securityName was not found"),
-            @ApiResponse(responseCode = "500", description = "Failed to delete user")
-    })
-    Response deleteTrapdUser(@PathParam("securityName") String securityName, @Context SecurityContext securityContext);
 }
 

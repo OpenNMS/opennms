@@ -25,7 +25,5 @@ import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 
 public interface TrapdConfigDao {
     TrapdConfiguration getConfig();
-    TrapdConfiguration getMaskedConfig();
     void updateConfig(TrapdConfiguration config);
-    void updateConfigWithoutUsers(TrapdConfiguration config);
 }
