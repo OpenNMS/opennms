@@ -36,7 +36,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
 
-const { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded } = useRole()
+const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -219,7 +219,18 @@ const router = createRouter({
     {
       path: '/snmp-config',
       name: 'SNMP Config',
-      component: () => import('@/containers/SnmpConfiguration.vue')
+      component: () => import('@/containers/SnmpConfiguration.vue'),
+      beforeEnter: (to, from) => {
+        const checkRoles = () => {
+          if (!snmpRole.value) {
+            showSnackBar({ msg: 'Must have the proper SNMP role(s) to access SNMP Config.' })
+            router.push(from.path)
+          }
+        }
+
+        if (rolesAreLoaded.value) checkRoles()
+        else whenever(rolesAreLoaded, () => checkRoles())
+      }
     },
     {
       path: '/usage-statistics',

@@ -447,18 +447,11 @@
       "roles": null,
       "items": [
         {
-          "id": "snmpConfiguration",
-          "name": "SNMP Configuration (New)",
+          "id": "snmpAgentConfiguration",
+          "name": "SNMP Agent Configuration",
           "url": "ui/index.html#/snmp-config",
           "locationMatch": "",
-          "roles": null
-        },
-        {
-          "id": "snmpAgentConfiguration",
-          "name": "SNMP Agent Configuration (Legacy)",
-          "url": "admin/snmpConfig",
-          "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "externalRequisitions",
