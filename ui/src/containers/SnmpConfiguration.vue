@@ -7,7 +7,7 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>Manage SNMP Configuration</h1>
+        <h2>Manage SNMP Configuration</h2>
       </div>
     </div>
     <div class="tabs">
