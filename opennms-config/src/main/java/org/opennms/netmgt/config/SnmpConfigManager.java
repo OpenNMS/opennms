@@ -214,7 +214,7 @@ public class SnmpConfigManager {
 			throw new IllegalArgumentException("profile must not be null and must have a label");
 		}
 
-		final SnmpProfiles snmpProfiles = getConfig().getSnmpProfiles();
+		final SnmpProfiles snmpProfiles = Objects.requireNonNullElseGet(getConfig().getSnmpProfiles(), SnmpProfiles::new);
 		final List<SnmpProfile> existingProfileList =
 			Objects.requireNonNullElseGet(snmpProfiles.getSnmpProfiles(), ArrayList::new);
 
@@ -251,6 +251,9 @@ public class SnmpConfigManager {
 		}
 
 		final SnmpProfiles snmpProfiles = getConfig().getSnmpProfiles();
+		if (snmpProfiles == null) {
+			return false;
+		}
 		final List<SnmpProfile> existingProfileList = snmpProfiles.getSnmpProfiles();
 
 		// find existing profile with same label
@@ -274,15 +277,17 @@ public class SnmpConfigManager {
 	}
 
 	private SnmpProfile findExistingProfile(final String label) {
-		final List<SnmpProfile> existingProfileList = getConfig().getSnmpProfiles().getSnmpProfiles();
+		final SnmpProfiles snmpProfiles = getConfig().getSnmpProfiles();
+		if (snmpProfiles == null) {
+			return null;
+		}
 
-		// find existing profile with same label, if any
-		final SnmpProfile existingProfile = existingProfileList.stream()
+		final List<SnmpProfile> existingProfileList = snmpProfiles.getSnmpProfiles();
+
+		return existingProfileList.stream()
 			.filter(p -> p.getLabel().equals(label))
 			.findFirst()
 			.orElse(null);
-
-		return existingProfile;
 	}
 
     private void removeDefinitionsThatDoNotMatchLocation(Definition eventToDef) {
