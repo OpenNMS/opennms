@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Configuration implements Serializable {
     private static final long serialVersionUID = 6018795999027969844L;
-    protected final String MASKED_PASSWORD = "******";
+
+    protected static final String MASKED_PASSWORD = "******";
 
     /**
      * The proxy host to use when communicating with this agent
