@@ -35,7 +35,6 @@ import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.config.exception.ValidationException;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
 import org.opennms.netmgt.config.snmp.Configuration;
@@ -782,7 +781,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             try {
                 getSnmpConfigDao().updateConfig(clonedConfig);
                 m_config = clonedConfig;
-            } catch (ValidationException e) {
+            } catch (Exception e) {
                 LOG.error("Failed to save default overrides to config, failed schema validation.", e);
                 // m_config remains untouched
             }
