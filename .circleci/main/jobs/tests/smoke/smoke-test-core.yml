@@ -1,7 +1,7 @@
  jobs:
   smoke-test-core:
     executor: smoke-test-executor
-    parallelism: 10
+    parallelism: 8
     resource_class: medium+
     steps:
       - cached-checkout
