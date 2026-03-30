@@ -22,11 +22,9 @@
 package org.opennms.web.rest.v2.api;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Context;
@@ -41,7 +39,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.opennms.web.rest.v2.model.Snmpv3UserDto;
 import org.opennms.web.rest.v2.model.TrapdConfigDto;
 
 @Path("trapd")
