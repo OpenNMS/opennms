@@ -19,8 +19,7 @@
                 "integration-test",
                 "smoke-test-core",
                 "smoke-test-minion",
-                "smoke-test-sentinel",
-                "smoke-test-flaky"
+                "smoke-test-sentinel"
             ]
         },
         "rpms": {
