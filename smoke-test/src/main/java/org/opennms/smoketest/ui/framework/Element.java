@@ -93,22 +93,27 @@ public abstract class Element {
     }
 
     protected void clickWithRetry(final By by) {
-        final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(200));
-        wait.ignoring(StaleElementReferenceException.class).until(webDriver -> {
-            final WebElement element = webDriver.findElement(by);
-            ((JavascriptExecutor)webDriver).executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
+        driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        try {
+            final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(200));
+            wait.ignoring(StaleElementReferenceException.class).until(webDriver -> {
+                final WebElement element = webDriver.findElement(by);
+                ((JavascriptExecutor)webDriver).executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
 
-            if (isCenterPointObscured(element)) {
-                return false;
-            }
+                if (isCenterPointObscured(element)) {
+                    return false;
+                }
 
-            try {
-                element.click();
-                return true;
-            } catch (final ElementClickInterceptedException e) {
-                return false;
-            }
-        });
+                try {
+                    element.click();
+                    return true;
+                } catch (final ElementClickInterceptedException e) {
+                    return false;
+                }
+            });
+        } finally {
+            driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
     }
 
     private boolean isCenterPointObscured(final WebElement element) {
