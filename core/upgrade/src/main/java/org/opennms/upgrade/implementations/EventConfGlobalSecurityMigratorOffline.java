@@ -118,7 +118,6 @@ public class EventConfGlobalSecurityMigratorOffline extends AbstractOnmsUpgrade 
                     throw new OnmsUpgradeException("The table 'eventconf_global_security' does not exist");
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
                 throw new OnmsUpgradeException("Error checking for table 'eventconf_global_security'", e);
             }
         } catch (SQLException e) {
@@ -168,7 +167,7 @@ public class EventConfGlobalSecurityMigratorOffline extends AbstractOnmsUpgrade 
         }
     }
 
-    private void modeEvents() throws OnmsUpgradeException {
+    private void moveEvents() throws OnmsUpgradeException {
         final Path srcEvents = Paths.get(ConfigFileConstants.getHome() + File.separator + "etc" + File.separator + "events");
         final Path dstEvents = Paths.get(ConfigFileConstants.getHome() + File.separator + "etc_archive" + File.separator + "events");
         if (srcEvents.toFile().exists()) {
@@ -192,7 +191,7 @@ public class EventConfGlobalSecurityMigratorOffline extends AbstractOnmsUpgrade 
     public void postExecute() throws OnmsUpgradeException {
         createEtcArchive();
         moveEventConf();
-        modeEvents();
+        moveEvents();
     }
 
     @Override

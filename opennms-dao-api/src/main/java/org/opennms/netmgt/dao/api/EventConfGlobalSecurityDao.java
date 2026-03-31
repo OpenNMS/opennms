@@ -24,5 +24,5 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.EventConfGlobalSecurity;
 
-public interface EventConfGlobalSecurityDao extends OnmsDao<EventConfGlobalSecurity, String>{
+public interface EventConfGlobalSecurityDao extends OnmsDao<EventConfGlobalSecurity, String> {
 }

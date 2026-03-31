@@ -4,6 +4,13 @@
 
 == Breaking changes
 
+=== File `eventconf.xml` moved to DB
+The contents of the file `eventconf.xml` will be stored in the database during the upgrade process and all files in `etc/events` will be moved to `etc_archive`.
+These events will not be imported into the database. Please refer to the OpenNMS documentation for information on how to migrate custom events to the database.
+
+=== JoeSNMP removed
+The SNMP implementation JoeSNMP was removed in Horizon 36.
+
 === At least PostgreSQL 14.0 is required
 
 OpenNMS {page-component-title} now requires PostgreSQL 14.x or newer.
