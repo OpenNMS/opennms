@@ -58,7 +58,7 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     @JsonProperty("profiles")
     @XmlElement(name="profiles")
-    private SnmpProfiles profiles;
+    private SnmpProfiles profiles = new SnmpProfiles();
 
     public SnmpConfig() {
         super();
@@ -129,15 +129,25 @@ public class SnmpConfig extends Configuration implements Serializable {
     }
 
     public void setDefinitions(final List<Definition> definitions) {
-        this.definition = new ArrayList<Definition>(definitions);
+        if (definitions == null) {
+            this.definition = new ArrayList<>();
+        } else {
+            this.definition = new ArrayList<Definition>(definitions);
+        }
     }
 
     public void addDefinition(final Definition definitions) throws IndexOutOfBoundsException {
-        this.definition.add(definitions);
+        if (definitions != null) {
+            this.definition.add(definitions);
+        }
     }
 
     public boolean removeDefinition(final Definition definitions) {
-        return this.definition.remove(definitions);
+        if (definitions != null) {
+            return this.definition.remove(definitions);
+        }
+
+        return false;
     }
 
     @JsonIgnore
@@ -146,7 +156,7 @@ public class SnmpConfig extends Configuration implements Serializable {
     }
 
     public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
-        this.profiles = snmpProfiles;
+        this.profiles = Objects.requireNonNullElseGet(snmpProfiles, SnmpProfiles::new);
     }
 
     @Override

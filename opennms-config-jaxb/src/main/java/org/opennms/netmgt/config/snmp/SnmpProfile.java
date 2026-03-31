@@ -43,11 +43,11 @@ public class SnmpProfile extends Configuration {
 
     @JsonProperty("label")
     @XmlElement(name = "label")
-    private String label;
+    private String label = "";
 
     @JsonProperty("filter")
     @XmlElement(name = "filter")
-    private String filter;
+    private String filter = "";
 
     public SnmpProfile() {
     }
@@ -86,7 +86,9 @@ public class SnmpProfile extends Configuration {
     }
 
     public void setLabel(String label) {
-        this.label = label;
+        if (label != null) {
+            this.label = label;
+        }
     }
 
     @JsonIgnore
@@ -95,9 +97,10 @@ public class SnmpProfile extends Configuration {
     }
 
     public void setFilterExpression(String filterExpression) {
-        this.filter = filterExpression;
+        if (filterExpression != null) {
+            this.filter = filterExpression;
+        }
     }
-
 
     public void visit(SnmpConfigVisitor visitor) {
         visitor.visitSnmpProfile(this);

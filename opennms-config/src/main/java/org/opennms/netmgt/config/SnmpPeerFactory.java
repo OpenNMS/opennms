@@ -122,8 +122,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     public SnmpPeerFactory(final Resource resource) {
-        LOG.debug("creating new instance: {}", this);
+        LOG.debug("creating new instance from resource: {}", this);
         setResource(resource);
+    }
+
+    public SnmpPeerFactory(SnmpConfig config) {
+        LOG.debug("creating new instance from config: {}", this);
+        this.m_config = config;
     }
 
     private Lock getReadLock() {
@@ -136,7 +141,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     public static synchronized void init() throws IOException {
         if (!s_loaded.get()) {
-            s_singleton = new SnmpPeerFactory();
+            SnmpConfig config = getSnmpConfigDao().getConfig();
+            s_singleton = new SnmpPeerFactory(config);
             s_loaded.set(true);
         }
         if (s_singleton.encryptionEnabled) {
@@ -247,7 +253,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return secureCredentialsVaultScope;
     }
 
-    private synchronized SnmpConfigDao getSnmpConfigDao() {
+    private static synchronized SnmpConfigDao getSnmpConfigDao() {
         if (SnmpPeerFactory.snmpConfigDao == null) {
             SnmpPeerFactory.snmpConfigDao = BeanUtils.getBean("daoContext", "snmpConfigDao", SnmpConfigDao.class);
         }

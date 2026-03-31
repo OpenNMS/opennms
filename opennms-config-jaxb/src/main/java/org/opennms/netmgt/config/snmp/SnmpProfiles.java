@@ -49,11 +49,17 @@ public class SnmpProfiles {
     }
 
     public void setSnmpProfiles(List<SnmpProfile> snmpProfiles) {
-        this.profile = snmpProfiles;
+        if (snmpProfiles == null) {
+            this.profile.clear();
+        } else {
+            this.profile = snmpProfiles;
+        }
     }
 
     public void addSnmpProfile(SnmpProfile snmpProfile) {
-        this.profile.add(snmpProfile);
+        if (snmpProfile != null) {
+            this.profile.add(snmpProfile);
+        }
     }
 
     @Override
