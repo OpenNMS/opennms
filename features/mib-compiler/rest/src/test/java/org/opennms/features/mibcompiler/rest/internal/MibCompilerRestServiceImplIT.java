@@ -21,15 +21,15 @@
  */
 package org.opennms.features.mibcompiler.rest.internal;
 
-import org.junit.Test;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.AfterClass;
-
+import org.junit.Test;
 import org.opennms.features.mibcompiler.api.MibParser;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileInfo;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
+import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequest;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -44,20 +44,27 @@ import java.util.Map;
 
 import static org.apache.activemq.util.IOHelper.deleteChildren;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MibCompilerRestServiceImplIT {
 
-    private File tempHome;
     private File pendingDir;
     private File compiledDir;
     private static File classHome;
 
-    private MibCompilerRestServiceImpl service;
+    private MibParser parser;
+    private EventConfSourceDao eventConfSourceDao;
+    private EventConfEventDao eventConfEventDao;
+    private EventConfDao eventConfDao;
+    private TransactionOperations operations;
 
+    private MibCompilerRestServiceImpl service;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -71,8 +78,6 @@ public class MibCompilerRestServiceImplIT {
         deleteRecursively(classHome);
     }
 
-
-
     @Before
     public void setUp() throws Exception {
         File mibsRoot = new File(classHome, "share/mibs");
@@ -85,20 +90,20 @@ public class MibCompilerRestServiceImplIT {
         deleteChildren(pendingDir);
         deleteChildren(compiledDir);
 
-        MibParser parser = mock(MibParser.class);
-        EventConfSourceDao eventConfSourceDao = mock(EventConfSourceDao.class);
-        EventConfEventDao eventConfEventDao = mock(EventConfEventDao.class);
-        EventConfDao eventConfDao = mock(EventConfDao.class);
-        TransactionOperations operations = mock(TransactionOperations.class);
+        // Keep references to mocks so tests (especially generateEvents) can stub them.
+        parser = mock(MibParser.class);
+        eventConfSourceDao = mock(EventConfSourceDao.class);
+        eventConfEventDao = mock(EventConfEventDao.class);
+        eventConfDao = mock(EventConfDao.class);
+        operations = mock(TransactionOperations.class);
 
-
-        service = new MibCompilerRestServiceImpl(parser,eventConfSourceDao,eventConfEventDao,eventConfDao,operations);
+        service = new MibCompilerRestServiceImpl(parser, eventConfSourceDao, eventConfEventDao, eventConfDao, operations);
     }
 
     @After
     public void tearDown() {
-        System.clearProperty("opennms.home");
-        deleteRecursively(tempHome);
+        deleteRecursively(pendingDir);
+        deleteRecursively(compiledDir);
     }
 
     @Test
@@ -179,7 +184,7 @@ public class MibCompilerRestServiceImplIT {
 
     @Test
     public void getFileText_shouldReturn404ForInvalidFileName() throws Exception {
-        // This test requires validateFileNameAndLocation(...) result to be returned by getFileText()
+        // validateFileNameAndLocation(...) returns BAD_REQUEST (400) for "..\\evil.txt"
         Response r = service.getFileText("pending", "..\\evil.txt");
         assertEquals(404, r.getStatus());
     }
@@ -195,17 +200,15 @@ public class MibCompilerRestServiceImplIT {
 
         assertEquals(200, r.getStatus());
         assertNotNull(r.getEntity());
+
         // Verify content changed on disk
         String updated = Files.readString(new File(pendingDir, "edit.txt").toPath(), StandardCharsets.UTF_8);
         assertEquals("new\ntext", updated);
-
     }
 
-
     @Test
-    public void setFileText_shouldReturn400WhenPendingFileMissing() {
-        byte[] content = "SOME MIB CONTENT".getBytes(StandardCharsets.UTF_8);
-        Response r = service.setFileText("missing.txt", content);
+    public void setFileText_shouldReturn400WhenMibContentIsNull() {
+        Response r = service.setFileText("edit.txt", null);
         assertEquals(400, r.getStatus());
     }
 
@@ -242,6 +245,54 @@ public class MibCompilerRestServiceImplIT {
         Files.writeString(new File(pendingDir, "IF-MIB.mib").toPath(), "existing", StandardCharsets.UTF_8);
         Response r = service.uploadMib("new".getBytes(StandardCharsets.UTF_8), "IF-MIB.txt");
         assertEquals(409, r.getStatus());
+    }
+
+
+    @Test
+    public void generateEvents_shouldReturn409WhenMissingDependencies() throws Exception {
+        Files.writeString(new File(compiledDir, "D.mib").toPath(), "dummy", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(false);
+        when(parser.getMissingDependencies()).thenReturn(List.of("SNMPv2-SMI"));
+
+        MibCompilerGenerateEventsRequest req = new MibCompilerGenerateEventsRequest();
+        req.setName("D.mib");
+        req.setUeiBase("uei.opennms.org/test");
+
+        Response r = service.generateEvents(req);
+        assertEquals(409, r.getStatus());
+    }
+
+    @Test
+    public void generateEvents_shouldReturn400WhenParseFailsWithErrors() throws Exception {
+        Files.writeString(new File(compiledDir, "D.mib").toPath(), "dummy", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(false);
+        when(parser.getMissingDependencies()).thenReturn(List.of());
+        when(parser.getFormattedErrors()).thenReturn("parse error");
+
+        MibCompilerGenerateEventsRequest req = new MibCompilerGenerateEventsRequest();
+        req.setName("D.mib");
+        req.setUeiBase("uei.opennms.org/test");
+
+        Response r = service.generateEvents(req);
+        assertEquals(400, r.getStatus());
+        assertEquals("parse error", r.getEntity());
+    }
+
+    @Test
+    public void generateEvents_shouldReturn500WhenEventsNull() throws Exception {
+        Files.writeString(new File(compiledDir, "D.mib").toPath(), "dummy", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(true);
+        when(parser.getEvents(anyString())).thenReturn(null);
+
+        MibCompilerGenerateEventsRequest req = new MibCompilerGenerateEventsRequest();
+        req.setName("D.mib");
+        req.setUeiBase("uei.opennms.org/test");
+
+        Response r = service.generateEvents(req);
+        assertEquals(500, r.getStatus());
     }
 
     private static void deleteRecursively(File f) {
