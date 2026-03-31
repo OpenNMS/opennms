@@ -187,7 +187,7 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
-        public void saveDefinition(Definition definition) {
+        public void saveDefinition(Definition definition, boolean save) {
 
         }
 

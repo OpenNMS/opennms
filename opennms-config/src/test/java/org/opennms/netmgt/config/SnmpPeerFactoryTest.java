@@ -72,7 +72,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         secureCredentialsVault.setCredentials("myCredentials-profile2", new Credentials("securityName-profile2", "authPassphrase-profile2"));
         SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
         setVersion(SnmpAgentConfig.VERSION2C);
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         MockLogAppender.setupLogging(true);
     }
 
@@ -478,7 +478,7 @@ public class SnmpPeerFactoryTest extends TestCase {
      * @throws UnknownHostException
      */
     public void testReversedRange() throws UnknownHostException {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getBadRangeSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getBadRangeSnmpConfig().getBytes()));
 
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.7.23.100"));
         assertNotNull(agentConfig);
@@ -487,7 +487,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSnmpv3WithNoAuthNoPriv() throws Exception {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.13"));
         assertEquals("opennmsuser1", agentConfig.getSecurityName());
         assertEquals("VF:2", agentConfig.getContextName());
@@ -502,7 +502,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSnmpProfile() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
         assertEquals(2, profiles.size());
 
@@ -534,8 +534,8 @@ public class SnmpPeerFactoryTest extends TestCase {
         final URL url = file.toURI().toURL();
 
         try (final InputStream inputStream = url.openStream()) {
-            final SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(inputStream));
-            SnmpPeerFactory.setFile(file);
+            SnmpPeerFactory.setResource(new InputStreamResource(inputStream));
+            final SnmpPeerFactory snmpPeerFactory = SnmpPeerFactory.getInstance();
 
             final Definition defA = new Definition();
             defA.setRanges(List.of(new Range("192.168.30.1", "192.168.30.10")));
@@ -543,8 +543,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             defA.setWriteCommunity("private");
             defA.setAuthPassphrase("${scv:myAuthPassphrase:password}");
             defA.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
-            snmpPeerFactory.saveDefinition(defA);
-            snmpPeerFactory.saveCurrent();
+            snmpPeerFactory.saveDefinition(defA, true);
 
             final Definition defB = new Definition();
             defB.setRanges(List.of(new Range("192.168.30.11", "192.168.30.30")));
@@ -552,8 +551,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             defB.setWriteCommunity("private");
             defB.setAuthPassphrase("${scv:myAuthPassphrase:password}");
             defB.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
-            snmpPeerFactory.saveDefinition(defB);
-            snmpPeerFactory.saveCurrent();
+            snmpPeerFactory.saveDefinition(defB, true);
 
             final SnmpConfig snmpConfig1 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
 
@@ -570,8 +568,7 @@ public class SnmpPeerFactoryTest extends TestCase {
             defC.setWriteCommunity("private");
             defC.setAuthPassphrase("${scv:myAuthPassphrase:password}");
             defC.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
-            snmpPeerFactory.saveDefinition(defC);
-            snmpPeerFactory.saveCurrent();
+            snmpPeerFactory.saveDefinition(defC, true);
 
             final SnmpConfig snmpConfig2 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
             assertEquals(2, snmpConfig2.getDefinitions().size());
@@ -884,7 +881,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveNewProfile() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
 
         // confirm initial conditions - 2 profiles
@@ -948,7 +945,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveUpdatedProfile() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
 
         // confirm initial conditions
@@ -1011,7 +1008,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testRemoveProfile() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
 
         // confirm initial conditions
@@ -1045,7 +1042,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_ReplaceExistingValues() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // Get initial config values
         SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
@@ -1108,7 +1105,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_SetExistingValuesToNull() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // Get initial config values - verify they're not null
         SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
@@ -1162,7 +1159,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_MixNullAndNonNull() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // Get initial config values
         SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
@@ -1220,7 +1217,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_ReplaceNullWithNonNull() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // First set everything to null
         Configuration nullConfig = new Configuration(
@@ -1285,7 +1282,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_PreservesDefinitions() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // Get initial config and count definitions
         SnmpConfig initialConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
@@ -1316,7 +1313,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_MultipleUpdates() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
 
         // First update
         Configuration config1 = new Configuration(
@@ -1354,7 +1351,7 @@ public class SnmpPeerFactoryTest extends TestCase {
     }
 
     public void testSaveDefaultOverrides_NullConfig() {
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         SnmpConfig originalConfig = SnmpPeerFactory.cloneConfig(SnmpPeerFactory.getInstance().getSnmpConfig());
 
         SnmpPeerFactory.getInstance().saveDefaultOverrides(null);

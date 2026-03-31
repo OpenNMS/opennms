@@ -182,8 +182,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 return createBadRequestResponse(ipMatchValidationError);
             }
 
-            SnmpPeerFactory.getInstance().saveDefinition(definition);
-            SnmpPeerFactory.getInstance().saveCurrent();
+            SnmpPeerFactory.getInstance().saveDefinition(definition, true);
         } catch (DataAccessException dae) {
             LOG.error("Data access error adding SNMP definition, failed schema validation: {}", dae.getMessage(), dae);
             throw createServerException("Error saving SNMP definition, failed schema validation.");

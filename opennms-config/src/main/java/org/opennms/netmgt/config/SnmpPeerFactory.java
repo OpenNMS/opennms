@@ -58,7 +58,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -88,22 +87,22 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
     protected static final String ENCRYPTION_ENABLED = "org.opennms.snmp.encryption.enabled";
 
-    protected static SnmpConfigDao snmpConfigDao;
+    protected static volatile SnmpConfigDao snmpConfigDao;
 
     /**
      * The singleton instance of this factory
      */
     private static SnmpPeerFactory s_singleton = null;
 
-    /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static AtomicBoolean s_loaded = new AtomicBoolean(false);
 
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
 
     /**
-     * The config class loaded from the config file
+     * The config class loaded from the config file.
+     * Note, this is repopulated from the DAO on each call to getSnmpConfig() to ensure it is always in sync with
+     * the latest saved config.
+     * This is used as a temporary, mutable object to hold the config when making changes, e.g. via
+     * SnmpConfigManager, then can be saved to the DAO via saveCurrent().
      */
     private SnmpConfig m_config;
 
@@ -126,11 +125,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         setResource(resource);
     }
 
-    public SnmpPeerFactory(SnmpConfig config) {
-        LOG.debug("creating new instance from config: {}", this);
-        this.m_config = config;
-    }
-
     private Lock getReadLock() {
         return m_lock.readLock();
     }
@@ -139,12 +133,18 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return m_lock.writeLock();
     }
 
+    /**
+     * Initializes the singleton instance.
+     * However, this does not initialize snmpConfigDao as it would create a circular dependency.
+     * Calling getSnmpConfig() will perform this initialization.
+     *
+     * @throws IOException
+     */
     public static synchronized void init() throws IOException {
-        if (!s_loaded.get()) {
-            SnmpConfig config = getSnmpConfigDao().getConfig();
-            s_singleton = new SnmpPeerFactory(config);
-            s_loaded.set(true);
+        if (s_singleton == null) {
+            s_singleton = new SnmpPeerFactory();
         }
+
         if (s_singleton.encryptionEnabled) {
             s_singleton.encryptSnmpConfig();
         }
@@ -152,6 +152,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private void encryptSnmpConfig() {
         initializeTextEncryptor();
+
         if (textEncryptor != null) {
             s_singleton.saveCurrent();
         }
@@ -162,12 +163,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
-     * Load the config from the default config file and create the singleton instance of this factory.
+     * Gets the singleton instance, which is created if needed.
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be read
      */
     public static synchronized SnmpPeerFactory getInstance() {
-        if (!s_loaded.get()) {
+        if (s_singleton == null) {
             try {
                 init();
             } catch (final IOException e) {
@@ -178,20 +179,26 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     /**
-     * <p>setInstance</p>
+     * Set the singleton instance, e.g. to a mocked instance.
+     * This should only be used in unit or integration tests.
      *
      * @param singleton a {@link org.opennms.netmgt.config.SnmpPeerFactory} object.
      */
     public static synchronized void setInstance(final SnmpPeerFactory singleton) {
         LOG.debug("setting new singleton instance {}", singleton);
         s_singleton = singleton;
-        s_loaded.set(true);
     }
 
+    /**
+     * Used only by unit and integration tests to construct a mock DAO object populated from a file.
+     */
     public static synchronized void setFile(final File configFile) {
         setResource(new FileSystemResource(configFile));
     }
 
+    /**
+     * Used only by unit and integration tests to construct a mock DAO object populated from a file or string.
+     */
     public static synchronized void setResource(final Resource resource) {
         SnmpPeerFactory.snmpConfigDao = new SnmpConfigDao() {
             SnmpConfig snmpConfig = JaxbUtils.unmarshal(SnmpConfig.class, resource);
@@ -206,17 +213,21 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 snmpConfig = config;
             }
         };
-        s_loaded.set(false);
+        s_singleton = null;
     }
 
     /**
-     * Saves the current settings to disk
+     * Saves the current settings to the database.
+     * This is a no-op if the configuration has not been initialized, e.g. via getSnmpConfigDao().getConfig().
      */
     @Override
     public void saveCurrent() {
         getWriteLock().lock();
+
         try {
-            getSnmpConfigDao().updateConfig(m_config);
+            if (m_config != null) {
+                getSnmpConfigDao().updateConfig(m_config);
+            }
         } finally {
             getWriteLock().unlock();
         }
@@ -229,6 +240,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         try {
             encryptSnmpConfig(snmpConfig);
             getSnmpConfigDao().updateConfig(snmpConfig);
+
+            // repopulate m_config from the DAO to make sure it is in sync with what is saved
             this.m_config = getSnmpConfigDao().getConfig();
         } finally {
             getWriteLock().unlock();
@@ -253,11 +266,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return secureCredentialsVaultScope;
     }
 
-    private static synchronized SnmpConfigDao getSnmpConfigDao() {
-        if (SnmpPeerFactory.snmpConfigDao == null) {
-            SnmpPeerFactory.snmpConfigDao = BeanUtils.getBean("daoContext", "snmpConfigDao", SnmpConfigDao.class);
+    private static SnmpConfigDao getSnmpConfigDao() {
+        if (snmpConfigDao == null) {
+            synchronized (SnmpPeerFactory.class) {
+                if (snmpConfigDao == null) {
+                    snmpConfigDao = BeanUtils.getBean("daoContext", "snmpConfigDao", SnmpConfigDao.class);
+                }
+            }
         }
-        return SnmpPeerFactory.snmpConfigDao;
+        return snmpConfigDao;
     }
 
     /**
@@ -323,9 +340,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, String location, final int requestedSnmpVersion, boolean metaDataInterpolation) {
         getReadLock().lock();
+
         try {
             if (getSnmpConfig() == null) {
                 final SnmpAgentConfig agentConfig = new SnmpAgentConfig(agentInetAddress);
+
                 if (requestedSnmpVersion == SnmpAgentConfig.VERSION_UNSPECIFIED) {
                     agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
                 } else {
@@ -421,18 +440,22 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         definition.setMaxVarsPerPdu(snmpAgentConfig.getMaxVarsPerPdu());
         definition.setMaxRepetitions(snmpAgentConfig.getMaxRepetitions());
         definition.setTTL(snmpAgentConfig.getTTL());
+
         if (snmpAgentConfig.getProxyFor() != null) {
             definition.addSpecific(snmpAgentConfig.getProxyFor().getHostAddress());
             definition.setProxyHost(snmpAgentConfig.getAddress().getHostAddress());
         } else {
             definition.addSpecific(snmpAgentConfig.getAddress().getHostAddress());
         }
+
         if (DEFAULT_SECURITY_LEVEL != snmpAgentConfig.getSecurityLevel()) {
             definition.setSecurityLevel(snmpAgentConfig.getSecurityLevel());
         }
+
         if (!DEFAULT_SECURITY_NAME.equals(snmpAgentConfig.getSecurityName())) {
             definition.setSecurityName(snmpAgentConfig.getSecurityName());
         }
+
         definition.setAuthProtocol(snmpAgentConfig.getAuthProtocol());
         definition.setAuthPassphrase(snmpAgentConfig.getAuthPassPhrase());
         definition.setPrivacyPassphrase(snmpAgentConfig.getPrivPassPhrase());
@@ -465,18 +488,15 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * <p>getSnmpConfig</p>
      *
+     * Repopulate m_config from the DAO and return the reference.
+     *
      * @return a {@link org.opennms.netmgt.config.snmp.SnmpConfig} object.
      */
     @Override
     public SnmpConfig getSnmpConfig() {
-        getReadLock().lock();
-        try {
-            this.m_config = getSnmpConfigDao().getConfig();
-            decryptSnmpConfig(m_config);
-            return m_config;
-        } finally {
-            getReadLock().unlock();
-        }
+        m_config = getSnmpConfigDao().getConfig();
+        decryptSnmpConfig(m_config);
+        return m_config;
     }
 
     /**
@@ -490,15 +510,21 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @param info a {@link org.opennms.netmgt.config.SnmpEventInfo} object.
      */
     public void define(final SnmpEventInfo info) {
-        saveDefinition(info.createDef());
+        saveDefinition(info.createDef(), false);
     }
 
     @Override
-    public void saveDefinition(final Definition definition) {
+    public void saveDefinition(final Definition definition, boolean save) {
         getWriteLock().lock();
+
         try {
+            // this mutates m_config. Can call saveCurrent() afterwards to save to DAO.
             final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
             mgr.mergeIntoConfig(definition);
+
+            if (save) {
+                saveCurrent();
+            }
         } finally {
             getWriteLock().unlock();
         }
@@ -519,17 +545,20 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 List<String> specifics = new ArrayList<>();
                 specifics.add(InetAddressUtils.toIpAddrString(inetAddress));
                 definition.setSpecifics(specifics);
+
+                // this mutates m_config. Can call saveCurrent() afterwards to save to DAO.
                 final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
                 succeeded = mgr.removeDefinition(definition);
+            }
+
+            if (succeeded) {
+                saveCurrent();
+                LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
             }
         } finally {
             getWriteLock().unlock();
         }
 
-        if (succeeded) {
-            saveCurrent();
-            LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
-        }
         return succeeded;
     }
 
@@ -555,8 +584,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         int specificsRemoved = 0;
         int ipMatchesRemoved = 0;
 
+        // Refresh m_config from the DAO before cloning so we always operate on current state.
         // clone the current in-memory config to work with so that we can compare at the end
         // and only update if there are actual changes
+        m_config = getSnmpConfigDao().getConfig();
         SnmpConfig clonedConfig = SnmpPeerFactory.cloneConfig(m_config);
         final SnmpConfigManager mgr = new SnmpConfigManager(clonedConfig);
 
@@ -629,9 +660,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
             // only update config here and in the DAO if it is actually changed
             if (!Objects.equals(clonedConfig, m_config)) {
-                // call these directly since we are already in a write lock
                 m_config = clonedConfig;
-                getSnmpConfigDao().updateConfig(m_config);
+                saveCurrent();
 
                 LOG.info("Removed {} ranges, {} specifics, {} ipMatches from definitions at location {} by module {}",
                         rangesRemoved, specificsRemoved, ipMatchesRemoved, location, module);
@@ -648,7 +678,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     @Override
     public void saveProfile(final SnmpProfile profile) {
         getWriteLock().lock();
+
         try {
+            // this mutates m_config. saveCurrent() then saves the updated m_config to DAO.
             final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
             mgr.mergeProfileIntoConfig(profile);
             saveCurrent();
@@ -663,15 +695,16 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         getWriteLock().lock();
 
         try {
+            // this mutates m_config. saveCurrent() then saves the updated m_config to DAO.
             final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
             succeeded = mgr.removeProfile(label);
+
+            if (succeeded) {
+                saveCurrent();
+                LOG.info("Removed profile {}", label);
+            }
         } finally {
             getWriteLock().unlock();
-        }
-
-        if (succeeded) {
-            saveCurrent();
-            LOG.info("Removed profile {}", label);
         }
 
         return succeeded;
@@ -681,17 +714,20 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private Definition findMatchingDefinition(InetAddress inetAddress, String location) {
         SnmpConfig config = getSnmpConfig();
         List<Definition> definitions = config.getDefinitions();
+
         return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
     }
 
     /** Find matching definitions for the given config. */
     private Definition findMatchingDefinition(SnmpConfig config, InetAddress inetAddress, String location) {
         List<Definition> definitions = config.getDefinitions();
+
         return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
     }
 
     private static Definition createDefinition(Definition matchingDefinition) {
         Definition definition = new Definition();
+
         definition.setProfileLabel(matchingDefinition.getProfileLabel());
         definition.setLocation(matchingDefinition.getLocation());
         // Fill configuration
@@ -717,11 +753,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         definition.setTimeout(matchingDefinition.getTimeout());
         definition.setTTL(matchingDefinition.getTTL());
         definition.setRetry(matchingDefinition.getRetry());
+
         return definition;
     }
 
     private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
         boolean locationMatched = LocationUtils.doesLocationsMatch(location, definition.getLocation());
+
         return locationMatched && matchingIpAddress(inetAddress, definition);
     }
 
@@ -762,10 +800,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         definition.setLocation(location);
 
         setDefinitionFromAgentConfig(definition, snmpAgentConfig);
-        saveDefinition(definition);
-        LOG.info("Definition saved for {} by module {}", ipAddress, module);
 
-        saveCurrent();
+        saveDefinition(definition, true);
+        LOG.info("Definition saved for {} by module {}", ipAddress, module);
     }
 
     @Override
@@ -846,7 +883,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (!encryptionEnabled) {
             return;
         }
+
         initializeTextEncryptor();
+
         if (textEncryptor == null) {
             return;
         }
@@ -863,10 +902,13 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (!encryptionEnabled) {
             return;
         }
+
         initializeTextEncryptor();
+
         if (textEncryptor == null) {
             return;
         }
+
         decryptConfig(snmpConfig);
 
         snmpConfig.getDefinitions().forEach(this::decryptConfig);

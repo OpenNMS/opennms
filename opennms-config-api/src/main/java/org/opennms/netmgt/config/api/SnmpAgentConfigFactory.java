@@ -72,8 +72,9 @@ public interface SnmpAgentConfigFactory {
     /**
      * Merge this definition into current config.
      * @param definition Definition that has SNMP parameters associated with a specific IP address or Range.
+     * @param save If true, save to the backing store or DAO.
      */
-    void saveDefinition(Definition definition);
+    void saveDefinition(Definition definition, boolean save);
 
     /**
      * Remove an address from the definitions.
