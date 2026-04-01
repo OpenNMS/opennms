@@ -1084,9 +1084,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 // if requesition label NOW is equal to the node label BEFORE merge,
                 // AND the label before was ADDRESS AND is now Sysname
                 // update
-                if (reqNode != null &&
-                        oldSource == NodeLabelSource.ADDRESS
-                        && newSource == NodeLabelSource.SYSNAME // could consider adding HOSTNAME to make sure dns doesn't have the same problem
+                // could consider adding HOSTNAME to make sure dns doesn't have the same problem
+                if (reqNode != null && oldSource == NodeLabelSource.ADDRESS
+                        && newSource == NodeLabelSource.SYSNAME
                         && Objects.equals(reqNode.getNodeLabel(), oldLabel)) {
 
                     reqNode.setNodeLabel(newLabel);
