@@ -34,7 +34,6 @@
 %define _binary_filedigest_algorithm 0
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
-%define _log_dir /var/log/sentinel
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -68,6 +67,7 @@ Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Provides:	opennms-plugin-api = %{opa_version}
+Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
 

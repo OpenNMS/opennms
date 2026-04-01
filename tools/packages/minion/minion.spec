@@ -34,7 +34,6 @@
 %define _binary_filedigest_algorithm 0
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
-%define _log_dir /var/log/minion
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -72,6 +71,7 @@ Requires(pre):  jicmp >= 3.0.0
 Requires:       jicmp6 >= 3.0.0
 Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
+Recommends:	haveged
 
 Conflicts:      %{name}-container        < %{version}-%{release}
 Conflicts:      %{name}-features-core    < %{version}-%{release}
