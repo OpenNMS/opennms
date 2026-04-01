@@ -243,6 +243,7 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
         context.put("measurements", new MeasurementsWrapper(measurementsService));
         context.put("snmpInterfaceDao", snmpInterfaceDao);
         context.put("resourceDao", resourceDao);
+        context.put("nodeDao", nodeDao);
 
         return context;
     }
