@@ -57,7 +57,7 @@ public class TrapdRestService implements TrapdRestApi {
     @Override
     public Response uploadTrapdConfiguration(final Attachment attachment, final SecurityContext securityContext) {
         if (attachment == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Missing uploaded file field 'upload'.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Missing uploaded file for trapd file upload.").build();
         }
 
         final TrapdConfiguration config;
@@ -111,7 +111,7 @@ public class TrapdRestService implements TrapdRestApi {
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);
-            return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
+            return Response.status(Status.BAD_REQUEST).entity("Provided trapd configuration failed schema validation.").build();
         } catch (Exception e) {
             LOG.error("Failed to persist provided trapd configuration.", e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd configuration.").build();

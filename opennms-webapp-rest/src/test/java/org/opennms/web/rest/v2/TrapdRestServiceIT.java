@@ -87,7 +87,7 @@ public class TrapdRestServiceIT {
     public void uploadShouldReturnBadRequestWhenAttachmentMissing() {
         try (Response response = trapdRestService.uploadTrapdConfiguration(null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Missing uploaded file field 'upload'.", response.getEntity());
+            assertEquals("Missing uploaded file for trapd file upload.", response.getEntity());
         }
     }
 
@@ -469,7 +469,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("validation failed", response.getEntity());
+            assertEquals("Provided trapd configuration failed schema validation.", response.getEntity());
         }
     }
 
