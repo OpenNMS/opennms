@@ -467,9 +467,6 @@ public class WillItUnmarshalIT {
                 System.err.println(onDisk);
                 System.err.println(resource.getFilename() + " marshalled:");
                 System.err.println(marshalled);
-
-                System.err.println("path: " + resource.getFile().getAbsolutePath());
-
                 throw new AssertionFailedError(resource.getFilename() + ": " + diffs);
             }
         } catch (final Exception e) {
