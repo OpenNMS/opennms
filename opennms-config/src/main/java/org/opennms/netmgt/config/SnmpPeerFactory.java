@@ -1005,6 +1005,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         snmpConfig.setPrivacyPassphrase(config.getPrivacyPassphrase());
         snmpConfig.setPrivacyProtocol(config.getPrivacyProtocol());
         snmpConfig.setEnterpriseId(config.getEnterpriseId());
+        snmpConfig.setTTL(config.getTTL());
     }
 
     @VisibleForTesting

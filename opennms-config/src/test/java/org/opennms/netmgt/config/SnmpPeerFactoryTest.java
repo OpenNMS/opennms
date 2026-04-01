@@ -1077,6 +1077,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "newEntId"     // enterpriseId
         );
 
+        newConfig.setTTL(20L);
+
         // Save the overrides
         SnmpPeerFactory.getInstance().saveDefaultOverrides(newConfig);
 
@@ -1102,6 +1104,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("newPrivPass", updatedConfig.getPrivacyPassphrase());
         assertEquals("AES", updatedConfig.getPrivacyProtocol());
         assertEquals("newEntId", updatedConfig.getEnterpriseId());
+        assertEquals(20L, updatedConfig.getTTL().longValue());
     }
 
     public void testSaveDefaultOverrides_SetExistingValuesToNull() {
@@ -1156,6 +1159,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertNull(updatedConfig.getPrivacyPassphrase());
         assertNull(updatedConfig.getPrivacyProtocol());
         assertNull(updatedConfig.getEnterpriseId());
+        assertNull(updatedConfig.getTTL());
     }
 
     public void testSaveDefaultOverrides_MixNullAndNonNull() {
@@ -1214,6 +1218,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertNull(updatedConfig.getPrivacyPassphrase());
         assertNull(updatedConfig.getPrivacyProtocol());
         assertNull(updatedConfig.getEnterpriseId());
+        assertNull(updatedConfig.getTTL());
     }
 
     public void testSaveDefaultOverrides_ReplaceNullWithNonNull() {
@@ -1255,6 +1260,9 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "DES",         // privacyProtocol
                 "entId"        // enterpriseId
         );
+
+        nonNullConfig.setTTL(20L);
+
         SnmpPeerFactory.getInstance().saveDefaultOverrides(nonNullConfig);
 
         // Verify all values are now set
@@ -1279,6 +1287,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("privPass", updatedConfig.getPrivacyPassphrase());
         assertEquals("DES", updatedConfig.getPrivacyProtocol());
         assertEquals("entId", updatedConfig.getEnterpriseId());
+        assertEquals(20L, updatedConfig.getTTL().longValue());
     }
 
     public void testSaveDefaultOverrides_PreservesDefinitions() {
