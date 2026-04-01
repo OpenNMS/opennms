@@ -55,7 +55,7 @@ public class SnmpConfigConfigurationValidationCallback implements Consumer<Confi
 
         for(final Definition definition : snmpConfig.getDefinitions()) {
             for(final String specific : definition.getSpecifics()) {
-                if (Strings.isNullOrEmpty(specific) ||!InetAddressUtils.isIPv4Address(specific) && !InetAddressUtils.isIPv6Address(specific)) {
+                if (Strings.isNullOrEmpty(specific) || !InetAddressUtils.isIPv4Address(specific) && !InetAddressUtils.isIPv6Address(specific)) {
                     throw new ValidationException(String.format("Invalid specific IP address. %s", specific));
                 }
             }
