@@ -165,8 +165,10 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                            + "      end=\"192.168.0.255\"/>"
                                            + "    <specific>192.168.1.1</specific>"
                                            + "    <ip-match>10.0.0.*</ip-match>"
-                                           + "  </definition>" + "</snmp-config>\n",
-                "target/classes/xsds/snmp-config.xsd" },
+                                           + "  </definition>"
+                                           + "  <profiles/>"
+                                           + "</snmp-config>\n",
+                    "target/classes/xsds/snmp-config.xsd" },
                 {
                     new SnmpConfig(
                                    1, // port
@@ -213,8 +215,10 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                            + "      end=\"192.168.0.255\"/>"
                                            + "    <specific>192.168.1.1</specific>"
                                            + "    <ip-match>10.0.0.*</ip-match>"
-                                           + "  </definition>" + "</snmp-config>\n",
-                "target/classes/xsds/snmp-config.xsd" },
+                                           + "  </definition>"
+                                           + "  <profiles/>"
+                                           + "</snmp-config>\n",
+                    "target/classes/xsds/snmp-config.xsd" },
                 {
                     snmpConfig,
                         "<snmp-config xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\" "
