@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.xml.ValidateUsing;
 
@@ -58,6 +59,7 @@ public class SnmpConfig extends Configuration implements Serializable {
 
     @JsonProperty("profiles")
     @XmlElement(name="profiles")
+    @XmlJavaTypeAdapter(SnmpProfilesAdapter.class)
     private SnmpProfiles profiles = new SnmpProfiles();
 
     public SnmpConfig() {

@@ -166,7 +166,6 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                            + "    <specific>192.168.1.1</specific>"
                                            + "    <ip-match>10.0.0.*</ip-match>"
                                            + "  </definition>"
-                                           + "  <profiles/>"
                                            + "</snmp-config>\n",
                     "target/classes/xsds/snmp-config.xsd" },
                 {
@@ -216,7 +215,6 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
                                            + "    <specific>192.168.1.1</specific>"
                                            + "    <ip-match>10.0.0.*</ip-match>"
                                            + "  </definition>"
-                                           + "  <profiles/>"
                                            + "</snmp-config>\n",
                     "target/classes/xsds/snmp-config.xsd" },
                 {

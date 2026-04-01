@@ -377,7 +377,6 @@ public class SnmpEventInfoTest {
             "   <definition version=\"v2c\">\n" +
             "      <specific>192.168.0.5</specific>\n" +
             "   </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "" +
@@ -386,7 +385,6 @@ public class SnmpEventInfoTest {
             "   <definition read-community=\"abc\">\n" +
             "      <specific>192.168.0.5</specific>\n" +
             "   </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -414,7 +412,6 @@ public class SnmpEventInfoTest {
             "   <definition version=\"v2c\">\n" +
             "      <specific>192.168.0.5</specific>\n" +
             "   </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "" +
@@ -423,7 +420,6 @@ public class SnmpEventInfoTest {
             "   <definition auth-passphrase=\"nant\" auth-protocol=\"SHA-256\" version=\"v3\">\n" +
             "      <specific>192.168.0.5</specific>\n" +
             "   </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -459,7 +455,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <specific>2001:db8::10</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "" +
@@ -468,7 +463,6 @@ public class SnmpEventInfoTest {
             "    <definition read-community=\"abc\">\n" +
             "        <specific>2001:db8::10</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -525,7 +519,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <specific>192.168.0.5</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedSnmpConfigXmlOrig = "" +
@@ -534,7 +527,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <specific>192.168.0.5</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfigAfterChanges = "" +
@@ -543,7 +535,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.0.5\" end=\"192.168.0.6\"/>\n" +
                 "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXmlOrig));
@@ -575,7 +566,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <specific>2001:db8::10</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "" +
@@ -584,7 +574,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"2001:db8::10\" end=\"2001:db8::11\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -614,7 +603,6 @@ public class SnmpEventInfoTest {
             "        <specific>192.168.0.5</specific>\n" +
             "        <specific>192.168.0.7</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -622,7 +610,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.0.5\" end=\"192.168.0.7\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -652,7 +639,6 @@ public class SnmpEventInfoTest {
             "        <specific>0.0.0.5</specific>\n" +
             "        <specific>0.0.0.7</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -660,7 +646,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"0.0.0.5\" end=\"0.0.0.7\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -690,7 +675,6 @@ public class SnmpEventInfoTest {
             "        <specific>::5</specific>\n" +
             "        <specific>::7</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -698,7 +682,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"::5\" end=\"::7\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
            "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -724,7 +707,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.0.7\" end=\"192.168.0.9\"/>\n" +
             "        <specific>192.168.0.5</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
            "</snmp-config>";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
@@ -732,7 +714,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.0.5\" end=\"192.168.0.9\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -763,7 +744,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -776,7 +756,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.120\" end=\"192.168.1.130\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -807,7 +786,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -820,7 +798,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.1.120</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -845,7 +822,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -858,7 +834,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.1.199</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -883,7 +858,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.100\" end=\"192.168.1.200\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -895,7 +869,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.1.200</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -930,7 +903,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.1.15</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -940,7 +912,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -970,7 +941,6 @@ public class SnmpEventInfoTest {
             "        <specific>192.168.1.30</specific>\n" +
             "        <specific>10.1.1.1</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -983,7 +953,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1012,7 +981,6 @@ public class SnmpEventInfoTest {
             "        <specific>192.168.1.30</specific>\n" +
             "        <specific>10.1.1.1</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1022,7 +990,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <specific>10.1.1.1</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1051,7 +1018,6 @@ public class SnmpEventInfoTest {
             "       <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>" +
             "   </definition>\n" +
             "\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
                 
@@ -1082,7 +1048,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.0.3\" end=\"192.168.0.100\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1095,7 +1060,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.0.3</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1125,7 +1089,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n" +
             "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1139,7 +1102,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1166,7 +1128,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.20\"/>\n" +
             "        <range begin=\"192.168.1.30\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1176,7 +1137,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1204,7 +1164,6 @@ public class SnmpEventInfoTest {
             + "    <definition location=\"AUSTIN\" version=\"v2c\">\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n"
             + "";
 
@@ -1217,7 +1176,6 @@ public class SnmpEventInfoTest {
             + "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n" + "";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1265,7 +1223,6 @@ public class SnmpEventInfoTest {
             + "    <definition location=\"Default\" version=\"v2c\">\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n" + "";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -1277,7 +1234,6 @@ public class SnmpEventInfoTest {
             + "        <range begin=\"192.168.1.0\" end=\"192.168.1.40\"/>\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n" + "";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1304,7 +1260,6 @@ public class SnmpEventInfoTest {
             + "    <definition version=\"v2c\">\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n" + "";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -1316,7 +1271,6 @@ public class SnmpEventInfoTest {
             + "        <range begin=\"192.168.1.15\" end=\"192.168.1.40\"/>\n"
             + "        <range begin=\"192.168.2.10\" end=\"192.168.2.20\"/>\n"
             + "        <range begin=\"192.168.2.30\" end=\"192.168.2.40\"/>\n" + "    </definition>\n"
-            + "    <profiles/>\n"
             + "</snmp-config>\n" + "";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1351,7 +1305,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1361,7 +1314,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1396,7 +1348,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1406,7 +1357,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\">\n" +
             "        <range begin=\"192.168.1.10\" end=\"192.168.1.40\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1437,7 +1387,6 @@ public class SnmpEventInfoTest {
             "        <specific>192.168.0.5</specific>\n" +
             "        <specific>192.168.0.6</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
         
@@ -1450,7 +1399,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.0.6</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1482,13 +1430,11 @@ public class SnmpEventInfoTest {
         final String expectedSnmpConfigXmlOri =
             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-            "<profiles/>" +
             "</snmp-config>\n";
 
         final String expectedConfig =
             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v2c\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-            "<profiles/>" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXmlOrig));
@@ -1517,7 +1463,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\" location=\"MINION\" port=\"1161\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1526,7 +1471,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\" location=\"MINION\" port=\"1161\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.34\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1551,7 +1495,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"3000\" write-community=\"private\"  >\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1561,7 +1504,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
             "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1586,7 +1528,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1595,7 +1536,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1623,7 +1563,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" write-community=\"horizon\" location=\"Minion\"> \n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1636,7 +1575,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
             "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1663,12 +1601,10 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\">\n" +
             "        <specific>192.168.0.8</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1695,13 +1631,11 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" profile-label=\"profile3\">\n" +
             "        <specific>192.168.0.8</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1728,13 +1662,11 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" profile-label=\"profile3\"  location=\"MINION\">\n" +
             "        <specific>192.168.0.8</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
         final String expectedConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<snmp-config retry=\"3\" timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXml));
@@ -1761,7 +1693,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"1200\" profile-label=\"profile3\" location=\"MINION\" >\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1771,7 +1702,6 @@ public class SnmpEventInfoTest {
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.24\"/>\n" +
             "        <range begin=\"192.168.1.26\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1803,7 +1733,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"1500\" profile-label=\"profile2\" location=\"MINION\" >\n" +
             "        <range begin=\"192.168.2.15\" end=\"192.168.2.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1816,7 +1745,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"1500\" profile-label=\"profile2\" location=\"MINION\" >\n" +
             "        <range begin=\"192.168.2.15\" end=\"192.168.2.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1869,7 +1797,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"2000\" profile-label=\"profile4\" location=\"Apex\" >\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -1885,7 +1812,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v1\" timeout=\"2000\" profile-label=\"profile4\" location=\"Apex\" >\n" +
             "        <range begin=\"192.168.1.15\" end=\"192.168.1.35\"/>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n" +
             "";
 
@@ -2087,7 +2013,6 @@ public class SnmpEventInfoTest {
         final String expectedSnmpConfigXmlOrig =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <profiles/>\n" +
                 "</snmp-config>\n";
 
         final String expectedConfig =
@@ -2096,7 +2021,6 @@ public class SnmpEventInfoTest {
             "    <definition version=\"v2c\" max-repetitions=\"5\">\n" +
             "        <specific>192.168.0.8</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXmlOrig));
@@ -2126,7 +2050,6 @@ public class SnmpEventInfoTest {
         final String expectedSnmpConfigXmlOrig =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<snmp-config port=\"161\" retry=\"3\" timeout=\"800\" read-community=\"public\" version=\"v1\" max-repetitions=\"17\" max-vars-per-pdu=\"13\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
-                "    <profiles/>\n" +
                 "</snmp-config>\n";
 
         final String expectedConfig =
@@ -2135,7 +2058,6 @@ public class SnmpEventInfoTest {
             "    <definition proxy-host=\"127.0.0.1\">\n" +
             "        <specific>192.168.0.8</specific>\n" +
             "    </definition>\n" +
-            "    <profiles/>\n" +
             "</snmp-config>\n";
 
         SnmpPeerFactory.setResource(new StringResource(snmpConfigXmlOrig));
