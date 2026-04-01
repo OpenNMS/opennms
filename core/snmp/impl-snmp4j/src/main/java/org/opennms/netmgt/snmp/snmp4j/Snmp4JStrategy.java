@@ -646,6 +646,13 @@ public class Snmp4JStrategy implements SnmpStrategy {
             int maxNumUniqueDefs = usmUsersByKey.values().stream()
                     .mapToInt(List::size).max().orElse(0);
 
+            // Add auth failure logging to the primary dispatcher when there are duplicates
+            if (maxNumUniqueDefs > 1) {
+                AuthenticationFailureLogger primaryAuthLogger = new AuthenticationFailureLogger(0, maxNumUniqueDefs - 1);
+                dispatcher.addAuthenticationFailureListener(primaryAuthLogger);
+                dispatcher.addCommandResponder(primaryAuthLogger);
+            }
+
             // For every additional index (meaning there are duplicate entries for the same key)
             // gather the entries across all the other lists and:
             //   1) Add these to a new USM context
@@ -704,6 +711,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
             // the dispatchers for different credentials have only the v3 processing model assigned, so we can check whether the v2 processing model is null
             if (messageDispatcher.getMessageProcessingModel(MPv2c.ID) == null) {
                 LOG.debug("Error authenticating SNMP v3 trap PDU received from {} (error status code {}). Tried #{} of {} different dispatchers.", authenticationFailureEvent.getAddress(), authenticationFailureEvent.getError(), currentDispatcher, maxDispatcher);
+                if (currentDispatcher == maxDispatcher) {
+                    LOG.warn("Failed to authenticate SNMP v3 trap from {} on all {} dispatchers. Security name may not be configured in trapd-configuration.xml.", authenticationFailureEvent.getAddress(), maxDispatcher + 1);
+                }
             }
         }
 
