@@ -26,8 +26,6 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -36,12 +34,13 @@ import com.google.common.base.Strings;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.SnmpConfigUtils;
+import org.opennms.netmgt.config.SnmpConfigUtils.DefinitionContentsValidationStatus;
+import org.opennms.netmgt.config.SnmpConfigUtils.ValidatedDefinitionContents;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
-import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -63,18 +62,12 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigRestService.class);
     private static final String MODULE_NAME = "web rest api";
 
-    private static final String COMMA_DELIMITER = ",";
-    private static final String RANGE_DELIMITER = "-";
-    private static final String IPLIKE_VALIDATION_REGEX = "(([0-9]{1,3}(([,-])[0-9]{1,3})*|\\*)\\.){3}([0-9]{1,3}(([,-])[0-9]{1,3})*|\\*)";
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static final String DEFINITION_MISSING_CONTENTS_MESSAGE = "Definition must have at least one specific IP, IP range or IP match specified.";
     public static final String DEFINITION_CANNOT_MIX_RANGE_AND_IPMATCH_MESSAGE =
             "Cannot have an IP match expression along with IP ranges or specific IP addresses.";
     public static final String DEFINITION_NO_ITEMS_REMOVED_MESSAGE = "No configuration items removed, mostly likely no matching definitions found.";
-
-    record DefinitionContents(boolean hasRange, boolean hasSpecific, boolean hasIpMatch) {}
 
     @Autowired
     private MonitoringLocationDao monitoringLocationDao;
@@ -97,7 +90,7 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
     @Override
     public Response getConfigForIp(final String ipAddress, final String location) {
         try {
-            InetAddress addr = safeGetInetAddress(ipAddress);
+            InetAddress addr = SnmpConfigUtils.safeGetInetAddress(ipAddress);
 
             if (addr == null) {
                 return createBadRequestResponse("Missing or invalid 'ipAddress'.");
@@ -151,13 +144,11 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 return createBadRequestResponse("Missing or invalid request parameters.");
             }
 
-            DefinitionContents contents = getDefinitionContents(definition);
+            SnmpConfigUtils.DefinitionStatsValidationStatus status = SnmpConfigUtils.validateDefinitionContents(definition);
 
-            if (!contents.hasRange && !contents.hasSpecific && !contents.hasIpMatch) {
+            if (status == SnmpConfigUtils.DefinitionStatsValidationStatus.MISSING_CONTENTS) {
                 return createBadRequestResponse(DEFINITION_MISSING_CONTENTS_MESSAGE);
-            }
-
-            if (contents.hasIpMatch && (contents.hasRange || contents.hasSpecific)) {
+            } else if (status == SnmpConfigUtils.DefinitionStatsValidationStatus.CANNOT_MIX_RANGE_AND_IPMATCH) {
                 return createBadRequestResponse(DEFINITION_CANNOT_MIX_RANGE_AND_IPMATCH_MESSAGE);
             }
 
@@ -170,13 +161,14 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             }
 
             // Validate IP addresses in the definition
-            String ipValidationError = validateDefinitionIpAddresses(definition);
+            String ipValidationError = SnmpConfigUtils.validateDefinitionIpAddresses(definition);
+
             if (ipValidationError != null) {
                 return createBadRequestResponse(ipValidationError);
             }
 
             // Validate IP match expressions in the definition
-            String ipMatchValidationError = validateDefinitionIpMatches(definition);
+            String ipMatchValidationError = SnmpConfigUtils.validateDefinitionIpMatches(definition);
 
             if (ipMatchValidationError != null) {
                 return createBadRequestResponse(ipMatchValidationError);
@@ -207,44 +199,31 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
                 return createBadRequestResponse("Missing or invalid 'location'.");
             }
 
-            List<String> rangeItems = splitAndTrim(ranges, COMMA_DELIMITER);
-            List<String> definitionIpMatches = splitAndTrim(ipMatches, COMMA_DELIMITER);
-            List<String> definitionSpecifics = splitAndTrim(specifics, COMMA_DELIMITER);
-            List<Range> definitionRanges = new ArrayList<>();
+            ValidatedDefinitionContents validatedContents = SnmpConfigUtils.sanitizeAndValidateDefinitionItems(specifics, ranges, ipMatches);
 
-            for (String specific : definitionSpecifics) {
-                if (safeGetInetAddress(specific) == null) {
-                    return createBadRequestResponse("The specific IP address '" + specific + "' was invalid.");
+            if (validatedContents.status() != DefinitionContentsValidationStatus.VALID) {
+                switch (validatedContents.status()) {
+                    case INVALID_SPECIFIC_ADDRESS -> {
+                        return createBadRequestResponse("The specific IP address '" + validatedContents.invalidItem() + "' was invalid.");
+                    }
+                    case INVALID_RANGE -> {
+                        return createBadRequestResponse("Invalid range '" + validatedContents.invalidItem() + "'.");
+                    }
+                    case INVALID_RANGE_BEGIN -> {
+                        return createBadRequestResponse("The range begin IP address '" + validatedContents.invalidItem() + "' was invalid.");
+                    }
+                    case INVALID_RANGE_END -> {
+                        return createBadRequestResponse("The range end IP address '" + validatedContents.invalidItem() + "' was invalid.");
+                    }
+                    case INVALID_EMPTY -> {
+                        return createBadRequestResponse("Must supply at least one specific or range of IP addresses or IP match expression to remove.");
+                    }
                 }
-            }
-
-            for (String range : rangeItems) {
-                List<String> rangeSplit = splitAndTrim(range, RANGE_DELIMITER);
-
-                if (rangeSplit.size() != 2) {
-                    return createBadRequestResponse("Invalid range '" + range + "'.");
-                }
-
-                Range r = new Range(rangeSplit.get(0), rangeSplit.get(1));
-
-                if (safeGetInetAddress(r.getBegin()) == null) {
-                    return createBadRequestResponse("The range begin IP address '" + r.getBegin() + "' was invalid.");
-                }
-
-                if (safeGetInetAddress(r.getEnd()) == null) {
-                    return createBadRequestResponse("The range end IP address '" + r.getEnd() + "' was invalid.");
-                }
-
-                definitionRanges.add(r);
-            }
-
-            if (definitionSpecifics.isEmpty() && definitionRanges.isEmpty() && definitionIpMatches.isEmpty()) {
-                return createBadRequestResponse("Must supply at least one specific or range of IP addresses or IP match expression to remove.");
             }
 
             // removes and also saves
-            boolean result = SnmpPeerFactory.getInstance()
-                    .removeRangesFromDefinition(definitionRanges, definitionSpecifics, definitionIpMatches, validLocation, MODULE_NAME);
+            boolean result = SnmpPeerFactory.getInstance().removeRangesFromDefinition(validatedContents.definitionRanges(),
+                    validatedContents.definitionSpecifics(), validatedContents.definitionIpMatches(), validLocation, MODULE_NAME);
 
             if (!result) {
                 LOG.info(DEFINITION_NO_ITEMS_REMOVED_MESSAGE);
@@ -398,16 +377,6 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
         return location;
     }
 
-    private DefinitionContents getDefinitionContents(Definition definition) {
-        boolean hasRange = definition.getRanges().stream()
-                .anyMatch(range -> !Strings.isNullOrEmpty(range.getBegin()) && !Strings.isNullOrEmpty(range.getEnd()));
-
-        boolean hasSpecific = definition.getSpecifics().stream().anyMatch(spec -> !Strings.isNullOrEmpty(spec));
-        boolean hasIpMatch = definition.getIpMatches().stream().anyMatch(match -> !Strings.isNullOrEmpty(match));
-
-        return new DefinitionContents(hasRange, hasSpecific, hasIpMatch);
-    }
-
     private static Response createBadRequestResponse(String message) {
         return
             Response.status(Response.Status.BAD_REQUEST)
@@ -420,109 +389,5 @@ public class SnmpConfigRestService implements SnmpConfigRestApi {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR)
             .type(MediaType.TEXT_PLAIN)
             .entity(message).build());
-    }
-
-    /** Return a valid InetAddress, or null if it could not be parsed. */
-    private static InetAddress safeGetInetAddress(String ipAddress) {
-        InetAddress addr = null;
-
-        try {
-            if (!Strings.isNullOrEmpty(ipAddress)) {
-                addr = InetAddressUtils.addr(ipAddress);
-            }
-        } catch (Exception e) {
-            LOG.debug("Invalid IP address: {}", ipAddress, e);
-        }
-
-        return addr;
-    }
-
-    private static List<String> splitAndTrim(final String source, final String delimiter) {
-        String trimmed = !Strings.isNullOrEmpty(source) ? source.trim() : "";
-
-        List<String> items =
-            Arrays.stream(trimmed.split(delimiter))
-                .map(String::trim)
-                .filter(s -> !Strings.isNullOrEmpty(s))
-                .toList();
-
-        return items;
-    }
-
-    /**
-     * Validates IP addresses in the Definition's specifics and ranges.
-     * @return error message if validation fails, null if valid
-     */
-    private static String validateDefinitionIpAddresses(final Definition definition) {
-        for (final String specific : definition.getSpecifics()) {
-            if (Strings.isNullOrEmpty(specific)) {
-                return "Invalid specific IP address: empty value.";
-            }
-            InetAddress addr = null;
-
-            try {
-                addr = InetAddressUtils.addr(specific);
-            } catch (IllegalArgumentException ignored) {
-            }
-
-            if (addr == null) {
-                return String.format("Invalid specific IP address: %s", specific);
-            }
-        }
-
-        for (final Range range : definition.getRanges()) {
-            if (Strings.isNullOrEmpty(range.getBegin()) || Strings.isNullOrEmpty(range.getEnd())) {
-                return String.format("Invalid range: begin and end must be specified. begin=%s, end=%s",
-                    range.getBegin(), range.getEnd());
-            }
-
-            InetAddress beginAddr = null;
-            InetAddress endAddr = null;
-
-            try {
-                beginAddr = InetAddressUtils.addr(range.getBegin());
-                endAddr = InetAddressUtils.addr(range.getEnd());
-            } catch (IllegalArgumentException ignored) {
-            }
-
-            if (beginAddr == null) {
-                return String.format("Invalid range begin IP address: %s", range.getBegin());
-            }
-            if (endAddr == null) {
-                return String.format("Invalid range end IP address: %s", range.getEnd());
-            }
-
-            // Ensure both addresses are the same IP version
-            // They should be either both Inet4Address or both Inet6Address, but not one of each
-            boolean beginIsV4 = beginAddr instanceof java.net.Inet4Address;
-            boolean endIsV4 = endAddr instanceof java.net.Inet4Address;
-
-            if (beginIsV4 != endIsV4) {
-                return String.format("Invalid range: begin and end must be same IP version. begin=%s, end=%s",
-                    range.getBegin(), range.getEnd());
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Validates IP match expressions in the Definition's ipMatch list.
-     * @return error message if validation fails, null if valid
-     */
-    private static String validateDefinitionIpMatches(final Definition definition) {
-        for (final String ipMatch : definition.getIpMatches()) {
-            if (Strings.isNullOrEmpty(ipMatch)) {
-                return "Invalid IP match expression: empty value.";
-            }
-
-            if (!ipMatch.matches(IPLIKE_VALIDATION_REGEX)) {
-                return String.format("Invalid IP match expression: '%s'.", ipMatch);
-            }
-
-            // TODO: Consider more robust validation, for example checking octets are in the 0-255 range
-        }
-
-        return null;
     }
 }

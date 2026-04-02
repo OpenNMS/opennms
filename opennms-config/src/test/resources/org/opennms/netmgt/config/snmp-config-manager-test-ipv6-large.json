@@ -1,0 +1,18 @@
+{
+  "readCommunity": "public",
+  "definition": [
+    {
+      "readCommunity": "public-1",
+      "range": [
+        {
+          "begin": "2001:db8:1:2:3:4:5:1",
+          "end": "2001:db8:1:2:3:4:5:9"
+        }
+      ],
+      "specific": [],
+      "ipMatch": [],
+      "location": null,
+      "profileLabel": null
+    }
+  ]
+}

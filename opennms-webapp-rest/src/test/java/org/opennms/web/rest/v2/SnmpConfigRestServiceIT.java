@@ -86,6 +86,8 @@ import static org.mockito.Mockito.when;
 @JUnitTemporaryDatabase
 public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+    private static final String SNMP_CONFIG_IPV4_RESOURCE_NAME = "snmp-config.xml";
+    private static final String SNMP_CONFIG_IPV6_RESOURCE_NAME = "snmp-config-ipv6.xml";
 
     public SnmpConfigRestServiceIT () {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -97,14 +99,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Before
     public void setUp() {
         try {
-            // NOTE: Make sure 'snmpPeerFactory' setup in 'applicationContext-rest-test.xml' is
-            // set to 'MockSnmpPeerFactory'
-            // <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
-            URL xmlPath = Thread.currentThread().getContextClassLoader().getResource("snmp-config.xml");
-            FileSystemResource resource = new FileSystemResource(xmlPath.getPath());
-
-            SnmpPeerFactory factory = new SnmpPeerFactory(resource);
-            SnmpPeerFactory.setInstance(factory);
+            populateSnmpPeerFactory(SNMP_CONFIG_IPV4_RESOURCE_NAME);
         } catch (Exception e) {
             Assert.fail("setUp failed");
         }
@@ -118,6 +113,17 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
+    }
+
+    private void populateSnmpPeerFactory(final String resourceName) {
+        // NOTE: Make sure 'snmpPeerFactory' setup in 'applicationContext-rest-test.xml' is
+        // set to 'MockSnmpPeerFactory'
+        // <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
+        URL xmlPath = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+        FileSystemResource resource = new FileSystemResource(xmlPath.getPath());
+
+        SnmpPeerFactory factory = new SnmpPeerFactory(resource);
+        SnmpPeerFactory.setInstance(factory);
     }
 
     @Test
@@ -551,6 +557,131 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals(400, response.getStatus());
         message = (String) response.getEntity();
         assertEquals("Missing or invalid 'location'.", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithValidIpv4IpMatch() {
+        Definition definition = new Definition();
+        definition.addIpMatch("10.0.0.*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv4-ipmatch");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        definition = new Definition();
+        definition.addIpMatch("192.168.1,2.1-10");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv4-ipmatch2");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidIpv4IpMatch() {
+        Definition definition = new Definition();
+        definition.addIpMatch("10.0.0.");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-bad-ipmatch");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid IP match expression: '10.0.0.'.", message);
+    }
+
+    @Test
+    public void testAddDefinitionWithValidIpv6IpMatch() {
+        // wildcard in last hextet, fully expanded
+        Definition definition = new Definition();
+        definition.addIpMatch("2001:db8:0:0:0:0:0:*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // range in one hextet, fully expanded
+        definition = new Definition();
+        definition.addIpMatch("2001:db8:0:0:0:0:0:1-ffff");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch2");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // comma-separated values in one hextet, fully expanded
+        definition = new Definition();
+        definition.addIpMatch("fd00:0:0:0:0:0:0:1,2");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch3");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // compressed :: notation — expands to 2001:db8:0:0:0:0:0:1
+        definition = new Definition();
+        definition.addIpMatch("2001:db8::1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch4");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // compressed :: with wildcard — expands to 2001:db8:0:0:0:0:0:*
+        definition = new Definition();
+        definition.addIpMatch("2001:db8::*");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch5");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // leading :: — expands to 0:0:0:0:0:0:0:1
+        definition = new Definition();
+        definition.addIpMatch("::1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-ipv6-ipmatch6");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+    }
+
+    @Test
+    public void testAddDefinitionWithInvalidIpv6IpMatch() {
+        // invalid hex characters, fully expanded
+        Definition definition = new Definition();
+        definition.addIpMatch("2001:zzzz:0:0:0:0:0:1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-bad-ipv6-ipmatch");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        String message = (String) response.getEntity();
+        assertEquals("Invalid IP match expression: '2001:zzzz:0:0:0:0:0:1'.", message);
+
+        // invalid hex characters with :: compression
+        definition = new Definition();
+        definition.addIpMatch("2001:zzzz::1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing-bad-ipv6-ipmatch2");
+
+        response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(400, response.getStatus());
+        message = (String) response.getEntity();
+        assertEquals("Invalid IP match expression: '2001:zzzz::1'.", message);
     }
 
     @Test
@@ -1194,6 +1325,169 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         String message = (String) response.getEntity();
         assertEquals("Missing or invalid request body.", message);
+    }
+
+    @Test
+    public void testAddAndRemoveSnmpDefinitionsIPv6() {
+        populateSnmpPeerFactory(SNMP_CONFIG_IPV6_RESOURCE_NAME);
+
+        // Add a new definition with an IPv6 range
+        Definition definition = new Definition();
+        definition.addRange(new Range("fd00:99::1", "fd00:99::2"));
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // Check if config was updated with new community string for both IPs in range
+        response = snmpConfigRestApi.getConfigForIp("fd00:99::1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+
+        SnmpAgentConfig config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("testing99", config.getReadCommunity());
+
+        response = snmpConfigRestApi.getConfigForIp("fd00:99::2", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("testing99", config.getReadCommunity());
+
+        // make sure community string for a previously-existing item was not changed
+        response = snmpConfigRestApi.getConfigForIp("fd00::1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("profile2", config.getProfileLabel());
+
+        // Delete part of the definition (first IP only)
+        response = snmpConfigRestApi.removeDefinition("fd00:99::1", null, null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Check if config reverted to the default for the deleted IP
+        response = snmpConfigRestApi.getConfigForIp("fd00:99::1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("public", config.getReadCommunity());
+
+        // config for not-yet-deleted IP should still be there
+        response = snmpConfigRestApi.getConfigForIp("fd00:99::2", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("testing99", config.getReadCommunity());
+
+        // Delete the remaining IP
+        response = snmpConfigRestApi.removeDefinition("fd00:99::2", null, null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // Check if config reverted to the default
+        response = snmpConfigRestApi.getConfigForIp("fd00:99::2", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("public", config.getReadCommunity());
+    }
+
+    @Test
+    public void testAddAndRemoveDefinitionRangesIPv6() {
+        populateSnmpPeerFactory(SNMP_CONFIG_IPV6_RESOURCE_NAME);
+
+        // get the original config
+        final SnmpConfig originalConfig = getCurrentConfig();
+
+        // Add a new definition with an IPv6 range and a specific
+        Definition definition = new Definition();
+        definition.addRange(new Range("fd00:99::1", "fd00:99::63"));
+        definition.addSpecific("fd00::1");
+        definition.setLocation("Default");
+        definition.setReadCommunity("testing99");
+
+        Response response = snmpConfigRestApi.addDefinition(definition);
+        assertNotNull(response);
+        assertEquals(201, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterAdd = getCurrentConfig();
+        assertNotEquals(originalConfig, updatedConfigAfterAdd);
+
+        // Check if all IPs in the range and the specific have the new community string
+        List<String> ipsToTest =
+                List.of("fd00::1", "fd00:99::1", "fd00:99::2", "fd00:99::62", "fd00:99::63");
+
+        ipsToTest.forEach(ip -> {
+            Response resp = snmpConfigRestApi.getConfigForIp(ip, "Default");
+            assertNotNull(resp);
+            assertEquals(200, resp.getStatus());
+
+            SnmpAgentConfig config = (SnmpAgentConfig) resp.getEntity();
+            assertNotNull(config);
+            assertEquals("testing99", config.getReadCommunity());
+        });
+
+        // Remove the range only
+        response = snmpConfigRestApi.removeDefinition(null, "fd00:99::1-fd00:99::63", null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterDelete = getCurrentConfig();
+        assertNotEquals(updatedConfigAfterDelete, updatedConfigAfterAdd);
+
+        // IPs in the deleted range should revert to the default community
+        List<String> deletedRangeIps =
+                List.of("fd00:99::1", "fd00:99::2", "fd00:99::62", "fd00:99::63");
+
+        deletedRangeIps.forEach(ip -> {
+            Response resp = snmpConfigRestApi.getConfigForIp(ip, "Default");
+            assertNotNull(resp);
+            assertEquals(200, resp.getStatus());
+
+            SnmpAgentConfig config = (SnmpAgentConfig) resp.getEntity();
+            assertNotNull(config);
+            assertEquals("public", config.getReadCommunity());
+        });
+
+        // the specific was not deleted, should still have updated config
+        response = snmpConfigRestApi.getConfigForIp("fd00::1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        SnmpAgentConfig config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("testing99", config.getReadCommunity());
+
+        // Now delete the specific
+        response = snmpConfigRestApi.removeDefinition("fd00::1", null, null, "Default");
+        assertNotNull(response);
+        assertEquals(204, response.getStatus());
+
+        // config should have changed
+        final SnmpConfig updatedConfigAfterSecondDelete = getCurrentConfig();
+        assertNotEquals(updatedConfigAfterSecondDelete, updatedConfigAfterAdd);
+
+        // specific should now revert to the default community
+        response = snmpConfigRestApi.getConfigForIp("fd00::1", "Default");
+        assertNotNull(response);
+        assertEquals(200, response.getStatus());
+        config = (SnmpAgentConfig) response.getEntity();
+        assertNotNull(config);
+        assertEquals("public", config.getReadCommunity());
     }
 
     /**
