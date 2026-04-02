@@ -53,8 +53,6 @@ public class NodeDaoWrapper {
         this.delegate = Objects.requireNonNull(delegate);
     }
 
-    // -- single-entity lookups -----------------------------------------------
-
     /** Look up a node by its integer database ID. */
     public OnmsNode get(final Integer id) {
         return delegate.get(id);
@@ -70,8 +68,6 @@ public class NodeDaoWrapper {
         return delegate.load(id);
     }
 
-    // -- lightweight label/location helpers -----------------------------------
-
     /** Map of every nodeId → nodeLabel. Cheaper than {@code findAll()}. */
     public Map<Integer, String> getAllLabelsById() {
         return delegate.getAllLabelsById();
@@ -86,8 +82,6 @@ public class NodeDaoWrapper {
     public String getLocationForId(final Integer id) {
         return delegate.getLocationForId(id);
     }
-
-    // -- list / criteria queries ---------------------------------------------
 
     /** Return all nodes (expensive on large systems — use sparingly). */
     public List<OnmsNode> findAll() {
@@ -114,11 +108,9 @@ public class NodeDaoWrapper {
         return delegate.findMatching(criteria);
     }
 
-    // -- foreign-source helpers ----------------------------------------------
-
     /** Map of foreignId → nodeId for every node that has a foreignSource. */
-    public Map<String, Integer> getForeignIdToNodeIdMap() {
-        return delegate.getForeignIdToNodeIdMap();
+    public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        return delegate.getForeignIdToNodeIdMap(foreignSource);
     }
 
     /** Map of foreignSource → set-of-foreignIds. */
@@ -126,20 +118,4 @@ public class NodeDaoWrapper {
         return delegate.getForeignIdsPerForeignSourceMap();
     }
 
-    // -----------------------------------------------------------------------
-    //  The following NodeDao / OnmsDao methods are intentionally OMITTED:
-    //
-    //    save(OnmsNode)
-    //    saveOrUpdate(OnmsNode)
-    //    update(OnmsNode)
-    //    delete(OnmsNode)
-    //    delete(Integer)
-    //    flush()
-    //    clear()
-    //    lock()
-    //    initialize(Object)
-    //
-    //  If NodeDao gains new mutating methods in the future they must NOT
-    //  be added here.
-    // -----------------------------------------------------------------------
 }

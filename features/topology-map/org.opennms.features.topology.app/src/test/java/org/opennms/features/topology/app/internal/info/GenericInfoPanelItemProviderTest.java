@@ -117,6 +117,7 @@ public class GenericInfoPanelItemProviderTest {
 
         m_nodeDao = mock(NodeDao.class);
         m_measurementsService = mock(MeasurementsService.class);
+        m_resourceDao = mock(ResourceDao.class);
         m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService, m_resourceDao);
         m_onmsNode = new OnmsNode();
         m_onmsNode.setLabel("nodeLabel");
