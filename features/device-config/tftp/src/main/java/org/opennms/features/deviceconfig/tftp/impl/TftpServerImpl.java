@@ -127,28 +127,7 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                             LOG.debug("Negotiating tftp blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
                             // Create an OAck response packet - commons doesn't provide a method for this yet.
                             DatagramPacket oackPacket = createBlksizeOAckPacket(negotiatedBlksize, twrp.getAddress(), twrp.getPort());
-                           
-                            try {
-                                int localPort = transferTftp_.getLocalPort();
-                                transferTftp_.close();
-                                while (true) {
-                                    if (!transferTftp_.isOpen()) { // wait until we know the socket is not open
-                                        break;
-                                    }
-                                }
-                                DatagramSocket socket = new DatagramSocket(localPort);
-                                socket.send(oackPacket);
-                                socket.close();
-                                while (true) {
-                                    if (socket.isClosed()) { // wait until we know the socket is closed
-                                        break;
-                                    }
-                                }
-                                transferTftp_.open(localPort); // every day I'm shufflin'
-                            } catch (Exception e) {
-                                LOG.debug("Error sending OACK packet in response to 'blksize={}',", negotiatedBlksize, e);
-                                return;
-                            }
+                            sendOAckPacket(transferTftp_, oackPacket);
                             transferTftp_.resetBuffersToSize(negotiatedBlksize);
                             LOG.debug("Successfully negotiated blksize '{}' with client '{}'", negotiatedBlksize, twrp.getAddress());
                         }
@@ -675,5 +654,24 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
         byte[] oackData = oack.toByteArray();
 
         return new DatagramPacket(oackData, oackData.length, addr, port);
+    }
+
+    //Helper method to send a DatagramPacket through transferTftp_'s underlying socket using reflection
+    private void sendOAckPacket(TFTP tftp, DatagramPacket oackPacket) throws IOException {
+        try {
+            // TFTP class extends DatagramSocketClient, which has a protected field "_socket_"
+            // that holds the underlying DatagramSocket.
+            java.lang.reflect.Field socketField =
+                    org.apache.commons.net.DatagramSocketClient.class.getDeclaredField("_socket_");
+            socketField.setAccessible(true);
+
+            DatagramSocket socket = (DatagramSocket) socketField.get(tftp);
+            if (socket == null || socket.isClosed()) {
+                throw new IOException("TFTP socket is not open");
+            }
+            socket.send(oackPacket);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IOException("Failed to access TFTP socket via reflection", e);
+        }
     }
 }
