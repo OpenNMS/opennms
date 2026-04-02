@@ -69,7 +69,7 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         try {
-            trapdConfigDao.updateConfig(config);
+            trapdConfigDao.replaceConfig(config);
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Uploaded trapd configuration failed schema validation.", e);
@@ -107,7 +107,7 @@ public class TrapdRestService implements TrapdRestApi {
 
         TrapdConfiguration payload = configDto.toEntity();
         try {
-            trapdConfigDao.updateConfig(payload);
+            trapdConfigDao.replaceConfig(payload);
             return Response.ok().build();
         } catch (ValidationException e) {
             LOG.warn("Provided trapd configuration failed schema validation.", e);

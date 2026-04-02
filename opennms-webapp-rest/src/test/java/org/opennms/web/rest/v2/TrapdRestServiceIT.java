@@ -117,7 +117,7 @@ public class TrapdRestServiceIT {
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
-        verify(trapdConfigDao).updateConfig(captor.capture());
+        verify(trapdConfigDao).replaceConfig(captor.capture());
         assertEquals(10163, captor.getValue().getSnmpTrapPort());
     }
 
@@ -134,7 +134,7 @@ public class TrapdRestServiceIT {
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
-        verify(trapdConfigDao).updateConfig(captor.capture());
+        verify(trapdConfigDao).replaceConfig(captor.capture());
         assertTrue(captor.getValue().shouldUseAddressFromVarbind());
     }
 
@@ -158,7 +158,7 @@ public class TrapdRestServiceIT {
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
         );
-        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
@@ -387,7 +387,7 @@ public class TrapdRestServiceIT {
             assertEquals("snmpTrapPort is required and must be between 1 and 65535.", response.getEntity());
         }
 
-        verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -400,7 +400,7 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
-        verify(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -413,7 +413,7 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
-        verify(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -432,7 +432,7 @@ public class TrapdRestServiceIT {
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
-        verify(trapdConfigDao).updateConfig(captor.capture());
+        verify(trapdConfigDao).replaceConfig(captor.capture());
         TrapdConfiguration persisted = captor.getValue();
         assertEquals(10164, persisted.getSnmpTrapPort());
         assertEquals(4, persisted.getThreads());
@@ -453,14 +453,14 @@ public class TrapdRestServiceIT {
         }
 
         ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
-        verify(trapdConfigDao).updateConfig(captor.capture());
+        verify(trapdConfigDao).replaceConfig(captor.capture());
         assertTrue(captor.getValue().shouldUseAddressFromVarbind());
     }
 
     @Test
     public void updateShouldReturnBadRequestWhenValidationFails() {
         org.mockito.Mockito.doThrow(new ValidationException("validation failed"))
-                .when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+                .when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         TrapdConfigDto payload = new TrapdConfigDto();
         payload.setSnmpTrapAddress("127.0.0.1");
@@ -476,7 +476,7 @@ public class TrapdRestServiceIT {
     @Test
     public void updateShouldReturnServerErrorWhenPersistenceThrows() {
         org.mockito.Mockito.doThrow(new RuntimeException("db down"))
-                .when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+                .when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         TrapdConfigDto payload = new TrapdConfigDto();
         payload.setSnmpTrapAddress("127.0.0.1");
@@ -503,7 +503,23 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
-        verify(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateShouldClearSnmpv3UsersWhenEmptyListProvided() {
+        // Reproduces the bug: sending snmpv3User=[] should result in replaceConfig being called
+        // with an entity that has no SNMPv3 users (not the old ones retained from a merge).
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        payload.setSnmpv3User(java.util.Collections.emptyList());
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals(0, captor.getValue().getSnmpv3UserCount());
     }
 
     @Test
@@ -519,7 +535,7 @@ public class TrapdRestServiceIT {
             assertTrue(((String) response.getEntity()).contains("securityName is required."));
         }
 
-        verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -573,7 +589,7 @@ public class TrapdRestServiceIT {
             assertTrue(((String) response.getEntity()).contains("securityLevel must be between 1 and 3."));
         }
 
-        verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -771,7 +787,7 @@ public class TrapdRestServiceIT {
             assertTrue(((String) response.getEntity()).contains("securityName is required."));
         }
 
-        verify(trapdConfigDao, never()).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     // --- Boundary Value Tests ---
@@ -887,7 +903,7 @@ public class TrapdRestServiceIT {
     }
 
     private void whenValidationFailsOnUpdate(final String message) {
-        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).updateConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     private static void setField(final Object target, final String fieldName, final Object value) throws Exception {
