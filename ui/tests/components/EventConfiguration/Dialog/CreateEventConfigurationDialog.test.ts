@@ -45,7 +45,6 @@ describe('CreateEventConfigurationDialog.vue', () => {
   let wrapper: ReturnType<typeof mount>
 
   beforeEach(async () => {
-    vi.useFakeTimers()
     const pinia = createTestingPinia({ createSpy: vi.fn })
     setActivePinia(pinia)
     store = useEventConfigStore()
@@ -58,15 +57,21 @@ describe('CreateEventConfigurationDialog.vue', () => {
         components: { FeatherButton, FeatherInput, FeatherDialog, FeatherTextarea }
       }
     })
+
     await flushPromises()
-    vi.runAllTimers()
   })
 
   afterEach(() => {
-    vi.runAllTimers()
+    if (vi.isFakeTimers()) {
+      vi.runAllTimers()
+    }
+
     wrapper.unmount()
     document.body.innerHTML = ''
-    vi.useRealTimers()
+
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+    }
   })
 
   const setWrapperRefs = async (configName: string, vendor: string, description: string) => {
@@ -204,6 +209,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
   })
 
   it('visibility reactive (v-model)', async () => {
+    vi.useFakeTimers()
     expect(document.body.querySelector('.modal-body-form')).not.toBeNull()
     store.createEventConfigSourceDialogState.visible = false
     await wrapper.vm.$nextTick()
@@ -773,11 +779,16 @@ describe('CreateEventConfigurationDialog.vue', () => {
 
   describe('Input Field Model Binding', () => {
     it('updates configName on input', async () => {
+      vi.useFakeTimers()
+
       const inputs = wrapper.findAllComponents(FeatherInput)
       const nameInput = inputs[0]
 
       const vm = wrapper.vm as any
       await nameInput.vm.$emit('update:modelValue', 'NewName')
+
+      vi.advanceTimersByTime(500)
+      await flushPromises()
       await vm.$nextTick()
 
       expect(vm.configName).toBe('NewName')

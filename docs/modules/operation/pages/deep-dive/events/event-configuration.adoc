@@ -227,7 +227,7 @@ Key operations include:
 
 * `POST /api/v2/eventconf/upload` - Upload event configuration files.
 * `GET /api/v2/eventconf/filter/sources` - List and filter event sources.
-* `GET /api/v2/eventconf/filter/{sourceId}/events` - Get events for a source.
+* `GET /api/v2/eventconf/filter/\{sourceId}/events` - Get events for a source.
 * `PATCH /api/v2/eventconf/sources/status` - Enable/disable sources.
 * `DELETE /api/v2/eventconf/sources` - Delete event sources.
 

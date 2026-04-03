@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.config.snmp;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +30,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="profiles")
@@ -38,31 +39,50 @@ import org.opennms.core.xml.ValidateUsing;
 @ValidateUsing("snmp-config.xsd")
 public class SnmpProfiles {
 
+    @JsonProperty("profile")
     @XmlElement(name="profile")
-    private List<SnmpProfile> snmpProfiles = new ArrayList<>();
+    private List<SnmpProfile> profile = new ArrayList<>();
 
+    @JsonIgnore
     public List<SnmpProfile> getSnmpProfiles() {
-        return snmpProfiles;
+        return profile;
     }
 
     public void setSnmpProfiles(List<SnmpProfile> snmpProfiles) {
-        this.snmpProfiles = snmpProfiles;
+        if (snmpProfiles == null) {
+            this.profile.clear();
+        } else {
+            this.profile = snmpProfiles;
+        }
     }
 
     public void addSnmpProfile(SnmpProfile snmpProfile) {
-        this.snmpProfiles.add(snmpProfile);
+        if (snmpProfile != null) {
+            this.profile.add(snmpProfile);
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SnmpProfiles that = (SnmpProfiles) o;
-        return Objects.equals(snmpProfiles, that.snmpProfiles);
+        return Objects.equals(profile, that.profile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(snmpProfiles);
+        return Objects.hash(profile);
+    }
+
+    @Override
+    public String toString() {
+        return "SnmpProfiles [" +
+                "profile=" + profile +
+                "]";
     }
 }
