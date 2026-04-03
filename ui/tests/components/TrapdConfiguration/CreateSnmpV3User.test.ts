@@ -1,5 +1,10 @@
 import CreateSnmpV3User from '@/components/TrapdConfiguration/CreateSnmpV3User.vue'
 import {
+  DEFAULT_SNMP_V3_AUTH_PROTOCOL,
+  DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
+  DEFAULT_SNMP_V3_SECURITY_NAME
+} from '@/lib/constants'
+import {
   AUTH_PROTOCOL_OPTIONS,
   getDefaultTrapdConfig,
   PRIVACY_PROTOCOL_OPTIONS,
@@ -14,8 +19,11 @@ import type { SnmpV3User } from '@/types/trapConfig'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount } from '@vue/test-utils'
 import { setActivePinia } from 'pinia'
+import { ISelectItemType } from '@featherds/select'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, nextTick } from 'vue'
+
+const createEmptySelectItem = (): ISelectItemType => (undefined as unknown as ISelectItemType)
 
 const { showSnackBarMock, populateScvMock } = vi.hoisted(() => ({
   showSnackBarMock: vi.fn(),
@@ -317,7 +325,9 @@ describe('CreateSnmpV3User.vue', () => {
     await (wrapper.vm as any).onSecurityLevelChange()
     await nextTick()
 
-    expect((wrapper.vm as any).authProtocol).toEqual(AUTH_PROTOCOL_OPTIONS[0])
+    expect((wrapper.vm as any).authProtocol).toEqual(
+      AUTH_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_AUTH_PROTOCOL)
+    )
     expect((wrapper.vm as any).authPassphrase).toBe('')
   })
 
@@ -328,8 +338,12 @@ describe('CreateSnmpV3User.vue', () => {
     await (wrapper.vm as any).onSecurityLevelChange()
     await nextTick()
 
-    expect((wrapper.vm as any).authProtocol).toEqual(AUTH_PROTOCOL_OPTIONS[0])
-    expect((wrapper.vm as any).privacyProtocol).toEqual(PRIVACY_PROTOCOL_OPTIONS[0])
+    expect((wrapper.vm as any).authProtocol).toEqual(
+      AUTH_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_AUTH_PROTOCOL)
+    )
+    expect((wrapper.vm as any).privacyProtocol).toEqual(
+      PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_PRIVACY_PROTOCOL)
+    )
     expect((wrapper.vm as any).authPassphrase).toBe('')
     expect((wrapper.vm as any).privacyPassphrase).toBe('')
   })
@@ -343,7 +357,7 @@ describe('CreateSnmpV3User.vue', () => {
     await nextTick()
 
     expect((wrapper.vm as any).securityLevel).toEqual(SECURITY_LEVEL_OPTIONS[0])
-    expect((wrapper.vm as any).securityName).toBe('')
+    expect((wrapper.vm as any).securityName).toBe(DEFAULT_SNMP_V3_SECURITY_NAME)
     expect((wrapper.vm as any).engineId).toBe('')
   })
 
@@ -415,11 +429,66 @@ describe('CreateSnmpV3User.vue', () => {
     })
   })
 
+  it('does not require security level to match backend optional behaviour', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    await setBindingValue(wrapper, 'securityLevel', createEmptySelectItem())
+
+    expect((wrapper.vm as any).error.securityLevel).toBeUndefined()
+  })
+
+  it('shows validation error when level 1 has auth credentials (backend cross-field rule)', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    // Manually set auth protocol with NoAuthNoPriv level to simulate dirty state
+    ;(wrapper.vm as any).securityLevel = SECURITY_LEVEL_OPTIONS[0]
+    ;(wrapper.vm as any).authProtocol = AUTH_PROTOCOL_OPTIONS[0]
+    await nextTick()
+
+    expect((wrapper.vm as any).error.securityLevel).toBe(
+      'Security level 1 does not allow auth or privacy credentials'
+    )
+    expect((wrapper.vm as any).isSaveDisabled).toBe(true)
+  })
+
+  it('shows validation error when level 1 has privacy credentials (backend cross-field rule)', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'new-user')
+    ;(wrapper.vm as any).securityLevel = SECURITY_LEVEL_OPTIONS[0]
+    ;(wrapper.vm as any).privacyProtocol = PRIVACY_PROTOCOL_OPTIONS[0]
+    await nextTick()
+
+    expect((wrapper.vm as any).error.securityLevel).toBe(
+      'Security level 1 does not allow auth or privacy credentials'
+    )
+    expect((wrapper.vm as any).isSaveDisabled).toBe(true)
+  })
+
+  it('shows validation error when level 2 has privacy credentials (backend cross-field rule)', async () => {
+    const wrapper = mountComponent()
+
+    // Set level 2 and await so the watcher fires and clears privacyProtocol normally
+    ;(wrapper.vm as any).securityLevel = SECURITY_LEVEL_OPTIONS[1]
+    await nextTick()
+
+    // Now inject dirty privacy state AFTER the watcher ran, and call validateInputs
+    // directly before the Vue scheduler has a chance to run watchEffect again
+    ;(wrapper.vm as any).privacyProtocol = PRIVACY_PROTOCOL_OPTIONS[0]
+    const errors = (wrapper.vm as any).validateInputs()
+
+    expect(errors.privacyProtocol).toBe('Security level 2 does not allow privacy credentials')
+  })
+
   it('requires auth protocol and auth passphrase for auth-only security level', async () => {
     const wrapper = mountComponent()
 
     await setInputValue(wrapper, 'security-name-input', 'auth-only-user')
     await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await setBindingValue(wrapper, 'authProtocol', createEmptySelectItem())
+    await setBindingValue(wrapper, 'authPassphrase', '')
     await clickButton(wrapper, 'create-user-button')
 
     expect(updateTrapdConfigurationMock).not.toHaveBeenCalled()
@@ -427,6 +496,28 @@ describe('CreateSnmpV3User.vue', () => {
       msg: 'Please fix validation errors before saving.',
       error: true
     })
+  })
+
+  it('shows auth protocol error with passphrase-specific message when passphrase is set but protocol is cleared', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'auth-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await setBindingValue(wrapper, 'authProtocol', createEmptySelectItem())
+    await setBindingValue(wrapper, 'authPassphrase', 'some-passphrase')
+
+    expect((wrapper.vm as any).error.authProtocol).toBe('Auth Passphrase requires an Auth Protocol to be selected')
+  })
+
+  it('shows generic auth protocol error when passphrase is also missing', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'auth-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await setBindingValue(wrapper, 'authProtocol', createEmptySelectItem())
+    await setBindingValue(wrapper, 'authPassphrase', '')
+
+    expect((wrapper.vm as any).error.authProtocol).toBe('Auth Protocol is required for selected security level')
   })
 
   it('requires privacy protocol and privacy passphrase for auth-priv security level', async () => {
@@ -443,6 +534,32 @@ describe('CreateSnmpV3User.vue', () => {
       msg: 'Please fix validation errors before saving.',
       error: true
     })
+  })
+
+  it('shows privacy protocol error with passphrase-specific message when privacy passphrase is set but protocol is cleared', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'priv-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'auth-secret')
+    await setBindingValue(wrapper, 'privacyProtocol', createEmptySelectItem())
+    await setBindingValue(wrapper, 'privacyPassphrase', 'privacy-secret')
+
+    expect((wrapper.vm as any).error.privacyProtocol).toBe('Privacy Passphrase requires a Privacy Protocol to be selected')
+  })
+
+  it('shows generic privacy protocol error when privacy passphrase is also missing', async () => {
+    const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', 'priv-user')
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await setBindingValue(wrapper, 'authProtocol', AUTH_PROTOCOL_OPTIONS[0])
+    await setBindingValue(wrapper, 'authPassphrase', 'auth-secret')
+    await setBindingValue(wrapper, 'privacyProtocol', createEmptySelectItem())
+    await setBindingValue(wrapper, 'privacyPassphrase', '')
+
+    expect((wrapper.vm as any).error.privacyProtocol).toBe('Privacy Protocol is required for selected security level')
   })
 
   it('shows service error when updateTrapdConfiguration throws Error', async () => {
@@ -491,6 +608,8 @@ describe('CreateSnmpV3User.vue', () => {
 
   it('shows validation message when trying to save with empty security name', async () => {
     const wrapper = mountComponent()
+
+    await setInputValue(wrapper, 'security-name-input', '')
 
     await clickButton(wrapper, 'create-user-button')
 

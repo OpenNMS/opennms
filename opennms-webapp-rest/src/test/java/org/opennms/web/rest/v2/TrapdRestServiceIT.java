@@ -949,4 +949,19 @@ public class TrapdRestServiceIT {
             assertTrue(entity.contains("securityLevel must be between 1 and 3."));
         }
     }
+
+    @Test
+    public void updateShouldRejectNullSnmpv3UserEntryWithIndexInMessage() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        payload.setSnmpv3User(java.util.Collections.singletonList(null));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            String entity = (String) response.getEntity();
+            assertTrue(entity.contains("Invalid SNMPv3 user at index 0:"));
+            assertTrue(entity.contains("entry must not be null."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
 }
