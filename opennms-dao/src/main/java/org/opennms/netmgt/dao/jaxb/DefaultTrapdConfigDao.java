@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.jaxb;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
@@ -59,5 +60,10 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
     @Override
     public Consumer getValidationCallback() {
         return super.getValidationCallback();
+    }
+
+    @Override
+    public void replaceConfig(TrapdConfiguration config) {
+        this.updateConfig(this.getDefaultConfigId(), ConfigConvertUtil.objectToJson(config), true);
     }
 }

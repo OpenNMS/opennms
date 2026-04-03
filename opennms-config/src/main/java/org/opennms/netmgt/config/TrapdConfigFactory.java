@@ -221,6 +221,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_config.setSnmpTrapAddress(config.getSnmpTrapAddress());
         m_config.setSnmpTrapPort(config.getSnmpTrapPort());
         m_config.setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+        m_config.setUseAddressFromVarbind(config.shouldUseAddressFromVarbind());
         m_config.setQueueSize(config.getQueueSize());
         m_config.setBatchSize(config.getBatchSize());
         m_config.setBatchInterval(config.getBatchIntervalMs());
