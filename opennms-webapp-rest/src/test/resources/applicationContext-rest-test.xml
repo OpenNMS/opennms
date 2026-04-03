@@ -14,6 +14,10 @@
 	<bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
 	<bean id="trapdRestService" class="org.opennms.web.rest.v2.TrapdRestService"/>
 
+	<bean id="snmpConfigRestApi" class="org.opennms.web.rest.v2.SnmpConfigRestService"/>
+
+	<bean id="snmpPeerFactory" class="org.opennms.netmgt.config.mock.MockSnmpPeerFactory"/>
+
 	<bean name="collectd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.collectd.CollectdConfiguration" />
 		<constructor-arg value="file:target/test-classes/collectd-configuration.xml" />
@@ -39,5 +43,4 @@
 
 	<import resource="classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml"/>
 	<import resource="classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"/>
-
 </beans>

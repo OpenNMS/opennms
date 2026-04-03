@@ -21,37 +21,46 @@
  */
 package org.opennms.netmgt.config.snmp;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.xml.ValidateUsing;
 
 /**
  * Top-level element for the snmp-config.xml configuration file.
  */
-
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("snmp-config.xsd")
+@XmlType(propOrder={"definition", "profiles"})
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 
     /**
      * Maps IP addresses to specific SNMP parameters (retries, timeouts...)
      */
+    @JsonProperty("definition")
     @XmlElement(name="definition")
-    private List<Definition> m_definitions = new ArrayList<>();
+    private List<Definition> definition = new ArrayList<>();
 
+    @JsonProperty("profiles")
     @XmlElement(name="profiles")
-    private SnmpProfiles m_snmpProfiles;
+    @XmlJavaTypeAdapter(SnmpProfilesAdapter.class)
+    private SnmpProfiles profiles = new SnmpProfiles();
 
     public SnmpConfig() {
         super();
@@ -85,40 +94,76 @@ public class SnmpConfig extends Configuration implements Serializable {
         setDefinitions(definitions);
     }
 
+    public SnmpConfig(Configuration baseConfig, List<Definition> definitions) {
+        super(
+            baseConfig.getPort(),
+            baseConfig.getRetry(),
+            baseConfig.getTimeout(),
+            baseConfig.getReadCommunity(),
+            baseConfig.getWriteCommunity(),
+            baseConfig.getProxyHost(),
+            baseConfig.getVersion(),
+            baseConfig.getMaxVarsPerPdu(),
+            baseConfig.getMaxRepetitions(),
+            baseConfig.getMaxRequestSize(),
+            baseConfig.getSecurityName(),
+            baseConfig.getSecurityLevel(),
+            baseConfig.getAuthPassphrase(),
+            baseConfig.getAuthProtocol(),
+            baseConfig.getEngineId(),
+            baseConfig.getContextEngineId(),
+            baseConfig.getContextName(),
+            baseConfig.getPrivacyPassphrase(),
+            baseConfig.getPrivacyProtocol(),
+            baseConfig.getEnterpriseId()
+        );
+
+        setDefinitions(definitions);
+    }
+
+    @JsonIgnore
     public List<Definition> getDefinitions() {
-        if (m_definitions == null) {
+        if (definition == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableList(m_definitions);
+            return Collections.unmodifiableList(definition);
         }
     }
 
     public void setDefinitions(final List<Definition> definitions) {
-        m_definitions = new ArrayList<Definition>(definitions);
+        if (definitions == null) {
+            this.definition = new ArrayList<>();
+        } else {
+            this.definition = new ArrayList<Definition>(definitions);
+        }
     }
 
     public void addDefinition(final Definition definitions) throws IndexOutOfBoundsException {
-        this.m_definitions.add(definitions);
+        if (definitions != null) {
+            this.definition.add(definitions);
+        }
     }
 
     public boolean removeDefinition(final Definition definitions) {
-        return m_definitions.remove(definitions);
+        if (definitions != null) {
+            return this.definition.remove(definitions);
+        }
+
+        return false;
     }
 
+    @JsonIgnore
     public SnmpProfiles getSnmpProfiles() {
-        return m_snmpProfiles;
+        return profiles;
     }
 
     public void setSnmpProfiles(SnmpProfiles snmpProfiles) {
-        this.m_snmpProfiles = snmpProfiles;
+        this.profiles = Objects.requireNonNullElseGet(snmpProfiles, SnmpProfiles::new);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((m_definitions == null) ? 0 : m_definitions.hashCode());
-        return result;
+        return Objects.hash(super.hashCode(), definition, profiles);
     }
 
     @Override
@@ -133,24 +178,50 @@ public class SnmpConfig extends Configuration implements Serializable {
             return false;
         }
         SnmpConfig other = (SnmpConfig) obj;
-        if (m_definitions == null) {
-            if (other.m_definitions != null) {
-                return false;
-            }
-        } else if (!m_definitions.equals(other.m_definitions)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(definition, other.definition)
+                && Objects.equals(profiles, other.profiles);
     }
 
     @Override
     public String toString() {
-        return "SnmpConfig [definitions=" + m_definitions + "]";
+        return "SnmpConfig [" +
+                "definition=" + definition +
+                ", profiles=" + profiles +
+                ", proxyHost=" + getProxyHost() +
+                ", maxVarsPerPdu=" + getMaxVarsPerPdu() +
+                ", maxRepetitions=" + getMaxRepetitions() +
+                ", maxRequestSize=" + getMaxRequestSize() +
+                ", securityName=" + getSecurityName() +
+                ", securityLevel=" + getSecurityLevel() +
+                ", authPassphrase=" + MASKED_PASSWORD +
+                ", authProtocol=" + getAuthProtocol() +
+                ", engineId=" + getEngineId() +
+                ", contextEngineId=" + getContextEngineId() +
+                ", contextName=" + getContextName() +
+                ", privacyPassphrase=" + MASKED_PASSWORD +
+                ", privacyProtocol=" + getPrivacyProtocol() +
+                ", enterpriseId=" + getEnterpriseId() +
+                ", version=" + getVersion() +
+                ", writeCommunity=" + MASKED_PASSWORD +
+                ", readCommunity=" + MASKED_PASSWORD +
+                ", timeout=" + getTimeout() +
+                ", retry=" + getRetry() +
+                ", port=" + getPort() +
+                ", ttl=" + getTTL() +
+                ", encrypted=" + getEncrypted() +
+                "]";
+    }
+
+    @Override
+    public void fixSecurityLevel() {
+        super.fixSecurityLevel();
+        definition.forEach(Configuration::fixSecurityLevel);
+        profiles.getSnmpProfiles().forEach(Configuration::fixSecurityLevel);
     }
 
     public void visit(SnmpConfigVisitor visitor) {
         visitor.visitSnmpConfig(this);
-        for (final Definition definition : m_definitions) {
+        for (final Definition definition : definition) {
             definition.visit(visitor);
         }
         visitor.visitSnmpConfigFinished();
@@ -161,5 +232,4 @@ public class SnmpConfig extends Configuration implements Serializable {
         visit(visitor);
         return visitor.getDefinition();
     }
-
 }

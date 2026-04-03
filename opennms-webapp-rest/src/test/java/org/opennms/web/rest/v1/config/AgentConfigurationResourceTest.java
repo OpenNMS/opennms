@@ -43,7 +43,9 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.config.agents.AgentResponse;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.dao.mock.UnimplementedFilterDao;
@@ -165,6 +167,11 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
+        public void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException {
+            // Ignore
+        }
+
+        @Override
         public SnmpAgentConfig getAgentConfig(InetAddress address, String location) {
             return new SnmpAgentConfig(address, getDefaults());
         }
@@ -180,7 +187,7 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
-        public void saveDefinition(Definition definition) {
+        public void saveDefinition(Definition definition, boolean save) {
 
         }
 
@@ -190,8 +197,29 @@ public class AgentConfigurationResourceTest {
         }
 
         @Override
+        public boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics, List<String> ipMatches,
+                                                  String location, String module) {
+            return true;
+        }
+
+        @Override
         public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
 
+        }
+
+        @Override
+        public void saveDefaultOverrides(Configuration config) {
+
+        }
+
+        @Override
+        public void saveProfile(SnmpProfile profile) {
+
+        }
+
+        @Override
+        public boolean removeProfile(String label) {
+            return false;
         }
 
         @Override
