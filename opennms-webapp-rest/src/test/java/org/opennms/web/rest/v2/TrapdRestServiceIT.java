@@ -67,7 +67,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
 public class TrapdRestServiceIT {
-    private static final String PASSPHRASE_PLACEHOLDER = "********";
 
     @Autowired
     private TrapdRestService trapdRestService;
@@ -203,18 +202,17 @@ public class TrapdRestServiceIT {
         }
     }
 
-    // --- passphrase masking tests ---
-
     @Test
-    public void getShouldMaskBothPassphrasesWithPlaceholder() {
+    public void getShouldReturnSnmpv3UserFieldsUnchanged() {
         TrapdConfiguration config = buildMinimalConfig();
         Snmpv3User user = new Snmpv3User();
-        user.setSecurityName("user1");
+        user.setSecurityName("engine-user");
+        user.setEngineId("0x8000000001020304");
         user.setSecurityLevel(3);
         user.setAuthProtocol("SHA");
-        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
+        user.setAuthPassphrase("authpass");
         user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
+        user.setPrivacyPassphrase("privpass");
         config.addSnmpv3User(user);
         when(trapdConfigDao.getConfig()).thenReturn(config);
 
@@ -222,33 +220,18 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
             Snmpv3UserDto returnedUser = returned.getSnmpv3User().get(0);
-            assertEquals(PASSPHRASE_PLACEHOLDER, returnedUser.getAuthPassphrase());
-            assertEquals(PASSPHRASE_PLACEHOLDER, returnedUser.getPrivacyPassphrase());
+            assertEquals("engine-user", returnedUser.getSecurityName());
+            assertEquals("0x8000000001020304", returnedUser.getEngineId());
+            assertEquals("SHA", returnedUser.getAuthProtocol());
+            assertEquals("AES", returnedUser.getPrivacyProtocol());
+            assertEquals(Integer.valueOf(3), returnedUser.getSecurityLevel());
+            assertEquals("authpass", returnedUser.getAuthPassphrase());
+            assertEquals("privpass", returnedUser.getPrivacyPassphrase());
         }
     }
 
     @Test
-    public void getShouldMaskAuthPassphraseWhenPrivacyPassphraseIsAbsent() {
-        TrapdConfiguration config = buildMinimalConfig();
-        Snmpv3User user = new Snmpv3User();
-        user.setSecurityName("user1");
-        user.setSecurityLevel(2);
-        user.setAuthProtocol("MD5");
-        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
-        config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
-
-        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
-            Snmpv3UserDto returnedUser = returned.getSnmpv3User().get(0);
-            assertEquals(PASSPHRASE_PLACEHOLDER, returnedUser.getAuthPassphrase());
-            assertNull(returnedUser.getPrivacyPassphrase());
-        }
-    }
-
-    @Test
-    public void getShouldNotSetPlaceholderWhenPassphrasesAreNull() {
+    public void getShouldReturnNullPassphrasesWhenNotSet() {
         TrapdConfiguration config = buildMinimalConfig();
         Snmpv3User user = new Snmpv3User();
         user.setSecurityName("user1");
@@ -267,23 +250,15 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void getShouldMaskPassphrasesForEveryUser() {
+    public void getShouldReturnAllSnmpv3Users() {
         TrapdConfiguration config = buildMinimalConfig();
 
         Snmpv3User userA = new Snmpv3User();
         userA.setSecurityName("user-a");
-        userA.setSecurityLevel(3);
-        userA.setAuthProtocol("SHA");
-        userA.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
-        userA.setPrivacyProtocol("AES");
-        userA.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(userA);
 
         Snmpv3User userB = new Snmpv3User();
         userB.setSecurityName("user-b");
-        userB.setSecurityLevel(2);
-        userB.setAuthProtocol("MD5");
-        userB.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
         config.addSnmpv3User(userB);
 
         when(trapdConfigDao.getConfig()).thenReturn(config);
@@ -292,62 +267,8 @@ public class TrapdRestServiceIT {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
             assertEquals(2, returned.getSnmpv3User().size());
-            assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(0).getAuthPassphrase());
-            assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(0).getPrivacyPassphrase());
-            assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(1).getAuthPassphrase());
-            assertNull(returned.getSnmpv3User().get(1).getPrivacyPassphrase());
-        }
-    }
-
-    @Test
-    public void getShouldNotMutateStoredConfigWhenMaskingPassphrases() {
-        TrapdConfiguration config = buildMinimalConfig();
-        Snmpv3User user = new Snmpv3User();
-        user.setSecurityName("user1");
-        user.setSecurityLevel(3);
-        user.setAuthProtocol("SHA");
-        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
-        user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
-        config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
-
-        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        }
-
-        // The config returned by getConfig should not have been mutated by the service
-        assertEquals(PASSPHRASE_PLACEHOLDER, config.getSnmpv3User(0).getAuthPassphrase());
-        assertEquals(PASSPHRASE_PLACEHOLDER, config.getSnmpv3User(0).getPrivacyPassphrase());
-    }
-
-    @Test
-    public void getShouldReturnConfigWithOtherFieldsIntactAfterMasking() {
-        TrapdConfiguration config = buildMinimalConfig();
-        Snmpv3User user = new Snmpv3User();
-        user.setSecurityName("engine-user");
-        user.setEngineId("0x8000000001020304");
-        user.setSecurityLevel(3);
-        user.setAuthProtocol("SHA");
-        user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
-        user.setPrivacyProtocol("AES");
-        user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
-        config.addSnmpv3User(user);
-        when(trapdConfigDao.getConfig()).thenReturn(config);
-
-        try (Response response = trapdRestService.getTrapdConfiguration(null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-            TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
-            Snmpv3UserDto returnedUser = returned.getSnmpv3User().get(0);
-            // Non-sensitive fields must be preserved
-            assertEquals("engine-user", returnedUser.getSecurityName());
-            assertEquals("0x8000000001020304", returnedUser.getEngineId());
-            assertEquals("SHA", returnedUser.getAuthProtocol());
-            assertEquals("AES", returnedUser.getPrivacyProtocol());
-            assertEquals(Integer.valueOf(3), returnedUser.getSecurityLevel());
-            // Sensitive fields must be masked
-            assertEquals(PASSPHRASE_PLACEHOLDER, returnedUser.getAuthPassphrase());
-            assertEquals(PASSPHRASE_PLACEHOLDER, returnedUser.getPrivacyPassphrase());
+            assertEquals("user-a", returned.getSnmpv3User().get(0).getSecurityName());
+            assertEquals("user-b", returned.getSnmpv3User().get(1).getSecurityName());
         }
     }
 
@@ -892,16 +813,6 @@ public class TrapdRestServiceIT {
         }
     }
 
-    // --- Security/Authorization Placeholder ---
-    // Note: SecurityContext is not currently used for access control in TrapdRestService.
-    // This test is a placeholder for future security/authorization checks.
-    @Test
-    public void updateShouldEnforceAuthorizationIfSecurityContextIsUsed() {
-        // If/when SecurityContext is used for access control, add tests here.
-        // For now, this is a no-op.
-        assertTrue(true);
-    }
-
     private void whenValidationFailsOnUpdate(final String message) {
         org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
@@ -927,51 +838,115 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void getShouldHandleLargeNumberOfSnmpv3Users() {
-        TrapdConfiguration config = buildMinimalConfig();
-        int userCount = 1000; // Large number for stress test
-        for (int i = 0; i < userCount; i++) {
-            Snmpv3User user = new Snmpv3User();
-            user.setSecurityName("user-" + i);
-            user.setSecurityLevel(3);
-            user.setAuthProtocol("SHA");
-            user.setAuthPassphrase(PASSPHRASE_PLACEHOLDER);
-            user.setPrivacyProtocol("AES");
-            user.setPrivacyPassphrase(PASSPHRASE_PLACEHOLDER);
-            config.addSnmpv3User(user);
-        }
-        when(trapdConfigDao.getConfig()).thenReturn(config);
+    public void uploadShouldNotCallReplaceConfigWhenXmlParsingFails() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
+        );
+
+        trapdRestService.uploadTrapdConfiguration(attachment, null);
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void getShouldReturnEmptySnmpv3UserListWhenNoUsersConfigured() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             TrapdConfigDto returned = (TrapdConfigDto) response.getEntity();
-            assertEquals(userCount, returned.getSnmpv3User().size());
-            for (int i = 0; i < userCount; i++) {
-                assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(i).getAuthPassphrase());
-                assertEquals(PASSPHRASE_PLACEHOLDER, returned.getSnmpv3User().get(i).getPrivacyPassphrase());
-            }
+            assertTrue(returned.getSnmpv3User().isEmpty());
         }
     }
 
     @Test
-    public void updateShouldBeThreadSafeUnderConcurrentAccess() throws InterruptedException {
-        final int threadCount = 10;
-        final TrapdConfigDto payload = new TrapdConfigDto();
-        payload.setSnmpTrapAddress("127.0.0.1");
-        payload.setSnmpTrapPort(162);
-        payload.setNewSuspectOnTrap(false);
-        Runnable updateTask = () -> {
-            try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
-                assertTrue(response.getStatus() == Response.Status.OK.getStatusCode() ||
-                           response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode() ||
-                           response.getStatus() == Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-            }
-        };
-        Thread[] threads = new Thread[threadCount];
-        for (int i = 0; i < threadCount; i++) {
-            threads[i] = new Thread(updateTask);
+    public void updateShouldNotSetSnmpv3UsersOnEntityWhenListIsNull() {
+        // When snmpv3User is null (omitted from request), toEntity() must not call setSnmpv3User
+        // so the entity's user count defaults to 0 (fresh TrapdConfiguration).
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        // snmpv3User deliberately not set — remains null
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
-        for (Thread t : threads) t.start();
-        for (Thread t : threads) t.join();
-        // If no exceptions, concurrency is handled gracefully
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals(0, captor.getValue().getSnmpv3UserCount());
+    }
+
+    @Test
+    public void updateShouldPersistSnmpv3UsersWhenValidUsersProvided() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("my-user");
+        user.setSecurityLevel(2);
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("authpass123");
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals(1, captor.getValue().getSnmpv3UserCount());
+        assertEquals("my-user", captor.getValue().getSnmpv3User(0).getSecurityName());
+        assertEquals("SHA", captor.getValue().getSnmpv3User(0).getAuthProtocol());
+    }
+
+    @Test
+    public void updateShouldRejectSnmpv3UserWhenLevel1HasPrivacyCredentials() {
+        // securityLevel 1 (noAuthNoPriv) must not have privacy-only credentials either
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setSecurityLevel(1);
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("privpass");
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("securityLevel 1 does not allow auth or privacy credentials."));
+        }
+    }
+
+    @Test
+    public void updateShouldRejectSnmpv3UserWhenLevel3MissingAuthCredentials() {
+        // securityLevel 3 with only privacy (no auth) must be rejected
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setSecurityLevel(3);
+        // auth intentionally omitted
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("privpass");
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("securityLevel 3 requires both auth and privacy credentials."));
+        }
+    }
+
+    @Test
+    public void updateShouldIncludeSecurityNameInValidationErrorMessage() {
+        // The error message format is: "Invalid SNMPv3 user: <name>. <reason>"
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("bad-user");
+        user.setSecurityLevel(0); // out of range
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            String entity = (String) response.getEntity();
+            assertTrue(entity.contains("bad-user"));
+            assertTrue(entity.contains("securityLevel must be between 1 and 3."));
+        }
     }
 }
