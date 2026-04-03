@@ -2,8 +2,9 @@
   <TableCard class="general-configuration">
     <div class="header">
       <div class="section-left">
-        <h3>TrapD Listener Settings</h3>
+        <h3>Trap Listener Settings</h3>
         <p>General config for TrapD Config</p>
+        <p>Note: Changes to these settings only affect OpenNMS runtime.</p>
       </div>
     </div>
     <div class="section">

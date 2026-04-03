@@ -91,7 +91,7 @@ describe('GeneralConfiguration.vue', () => {
   it('renders the section labels and loads the current trap configuration values from the store', () => {
     const wrapper = mountComponent()
 
-    expect(wrapper.text()).toContain('TrapD Listener Settings')
+    expect(wrapper.text()).toContain('Trap Listener Settings')
     expect(wrapper.text()).toContain('Update Changes')
     expect((wrapper.vm as any).port).toBe(162)
     expect((wrapper.vm as any).bindAddress).toBe('192.168.1.10')

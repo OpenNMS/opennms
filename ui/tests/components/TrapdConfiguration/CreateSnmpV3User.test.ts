@@ -288,6 +288,65 @@ describe('CreateSnmpV3User.vue', () => {
     expect(store.closeCredentialDrawer).toHaveBeenCalledTimes(1)
   })
 
+  it('closes SCV drawer when ScvSearchDrawer emits hidden', async () => {
+    const wrapper = mountComponent()
+
+    await wrapper.findComponent(ScvSearchDrawerStub).vm.$emit('hidden')
+
+    expect(store.closeCredentialDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('closes SCV drawer without changing passphrases when SCV key is unknown', async () => {
+    const wrapper = mountComponent()
+    store.credentialDrawerState.key = 'other'
+    await setBindingValue(wrapper, 'authPassphrase', 'existing-auth')
+    await setBindingValue(wrapper, 'privacyPassphrase', 'existing-privacy')
+
+    ;(wrapper.vm as any).scvItemSelected({ alias: 'vault', key: 'some-key' })
+    await nextTick()
+
+    expect((wrapper.vm as any).authPassphrase).toBe('existing-auth')
+    expect((wrapper.vm as any).privacyPassphrase).toBe('existing-privacy')
+    expect(store.closeCredentialDrawer).toHaveBeenCalledTimes(1)
+  })
+
+  it('onSecurityLevelChange sets default auth protocol for AuthNoPriv', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[1])
+    await (wrapper.vm as any).onSecurityLevelChange()
+    await nextTick()
+
+    expect((wrapper.vm as any).authProtocol).toEqual(AUTH_PROTOCOL_OPTIONS[0])
+    expect((wrapper.vm as any).authPassphrase).toBe('')
+  })
+
+  it('onSecurityLevelChange sets default auth/privacy protocols for AuthPriv', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'securityLevel', SECURITY_LEVEL_OPTIONS[2])
+    await (wrapper.vm as any).onSecurityLevelChange()
+    await nextTick()
+
+    expect((wrapper.vm as any).authProtocol).toEqual(AUTH_PROTOCOL_OPTIONS[0])
+    expect((wrapper.vm as any).privacyProtocol).toEqual(PRIVACY_PROTOCOL_OPTIONS[0])
+    expect((wrapper.vm as any).authPassphrase).toBe('')
+    expect((wrapper.vm as any).privacyPassphrase).toBe('')
+  })
+
+  it('loads create mode defaults with NoAuthNoPriv selected', async () => {
+    const wrapper = mountComponent()
+
+    store.createUserDrawerState.mode = CreateEditMode.Create
+    store.createUserDrawerState.selectedUserIndex = -1
+    await nextTick()
+    await nextTick()
+
+    expect((wrapper.vm as any).securityLevel).toEqual(SECURITY_LEVEL_OPTIONS[0])
+    expect((wrapper.vm as any).securityName).toBe('')
+    expect((wrapper.vm as any).engineId).toBe('')
+  })
+
   it('creates user successfully in create mode', async () => {
     const wrapper = mountComponent()
 

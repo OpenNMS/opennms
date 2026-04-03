@@ -92,7 +92,7 @@ describe('TrapdConfiguration.vue', () => {
   it('renders heading and child sections', () => {
     const wrapper = mountComponent()
 
-    expect(wrapper.find('h1').text()).toBe('TrapD Configuration')
+    expect(wrapper.find('h1').text()).toBe('Trap Listener Configuration')
     expect(wrapper.findComponent(BreadCrumbs).exists()).toBe(true)
     expect(wrapper.find('input[type="file"]').exists()).toBe(true)
   })
@@ -104,7 +104,7 @@ describe('TrapdConfiguration.vue', () => {
 
     expect(items).toHaveLength(2)
     expect(items[0]).toEqual({ label: 'Home', to: '/home', isAbsoluteLink: true })
-    expect(items[1]).toEqual({ label: 'Trap Configurations', to: '#', position: 'last' })
+    expect(items[1]).toEqual({ label: 'Trap Listener Configuration', to: '#', position: 'last' })
   })
 
   it('calls fetchTrapConfig on mount', () => {

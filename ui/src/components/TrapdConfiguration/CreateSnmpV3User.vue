@@ -45,6 +45,7 @@
           <FeatherSelect
             label="Security Level"
             v-model="securityLevel"
+            @update:model-value="onSecurityLevelChange"
             :clear="'true'"
             :options="SECURITY_LEVEL_OPTIONS"
             :error="error.securityLevel"
@@ -124,7 +125,6 @@
         {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
       </FeatherButton>
     </div>
-    <!-- <SearchExistingCredential /> -->
     <ScvSearchDrawer
       :isOpen="store.credentialDrawerState.visible"
       @hidden="store.closeCredentialDrawer"
@@ -246,6 +246,28 @@ const scvItemSelected = (item: any) => {
   store.closeCredentialDrawer()
 }
 
+const onSecurityLevelChange = async () => {
+  const selectedSecurityLevel = Number(securityLevel.value?._value)
+  await nextTick()
+
+  if (selectedSecurityLevel === SecurityLevel.NoAuthNoPriv) {
+    authProtocol.value = createEmptySelectItem()
+    privacyProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+  if (selectedSecurityLevel === SecurityLevel.AuthNoPriv) {
+    authProtocol.value = AUTH_PROTOCOL_OPTIONS[0] || createEmptySelectItem()
+    authPassphrase.value = ''
+  }
+  if (selectedSecurityLevel === SecurityLevel.AuthPriv) {
+    authProtocol.value = AUTH_PROTOCOL_OPTIONS[0] || createEmptySelectItem()
+    privacyProtocol.value = PRIVACY_PROTOCOL_OPTIONS[0] || createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+}
+
 const validateInputs = () => {
   const newError: SnmpV3UserError = {}
 
@@ -295,7 +317,7 @@ const loadUserData = async (drawerState: typeof store.createUserDrawerState) => 
       privacyPassphrase.value = selectedUser.privacyPassphrase || ''
     }
   } else {
-    securityLevel.value = createEmptySelectItem()
+    securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(SecurityLevel.NoAuthNoPriv)) ?? createEmptySelectItem()
     authProtocol.value = createEmptySelectItem()
     privacyProtocol.value = createEmptySelectItem()
     securityName.value = ''
