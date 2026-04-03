@@ -97,8 +97,5 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
   }
 }
 
-export {
-  addCredentials, getAliases,
-  getAllCredentials,
-  getCredentialsByAlias, updateCredentials
-}
+export { addCredentials, getAliases, getAllCredentials, getCredentialsByAlias, updateCredentials }
+

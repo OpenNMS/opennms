@@ -139,9 +139,7 @@ const validateSnmpV3UserElement = (
 
   const securityLevelAttr = user.getAttribute('security-level')
   let securityLevel: number | undefined
-  if (securityLevelAttr === null || securityLevelAttr.trim() === '') {
-    addError(errors, `${prefix}.security-level`, `${prefix}: security-level is required (1, 2, or 3)`)
-  } else {
+  if (securityLevelAttr !== null && securityLevelAttr.trim() !== '') {
     securityLevel = parseInt(securityLevelAttr, 10)
     if (!isValidSnmpSecurityLevel(securityLevel)) {
       addError(

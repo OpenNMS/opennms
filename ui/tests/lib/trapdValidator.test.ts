@@ -446,10 +446,11 @@ describe('validateTrapdXml – snmpv3-user: security-name and security-level', (
     expect(result.errors.some((e) => e.field.includes('security-name'))).toBe(true)
   })
 
-  it('returns error when security-level is missing', () => {
+  it('allows missing security-level (optional)', () => {
     const user = buildUser({ 'security-name': 'user1' })
     const result = validateTrapdXml(buildXml({ users: user }))
-    expect(result.errors.some((e) => e.field.includes('security-level'))).toBe(true)
+    expect(result.valid).toBe(true)
+    expect(result.errors.some((e) => e.field.includes('security-level'))).toBe(false)
   })
 
   it('returns error for security-level 0 (None)', () => {

@@ -18,8 +18,6 @@
 
 * xref:graph/graph.adoc[]
 
-* xref:menu/menu-templates.adoc[]
-
 * xref:rest/CORS.adoc[]
 
 * xref:rest/rest-api.adoc[]
@@ -63,6 +61,7 @@
 *** xref:rest/situations.adoc[]
 *** xref:rest/scv.adoc[]
 *** xref:rest/snmp_configuration.adoc[]
+*** xref:rest/snmp_configuration_legacy.adoc[]
 *** xref:rest/snmpinterfaces.adoc[]
 *** xref:rest/snmpmetadata.adoc[]
 *** xref:rest/users.adoc[]
