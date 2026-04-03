@@ -144,7 +144,6 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
         }
 
-        // 2) Resolve pending file
         final File pendingFile;
         try {
             pendingFile = MibCompilerServiceUtil.findPendingByBaseName(baseName);
@@ -164,7 +163,6 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             return Response.status(Response.Status.NOT_FOUND).entity(response).build();
         }
 
-        // 3) Parse/validate using mibParser (now owned by REST)
         final boolean parsed = mibParser.parseMib(pendingFile);
         if (!parsed) {
             final var missingDeps = mibParser.getMissingDependencies();
@@ -186,7 +184,6 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
         }
 
-        // 4) Parsed OK: move to compiled
         final File compiledFile;
         try {
             compiledFile = MibCompilerServiceUtil.movePendingToCompiled(pendingFile, baseName);
@@ -347,8 +344,6 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
                     .build();
         }
     }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     @Override
     public Response generateEvents(final MibCompilerGenerateEventsRequest request) {
         final String location = "compiled";
