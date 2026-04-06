@@ -2,7 +2,7 @@
 = Trapd REST API (v2)
 :description: Manage trapd configuration through the OpenNMS REST v2 API.
 
-You can read and update trapd configuration over REST without editing `trapd-configuration.xml` manually.
+You can view and update trapd configuration over REST.
 These endpoints are useful for automation and external configuration tooling.
 
 The Trapd REST API base path is `/api/v2/trapd`.
