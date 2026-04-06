@@ -935,7 +935,7 @@ public class TrapdRestServiceIT {
 
     @Test
     public void updateShouldIncludeSecurityNameInValidationErrorMessage() {
-        // The error message format is: "Invalid SNMPv3 user: <name>. <reason>"
+        // The error message format is: "Invalid SNMPv3 user at index <index>: <reason>"
         TrapdConfigDto payload = buildMinimalUpdatePayload();
         Snmpv3UserDto user = new Snmpv3UserDto();
         user.setSecurityName("bad-user");
@@ -945,8 +945,23 @@ public class TrapdRestServiceIT {
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             String entity = (String) response.getEntity();
-            assertTrue(entity.contains("bad-user"));
+            assertTrue(entity.contains("at index 0"));
             assertTrue(entity.contains("securityLevel must be between 1 and 3."));
         }
+    }
+
+    @Test
+    public void updateShouldRejectNullSnmpv3UserEntryWithIndexInMessage() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        payload.setSnmpv3User(java.util.Collections.singletonList(null));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            String entity = (String) response.getEntity();
+            assertTrue(entity.contains("Invalid SNMPv3 user at index 0:"));
+            assertTrue(entity.contains("entry must not be null."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 }

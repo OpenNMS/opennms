@@ -79,7 +79,9 @@ export const isValidSnmpSecurityLevel = (level: number | undefined): boolean => 
 
 export const isValidIP = (ip: string): boolean => {
   const parts = ip.split('.')
-  if (parts.length !== 4) return false
+  if (parts.length !== 4) {
+    return false
+  }
   return parts.every((part) => {
     const num = parseInt(part, 10)
     return !isNaN(num) && num >= 0 && num <= 255
@@ -122,14 +124,9 @@ const VALID_AUTH_PROTOCOL_VALUES = new Set(AuthProtocols.map(normalizeAuthProtoc
 // All valid privacy protocol values
 const VALID_PRIVACY_PROTOCOL_VALUES = new Set(PrivacyProtocols as string[])
 
-const addError = (errors: XmlValidationError[], field: string, message: string) =>
-  errors.push({ field, message })
+const addError = (errors: XmlValidationError[], field: string, message: string) => errors.push({ field, message })
 
-const validateSnmpV3UserElement = (
-  user: Element,
-  index: number,
-  errors: XmlValidationError[]
-): void => {
+const validateSnmpV3UserElement = (user: Element, index: number, errors: XmlValidationError[]): void => {
   const prefix = `snmpv3-user[${index}]`
 
   const securityName = user.getAttribute('security-name')
@@ -165,11 +162,7 @@ const validateSnmpV3UserElement = (
       )
     }
     if (!authPassphrase || authPassphrase.trim() === '') {
-      addError(
-        errors,
-        `${prefix}.auth-passphrase`,
-        `${prefix}: auth-passphrase is required when auth-protocol is set`
-      )
+      addError(errors, `${prefix}.auth-passphrase`, `${prefix}: auth-passphrase is required when auth-protocol is set`)
     }
   }
 
@@ -189,11 +182,7 @@ const validateSnmpV3UserElement = (
       )
     }
     if (authProtocol === null) {
-      addError(
-        errors,
-        `${prefix}.auth-protocol`,
-        `${prefix}: auth-protocol is required when privacy-protocol is set`
-      )
+      addError(errors, `${prefix}.auth-protocol`, `${prefix}: auth-protocol is required when privacy-protocol is set`)
     }
   }
 
@@ -335,11 +324,7 @@ export const validateTrapdXml = (xmlString: string): XmlValidationResult => {
 
   const xmlns = root.namespaceURI ?? root.getAttribute('xmlns')
   if (xmlns !== TRAPD_XML_NAMESPACE) {
-    addError(
-      errors,
-      'xmlns',
-      `Invalid xmlns '${xmlns ?? ''}': expected '${TRAPD_XML_NAMESPACE}'`
-    )
+    addError(errors, 'xmlns', `Invalid xmlns '${xmlns ?? ''}': expected '${TRAPD_XML_NAMESPACE}'`)
   }
 
   // snmp-trap-address: required; must be '*' or a valid IPv4 address

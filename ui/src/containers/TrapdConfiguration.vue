@@ -7,7 +7,7 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>TrapD Configuration</h1>
+        <h1>Trap Listener Configuration</h1>
       </div>
       <div class="action">
         <input type="file" accept=".xml" single @change="handleConfigurationUpload" ref="fileInput" />
@@ -56,7 +56,7 @@ const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
   { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
-  { label: 'Trap Configurations', to: '#', position: 'last' }
+  { label: 'Trap Listener Configuration', to: '#', position: 'last' }
 ]))
 
 const openFileDialog = () => {
@@ -65,12 +65,16 @@ const openFileDialog = () => {
 
 const handleConfigurationUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement
-  if (!input.files || input.files.length === 0) return
+  if (!input.files || input.files.length === 0) {
+    return
+  }
 
   const file = input.files[0]
 
   // Reset input so the same file can be re-uploaded
-  if (fileInput.value) fileInput.value.value = ''
+  if (fileInput.value) {
+    fileInput.value.value = ''
+  }
 
   if (!file.name.endsWith('.xml')) {
     showSnackBar({ msg: 'Only .xml files are supported.', error: true })

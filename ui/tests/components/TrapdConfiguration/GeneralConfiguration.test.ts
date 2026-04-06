@@ -91,7 +91,7 @@ describe('GeneralConfiguration.vue', () => {
   it('renders the section labels and loads the current trap configuration values from the store', () => {
     const wrapper = mountComponent()
 
-    expect(wrapper.text()).toContain('TrapD Listener Settings')
+    expect(wrapper.text()).toContain('Trap Listener Settings')
     expect(wrapper.text()).toContain('Update Changes')
     expect((wrapper.vm as any).port).toBe(162)
     expect((wrapper.vm as any).bindAddress).toBe('192.168.1.10')
@@ -323,7 +323,16 @@ describe('GeneralConfiguration.vue', () => {
 
     await setBindingValue(wrapper, 'queueSize', -1)
 
-    expect((wrapper.vm as any).trapConfigError.queueSize).toBe('Queue Size cannot be negative.')
+    expect((wrapper.vm as any).trapConfigError.queueSize).toBe('Queue Size must be greater than 0.')
+    expect((wrapper.vm as any).isSaveDisabled).toBe(true)
+  })
+
+  it('shows a validation error when queue size is zero', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'queueSize', 0)
+
+    expect((wrapper.vm as any).trapConfigError.queueSize).toBe('Queue Size must be greater than 0.')
     expect((wrapper.vm as any).isSaveDisabled).toBe(true)
   })
 
@@ -332,7 +341,16 @@ describe('GeneralConfiguration.vue', () => {
 
     await setBindingValue(wrapper, 'batchSize', -1)
 
-    expect((wrapper.vm as any).trapConfigError.batchSize).toBe('Batch Size cannot be negative.')
+    expect((wrapper.vm as any).trapConfigError.batchSize).toBe('Batch Size must be greater than 0.')
+    expect((wrapper.vm as any).isSaveDisabled).toBe(true)
+  })
+
+  it('shows a validation error when batch size is zero', async () => {
+    const wrapper = mountComponent()
+
+    await setBindingValue(wrapper, 'batchSize', 0)
+
+    expect((wrapper.vm as any).trapConfigError.batchSize).toBe('Batch Size must be greater than 0.')
     expect((wrapper.vm as any).isSaveDisabled).toBe(true)
   })
 

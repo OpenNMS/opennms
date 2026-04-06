@@ -45,6 +45,7 @@
           <FeatherSelect
             label="Security Level"
             v-model="securityLevel"
+            @update:model-value="onSecurityLevelChange"
             :clear="'true'"
             :options="SECURITY_LEVEL_OPTIONS"
             :error="error.securityLevel"
@@ -124,7 +125,6 @@
         {{ store.createUserDrawerState.mode === CreateEditMode.Create ? 'Create User' : 'Update User' }}
       </FeatherButton>
     </div>
-    <!-- <SearchExistingCredential /> -->
     <ScvSearchDrawer
       :isOpen="store.credentialDrawerState.visible"
       @hidden="store.closeCredentialDrawer"
@@ -135,6 +135,7 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
+import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_NAME } from '@/lib/constants'
 import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
@@ -246,27 +247,62 @@ const scvItemSelected = (item: any) => {
   store.closeCredentialDrawer()
 }
 
+const onSecurityLevelChange = async () => {
+  const selectedSecurityLevel = Number(securityLevel.value?._value)
+  await nextTick()
+
+  if (selectedSecurityLevel === SecurityLevel.NoAuthNoPriv) {
+    authProtocol.value = createEmptySelectItem()
+    privacyProtocol.value = createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+  if (selectedSecurityLevel === SecurityLevel.AuthNoPriv) {
+    authProtocol.value = AUTH_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_AUTH_PROTOCOL) ?? createEmptySelectItem()
+    authPassphrase.value = ''
+  }
+  if (selectedSecurityLevel === SecurityLevel.AuthPriv) {
+    authProtocol.value = AUTH_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_AUTH_PROTOCOL) ?? createEmptySelectItem()
+    privacyProtocol.value = PRIVACY_PROTOCOL_OPTIONS.find(option => option._value === DEFAULT_SNMP_V3_PRIVACY_PROTOCOL) ?? createEmptySelectItem()
+    authPassphrase.value = ''
+    privacyPassphrase.value = ''
+  }
+}
+
 const validateInputs = () => {
   const newError: SnmpV3UserError = {}
+  const levelValue = Number(securityLevel.value?._value)
 
   if (!securityName.value) {
     newError.securityName = 'Security Name is required'
   }
 
-  if (!securityLevel.value) {
-    newError.securityLevel = 'Security Level is required'
+  // Level 1 (NoAuthNoPriv) must not carry auth or privacy credentials (backend rule)
+  if (levelValue === SecurityLevel.NoAuthNoPriv && (authProtocol.value || privacyProtocol.value)) {
+    newError.securityLevel = 'Security level 1 does not allow auth or privacy credentials'
   }
 
+  // Level 2 (AuthNoPriv) must not carry privacy credentials (backend rule)
+  if (levelValue === SecurityLevel.AuthNoPriv && privacyProtocol.value) {
+    newError.privacyProtocol = 'Security level 2 does not allow privacy credentials'
+  }
+
+  // authProtocol and authPassphrase must be provided together (backend rule)
   if (authProtocolVisible.value && !authProtocol.value) {
-    newError.authProtocol = 'Auth Protocol is required for selected security level'
-  }
-
-  if (privacyProtocolVisible.value && !privacyProtocol.value) {
-    newError.privacyProtocol = 'Privacy Protocol is required for selected security level'
+    newError.authProtocol = authPassphrase.value
+      ? 'Auth Passphrase requires an Auth Protocol to be selected'
+      : 'Auth Protocol is required for selected security level'
   }
 
   if (authProtocolVisible.value && authProtocol.value && !authPassphrase.value) {
     newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
+  }
+
+  // privacyProtocol and privacyPassphrase must be provided together (backend rule)
+  if (privacyProtocolVisible.value && !privacyProtocol.value) {
+    newError.privacyProtocol = privacyPassphrase.value
+      ? 'Privacy Passphrase requires a Privacy Protocol to be selected'
+      : 'Privacy Protocol is required for selected security level'
   }
 
   if (privacyProtocolVisible.value && privacyProtocol.value && !privacyPassphrase.value) {
@@ -295,10 +331,10 @@ const loadUserData = async (drawerState: typeof store.createUserDrawerState) => 
       privacyPassphrase.value = selectedUser.privacyPassphrase || ''
     }
   } else {
-    securityLevel.value = createEmptySelectItem()
+    securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(SecurityLevel.NoAuthNoPriv)) ?? createEmptySelectItem()
     authProtocol.value = createEmptySelectItem()
     privacyProtocol.value = createEmptySelectItem()
-    securityName.value = ''
+    securityName.value = DEFAULT_SNMP_V3_SECURITY_NAME
     engineId.value = ''
     authPassphrase.value = ''
     privacyPassphrase.value = ''

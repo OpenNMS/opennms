@@ -2,8 +2,9 @@
   <TableCard class="general-configuration">
     <div class="header">
       <div class="section-left">
-        <h3>TrapD Listener Settings</h3>
+        <h3>Trap Listener Settings</h3>
         <p>General config for TrapD Config</p>
+        <p>Note: Changes to these settings only affect OpenNMS runtime.</p>
       </div>
     </div>
     <div class="section">
@@ -182,12 +183,12 @@ const validateInputs = (): TrapdConfigurationError => {
     trapConfigError.threads = 'Threads cannot be negative.'
   }
 
-  if (queueSize.value < 0) {
-    trapConfigError.queueSize = 'Queue Size cannot be negative.'
+  if (queueSize.value < 1) {
+    trapConfigError.queueSize = 'Queue Size must be greater than 0.'
   }
 
-  if (batchSize.value < 0) {
-    trapConfigError.batchSize = 'Batch Size cannot be negative.'
+  if (batchSize.value < 1) {
+    trapConfigError.batchSize = 'Batch Size must be greater than 0.'
   }
 
   if (batchInterval.value < 0) {

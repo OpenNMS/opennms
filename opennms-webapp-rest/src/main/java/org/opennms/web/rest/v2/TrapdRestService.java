@@ -151,11 +151,13 @@ public class TrapdRestService implements TrapdRestApi {
         }
 
         if (configDto.getSnmpv3User() != null) {
+            int index = 0;
             for (Snmpv3UserDto user : configDto.getSnmpv3User()) {
                 String userValidation = validateSnmpv3UserPayload(user);
                 if (userValidation != null) {
-                    return "Invalid SNMPv3 user: " + user.getSecurityName() + ". " + userValidation;
+                    return "Invalid SNMPv3 user at index " + index + ": " + userValidation;
                 }
+                index++;
             }
         }
         return null;
@@ -175,6 +177,10 @@ public class TrapdRestService implements TrapdRestApi {
      * @return an error message string, or {@code null} if the user is valid.
      */
     private String validateSnmpv3UserPayload(final Snmpv3UserDto user) {
+        if (user == null) {
+            return "entry must not be null.";
+        }
+
         if (StringUtils.isBlank(user.getSecurityName())) {
             return "securityName is required.";
         }
