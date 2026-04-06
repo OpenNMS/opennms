@@ -20,11 +20,11 @@
 /// License.
 ///
 
-import { rest } from './axiosInstances'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { SCVCredentials } from '@/types/scv'
+import { rest } from './axiosInstances'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -97,10 +97,5 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
   }
 }
 
-export {
-  getAliases,
-  getAllCredentials,
-  getCredentialsByAlias,
-  addCredentials,
-  updateCredentials
-}
+export { addCredentials, getAliases, getAllCredentials, getCredentialsByAlias, updateCredentials }
+

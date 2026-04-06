@@ -317,6 +317,7 @@ describe('snmpConfigService', () => {
     })
 
     it('should handle exceptions and return failure result', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       vi.mocked(v2.post).mockRejectedValue(new Error('Network error'))
 
       const config: SnmpBaseConfiguration = {
@@ -330,6 +331,11 @@ describe('snmpConfigService', () => {
       expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
       expect(result.success).toBe(false)
       expect(result.message).toBe('Failed to save SNMP configuration defaults')
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error saving SNMP config defaults:',
+        expect.any(Error)
+      )
+      consoleErrorSpy.mockRestore()
     })
 
     it('should work with SNMPv3 configuration', async () => {

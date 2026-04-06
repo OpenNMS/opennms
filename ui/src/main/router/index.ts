@@ -303,9 +303,9 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
-      path: '/trap-config',
-      name: 'Trap Configuration',
-      component: () => import('@/containers/TrapConfiguration.vue')
+      path: '/trapd-config',
+      name: 'Trapd Configuration',
+      component: () => import('@/containers/TrapdConfiguration.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

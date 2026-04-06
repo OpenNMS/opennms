@@ -11,7 +11,9 @@
 
 	<bean id="eventConfPersistenceService" class="org.opennms.web.rest.v2.EventConfPersistenceService"/>
 	<bean id="eventConfRestApi" class="org.opennms.web.rest.v2.EventConfRestService"/>
+
 	<bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
+
 	<bean id="trapdRestService" class="org.opennms.web.rest.v2.TrapdRestService"/>
 
 	<bean id="snmpConfigRestApi" class="org.opennms.web.rest.v2.SnmpConfigRestService"/>
