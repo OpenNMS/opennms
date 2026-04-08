@@ -144,7 +144,7 @@ public class SnmpConfigUtils {
             }
 
             final String normalizedIpMatch = expandIPv6Compressed(ipMatch);
-            if (!normalizedIpMatch.matches(IPLIKE_IPV4_VALIDATION_REGEX) && !normalizedIpMatch.matches(IPLIKE_IPV6_VALIDATION_REGEX)) {
+            if (normalizedIpMatch == null || (!normalizedIpMatch.matches(IPLIKE_IPV4_VALIDATION_REGEX) && !normalizedIpMatch.matches(IPLIKE_IPV6_VALIDATION_REGEX))) {
                 return String.format("Invalid IP match expression: '%s'.", ipMatch);
             }
 
@@ -237,6 +237,7 @@ public class SnmpConfigUtils {
      * Expands compressed IPv6 notation (e.g. {@code 2001:db8::1}) into its full 8-hextet form
      * (e.g. {@code 2001:db8:0:0:0:0:0:1}) so it can be validated against the IPv6 IPLIKE regex.
      * Returns the input unchanged if it contains no {@code ::}.
+     * Returns {@code null} if the input is malformed (e.g. contains multiple {@code ::}).
      */
     private static String expandIPv6Compressed(final String ipMatch) {
         if (!ipMatch.contains("::")) {
@@ -244,6 +245,10 @@ public class SnmpConfigUtils {
         }
 
         final String[] sides = ipMatch.split("::", -1);
+
+        if (sides.length > 2) {
+            return null;
+        }
         final String left = sides[0];
         final String right = sides.length > 1 ? sides[1] : "";
 

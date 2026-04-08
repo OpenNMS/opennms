@@ -260,6 +260,13 @@ public class SnmpConfigUtilsTest {
         assertEquals("Invalid IP match expression: '2001:zzzz::1'.", SnmpConfigUtils.validateDefinitionIpMatches(definition));
     }
 
+    @Test
+    public void testValidateDefinitionIpMatchesInvalidIPv6MultipleDoubleColons() {
+        Definition definition = new Definition();
+        definition.addIpMatch("2001::db8::1");
+        assertEquals("Invalid IP match expression: '2001::db8::1'.", SnmpConfigUtils.validateDefinitionIpMatches(definition));
+    }
+
     // -------------------------------------------------------------------------
     // sanitizeAndValidateDefinitionItems
     // -------------------------------------------------------------------------
