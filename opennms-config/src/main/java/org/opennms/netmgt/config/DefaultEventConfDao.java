@@ -211,10 +211,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		if (eventConfGlobalSecurities != null) {
 			final Security security = new Security();
 
-			security.setDoNotOverride(eventConfGlobalSecurities.stream()
+            final List<String> doNotOverrides = eventConfGlobalSecurities.stream()
 					.map(EventConfGlobalSecurity::getDoNotOverride)
-					.collect(Collectors.toList())
-			);
+					.toList();
+
+			if (!doNotOverrides.isEmpty()) {
+				security.setDoNotOverride(doNotOverrides);
+			}
 
 			final Global global = new Global();
 			global.setSecurity(security);
