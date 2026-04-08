@@ -30,11 +30,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
@@ -42,8 +39,6 @@ import java.util.List;
 @Service
 public class DeleteRequisitionedNode implements Action {
     @Reference
-    @Autowired
-    @Qualifier("pending")
     private ForeignSourceRepository pendingForeignSourceRepository;
 
     @Option(name = "-r", aliases = "--requisition", description = "Requisition name", required = true)
@@ -56,7 +51,7 @@ public class DeleteRequisitionedNode implements Action {
     @Override
     public Object execute() {
         try {
-            if (doesRequisitionExist()) {
+            if (RequisitionCmdCommon.doesRequisitionExist(pendingForeignSourceRepository, requisitionName)) {
                 Requisition req = pendingForeignSourceRepository.getRequisition(requisitionName);
                 int count = 0;
                 for (String fsid : foreignIDs) {
@@ -78,22 +73,7 @@ public class DeleteRequisitionedNode implements Action {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return null;
-    }
-
-    private boolean doesRequisitionExist() {
-        boolean reqExists = true;
-        Requisition someReq = null;
-        try {
-            someReq = pendingForeignSourceRepository.getRequisition(requisitionName);
-        } catch (ForeignSourceRepositoryException e) {
-            reqExists = false;
-        }
-        if (someReq == null) {
-            reqExists = false;
-        }
-        return reqExists;
     }
 }

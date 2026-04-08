@@ -30,22 +30,15 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import java.util.List;
-import java.util.Objects;
 
 @Command(scope = "opennms", name = "delete-detector-from-foreignsource", description = "Delete a detector to a named foreign source definition.")
 @Service
 public class DeleteDetectorFromForeignSource implements Action {
     @Reference
-    @Autowired
-    @Qualifier("deployed")
     private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Option(name = "-f", aliases = "--foreignsource", description = "Foreign Source Name", required = true)
@@ -58,7 +51,7 @@ public class DeleteDetectorFromForeignSource implements Action {
     @Override
     public Object execute() {
         try {
-            if (doesFSDExist()) {
+            if (RequisitionCmdCommon.doesFSDExist(deployedForeignSourceRepository, fsName)) {
                 ForeignSource fsd = deployedForeignSourceRepository.getForeignSource(fsName);
                 int count = 0;
                 List<PluginConfig> theseDetectors = fsd.getDetectors();
@@ -75,27 +68,15 @@ public class DeleteDetectorFromForeignSource implements Action {
                 }
                 fsd.setDetectors(theseDetectors);
                 fsd.updateDateStamp();
-                deployedForeignSourceRepository.save(fsd);
                 deployedForeignSourceRepository.validate(fsd);
+                deployedForeignSourceRepository.save(fsd);
                 System.out.println("Deleted " + count + " detector(s).");
             } else {
                 System.out.println("Foreign Source '" + fsName + "' not found.");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return null;
-    }
-
-    private boolean doesFSDExist() {
-        boolean fsExists = false;
-        for (ForeignSource fs : deployedForeignSourceRepository.getForeignSources()) {
-            if (Objects.equals(fs.getName(), fsName)) {
-                fsExists = true;
-                break;
-            }
-        }
-        return fsExists;
     }
 }

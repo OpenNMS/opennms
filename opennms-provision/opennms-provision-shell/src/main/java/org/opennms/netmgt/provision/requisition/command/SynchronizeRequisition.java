@@ -23,7 +23,6 @@ package org.opennms.netmgt.provision.requisition.command;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -42,7 +41,6 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 @Command(scope = "opennms", name = "synchronize-requisition", description = "Sends an 'uei.opennms.org/internal/importer/reloadImport' event to import the requisition from a given url parameter")
@@ -52,7 +50,7 @@ public class SynchronizeRequisition implements Action {
     public static final String EVENT_SOURCE = "karaf-shell";
 
     @Reference
-    private static ForeignSourceRepository deployedForeignSourceRepository;
+    private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Reference
     private EventForwarder eventForwarder;
@@ -109,7 +107,7 @@ public class SynchronizeRequisition implements Action {
         return sendImportRequisitionEvent(eventForwarder, requisitionName, rescanExisting, wait, eventSubscriptionService);
     }
 
-    public static Object sendImportRequisitionEvent(EventForwarder eventForwarder, String requisitionName, String rescanExisting, boolean wait, EventSubscriptionService eventSubscriptionService) throws URISyntaxException {
+    public Object sendImportRequisitionEvent(EventForwarder eventForwarder, String requisitionName, String rescanExisting, boolean wait, EventSubscriptionService eventSubscriptionService) throws URISyntaxException {
         String url = deployedForeignSourceRepository.getRequisitionURL(requisitionName).toString();
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, EVENT_SOURCE);
         eventBuilder.addParam(EventConstants.PARM_URL, url);

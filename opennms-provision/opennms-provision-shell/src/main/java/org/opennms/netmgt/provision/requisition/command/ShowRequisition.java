@@ -79,7 +79,7 @@ public class ShowRequisition implements Action {
                 table.print(System.out);
                 return null;
             }
-            if (doesRequisitionExist() && !asXML) {
+            if (RequisitionCmdCommon.doesRequisitionExist(deployedForeignSourceRepository, requisitionName) && !asXML) {
                 final Requisition req = deployedForeignSourceRepository.getRequisition(requisitionName);
                 ShellTable reqTable = new ShellTable();
                 reqTable.column("Requisition Name");
@@ -140,7 +140,7 @@ public class ShowRequisition implements Action {
                     System.out.println();
                 }
             }
-            else if (doesRequisitionExist() && asXML) {
+            else if (RequisitionCmdCommon.doesRequisitionExist(deployedForeignSourceRepository, requisitionName) && asXML) {
                 final Requisition req = deployedForeignSourceRepository.getRequisition(requisitionName);
                 System.out.println("Requisition XML:");
                 System.out.println(JaxbUtils.marshal(req));
@@ -151,23 +151,8 @@ public class ShowRequisition implements Action {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
 
         return null;
-    }
-    private boolean doesRequisitionExist() {
-        // first things first.  Does this node requisition exist?
-        boolean reqExists = true;
-        Requisition someReq = null;
-        try {
-            someReq = deployedForeignSourceRepository.getRequisition(requisitionName);
-        } catch (ForeignSourceRepositoryException e) {
-            reqExists = false;
-        }
-        if (someReq == null) {
-            reqExists = false;
-        }
-        return reqExists;
     }
 }

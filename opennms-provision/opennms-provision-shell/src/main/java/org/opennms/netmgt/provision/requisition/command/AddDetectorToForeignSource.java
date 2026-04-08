@@ -32,11 +32,8 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
-import java.util.Objects;
 
 
 @Command(scope = "opennms", name = "add-detector-to-foreignsource", description = "Add a detector to a named foreign source definition. If the foreign Source definition doesn't exist, it will be created.")
@@ -44,8 +41,6 @@ import java.util.Objects;
 public class AddDetectorToForeignSource implements Action {
 
     @Reference
-    @Autowired
-    @Qualifier("deployed")
     private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Option(name = "-f", aliases = "--foreignsource", description = "The foreign source name to which this detector should be added, or the name of a new foreign source to create.", required = true)
@@ -65,7 +60,7 @@ public class AddDetectorToForeignSource implements Action {
         // check if the requisition exists
         ForeignSource theFSD;
         try {
-            if (doesFSDExist()) {
+            if (RequisitionCmdCommon.doesFSDExist(deployedForeignSourceRepository, fsName)) {
                 theFSD = deployedForeignSourceRepository.getForeignSource(fsName);
             } else {
                 // if not create it
@@ -94,21 +89,9 @@ public class AddDetectorToForeignSource implements Action {
         catch(Exception e) {
             System.out.println("Failed to add \"" + detectorName + "\" to \""+ fsName +"\"!");
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
             return null;
         }
         System.out.println("Successfully added detector \"" + detectorName + "\" to \""+ fsName +"\"!");
         return null;
-    }
-
-    private boolean doesFSDExist() {
-        boolean fsExists = false;
-        for (ForeignSource fs : deployedForeignSourceRepository.getForeignSources()) {
-            if (Objects.equals(fs.getName(), fsName)) {
-                fsExists = true;
-                break;
-            }
-        }
-        return fsExists;
     }
 }

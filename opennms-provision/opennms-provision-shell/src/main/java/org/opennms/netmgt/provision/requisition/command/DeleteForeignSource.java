@@ -32,18 +32,10 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.List;
-import java.util.Objects;
-
 @Command(scope = "opennms", name = "delete-foreignsource", description = "Delete a named foreign source definition.")
 @Service
 public class DeleteForeignSource implements Action {
     @Reference
-    @Autowired
-    @Qualifier("deployed")
     private ForeignSourceRepository deployedForeignSourceRepository;
 
     @Option(name = "-f", aliases = "--foreignsource", description = "Foreign Source Name", required = true)
@@ -53,7 +45,7 @@ public class DeleteForeignSource implements Action {
     @Override
     public Object execute() {
         try {
-            if (doesFSDExist()) {
+            if (RequisitionCmdCommon.doesFSDExist(deployedForeignSourceRepository, fsName)) {
                 ForeignSource fsd = deployedForeignSourceRepository.getForeignSource(fsName);
                 deployedForeignSourceRepository.delete(fsd);
                 System.out.println("Deleted foreign source '" + fsName + "'.");
@@ -62,19 +54,7 @@ public class DeleteForeignSource implements Action {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return null;
-    }
-
-    private boolean doesFSDExist() {
-        boolean fsExists = false;
-        for (ForeignSource fs : deployedForeignSourceRepository.getForeignSources()) {
-            if (Objects.equals(fs.getName(), fsName)) {
-                fsExists = true;
-                break;
-            }
-        }
-        return fsExists;
     }
 }

@@ -36,7 +36,6 @@ import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginParameter;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Command(scope = "opennms", name = "show-foreignsource-definition", description = "Display defined Foreign Source Definitions.")
@@ -60,7 +59,7 @@ public class ShowForeignSourceDefinition implements Action {
                 return null;
             }
             if (foreignSourceName != null) {
-                if (!doesFSDExist()) {
+                if (!RequisitionCmdCommon.doesFSDExist(foreignSource, foreignSourceName)) {
                     System.out.println("ForeignSource '" + foreignSourceName + "' does not exist, displaying Default Foreign Source:");
                 }
                 final ForeignSource fsd = foreignSource.getForeignSource(foreignSourceName);
@@ -106,20 +105,8 @@ public class ShowForeignSourceDefinition implements Action {
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
 
         return null;
-    }
-
-    private boolean doesFSDExist() {
-        boolean fsExists = false;
-        for (ForeignSource fs : foreignSource.getForeignSources()) {
-            if (Objects.equals(fs.getName(), foreignSourceName)) {
-                fsExists = true;
-                break;
-            }
-        }
-        return fsExists;
     }
 }

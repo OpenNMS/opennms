@@ -34,9 +34,14 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.*;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 
 @Command(scope = "opennms", name = "add-requisitioned-node", description = "Add a node to a named requisition. If the requisition doesn't exist, it will be created.")
@@ -82,7 +87,7 @@ public class AddRequisitionedNode implements Action {
         // check if the requisition exists
         Requisition theRequisition;
         try {
-            if (doesRequisitionExist()) {
+            if (RequisitionCmdCommon.doesRequisitionExist(deployedForeignSourceRepository, requisitionName)) {
                 theRequisition = deployedForeignSourceRepository.getRequisition(requisitionName);
             } else {
                 // if not create it
@@ -126,35 +131,17 @@ public class AddRequisitionedNode implements Action {
             theRequisition.insertNode(theNode); //insert and put are equivalent
             theRequisition.validate();
             deployedForeignSourceRepository.save(theRequisition);
+            System.out.println("Successfully added node \""+ nodeLabel +"\" to requisition \"" + requisitionName + "\".");
         }
         catch(Exception e) {
             System.out.println("Failed to add node \""+ nodeLabel +"\" to requisition \"" + requisitionName + "\" !");
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
-        System.out.println("Successfully added node \""+ nodeLabel +"\" to requisition \"" + requisitionName + "\".");
         return null;
-    }
-
-    private boolean doesRequisitionExist() {
-        // first things first.  Does this node requisition exist?
-        boolean reqExists = true;
-        Requisition someReq = null;
-        try {
-            someReq = deployedForeignSourceRepository.getRequisition(requisitionName);
-        } catch (ForeignSourceRepositoryException e) {
-            reqExists = false;
-        }
-        if (someReq == null) {
-            reqExists = false;
-        }
-        return reqExists;
     }
 
     private Requisition createNewRequisition(String name) {
         // I think this is enough?
-        ForeignSource newForeignSource = new ForeignSource();
-        newForeignSource.setName(requisitionName);
         Requisition thisReq = new Requisition();
         thisReq.setForeignSource(requisitionName);
         deployedForeignSourceRepository.save(thisReq);
@@ -207,7 +194,6 @@ public class AddRequisitionedNode implements Action {
         }
         catch(Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return allTheseInterfaces;
         }
@@ -216,16 +202,17 @@ public class AddRequisitionedNode implements Action {
         try {
             for (String thisKVpair : nodeMetaData) {
                 String[] KV = thisKVpair.split("=");
-                RequisitionMetaData metadataKeyValue = new RequisitionMetaData();
-                metadataKeyValue.setContext("requisition");
-                metadataKeyValue.setKey(KV[0]);
-                metadataKeyValue.setValue(KV[1]);
-                allThisMetaData.add(metadataKeyValue);
+                if (KV.length == 2) {
+                    RequisitionMetaData metadataKeyValue = new RequisitionMetaData();
+                    metadataKeyValue.setContext("requisition");
+                    metadataKeyValue.setKey(KV[0]);
+                    metadataKeyValue.setValue(KV[1]);
+                    allThisMetaData.add(metadataKeyValue);
+                }
             }
         }
         catch(Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return allThisMetaData;
     }
@@ -240,7 +227,6 @@ public class AddRequisitionedNode implements Action {
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return allTheseCategories;
     }
@@ -257,7 +243,6 @@ public class AddRequisitionedNode implements Action {
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
         }
         return allTheseAssets;
     }
