@@ -59,7 +59,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Manage Surveillance Categories", "//span[text()='Surveillance Categories']" },
         new String[] { "Configure Discovery", "//span[text()='General Settings']" },
         new String[] { "Run Single Discovery Scan", "//span[text()='Exclude Ranges']" },
-        new String[] { "Configure SNMP Community Names by IP Address", "//span[text()='SNMP Config Lookup']" },
+        new String[] { "Configure SNMP Community Names by IP Address", "//h2[text()='Manage SNMP Configuration']" },
         new String[] { "Manually Add an Interface", "//span[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//span[text()='Delete Nodes']" },
         new String[] { "Configure External Requisitions", "//h1[contains(text(), 'Configuration')]" },

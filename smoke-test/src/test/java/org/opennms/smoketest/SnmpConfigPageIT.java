@@ -30,6 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Remove when legacy SNMP UI is removed (Horizon 37)
 public class SnmpConfigPageIT extends OpenNMSSeleniumIT {
     private static Logger LOG = LoggerFactory.getLogger(SnmpConfigPageIT.class);
 
@@ -37,7 +38,7 @@ public class SnmpConfigPageIT extends OpenNMSSeleniumIT {
      * Checks whether Snmp config data is saved and
      * correctly retrieved in the Web UI (see NMS-13512)
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void lookupSaveAndLookupAgain() {
         // lookup IP 1.2.3.4
         lookupIpAddress("1.2.3.4");

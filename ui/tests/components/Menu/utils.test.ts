@@ -154,7 +154,7 @@ describe('Menu utils', () => {
         id: 'snmpAgentConfiguration',
         type: 'item',
         title: 'SNMP Agent Configuration',
-        href: `${baseHref}admin/snmpConfig`,
+        href: `${baseHref}ui/index.html#/snmp-config`,
         target: '_self'
       })
       expect(integrationItems[1]).toMatchObject({
