@@ -139,7 +139,7 @@ admin@opennms()> config:update
 ----
 
 In the example above, the filter is configured such that only metrics associated with the given location are forwarded.
-Available properties are nodeId, nodeLabel, foreignSource, foreignId, location, resourceType, resourceName and instance.
+Available properties are nodeId, nodeLabel, foreignSource, foreignId, location, resourceTypeName, resourceName, resourceId, ifIndex and instance.
 
 == Enable metric forwarding
 

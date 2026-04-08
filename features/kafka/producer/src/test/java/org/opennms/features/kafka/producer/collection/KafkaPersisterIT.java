@@ -353,7 +353,7 @@ public class KafkaPersisterIT {
     @Test
     public void testMetricsFilterByResourceType() throws IOException {
         // Setup persister with filter that only allows responseTime resources
-        kafkaPersisterFactory.setMetricFilter("getResourceType() == 'responseTime'");
+        kafkaPersisterFactory.setMetricFilter("getResourceTypeName() == 'responseTime'");
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
         RrdRepository repository = new RrdRepository();
         persister = kafkaPersisterFactory.createPersister(params, repository);

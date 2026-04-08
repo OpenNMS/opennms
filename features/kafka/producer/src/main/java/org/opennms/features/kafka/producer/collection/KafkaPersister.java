@@ -356,6 +356,8 @@ public class KafkaPersister implements Persister {
                 nodeLabel = resource.getInterface().getNode().getNodeLabel();
             } else if (resource.hasGeneric() && !resource.getGeneric().getNode().getNodeLabel().isEmpty()) {
                 nodeLabel = resource.getGeneric().getNode().getNodeLabel();
+            } else if (resource.hasResponse() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+                nodeLabel = resource.getResponse().getNode().getNodeLabel();
             }
             return nodeLabel;
         }
@@ -398,7 +400,7 @@ public class KafkaPersister implements Persister {
             return location;
         }
 
-        public String getResourceType() {
+        public String getResourceTypeName() {
             if (resource.hasGeneric()) {
                 return resource.getGeneric().getType();
             } else if (resource.hasInterface()) {
@@ -418,8 +420,23 @@ public class KafkaPersister implements Persister {
             return null;
         }
 
+        public Integer getIfIndex() {
+            if (resource.hasInterface()) {
+                return resource.getInterface().getIfIndex();
+            }
+            return null;
+        }
+
+        public String getResourceId() {
+            return resource.getResourceId();
+        }
+
         public String getInstance() {
-            if (resource.hasResponse() && !resource.getResponse().getInstance().isEmpty()) {
+            if (resource.hasGeneric()) {
+                return resource.getGeneric().getInstance();
+            } else if (resource.hasInterface()) {
+                return resource.getInterface().getInstance();
+            } else if (resource.hasResponse()) {
                 return resource.getResponse().getInstance();
             }
             return null;
