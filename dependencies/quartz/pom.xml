@@ -28,7 +28,16 @@
           <groupId>c3p0</groupId>
           <artifactId>c3p0</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.mchange</groupId>
+          <artifactId>mchange-commons-java</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>mchange-commons-java</artifactId>
+      <version>0.4.0</version>
     </dependency>
     <dependency>
       <groupId>com.mchange</groupId>
