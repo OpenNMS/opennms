@@ -87,7 +87,6 @@
         "weekly-coverage": {
             "extends": [
                 "build",
-                "integration-test-with-coverage",
                 "trivy-scan",
                 "trivy-analyze"
             ]
@@ -494,10 +493,8 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "develop",
                         "/^master-.*/",
-                        "/^release-.*/",
-                        "/^foundation.*/"
+                        "/^release-.*/"
                     ]
                 },
                 "user_overridable": false

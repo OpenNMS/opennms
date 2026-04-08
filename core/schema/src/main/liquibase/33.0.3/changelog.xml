@@ -26,4 +26,11 @@
     <changeSet author="cpape" id="33.0.3-assets-userlastmodified">
         <modifyDataType tableName="assets" columnName="userlastmodified" newDataType="varchar(256)"/>
     </changeSet>
+
+    <changeSet author="cgorantla" id="33.0.3-snmpinterface_nodeid_ifname-index">
+        <createIndex tableName="snmpinterface" indexName="snmpinterface_nodeid_ifname_idx" unique="false">
+            <column name="nodeid" />
+            <column name="snmpifname" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
