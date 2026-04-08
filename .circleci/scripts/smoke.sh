@@ -1,4 +1,6 @@
-#!/bin/sh -e
+#!/bin/bash
+set -e
+set -o pipefail
 
 SUITE="$1"; shift
 if [ -z "$SUITE" ]; then
@@ -67,17 +69,97 @@ fi
 
 sudo apt update && sudo apt -y install openjdk-17-jdk-headless
 
+# When retries are enabled, use --fail-at-end so all tests run before retrying
+FAILURE_MODE="--fail-fast"
+SKIP_AFTER_FAILURE=""
+if [ "${CCI_RERUN_FAILTEST:-0}" -gt 0 ]; then
+  FAILURE_MODE="--fail-at-end"
+else
+  SKIP_AFTER_FAILURE="-Dfailsafe.skipAfterFailureCount=1"
+fi
+
 # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
+set +e
 ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \
   -Dtest.fork.count=1 \
   -Dit.test="$IT_TESTS" \
-  --fail-fast \
+  $FAILURE_MODE \
   --batch-mode \
-  -Dfailsafe.skipAfterFailureCount=1 \
+  $SKIP_AFTER_FAILURE \
   -N \
   '-P!smoke.all' \
   "-Psmoke.$SUITE" \
   install
+TEST_EXIT=$?
+set -e
+
+# Retry failed tests if configured
+RETRIES_LEFT="${CCI_RERUN_FAILTEST:-0}"
+MAX_RETRIES="$RETRIES_LEFT"
+RETRIED_TESTS=""
+while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
+    ATTEMPT=$((MAX_RETRIES - RETRIES_LEFT + 1))
+    echo "#### Finding failed smoke tests for re-run (attempt $ATTEMPT of $MAX_RETRIES)"
+
+    set +e +o pipefail
+    FAILED_TESTS=$(find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | sed 's|.*/TEST-||;s|\.xml||' \
+      | sort -u)
+    set -e -o pipefail
+
+    if [ -z "$FAILED_TESTS" ]; then
+        echo "#### No failed tests found in reports, skipping retry"
+        break
+    fi
+
+    echo "#### Failed tests: $FAILED_TESTS"
+    RETRIED_TESTS="$FAILED_TESTS"
+
+    # Clean failed test XML reports so fresh results are written
+    set +e +o pipefail
+    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | xargs rm -f
+    set -e -o pipefail
+
+    FAILED_ITS=$(echo "$FAILED_TESTS" | paste -s -d, -)
+
+    echo "#### Re-running failed smoke tests: $FAILED_ITS"
+    set +e
+    ionice nice ../compile.pl \
+      -DskipTests=false \
+      -DskipITs=false \
+      -DfailIfNoTests=false \
+      -Dtest.fork.count=1 \
+      -Dit.test="$FAILED_ITS" \
+      --fail-at-end \
+      --batch-mode \
+      -N \
+      '-P!smoke.all' \
+      "-Psmoke.$SUITE" \
+      install
+    TEST_EXIT=$?
+    set -e
+
+    RETRIES_LEFT=$((RETRIES_LEFT - 1))
+done
+
+# Print retry summary
+if [ -n "$RETRIED_TESTS" ]; then
+    echo ""
+    echo "========================================"
+    echo "#### Retry Summary"
+    echo "#### Retried tests: $(echo "$RETRIED_TESTS" | paste -s -d, -)"
+    if [ "$TEST_EXIT" -eq 0 ]; then
+        echo "#### Result: PASSED on retry (attempt $ATTEMPT)"
+    else
+        echo "#### Result: FAILED after $MAX_RETRIES retry attempt(s)"
+    fi
+    echo "========================================"
+fi
+
+exit $TEST_EXIT

@@ -33,6 +33,7 @@ import {
 } from '@/components/Nodes/hooks/queryStringParser'
 import { categories, monitoringLocations } from './utils'
 import { MatchType, SetOperator } from '@/types'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 describe('Nodes queryStringParser test', () => {
   describe('queryStringParser, parseNodeLabel', () => {
@@ -78,7 +79,7 @@ describe('Nodes queryStringParser test', () => {
     test.each([
       ['empty', {}, null],
       ['empty location', { monitoringLocation: '' }, null],
-      ['default location', { monitoringLocation: 'Default' }, monitoringLocations[0]],
+      ['default location', { monitoringLocation: DEFAULT_MONITORING_LOCATION }, monitoringLocations[0]],
       ['other location', { monitoringLocation: 'Loc0' }, monitoringLocations[1]],
       ['invalid location', { monitoringLocation: 'Something' }, null]
     ]) (

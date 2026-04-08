@@ -1,0 +1,97 @@
+{
+  "proxyHost": null,
+  "maxVarsPerPdu": 10,
+  "maxRepetitions": 2,
+  "maxRequestSize": 65535,
+  "securityName": null,
+  "securityLevel": null,
+  "authPassphrase": null,
+  "authProtocol": null,
+  "engineId": null,
+  "contextEngineId": null,
+  "contextName": null,
+  "privacyPassphrase": null,
+  "privacyProtocol": null,
+  "enterpriseId": null,
+  "version": "v2c",
+  "writeCommunity": null,
+  "readCommunity": "public",
+  "timeout": 1800,
+  "retry": 1,
+  "port": 161,
+  "ttl": null,
+  "encrypted": false,
+  "profiles": {
+    "profile": [
+      {
+        "proxyHost": null,
+        "maxVarsPerPdu": 10,
+        "maxRepetitions": 2,
+        "maxRequestSize": 65535,
+        "securityName": null,
+        "securityLevel": 1,
+        "authPassphrase": null,
+        "authProtocol": null,
+        "engineId": null,
+        "contextEngineId": null,
+        "contextName": null,
+        "privacyPassphrase": null,
+        "privacyProtocol": null,
+        "enterpriseId": null,
+        "version": "v2c",
+        "writeCommunity": "privateOne",
+        "readCommunity": "publicOne",
+        "timeout": 0,
+        "retry": 0,
+        "port": 161,
+        "ttl": null,
+        "encrypted": false,
+        "label": "profileOne",
+        "filterExpression": "expression one"
+      }
+    ]
+  },
+  "definition": [
+    {
+      "proxyHost": null,
+      "maxVarsPerPdu": 10,
+      "maxRepetitions": 2,
+      "maxRequestSize": 65535,
+      "securityName": null,
+      "securityLevel": null,
+      "authPassphrase": null,
+      "authProtocol": null,
+      "engineId": null,
+      "contextEngineId": null,
+      "contextName": null,
+      "privacyPassphrase": null,
+      "privacyProtocol": null,
+      "enterpriseId": null,
+      "version": null,
+      "writeCommunity": null,
+      "readCommunity": "public123",
+      "timeout": 0,
+      "retry": 0,
+      "port": 161,
+      "ttl": null,
+      "encrypted": false,
+      "location": null,
+      "profileLabel": null,
+      "range": [
+        {
+          "begin": "10.0.0.10",
+          "end": "10.0.2.8"
+        },
+        {
+          "begin": "10.0.2.10",
+          "end": "10.0.2.16"
+        }
+      ],
+      "specific": [
+        "10.0.0.1",
+        "10.0.2.18"
+      ],
+      "ipMatch": []
+    }
+  ]
+}

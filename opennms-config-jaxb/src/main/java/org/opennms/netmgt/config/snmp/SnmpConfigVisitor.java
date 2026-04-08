@@ -41,5 +41,4 @@ public interface SnmpConfigVisitor {
 
     void visitSnmpProfile(SnmpProfile snmpProfile);
     void visitSnmpProfileFinished();
-
 }

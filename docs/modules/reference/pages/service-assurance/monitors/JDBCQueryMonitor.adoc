@@ -176,17 +176,17 @@ Note that you must include the `monitor` section in your definition.
 [source, xml]
 ----
 <service name="OpenNMS-DB-Event-Limit" interval="30000" user-defined="true" status="on">
-  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/> <2>
-  <parameter key="user" value="opennms"/> <3>
-  <parameter key="password" value="opennms"/> <4>
-  <parameter key="query" value="select eventid from events" /> <5>
-  <parameter key="action" value="row_count" /> <6>
-  <parameter key="operand" value="250000" /> <7>
-  <parameter key="operator" value="&lt;" /> <8>
-  <parameter key="message" value="too many events in OpenNMS database" /> <9>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/> <1>
+  <parameter key="user" value="opennms"/> <2>
+  <parameter key="password" value="opennms"/> <3>
+  <parameter key="query" value="select eventid from events" /> <4>
+  <parameter key="action" value="row_count" /> <5>
+  <parameter key="operand" value="250000" /> <6>
+  <parameter key="operator" value="&lt;" /> <7>
+  <parameter key="message" value="too many events in OpenNMS database" /> <8>
 </service>
 
-<monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <10>
+<monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <9>
 ----
 <1> JDBC URL to connect to.
 <2> Database user.
@@ -207,18 +207,18 @@ Note that you must include the `monitor` section in your definition.
 [source, xml]
 ----
 <service name="MariaDB-Galera" interval="300000" user-defined="false" status="on">
-  <parameter key="user" value="opennms"/> <2>
-  <parameter key="password" value="********"/> <3>
-  <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/> <4>
-  <parameter key="query" value="SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_STATUS WHERE VARIABLE_NAME = 'wsrep_cluster_status'"/> <5>
-  <parameter key="column" value="VARIABLE_VALUE"/> <6>
-  <parameter key="action" value="compare_string"/> <7>
-  <parameter key="operator" value="="/> <8>
-  <parameter key="operand" value="Primary"/> <9>
-  <parameter key="message" value="Galera Node is not in primary component"/> <10>
+  <parameter key="user" value="opennms"/> <1>
+  <parameter key="password" value="********"/> <2>
+  <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/> <3>
+  <parameter key="query" value="SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_STATUS WHERE VARIABLE_NAME = 'wsrep_cluster_status'"/> <4>
+  <parameter key="column" value="VARIABLE_VALUE"/> <5>
+  <parameter key="action" value="compare_string"/> <6>
+  <parameter key="operator" value="="/> <7>
+  <parameter key="operand" value="Primary"/> <8>
+  <parameter key="message" value="Galera Node is not in primary component"/> <9>
 </service>
 
-<monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <11>
+<monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" /> <10>
 ----
 <1> Database user.
 <2> Database password.

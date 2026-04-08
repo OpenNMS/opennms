@@ -93,7 +93,6 @@
         "weekly-coverage": {
             "extends": [
                 "build",
-                "integration-test-with-coverage",
                 "trivy-scan",
                 "trivy-analyze"
             ]

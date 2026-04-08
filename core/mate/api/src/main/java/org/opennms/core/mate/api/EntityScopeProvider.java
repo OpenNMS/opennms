@@ -42,6 +42,8 @@ public interface EntityScopeProvider {
 
     Scope getScopeForInterfaceByIfIndex(final Integer nodeId, final int ifIndex);
 
+    Scope getScopeForInterfaceByIfName(final Integer nodeId, final String ifName);
+
     Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName);
 
     default ScopeProvider getScopeProviderForScv() {
@@ -62,6 +64,10 @@ public interface EntityScopeProvider {
 
     default ScopeProvider getScopeProviderForInterfaceByIfIndex(final Integer nodeId, final int ifIndex) {
         return () -> getScopeForInterfaceByIfIndex(nodeId, ifIndex);
+    }
+
+    default ScopeProvider getScopeProviderForInterfaceByIfName(final Integer nodeId, final String ifName) {
+        return () -> getScopeForInterfaceByIfName(nodeId, ifName);
     }
 
     default ScopeProvider getScopeProviderForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName) {

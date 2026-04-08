@@ -1,0 +1,69 @@
+{
+  "proxyHost": null,
+  "maxVarsPerPdu": 10,
+  "maxRepetitions": 2,
+  "maxRequestSize": 65535,
+  "securityName": null,
+  "securityLevel": 0,
+  "authPassphrase": null,
+  "authProtocol": null,
+  "engineId": null,
+  "contextEngineId": null,
+  "contextName": null,
+  "privacyPassphrase": null,
+  "privacyProtocol": null,
+  "enterpriseId": null,
+  "version": "whatever",
+  "writeCommunity": null,
+  "readCommunity": "public",
+  "timeout": 1800,
+  "retry": 1,
+  "port": 1610000,
+  "ttl": null,
+  "encrypted": false,
+  "profiles": {
+    "profile": [
+      {
+        "proxyHost": null,
+        "maxVarsPerPdu": 10,
+        "maxRepetitions": 2,
+        "maxRequestSize": 65535,
+        "securityName": null,
+        "securityLevel": 1,
+        "authPassphrase": null,
+        "authProtocol": null,
+        "engineId": null,
+        "contextEngineId": null,
+        "contextName": null,
+        "privacyPassphrase": null,
+        "privacyProtocol": null,
+        "enterpriseId": null,
+        "version": "v2c",
+        "writeCommunity": "privateOne",
+        "readCommunity": "publicOne",
+        "timeout": 0,
+        "retry": 0,
+        "port": -999,
+        "ttl": null,
+        "encrypted": false,
+        "label": "profileOne",
+        "filterExpression": "expression one"
+      }
+    ]
+  },
+  "definition": [
+    {
+      "proxyHost": null,
+      "range": [
+        {
+          "begin": "10.0.",
+          "end": "10.0.2.8"
+        },
+        {
+          "begin": "10.0.2.10",
+          "end": "10.0.2.16"
+        }
+      ]
+    }
+  ]
+}

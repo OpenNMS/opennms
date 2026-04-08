@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.opennms.netmgt.snmp.joesnmp.JoeSnmpStrategy;
 import org.opennms.netmgt.snmp.mock.MockSnmpStrategy;
 import org.opennms.netmgt.snmp.snmp4j.MockSnmpAgentITCase;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
@@ -53,8 +52,7 @@ public class SnmpUtilsIT extends MockSnmpAgentITCase {
 	public static List<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 				/* Strategy class,        SnmpVersion,              trapsSupported */
-				{ JoeSnmpStrategy.class.getName(),  SnmpAgentConfig.VERSION1,  true },	
-				{ Snmp4JStrategy.class.getName(),   SnmpAgentConfig.VERSION1,  true },	
+				{ Snmp4JStrategy.class.getName(),   SnmpAgentConfig.VERSION1,  true },
 				{ MockSnmpStrategy.class.getName(), SnmpAgentConfig.VERSION1,  false },	
 		});
 	}

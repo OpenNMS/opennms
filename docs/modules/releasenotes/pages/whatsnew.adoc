@@ -10,6 +10,8 @@
 
 == New features and important changes
 
+=== JoeSNMP removed
+The SNMP implementation JoeSNMP was removed in Horizon 36.
 
 === Event Configuration Moved to Database
 

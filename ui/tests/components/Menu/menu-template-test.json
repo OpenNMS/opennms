@@ -1,0 +1,309 @@
+{
+  "templateName": "ui-test",
+  "baseHref": "http://localhost:8980/opennms/",
+  "homeUrl": "http://localhost:8980/opennms/index.jsp",
+  "formattedDate": "March 24, 2026",
+  "formattedDateTime": "2026-03-24T21:00:12-04:00",
+  "formattedTime": "21:00:12 UTC-04",
+  "noticeStatus": "Off",
+  "username": "admin-user",
+  "baseNodeUrl": "element/node.jsp?node=",
+  "zenithConnectEnabled": false,
+  "zenithConnectBaseUrl": "",
+  "zenithConnectRelativeUrl": "",
+  "displayAddNodeButton": false,
+  "sideMenuInitialExpand": false,
+  "copyrightDates": "2002-2026",
+  "version": "36.0.0-SNAPSHOT",
+  "menus": [
+    {
+      "id": "testHeader",
+      "name": "Test Header",
+      "type": "header"
+    },
+    {
+      "id": "inventoryMenu",
+      "name": "Inventory",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Inventory",
+      "roles": null,
+      "items": [
+        {
+          "id": "nodes",
+          "name": "Nodes",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
+          "roles": null
+        },
+        {
+          "id": "structuredNodeList",
+          "name": "Structured Node List",
+          "url": "ui/index.html#/nodes",
+          "locationMatch": "configurationManagement",
+          "roles": null
+        },
+        {
+          "id": "deviceConfigs",
+          "name": "Device Configs",
+          "url": "ui/index.html#/device-config-backup",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN", "ROLE_REST", "ROLE_DEVICE_CONFIG_BACKUP"]
+        }
+      ]
+    },
+    {
+      "id": "mapsMenu",
+      "name": "Geographical Map",
+      "url": "ui/index.html#/map",
+      "action": "link",
+      "locationMatch": "geographical",
+      "icon": "action/Location",
+      "roles": null,
+      "items": null
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "id": "administrationMenu",
+      "name": "Administration",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Configuration",
+      "roles": null,
+      "items": [
+        {
+          "id": "configureOpenNms",
+          "name": "Configure OpenNMS",
+          "url": "admin/index.jsp",
+          "locationMatch": null,
+          "icon": "network/Configuration",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "flowClassification",
+          "name": "Flow Classification",
+          "url": "admin/classification/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN", "ROLE_FLOW_MANAGER"]
+        }
+      ]
+    },
+    {
+      "id": "integrationsMenu",
+      "name": "Integrations",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/ApiEndpoints",
+      "roles": null,
+      "items": [
+        {
+          "id": "snmpAgentConfiguration",
+          "name": "SNMP Agent Configuration",
+          "url": "admin/snmpConfig",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "externalRequisitions",
+          "name": "External Requisitions",
+          "url": "ui/index.html#/configuration",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "geocodingServices",
+          "name": "Geocoding Services",
+          "url": "admin/geoservice/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "zenithConnect",
+          "name": "Connect to Zenith",
+          "url": "ui/index.html#/zenith-connect",
+          "locationMatch": "zenithConnect",
+          "roles": ["ROLE_ADMIN", "ROLE_USER"],
+          "requiredSystemProperties": [
+            {
+              "name": "opennms.zenithConnect.enabled",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pluginsMenu",
+      "type": "plugins"
+    },
+    {
+      "id": "toolsMenu",
+      "name": "Tools",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Build",
+      "roles": null,
+      "items": [
+        {
+          "id": "snmpMibCompiler",
+          "name": "SNMP MIB Compiler",
+          "url": "admin/mibCompiler.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "fileEditor",
+          "name": "File Editor",
+          "url": "ui/index.html#/file-editor",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_FILESYSTEM_EDITOR"]
+        },
+        {
+          "id": "scv",
+          "name": "Secure Credentials Vault",
+          "url": "ui/index.html#/scv",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "id": "internalLogsMenu",
+      "name": "Internal Logs",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/LogsAlt",
+      "roles": ["ROLE_ADMIN"],
+      "items": [
+        {
+          "id": "logViewer",
+          "name": "Log Viewer",
+          "url": "ui/index.html#/logs",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "instrumentationLogReader",
+          "name": "Instrumentation Log Reader",
+          "url": "admin/nodemanagement/instrumentationLogReader.jsp",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "id": "supportMenu",
+      "name": "Support",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ContactSupport",
+      "roles": null,
+      "items": [
+        {
+          "id": "professionalSupport",
+          "name": "Professional Support",
+          "url": "https://www.opennms.com/support",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "chat",
+          "name": "Chat",
+          "url": "https://chat.opennms.org",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        }
+      ]
+    }
+  ],
+  "helpMenu": {
+    "id": "helpMenu",
+    "name": "Help",
+    "url": "#",
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+    ]
+  },
+  "selfServiceMenu": {
+    "id": "selfServiceMenu",
+    "name": "admin",
+    "url": "account/selfService/index.jsp",
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "changePassword",
+        "name": "Change Password",
+        "url": "account/selfService/newPasswordEntry",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "logout",
+        "name": "Log Out",
+        "url": "j_spring_security_logout",
+        "locationMatch": null,
+        "action": "logout",
+        "roles": null
+      }
+    ]
+  },
+  "userNotificationMenu": {
+    "id": "userNotificationMenu",
+    "name": null,
+    "url": null,
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "userNotificationConfiguration",
+        "name": null,
+        "url": "admin/notification/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationUser",
+        "name": null,
+        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationTeam",
+        "name": null,
+        "url": "notification/browse?acktype=unack",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationOnCall",
+        "name": "On-Call Schedule",
+        "url": "roles",
+        "locationMatch": null,
+        "roles": null
+      }
+    ]
+  },
+  "provisionMenu": {
+    "id": "provisionMenu",
+    "name": "Quick-Add Node",
+    "url": "admin/ng-requisitions/quick-add-node.jsp#/",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+  },
+  "configurationMenu": {
+    "id": "configurationMenu",
+    "name": "Configure OpenNMS",
+    "url": "admin/index.jsp",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN"]
+  }
+}

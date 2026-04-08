@@ -72,6 +72,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-timeseries-test.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jceks-scv.xml"
 
 })

@@ -159,6 +159,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             try {
                 stream = new FileInputStream(cfgFile);
                 unmarshall(stream);
+                // After reloading m_config we must invalidate the cached specs so new
+                // events are translated using the updated configuration.
+                m_translationSpecs = null;
             } finally {
                 if (stream != null) {
                     IOUtils.closeQuietly(stream);

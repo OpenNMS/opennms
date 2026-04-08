@@ -70,6 +70,8 @@ public interface EventUtil {
 	 */
 	String getIfAlias(long nodeId, String ipAddr) throws SQLException;
 
+	String getIfAliasByNodeAndIfIndex(long nodeId, int ifIndex) throws SQLException;
+
 	/**
 	 * Helper method.
 	 *
