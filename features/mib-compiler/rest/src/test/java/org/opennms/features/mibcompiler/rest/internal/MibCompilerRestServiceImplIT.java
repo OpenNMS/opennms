@@ -184,9 +184,8 @@ public class MibCompilerRestServiceImplIT {
 
     @Test
     public void getFileText_shouldReturn404ForInvalidFileName() throws Exception {
-        // validateFileNameAndLocation(...) returns BAD_REQUEST (400) for "..\\evil.txt"
         Response r = service.getFileText("pending", "..\\evil.txt");
-        assertEquals(404, r.getStatus());
+        assertEquals(400, r.getStatus());
     }
 
     @Test

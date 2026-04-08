@@ -35,10 +35,9 @@ import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
+import javax.annotation.PreDestroy;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -227,9 +226,8 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
     public Response deleteFile(String location, String fileName) {
         LOG.debug("REST request: delete mib compiler file: location={}, fileName={}", location, fileName);
 
-        validateFileNameAndLocation(fileName, location);
-
         try {
+            validateLocationAndFileName(location, fileName);
             final boolean deleted = MibCompilerServiceUtil.deleteFile(location, fileName);
 
             if (!deleted) {
@@ -267,7 +265,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
     @Override
     public Response getFileText(String location, String fileName) throws Exception {
         try {
-            validateFileNameAndLocation(fileName, location);
+            validateLocationAndFileName(location, fileName);
 
             final String contents = MibCompilerServiceUtil.readTextFile(location, fileName);
             if (contents == null) {
@@ -306,16 +304,17 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         final String location = "pending";
         LOG.debug("REST request: set mib compiler file text: location={}, fileName={}", location, fileName);
 
-        validateFileNameAndLocation(location, fileName);
-
-        if (mibContent == null) {
-            LOG.warn("Set file text rejected: null mibContent (location={}, fileName={})", location, fileName);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("mibContent must not be null.")
-                    .build();
-        }
-
         try {
+
+            validateLocationAndFileName(location, fileName);
+
+            if (mibContent == null) {
+                LOG.warn("Set file text rejected: null mibContent (location={}, fileName={})", location, fileName);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("mibContent must not be null.")
+                        .build();
+            }
+
             MibCompilerServiceUtil.writeBinaryFile(location, fileName, mibContent);
 
             LOG.info("Set file text: updated successfully (location={}, fileName={})", location, fileName);
@@ -346,35 +345,31 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
     }
     @Override
     public Response generateEvents(final MibCompilerGenerateEventsRequest request) {
-        final String location = "compiled";
-        LOG.debug("REST request: generate events: location={}, file={}", location, request != null ? request.getName() : null);
-
         if (request == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Request must not be null.")
                     .build();
         }
-
-        final String fileName = request.getName();
-        if (fileName == null || fileName.trim().isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("mibFileName must not be null/empty.")
-                    .build();
-        }
-
-        final Response validationError = validateFileNameAndLocation(location, fileName);
-        if (validationError != null) {
-            return validationError;
-        }
-
-        final String ueiBase = request.getUeiBase();
-        if (ueiBase == null || ueiBase.trim().isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ueiBase must not be null/empty.")
-                    .build();
-        }
+        final String location = "compiled";
+        String fileName = request.getName();
+        LOG.debug("REST request: generate events: location={}, file={}", location, request != null ? request.getName() : null);
 
         try {
+
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("mibFileName must not be null/empty.")
+                        .build();
+            }
+
+            validateLocationAndFileName(location, fileName);
+
+            final String ueiBase = request.getUeiBase();
+            if (ueiBase == null || ueiBase.trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ueiBase must not be null/empty.")
+                        .build();
+            }
             final boolean exists = MibCompilerServiceUtil.exists(location, fileName);
             if (!exists) {
                 LOG.info("Generate events: file not found (location={}, fileName={})", location, fileName);
@@ -416,7 +411,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
                     final int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
                     final int nextFileOrder = maxFileOrder + 1;
                     final EventConfSourceMetadataDto meta =
-                            buildMetadata(fileName, "", events, nextFileOrder, now);
+                            buildMetadata(fileName, events, nextFileOrder, now);
 
                     final EventConfSource source = EventConfServiceHelper.createOrUpdateSource(eventConfSourceDao, meta);
 
@@ -549,36 +544,24 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         return f == null ? null : f.getName();
     }
 
-    private static List<String> emptyToNull(List<String> l) {
-        return (l == null || l.isEmpty()) ? null : l;
-    }
-
-    private static Response validateFileNameAndLocation(final String location, final String fileName) {
+    private static void validateLocationAndFileName(final String location, final String fileName) {
         if (location == null || location.isBlank()) {
             LOG.warn("Request rejected: blank location (fileName={})", fileName);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("location must not be blank.")
-                    .build();
+            throw new IllegalArgumentException("location must not be blank.");
         }
 
         if (fileName == null || fileName.isBlank()) {
             LOG.warn("Request rejected: blank fileName (location={})", location);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("fileName must not be blank.")
-                    .build();
+            throw new IllegalArgumentException("fileName must not be blank.");
         }
 
         if (fileName.contains("/") || fileName.contains("\\") || fileName.contains("..")) {
             LOG.warn("Request rejected: invalid fileName={} (location={})", fileName, location);
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid fileName.")
-                    .build();
+            throw new IllegalArgumentException("Invalid fileName.");
         }
-
-        return null;
     }
 
-    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
+    private EventConfSourceMetadataDto buildMetadata(String fileName, Events events, int fileOrder,
                                                      Date now) {
 
         final String baseName = StringUtils.substringBeforeLast(fileName, ".");
@@ -593,8 +576,13 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
                 .username("system-generated")
                 .now(now)
                 .vendor(base)
-                .description(description)
+                .description("")
                 .build();
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        eventConfExecutor.shutdown();
     }
 
 }
