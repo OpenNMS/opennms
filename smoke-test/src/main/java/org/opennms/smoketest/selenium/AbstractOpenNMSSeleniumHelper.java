@@ -757,19 +757,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     private boolean isCenterPointObscured(final WebElement element) {
         final JavascriptExecutor executor = (JavascriptExecutor)getDriver();
-        final Object result = executor.executeScript(
-                "var el = arguments[0];"
-                + "if (!el) { return true; }"
-                + "var rect = el.getBoundingClientRect();"
-                + "if (rect.width === 0 || rect.height === 0) { return true; }"
-                + "var x = rect.left + (rect.width / 2);"
-                + "var y = rect.top + (rect.height / 2);"
-                + "var top = document.elementFromPoint(x, y);"
-                + "if (!top) { return true; }"
-                + "return top !== el && !el.contains(top);",
-                element);
-
-        return result instanceof Boolean && (Boolean)result;
+        return ElementClickGuards.isCenterPointObscured(executor, element);
     }
 
     /**

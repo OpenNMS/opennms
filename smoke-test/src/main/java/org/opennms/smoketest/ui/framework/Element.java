@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
+import org.opennms.smoketest.selenium.ElementClickGuards;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -117,17 +118,6 @@ public abstract class Element {
     }
 
     private boolean isCenterPointObscured(final WebElement element) {
-        final Object result = ((JavascriptExecutor)driver).executeScript(
-                "var el = arguments[0];"
-                + "if (!el) { return true; }"
-                + "var rect = el.getBoundingClientRect();"
-                + "if (rect.width === 0 || rect.height === 0) { return true; }"
-                + "var x = rect.left + (rect.width / 2);"
-                + "var y = rect.top + (rect.height / 2);"
-                + "var top = document.elementFromPoint(x, y);"
-                + "if (!top) { return true; }"
-                + "return top !== el && !el.contains(top);",
-                element);
-        return result instanceof Boolean && (Boolean)result;
+        return ElementClickGuards.isCenterPointObscured((JavascriptExecutor) driver, element);
     }
 }
