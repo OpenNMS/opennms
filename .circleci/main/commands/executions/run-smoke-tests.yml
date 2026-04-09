@@ -69,7 +69,14 @@ commands:
           command: |
             mkdir -p ~/test-results/flaky-evidence
             if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
-              find /tmp/flaky-evidence -name '*.xml' -exec cp {} ~/test-results/flaky-evidence/ \;
+              (
+                cd /tmp/flaky-evidence || exit 1
+                find . -name '*.xml' -type f | while read -r xml; do
+                  xml="${xml#./}"
+                  mkdir -p ~/test-results/flaky-evidence/"$(dirname "$xml")"
+                  cp "$xml" ~/test-results/flaky-evidence/"$xml"
+                done
+              )
               echo "#### Flaky tests detected (passed only after retry):"
               find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
             fi
