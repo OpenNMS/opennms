@@ -94,8 +94,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -110,8 +113,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -126,8 +132,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -196,8 +205,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -212,8 +224,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -228,8 +243,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -244,8 +262,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -303,6 +324,11 @@ const router = createRouter({
       component: () => import('@/containers/EventConfigEventCreate.vue')
     },
     {
+      path: '/mib-compiler',
+      name: 'MIB Compiler',
+      component: () => import('@/containers/MibCompiler.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
@@ -313,3 +339,4 @@ router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
 export { isLegacyPlugin }
+
