@@ -132,21 +132,23 @@
         try {
           targets = DestinationPathFactory.getInstance().getTargetList(index, path);
         
-        for (int i = 0; i < targets.length; i++)
-        {
-            buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
-            // don't let user pick commands for email addresses
-            if (!(targets[i].getCommands().size() == 1 && "email".equals(targets[i].getCommands().get(0))))
-            {
-                buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
-            }
-            else
-            {
-                buffer.append("<td>").append("email adddress").append("</td>");
-            }
-            buffer.append("<td>").append(buildAutoNotifySelect(targets[i].getName(), targets[i].getAutoNotify().orElse(null))).append("<td>");
-            buffer.append("</tr>");
-        }
+          for (int i = 0; i < targets.length; i++)
+          {
+              buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
+              // don't let user pick commands for email addresses
+              boolean isEmailCommand = targets[i].getCommands().size() == 1 &&
+                  ("email".equals(targets[i].getCommands().get(0)) || "javaEmail".equals(targets[i].getCommands().get(0)));
+              boolean isEmailAddress = targets[i].getName().contains("@");
+
+              if (isEmailCommand && isEmailAddress) {
+                  buffer.append("<td>").append("email address").append("</td>");
+              } else {
+                  buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
+              }
+
+              buffer.append("<td>").append(buildAutoNotifySelect(targets[i].getName(), targets[i].getAutoNotify().orElse(null))).append("<td>");
+              buffer.append("</tr>");
+          }
         } catch (Throwable e)
         {
             throw new ServletException("couldn't get list of targets for path " + path.getName(), e);
