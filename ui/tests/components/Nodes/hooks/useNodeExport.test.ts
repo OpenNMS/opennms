@@ -26,6 +26,7 @@ import { describe, expect, test, vi } from 'vitest'
 import { mock } from 'vitest-mock-extended'
 import getExportDataResponseJson from './data/getExportDataResponse.json'
 import getExportDataResponseCsv from './data/getExportDataResponseCSV.json'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const { generateBlob, getExportData } = useNodeExport()
 
@@ -60,7 +61,7 @@ const createNodeResponse = () => {
   node2.id = '106'
   node2.label = 'WI_racine-store-pos';
   (node2 as any)['ipaddress'] = '192.168.99.106'
-  node2.location = 'Default'
+  node2.location = DEFAULT_MONITORING_LOCATION
   node2.foreignSource = 'Demo_Stores'
   node2.foreignId = 'WI_racine-store-pos'
   node2.sysContact = 'Administrator <racineadmin@example.com>'

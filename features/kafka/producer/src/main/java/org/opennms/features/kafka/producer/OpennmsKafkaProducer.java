@@ -232,7 +232,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Forward!
         sendRecord(KafkaProducerManager.MessageType.EVENT,() -> {
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
-            LOG.debug("Sending event with UEI: {}, instanceId={}, eventId={}", mappedEvent.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
+            LOG.info("Sending event with UEI: {}, instanceId={}, eventId={}", mappedEvent.getUei(), SystemInfoUtils.getInstanceId(), event.getDbid());
             return new ProducerRecord<>(eventTopic, mappedEvent.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
@@ -309,7 +309,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         // Forward!
         sendRecord(KafkaProducerManager.MessageType.ALARM,() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
-            LOG.debug("Sending alarm with reduction key: {}, instanceId={}, alarmId={}", reductionKey, SystemInfoUtils.getInstanceId(), alarm.getId());
+            LOG.info("Sending alarm with reduction key: {}, instanceId={}, alarmId={}", reductionKey, SystemInfoUtils.getInstanceId(), alarm.getId());
             return new ProducerRecord<>(alarmTopic, reductionKey.getBytes(encoding), mappedAlarm.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the alarm was forwarded

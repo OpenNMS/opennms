@@ -173,9 +173,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
 
         // Integrations Menu
-        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Configure SNMP by IP')]")));
-
         clickMenuItem("integrationsMenu", "Geocoding Services");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Geocoder Configuration')]")));
 
@@ -308,6 +305,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // clickMenuItem("toolsMenu", "File Editor");
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='File Editor']")));
+
+        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Manage SNMP Configuration']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Manage SNMP Configuration']")));
 
         clickMenuItem("integrationsMenu", "External Requisitions");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='External Requisitions and Thread Pools']")));

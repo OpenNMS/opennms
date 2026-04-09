@@ -158,7 +158,6 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
      * @return The bytes representing the raw message, or null if not supported
      */
     private static byte[] convertToRawMessage(TrapInformation trapInfo) {
-        // Raw message conversion is not implemented for JoeSnmp, as the usage of that strategy is deprecated
         if (!(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV1TrapInformation)
                 && !(trapInfo instanceof Snmp4JTrapNotifier.Snmp4JV2V3TrapInformation)) {
             LOG.warn("Unable to convert TrapInformation of type {} to raw message. " +

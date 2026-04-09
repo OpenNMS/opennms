@@ -39,11 +39,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
-import org.opennms.netmgt.snmp.joesnmp.JoeSnmpValueFactory;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
 
 public class SnmpValueTest {
-    private static final SnmpValueFactory[] m_factories = new SnmpValueFactory[] { new Snmp4JValueFactory(), new JoeSnmpValueFactory(), new MockSnmpValueFactory() };
+    private static final SnmpValueFactory[] m_factories = new SnmpValueFactory[] { new Snmp4JValueFactory(), new MockSnmpValueFactory() };
 
     @Before
     public void setUp() {

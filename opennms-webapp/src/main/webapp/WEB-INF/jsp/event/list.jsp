@@ -364,15 +364,13 @@
 						<% } %>
           <% } %>
           <th width="01%"><%=this.makeSortLink(callback, parms, SortStyle.ID,            SortStyle.REVERSE_ID,            "id",           "ID"                  , favorite)%></th>
-          <th width="06%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,      SortStyle.REVERSE_SEVERITY,      "severity",     "Severity"            , favorite)%></th>
-          <th width="10%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,          SortStyle.REVERSE_TIME,          "time",         "Time"                , favorite)%></th>
-          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.LOCATION,      SortStyle.REVERSE_LOCATION,      "location",     "Source&nbsp;Location", favorite)%></th>
-          <th width="19%"><%=this.makeSortLink(callback, parms, SortStyle.SYSTEMID,      SortStyle.REVERSE_SYSTEMID,      "systemid",     "System-ID"           , favorite)%></th>
+          <th width="08%"><%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,      SortStyle.REVERSE_SEVERITY,      "severity",     "Severity"            , favorite)%></th>
+          <th width="15%"><%=this.makeSortLink(callback, parms, SortStyle.TIME,          SortStyle.REVERSE_TIME,          "time",         "Time"                , favorite)%></th>
           <th width="18%"><%=this.makeSortLink(callback, parms, SortStyle.NODE,          SortStyle.REVERSE_NODE,          "node",         "Node"                , favorite)%></th>
-          <th width="05%"><%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node&nbsp;Location"  , favorite)%></th>
-          <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"           , favorite)%></th>
-          <th width="8%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"              , favorite)%></th>
-          <th width="5%"><%=this.makeSortLink(callback, parms, SortStyle.ALARMID,       SortStyle.REVERSE_ALARMID,       "alarm",      "Alarm ID"                  , favorite)%></th>
+          <th width="14%"><%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Monitoring&nbsp;Location"  , favorite)%></th>
+          <th width="12%"><%=this.makeSortLink(callback, parms, SortStyle.INTERFACE,     SortStyle.REVERSE_INTERFACE,     "interface",    "Interface"           , favorite)%></th>
+          <th width="16%"><%=this.makeSortLink(callback, parms, SortStyle.SERVICE,       SortStyle.REVERSE_SERVICE,       "service",      "Service"              , favorite)%></th>
+          <th width="7%"><%=this.makeSortLink(callback, parms, SortStyle.ALARMID,       SortStyle.REVERSE_ALARMID,       "alarm",      "Alarm ID"                  , favorite)%></th>
         </tr>
         </thead>     
       <% for( int i=0; i < events.length; i++ ) {
@@ -410,36 +408,7 @@
               <a href="<%=this.makeLink(callback, parms, new BeforeDateFilter(events[i].getTime()), true, favorite)%>" class="filterLink" title="Only show events occurring before this one">${addBeforeFilter}</a>
             </nobr>
           </td>
-          <td class="divider">
-              <% if(!Strings.isNullOrEmpty(events[i].getLocation())) { %>
-              <% Filter locationFilter = new LocationFilter(events[i].getLocation()); %>
-              <%=events[i].getLocation()%></a>
 
-              <% if( !parms.getFilters().contains(locationFilter) ) { %>
-              <nobr>
-                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only events for this location">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeLocationFilter(events[i].getLocation()), true, favorite)%>" class="filterLink" title="Do not show events for this location">${addNegativeFilter}</a>
-              </nobr>
-              <% } %>
-              <% } else { %>
-              &nbsp;
-              <% } %>
-          </td>
-          <td class="divider">
-              <% if(!Strings.isNullOrEmpty(events[i].getSystemId())) { %>
-              <% Filter systemIdFilter = new SystemIdFilter(events[i].getSystemId()); %>
-              <%=events[i].getSystemId()%></a>
-
-              <% if( !parms.getFilters().contains(systemIdFilter) ) { %>
-              <nobr>
-                  <a href="<%=this.makeLink(callback, parms, systemIdFilter, true, favorite)%>" class="filterLink" title="Show only events for this system Id">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeSystemIdFilter(events[i].getSystemId()), true, favorite)%>" class="filterLink" title="Do not show events for this system Id">${addNegativeFilter}</a>
-              </nobr>
-              <% } %>
-              <% } else { %>
-              &nbsp;
-              <% } %>
-          </td>
           <td class="divider">
 	        <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% Filter nodeFilter = new NodeFilter(events[i].getNodeId(), pageContext.getServletContext()); %>
@@ -457,14 +426,14 @@
             <% } %>
           </td>
           <td class="divider">
-              <% if(!Strings.isNullOrEmpty(events[i].getNodeLocation())) { %>
+              <% if (!Strings.isNullOrEmpty(events[i].getNodeLocation())) { %>
               <% Filter nodeLocationFilter = new NodeLocationFilter(events[i].getNodeLocation()); %>
               <%=events[i].getNodeLocation()%></a>
 
-              <% if( !parms.getFilters().contains(nodeLocationFilter) ) { %>
+              <% if (!parms.getFilters().contains(nodeLocationFilter) ) { %>
               <nobr>
-                  <a href="<%=this.makeLink(callback, parms, nodeLocationFilter, true, favorite)%>" class="filterLink" title="Show only events for this node location">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(events[i].getNodeLocation()), true, favorite)%>" class="filterLink" title="Do not show events for this node location">${addNegativeFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, nodeLocationFilter, true, favorite)%>" class="filterLink" title="Show only events for this monitoring location">${addPositiveFilter}</a>
+                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(events[i].getNodeLocation()), true, favorite)%>" class="filterLink" title="Do not show events for this monitoring location">${addNegativeFilter}</a>
               </nobr>
               <% } %>
               <% } else { %>

@@ -102,6 +102,9 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
+  <bean id="snmpConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSnmpConfigDao"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpConfigDao" ref="snmpConfigDao" />
+
   <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory

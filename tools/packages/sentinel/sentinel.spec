@@ -26,7 +26,6 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
-%define _use_internal_dependency_generator 0
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
@@ -35,6 +34,7 @@
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
 %define _log_dir /var/log/sentinel
+%define __requires_exclude ^libstdc++-libc6.2.*$
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -68,6 +68,8 @@ Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Provides:	opennms-plugin-api = %{opa_version}
+Provides:   user(sentinel)
+Provides:   group(sentinel)
 
 Prefix:        %{sentinelinstprefix}
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" write-community="private" read-community="public" timeout="800" retry="3">
+    <definition version="v2c" ttl="7000" profile-label="profile2">
+        <range begin="10.0.0.1" end="10.4.252.40"/>
+    </definition>
+    <definition version="v1" ttl="6000" profile-label="profile1">
+        <specific>127.0.0.1</specific>
+    </definition>
+    <profiles>
+        <profile version="v1" read-community="horizon" timeout="10000">
+            <label>profile1</label>
+        </profile>
+        <profile version="v1" ttl="6000">
+            <label>profile2</label>
+            <filter>iphostname LIKE '%opennms%'</filter>
+        </profile>
+        <profile version="v1" read-community="meridian">
+            <label>profile3</label>
+            <filter>IPADDR IPLIKE 172.1.*.*</filter>
+        </profile>
+    </profiles>
+</snmp-config>

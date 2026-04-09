@@ -41,12 +41,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.implementations.joesnmp</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.implementations.mock</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
