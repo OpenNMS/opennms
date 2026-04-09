@@ -215,20 +215,18 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows[1].text()).toContain('Disabled')
   })
 
-  // This test is skipped because it relies on debouncing which can be tricky to test reliably.
-  // Consider refactoring the search input handling to make it more testable or use a library like 
-  // @vue/test-utils' `setValue` with `flushPromises` to handle the debounce timing.
-  it.skip('handles search input changes with debouncing and calls onChangeSourcesSearchTerm', async () => {
+  it('updates the search term through the input without calling the store immediately', async () => {
     vi.useFakeTimers()
 
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
-    wrapper.vm.onChangeSearchTerm('test')
-    wrapper.vm.onChangeSearchTerm.flush()
-    await flushPromises()
+    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+    await searchInput.setValue('test')
+    await nextTick()
 
-    expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
+    expect(store.sourcesSearchTerm).toBe('test')
+    expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
 
     vi.useRealTimers()
   })

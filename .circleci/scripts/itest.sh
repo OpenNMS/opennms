@@ -246,7 +246,7 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
                -DskipITs=false \
                --batch-mode \
                --fail-at-end \
-               -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+               -Dorg.opennms.core.test-api.dbCreateThreads=8 \
                -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
                --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
                install

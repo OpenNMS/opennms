@@ -215,50 +215,49 @@ describe('EventConfigEventTable.vue', () => {
     })
   })
 
-  describe.skip('Search Functionality', () => {
-    // skipping debounced search tests for now as they require handling timers and async updates in a more complex way.
-    // These can be re-enabled and adjusted once the debounce implementation is finalized and stable in the component.
-    it('updates search term on input and debounces call to store', async () => {
+  describe('Search Functionality', () => {
+    it('updates the search term through the input without calling the store immediately', async () => {
       vi.useFakeTimers()
 
       expect(store.eventsSearchTerm).toBe('')
 
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', 'test search')
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test search')
       await nextTick()
-
-      wrapper.vm.onChangeSearchTerm('test search')
-      wrapper.vm.onChangeSearchTerm.flush()
-      await flushPromises()
 
       expect(store.eventsSearchTerm).toBe('test search')
-      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('test search')
-    })
-
-    it('trims search term on update', async () => {
-      vi.useFakeTimers()
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', '  trimmed  ')
-      await nextTick()
-
-      wrapper.vm.onChangeSearchTerm(store.eventsSearchTerm)
-      wrapper.vm.onChangeSearchTerm.flush()
-      await flushPromises()
-
-      expect(store.eventsSearchTerm).toBe('trimmed')
-      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('trimmed')
-    })
-
-    it('does not call store immediately on input (debounce)', () => {
-      wrapper.vm.onChangeSearchTerm('test')
       expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
     })
 
-    it('calls store on empty search after debounce', async () => {
-      wrapper.vm.onChangeSearchTerm('')
-      wrapper.vm.onChangeSearchTerm.flush()
-      await flushPromises()
-      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('')
+    it('trims the search term through the input without calling the store immediately', async () => {
+      vi.useFakeTimers()
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('  trimmed  ')
+      await nextTick()
+
+      expect(store.eventsSearchTerm).toBe('trimmed')
+      expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
+    })
+
+    it('does not call store immediately on input (debounce)', async () => {
+      vi.useFakeTimers()
+
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('test')
+      await nextTick()
+
+      expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
+    })
+
+    it('updates the search term to empty without calling the store immediately', async () => {
+      vi.useFakeTimers()
+
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('')
+      await nextTick()
+
+      expect(store.eventsSearchTerm).toBe('')
+      expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
     })
   })
 
@@ -991,18 +990,14 @@ describe('EventConfigEventTable.vue', () => {
       expect(store.onEventsSortChange).toHaveBeenCalledWith('uei', SORT.ASCENDING)
     })
 
-    it.skip('search with special characters (trims and calls store)', async () => {
+    it('trims search input with special characters without calling the store immediately', async () => {
       vi.useFakeTimers()
-      const searchInput = wrapper.findComponent(FeatherInput)
-      await searchInput.vm.$emit('update:modelValue', '  <script>alert(1)</script> test  ')
+      const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
+      await searchInput.setValue('  <script>alert(1)</script> test  ')
       await nextTick()
 
-      wrapper.vm.onChangeSearchTerm(store.eventsSearchTerm)
-      wrapper.vm.onChangeSearchTerm.flush()
-      await flushPromises()
-
       expect(store.eventsSearchTerm).toBe('<script>alert(1)</script> test')
-      expect(store.onChangeEventsSearchTerm).toHaveBeenCalledWith('<script>alert(1)</script> test')
+      expect(store.onChangeEventsSearchTerm).not.toHaveBeenCalled()
     })
 
     it('handles missing event properties gracefully', async () => {
