@@ -165,8 +165,8 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       fast-xml-parser:
-        specifier: ^5.3.0
-        version: 5.3.2
+        specifier: ^5.5.11
+        version: 5.5.11
       ip-regex:
         specifier: ^5.0.0
         version: 5.0.0
@@ -183,8 +183,8 @@ importers:
         specifier: ^1.5.3
         version: 1.5.3(leaflet@1.9.4)
       lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+        specifier: ^4.18.1
+        version: 4.18.1
       marked:
         specifier: ^12.0.2
         version: 12.0.2
@@ -269,7 +269,7 @@ importers:
         version: 6.21.0(eslint@8.57.1)(typescript@5.4.5)
       '@vitejs/plugin-vue':
         specifier: ^5.2.4
-        version: 5.2.4(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))(vue@3.5.25(typescript@5.4.5))
+        version: 5.2.4(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))(vue@3.5.25(typescript@5.4.5))
       '@vue-leaflet/vue-leaflet':
         specifier: ^0.7.0
         version: 0.7.0(leaflet@1.9.4)(vue@3.5.25(typescript@5.4.5))
@@ -307,14 +307,14 @@ importers:
         specifier: ^0.26.0
         version: 0.26.0(@babel/parser@7.29.0)(rollup@4.53.3)(vue@3.5.25(typescript@5.4.5))
       vite:
-        specifier: ^6.4.1
-        version: 6.4.1(@types/node@24.10.1)(sass@1.94.2)
+        specifier: ^6.4.2
+        version: 6.4.2(@types/node@24.10.1)(sass@1.94.2)
       vitest:
         specifier: ^4.1.0
-        version: 4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))
+        version: 4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))
       vitest-mock-extended:
         specifier: ^1.3.1
-        version: 1.3.2(typescript@5.4.5)(vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2)))
+        version: 1.3.2(typescript@5.4.5)(vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2)))
       vue-eslint-parser:
         specifier: ^9.3.1
         version: 9.4.3(eslint@8.57.1)
@@ -1956,8 +1956,11 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
-  fast-xml-parser@5.3.2:
-    resolution: {integrity: sha512-n8v8b6p4Z1sMgqRmqLJm3awW4NX7NkaKPfb3uJIBTSH7Pdvufi3PQ3/lJLQrvxcMYl7JI2jnDO90siPEpD8JBA==}
+  fast-xml-builder@1.1.4:
+    resolution: {integrity: sha512-f2jhpN4Eccy0/Uz9csxh3Nu6q4ErKxf0XIsasomfOihuSUa3/xw6w8dnOtCDgEItQFJG8KyXPzQXzcODDrrbOg==}
+
+  fast-xml-parser@5.5.11:
+    resolution: {integrity: sha512-QL0eb0YbSTVWF6tTf1+LEMSgtCEjBYPpnAjoLC8SscESlAjXEIRJ7cHtLG0pLeDFaZLa4VKZLArtA/60ZS7vyA==}
     hasBin: true
 
   fastq@1.19.1:
@@ -2250,8 +2253,8 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
@@ -2424,6 +2427,10 @@ packages:
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
     engines: {node: '>=8'}
+
+  path-expression-matcher@1.5.0:
+    resolution: {integrity: sha512-cbrerZV+6rvdQrrD+iGMcZFEiiSrbv9Tfdkvnusy6y0x0GKBXREFg/Y65GhIfm0tnLntThhzCnfKwp1WRjeCyQ==}
+    engines: {node: '>=14.0.0'}
 
   path-is-absolute@1.0.1:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
@@ -2703,8 +2710,8 @@ packages:
   strip-literal@2.1.1:
     resolution: {integrity: sha512-631UJ6O00eNGfMiWG78ck80dfBab8X6IVFB51jZK5Icd7XAs60Z5y7QdSd/wGIklnWvRbUNloVzhOKKmutxQ6Q==}
 
-  strnum@2.1.1:
-    resolution: {integrity: sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw==}
+  strnum@2.2.3:
+    resolution: {integrity: sha512-oKx6RUCuHfT3oyVjtnrmn19H1SiCqgJSg+54XqURKp5aCMbrXrhLjRN9TjuwMjiYstZ0MzDrHqkGZ5dFTKd+zg==}
 
   super-regex@0.2.0:
     resolution: {integrity: sha512-WZzIx3rC1CvbMDloLsVw0lkZVKJWbrkJ0k1ghKFmcnPrW1+jWbgTkTEWVtD9lMdmI4jZEz40+naBxl1dCUhXXw==}
@@ -2867,8 +2874,8 @@ packages:
   vite-svg-loader@4.0.0:
     resolution: {integrity: sha512-0MMf1yzzSYlV4MGePsLVAOqXsbF5IVxbn4EEzqRnWxTQl8BJg/cfwIzfQNmNQxZp5XXwd4kyRKF1LytuHZTnqA==}
 
-  vite@6.4.1:
-    resolution: {integrity: sha512-+Oxm7q9hDoLMyJOYfUYBuHQo+dkAloi33apOPP56pzj+vsdJDzr+j1NISE5pyaAuKL4A3UD34qd0lx5+kfKp2g==}
+  vite@6.4.2:
+    resolution: {integrity: sha512-2N/55r4JDJ4gdrCvGgINMy+HH3iRpNIz8K6SFwVsA+JbQScLiC+clmAxBgwiSPgcG9U15QmvqCGWzMbqda5zGQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -4408,9 +4415,9 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitejs/plugin-vue@5.2.4(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))(vue@3.5.25(typescript@5.4.5))':
+  '@vitejs/plugin-vue@5.2.4(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))(vue@3.5.25(typescript@5.4.5))':
     dependencies:
-      vite: 6.4.1(@types/node@24.10.1)(sass@1.94.2)
+      vite: 6.4.2(@types/node@24.10.1)(sass@1.94.2)
       vue: 3.5.25(typescript@5.4.5)
 
   '@vitest/expect@4.1.0':
@@ -4422,13 +4429,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.1.0(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))':
+  '@vitest/mocker@4.1.0(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))':
     dependencies:
       '@vitest/spy': 4.1.0
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 6.4.1(@types/node@24.10.1)(sass@1.94.2)
+      vite: 6.4.2(@types/node@24.10.1)(sass@1.94.2)
 
   '@vitest/pretty-format@4.1.0':
     dependencies:
@@ -5231,9 +5238,15 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
-  fast-xml-parser@5.3.2:
+  fast-xml-builder@1.1.4:
     dependencies:
-      strnum: 2.1.1
+      path-expression-matcher: 1.5.0
+
+  fast-xml-parser@5.5.11:
+    dependencies:
+      fast-xml-builder: 1.1.4
+      path-expression-matcher: 1.5.0
+      strnum: 2.2.3
 
   fastq@1.19.1:
     dependencies:
@@ -5519,7 +5532,7 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.18.1: {}
 
   lru-cache@10.4.3: {}
 
@@ -5552,7 +5565,7 @@ snapshots:
 
   minim@0.23.8:
     dependencies:
-      lodash: 4.17.21
+      lodash: 4.18.1
 
   minimatch@3.1.2:
     dependencies:
@@ -5667,6 +5680,8 @@ snapshots:
   path-browserify@1.0.1: {}
 
   path-exists@4.0.0: {}
+
+  path-expression-matcher@1.5.0: {}
 
   path-is-absolute@1.0.1: {}
 
@@ -5911,7 +5926,7 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  strnum@2.1.1: {}
+  strnum@2.2.3: {}
 
   super-regex@0.2.0:
     dependencies:
@@ -6108,7 +6123,7 @@ snapshots:
       '@vue/compiler-sfc': 3.5.25
       svgo: 3.3.2
 
-  vite@6.4.1(@types/node@24.10.1)(sass@1.94.2):
+  vite@6.4.2(@types/node@24.10.1)(sass@1.94.2):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.3)
@@ -6121,16 +6136,16 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.94.2
 
-  vitest-mock-extended@1.3.2(typescript@5.4.5)(vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))):
+  vitest-mock-extended@1.3.2(typescript@5.4.5)(vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))):
     dependencies:
       ts-essentials: 10.1.1(typescript@5.4.5)
       typescript: 5.4.5
-      vitest: 4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))
+      vitest: 4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))
 
-  vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2)):
+  vitest@4.1.0(@types/node@24.10.1)(happy-dom@9.20.3)(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2)):
     dependencies:
       '@vitest/expect': 4.1.0
-      '@vitest/mocker': 4.1.0(vite@6.4.1(@types/node@24.10.1)(sass@1.94.2))
+      '@vitest/mocker': 4.1.0(vite@6.4.2(@types/node@24.10.1)(sass@1.94.2))
       '@vitest/pretty-format': 4.1.0
       '@vitest/runner': 4.1.0
       '@vitest/snapshot': 4.1.0
@@ -6147,7 +6162,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 6.4.1(@types/node@24.10.1)(sass@1.94.2)
+      vite: 6.4.2(@types/node@24.10.1)(sass@1.94.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.10.1
@@ -6182,7 +6197,7 @@ snapshots:
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
       esquery: 1.6.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
