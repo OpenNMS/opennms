@@ -1,3 +1,5 @@
+import { SORT } from '@featherds/table'
+
 export type MibCompilerFileLocation = 'PENDING' | 'COMPILED'
 
 export interface MibCompilerFileInfo {
@@ -17,6 +19,14 @@ export interface MibCompilerStoreState {
   pendingMibFiles: MibCompilerFileInfo[]
   files: MibCompilerFileInfo[]
   isLoading: boolean
+  compiledMibFilesSort: {
+    property: keyof MibCompilerFileInfo
+    value: SORT
+  }
+  pendingMibFilesSort: {
+    property: keyof MibCompilerFileInfo
+    value: SORT
+  }
   compiledMibFilesPagination: {
     page: number
     pageSize: number
@@ -28,3 +38,4 @@ export interface MibCompilerStoreState {
     total: number
   }
 }
+

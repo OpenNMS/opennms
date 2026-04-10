@@ -127,6 +127,10 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
+  store.onPendingMibFilesSortChange({
+    property: sortObj.property as 'fileName' | 'location',
+    value: sortObj.value
+  })
 }
 </script>
 
@@ -151,10 +155,12 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     div {
       flex: 1;
     }
+
     :deep(.section-right) {
       .feather-input-container {
         float: right;
         width: 50%;
+
         .feather-input-sub-text {
           display: none !important;
         }
