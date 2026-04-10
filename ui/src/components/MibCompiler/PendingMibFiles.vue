@@ -8,6 +8,8 @@
         <FeatherInput
           label="Search MIBs"
           placeholder="Search Pending MIB Files"
+          :modelValue="store.pendingMibFilesSearchTerm"
+          @update:modelValue="store.onPendingMibFilesSearchChange"
         >
           <template #pre>
             <FeatherIcon :icon="Search" />
@@ -27,7 +29,7 @@
               :key="col.label"
               scope="col"
               :property="col.id"
-              :sort="(sort as any)[col.id]"
+              :sort="store.pendingMibFilesSort.property === col.id ? store.pendingMibFilesSort.value : SORT.NONE"
               v-on:sort-changed="sortChanged"
             >
               {{ col.label }}
@@ -73,19 +75,19 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="store.filteredPendingMibFiles.length"
+        v-if="store.searchedPendingMibFiles.length"
       >
         <FeatherPagination
           :modelValue="store.pendingMibFilesPagination.page"
           :pageSize="store.pendingMibFilesPagination.pageSize"
-          :total="store.pendingMibFilesPagination.total"
+          :total="store.searchedPendingMibFiles.length"
           :pageSizes="[10, 20, 50, 100, 200]"
           @update:modelValue="store.onPendingMibFilesPageChange"
           @update:pageSize="store.onPendingMibFilesPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
-      <div v-if="!store.filteredPendingMibFiles.length">
+      <div v-if="!store.searchedPendingMibFiles.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -118,15 +120,7 @@ const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
 
-const sort = reactive({
-  fileName: SORT.NONE
-}) as any
-
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
   store.onPendingMibFilesSortChange({
     property: sortObj.property as 'fileName' | 'location',
     value: sortObj.value

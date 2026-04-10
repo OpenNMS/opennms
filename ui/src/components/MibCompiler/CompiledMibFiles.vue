@@ -8,6 +8,8 @@
         <FeatherInput
           label="Search MIBs"
           placeholder="Search Compiled MIB Files"
+          :modelValue="store.compiledMibFilesSearchTerm"
+          @update:modelValue="store.onCompiledMibFilesSearchChange"
         >
           <template #pre>
             <FeatherIcon :icon="Search" />
@@ -27,7 +29,7 @@
               :key="col.label"
               scope="col"
               :property="col.id"
-              :sort="(sort as any)[col.id]"
+              :sort="store.compiledMibFilesSort.property === col.id ? store.compiledMibFilesSort.value : SORT.NONE"
               v-on:sort-changed="sortChanged"
             >
               {{ col.label }}
@@ -71,19 +73,19 @@
       </table>
       <div
         class="alerts-pagination"
-        v-if="store.filteredCompiledMibFiles.length"
+        v-if="store.searchedCompiledMibFiles.length"
       >
         <FeatherPagination
           :modelValue="store.compiledMibFilesPagination.page"
           :pageSize="store.compiledMibFilesPagination.pageSize"
-          :total="store.compiledMibFilesPagination.total"
+          :total="store.searchedCompiledMibFiles.length"
           :pageSizes="[10, 20, 50, 100, 200]"
           @update:modelValue="store.onCompiledMibFilesPageChange"
           @update:pageSize="store.onCompiledMibFilesPageSizeChange"
           data-test="FeatherPagination"
         />
       </div>
-      <div v-if="!store.filteredCompiledMibFiles.length">
+      <div v-if="!store.searchedCompiledMibFiles.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -116,15 +118,7 @@ const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
 
-const sort = reactive({
-  fileName: SORT.NONE
-}) as any
-
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
-  for (const prop in sort) {
-    sort[prop] = SORT.NONE
-  }
-  sort[sortObj.property] = sortObj.value
   store.onCompiledMibFilesSortChange({
     property: sortObj.property as 'fileName' | 'location',
     value: sortObj.value

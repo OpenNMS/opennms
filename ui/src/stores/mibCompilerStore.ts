@@ -5,10 +5,10 @@ import { defineStore } from 'pinia'
 
 export const useMibCompilerStore = defineStore('useMibCompilerStore', {
   state: (): MibCompilerStoreState => ({
-    compiledMibFiles: [],
-    pendingMibFiles: [],
     files: [],
     isLoading: false,
+    compiledMibFilesSearchTerm: '',
+    pendingMibFilesSearchTerm: '',
     compiledMibFilesSort: {
       property: 'fileName',
       value: SORT.NONE
@@ -35,14 +35,32 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     filteredPendingMibFiles(): MibCompilerFileInfo[] {
       return this.files.filter((file: MibCompilerFileInfo) => file.location === 'PENDING')
     },
+    searchedCompiledMibFiles(): MibCompilerFileInfo[] {
+      const query = this.compiledMibFilesSearchTerm.trim().toLowerCase()
+
+      if (!query) {
+        return this.filteredCompiledMibFiles
+      }
+
+      return this.filteredCompiledMibFiles.filter((file) => file.fileName.toLowerCase().includes(query))
+    },
+    searchedPendingMibFiles(): MibCompilerFileInfo[] {
+      const query = this.pendingMibFilesSearchTerm.trim().toLowerCase()
+
+      if (!query) {
+        return this.filteredPendingMibFiles
+      }
+
+      return this.filteredPendingMibFiles.filter((file) => file.fileName.toLowerCase().includes(query))
+    },
     sortedCompiledMibFiles(): MibCompilerFileInfo[] {
       const { property, value } = this.compiledMibFilesSort
 
       if (value === SORT.NONE) {
-        return this.filteredCompiledMibFiles
+        return this.searchedCompiledMibFiles
       }
 
-      return [...this.filteredCompiledMibFiles].sort((a, b) => {
+      return [...this.searchedCompiledMibFiles].sort((a, b) => {
         const aValue = String(a[property] ?? '')
         const bValue = String(b[property] ?? '')
         const compareResult = aValue.localeCompare(bValue, undefined, {
@@ -57,10 +75,10 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
       const { property, value } = this.pendingMibFilesSort
 
       if (value === SORT.NONE) {
-        return this.filteredPendingMibFiles
+        return this.searchedPendingMibFiles
       }
 
-      return [...this.filteredPendingMibFiles].sort((a, b) => {
+      return [...this.searchedPendingMibFiles].sort((a, b) => {
         const aValue = String(a[property] ?? '')
         const bValue = String(b[property] ?? '')
         const compareResult = aValue.localeCompare(bValue, undefined, {
@@ -88,8 +106,19 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
       try {
         const response = await listPendingAndCompiledFiles()
         this.files = response
-        this.compiledMibFilesPagination.total = this.filteredCompiledMibFiles.length
-        this.pendingMibFilesPagination.total = this.filteredPendingMibFiles.length
+
+        const compiledCount = this.searchedCompiledMibFiles.length
+        const compiledMaxPage = Math.max(1, Math.ceil(compiledCount / this.compiledMibFilesPagination.pageSize))
+        if (this.compiledMibFilesPagination.page > compiledMaxPage) {
+          this.compiledMibFilesPagination.page = compiledMaxPage
+        }
+
+        const pendingCount = this.searchedPendingMibFiles.length
+        const pendingMaxPage = Math.max(1, Math.ceil(pendingCount / this.pendingMibFilesPagination.pageSize))
+        if (this.pendingMibFilesPagination.page > pendingMaxPage) {
+          this.pendingMibFilesPagination.page = pendingMaxPage
+        }
+
         this.isLoading = false
       } catch (error) {
         console.error('Error fetching compiled MIB files:', error)
@@ -99,6 +128,10 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     // Frontend pagination actions - only update page state, do not re-fetch
     onCompiledMibFilesPageChange(newPage: number) {
       this.compiledMibFilesPagination.page = newPage
+    },
+    onCompiledMibFilesSearchChange(searchTerm: string | number | undefined) {
+      this.compiledMibFilesSearchTerm = String(searchTerm ?? '')
+      this.compiledMibFilesPagination.page = 1
     },
     onCompiledMibFilesSortChange(sortObj: { property: keyof MibCompilerFileInfo; value: SORT }) {
       this.compiledMibFilesSort = sortObj
@@ -110,6 +143,10 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     },
     onPendingMibFilesPageChange(newPage: number) {
       this.pendingMibFilesPagination.page = newPage
+    },
+    onPendingMibFilesSearchChange(searchTerm: string | number | undefined) {
+      this.pendingMibFilesSearchTerm = String(searchTerm ?? '')
+      this.pendingMibFilesPagination.page = 1
     },
     onPendingMibFilesSortChange(sortObj: { property: keyof MibCompilerFileInfo; value: SORT }) {
       this.pendingMibFilesSort = sortObj

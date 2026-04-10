@@ -15,10 +15,10 @@ export interface MibCompilerGenerateEventsRequest {
 }
 
 export interface MibCompilerStoreState {
-  compiledMibFiles: MibCompilerFileInfo[]
-  pendingMibFiles: MibCompilerFileInfo[]
   files: MibCompilerFileInfo[]
   isLoading: boolean
+  compiledMibFilesSearchTerm: string
+  pendingMibFilesSearchTerm: string
   compiledMibFilesSort: {
     property: keyof MibCompilerFileInfo
     value: SORT
