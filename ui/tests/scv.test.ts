@@ -22,11 +22,21 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
+
+vi.mock('@/services', () => ({
+  default: {
+    getAliases: vi.fn().mockResolvedValue([]),
+    getAllCredentials: vi.fn().mockResolvedValue([]),
+    getCredentialsByAlias: vi.fn().mockResolvedValue(null),
+    addCredentials: vi.fn().mockResolvedValue(true),
+    updateCredentials: vi.fn().mockResolvedValue(true)
+  }
+}))
 
 const mockCredentials: SCVCredentials = {
   alias: 'alias',
