@@ -217,11 +217,7 @@ final public class DnsMonitor extends AbstractServiceMonitor {
                 LOG.debug(reason1, e);
                 return PollStatus.unavailable(reason1);
             } catch (final IOException e) {
-                if (! timeoutTracker.shouldRetry()) {
-                    String reason1 = "IOException while polling address: " + addr + " " + e.getMessage();
-                    LOG.debug(reason1, e);
-                    return PollStatus.unavailable(reason1);
-                }
+                // do nothing, retry if possible
             }
         }
         String reason = "Never received valid DNS response for address: " + addr;
