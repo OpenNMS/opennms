@@ -34,7 +34,6 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
