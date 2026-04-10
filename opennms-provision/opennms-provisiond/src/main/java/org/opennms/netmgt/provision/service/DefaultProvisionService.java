@@ -1065,36 +1065,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     dbNode.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
                 }
 
-                // possible that node label in requisition is still the ip address,
-                // when we have discovered a sysName through snmp that is set as the node label
-                // if this is the case, want req to match node so rescans set sysName as the "user defined" label
-                // as future imports set the node label from the req xml as the source of truth
-                // see NMS-17006
-                final String oldLabel = dbNode.getLabel();
-                final NodeLabelSource oldSource = dbNode.getLabelSource();
-                final String foreignSource = dbNode.getForeignSource();
-                final Requisition r = foreignSource == null ? null : m_foreignSourceRepository.getRequisition(foreignSource);
-                final RequisitionNode reqNode = r == null ? null : r.getNode(dbNode.getForeignId());
-
                 dbNode.mergeNodeAttributes(node, accumulator);
-
-                final NodeLabelSource newSource = dbNode.getLabelSource();
-                final String newLabel = dbNode.getLabel();
-
-                // if requesition label NOW is equal to the node label BEFORE merge,
-                // AND the label before was ADDRESS AND is now Sysname
-                // update
-                // could consider adding HOSTNAME to make sure dns doesn't have the same problem
-                if (reqNode != null && oldSource == NodeLabelSource.ADDRESS
-                        && newSource == NodeLabelSource.SYSNAME
-                        && Objects.equals(reqNode.getNodeLabel(), oldLabel)) {
-
-                    reqNode.setNodeLabel(newLabel);
-                    r.updateDateStamp();
-                    m_foreignSourceRepository.save(r);
-                    m_foreignSourceRepository.flush();
-                }
-
                 node.getAssetRecord().setId(dbNode.getAssetRecord().getId());
                 node.setId(dbNode.getId());
                 dbNode.mergeAssets(node);
@@ -1425,6 +1396,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }
         LOG.debug("Created/Updated requistion {} for newSuspect {}.", m_foreignSource, addrString);
         return true;
+    }
+
+    /** {@inheritDoc} */
+    public boolean updateRequisitionForNewSuspect(final String addrString, final OnmsNode node) {
+        return createUpdateRequistion(addrString, node, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node), node.getForeignSource());
     }
 
     /** {@inheritDoc} */

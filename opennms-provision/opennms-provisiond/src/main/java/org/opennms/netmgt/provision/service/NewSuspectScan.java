@@ -121,6 +121,8 @@ public class NewSuspectScan implements Scan {
 				new RunInBatch() {
 					@Override
 					public void run(BatchTask batch) {
+                        // want to update the nodes label if we found a better one
+                        m_provisionService.updateRequisitionForNewSuspect(addrString, node);
 						LOG.info("Done scanning scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
                         DefaultProvisionService.setTag(m_span, FOREIGN_ID, node.getForeignId());
                         DefaultProvisionService.setTag(m_span, FOREIGN_SOURCE, node.getForeignSource());
