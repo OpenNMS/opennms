@@ -115,9 +115,6 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
             }
 
             AbstractSystemReportFormatter formatter = new TextSystemReportFormatter();
-            if (".csv".equals(plugin.defaultFormat())) {
-                formatter = new CsvSystemReportFormatter();
-            }
 
             formatter.setOutputStream(m_zipOutputStream);
             formatter.begin();

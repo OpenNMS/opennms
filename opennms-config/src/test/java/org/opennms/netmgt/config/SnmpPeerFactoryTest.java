@@ -486,7 +486,7 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals("rangev2c", agentConfig.getReadCommunity());
     }
 
-    public void testSnmpv3WithNoAuthNoPriv() throws Exception {
+    public void testSnmpV3WithNoAuthNoPriv() throws Exception {
         SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr("10.11.12.13"));
         assertEquals("opennmsuser1", agentConfig.getSecurityName());
@@ -606,6 +606,161 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals(1, config.getVersion());
         assertEquals("opennmsUser", config.getSecurityName());
         assertNull(config.getAuthPassPhrase());
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("private", config.getWriteCommunity());
+    }
+
+    public void testRemoveSpecificIPv6Address() {
+        // add an IPv6 specific entry
+        final String ipv6Address = "2266:25::12:0:ad12";
+        InetAddress addr = InetAddressUtils.addr(ipv6Address);
+
+        SnmpPeerFactory.getInstance().saveDefinition(new Definition() {{
+            setSpecifics(List.of(ipv6Address));
+            setReadCommunity("read-ipv6-21");
+            setVersion("v2c");
+        }}, true);
+
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+
+        assertTrue(snmpConfig.getDefinitions().stream().anyMatch(d -> d.getSpecifics().contains(ipv6Address)));
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(2, config.getVersion());
+        assertEquals("read-ipv6-21", config.getReadCommunity());
+
+        // now delete it
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, List.of(ipv6Address), null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 1, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().noneMatch(d -> d.getSpecifics().contains(ipv6Address)));
+
+        // config should have reverted to defaults
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("private", config.getWriteCommunity());
+    }
+
+    /** Add compressed, remove using full/expanded notation. */
+    public void testRemoveSpecificIPv6AddressAddCompressedRemoveFull() {
+        final String compressedAddress = "2266:25::12:0:ad12";
+        final String fullAddress = "2266:25:0:0:0:12:0:ad12";
+        InetAddress addr = InetAddressUtils.addr(compressedAddress);
+
+        SnmpPeerFactory.getInstance().saveDefinition(new Definition() {{
+            setSpecifics(List.of(compressedAddress));
+            setReadCommunity("read-ipv6-compressed");
+            setVersion("v2c");
+        }}, true);
+
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().anyMatch(d -> d.getSpecifics().contains(compressedAddress)));
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(2, config.getVersion());
+        assertEquals("read-ipv6-compressed", config.getReadCommunity());
+
+        // remove using full notation
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, List.of(fullAddress), null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 1, 0, "Default", "unit test");
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().noneMatch(d -> d.getSpecifics().contains(compressedAddress)));
+
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("private", config.getWriteCommunity());
+    }
+
+    /** Add full/expanded notation, remove using compressed notation. */
+    public void testRemoveSpecificIPv6AddressAddFullRemoveCompressed() {
+        final String fullAddress = "2266:25:0:0:0:12:0:ad12";
+        final String compressedAddress = "2266:25::12:0:ad12";
+        InetAddress addr = InetAddressUtils.addr(fullAddress);
+
+        SnmpPeerFactory.getInstance().saveDefinition(new Definition() {{
+            setSpecifics(List.of(fullAddress));
+            setReadCommunity("read-ipv6-full");
+            setVersion("v2c");
+        }}, true);
+
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().anyMatch(d -> d.getSpecifics().contains(fullAddress)));
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(2, config.getVersion());
+        assertEquals("read-ipv6-full", config.getReadCommunity());
+
+        // remove using compressed notation
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, List.of(compressedAddress), null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 1, 0, "Default", "unit test");
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().noneMatch(d -> d.getSpecifics().contains(fullAddress)));
+
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
+        assertEquals("public", config.getReadCommunity());
+        assertEquals("private", config.getWriteCommunity());
+    }
+
+    public void testRemoveSpecificIPv6LongAddress() {
+        // add an IPv6 specific entry
+        final String ipv6Address = "2001:db8:1:2:3:4:5:1";
+        InetAddress addr = InetAddressUtils.addr(ipv6Address);
+
+        SnmpPeerFactory.getInstance().saveDefinition(new Definition() {{
+            setSpecifics(List.of(ipv6Address));
+            setReadCommunity("read-ipv6-21");
+            setVersion("v2c");
+        }}, true);
+
+        SnmpConfig snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().anyMatch(d -> d.getSpecifics().contains(ipv6Address)));
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(2, config.getVersion());
+        assertEquals("read-ipv6-21", config.getReadCommunity());
+
+        // now delete it
+        assertTrue(SnmpPeerFactory.getInstance().removeRangesFromDefinition(null, List.of(ipv6Address), null, "Default", "unit test"));
+
+        final String expectedLogMessage =
+                String.format("Removed %d ranges, %d specifics, %d ipMatches from definitions at location %s by module %s",
+                        0, 1, 0, "Default", "unit test");
+
+        MockLogAppender.assertLogMatched(Level.INFO, expectedLogMessage);
+
+        snmpConfig = SnmpPeerFactory.getInstance().getSnmpConfig();
+        assertTrue(snmpConfig.getDefinitions().stream().noneMatch(d -> d.getSpecifics().contains(ipv6Address)));
+
+        // config should have reverted to defaults
+        config = SnmpPeerFactory.getInstance().getAgentConfig(addr, "Default");
+        assertNotNull(config);
+        assertEquals(1, config.getVersion());
         assertEquals("public", config.getReadCommunity());
         assertEquals("private", config.getWriteCommunity());
     }

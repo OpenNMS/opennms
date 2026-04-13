@@ -13,11 +13,6 @@
           />
         </div>
       </div>
-      <EmptyList
-        v-if="!store.config.definition.length && displayTable"
-        :content="emptyListContent"
-        data-test="empty-list"
-      />
  
       <SnmpConfigDefinitionsTable v-if="displayTable" />
 
@@ -60,7 +55,6 @@ import { SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigDefinitionsTable from './SnmpConfigDefinitionsTable.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
-import EmptyList from '../Common/EmptyList.vue'
 
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
@@ -69,10 +63,6 @@ const isMessageDialogVisible = ref(false)
 const displayTable = computed(() => {
   return store.definitionCreateEditMode === SnmpConfigEditMode.Table
 })
-
-const emptyListContent = {
-  msg: 'No definitions found.'
-}
 
 const handleBackButtonClick = () => {
   store.setDefinitionCreateEditMode(SnmpConfigEditMode.Table)
