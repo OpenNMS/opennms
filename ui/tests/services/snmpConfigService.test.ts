@@ -65,9 +65,7 @@ describe('snmpConfigService', () => {
 
       await lookupSnmpConfig('192.168.1.1', 'Default')
 
-      expect(v2.get).toHaveBeenCalledWith(
-        '/snmp-config/lookup?ipAddress=192.168.1.1&location=Default'
-      )
+      expect(v2.get).toHaveBeenCalledWith('/snmp-config/lookup?ipAddress=192.168.1.1&location=Default')
     })
 
     it('should encode special characters in ipAddress and location', async () => {
@@ -202,9 +200,7 @@ describe('snmpConfigService', () => {
 
       await deleteSnmpProfile('Profile/With&Special=Chars')
 
-      expect(v2.delete).toHaveBeenCalledWith(
-        '/snmp-config/profile?label=Profile%2FWith%26Special%3DChars'
-      )
+      expect(v2.delete).toHaveBeenCalledWith('/snmp-config/profile?label=Profile%2FWith%26Special%3DChars')
     })
   })
 
@@ -214,10 +210,7 @@ describe('snmpConfigService', () => {
 
       await downloadSnmpConfig(true)
 
-      expect(v2.get).toHaveBeenCalledWith(
-        '/snmp-config/download?format=xml',
-        { responseType: 'blob' }
-      )
+      expect(v2.get).toHaveBeenCalledWith('/snmp-config/download?format=xml', { responseType: 'blob' })
     })
 
     it('should call GET /snmp-config/download with format=json when isXml is false', async () => {
@@ -225,10 +218,7 @@ describe('snmpConfigService', () => {
 
       await downloadSnmpConfig(false)
 
-      expect(v2.get).toHaveBeenCalledWith(
-        '/snmp-config/download?format=json',
-        { responseType: 'blob' }
-      )
+      expect(v2.get).toHaveBeenCalledWith('/snmp-config/download?format=json', { responseType: 'blob' })
     })
   })
 
@@ -240,10 +230,7 @@ describe('snmpConfigService', () => {
 
       await uploadSnmpConfig(file, false)
 
-      expect(v2.post).toHaveBeenCalledWith(
-        '/snmp-config/upload',
-        expect.any(FormData)
-      )
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/upload', expect.any(FormData))
 
       const formData = vi.mocked(v2.post).mock.calls[0][1] as FormData
       expect(formData.get('upload')).toBe(file)
@@ -256,10 +243,7 @@ describe('snmpConfigService', () => {
 
       await uploadSnmpConfig(file, true)
 
-      expect(v2.post).toHaveBeenCalledWith(
-        '/snmp-config/upload/xml',
-        expect.any(FormData)
-      )
+      expect(v2.post).toHaveBeenCalledWith('/snmp-config/upload/xml', expect.any(FormData))
 
       const formData = vi.mocked(v2.post).mock.calls[0][1] as FormData
       expect(formData.get('upload')).toBe(file)
@@ -317,19 +301,24 @@ describe('snmpConfigService', () => {
     })
 
     it('should handle exceptions and return failure result', async () => {
-      vi.mocked(v2.post).mockRejectedValue(new Error('Network error'))
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      try {
+        vi.mocked(v2.post).mockRejectedValue(new Error('Network error'))
 
-      const config: SnmpBaseConfiguration = {
-        readCommunity: 'public',
-        version: 'v3',
-        securityName: 'admin'
+        const config: SnmpBaseConfiguration = {
+          readCommunity: 'public',
+          version: 'v3',
+          securityName: 'admin'
+        }
+
+        const result = await saveSnmpConfigDefaultOverrides(config)
+
+        expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
+        expect(result.success).toBe(false)
+        expect(result.message).toBe('Failed to save SNMP configuration defaults')
+      } finally {
+        consoleSpy.mockRestore()
       }
-
-      const result = await saveSnmpConfigDefaultOverrides(config)
-
-      expect(v2.post).toHaveBeenCalledWith('/snmp-config/defaults', config)
-      expect(result.success).toBe(false)
-      expect(result.message).toBe('Failed to save SNMP configuration defaults')
     })
 
     it('should work with SNMPv3 configuration', async () => {
@@ -388,3 +377,4 @@ describe('snmpConfigService', () => {
     })
   })
 })
+
