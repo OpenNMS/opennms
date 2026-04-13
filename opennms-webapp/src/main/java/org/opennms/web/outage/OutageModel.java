@@ -223,7 +223,7 @@ public abstract class OutageModel {
             }
 
             if (includesNotifications) {
-                long serviceLostEventId = rs.getInt("svclosteventid");
+                long serviceLostEventId = rs.getLong("svclosteventid");
                 if (!rs.wasNull()) {
                     outage.lostServiceEventId = serviceLostEventId;
                 }
