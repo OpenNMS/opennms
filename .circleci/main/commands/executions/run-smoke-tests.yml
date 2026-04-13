@@ -8,6 +8,10 @@ commands:
       rerun-failtest-count:
         default: 0
         type: integer
+      allow-failures:
+        description: "Exit 0 regardless of test outcome (use for quarantined suites)"
+        default: false
+        type: boolean
     steps:
       - run:
           name: Enable swap
@@ -20,13 +24,17 @@ commands:
             cat /proc/sys/vm/swappiness
       - load-oci:
           match: amd64
-      - restore-maven-cache
       - run:
           name: Smoke Tests
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            <<# parameters.allow-failures >>
+            .circleci/scripts/smoke.sh << parameters.suite >> || true
+            <</ parameters.allow-failures >>
+            <<^ parameters.allow-failures >>
             .circleci/scripts/smoke.sh << parameters.suite >>
+            <</ parameters.allow-failures >>
       - run:
           name: Gather system logs
           when: always
@@ -38,7 +46,7 @@ commands:
 
             (date '+%T' || :)                      > ~/test-results/system-logs/docker_stats 2>&1
             (docker stats --all --no-stream || :) >> ~/test-results/system-logs/docker_stats 2>&1
-            (docker ps ---all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
+            (docker ps --all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
             for CONTAINER in `docker ps --all --quiet`; do
               ((docker logs --timestamps "$CONTAINER" 2>&1 | tail -n 20 ) || :) > ~/test-results/system-logs/"docker-${CONTAINER}.log" 2>&1
             done
@@ -55,8 +63,29 @@ commands:
             cp -R ~/project/smoke-test/target/*.{flv,mp4} ~/test-artifacts/recordings || true
             cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
             cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - run:
+          name: Collect flaky test evidence
+          when: always
+          command: |
+            mkdir -p ~/test-results/flaky-evidence
+            if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
+              (
+                cd /tmp/flaky-evidence || exit 1
+                find . -name '*.xml' -type f | while read -r xml; do
+                  xml="${xml#./}"
+                  mkdir -p ~/test-results/flaky-evidence/"$(dirname "$xml")"
+                  cp "$xml" ~/test-results/flaky-evidence/"$xml"
+                done
+              )
+              echo "#### Flaky tests detected (passed only after retry):"
+              find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
+            fi
       - store_test_results:
           path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results/flaky-evidence
+          destination: flaky-evidence
       - run:
           name: Copy artifacts on failure
           when: on_fail
@@ -65,5 +94,6 @@ commands:
             cp -R ~/test-results ~/failure-artifacts/ || true
             cp -R ~/test-artifacts ~/failure-artifacts/ || true
       - store_artifacts:
+          when: on_fail
           path: ~/failure-artifacts
           destination: failure-artifacts

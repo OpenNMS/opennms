@@ -57,12 +57,31 @@ commands:
 
             (date '+%T' || :)                       > ~/test-results/system-logs/docker_stats 2>&1
             (docker stats --all --no-stream || :) >> ~/test-results/system-logs/docker_stats 2>&1
-            (docker ps ---all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
+            (docker ps --all || :)               >> ~/test-results/system-logs/docker_stats 2>&1
             for CONTAINER in `docker ps --all --quiet`; do
               ((docker logs --timestamps "$CONTAINER" 2>&1 | tail -n 20 ) || :) > ~/test-results/system-logs/"docker-${CONTAINER}.log" 2>&1
             done
+      - run:
+          name: Collect flaky test evidence
+          when: always
+          command: |
+            mkdir -p ~/test-results/flaky-evidence
+            if [ -d /tmp/flaky-evidence ] && [ "$(find /tmp/flaky-evidence -name '*.xml' | wc -l)" -gt 0 ]; then
+              (
+                cd /tmp/flaky-evidence &&
+                find . -name '*.xml' -exec cp --parents {} ~/test-results/flaky-evidence/ \;
+              )
+              echo "#### Flaky tests detected (passed only after retry):"
+              find /tmp/flaky-evidence -name '*.xml' | sed 's|.*/TEST-||;s|\.xml||' | sort -u
+            else
+              echo "No flaky tests detected."
+            fi
       - store_test_results:
           path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results/flaky-evidence
+          destination: flaky-evidence
       - run:
           name: Copy artifacts on failure
           when: on_fail
@@ -72,5 +91,6 @@ commands:
             cp -R ~/build-results ~/failure-artifacts/ || true
             cp -R ~/generated-tests ~/failure-artifacts/ || true
       - store_artifacts:
+          when: on_fail
           path: ~/failure-artifacts
           destination: failure-artifacts

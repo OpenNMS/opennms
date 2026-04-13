@@ -161,7 +161,7 @@
               </artifactItems>
             </configuration>
           </execution>
-          <!-- Unpack hawtio -->
+          <!-- Unpack hawtio, excluding the vulnerable org.json version bundled by hawtio -->
           <execution>
             <id>unpack-hawtio</id>
             <phase>process-resources</phase>
@@ -176,6 +176,25 @@
                   <artifactId>hawtio-default</artifactId>
                   <version>${hawtio.version}</version>
                   <type>war</type>
+                  <excludes>WEB-INF/lib/json-2*.jar</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Replace hawtio's vulnerable org.json with the project's vetted version -->
+          <execution>
+            <id>copy-json-for-hawtio</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.json</groupId>
+                  <artifactId>json</artifactId>
+                  <version>${jsonVersion}</version>
+                  <outputDirectory>${project.build.directory}/hawtio-webapp/WEB-INF/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -884,6 +903,10 @@
       <artifactId>hawtio-default</artifactId>
       <version>${hawtio.version}</version>
       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
     </dependency>
 
     <!-- Apache Karaf features.xml artifacts -->

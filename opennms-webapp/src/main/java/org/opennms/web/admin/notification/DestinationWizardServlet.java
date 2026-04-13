@@ -341,17 +341,25 @@ public class DestinationWizardServlet extends HttpServlet {
             for (int i = 0; i < targets.length; i++) {
                 String name = targets[i].getName();
                 // don't overwrite the email target command
-                if (!(targets[i].getCommands().size() == 1 && "email".equals(targets[i].getCommands().get(0)))) {
+                boolean isEmailCommand = targets[i].getCommands().size() == 1 &&
+                    ("email".equals(targets[i].getCommands().get(0)) || "javaEmail".equals(targets[i].getCommands().get(0)));
+
+                if (!isEmailCommand) {
                     targets[i].clearCommands();
+
                     String[] commands = request.getParameterValues(name + "Commands");
+
                     for (int j = 0; j < commands.length; j++) {
                         targets[i].addCommand(commands[j]);
                     }
                 }
+
                 String[] autoNotify =  request.getParameterValues(name + "AutoNotify");
-                if(autoNotify[0] == null) {
+
+                if (autoNotify[0] == null) {
                     autoNotify[0] = "auto";
                 }
+
                 targets[i].setAutoNotify(autoNotify[0]);
             }
 
