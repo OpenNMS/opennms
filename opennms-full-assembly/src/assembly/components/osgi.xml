@@ -29,6 +29,8 @@
         <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on\/1.7[56]\/?.*]</exclude>
         <exclude>**/commons-io/commons-io/2.8.0</exclude>
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
+        <exclude>**/commons-io/commons-io/2.11.0</exclude>
+        <exclude>**/commons-io/commons-io/2.11.0/*</exclude>
         <exclude>**/commons-io/commons-io/2.13.0</exclude>
         <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
         <exclude>**/zookeeper/3.4.14</exclude>

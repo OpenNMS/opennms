@@ -4,6 +4,8 @@ set -e
 set -o pipefail
 
 FIND_TESTS_DIR="target/find-tests"
+NODE_INDEX="${CIRCLE_NODE_INDEX:-0}"
+NODE_TOTAL="${CIRCLE_NODE_TOTAL:-1}"
 
 # attempt to work around repository flakiness
 retry()
@@ -49,9 +51,15 @@ echo "#### Determining tests to run"
 perl -pi -e "s,/home/circleci,${HOME},g" target/structure-graph.json
 find_tests
 if [ ! -s /tmp/this_node_projects ]; then
-  echo "No tests to run."
+  echo "#### Node $NODE_INDEX/$NODE_TOTAL: No tests assigned, skipping"
   exit 0
 fi
+PROJECT_COUNT=$(wc -l < /tmp/this_node_projects)
+TEST_COUNT=$(wc -l < /tmp/this_node_tests 2>/dev/null || echo 0)
+IT_COUNT=$(wc -l < /tmp/this_node_it_tests 2>/dev/null || echo 0)
+echo "#### Node $NODE_INDEX/$NODE_TOTAL: $PROJECT_COUNT projects | $TEST_COUNT unit tests | $IT_COUNT integration tests"
+
+echo "#### Node $NODE_INDEX/$NODE_TOTAL: Setting up local dependencies"
 
 echo "#### Set loopback to 127.0.0.1"
 sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
@@ -65,39 +73,39 @@ echo "#### Setting up Postgres"
 echo "#### Installing other dependencies"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
- 
-# kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
+
+# kill other apt commands first to avoid problems locking /var/lib/apt/lists/lock
 sudo killall -9 apt || true && \
-            retry sudo apt update && \
-            retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
-                ca-certificates \
-                tzdata \
-                software-properties-common \
-                debconf-utils
- 
+      retry sudo apt update && \
+      retry sudo env DEBIAN_FRONTEND=noninteractive apt -y --no-install-recommends install \
+        ca-certificates \
+        tzdata \
+        software-properties-common \
+        debconf-utils
+
 # install some keys
 curl -sSf https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo tee -a /etc/apt/trusted.gpg.d/opennms_key.asc
- 
+
 # limit more sources and add mirrors
 echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $(lsb_release -cs) main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -cs) main restricted" | sudo tee -a /etc/apt/sources.list
 sudo add-apt-repository -y 'deb http://debian.opennms.org stable main'
- 
+
 # add the R repository
 sudo add-apt-repository -y "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 retry sudo apt update && \
-            RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
-            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
-                openjdk-17-jdk-headless \
-                r-base \
-                "rrdtool=$RRDTOOL_VERSION" \
-                jrrd2 \
-                jicmp \
-                jicmp6 \
-            || exit 1
+      RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
+      echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+      retry sudo env DEBIAN_FRONTEND=noninteractive apt -f --no-install-recommends install \
+        openjdk-17-jdk-headless \
+        r-base \
+        "rrdtool=$RRDTOOL_VERSION" \
+        jrrd2 \
+        jicmp \
+        jicmp6 \
+      || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export MAVEN_OPTS="$MAVEN_OPTS -Xmx4g -XX:ReservedCodeCacheSize=1g"
@@ -132,9 +140,7 @@ else
   fi
 fi
 
-MAVEN_COMMANDS=("install")
-
-echo "#### Building Assembly Dependencies"
+echo "#### Node $NODE_INDEX/$NODE_TOTAL: Building Assembly Dependencies"
 ./compile.pl "${MAVEN_ARGS[@]}" \
            -P'!checkstyle' \
            -P'!production' \
@@ -164,7 +170,7 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -DskipITs=false \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
-           -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+           -Dorg.opennms.core.test-api.dbCreateThreads=8 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
@@ -196,8 +202,14 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
     echo "#### Failed tests: $FAILED_TESTS"
     RETRIED_TESTS="$FAILED_TESTS"
 
-    # Clean failed test XML reports so fresh results are written
+    # Preserve failing XMLs as flaky evidence before overwriting with retry results
+    FLAKY_EVIDENCE_DIR="/tmp/flaky-evidence/attempt-${ATTEMPT}"
+    mkdir -p "${FLAKY_EVIDENCE_DIR}"
     set +e +o pipefail
+    find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
+      -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
+      | xargs -I{} cp {} "${FLAKY_EVIDENCE_DIR}/"
+    # Now delete originals so fresh results are written by the retry
     find . \( -path "*/failsafe-reports/TEST-*.xml" -o -path "*/surefire-reports/TEST-*.xml" \) \
       -exec grep -l -E 'failures="[1-9]|errors="[1-9]' {} + 2>/dev/null \
       | xargs rm -f
@@ -234,7 +246,7 @@ while [ "$TEST_EXIT" -ne 0 ] && [ "$RETRIES_LEFT" -gt 0 ]; do
                -DskipITs=false \
                --batch-mode \
                --fail-at-end \
-               -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+               -Dorg.opennms.core.test-api.dbCreateThreads=8 \
                -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
                --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
                install

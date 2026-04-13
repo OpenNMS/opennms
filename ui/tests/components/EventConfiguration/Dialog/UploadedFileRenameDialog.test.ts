@@ -6,6 +6,28 @@ import { FeatherInput } from '@featherds/input'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@featherds/dialog', () => ({
+  FeatherDialog: {
+    name: 'FeatherDialog',
+    props: {
+      modelValue: {
+        type: Boolean,
+        default: true
+      },
+      labels: {
+        type: Object,
+        default: () => ({})
+      },
+      hideClose: {
+        type: Boolean,
+        default: false
+      }
+    },
+    emits: ['update:modelValue', 'hidden'],
+    template: '<div v-if="modelValue !== false" class="feather-dialog-stub" role="dialog" aria-modal="true"><div data-ref-id="feather-dialog-header">{{ labels?.title }}</div><slot /><slot name="footer" /></div>'
+  }
+}))
+
 describe('UploadedFileRenameDialog.vue', () => {
   let wrapper: any
 
@@ -49,23 +71,29 @@ describe('UploadedFileRenameDialog.vue', () => {
     })
 
   beforeEach(() => {
-    vi.useFakeTimers()
     wrapper = createWrapper()
   })
 
   afterEach(async () => {
+    const currentWrapper = wrapper
+    wrapper = null
+
     // Advance timers before unmounting to clear pending focus management timers
     if (vi.isFakeTimers()) {
       vi.advanceTimersByTime(1000)
     }
 
-    if (wrapper) {
-      await wrapper.unmount()
+    if (currentWrapper) {
+      await currentWrapper.setProps({ visible: false })
+      await flushPromises()
+      currentWrapper.unmount()
     }
 
     if (vi.isFakeTimers()) {
       vi.useRealTimers()
     }
+
+    document.body.innerHTML = ''
   })
 
   // Rendering Tests

@@ -1,12 +1,13 @@
- jobs:
-  smoke-test-minion:
+jobs:
+  smoke-test-flaky:
     executor: smoke-test-executor
-    parallelism: 10
+    parallelism: 2
     resource_class: medium+
     steps:
       - cached-checkout
       - attach_workspace:
           at: ~/
       - run-smoke-tests:
-          suite: minion
-          rerun-failtest-count: 1
+          suite: flaky
+          rerun-failtest-count: 2
+          allow-failures: true

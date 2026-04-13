@@ -1002,8 +1002,8 @@ test('Service: RequisitionsService: deleteForeignSourceDefinition', function() {
 test('Service: RequisitionsService: updateSnmpCommunity', function() {
   console.log('Running tests for updateSnmpCommunity');
 
-  var url = requisitionsService.internal.snmpConfigUrl + '/192.168.1.1';
-  $httpBackend.expect('PUT', url, {'readCommunity' : 'my_community', 'version' : 'v2c'}).respond();
+  var url = requisitionsService.internal.snmpConfigUrl + '/definition';
+  $httpBackend.expect('PUT', url, {'readCommunity': 'my_community', 'version': 'v2c', 'specific': ['192.168.1.1']}).respond();
 
   return runDigest(requisitionsService.updateSnmpCommunity('192.168.1.1', 'my_community', 'v2c')).then(function(ip) {
     return expect(ip).toBe('192.168.1.1');
@@ -1044,10 +1044,12 @@ test('Service: RequisitionsService: quickAddNode', function() {
   quickNode.snmpCommunity = 'my_community';
   var node = quickNode.createRequisitionedNode().getOnmsRequisitionNode();
 
-  var updateSnmpUrl = requisitionsService.internal.snmpConfigUrl + '/' + quickNode.ipAddress;
-  $httpBackend.expect('PUT', updateSnmpUrl, {'readCommunity' : quickNode.snmpCommunity, 'version' : quickNode.snmpVersion}).respond();
+  var updateSnmpUrl = requisitionsService.internal.snmpConfigUrl + '/definition';
+  $httpBackend.expect('PUT', updateSnmpUrl, {'readCommunity' : quickNode.snmpCommunity, 'version' : quickNode.snmpVersion, 'specific': [quickNode.ipAddress]}).respond();
+
   var saveUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/nodes';
   $httpBackend.expect('POST', saveUrl, node).respond({});
+
   var importUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/import?rescanExisting=false';
   $httpBackend.expect('PUT', importUrl).respond({});
 

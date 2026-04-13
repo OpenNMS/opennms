@@ -12,6 +12,28 @@ import { afterEach, beforeEach, describe, it, vi } from 'vitest'
 // Ensure expect is always from vitest
 import { expect } from 'vitest'
 
+vi.mock('@featherds/dialog', () => ({
+  FeatherDialog: {
+    name: 'FeatherDialog',
+    props: {
+      modelValue: {
+        type: Boolean,
+        default: true
+      },
+      labels: {
+        type: Object,
+        default: () => ({})
+      },
+      hideClose: {
+        type: Boolean,
+        default: false
+      }
+    },
+    emits: ['update:modelValue', 'hidden'],
+    template: '<div v-if="modelValue !== false" class="feather-dialog-stub" role="dialog" aria-modal="true"><div data-ref-id="feather-dialog-header">{{ labels?.title }}</div><slot /><slot name="footer" /></div>'
+  }
+}))
+
 // Mock router
 const mockPush = vi.fn()
 vi.mock('vue-router', () => ({
@@ -61,12 +83,23 @@ describe('CreateEventConfigurationDialog.vue', () => {
     await flushPromises()
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    if (store) {
+      store.createEventConfigSourceDialogState.visible = false
+    }
+
+    const currentWrapper = wrapper
+
     if (vi.isFakeTimers()) {
       vi.runAllTimers()
     }
 
-    wrapper.unmount()
+    await flushPromises()
+
+    if (currentWrapper) {
+      currentWrapper.unmount()
+    }
+
     document.body.innerHTML = ''
 
     if (vi.isFakeTimers()) {
@@ -213,7 +246,7 @@ describe('CreateEventConfigurationDialog.vue', () => {
     expect(document.body.querySelector('.modal-body-form')).not.toBeNull()
     store.createEventConfigSourceDialogState.visible = false
     await wrapper.vm.$nextTick()
-    vi.runAllTimers()
+    await flushPromises()
     expect(document.body.querySelector('.modal-body-form')).toBeNull()
   })
 

@@ -73,6 +73,16 @@ describe('EventConfigSourceTable.vue', () => {
     wrapper = mount(EventConfigSourceTable, {
       global: {
         plugins: [pinia],
+        stubs: {
+          DeleteEventConfigSourceDialog: {
+            name: 'DeleteEventConfigSourceDialog',
+            template: '<div data-test="delete-event-config-source-dialog-stub" />'
+          },
+          ChangeEventConfigSourceStatusDialog: {
+            name: 'ChangeEventConfigSourceStatusDialog',
+            template: '<div data-test="change-event-config-source-status-dialog-stub" />'
+          }
+        },
         components: {
           FeatherButton,
           FeatherDropdown,
@@ -89,21 +99,19 @@ describe('EventConfigSourceTable.vue', () => {
   })
 
   afterEach(async () => {
-    // Unmount wrapper to clean up watchers and event listeners
     if (wrapper) {
       wrapper.unmount()
     }
-    
-    // Flush any remaining promises
+
     await flushPromises()
-    
-    // Additional nextTick to ensure all updates are processed
     await nextTick()
-    
-    // Restore mocks and timers
+
+    document.body.innerHTML = ''
+
     if (vi.isFakeTimers()) {
       vi.useRealTimers()
     }
+
     vi.restoreAllMocks()
   })
 
@@ -207,10 +215,7 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows[1].text()).toContain('Disabled')
   })
 
-  // This test is skipped because it relies on debouncing which can be tricky to test reliably.
-  // Consider refactoring the search input handling to make it more testable or use a library like 
-  // @vue/test-utils' `setValue` with `flushPromises` to handle the debounce timing.
-  it.skip('handles search input changes with debouncing and calls onChangeSourcesSearchTerm', async () => {
+  it('updates the search term through the input without calling the store immediately', async () => {
     vi.useFakeTimers()
 
     store.sources = [mockSource]
@@ -218,10 +223,10 @@ describe('EventConfigSourceTable.vue', () => {
 
     const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
     await searchInput.setValue('test')
-    vi.advanceTimersByTime(500)
-    await wrapper.vm.$nextTick()
+    await nextTick()
 
-    expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
+    expect(store.sourcesSearchTerm).toBe('test')
+    expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
 
     vi.useRealTimers()
   })
@@ -409,9 +414,8 @@ describe('EventConfigSourceTable.vue', () => {
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
-    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-    await searchInput.setValue('nonexistent')
-    vi.advanceTimersByTime(500)
+    wrapper.vm.onChangeSearchTerm('nonexistent')
+    wrapper.vm.onChangeSearchTerm.flush()
     await flushPromises()
 
     store.sources = []

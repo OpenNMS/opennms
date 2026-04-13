@@ -48,10 +48,10 @@ const RequisitionNode  = require('../model/RequisitionNode');
   *
   * @description The RequisitionsService provides all the required methods to access ReST API for the OpenNMS requisitions.
   *
-  * It uses Angular's Cache service to store localy all the requisitions after retrieving them from the server the first time.
+  * It uses Angular's Cache service to store locally all the requisitions after retrieving them from the server the first time.
   * This helps in terms of performance and responsiveness of the UI. Only changes are pushed back to the server.
   *
-  * Conflicts may accour if someone else is changing the requisitions at the same time.
+  * Conflicts may occur if someone else is changing the requisitions at the same time.
   *
   * If the cache is not going to be used, the controllers are responsible for maintaining the state of the data.
   */
@@ -74,7 +74,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.internal.foreignSourcesUrl = 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = 'rest/foreignSourcesConfig';
     requisitionsService.internal.monitoringLocationsUrl = 'rest/monitoringLocations';
-    requisitionsService.internal.snmpConfigUrl = 'rest/snmpConfig';
+    requisitionsService.internal.snmpConfigUrl = 'api/v2/snmp-config';
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
 
     requisitionsService.internal.excludedRequisitionNames = ['selfmonitor', 'minions'];
@@ -1428,9 +1428,10 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.updateSnmpCommunity = function(ipAddress, snmpCommunity, snmpVersion) {
       const deferred = $q.defer();
 
-      const url = requisitionsService.internal.snmpConfigUrl + '/' + ipAddress;
+      const url = requisitionsService.internal.snmpConfigUrl + '/definition';
+
       $log.debug('updateSnmpCommunity: updating snmp community for ' + ipAddress);
-      $http.put(url, {'readCommunity' : snmpCommunity, 'version' : snmpVersion})
+      $http.put(url, {'readCommunity': snmpCommunity, 'version': snmpVersion, 'specific': [ipAddress] })
       .then(function updateSnmpCommunitySuccess() {
         $log.debug('updateSnmpCommunity: updated snmp community for ' + ipAddress);
         deferred.resolve(ipAddress);

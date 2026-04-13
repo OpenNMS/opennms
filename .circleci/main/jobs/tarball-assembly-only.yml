@@ -4,7 +4,7 @@ jobs:
     resource_class: large
     parameters:
       number-vcpu:
-        default: 6
+        default: 4
         type: integer
       vaadin-javamaxmem:
         default: 1g
@@ -18,8 +18,7 @@ jobs:
           name: Assemble tarballs and related artifacts
           command: |
             ulimit -n 65536 || :
-            export MAVEN_OPTS="-Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            export MAVEN_ARGS="install"
+            export MAVEN_OPTS="-Xmx6g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             export MAVEN_ARGS="install"
             # release branches should enable extra "production" stuff like license indexing
             case "${CIRCLE_BRANCH}" in

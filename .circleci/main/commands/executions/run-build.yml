@@ -47,7 +47,7 @@ commands:
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+            ./compile.pl -DskipTests=true -DskipITs=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
               -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
