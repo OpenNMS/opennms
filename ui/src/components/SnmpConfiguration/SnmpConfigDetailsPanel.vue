@@ -350,6 +350,17 @@ const snmpV3ContextFields = computed<SnmpFieldInfo[]>(() => withDefaultHints([
   { key: 'enterpriseId', label: 'Enterprise ID', hint: 'Enterprise ID', dataTest: 'snmp-definition-enterprise-id' }
 ], store.currentDefaults))
 
+const scvEnabledKeys = computed<Set<string>>(() => {
+  const allFields = [
+    ...snmpV2Fields.value,
+    ...snmpV3Fields.value,
+    ...snmpV3ContextFields.value,
+    ...generalParamFields.value,
+    ...advancedConfigOptions.value
+  ]
+  return new Set(allFields.filter(f => f.scvEnabled).map(f => f.key))
+})
+
 const loadInitialValues = () => {
   const currentConfig: SnmpAgentConfig = props.config ?? getDefaultSnmpBaseConfiguration()
 
@@ -507,7 +518,8 @@ const handleValidate = (isSaving?: boolean) => {
     version,
     props.displayIps && !isSaving ? firstIpAddress.value : fakeValidIp,
     lastIpAddress.value,
-    ipMatchValue.value
+    ipMatchValue.value,
+    scvEnabledKeys.value
   )
 
   errors.value = currentErrors as SnmpConfigFormErrors

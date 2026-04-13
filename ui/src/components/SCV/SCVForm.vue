@@ -94,7 +94,9 @@ const disabled = computed<boolean>(() => Boolean(!scvStore.credentials.alias || 
 
 const isMasked = (password: string) => {
   for (const char of password) {
-    if (char !== '*') return false
+    if (char !== '*') {
+      return false
+    }
   }
 
   return true

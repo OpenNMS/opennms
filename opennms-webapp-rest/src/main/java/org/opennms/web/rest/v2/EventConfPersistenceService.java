@@ -144,13 +144,22 @@ public class EventConfPersistenceService {
         return eventConfSourceDao.save(eventConfSource);
     }
 
+    @Transactional
+    public void updateFileOrder(final String sourceName, final int fileOrder) {
+        EventConfSource source = eventConfSourceDao.findByName(sourceName);
+        if (source != null) {
+            source.setFileOrder(fileOrder);
+            eventConfSourceDao.saveOrUpdate(source);
+        }
+    }
+
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = eventConfSourceDao.findByName(eventConfSourceMetadataDto.getFilename());
         if (source == null) {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
-            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         }
+        source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         source.setName(eventConfSourceMetadataDto.getFilename());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);

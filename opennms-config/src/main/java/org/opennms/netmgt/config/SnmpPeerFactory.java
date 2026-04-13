@@ -725,72 +725,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
     }
 
-    private static Definition createDefinition(Definition matchingDefinition) {
-        Definition definition = new Definition();
-
-        definition.setProfileLabel(matchingDefinition.getProfileLabel());
-        definition.setLocation(matchingDefinition.getLocation());
-        // Fill configuration
-        definition.setProxyHost(matchingDefinition.getProxyHost());
-        definition.setMaxVarsPerPdu(matchingDefinition.getMaxVarsPerPdu());
-        definition.setMaxRepetitions(matchingDefinition.getMaxRepetitions());
-        definition.setMaxRequestSize(matchingDefinition.getMaxRequestSize());
-
-        definition.setSecurityName(matchingDefinition.getSecurityName());
-        definition.setSecurityLevel(matchingDefinition.getSecurityLevel());
-        definition.setAuthPassphrase(matchingDefinition.getAuthPassphrase());
-        definition.setAuthProtocol(matchingDefinition.getAuthProtocol());
-        definition.setEngineId(matchingDefinition.getEngineId());
-        definition.setContextEngineId(matchingDefinition.getContextEngineId());
-        definition.setContextName(matchingDefinition.getContextName());
-        definition.setEnterpriseId(matchingDefinition.getEnterpriseId());
-        definition.setPrivacyPassphrase(matchingDefinition.getPrivacyPassphrase());
-        definition.setPrivacyProtocol(matchingDefinition.getPrivacyProtocol());
-        definition.setVersion(matchingDefinition.getVersion());
-        definition.setReadCommunity(matchingDefinition.getReadCommunity());
-        definition.setWriteCommunity(matchingDefinition.getWriteCommunity());
-        definition.setPort(matchingDefinition.getPort());
-        definition.setTimeout(matchingDefinition.getTimeout());
-        definition.setTTL(matchingDefinition.getTTL());
-        definition.setRetry(matchingDefinition.getRetry());
-
-        return definition;
-    }
-
-    private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
-        boolean locationMatched = LocationUtils.doesLocationsMatch(location, definition.getLocation());
-
-        return locationMatched && matchingIpAddress(inetAddress, definition);
-    }
-
-    private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
-        boolean matchingIpAddress = definition.getSpecifics().stream()
-                .anyMatch(saddr -> saddr.equals(inetAddress.getHostAddress()));
-
-        if (!matchingIpAddress) {
-            return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
-        }
-
-        return true;
-    }
-
-    private static boolean matchingRanges(InetAddress inetAddress, Range range) {
-        final byte[] addr = inetAddress.getAddress();
-        final byte[] begin = InetAddressUtils.toIpAddrBytes(range.getBegin());
-        final byte[] end = InetAddressUtils.toIpAddrBytes(range.getEnd());
-
-        final boolean inRange;
-        final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
-
-        if (BYTE_ARRAY_COMPARATOR.compare(begin, end) <= 0) {
-            inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
-        } else {
-            inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
-        }
-
-        return inRange;
-    }
-
     @Override
     public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
         Definition definition = new Definition();
@@ -1016,5 +950,95 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     @VisibleForTesting
     void setTextEncryptor(TextEncryptor textEncryptor) {
         this.textEncryptor = textEncryptor;
+    }
+
+    private static Definition createDefinition(Definition matchingDefinition) {
+        Definition definition = new Definition();
+
+        definition.setProfileLabel(matchingDefinition.getProfileLabel());
+        definition.setLocation(matchingDefinition.getLocation());
+        // Fill configuration
+        definition.setProxyHost(matchingDefinition.getProxyHost());
+        definition.setMaxVarsPerPdu(matchingDefinition.getMaxVarsPerPdu());
+        definition.setMaxRepetitions(matchingDefinition.getMaxRepetitions());
+        definition.setMaxRequestSize(matchingDefinition.getMaxRequestSize());
+
+        definition.setSecurityName(matchingDefinition.getSecurityName());
+        definition.setSecurityLevel(matchingDefinition.getSecurityLevel());
+        definition.setAuthPassphrase(matchingDefinition.getAuthPassphrase());
+        definition.setAuthProtocol(matchingDefinition.getAuthProtocol());
+        definition.setEngineId(matchingDefinition.getEngineId());
+        definition.setContextEngineId(matchingDefinition.getContextEngineId());
+        definition.setContextName(matchingDefinition.getContextName());
+        definition.setEnterpriseId(matchingDefinition.getEnterpriseId());
+        definition.setPrivacyPassphrase(matchingDefinition.getPrivacyPassphrase());
+        definition.setPrivacyProtocol(matchingDefinition.getPrivacyProtocol());
+        definition.setVersion(matchingDefinition.getVersion());
+        definition.setReadCommunity(matchingDefinition.getReadCommunity());
+        definition.setWriteCommunity(matchingDefinition.getWriteCommunity());
+        definition.setPort(matchingDefinition.getPort());
+        definition.setTimeout(matchingDefinition.getTimeout());
+        definition.setTTL(matchingDefinition.getTTL());
+        definition.setRetry(matchingDefinition.getRetry());
+
+        return definition;
+    }
+
+    private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
+        boolean locationMatched = LocationUtils.doesLocationsMatch(location, definition.getLocation());
+
+        return locationMatched && matchingIpAddress(inetAddress, definition);
+    }
+
+    private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
+        boolean matchingIpAddress = definition.getSpecifics().stream()
+                .anyMatch(saddr -> matchingSpecific(inetAddress, saddr));
+
+        if (!matchingIpAddress) {
+            return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
+        }
+
+        return true;
+    }
+
+    private static boolean matchingSpecific(InetAddress inetAddress, String specific) {
+        final byte[] addr = inetAddress.getAddress();
+        final byte[] specificBytes;
+
+        try {
+            specificBytes = InetAddressUtils.toIpAddrBytes(specific);
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+
+        return InetAddressUtils.areSameInetAddress(addr, specificBytes);
+    }
+
+    private static boolean matchingRanges(InetAddress inetAddress, Range range) {
+        if (range == null || range.getBegin() == null || range.getEnd() == null) {
+            return false;
+        }
+
+        final byte[] addr = inetAddress.getAddress();
+        final byte[] begin;
+        final byte[] end;
+
+        try {
+            begin = InetAddressUtils.toIpAddrBytes(range.getBegin());
+            end = InetAddressUtils.toIpAddrBytes(range.getEnd());
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+
+        final boolean inRange;
+        final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
+
+        if (BYTE_ARRAY_COMPARATOR.compare(begin, end) <= 0) {
+            inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
+        } else {
+            inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
+        }
+
+        return inRange;
     }
 }
