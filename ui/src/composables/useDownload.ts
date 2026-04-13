@@ -29,7 +29,7 @@ const useDownload = () => {
    * @param   {AxiosResponse}  file  response from the server
    */
   const downloadFile = (file: AxiosResponse): void => {
-    const name = getNameFromHeaders(file.headers)
+    const name = getNameFromHeaders(file.headers as AxiosResponseHeaders)
     const extension = name.split('.').pop() || ''
     const blob = generateBlob(file, extension)
     generateDownload(blob, name)
