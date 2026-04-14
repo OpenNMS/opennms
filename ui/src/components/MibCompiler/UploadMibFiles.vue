@@ -5,6 +5,7 @@
         secondary
         data-test="upload-button"
         @click="fileInput?.click()"
+        :disabled="isLoading"
       >
         Upload MIB Files
       </FeatherButton>
@@ -15,6 +16,7 @@
         @change="handleUpload"
         data-test="event-conf-upload-input"
         ref="fileInput"
+        :disabled="isLoading"
       />
     </div>
     <div class="files">
@@ -117,7 +119,7 @@ import Warning from '@featherds/icon/notification/Warning'
 import { FeatherTooltip } from '@featherds/tooltip'
 import { mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
 
-// const isLoading = ref(false)
+const isLoading = ref(false)
 const snackbar = useSnackbar()
 const store = useMibCompilerStore()
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -175,6 +177,7 @@ const handleUpload = async (e: Event) => {
     return
   }
 
+  isLoading.value = true
   const exts = VALID_FILE_EXTENSION.split(',').map(ext => ext.trim().toLowerCase())
   const files = Array.from(input.files).filter(f => {
     const fileExt = f.name.split('.').pop()?.toLowerCase() || ''
@@ -213,14 +216,17 @@ const handleUpload = async (e: Event) => {
         addLog('info', `${file.name} - Uploading file...`)
         await uploadMib(file, file.name)
         addLog('success', `File uploaded successfully - ${file.name} - ${file.size / 1024} KB`)
+        isLoading.value = false
       } catch (error) {
         addLog('error', `${file.name} - Error processing file`)
+        isLoading.value = false
       }
     }
     input.value = ''
     input.files = null
   } else {
     addLog('info', 'No valid MIB files selected')
+    isLoading.value = false
   }
 }
 </script>
@@ -359,7 +365,6 @@ const handleUpload = async (e: Event) => {
         }
 
         .log-message {
-          // flex: 1;
           flex: 1;
           word-break: break-word;
         }
