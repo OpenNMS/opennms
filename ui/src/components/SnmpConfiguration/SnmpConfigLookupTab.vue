@@ -28,7 +28,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
 import { ActiveTabs, getDefaultSnmpDefinition, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
-import { SnmpAgentConfig, SnmpDefinition } from '@/types/snmpConfig'
+import { SnmpAgentConfig, SnmpConfigFormErrors, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigLookupPanel from './SnmpConfigLookupPanel.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
 
@@ -104,7 +104,18 @@ const onLookupComplete = (config: SnmpAgentConfig, ip: string) => {
   } as SnmpDefinition
 }
 
-const onDetailsValidationError = () => {
+const onDetailsValidationError = (errors: SnmpConfigFormErrors) => {
+  const invalidRange = errors.invalidRangeConfig || errors.mixingRangeWithIpMatch || errors.duplicateRangeItem
+
+  if (invalidRange) {
+    snackbar.showSnackBar({
+      msg: 'Cannot add range. ' + invalidRange,
+      error: true
+    })
+
+    return
+  }
+
   snackbar.showSnackBar({ msg: 'Save failed. Please fix invalid values.', error: true })
 }
 

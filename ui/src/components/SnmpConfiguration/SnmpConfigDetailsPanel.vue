@@ -23,7 +23,7 @@
               <FeatherInput
                 label=""
                 data-test="snmp-definition-first-ip-address"
-                :error="errors.firstIpAddress ?? errors.invalidRangeConfig"
+                :error="errors.firstIpAddress"
                 v-model.trim="firstIpAddress"
                 hint="First IP Address in range or specific IP"
               >
@@ -33,7 +33,7 @@
               <FeatherInput
                 label=""
                 data-test="snmp-definition-last-ip-address"
-                :error="errors.lastIpAddress ?? errors.invalidRangeConfig"
+                :error="errors.lastIpAddress"
                 v-model.trim="lastIpAddress"
                 hint="Last IP Address in range (leave blank if not a range)"
               >
@@ -47,7 +47,7 @@
               <FeatherInput
                 label=""
                 data-test="snmp-definition-ipmatch-expression"
-                :error="errors.ipMatch ?? errors.invalidRangeConfig"
+                :error="errors.ipMatch"
                 v-model.trim="ipMatchValue"
                 hint="IPLIKE Expression (cannot be used with First/Last IP)"
               >
@@ -64,6 +64,11 @@
               </FeatherButton>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="feather-row" v-if="errors.invalidRangeConfig">
+        <div class="feather-col-12">
+          <span class="label text-danger">{{ errors.invalidRangeConfig }}</span>
         </div>
       </div>
     </FeatherCard>
@@ -429,12 +434,12 @@ const onFieldUpdate = (updatedConfig: SnmpBaseConfiguration) => {
   Object.assign(formConfig, updatedConfig)
 
   if (!isLoading.value) {
-    handleValidate()
+    handleValidate(false)
   }
 }
 
 const onAddRange = () => {
-  handleValidate()
+  handleValidate(false)
 
   if (!isValid.value) {
     emit('validation-error', errors.value)
@@ -508,17 +513,16 @@ const handleCancel = () => {
   emit('cancel')
 }
 
-const handleValidate = (isSaving?: boolean) => {
+const handleValidate = (isSaving: boolean) => {
   const version = String(snmpVersion.value?._value || '')
-  // if we are not displaying IPs, or if we are saving, pass a fake valid IP to avoid validation errors
-  const fakeValidIp = '10.0.0.0'
 
   const currentErrors = validateDefinition(
     formConfig,
     version,
-    props.displayIps && !isSaving ? firstIpAddress.value : fakeValidIp,
+    firstIpAddress.value,
     lastIpAddress.value,
     ipMatchValue.value,
+    isSaving,
     scvEnabledKeys.value
   )
 
@@ -571,6 +575,10 @@ onMounted(() => {
 .snmp-config-definition-details {
   .label {
     font-weight: 600;
+  }
+
+  .text-danger {
+    color: var(variables.$error);
   }
 
   .show-context-fields-label {
