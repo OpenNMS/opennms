@@ -41,6 +41,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -98,6 +99,7 @@ public class GenericInfoPanelItemProviderTest {
 
     private NodeDao m_nodeDao;
     private MeasurementsService m_measurementsService;
+    private ResourceDao m_resourceDao;
     private GenericInfoPanelItemProvider m_genericInfoPanelItemProvider;
     private OnmsNode m_onmsNode;
 
@@ -115,7 +117,8 @@ public class GenericInfoPanelItemProviderTest {
 
         m_nodeDao = mock(NodeDao.class);
         m_measurementsService = mock(MeasurementsService.class);
-        m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService);
+        m_resourceDao = mock(ResourceDao.class);
+        m_genericInfoPanelItemProvider = new GenericInfoPanelItemProvider(m_nodeDao, m_measurementsService, m_resourceDao);
         m_onmsNode = new OnmsNode();
         m_onmsNode.setLabel("nodeLabel");
         m_onmsNode.setId(10);

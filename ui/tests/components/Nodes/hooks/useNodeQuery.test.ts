@@ -24,6 +24,7 @@ import { describe, expect, test } from 'vitest'
 import { categories, monitoringLocations } from './utils'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { MatchType, NodeQueryFilter, SetOperator } from '@/types'
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
 const {
   buildNodeQueryFilterFromQueryString,
@@ -71,7 +72,7 @@ describe('Nodes useNodeQuery test', () => {
     )
 
     test.each([
-      [ 'Default', { monitoringLocation: 'Default' }, SetOperator.Union, [monitoringLocations[0]]],
+      [ DEFAULT_MONITORING_LOCATION, { monitoringLocation: DEFAULT_MONITORING_LOCATION }, SetOperator.Union, [monitoringLocations[0]]],
       [ 'Loc0', { monitoringLocation: 'Loc0' }, SetOperator.Union, [monitoringLocations[1]]],
       [ 'not found', { monitoringLocation: 'Somewhere' }, SetOperator.Union, []]
     ]) (

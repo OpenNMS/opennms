@@ -90,18 +90,7 @@
             <phase>compile</phase>
             <configuration>
               <skip>${skipNodeJSBuild}</skip>
-              <arguments>run build</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>build-menu release</id>
-            <goals>
-              <goal>pnpm</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <skip>${skipNodeJSBuild}</skip>
-              <arguments>run build:menu</arguments>
+              <arguments>run build:all</arguments>
             </configuration>
           </execution>
         </executions>

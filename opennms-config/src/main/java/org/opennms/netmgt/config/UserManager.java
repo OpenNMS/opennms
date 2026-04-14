@@ -45,8 +45,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jasypt.digest.StandardStringDigester;
+import org.jasypt.exceptions.EncryptionInitializationException;
+import org.jasypt.salt.RandomSaltGenerator;
 import org.jasypt.util.password.PasswordEncryptor;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.UserConfig;
 import org.opennms.netmgt.config.users.Contact;
@@ -59,6 +61,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.netmgt.model.OnmsUserList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract UserManager class.</p>
@@ -69,12 +73,41 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public abstract class UserManager implements UserConfig {
+    private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
 	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
     private final boolean m_allowUnsalted;
 
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    private static final PasswordEncryptor s_passwordEncryptor = new StrongPasswordEncryptor();
+    private static class UserManagerPasswordEncryptor implements PasswordEncryptor {
+        private final StandardStringDigester digester;
+
+        public UserManagerPasswordEncryptor() {
+            super();
+            this.digester = new StandardStringDigester();
+            this.digester.setAlgorithm("SHA-256");
+            this.digester.setIterations(100000);
+            this.digester.setSaltSizeBytes(16);
+            try {
+                this.digester.setSaltGenerator(new RandomSaltGenerator(RandomSaltGenerator.DEFAULT_SECURE_RANDOM_ALGORITHM));
+            } catch (EncryptionInitializationException e) {
+                LOG.info("Could not initialize random salt generator with algorithm {}, using PKCS11", RandomSaltGenerator.DEFAULT_SECURE_RANDOM_ALGORITHM, e);
+                this.digester.setSaltGenerator(new RandomSaltGenerator("PKCS11"));
+            }
+            this.digester.initialize();
+        }
+
+        public String encryptPassword(final String password) {
+            return this.digester.digest(password);
+        }
+
+        public boolean checkPassword(final String plainPassword,
+                                     final String encryptedPassword) {
+            return this.digester.matches(plainPassword, encryptedPassword);
+        }
+    };
+
+    private static final PasswordEncryptor s_passwordEncryptor = new UserManagerPasswordEncryptor();
 
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
@@ -1157,8 +1190,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     public boolean checkSaltedPassword(final String raw, final String encrypted) {
-        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-        return passwordEncryptor.checkPassword(raw, encrypted);
+        return s_passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**

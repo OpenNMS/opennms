@@ -145,14 +145,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * This file isn't read directly by OpenNMS.
-     */
-    public void testC3p0Properties() {
-        ignoreConfigFile("c3p0.properties");
-    }
-
-    @Test
     public void testCategories() {
         testConfigFile("categories.xml");
     }

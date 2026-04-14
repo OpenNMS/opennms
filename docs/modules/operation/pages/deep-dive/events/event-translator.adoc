@@ -11,6 +11,8 @@ If you would like to generate multiple events from a single source event, you ca
 
 The `$\{OPENNMS_HOME}/etc/translator-configuration.xml` file contains elements and attributes that create and/or change the fields or parameters of one event and publish a new event with these changes.
 
+TIP: If the configured UEI in the event-translation-spec ends with a `/`, it acts as a prefix wildcard. Any event whose UEI starts with that prefix will match. IE, configuring `uei.opennms.org/nodes/` would match `uei.opennms.org/nodes/nodeDown`, `uei.opennms.org/nodes/nodeUp`, etc.
+
 == Examples
 
 === Example 1: Associate traps with a node other than the SNMP manager

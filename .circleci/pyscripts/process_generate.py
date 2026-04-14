@@ -192,11 +192,10 @@ print("Build Trigger Override Found:", str(build_trigger_override_found))
 print()
 
 # Epoch file will force a build to run
-if ".circleci/epoch" in changed_files:
+if ".circleci/epoch" in changed_files and "trigger-coverage" not in mappings:
     print("`epoch` file detected")
     mappings["trigger-build"] = True
     print()
-
 
 if build_mappings["experimental"] or "experimentalPath" in git_keywords:
     print("Experimental path detected, will disable other paths")

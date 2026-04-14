@@ -96,7 +96,7 @@ const wrapper = mount(DCB, {
   }
 })
 
-describe('deviceConfigBackupStore test', () => {
+describe('deviceConfigBackup test', () => {
   beforeAll(() => {
     const deviceStore = useDeviceStore()
     deviceStore.deviceConfigBackups = mockDeviceConfigBackups

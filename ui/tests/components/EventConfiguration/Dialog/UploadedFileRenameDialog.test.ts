@@ -6,6 +6,28 @@ import { FeatherInput } from '@featherds/input'
 import { flushPromises, mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@featherds/dialog', () => ({
+  FeatherDialog: {
+    name: 'FeatherDialog',
+    props: {
+      modelValue: {
+        type: Boolean,
+        default: true
+      },
+      labels: {
+        type: Object,
+        default: () => ({})
+      },
+      hideClose: {
+        type: Boolean,
+        default: false
+      }
+    },
+    emits: ['update:modelValue', 'hidden'],
+    template: '<div v-if="modelValue !== false" class="feather-dialog-stub" role="dialog" aria-modal="true"><div data-ref-id="feather-dialog-header">{{ labels?.title }}</div><slot /><slot name="footer" /></div>'
+  }
+}))
+
 describe('UploadedFileRenameDialog.vue', () => {
   let wrapper: any
 
@@ -49,17 +71,29 @@ describe('UploadedFileRenameDialog.vue', () => {
     })
 
   beforeEach(() => {
-    vi.useFakeTimers()
     wrapper = createWrapper()
   })
 
   afterEach(async () => {
+    const currentWrapper = wrapper
+    wrapper = null
+
     // Advance timers before unmounting to clear pending focus management timers
-    vi.advanceTimersByTime(1000)
-    if (wrapper) {
-      await wrapper.unmount()
+    if (vi.isFakeTimers()) {
+      vi.advanceTimersByTime(1000)
     }
-    vi.useRealTimers()
+
+    if (currentWrapper) {
+      await currentWrapper.setProps({ visible: false })
+      await flushPromises()
+      currentWrapper.unmount()
+    }
+
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+    }
+
+    document.body.innerHTML = ''
   })
 
   // Rendering Tests
@@ -114,6 +148,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('shows validation error when new name matches original name', async () => {
+    vi.useFakeTimers()
+
     // First initialize originalFileName via watch
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
@@ -129,9 +165,12 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('shows validation error when file exists in current upload list', async () => {
+    vi.useFakeTimers()
+
     wrapper.vm.renameFile = true
     wrapper.vm.newFileName = 'another.events.xml'
     wrapper.vm.validateName()
+
     await flushPromises()
     
     expect(wrapper.vm.error).toBe('A file with this name already exists in the current upload list.')
@@ -236,6 +275,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('sets new file name to original when overwrite is selected', async () => {
+    vi.useFakeTimers()
+
     // Initialize originalFileName via watch
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 0 })
@@ -340,6 +381,8 @@ describe('UploadedFileRenameDialog.vue', () => {
   })
 
   it('resets state when index is invalid', async () => {
+    vi.useFakeTimers()
+
     await wrapper.setProps({ visible: false })
     await wrapper.setProps({ visible: true, index: 999 })
     await flushPromises()

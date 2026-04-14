@@ -1,7 +1,7 @@
  jobs:
   smoke-test-minion:
     executor: smoke-test-executor
-    parallelism: 4
+    parallelism: 10
     resource_class: medium+
     steps:
       - cached-checkout
@@ -9,3 +9,4 @@
           at: ~/
       - run-smoke-tests:
           suite: minion
+          rerun-failtest-count: 1

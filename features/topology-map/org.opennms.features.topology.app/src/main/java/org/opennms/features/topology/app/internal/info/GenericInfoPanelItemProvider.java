@@ -48,8 +48,10 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,15 +86,23 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
     }
 
     private final NodeDao nodeDao;
-
+    private final ResourceDao resourceDao;
     private final Jinjava jinjava;
-
     private final MeasurementsService measurementsService;
 
-    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService) {
+    // Read-only wrappers for the templating context
+    private final NodeDaoWrapper readOnlyNodeDao;
+    private final ResourceDaoWrapper readOnlyResourceDao;
+
+    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService, final ResourceDao resourceDao) {
         this.jinjava = withClassLoaderFix(Jinjava::new);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.resourceDao = Objects.requireNonNull(resourceDao);
         this.measurementsService = Objects.requireNonNull(measurementsService);
+
+        this.readOnlyNodeDao = new NodeDaoWrapper(nodeDao);
+        this.readOnlyResourceDao = new ResourceDaoWrapper(resourceDao);
+
 
         this.jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("System", "currentTimeMillis", System.class, "currentTimeMillis"));
     }
@@ -206,6 +216,11 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                 final OnmsNode node = this.nodeDao.get(abstractVertex.getNodeID());
                 if (node != null) {
                     context.put("node", node);
+                    // Also expose the node's resource tree if it exists
+                    final OnmsResource resource = this.resourceDao.getResourceForNode(node);
+                    if (resource != null) {
+                        context.put("nodeResource", resource);
+                    }
                 }
             }
         }
@@ -232,6 +247,8 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                 .map(this::createVertexContext)
                 .ifPresent(context::putAll);
 
+        context.put("nodeDao", this.readOnlyNodeDao);
+        context.put("resourceDao", this.readOnlyResourceDao);
         context.put("measurements", new MeasurementsWrapper(measurementsService));
 
         return context;

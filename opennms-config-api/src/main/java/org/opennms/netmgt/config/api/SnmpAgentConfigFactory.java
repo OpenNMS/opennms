@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -37,6 +39,13 @@ public interface SnmpAgentConfigFactory {
      * Saves current configuration in memory to file system.
      */
     void saveCurrent() throws IOException;
+
+    /**
+     * <p>setAndSaveConfig</p>
+     * Sets and then saves the given configuration to file system.
+     * Use caution, this will overwrite the configuration.
+     */
+    void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException;
 
     /**
      * <p>getAgentConfig</p>
@@ -63,8 +72,9 @@ public interface SnmpAgentConfigFactory {
     /**
      * Merge this definition into current config.
      * @param definition Definition that has SNMP parameters associated with a specific IP address or Range.
+     * @param save If true, save to the backing store or DAO.
      */
-    void saveDefinition(Definition definition);
+    void saveDefinition(Definition definition, boolean save);
 
     /**
      * Remove an address from the definitions.
@@ -75,6 +85,18 @@ public interface SnmpAgentConfigFactory {
     boolean removeFromDefinition(InetAddress ipAddress, String location, String module);
 
     /**
+     * Remove the given IP address ranges and/or specific IP addresses from the definitions.
+     * Must supply at least one range or specific.
+     * @param ranges List of ranges to remove. Set to null or empty list to ignore.
+     * @param specifics List of individual IP addresses to remove. Set to null or empty list to ignore.
+     * @param ipMatches List of IP match expressions to remove. Set to null or empty list to ignore.
+     * @param location  location at which this ipaddress belongs.
+     * @param module    module from which the definition is getting removed.
+     */
+    boolean removeRangesFromDefinition(List<Range> ranges, List<String> specifics,
+                                       List<String> ipMatches, String location, String module);
+
+    /**
      * Create definition and merge this definition into Current SNMP Config.
      * @param snmpAgentConfig agentConfig that might have succeeded in SNMP walk/get.
      * @param location the location that this agent config belongs.
@@ -83,11 +105,30 @@ public interface SnmpAgentConfigFactory {
     void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module);
 
     /**
+     * Save default configuration overrides into current SNMP config.
+     * *NOTE*: Null values will NOT be ignored, they will replace values in the current config, meaning that
+     * default values will be used for any parameters that are set to null in the given config.
+     */
+    void saveDefaultOverrides(Configuration config);
+
+    /**
+     * Save an SnmpProfile. The given profile must include a label.
+     * If a profile with the label exists, replace it, otherwise add a new profile.
+     * Only fields that differ from defaults (for new profiles), or override any existing values (for
+     * updated profiles) should be non-null.
+     */
+    void saveProfile(SnmpProfile profile);
+
+    /**
+     * Remove the SnmpProfile with the given label.
+     */
+    boolean removeProfile(String label);
+
+    /**
      * Get all the SNMP profiles from SNMP Config.
      * @return a List of snmp profiles.
      */
     List<SnmpProfile> getProfiles();
 
     public SnmpConfig getSnmpConfig();
-
 }

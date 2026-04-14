@@ -79,7 +79,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Add from '@featherds/icon/action/Add' 
-import { GET_ALL_ALIAS, useScvStore } from '@/stores/scvStore'
+import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
+import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import { UpdateModelFunction } from '@/types'
 import SCVAttribute from './SCVAttribute.vue'
@@ -93,7 +94,9 @@ const disabled = computed<boolean>(() => Boolean(!scvStore.credentials.alias || 
 
 const isMasked = (password: string) => {
   for (const char of password) {
-    if (char !== '*') return false
+    if (char !== '*') {
+      return false
+    }
   }
 
   return true
@@ -116,7 +119,7 @@ const passwordError = computed<string | undefined>(() => {
 const aliasError = computed<string | undefined>(() => {
   if (
     !isEditing.value && 
-    scvStore.credentials.alias?.toLowerCase() === GET_ALL_ALIAS) {
+    scvStore.credentials.alias?.toLowerCase() === SCV_GET_ALL_ALIAS) {
     return 'Cannot use reserved alias name.'
   }
 
