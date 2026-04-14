@@ -264,7 +264,9 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
         entity.setCollectionSource(snmpCollectionSource);
-        return snmpCollectionMibGroupDao.save(entity);
+        final Integer id = snmpCollectionMibGroupDao.save(entity);
+        reloadDataCollectionConfigFromDb();
+        return id;
     }
 
     @Transactional
@@ -274,9 +276,9 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
         entity.setCollectionSource(snmpCollectionSource);
-
-        return snmpCollectionResourceTypeDao.save(entity);
-
+        final Integer id = snmpCollectionResourceTypeDao.save(entity);
+        reloadDataCollectionConfigFromDb();
+        return id;
     }
 
     @Transactional
@@ -286,9 +288,9 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
         entity.setCollectionSource(snmpCollectionSource);
-
-        return snmpCollectionSystemDefDao.save(entity);
-
+        final Integer id = snmpCollectionSystemDefDao.save(entity);
+        reloadDataCollectionConfigFromDb();
+        return id;
     }
 
     @Transactional
@@ -305,6 +307,7 @@ public class DataCollectionConfPersistenceService {
         }
         final var entity = SnmpCollectionMibGroupDto.updateEntity(snmpCollectionMibGroupEntity, request);
         snmpCollectionMibGroupDao.saveOrUpdate(entity);
+        reloadDataCollectionConfigFromDb();
     }
 
     @Transactional
@@ -324,6 +327,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(snmpCollectionResourceTypeEntity, request);
         snmpCollectionResourceTypeDao.saveOrUpdate(entity);
+        reloadDataCollectionConfigFromDb();
     }
 
     @Transactional
@@ -343,6 +347,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
+        reloadDataCollectionConfigFromDb();
     }
 
     @Transactional
@@ -403,6 +408,7 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionMibGroupDao::delete,
                 "MibGroup"
         );
+        reloadDataCollectionConfigFromDb();
     }
 
     @Transactional
@@ -416,6 +422,7 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionResourceTypeDao::delete,
                 "ResourceType"
         );
+        reloadDataCollectionConfigFromDb();
     }
 
     @Transactional
@@ -429,6 +436,7 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionSystemDefDao::delete,
                 "SystemDef"
         );
+        reloadDataCollectionConfigFromDb();
     }
 
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
@@ -507,6 +515,12 @@ public class DataCollectionConfPersistenceService {
             g.setIfType(e.getIfType());
             g.setMibObjs(DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects()));
             g.setProperties(DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties()));
+            // Restore nested include-group references
+            List<String> includeGroups = DatacollectionJsonHelper.fromJson(
+                    e.getMibGroupNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+            if (includeGroups != null) {
+                g.setIncludeGroups(includeGroups);
+            }
             return g;
         }).toList();
         group.setGroups(mibGroups);
