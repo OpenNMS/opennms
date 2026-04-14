@@ -87,7 +87,7 @@
     </action>
     <action>
         <label>Configure SNMP Community Names by IP Address</label>
-        <url>admin/snmpConfig?action=default</url>
+        <url>ui/index.html#/snmp-config</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>
@@ -108,7 +108,7 @@
     </action>
     <action>
         <label>Configure External Requisitions</label>
-        <url>ui/index.html/#/configuration</url>
+        <url>ui/index.html#/configuration</url>
         <roles>
             <role>ROLE_ADMIN</role>
         </roles>

@@ -285,6 +285,10 @@ if (request.getAttribute("success") != null) {
       <div class="card-header">
         <span>SNMP Config Lookup</span>
       </div>
+      <div style="padding: 10px;" class="alert alert-info">
+        Note, this page has been deprecated. Please use the side menu or <a href="ui/index.html#/snmp-config">click here</a> to
+        navigate to the new SNMP Agent Configuration page. This page will be removed in a future release.
+      </div>
       <div class="card-body">
         <form role="form" class="form" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -307,7 +311,7 @@ if (request.getAttribute("success") != null) {
           </div>
           <div class="form-group form-row">
             <div class="col-sm-9 col-sm-offset-2">
-              <button type="submit" class="btn btn-secondary" name="getConfig">Look up</button>
+              <button type="submit" class="btn btn-secondary" name="getConfig" disabled>Look up</button>
             </div>
           </div>
         </form>
@@ -669,7 +673,7 @@ if (request.getAttribute("success") != null) {
 
             <div class="form-group form-row">
               <div class="col-sm-9 col-sm-offset-3">
-                <button type="submit" class="btn btn-secondary" name="saveConfig">Save Config</button>
+                <button type="submit" class="btn btn-secondary" name="saveConfig" disabled>Save Config</button>
                 <button type="button" class="btn btn-secondary" name="cancelButton" onClick="cancel();">Cancel</button>
               </div>
             </div>

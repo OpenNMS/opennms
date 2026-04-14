@@ -28,7 +28,6 @@ import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-// Mock the API service
 vi.mock('@/services', () => ({
   default: {
     getAliases: vi.fn(() => Promise.resolve([])),

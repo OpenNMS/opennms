@@ -3,6 +3,8 @@
     <div class="main-section">
       <SnmpConfigLookupPanel
         v-if="store.snmpLookupEditMode === SnmpLookupEditMode.Lookup"
+        :autoLookupIpAddress="autoLookupIpAddress"
+        :autoLookupLocation="autoLookupLocation"
         @lookup-complete="onLookupComplete"
       />
       <div class="snmp-config-details" v-if="store.snmpLookupEditMode === SnmpLookupEditMode.Edit">
@@ -23,14 +25,20 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
 import useSnackbar from '@/composables/useSnackbar'
-import { getDefaultSnmpDefinition, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
+import { ActiveTabs, getDefaultSnmpDefinition, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinition } from '@/types/snmpConfig'
 import SnmpConfigLookupPanel from './SnmpConfigLookupPanel.vue'
 import SnmpConfigDefinitionBasicInformation from './SnmpConfigDefinitionBasicInformation.vue'
 
+const route = useRoute()
+const router = useRouter()
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
+
+const autoLookupIpAddress = computed(() => route.query.ipAddress as string | undefined)
+const autoLookupLocation = computed(() => route.query.location as string | undefined)
 
 const lookupConfig = ref<SnmpAgentConfig>()
 const currentDefinition = ref<SnmpDefinition>(getDefaultSnmpDefinition())
@@ -44,10 +52,23 @@ const resetValues = () => {
   ipAddress.value = ''
 }
 
-const handleBackButtonClick = () => {
+const clearLookupRoute = () => {
+  if (route.query.ipAddress) {
+    return router.replace('/snmp-config')
+  }
+}
+
+const handleBackButtonClick = async () => {
   resetValues()
+  await clearLookupRoute()
   store.setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
 }
+
+watch(() => store.activeTab, async (tab) => {
+  if (tab !== ActiveTabs.Lookup) {
+    await clearLookupRoute()
+  }
+})
 
 const onLookupComplete = (config: SnmpAgentConfig, ip: string) => {
   lookupConfig.value = config

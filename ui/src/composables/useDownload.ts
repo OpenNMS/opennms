@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { AxiosResponse, AxiosResponseHeaders } from 'axios'
+import { AxiosResponse } from 'axios'
 
 const useDownload = () => {
   /**
@@ -47,7 +47,7 @@ export default useDownload
  * @param   {Headers}  headers  headers from the server
  * @return  {string}            filename
  */
-const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
+const getNameFromHeaders = (headers: AxiosResponse['headers']): string => {
   let name = ''
   const disposition = headers['content-disposition']
 
@@ -71,7 +71,7 @@ const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
  * @return  {Blob}               file object
  */
 const generateBlob = (file: AxiosResponse, extension: string, forceBlob = false): Blob => {
-  const contentType = (<AxiosResponseHeaders>file.headers)['content-type']
+  const contentType = file.headers['content-type']
 
   // stringify if it's a JSON file, unless forceBlob is true
   if (!forceBlob && extension.toLowerCase() === 'json') {
