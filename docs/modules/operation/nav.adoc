@@ -171,6 +171,13 @@
 **** xref:deep-dive/database-reports/templates/total-bytes.adoc[Total Bytes Transferred by Interface]
 **** xref:deep-dive/database-reports/templates/traffic-rates.adoc[Traffic Rates for Nodes by Interface]
 
+** xref:deep-dive/snmp-configuration/introduction.adoc[]
+*** xref:deep-dive/snmp-configuration/snmp-config-ui-manage-default-overrides.adoc[]
+*** xref:deep-dive/snmp-configuration/snmp-config-ui-lookup.adoc[]
+*** xref:deep-dive/snmp-configuration/snmp-config-ui-manage-definitions.adoc[]
+*** xref:deep-dive/snmp-configuration/snmp-config-ui-manage-profiles.adoc[]
+*** xref:deep-dive/snmp-configuration/snmp-config-ui-upload-download.adoc[]
+
 ** xref:deep-dive/ticketing/introduction.adoc[]
 
 ** xref:deep-dive/workarounds/snmp.adoc[]

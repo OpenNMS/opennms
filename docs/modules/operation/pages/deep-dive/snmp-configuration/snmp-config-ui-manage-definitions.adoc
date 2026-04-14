@@ -1,0 +1,25 @@
+= SNMP Configuration: Manage Definitions
+:description: How to manage SNMP definitions in the SNMP Configuration UI.
+
+The SNMP Configuration UI allows you to manage SNMP definitions. SNMP definitions are used to specify the SNMP settings that should be applied to nodes based on their IP address or other criteria.
+
+Click the `Browse Definitions` tab to view the list of SNMP definitions. From this tab, you can add, edit, and delete SNMP definitions.
+
+.Definitions Table
+image::snmp-configuration/snmp-config-definitions.png["{page-component-title} SNMP definitions table."]
+
+The table displays the Monitoring Location and IP Ranges that each SNMP definition applies to.
+
+You can search the table by IP address or Monitoring Location using the search field at the top of the table. The table will be filtered in real-time as you type, showing only the definitions that match your search criteria.
+
+Click the Edit icon to edit a definition. When you click Edit, you will be taken to the definition details page where you can view and edit all the parameters of that SNMP definition. This page is the same as the one described in the xref:deep-dive/snmp-configuration/snmp-config-ui-lookup.adoc[SNMP Configuration Lookup] page, except that in the case of editing a definition, you may see multiple IP ranges or IPLIKE expressions in the badges at the top of the page, since a single SNMP definition can apply to multiple IP ranges or IPLIKE expressions.
+
+Click the Delete icon to "delete" a definition. In effect this removes any specific configuration for that IP range or IPLIKE expression, causing it to fall back to more general configurations such as global default overrides or hard-coded defaults. You will be asked to confirm the deletion before it is applied.
+
+Click the New Definition button to create a new SNMP definition. This will bring you to the same page as above, but with blank fields for the IP addresses, allowing you to specify a new specific IP, IP range or IPLIKE expression for the new definition.
+
+== Understanding OpenNMS SNMP Definitions
+
+OpenNMS optimizes the storage of SNMP definitions by grouping together IP addresses that share the same SNMP configuration. For example, if you have a range of IP addresses that all use the same SNMP version and community string, OpenNMS will store this as a single SNMP definition with that IP range and configuration. This allows for efficient storage and management of SNMP configurations, especially in large environments where many nodes may share the same SNMP settings.
+
+OpenNMS will automatically reconfigure definitions to merge or split contiguous or non-adjacent IP ranges as needed. Therefore you do not need to worry about how to group IP addresses together when creating or editing definitions. You can simply specify the IP addresses, IP ranges or IPLIKE expressions that you want to apply the configuration to, and OpenNMS will take care of optimizing the storage of those definitions in the configuration.

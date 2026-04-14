@@ -1,0 +1,15 @@
+= SNMP Configuration: Upload/Download
+:description: How to upload and download SNMP configuration files in the SNMP Configuration UI.
+
+The SNMP Configuration UI allows you to upload and download SNMP configuration files. This feature is useful for backing up your SNMP configurations, sharing configurations between different environments, or applying a predefined set of SNMP settings to your network devices.
+
+Click *Advanced* then *Upload/Download* to access the upload/download screen.
+
+You can then download the entire SNMP configuration in either XML or JSON format. This includes all SNMP profiles, default overrides, and specific SNMP configurations that you have defined.
+
+You can also upload the entire SNMP configuration from an XML or JSON file. When you upload a configuration file, it will replace the existing SNMP configuration with the contents of the uploaded file.
+
+WARNING: Use caution when uploading SNMP configuration files, as this will overwrite your entire existing SNMP configuration. Make sure to back up your current configuration using the Download feature before uploading a new one. You should only use this feature if you are sure that the uploaded configuration is correct and does not contain any errors, as an invalid configuration could cause issues with SNMP monitoring in OpenNMS. This feature is intended for advanced users who are comfortable working with SNMP configurations and understand the implications of uploading a new configuration file.
+
+.SNMP Configuration: Upload/Download
+image::snmp-configuration/snmp-config-upload-download.png["{page-component-title} SNMP upload/download."]

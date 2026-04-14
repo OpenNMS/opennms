@@ -1,0 +1,35 @@
+[[snmp-configuration]]
+= SNMP Configuration
+:description: Get an overview of how to configure {page-component-title} SNMP Configuration.
+
+OpenNMS uses SNMP to monitor devices and services on your network. To do this, you need to configure SNMP settings for your nodes. This includes specifying the SNMP version, community strings, and other parameters that allow OpenNMS to communicate with your devices.
+
+SNMP Configuration is stored in the database and can be managed through both the OpenNMS web interface and the REST API.
+
+The SNMP REST API provides endpoints to manage SNMP configurations programmatically. This allows you to automate the configuration of SNMP settings for your nodes, which can be especially useful in large environments.
+
+The REST API documentation for SNMP Configuration can be found in the xref:development:rest/snmp_configuration.adoc[SNMP Configuration REST API] section of the documentation.
+
+The SNMP Configuration UI allows you to manage SNMP settings for your nodes through the OpenNMS web interface.
+You can:
+
+- add, edit, and delete SNMP configurations for ranges of IP addresses or IPLIKE expressions
+- configure global default overrides that apply to all nodes unless overridden by more specific configurations
+- create SNMP profiles
+- look up the configuration for a specific IP address
+- upload and download configurations in XML or JSON format
+
+== How SNMP Configuration Works
+
+OpenNMS uses a layered approach to SNMP configuration. The configuration for any particular IP address is determined as follows.
+
+- Apply global default values. These are hard-coded defaults defined in the server code that apply to all nodes unless overridden by more specific configurations.
+
+- Apply any global default override values (see xref:deep-dive/snmp-configuration/snmp-config-ui-manage-default-overrides.adoc[SNMP Configuration Default Overrides]). These are values that can be set to override the hard-coded defaults. For example, for some deployments you might want to set the default SNMP read community string to something other than `public`. Generally this is done during initial deployment and is not something that is changed frequently.
+
+- Apply any SNMP configuration that matches the IP address. This is where you can specify specific SNMP settings for ranges of IP addresses or using IPLIKE expressions. For example, you might want to specify different SNMP versions or community strings for different groups of devices.
+
+- You can also create SNMP profiles that are applied during provisioning. For IP addresses that fit a profile's filter expression, OpenNMS will automatically create definitions for those IP addresses with the SNMP settings from that profile.
+
+
+See the sub-sections below for detailed instructions on each feature.

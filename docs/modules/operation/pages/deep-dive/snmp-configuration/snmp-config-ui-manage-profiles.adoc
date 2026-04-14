@@ -1,0 +1,22 @@
+= SNMP Configuration: Manage Profiles
+:description: How to manage SNMP profiles in the SNMP Configuration UI.
+
+The SNMP Configuration UI allows you to manage SNMP profiles. SNMP profiles are used to group together SNMP settings that can be applied to nodes based on their IP address or other criteria. This feature allows you to create reusable sets of SNMP settings that can be easily applied to multiple nodes, simplifying the management of SNMP configurations across your network.
+
+Click on the *Advanced* tab, then *Profiles* to view the list of SNMP profiles. From this screen, you can add, edit, and delete SNMP profiles.
+
+.SNMP Profiles Table
+image::snmp-configuration/snmp-config-profiles.png["{page-component-title} SNMP profiles table."]
+
+You can search profiles by profile label or filter expression, or click *New Profile* to create a new profile.
+
+Use the Edit or Delete icons to edit or delete a profile.
+
+If you are adding a profile, enter a unique label. Then add a filter expression and the SNMP settings that should be applied to nodes matching that filter expression. The filter expression is used to determine which nodes the profile should be applied to, based on their IP address or other criteria. For example, you could use an IPLIKE expression to apply the profile to all nodes in a specific subnet.
+
+Click `Save Changes` to save the profile, or `Cancel` to return to the SNMP Profiles table without saving any changes.
+
+See the xref:deep-dive/provisioning/snmp-profile.adoc[] page for more information on what profiles are and how they work in OpenNMS.
+
+.SNMP Profile Details
+image::snmp-configuration/snmp-config-profile-details.png["{page-component-title} SNMP profile details."]

@@ -1,0 +1,22 @@
+= SNMP Configuration: Manage Default Overrides
+:description: How to manage SNMP default overrides in the SNMP Configuration UI.
+
+The SNMP Configuration UI allows you to manage default overrides for SNMP settings. Default overrides allow you to change the global SNMP defaults that apply to all nodes before any specific SNMP definitions are applied.
+
+As noted in the introduction, OpenNMS has hard-coded default values for SNMP settings that apply to all nodes unless overridden by more specific configurations. Default overrides allow you to change these hard-coded defaults without needing to modify the server code. This can be useful for setting a different default SNMP read community string, for example.
+
+Typically these are set once during initial deployment and are not changed frequently, but you can update them at any time as needed.
+
+These values will then be overridden by any specific SNMP configuration definitions that you have added.
+
+.SNMP Default Overrides
+image::snmp-configuration/snmp-config-default-overrides.png["{page-component-title} SNMP default overrides."]
+
+The screen displays the *System Default Values* which are the hard-coded defaults defined in the server code, and the *User Defined Overrides* which are the values that you can set to override those hard-coded defaults.
+
+You can use SCV expressions in certain fields.
+
+Click *Reset to System Defaults* to remove all user defined overrides and reset the defaults back to the hard-coded system default values. Click *Save* to save any changes you have made to the user defined overrides.
+
+.SNMP Default Overrides - Additional
+image::snmp-configuration/snmp-config-default-overrides-2.png["{page-component-title} SNMP default overrides, additional."]
