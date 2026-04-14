@@ -39,3 +39,10 @@ export interface MibCompilerStoreState {
   }
 }
 
+export type UploadMibFileType = {
+  file: File
+  isValid: boolean
+  errors: string[]
+  isDuplicate: boolean
+}
+
