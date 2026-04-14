@@ -371,6 +371,11 @@ const router = createRouter({
       component: () => import('@/components/PrimeVueTest.vue')
     },
     {
+      path: '/mib-compiler',
+      name: 'MIB Compiler',
+      component: () => import('@/containers/MibCompiler.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
@@ -381,3 +386,4 @@ router.beforeEach(() => startSpinner())
 router.afterEach(() => stopSpinner())
 export default router
 export { isLegacyPlugin }
+
