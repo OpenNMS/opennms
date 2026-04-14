@@ -21,106 +21,44 @@
  */
 package org.opennms.web.rest.v2;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.config.datacollection.IpList;
 import org.opennms.netmgt.config.datacollection.MibObj;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Delegates to {@link org.opennms.netmgt.config.api.DatacollectionJsonHelper}.
+ * Kept for backward compatibility with existing code in opennms-webapp-rest.
+ */
 public final class DatacollectionJsonHelper {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private DatacollectionJsonHelper() {
-        // utility class
     }
 
     public static String toJson(Object value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("JSON serialization failed", e);
-        }
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.toJson(value);
     }
 
     public static IpList fromJsonToIpList(String json) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, IpList.class);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse IpList JSON: " + json, e);
-        }
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.fromJsonToIpList(json);
     }
-
 
     public static List<Parameter> fromJsonToParameters(String json) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            List<KeyValueDto> dtos = OBJECT_MAPPER.readValue(json, new TypeReference<List<KeyValueDto>>() {});
-
-            List<Parameter> out = new ArrayList<>(dtos.size());
-            for (KeyValueDto dto : dtos) {
-                // IMPORTANT: instantiate the JAXB/config Parameter class
-                org.opennms.netmgt.config.datacollection.Parameter p =
-                        new org.opennms.netmgt.config.datacollection.Parameter();
-                p.setKey(dto.key);
-                p.setValue(dto.value);
-                out.add(p); // upcast to API interface is fine
-            }
-            return out;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse parameters JSON: " + json, e);
-        }
-    }
-
-    private static final class KeyValueDto {
-        public String key;
-        public String value;
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.fromJsonToParameters(json);
     }
 
     public static List<MibObj> fromJsonToMibObjs(String json) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
-            });
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse MIB objects JSON: " + json, e);
-        }
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.fromJsonToMibObjs(json);
     }
 
     public static List<MibObjProperty> fromJsonToProperties(String json) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, new TypeReference<List<MibObjProperty>>() {});
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse properties JSON: " + json, e);
-        }
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.fromJsonToProperties(json);
     }
 
     public static <T> T fromJson(final String json, final TypeReference<T> typeRef) {
-        if (json == null || json.isBlank()) {
-            return null;
-        }
-        try {
-            return OBJECT_MAPPER.readValue(json, typeRef);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to parse JSON: " + json, e);
-        }
+        return org.opennms.netmgt.config.api.DatacollectionJsonHelper.fromJson(json, typeRef);
     }
 }

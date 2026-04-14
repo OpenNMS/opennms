@@ -316,4 +316,6 @@
     <bean id="snmpCollectionSystemDefDao" class="org.opennms.netmgt.dao.hibernate.SnmpCollectionSystemDefDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
+
+
 </beans>

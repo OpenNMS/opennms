@@ -117,8 +117,9 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             }
 
             try {
-                dataCollectionConfPersistenceService.addDataCollectionConfig(fileName,username,dataCollection,now);
-                successList.add(buildSuccessResponse(fileName, dataCollection));
+                final String sourceName = dataCollection.getName() != null ? dataCollection.getName() : fileName;
+                dataCollectionConfPersistenceService.addDataCollectionConfig(sourceName, username, dataCollection, now);
+                successList.add(buildSuccessResponse(sourceName, dataCollection));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
             }

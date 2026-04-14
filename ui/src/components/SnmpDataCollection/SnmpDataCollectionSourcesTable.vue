@@ -68,8 +68,6 @@
             :key="source.id"
           >
             <td>{{ source.name }}</td>
-            <td>{{ source.vendor }}</td>
-            <td>{{ source.uploadedBy }}</td>
             <td>
               <div class="tag">
                 <FeatherChip
@@ -210,15 +208,11 @@ const emptyListContent = {
 
 const columns = computed(() => [
   { id: 'name', label: 'Source' },
-  { id: 'vendor', label: 'Vendor' },
-  { id: 'uploadedBy', label: 'Uploaded By' },
   { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
   name: SORT.NONE,
-  vendor: SORT.NONE,
-  uploadedBy: SORT.NONE,
   enabled: SORT.NONE
 }) as any
 

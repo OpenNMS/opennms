@@ -1029,6 +1029,9 @@ public class Migrator {
                 LOG.info("- Running migration for changelog: {}", resource.getDescription());
                 migrate(resource);
             }
+
+            // Post-Liquibase: migrate SNMP datacollection XML to DB
+            migrateSnmpDataCollection();
         }
 
         if (vacuum) {
@@ -1037,6 +1040,27 @@ public class Migrator {
 
         if (iplike) {
             updateIplike();
+        }
+    }
+
+    /**
+     * Migrate SNMP data collection XML configs to database.
+     * Runs after Liquibase schema creation. Idempotent — skips if data already exists.
+     */
+    private void migrateSnmpDataCollection() throws MigrationException {
+        Connection connection = null;
+        try {
+            connection = m_dataSource.getConnection();
+            connection.setAutoCommit(false);
+            new org.opennms.core.schema.migrator.SnmpDataCollectionMigration().execute(connection);
+            connection.commit();
+        } catch (final Exception e) {
+            if (connection != null) {
+                try { connection.rollback(); } catch (SQLException ignored) { }
+            }
+            throw new MigrationException("SNMP data collection XML-to-DB migration failed: " + e.getMessage(), e);
+        } finally {
+            cleanUpDatabase(connection, null, null, null);
         }
     }
 

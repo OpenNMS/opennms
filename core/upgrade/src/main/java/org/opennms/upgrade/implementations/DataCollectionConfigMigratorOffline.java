@@ -63,12 +63,6 @@ public class DataCollectionConfigMigratorOffline extends AbstractOnmsUpgrade {
         // Grab the data collection configuration directory
         dataCollectionConfigDir = Paths.get(ConfigFileConstants.getHome(), "etc", "datacollection").toFile();
 
-        // Make sure it's a valid directory before continuing
-        if (!dataCollectionConfigDir.isDirectory()) {
-            throw new OnmsUpgradeException(String.format("Failed to determine the data collection configuration directory. "
-                    + "%s is not a directory", dataCollectionConfigDir.getAbsolutePath()));
-        }
-
         dataCollectionConfigDirBackupZip = new File(dataCollectionConfigDir.getAbsolutePath() + ZIP_EXT);
     }
 
@@ -89,12 +83,20 @@ public class DataCollectionConfigMigratorOffline extends AbstractOnmsUpgrade {
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (!dataCollectionConfigDir.isDirectory()) {
+            return;
+        }
         log("Backing up %s\n", dataCollectionConfigDir);
         zipDir(dataCollectionConfigDirBackupZip, dataCollectionConfigDir);
     }
 
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (!dataCollectionConfigDir.isDirectory()) {
+            log("Skipping — %s is not a directory (may have been archived after DB migration).\n",
+                    dataCollectionConfigDir.getAbsolutePath());
+            return;
+        }
         log("Patching files...\n");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dataCollectionConfigDir.toPath(), "*.xml")) {
             for (Path entry: stream) {
