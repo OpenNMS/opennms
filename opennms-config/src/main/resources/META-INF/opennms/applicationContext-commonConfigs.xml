@@ -96,7 +96,7 @@
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.CollectdConfigFactory" ref="collectdConfig" />
   
-   <!-- Config is loaded from DB by DataCollectionConfPersistenceService at startup -->
+   <!-- Config loaded from DB by DataCollectionConfPersistenceService at startup -->
   <bean id="dataCollectionConfigDao" class="org.opennms.netmgt.config.DefaultDataCollectionConfigDao">
   </bean>
 

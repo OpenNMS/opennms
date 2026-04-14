@@ -82,22 +82,27 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     }
 
     /**
-     * If configResource is set (tests or XML-based mode), load from XML as before.
-     * If configResource is not set (DB-backed mode), start with an empty config
-     * that will be populated via {@link #loadFromDatabase}.
+     * Try to load from XML. If the XML file doesn't exist (archived after DB migration),
+     * start with an empty config that will be populated via {@link #loadFromDatabase}.
      */
     @Override
     public void afterPropertiesSet() {
         if (getConfigResource() != null) {
-            // XML-based: delegate to parent to load from file/resource
-            super.afterPropertiesSet();
-        } else {
-            // DB-backed: start empty, persistence service will populate via loadFromDatabase()
-            final DatacollectionConfig emptyConfig = new DatacollectionConfig();
-            emptyConfig.setRrdRepository(DEFAULT_RRD_REPOSITORY);
-            this.dbConfig = emptyConfig;
-            LOG.info("DataCollectionConfigDao initialized — awaiting DB config load from persistence service.");
+            try {
+                // XML-based: delegate to parent to load from file/resource
+                super.afterPropertiesSet();
+                return;
+            } catch (org.opennms.core.xml.MarshallingResourceFailureException e) {
+                // XML file doesn't exist (archived after DB migration) — fall through to empty config
+                LOG.info("Could not load datacollection XML config: {} — will load from DB.",
+                        e.getMessage());
+            }
         }
+        // DB-backed: start empty, persistence service will populate via loadFromDatabase()
+        final DatacollectionConfig emptyConfig = new DatacollectionConfig();
+        emptyConfig.setRrdRepository(DEFAULT_RRD_REPOSITORY);
+        this.dbConfig = emptyConfig;
+        LOG.info("DataCollectionConfigDao initialized with empty config — awaiting DB config load.");
     }
 
     @Override

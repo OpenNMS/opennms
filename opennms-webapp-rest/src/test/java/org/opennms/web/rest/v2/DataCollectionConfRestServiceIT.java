@@ -77,6 +77,7 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-dataCollectionConfig-test.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
@@ -130,7 +131,7 @@ public class DataCollectionConfRestServiceIT {
         List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
 
         assertEquals("Should be one successful upload", 1, success.size());
-        assertEquals("Uploaded file key should match", "dell", success.get(0).get("file"));
+        assertEquals("Uploaded file key should match", "Dell", success.get(0).get("file"));
         assertTrue("Error list should be empty", errors.isEmpty());
     }
 
@@ -1018,7 +1019,7 @@ public class DataCollectionConfRestServiceIT {
         Response uploadResp = dataCollectionConfRestApi.uploadSnmpDataCollectionConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
-        SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("dell");
+        SnmpCollectionSource dataCollectionSource = snmpCollectionSourceDao.findByName("Dell");
         assertNotNull("DataCollectionSource should exist after upload", dataCollectionSource);
 
         Response response = dataCollectionConfRestApi.downloadSnmpDataCollectionById(
