@@ -61,13 +61,6 @@ public class DetectMBeansJob implements Task<JmxDatacollectionConfig> {
     public DetectMBeansJob(JmxConfigGeneratorUI ui, ServiceConfig config) {
         this.ui = Objects.requireNonNull(ui);
         this.config = Objects.requireNonNull(config);
-        filterMap.put(Mbean.class, (Consumer<Mbean>) input -> {
-            // The default PooledDataSource name is "com.mchange.v2.c3p0.PooledDataSource[1hge1gv9a1li8lwdjzwyop|290e7d09]".
-            // We remove the weired part at the end
-            if (input.getName().contains("com.mchange.v2.c3p0.PooledDataSource")) {
-                input.setName("com.mchange.v2.c3p0.PooledDataSource");
-            }
-        });
         filterMap.put(Attrib.class, (Consumer<Attrib>) input -> {
             // The mbean "PooledDataSource" has already a "0numFailChecDfltUsr" alias. Therefore the
             // JmxConfiggenerator created a "NAME_CRASH"-alias. We manually overwrite the value here to a valid one

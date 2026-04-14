@@ -1,0 +1,79 @@
+
+[[web-audit-log]]
+= Web Audit Log
+:description: How to configure the {page-component-title} web audit log for tracking user authentication events and SIEM integration.
+
+{page-component-title} writes authentication events to a dedicated audit log file (`web-audit.log`) in the logs directory.
+This file is designed for security monitoring and SIEM integration.
+
+== Log location
+
+The audit log is written to `$\{OPENNMS_HOME}/logs/web-audit.log`.
+
+== What is logged
+
+By default, the following events are recorded:
+
+[cols="1,2"]
+|===
+| Event | Description
+
+| Interactive login success
+| A user successfully logs in to the web UI via the login form.
+
+| Authentication failure
+| Any failed authentication attempt (web UI or REST API), including the failure reason.
+|===
+
+REST API authentication successes are not logged by default, as API clients authenticate on every request and can generate a high volume of log entries.
+
+== Log format
+
+Each line contains a timestamp, log level, outcome, username, client IP address, and an optional failure reason:
+
+[source]
+----
+2026-03-25 10:15:32,000 INFO  LOGIN SUCCESS user=admin ip=192.168.1.100
+2026-03-25 10:16:01,000 INFO  LOGIN FAILURE user=bob ip=10.0.0.5 reason=Bad credentials
+----
+
+== Configuration
+
+=== Enable REST API authentication logging
+
+To include REST API authentication successes in the audit log, set the following system property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/`:
+
+[source, properties]
+----
+org.opennms.security.auditLog.apiAuth=true
+----
+
+NOTE: Enabling this can produce a high volume of log entries in environments with many API clients.
+
+=== Disable the audit log
+
+To disable the audit log entirely, edit `$\{OPENNMS_HOME}/etc/log4j2.xml` and change the log level to `OFF`:
+
+[source, xml]
+----
+<logger name="web-audit" additivity="false" level="OFF">
+  <appender-ref ref="WebAuditFile"/>
+</logger>
+----
+
+The `log4j2.xml` configuration is reloaded automatically every 60 seconds, so changes take effect without a restart.
+
+=== Log rotation
+
+The audit log uses the same rolling file strategy as other {page-component-title} logs:
+
+* Maximum file size: 100 MB
+* Maximum number of rotated files: 4
+
+These settings can be adjusted in the `WebAuditFile` appender section of `log4j2.xml`.
+
+== SIEM integration
+
+The `web-audit.log` file is an append-only log file that can be consumed by any SIEM by tailing the file.
+
+NOTE: The internal `rtc` system user is excluded from the audit log.

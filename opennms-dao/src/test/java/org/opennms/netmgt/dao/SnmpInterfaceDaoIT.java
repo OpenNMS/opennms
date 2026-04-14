@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Collection;
 
@@ -48,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockSnmpPeerFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
@@ -79,9 +81,34 @@ public class SnmpInterfaceDaoIT implements InitializingBean {
 			assertNotNull(snmpIf.getNode());
 			assertEquals(1, snmpIf.getNode().getId().intValue());
 			assertEquals("node1", snmpIf.getNode().getLabel());
-			
+
 		}
-		
+	}
+
+	@Test
+	@Transactional
+	public void testFindByNodeIdAndIfName() {
+		int nodeId = m_databasePopulator.getNode1().getId();
+
+		OnmsSnmpInterface snmpIf = m_snmpInterfaceDao.findByNodeIdAndIfName(nodeId, "atm0");
+		assertNotNull(snmpIf);
+		assertEquals("atm0", snmpIf.getIfName());
+		assertEquals(1, snmpIf.getIfIndex().intValue());
+		assertEquals("ATM0", snmpIf.getIfDescr());
+
+		OnmsSnmpInterface snmpIf2 = m_snmpInterfaceDao.findByNodeIdAndIfName(nodeId, "eth0");
+		assertNotNull(snmpIf2);
+		assertEquals("eth0", snmpIf2.getIfName());
+		assertEquals(2, snmpIf2.getIfIndex().intValue());
+	}
+
+	@Test
+	@Transactional
+	public void testFindByNodeIdAndIfNameNotFound() {
+		int nodeId = m_databasePopulator.getNode1().getId();
+
+		OnmsSnmpInterface snmpIf = m_snmpInterfaceDao.findByNodeIdAndIfName(nodeId, "nonexistent0");
+		assertNull(snmpIf);
 	}
 
 }

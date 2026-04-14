@@ -21,9 +21,10 @@
 ///
 
 import { rest } from './axiosInstances'
-import { SCVCredentials } from '@/types/scv'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
+import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
+import { SCVCredentials } from '@/types/scv'
 
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -46,6 +47,19 @@ const getCredentialsByAlias = async (alias: string): Promise<SCVCredentials | nu
   try {
     startSpinner()
     const resp = await rest.get(`${endpoint}/${alias}`)
+    return resp.data
+  } catch (err) {
+    showSnackBar({ msg: 'Failed to retrieve credentials.' })
+    return null
+  } finally {
+    stopSpinner()
+  }
+}
+
+const getAllCredentials = async (): Promise<SCVCredentials[] | null> => {
+  try {
+    startSpinner()
+    const resp = await rest.get(`${endpoint}/${SCV_GET_ALL_ALIAS}`)
     return resp.data
   } catch (err) {
     showSnackBar({ msg: 'Failed to retrieve credentials.' })
@@ -83,4 +97,10 @@ const updateCredentials = async (credentials: SCVCredentials): Promise<number | 
   }
 }
 
-export { getAliases, getCredentialsByAlias, addCredentials, updateCredentials }
+export {
+  getAliases,
+  getAllCredentials,
+  getCredentialsByAlias,
+  addCredentials,
+  updateCredentials
+}

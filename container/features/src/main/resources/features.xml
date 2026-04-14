@@ -27,6 +27,7 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:commons-pool/commons-pool/${commonsPoolVersion}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
 
@@ -337,7 +338,6 @@
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
         <feature>atomikos</feature>
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-io</feature>
         <feature>postgresql</feature>
@@ -432,7 +432,6 @@
         <bundle>mvn:org.opennms/opennms-config-jaxb/${project.version}</bundle>
     </feature>
     <feature name="opennms-config" version="${project.version}" description="OpenNMS :: Configuration">
-        <feature>c3p0</feature>
         <feature>hikari-cp</feature>
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
@@ -721,7 +720,6 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
     </feature>

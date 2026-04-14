@@ -897,4 +897,192 @@ public class EventConfRestServiceIT {
         assertEquals(Response.Status.CONFLICT.getStatusCode(), resp.getStatus());
     }
 
+    // ---- eventconf.xml file ordering tests ----
+
+    private Attachment mockAttachment(String filename, String resourcePath) {
+        InputStream is = getClass().getResourceAsStream(resourcePath);
+        assertNotNull("Resource not found: " + resourcePath, is);
+        Attachment att = mock(Attachment.class);
+        ContentDisposition cd = mock(ContentDisposition.class);
+        when(cd.getParameter("filename")).thenReturn(filename);
+        when(att.getContentDisposition()).thenReturn(cd);
+        when(att.getObject(InputStream.class)).thenReturn(is);
+        return att;
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithEventConfXml_ShouldOrderByEventConf() throws Exception {
+        List<Attachment> attachments = List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/eventconf.xml"),
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")
+        );
+
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
+        @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
+        @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
+
+        assertEquals(2, success.size());
+        assertTrue(errors.isEmpty());
+        // eventconf.xml must not be persisted as a source
+        assertTrue("eventconf should not be stored as a source", eventConfSourceDao.findByName("eventconf") == null);
+
+        // First in eventconf.xml (alarm) should have HIGHER fileOrder than second (cisco)
+        EventConfSource alarmSource = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfSource ciscoSource = eventConfSourceDao.findByName("Cisco.airespace");
+        assertTrue("First entry in eventconf.xml should have higher fileOrder",
+                alarmSource.getFileOrder() > ciscoSource.getFileOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithoutEventConfXml_ShouldUseDefaultOrder() throws Exception {
+        List<Attachment> attachments = List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")
+        );
+
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        EventConfSource alarmSource = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfSource ciscoSource = eventConfSourceDao.findByName("Cisco.airespace");
+        assertNotNull(alarmSource);
+        assertNotNull(ciscoSource);
+        assertFalse("Sources should have different fileOrders",
+                alarmSource.getFileOrder().equals(ciscoSource.getFileOrder()));
+    }
+
+    @Test
+    @Transactional
+    public void testUploadEventConfXmlOnly_ShouldReorderExistingSources() throws Exception {
+        // Step 1: Upload event files without eventconf.xml
+        List<Attachment> initialAttachments = List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")
+        );
+        eventConfRestApi.uploadEventConfFiles(initialAttachments, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        int alarmOrderBefore = eventConfSourceDao.findByName("opennms.alarm.events").getFileOrder();
+        int ciscoOrderBefore = eventConfSourceDao.findByName("Cisco.airespace").getFileOrder();
+
+        // Default order: alarm uploaded first = lower fileOrder
+        assertTrue(alarmOrderBefore < ciscoOrderBefore);
+
+        // Step 2: Upload just eventconf.xml (lists alarm first, cisco second)
+        List<Attachment> reorderAttachments = List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/eventconf.xml")
+        );
+        Response resp = eventConfRestApi.uploadEventConfFiles(reorderAttachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        // After reorder: alarm should now have HIGHER fileOrder (searched first)
+        EventConfSource alarmAfter = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfSource ciscoAfter = eventConfSourceDao.findByName("Cisco.airespace");
+        assertTrue("After reorder, alarm should have higher fileOrder than cisco",
+                alarmAfter.getFileOrder() > ciscoAfter.getFileOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithEventConfXml_UnreferencedFilesGetHigherOrder() throws Exception {
+        // Pre-populate a source not referenced in eventconf.xml
+        EventConfSource unreferencedSource = new EventConfSource();
+        unreferencedSource.setName("unreferenced.events");
+        unreferencedSource.setEnabled(true);
+        unreferencedSource.setCreatedTime(new Date());
+        unreferencedSource.setFileOrder(99);
+        unreferencedSource.setEventCount(0);
+        unreferencedSource.setLastModified(new Date());
+        unreferencedSource.setUploadedBy("test");
+        eventConfSourceDao.saveOrUpdate(unreferencedSource);
+        sessionFactory.getCurrentSession().flush();
+
+        List<Attachment> attachments = List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/eventconf.xml"),
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")
+        );
+
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfSource cisco = eventConfSourceDao.findByName("Cisco.airespace");
+        EventConfSource unreferenced = eventConfSourceDao.findByName("unreferenced.events");
+
+        // Unreferenced sources get higher fileOrder (searched first), consistent with
+        // normal upload behavior where new/unknown files get highest priority
+        assertTrue("Unreferenced should have higher fileOrder than alarm",
+                unreferenced.getFileOrder() > alarm.getFileOrder());
+        assertTrue("Unreferenced should have higher fileOrder than cisco",
+                unreferenced.getFileOrder() > cisco.getFileOrder());
+        // Referenced order: alarm first in eventconf.xml = higher fileOrder among referenced
+        assertTrue("Alarm should have higher fileOrder than cisco",
+                alarm.getFileOrder() > cisco.getFileOrder());
+    }
+
+    @Test
+    @Transactional
+    public void testReUploadExistingSource_ShouldPreserveFileOrder() throws Exception {
+        List<Attachment> initialAttachments = List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")
+        );
+        eventConfRestApi.uploadEventConfFiles(initialAttachments, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        int originalFileOrder = eventConfSourceDao.findByName("opennms.alarm.events").getFileOrder();
+
+        // Re-upload the same file without eventconf.xml
+        List<Attachment> reuploadAttachments = List.of(
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml")
+        );
+        eventConfRestApi.uploadEventConfFiles(reuploadAttachments, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        int newFileOrder = eventConfSourceDao.findByName("opennms.alarm.events").getFileOrder();
+        assertEquals("FileOrder should be preserved on re-upload without eventconf.xml",
+                originalFileOrder, newFileOrder);
+    }
+
+    @Test
+    @Transactional
+    public void testUploadWithEventConfXml_CatchAllStaysPinnedAtFileOrder1() throws Exception {
+        // catch-all is seeded by liquibase migration at fileOrder 1
+        EventConfSource catchAllBefore = eventConfSourceDao.findByName("opennms.catch-all.events");
+        assertNotNull("catch-all should be seeded by migration", catchAllBefore);
+        assertEquals(1, (int) catchAllBefore.getFileOrder());
+
+        List<Attachment> attachments = List.of(
+                mockAttachment("eventconf.xml", "/EVENTS-CONF/eventconf.xml"),
+                mockAttachment("opennms.alarm.events.xml", "/EVENTS-CONF/opennms.alarm.events.xml"),
+                mockAttachment("Cisco.airespace.xml", "/EVENTS-CONF/Cisco.airespace.xml")
+        );
+
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        EventConfSource catchAllAfter = eventConfSourceDao.findByName("opennms.catch-all.events");
+        EventConfSource alarm = eventConfSourceDao.findByName("opennms.alarm.events");
+        EventConfSource cisco = eventConfSourceDao.findByName("Cisco.airespace");
+
+        assertEquals("catch-all should stay pinned at fileOrder 1", 1, (int) catchAllAfter.getFileOrder());
+        assertTrue("alarm should have higher fileOrder than catch-all",
+                alarm.getFileOrder() > catchAllAfter.getFileOrder());
+        assertTrue("cisco should have higher fileOrder than catch-all",
+                cisco.getFileOrder() > catchAllAfter.getFileOrder());
+    }
+
 }

@@ -321,14 +321,14 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         public EndpointModal newModal() {
             return new EndpointModal()
                     .open(() -> {
-                        findElementById("action.addGrafanaEndpoint").click(); // Click add button
+                        clickElement(By.id("action.addGrafanaEndpoint"));
                         new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Add Grafana Endpoint"));
                     });
         }
 
         public EndpointModal editModal(Long endpointId) {
             return new EndpointModal().open(() -> {
-                findElementById("action.edit." + endpointId).click();
+                clickElement(By.id("action.edit." + endpointId));
                 new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Edit Grafana Endpoint"));
             });
         }
@@ -336,7 +336,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         public void deleteEndpoint(GrafanaEndpoint endpoint) {
             execute(() -> {
                 // Click Delete
-                findElementById("action.delete." + endpoint.getId()).click();
+                clickElement(By.id("action.delete." + endpoint.getId()));
                 // Wait for confirm popover
                 new WebDriverWait(driver, Duration.ofSeconds(5)).until(pageContainsText("Delete Endpoint"));
                 // Click Yes in popover
@@ -379,7 +379,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         // Save or update
         public void save() {
             execute(() -> {
-                findElementById("save-endpoint").click();
+                clickElement(By.id("save-endpoint"));
                 return null;
             });
             ensureClosed();
@@ -388,7 +388,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         // Close dialog
         public void cancel() {
             execute(() -> {
-                findElementById("cancel-endpoint").click();
+                clickElement(By.id("cancel-endpoint"));
                 return null;
             });
             ensureClosed();

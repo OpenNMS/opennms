@@ -1,0 +1,18 @@
+{
+  "readCommunity": "public",
+  "definition": [
+    {
+      "readCommunity": "public-1",
+      "range": [
+        {
+          "begin": "fd00::1",
+          "end": "fd00::9"
+        }
+      ],
+      "specific": [],
+      "ipMatch": [],
+      "location": null,
+      "profileLabel": null
+    }
+  ]
+}

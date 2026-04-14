@@ -20,6 +20,8 @@
 /// License.
 ///
 
+import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
+
 export const categories = [
   { authorizedGroups: [] as any[], id: 1, name: 'Routers' }, 
   { authorizedGroups: [] as any[], id: 2, name: 'Switches' }, 
@@ -37,9 +39,9 @@ export const monitoringLocations = [
     tags: [
     ],
     priority: 100,
-    'location-name': 'Default',
+    'location-name': DEFAULT_MONITORING_LOCATION,
     'monitoring-area': 'localhost',
-    name: 'Default',
+    name: DEFAULT_MONITORING_LOCATION,
     area: 'localhost'
   },
   {

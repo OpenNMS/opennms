@@ -10,6 +10,7 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockPush = vi.fn()
@@ -27,7 +28,6 @@ describe('EventConfigSourceTable.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
@@ -73,6 +73,16 @@ describe('EventConfigSourceTable.vue', () => {
     wrapper = mount(EventConfigSourceTable, {
       global: {
         plugins: [pinia],
+        stubs: {
+          DeleteEventConfigSourceDialog: {
+            name: 'DeleteEventConfigSourceDialog',
+            template: '<div data-test="delete-event-config-source-dialog-stub" />'
+          },
+          ChangeEventConfigSourceStatusDialog: {
+            name: 'ChangeEventConfigSourceStatusDialog',
+            template: '<div data-test="change-event-config-source-status-dialog-stub" />'
+          }
+        },
         components: {
           FeatherButton,
           FeatherDropdown,
@@ -88,9 +98,21 @@ describe('EventConfigSourceTable.vue', () => {
     await nextTick()
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    if (wrapper) {
+      wrapper.unmount()
+    }
+
+    await flushPromises()
+    await nextTick()
+
+    document.body.innerHTML = ''
+
+    if (vi.isFakeTimers()) {
+      vi.useRealTimers()
+    }
+
     vi.restoreAllMocks()
-    vi.useRealTimers()
   })
 
   it('renders correctly and calls fetchEventConfigs on mount', () => {
@@ -193,16 +215,20 @@ describe('EventConfigSourceTable.vue', () => {
     expect(rows[1].text()).toContain('Disabled')
   })
 
-  it('handles search input changes with debouncing and calls onChangeSourcesSearchTerm', async () => {
+  it('updates the search term through the input without calling the store immediately', async () => {
+    vi.useFakeTimers()
+
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
     const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
     await searchInput.setValue('test')
-    vi.advanceTimersByTime(500)
-    await wrapper.vm.$nextTick()
+    await nextTick()
 
-    expect(store.onChangeSourcesSearchTerm).toHaveBeenCalledWith('test')
+    expect(store.sourcesSearchTerm).toBe('test')
+    expect(store.onChangeSourcesSearchTerm).not.toHaveBeenCalled()
+
+    vi.useRealTimers()
   })
 
   it('clicks view details button in row and navigates correctly', async () => {
@@ -315,6 +341,7 @@ describe('EventConfigSourceTable.vue', () => {
   })
 
   it('clicks download from dropdown and calls downloadEventConfXmlBySourceId', async () => {
+    vi.useFakeTimers()
     store.sources = [mockSource]
     const svc = await import('@/services/eventConfigService')
     vi.spyOn(svc, 'downloadEventConfXmlBySourceId').mockResolvedValue(false)
@@ -328,6 +355,7 @@ describe('EventConfigSourceTable.vue', () => {
     
     expect(downloadEventConfXmlBySourceId).toHaveBeenCalled()
     expect(svc.downloadEventConfXmlBySourceId).toHaveBeenCalledWith(mockSource.id)
+    vi.useRealTimers()
   })
 
   it('clicks delete from dropdown and calls showDeleteEventConfigSourceModal', async () => {
@@ -382,12 +410,12 @@ describe('EventConfigSourceTable.vue', () => {
   })
 
   it('shows empty state after search with no results', async () => {
+    vi.useFakeTimers()
     store.sources = [mockSource]
     await wrapper.vm.$nextTick()
 
-    const searchInput = wrapper.get('[data-test="search-input"] .feather-input')
-    await searchInput.setValue('nonexistent')
-    vi.advanceTimersByTime(500)
+    wrapper.vm.onChangeSearchTerm('nonexistent')
+    wrapper.vm.onChangeSearchTerm.flush()
     await flushPromises()
 
     store.sources = []
@@ -395,6 +423,6 @@ describe('EventConfigSourceTable.vue', () => {
 
     expect(wrapper.get('[data-test="empty-list"]').isVisible()).toBe(true)
     expect(wrapper.text()).toContain('No results found.')
+    vi.useRealTimers()
   })
 })
-

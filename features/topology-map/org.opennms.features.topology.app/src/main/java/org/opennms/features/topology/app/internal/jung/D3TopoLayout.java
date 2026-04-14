@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.collections4.map.LazyMap;
+import java.util.Objects;
+
+import org.apache.commons.collections4.map.LazyMap;
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;

@@ -21,12 +21,11 @@
  */
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
-import java.net.InetAddress;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.opennms.core.utils.InetAddressUtils;
+
+import java.net.InetAddress;
 
 /**
  * The Test Class for SnmpTrapNorthbounder.

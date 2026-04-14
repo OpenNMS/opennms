@@ -183,6 +183,10 @@ public abstract class MockLogAppender {
         setLogLevel(level);
         resetState();
 
+        // Clear per-package overrides from mocklogger.properties so that
+        // the requested level takes effect for all loggers
+        MockLogger.clearFileLogLevelOverrides();
+
         setProperty(MockLogger.DEFAULT_LOG_LEVEL_KEY, level);
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.jcraft.jsch", "WARN");
         setProperty(MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");

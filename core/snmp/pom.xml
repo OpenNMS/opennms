@@ -11,9 +11,7 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Core :: SNMP</name>
   <modules>
-    <module>joesnmp</module>
     <module>api</module>
-    <module>impl-joesnmp</module>
     <module>impl-snmp4j</module>
     <module>impl-mock</module>
     <module>integration-tests</module>

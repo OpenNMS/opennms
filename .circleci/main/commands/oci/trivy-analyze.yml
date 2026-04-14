@@ -1,7 +1,6 @@
 commands:
   trivy-analyze:
     steps:
-      - download-download-artifacts
       - cached-checkout
       - attach_workspace:
           at: ~/project
