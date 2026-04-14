@@ -53,6 +53,7 @@ import static org.junit.Assert.assertNull;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockEventForwarder.xml",
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
