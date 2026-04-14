@@ -218,6 +218,10 @@
         </exclusion>
         <exclusion>
           <groupId>io.netty</groupId>
+          <artifactId>netty-transport-classes-epoll</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
           <artifactId>netty-transport-native-kqueue</artifactId>
         </exclusion>
       </exclusions>
@@ -246,6 +250,11 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-codec-http</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport-classes-epoll</artifactId>
       <version>${netty4Version}</version>
     </dependency>
     <dependency>
