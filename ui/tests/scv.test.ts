@@ -20,13 +20,24 @@
 /// License.
 ///
 
-import { mount } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-import { beforeEach, describe, expect, test } from 'vitest'
+import SCV from '@/containers/SecureCredentialsVault.vue'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
-import SCV from '@/containers/SecureCredentialsVault.vue'
+import { createTestingPinia } from '@pinia/testing'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+
+// Mock the API service
+vi.mock('@/services', () => ({
+  default: {
+    getAliases: vi.fn(() => Promise.resolve([])),
+    getCredentialsByAlias: vi.fn(() => Promise.resolve(null)),
+    getAllCredentials: vi.fn(() => Promise.resolve([])),
+    addCredentials: vi.fn(() => Promise.resolve(true)),
+    updateCredentials: vi.fn(() => Promise.resolve(true))
+  }
+}))
 
 const mockCredentials: SCVCredentials = {
   alias: 'alias',
