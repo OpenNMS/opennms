@@ -17,6 +17,7 @@
         <bundle start-level="60">mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
         <bundle start-level="60">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="75">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
@@ -1652,6 +1653,7 @@
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
     </feature>
