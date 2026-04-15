@@ -409,7 +409,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Alarms"/>
-                                <property name="url" value="alarm/index.htm"/>
+                                <property name="url" value="alarm/list.htm"/>
                                 <property name="locationMatch" value="alarm"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
