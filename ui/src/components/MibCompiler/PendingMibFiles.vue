@@ -46,7 +46,6 @@
             :key="config.fileName"
           >
             <td>{{ config.fileName }}</td>
-            <td>{{ config.location }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton

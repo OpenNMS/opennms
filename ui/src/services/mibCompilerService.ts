@@ -1,18 +1,20 @@
 import {
   MibCompilerFileLocation,
   MibCompilerGenerateEventsRequest,
-  MibFileListResponse
+  MibFileListResponse,
+  MibUploadResponse
 } from '@/types/mibCompiler'
 import { rest } from './axiosInstances'
 
 const endpoint = '/mib-compiler'
 
-export const uploadMib = async (file: File, filename: string): Promise<void> => {
+export const uploadMib = async (file: File, filename: string): Promise<MibUploadResponse> => {
   const buffer = await file.arrayBuffer()
-  await rest.post(`${endpoint}/upload`, buffer, {
+  const response = await rest.post<MibUploadResponse>(`${endpoint}/upload`, buffer, {
     params: { filename },
     headers: { 'Content-Type': 'application/octet-stream' }
   })
+  return response.data
 }
 
 export const compileMib = async (name: string): Promise<void> => {
