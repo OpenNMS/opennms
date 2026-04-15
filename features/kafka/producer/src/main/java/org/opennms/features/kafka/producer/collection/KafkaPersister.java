@@ -340,10 +340,12 @@ public class KafkaPersister implements Persister {
         public Long getNodeId() {
             if (resource.hasNode()) {
                 return resource.getNode().getNodeId();
-            } else if (resource.hasInterface()) {
+            } else if (resource.hasInterface() && resource.getInterface().hasNode()) {
                 return resource.getInterface().getNode().getNodeId();
-            } else if (resource.hasGeneric()) {
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode()) {
                 return resource.getGeneric().getNode().getNodeId();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode()) {
+                return resource.getResponse().getNode().getNodeId();
             }
             return null;
         }
@@ -352,11 +354,11 @@ public class KafkaPersister implements Persister {
             String nodeLabel = null;
             if (resource.hasNode() && !resource.getNode().getNodeLabel().isEmpty()) {
                 nodeLabel = resource.getNode().getNodeLabel();
-            } else if (resource.hasInterface() && !resource.getInterface().getNode().getNodeLabel().isEmpty()) {
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getNodeLabel().isEmpty()) {
                 nodeLabel = resource.getInterface().getNode().getNodeLabel();
-            } else if (resource.hasGeneric() && !resource.getGeneric().getNode().getNodeLabel().isEmpty()) {
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getNodeLabel().isEmpty()) {
                 nodeLabel = resource.getGeneric().getNode().getNodeLabel();
-            } else if (resource.hasResponse() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
                 nodeLabel = resource.getResponse().getNode().getNodeLabel();
             }
             return nodeLabel;
@@ -366,10 +368,12 @@ public class KafkaPersister implements Persister {
             String foreignSource = null;
             if (resource.hasNode() && !resource.getNode().getForeignSource().isEmpty()) {
                 foreignSource = resource.getNode().getForeignSource();
-            } else if (resource.hasInterface() && !resource.getInterface().getNode().getForeignSource().isEmpty()) {
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignSource().isEmpty()) {
                 foreignSource = resource.getInterface().getNode().getForeignSource();
-            } else if (resource.hasGeneric() && !resource.getGeneric().getNode().getForeignSource().isEmpty()) {
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignSource().isEmpty()) {
                 foreignSource = resource.getGeneric().getNode().getForeignSource();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+                foreignSource = resource.getResponse().getNode().getForeignSource();
             }
             return foreignSource;
         }
@@ -378,10 +382,12 @@ public class KafkaPersister implements Persister {
             String foreignId = null;
             if (resource.hasNode() && !resource.getNode().getForeignId().isEmpty()) {
                 foreignId = resource.getNode().getForeignId();
-            } else if (resource.hasInterface() && !resource.getInterface().getNode().getForeignId().isEmpty()) {
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getForeignId().isEmpty()) {
                 foreignId = resource.getInterface().getNode().getForeignId();
-            } else if (resource.hasGeneric() && !resource.getGeneric().getNode().getForeignId().isEmpty()) {
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignId().isEmpty()) {
                 foreignId = resource.getGeneric().getNode().getForeignId();
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+                foreignId = resource.getResponse().getNode().getForeignId();
             }
             return foreignId;
         }
@@ -390,27 +396,18 @@ public class KafkaPersister implements Persister {
             String location = null;
             if (resource.hasNode() && !resource.getNode().getLocation().isEmpty()) {
                 location = resource.getNode().getLocation();
-            } else if (resource.hasInterface() && !resource.getInterface().getNode().getLocation().isEmpty()) {
+            } else if (resource.hasInterface() && resource.getInterface().hasNode() && !resource.getInterface().getNode().getLocation().isEmpty()) {
                 location = resource.getInterface().getNode().getLocation();
-            } else if (resource.hasGeneric() && !resource.getGeneric().getNode().getLocation().isEmpty()) {
+            } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getLocation().isEmpty()) {
                 location = resource.getGeneric().getNode().getLocation();
-            } else if (resource.hasResponse() && !resource.getResponse().getLocation().isEmpty()) {
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getLocation().isEmpty()) {
                 location = resource.getResponse().getLocation();
             }
             return location;
         }
 
         public String getResourceTypeName() {
-            if (resource.hasGeneric()) {
-                return resource.getGeneric().getType();
-            } else if (resource.hasInterface()) {
-                return "interface";
-            } else if (resource.hasNode()) {
-                return "node";
-            } else if (resource.hasResponse()) {
-                return "responseTime";
-            }
-            return null;
+            return resource.getResourceTypeName();
         }
 
         public String getResourceName() {
