@@ -1,23 +1,35 @@
 <template>
   <div class="upload-files-tab">
     <div class="action-bar">
-      <FeatherButton
-        secondary
-        data-test="upload-button"
-        @click="fileInput?.click()"
-        :disabled="isLoading"
-      >
-        Upload MIB Files
-      </FeatherButton>
-      <input
-        type="file"
-        :accept="VALID_FILE_EXTENSION"
-        multiple
-        @change="handleUpload"
-        data-test="event-conf-upload-input"
-        ref="fileInput"
-        :disabled="isLoading"
-      />
+      <div>
+        <FeatherButton
+          secondary
+          data-test="upload-button"
+          @click="fileInput?.click()"
+          :disabled="isLoading"
+        >
+          Upload MIB Files
+        </FeatherButton>
+        <input
+          type="file"
+          :accept="VALID_FILE_EXTENSION"
+          multiple
+          @change="handleUpload"
+          data-test="event-conf-upload-input"
+          ref="fileInput"
+          :disabled="isLoading"
+        />
+      </div>
+      <div>
+        <FeatherButton
+          text
+          data-test="clear-logs-button"
+          @click="clear"
+          :disabled="isLoading|| mibFiles.length === 0 || logs.length === 0"
+        >
+          Clear Logs
+        </FeatherButton>
+      </div>
     </div>
     <div class="files">
       <div
@@ -166,6 +178,15 @@ const removeFile = (index: number) => {
   mibFiles.value.splice(index, 1)
 }
 
+const clear = () => {
+  if (fileInput.value) {
+    fileInput.value.value = ''
+    fileInput.value.files = null
+  }
+  mibFiles.value = []
+  logs.value = []
+}
+
 const handleUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
   if (!input.files || input.files.length === 0) {
@@ -204,7 +225,7 @@ const handleUpload = async (e: Event) => {
           isDuplicate
         }
         mibFiles.value.push(mibFile)
-        
+
         if (isDuplicate) {
           addLog('error', `${file.name} - Duplicate file detected`)
         } else if (!isValid) {
@@ -244,6 +265,8 @@ const handleUpload = async (e: Event) => {
 
   .action-bar {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
 
     input[type="file"] {
