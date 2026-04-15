@@ -18,6 +18,11 @@ export const isDuplicateFile = (fileName: string, existingFiles: UploadMibFileTy
   return existingFiles.some((file) => file.file.name === fileName)
 }
 
+export enum FOLDER_LOCATIONS {
+  PENDING = 'PENDING',
+  COMPILED = 'COMPILED'
+}
+
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 export const VALID_FILE_EXTENSION = '.txt,.mib'
 

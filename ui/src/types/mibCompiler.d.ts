@@ -9,6 +9,8 @@ export interface MibCompilerFileInfo {
 
 export type MibFileListResponse = MibCompilerFileInfo[]
 
+export type MibCompilerFileInfoWithContent = MibCompilerFileContentResponse
+
 export interface MibCompilerGenerateEventsRequest {
   name: string
   ueiBase?: string
@@ -59,4 +61,11 @@ export interface MibUploadResponse {
     exception?: string
   }>
 }
+
+export interface MibCompilerFileContentResponse {
+  contents: string
+  location: string
+  name: string
+}
+
 

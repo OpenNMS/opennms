@@ -1,4 +1,5 @@
 import {
+  MibCompilerFileInfoWithContent,
   MibCompilerFileLocation,
   MibCompilerGenerateEventsRequest,
   MibFileListResponse,
@@ -30,8 +31,8 @@ export const deleteFile = async (location: MibCompilerFileLocation, fileName: st
   await rest.delete(`${endpoint}/files/${encodeURIComponent(location)}/${encodeURIComponent(fileName)}`)
 }
 
-export const getFileText = async (location: MibCompilerFileLocation, fileName: string): Promise<string> => {
-  const response = await rest.get<string>(
+export const getFileText = async (location: MibCompilerFileLocation, fileName: string): Promise<MibCompilerFileInfoWithContent> => {
+  const response = await rest.get<MibCompilerFileInfoWithContent>(
     `${endpoint}/files/${encodeURIComponent(location)}/${encodeURIComponent(fileName)}/text`
   )
   return response.data
