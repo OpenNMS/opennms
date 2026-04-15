@@ -252,6 +252,7 @@ const handleUpload = async (e: Event) => {
               addLog('error', `${errorItem.filename} - ${errorItem.error}`)
             }
           }
+          await store.fetchMibFiles()
         } catch (error: unknown) {
           let errorMsg = 'Unknown error occurred'
           if (error instanceof AxiosError) {
