@@ -94,7 +94,6 @@
         <entry key="thresholds.xml" value="thresholdingDao"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
-        <entry key="trapd-configuration.xml" value="trapdConfigDao"/>
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
