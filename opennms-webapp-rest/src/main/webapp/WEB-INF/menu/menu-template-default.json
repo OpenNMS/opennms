@@ -148,7 +148,7 @@
         {
           "id": "events",
           "name": "Events",
-          "url": "event/index",
+          "url": "event/list",
           "locationMatch": "event",
           "roles": null
         },

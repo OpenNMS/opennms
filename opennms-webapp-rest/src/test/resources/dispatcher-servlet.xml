@@ -399,7 +399,7 @@
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Events"/>
-                                <property name="url" value="event/index"/>
+                                <property name="url" value="event/list"/>
                                 <property name="locationMatch" value="event"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">

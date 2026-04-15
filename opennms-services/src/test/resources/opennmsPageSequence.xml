@@ -89,7 +89,7 @@
   <page virtual-host="${virtualHost}" path="/opennms/element/nodeList.htm" port="${port}" response-range="200"/>
 
   <page virtual-host="${virtualHost}" path="/opennms/event/advsearch.jsp" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/event/index" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/index" port="${port}" response-range="300-399"/>
   <page virtual-host="${virtualHost}" path="/opennms/event/list" port="${port}" response-range="200"/>
 
   <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->
