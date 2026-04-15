@@ -46,3 +46,17 @@ export type UploadMibFileType = {
   isDuplicate: boolean
 }
 
+export interface MibUploadResponse {
+  success: Array<{
+    filename: string
+    savedAs: string
+    success: boolean
+  }>
+  errors: Array<{
+    filename: string
+    basename: string
+    error: string
+    exception?: string
+  }>
+}
+

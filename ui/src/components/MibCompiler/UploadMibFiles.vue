@@ -121,7 +121,7 @@ import useSnackbar from '@/composables/useSnackbar'
 import { ellipsify } from '@/lib/utils'
 import { uploadMib } from '@/services/mibCompilerService'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
-import { UploadMibFileType } from '@/types/mibCompiler'
+import { MibUploadResponse, UploadMibFileType } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import CheckCircle from '@featherds/icon/action/CheckCircle'
@@ -129,6 +129,7 @@ import Generic from '@featherds/icon/file/Generic'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import Warning from '@featherds/icon/notification/Warning'
 import { FeatherTooltip } from '@featherds/tooltip'
+import { AxiosError } from 'axios'
 import { mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
 
 const isLoading = ref(false)
@@ -235,11 +236,38 @@ const handleUpload = async (e: Event) => {
         }
 
         addLog('info', `${file.name} - Uploading file...`)
-        await uploadMib(file, file.name)
-        addLog('success', `File uploaded successfully - ${file.name} - ${file.size / 1024} KB`)
+        try {
+          const uploadResponse: MibUploadResponse = await uploadMib(file, file.name)
+          
+          // Handle success cases
+          if (uploadResponse.success && uploadResponse.success.length > 0) {
+            for (const successItem of uploadResponse.success) {
+              addLog('success', `${successItem.filename} - Uploaded successfully as ${successItem.savedAs} (${(file.size / 1024).toFixed(2)} KB)`)
+            }
+          }
+          
+          // Handle error cases
+          if (uploadResponse.errors && uploadResponse.errors.length > 0) {
+            for (const errorItem of uploadResponse.errors) {
+              addLog('error', `${errorItem.filename} - ${errorItem.error}`)
+            }
+          }
+        } catch (error: unknown) {
+          let errorMsg = 'Unknown error occurred'
+          if (error instanceof AxiosError) {
+            errorMsg = error.response?.data?.message || error.message || 'Server error'
+          } else if (error instanceof Error) {
+            errorMsg = error.message
+          }
+          addLog('error', `${file.name} - Upload failed: ${errorMsg}`)
+        }
         isLoading.value = false
-      } catch (error) {
-        addLog('error', `${file.name} - Error processing file`)
+      } catch (error: unknown) {
+        let errorMsg = 'Unknown error occurred'
+        if (error instanceof Error) {
+          errorMsg = error.message
+        }
+        addLog('error', `${file.name} - Error processing file: ${errorMsg}`)
         isLoading.value = false
       }
     }
