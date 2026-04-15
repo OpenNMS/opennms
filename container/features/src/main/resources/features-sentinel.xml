@@ -38,6 +38,9 @@
         <feature>activemq-camel</feature>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
 
+        <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->
+        <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+
         <feature>opennms-core-ipc-sink-camel-server</feature>
         <!-- Sink Client-->
         <feature>opennms-core-ipc-sink-camel</feature>

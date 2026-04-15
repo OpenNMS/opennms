@@ -30,6 +30,9 @@
         <bundle>mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
         <feature>activemq-camel</feature>
 
+        <!-- netty-transport-classes-epoll is required by netty-transport-native-epoll at runtime -->
+        <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+
         <!-- This is also defined in "sentinel-jms" -->
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>

@@ -389,6 +389,8 @@
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
         <feature>camel-core</feature>
         <feature>camel-http</feature>
+        <!-- netty-transport-classes-epoll must be loaded before camel-netty4 resolves io.netty.channel.epoll -->
+        <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
