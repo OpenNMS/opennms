@@ -87,12 +87,6 @@
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
-                <FeatherButton
-                  icon="Edit Source"
-                  data-test="edit-button"
-                >
-                  <FeatherIcon :icon="Edit"> </FeatherIcon>
-                </FeatherButton>
                 <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
                     <FeatherButton
@@ -182,7 +176,6 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'

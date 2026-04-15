@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
+import { DEFAULT_OID_TYPE, DEFAULT_STATUS, OID_MASK_PATTERN, OID_TYPE_OPTIONS, STATUS_OPTIONS } from '@/lib/constants'
 import { mapSnmpDataCollectionSystemDefPayloadToServer } from '@/mappers/snmpDataCollection.mapper'
 import { useSnmpDataCollectionCreationStore } from '@/stores/snmpDataCollectionCreationStore'
 import { CreateEditMode } from '@/types'
@@ -187,7 +187,7 @@ const validateDefinition = (): SystemDefErrors => {
   if (!oidValue.value.trim()) {
     validationErrors['oidValue'] = 'OID Value is required.'
   }
-  if (oidValue.value && !OID_PATTERN.test(oidValue.value)) {
+  if (oidValue.value && !OID_MASK_PATTERN.test(oidValue.value)) {
     validationErrors['oidValue'] = 'OID Value format is invalid.'
   }
   if (mibGroupNames.value.length === 0) {

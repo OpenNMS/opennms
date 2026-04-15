@@ -74,7 +74,8 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     private volatile DatacollectionConfig dbConfig;
     private volatile Date lastDbUpdate = new Date();
 
-    private static final String DEFAULT_RRD_REPOSITORY = "/opt/opennms/share/rrd/snmp/";
+    private static final String DEFAULT_RRD_REPOSITORY =
+            System.getProperty("rrd.base.dir", "/opt/opennms/share/rrd") + "/snmp/";
 
     public DefaultDataCollectionConfigDao() {
         super(DatacollectionConfig.class, "data-collection");
@@ -87,16 +88,13 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
      */
     @Override
     public void afterPropertiesSet() {
+        if (getConfigResource() != null && getConfigResource().exists()) {
+            // XML file exists: load from it (tests and pre-migration)
+            super.afterPropertiesSet();
+            return;
+        }
         if (getConfigResource() != null) {
-            try {
-                // XML-based: delegate to parent to load from file/resource
-                super.afterPropertiesSet();
-                return;
-            } catch (org.opennms.core.xml.MarshallingResourceFailureException e) {
-                // XML file doesn't exist (archived after DB migration) — fall through to empty config
-                LOG.info("Could not load datacollection XML config: {} — will load from DB.",
-                        e.getMessage());
-            }
+            LOG.info("Datacollection XML config not found (archived after DB migration) — will load from DB.");
         }
         // DB-backed: start empty, persistence service will populate via loadFromDatabase()
         final DatacollectionConfig emptyConfig = new DatacollectionConfig();

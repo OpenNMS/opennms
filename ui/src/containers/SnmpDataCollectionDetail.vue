@@ -99,18 +99,18 @@
       <div class="tab-container">
         <FeatherTabContainer v-model="store.activeTab">
           <template v-slot:tabs>
-            <FeatherTab>Resource Types</FeatherTab>
-            <FeatherTab>MIB Groups</FeatherTab>
             <FeatherTab>System Definitions</FeatherTab>
+            <FeatherTab>MIB Groups</FeatherTab>
+            <FeatherTab>Resource Types</FeatherTab>
           </template>
           <FeatherTabPanel>
-            <ResourceTypesTable />
+            <SystemDefinitionsTable />
           </FeatherTabPanel>
           <FeatherTabPanel>
             <MibGroupsTable />
           </FeatherTabPanel>
           <FeatherTabPanel>
-            <SystemDefinitionsTable />
+            <ResourceTypesTable />
           </FeatherTabPanel>
         </FeatherTabContainer>
       </div>

@@ -21,12 +21,17 @@
  */
 package org.opennms.config.upgrade;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import org.opennms.config.upgrade.datacollection.SnmpDataCollectionMigration;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,6 +43,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UpgradeConfigService implements InitializingBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UpgradeConfigService.class);
 
     private final ConfigurationManagerService cm;
     private final DataSource dataSource;
@@ -57,6 +64,33 @@ public class UpgradeConfigService implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         if (!skipConfigUpgrades) {
             new LiquibaseUpgrader(cm).runChangelog("changelog-cm/changelog-cm.xml", dataSource.getConnection());
+            migrateSnmpDataCollection();
+        }
+    }
+
+    /**
+     * Migrate SNMP data collection XML configs to database.
+     * Idempotent — skips if data already exists.
+     */
+    private void migrateSnmpDataCollection() {
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(false);
+            final SnmpDataCollectionMigration migration = new SnmpDataCollectionMigration();
+            migration.execute(connection);
+            connection.commit();
+            // Archive only after successful commit
+            migration.archiveFiles();
+        } catch (final Exception e) {
+            if (connection != null) {
+                try { connection.rollback(); } catch (SQLException ignored) { }
+            }
+            LOG.error("SNMP data collection XML-to-DB migration failed: {}", e.getMessage(), e);
+        } finally {
+            if (connection != null) {
+                try { connection.close(); } catch (SQLException ignored) { }
+            }
         }
     }
 }

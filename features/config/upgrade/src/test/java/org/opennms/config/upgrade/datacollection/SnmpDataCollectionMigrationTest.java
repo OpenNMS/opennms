@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.schema.migrator;
+package org.opennms.config.upgrade.datacollection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

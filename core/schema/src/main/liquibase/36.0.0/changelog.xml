@@ -239,5 +239,4 @@
         </rollback>
     </changeSet>
 
-
 </databaseChangeLog>

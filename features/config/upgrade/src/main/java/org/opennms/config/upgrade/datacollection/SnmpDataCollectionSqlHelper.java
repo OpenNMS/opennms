@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.schema.migrator;
+package org.opennms.config.upgrade.datacollection;
 
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -45,8 +45,8 @@ public final class SnmpDataCollectionSqlHelper {
 
     private static final String INSERT_SOURCE =
             "INSERT INTO snmp_collection_sources " +
-            "(id, name, vendor, description, enabled, created_time, uploaded_by) " +
-            "VALUES (nextval('snmp_collection_sources_id_seq'), ?, ?, ?, true, NOW(), ?)";
+            "(id, name, vendor, description, enabled, created_time, last_modified, uploaded_by) " +
+            "VALUES (nextval('snmp_collection_sources_id_seq'), ?, ?, ?, true, NOW(), NOW(), ?)";
 
     private static final String SELECT_SOURCE_ID =
             "SELECT id FROM snmp_collection_sources WHERE name = ?";

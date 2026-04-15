@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.schema.migrator;
+package org.opennms.config.upgrade.datacollection;
 
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
@@ -143,8 +143,7 @@ public class SnmpDataCollectionMigration {
                             "{} MIB groups, {} resource types, {} system definitions.",
                     profileCount, sourceCount, mibGroupCount, resourceTypeCount, systemDefCount);
 
-            // Archive original XML files — DB is now the source of truth
-            archiveOriginalFiles(etcDir);
+            // Archival happens after commit in UpgradeConfigService
 
         } catch (SQLException e) {
             throw e;
@@ -310,7 +309,7 @@ public class SnmpDataCollectionMigration {
      * Uses a SAX filter to inject the expected namespace for XML files that omit it.
      */
     <T> T unmarshal(final Class<T> clazz, final File file) throws SQLException {
-        try {
+        try (final FileInputStream fis = new FileInputStream(file)) {
             final JAXBContext ctx = JAXBContext.newInstance(clazz);
             final Unmarshaller unmarshaller = ctx.createUnmarshaller();
 
@@ -318,13 +317,13 @@ public class SnmpDataCollectionMigration {
             final NamespaceFilter filter = new NamespaceFilter(DATACOLLECTION_NAMESPACE);
             filter.setParent(reader);
 
-            final InputSource is = new InputSource(new FileInputStream(file));
+            final InputSource is = new InputSource(fis);
             final SAXSource source = new SAXSource(filter, is);
 
             @SuppressWarnings("unchecked")
             final T result = (T) unmarshaller.unmarshal(source);
             return result;
-        } catch (JAXBException | SAXException | java.io.FileNotFoundException e) {
+        } catch (JAXBException | SAXException | java.io.IOException e) {
             throw new SQLException("Failed to unmarshal " + file.getAbsolutePath(), e);
         }
     }
@@ -355,6 +354,14 @@ public class SnmpDataCollectionMigration {
             }
             super.endElement(uri, localName, qName);
         }
+    }
+
+    /**
+     * Archive original XML files after successful migration and commit.
+     * Should be called after the DB transaction is committed.
+     */
+    public void archiveFiles() {
+        archiveOriginalFiles(resolveEtcDirectory());
     }
 
     /**

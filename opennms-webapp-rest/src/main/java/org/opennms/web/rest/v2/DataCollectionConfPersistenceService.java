@@ -92,6 +92,7 @@ public class DataCollectionConfPersistenceService {
     @Autowired
     private DataCollectionConfigDao dataCollectionConfigDao;
 
+
     @PostConstruct
     public void init() {
         try {
@@ -116,7 +117,11 @@ public class DataCollectionConfPersistenceService {
         LOG.info("Loading SNMP data collection config from database ({} profiles)...", profiles.size());
 
         final DatacollectionConfig config = new DatacollectionConfig();
-        config.setRrdRepository(dataCollectionConfigDao.getRrdPath() + "/");
+        String rrdPath = dataCollectionConfigDao.getRrdPath();
+        if (!rrdPath.endsWith("/")) {
+            rrdPath = rrdPath + "/";
+        }
+        config.setRrdRepository(rrdPath);
         final Map<String, ResourceType> allResourceTypes = new HashMap<>();
         final List<String> allGroups = new ArrayList<>();
 
