@@ -1,9 +1,13 @@
 import { UploadMibFileType } from '@/types/mibCompiler'
 
+export const isValidMibExtension = (fileName: string): boolean => {
+  return VALID_FILE_EXTENSION.some(ext => fileName.toLowerCase().endsWith(ext))
+}
+
 export const mibFilesValidator = async (file: File): Promise<{ isValid: boolean; errors: string[] }> => {
   const errors: string[] = []
-  if (!file.name.toLowerCase().endsWith('.txt')) {
-    errors.push('Invalid file type. Only .txt files are allowed.')
+  if (!isValidMibExtension(file.name)) {
+    errors.push(`Invalid file type. Only ${VALID_FILE_EXTENSION.join(', ')} files are allowed.`)
   }
   if (file.size > MAX_FILE_SIZE) {
     errors.push(`File size exceeds the maximum limit of ${MAX_FILE_SIZE / (1024 * 1024)}MB.`)
@@ -19,5 +23,5 @@ export const isDuplicateFile = (fileName: string, existingFiles: UploadMibFileTy
 }
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-export const VALID_FILE_EXTENSION = '.txt,.mib'
+export const VALID_FILE_EXTENSION = ['.txt', '.mib']
 
