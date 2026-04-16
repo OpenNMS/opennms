@@ -386,7 +386,7 @@ public class KafkaPersister implements Persister {
                 foreignId = resource.getInterface().getNode().getForeignId();
             } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignId().isEmpty()) {
                 foreignId = resource.getGeneric().getNode().getForeignId();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignId().isEmpty()) {
                 foreignId = resource.getResponse().getNode().getForeignId();
             }
             return foreignId;
@@ -407,7 +407,13 @@ public class KafkaPersister implements Persister {
         }
 
         public String getResourceTypeName() {
-            return resource.getResourceTypeName();
+            if (resource.hasResponse()) {
+                return "responseTime";
+            } else if (resource.hasGeneric()) {
+                return resource.getGeneric().getType();
+            } else {
+                return resource.getResourceTypeName();
+            }
         }
 
         public String getResourceName() {
