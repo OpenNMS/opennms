@@ -21,7 +21,13 @@
 ///
 
 import { rest } from './axiosInstances'
-import { UsageStatisticsData, UsageStatisticsMetadata, UsageStatisticsStatus } from '@/types/usageStatistics'
+import {
+  UsageStatisticsData,
+  UsageStatisticsMetadata,
+  UsageStatisticsStatus,
+  ProductUpdateEnrollmentStatus,
+  ProductUpdateEnrollmentFormData
+} from '@/types/usageStatistics'
 
 const endpoint = '/datachoices'
 
@@ -68,9 +74,53 @@ const setUsageStatisticsStatus = async (enabled: boolean) : Promise<any | false>
   }
 }
 
+const acknowledgeUsageStatisticsNotice = async (): Promise<any | false> => {
+  try {
+    const url = `${endpoint}/status`
+    const resp = await rest.post(url, { initialNoticeAcknowledged: true })
+    return resp
+  } catch (err) {
+    return false
+  }
+}
+
+const getProductUpdateEnrollmentStatus = async (): Promise<ProductUpdateEnrollmentStatus | false> => {
+  try {
+    const url = `${endpoint}/productupdate/status`
+    const resp = await rest.get(url)
+    return resp.data
+  } catch (err) {
+    return false
+  }
+}
+
+const setProductUpdateEnrollmentStatus = async (optedIn: boolean, noticeAcknowledged: boolean): Promise<any | false> => {
+  try {
+    const url = `${endpoint}/productupdate/status`
+    const resp = await rest.post(url, { optedIn, noticeAcknowledged })
+    return resp
+  } catch (err) {
+    return false
+  }
+}
+
+const submitProductUpdateEnrollmentForm = async (data: ProductUpdateEnrollmentFormData): Promise<any | false> => {
+  try {
+    const url = `${endpoint}/productupdate/submit`
+    const resp = await rest.post(url, data)
+    return resp
+  } catch (err) {
+    return false
+  }
+}
+
 export {
   getUsageStatistics,
   getUsageStatisticsMetadata,
   getUsageStatisticsStatus,
-  setUsageStatisticsStatus
+  setUsageStatisticsStatus,
+  acknowledgeUsageStatisticsNotice,
+  getProductUpdateEnrollmentStatus,
+  setProductUpdateEnrollmentStatus,
+  submitProductUpdateEnrollmentForm
 }

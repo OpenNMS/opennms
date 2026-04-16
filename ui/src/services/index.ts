@@ -52,7 +52,7 @@ import { getGeolocationConfig } from './geolocationService'
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
-import { getAliases, getAllCredentials, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
+import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
@@ -70,12 +70,21 @@ import {
   getUsageStatistics,
   getUsageStatisticsMetadata,
   getUsageStatisticsStatus,
-  setUsageStatisticsStatus
+  setUsageStatisticsStatus,
+  acknowledgeUsageStatisticsNotice,
+  getProductUpdateEnrollmentStatus,
+  setProductUpdateEnrollmentStatus,
+  submitProductUpdateEnrollmentForm
 } from './usageStatisticsService'
 import {
   addZenithRegistration,
   getZenithRegistrations
 } from './zenithConnectService'
+import {
+  getRequiresPasswordChange,
+  dismissPasswordChangePrompt,
+  changePassword
+} from './accountService'
 
 export default {
   search,
@@ -126,15 +135,21 @@ export default {
   getOsImageOptions,
   getHistoryByIpInterface,
   getAliases,
-  getAllCredentials,
   getCredentialsByAlias,
   addCredentials,
   updateCredentials,
   getUsageStatistics,
-  getUsageStatisticsMetadata, 
+  getUsageStatisticsMetadata,
   getUsageStatisticsStatus,
   setUsageStatisticsStatus,
+  acknowledgeUsageStatisticsNotice,
+  getProductUpdateEnrollmentStatus,
+  setProductUpdateEnrollmentStatus,
+  submitProductUpdateEnrollmentForm,
   addZenithRegistration,
   getZenithRegistrations,
+  getRequiresPasswordChange,
+  dismissPasswordChangePrompt,
+  changePassword,
   performLogout
 }

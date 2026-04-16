@@ -39,11 +39,14 @@ import org.springframework.util.StringUtils;
 
 @SuppressWarnings("java:S2068")
 public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    // username/password combination that triggers the password gate, which prompts
-    // user to change the default "admin" password
-
+    // username/password combination that triggers the password change prompt in the Vue UI
     public static final String PASSWORD_GATE_USERNAME = "admin";
     public static final String PASSWORD_GATE_PASSWORD = "admin";
+
+    //  attribute set when admin logs in with the default password.
+    // TheSessionu Vue WelcomeModal wizard reads this via GET /rest/account/requiresPasswordChange
+    // and clears it after the password is changed or dismissed.
+    public static final String REQUIRES_PASSWORD_CHANGE_SESSION_ATTR = "requiresPasswordChange";
 
     protected final Logger logger = LoggerFactory.getLogger(OpenNMSAuthSuccessHandler.class);
     private final RequestCache requestCache = new HttpSessionRequestCache();
@@ -53,54 +56,45 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // changing JSESSIONID to prevent Session Fixation attacks, see NMS-15310
         request.changeSessionId();
 
-        // check for admin/admin
-        boolean defaultAdminLogin = isDefaultAdminLogin(request.getParameter("j_username"), request.getParameter("j_password"));
+        // If admin logged in with the default password, flag the session so the Vue
+        // WelcomeModal wizard can prompt for a password change in-app instead of
+        // interrupting the flow with a full-page JSP redirect.
+        if (isDefaultAdminLogin(request.getParameter("j_username"), request.getParameter("j_password"))) {
+            request.getSession(true).setAttribute(REQUIRES_PASSWORD_CHANGE_SESSION_ATTR, Boolean.TRUE);
+            logger.debug("User logged in with default admin credentials. Setting '{}' session flag for Vue wizard.", REQUIRES_PASSWORD_CHANGE_SESSION_ATTR);
+        }
 
-        if (defaultAdminLogin) {
-            handleDefaultAdminLogin(request, response);
+        final DefaultSavedRequest savedRequest = (DefaultSavedRequest) this.requestCache.getRequest(request, response);
+
+        if (savedRequest == null) {
+            super.clearAuthenticationAttributes(request);
+            this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
         } else {
-            final DefaultSavedRequest savedRequest = (DefaultSavedRequest) this.requestCache.getRequest(request, response);
+            String targetUrlParameter = this.getTargetUrlParameter();
 
-            if (savedRequest == null) {
-                super.clearAuthenticationAttributes(request);
-                this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
-            } else {
-                String targetUrlParameter = this.getTargetUrlParameter();
+            boolean useSavedRequest = !this.isAlwaysUseDefaultTargetUrl() &&
+                (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
 
-                boolean useSavedRequest = !this.isAlwaysUseDefaultTargetUrl() &&
-                    (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
+            // make sure we are redirecting to an actual page, not e.g. a URL to an asset
+            // TODO: Determine why assets are getting saved in the requestCache
+            if (useSavedRequest) {
+                final String servletPathLower = savedRequest.getServletPath().toLowerCase();
 
-                // make sure we are redirecting to an actual page, not e.g. a URL to an asset
-                // TODO: Determine why assets are getting saved in the requestCache
-                if (useSavedRequest) {
-                    final String servletPathLower = savedRequest.getServletPath().toLowerCase();
-
-                    if (LoginModuleUtils.isInvalidSavedRequestUrl(servletPathLower)) {
-                        useSavedRequest = false;
-                    }
-                }
-
-                if (useSavedRequest) {
-                    this.clearAuthenticationAttributes(request);
-                    final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
-                    this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
-                    this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
-                } else {
-                    this.requestCache.removeRequest(request, response);
-                    this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
+                if (LoginModuleUtils.isInvalidSavedRequestUrl(servletPathLower)) {
+                    useSavedRequest = false;
                 }
             }
-        }
-    }
 
-    /**
-     * 'admin' user is logged in successfully, but with default "admin" password, redirect to password gate page.
-     */
-    private void handleDefaultAdminLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        final String targetUrl = Util.calculateUrlBase(request, "/account/selfService/passwordGate.jsp");
-        this.logger.debug("User used default admin password. Redirecting to Password Gate, url: " + targetUrl);
-        super.clearAuthenticationAttributes(request);
-        this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            if (useSavedRequest) {
+                this.clearAuthenticationAttributes(request);
+                final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
+                this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+                this.getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            } else {
+                this.requestCache.removeRequest(request, response);
+                this.getRedirectStrategy().sendRedirect(request, response, createTargetURL(request, response));
+            }
+        }
     }
 
     private String createTargetURL(HttpServletRequest request, HttpServletResponse response) {
