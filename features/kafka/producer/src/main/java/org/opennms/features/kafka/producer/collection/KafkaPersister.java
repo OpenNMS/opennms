@@ -372,7 +372,7 @@ public class KafkaPersister implements Persister {
                 foreignSource = resource.getInterface().getNode().getForeignSource();
             } else if (resource.hasGeneric() && resource.getGeneric().hasNode() && !resource.getGeneric().getNode().getForeignSource().isEmpty()) {
                 foreignSource = resource.getGeneric().getNode().getForeignSource();
-            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getNodeLabel().isEmpty()) {
+            } else if (resource.hasResponse() && resource.getResponse().hasNode() && !resource.getResponse().getNode().getForeignSource().isEmpty()) {
                 foreignSource = resource.getResponse().getNode().getForeignSource();
             }
             return foreignSource;
