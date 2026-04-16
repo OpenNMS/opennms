@@ -4,7 +4,7 @@
 The SNMP Configuration Lookup feature allows you to quickly find the SNMP configuration for a specific IP address. This is useful when you want to verify the SNMP settings for a particular device or troubleshoot SNMP-related issues.
 
 Enter an IP address in the lookup field and choose a Monitoring Location, then click the "Lookup" button.
-If you are not using minions, then the Monitoring Location is always `Default`. If you are using minions, then the Monitoring Location is determined by the minion that is responsible for monitoring the IP address.
+If you are not using Minions, then the Monitoring Location is always `Default`. If you are using Minions, then the Monitoring Location is determined by the Minion that is responsible for monitoring the IP address.
 
 OpenNMS will then display the SNMP configuration that applies to that IP address.
 

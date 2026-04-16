@@ -14,7 +14,7 @@ Use the Edit or Delete icons to edit or delete a profile.
 
 If you are adding a profile, enter a unique label. Then add a filter expression and the SNMP settings that should be applied to nodes matching that filter expression. The filter expression is used to determine which nodes the profile should be applied to, based on their IP address or other criteria. For example, you could use an IPLIKE expression to apply the profile to all nodes in a specific subnet.
 
-Click `Save Changes` to save the profile, or `Cancel` to return to the SNMP Profiles table without saving any changes.
+Click *Save Changes* to save the profile, or *Cancel* to return to the SNMP Profiles table without saving any changes.
 
 See the xref:deep-dive/provisioning/snmp-profile.adoc[] page for more information on what profiles are and how they work in OpenNMS.
 
