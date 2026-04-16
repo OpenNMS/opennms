@@ -445,21 +445,23 @@ public class DataCollectionConfPersistenceService {
     }
 
     public void enableDisableSnmpDataCollectionSources(boolean enabled, List<Integer> ids) {
-
         snmpCollectionSourceDao.updateEnabledFlag(ids, enabled);
+        reloadDataCollectionConfigFromDb();
     }
 
     public void enableDisableMibGroups(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-
         snmpCollectionMibGroupDao.updateMibGroupEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        reloadDataCollectionConfigFromDb();
     }
 
     public void enableDisableResourceTypes(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-      snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        reloadDataCollectionConfigFromDb();
     }
 
     public void enableDisableSystemDefs(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-      snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        reloadDataCollectionConfigFromDb();
     }
 
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
