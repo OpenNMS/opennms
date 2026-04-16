@@ -21,6 +21,7 @@ export interface MibCompilerStoreState {
   isLoading: boolean
   compiledMibFilesSearchTerm: string
   pendingMibFilesSearchTerm: string
+  selectedMibFile: MibCompilerFileInfoWithContent | null
   compiledMibFilesSort: {
     property: keyof MibCompilerFileInfo
     value: SORT

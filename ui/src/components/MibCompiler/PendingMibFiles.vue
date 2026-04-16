@@ -57,6 +57,13 @@
             <td>
               <div class="action-container">
                 <FeatherButton
+                  icon="Edit"
+                  data-test="edit-button"
+                  @click="onEditClick(config)"
+                >
+                  <FeatherIcon :icon="Edit" />
+                </FeatherButton>
+                <FeatherButton
                   icon="View Details"
                   data-test="view-button"
                 >
@@ -107,7 +114,12 @@
       title="Delete Pending MIB File"
       :visible="deleteDialogVisible"
     >
-      <template #content> Are you sure you want to delete this pending MIB file name: <strong>{{ selectedFile?.fileName }}</strong>? </template>
+      <template #content>
+        Are you sure you want to delete this pending MIB file name:
+        <strong>{{ selectedFile?.fileName
+        }}</strong
+        >?
+      </template>
     </ConfirmationDialog>
     <FileText
       title="Compiled MIB File Details"
@@ -123,9 +135,7 @@
             <p>View MIB contents</p>
           </div>
           <div class="content">
-            <pre
-              data-test="file-text"
-            >
+            <pre data-test="file-text">
             {{ fileText }}
           </pre
             >
@@ -143,6 +153,7 @@ import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import Delete from '@featherds/icon/action/Delete'
+import Edit from "@featherds/icon/action/Edit"
 import Search from '@featherds/icon/action/Search'
 import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
 import Generic from '@featherds/icon/file/Generic'
@@ -156,6 +167,7 @@ import TableCard from '../Common/TableCard.vue'
 import FileText from './Drawer/FileText.vue'
 import { FOLDER_LOCATIONS } from './mibFilesValidator'
 
+const router = useRouter()
 const store = useMibCompilerStore()
 const { showSnackBar } = useSnackbar()
 const deleteDialogVisible = ref(false)
@@ -169,6 +181,21 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
+
+const onEditClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for editing.', error: true })
+    return
+  }
+
+  try {
+    const response = await getFileText(FOLDER_LOCATIONS.PENDING, file.fileName)
+    store.setSelectedMibFile(response)
+    router.push('/mib-compiler/edit')
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to load pending MIB file details.', error: true })
+  }
+}
 
 const onDeleteClick = (file: MibCompilerFileInfo) => {
   selectedFile.value = file

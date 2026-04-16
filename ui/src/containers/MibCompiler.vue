@@ -7,7 +7,7 @@
     </div>
     <div class="header">
       <div class="heading">
-        <h1>Import Events from MIB</h1>
+        <p>Import Events from MIB</p>
       </div>
     </div>
     <div class="tab-container">
@@ -43,19 +43,20 @@ const store = useMibCompilerStore()
 const homeUrl = computed<string>(() => menuStore.mainMenu?.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => ([
-  { label: 'Home', to: homeUrl.value, isAbsoluteLink: true },
+  { label: 'Home', to: homeUrl.value, isAbsoluteLink: false },
   { label: 'MIB Compiler', to: '#', position: 'last' }
 ]))
 
 onMounted(async () => {
   await Promise.all([
     store.fetchMibFiles()
-    // store.fetchPendingMibFiles()
   ])
 })
 </script>
 
 <style lang="scss" scoped>
+@use '@featherds/styles/mixins/typography';
+
 .mib-compiler-container {
   padding: 20px;
 
@@ -65,6 +66,13 @@ onMounted(async () => {
     align-items: center;
     margin-bottom: 20px;
     padding: 60px 40px 25px 40px;
+
+    .heading {
+      p {
+        @include typography.headline1;
+        margin: 0;
+      }
+    }
   }
 
   .tab-container {
