@@ -38,6 +38,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.GET;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -456,6 +457,86 @@ public interface DataCollectionConfRestApi {
             @QueryParam("id") List<Integer> ids,
             @Context SecurityContext securityContext
     );
+
+    @PATCH
+    @Path("/collectsources/status/{enabled}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable SNMP Data Collection Sources",
+            description = "Enable or disable one or more SNMP data collection sources",
+            operationId = "enableDisableSnmpDataCollectionSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableSnmpDataCollectionSources(
+            @PathParam("enabled") boolean enabled,
+            @QueryParam("id") List<Integer> ids,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @PATCH
+    @Path("/collectsources/{snmpDataCollectionSourceId}/mib-groups/status/{enabled}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable SNMP MIB Groups",
+            description = "Enable or disable one or more SNMP MIB groups",
+            operationId = "enableDisableSnmpMibGroups"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableSnmpMibGroups(
+            @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
+            @PathParam("enabled") boolean enabled,
+            @QueryParam("id") List<Integer> ids,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+    @PATCH
+    @Path("/collectsources/{snmpDataCollectionSourceId}/resource-types/status/{enabled}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable SNMP Resource Types",
+            description = "Enable or disable one or more SNMP resource types",
+            operationId = "enableDisableSnmpResourceTypes"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableSnmpResourceTypes(
+            @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
+            @PathParam("enabled") boolean enabled,
+            @QueryParam("id") List<Integer> ids,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
+
+    @PATCH
+    @Path("/collectsources/{snmpDataCollectionSourceId}/system-defs/status/{enabled}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable SNMP System Definitions",
+            description = "Enable or disable one or more SNMP system definitions",
+            operationId = "enableDisableSnmpSystemDefs"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableSnmpSystemDefs(
+            @PathParam("snmpDataCollectionSourceId") Integer snmpDataCollectionSourceId,
+            @PathParam("enabled") boolean enabled,
+            @QueryParam("id") List<Integer> ids,
+            @Context SecurityContext securityContext
+    ) throws Exception;
 
 
     @GET

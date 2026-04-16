@@ -138,6 +138,59 @@ public class SnmpCollectionSourceDaoHibernate extends AbstractDaoHibernate<SnmpC
 
         return new PageResponse<>(resultCount, dataCollectionSourceList);
     }
+    @Override
+    public void updateEnabledFlag(Collection<Integer> snmpDataCollectionSourceIds, boolean enabled) {
+        if (snmpDataCollectionSourceIds == null || snmpDataCollectionSourceIds.isEmpty()) {
+            return;
+        }
+        String hqlSources =
+                "update SnmpCollectionSource s " +
+                        "set s.enabled = :enabled " +
+                        "where s.id in (:ids)";
+
+        getSessionFactory().getCurrentSession()
+                .createQuery(hqlSources)
+                .setParameter("enabled", enabled)
+                .setParameterList("ids", snmpDataCollectionSourceIds)
+                .executeUpdate();
+
+        String hqlResourceTypes =
+                "update SnmpCollectionResourceType rt " +
+                        "set rt.enabled = :enabled " +
+                        "where rt.collectionSource.id in (:ids)";
+
+        getSessionFactory().getCurrentSession()
+                .createQuery(hqlResourceTypes)
+                .setParameter("enabled", enabled)
+                .setParameterList("ids", snmpDataCollectionSourceIds)
+                .executeUpdate();
+
+        String hqlMibGroups =
+                "update SnmpCollectionMibGroup mg " +
+                        "set mg.enabled = :enabled " +
+                        "where mg.collectionSource.id in (:ids)";
+
+        getSessionFactory().getCurrentSession()
+                .createQuery(hqlMibGroups)
+                .setParameter("enabled", enabled)
+                .setParameterList("ids", snmpDataCollectionSourceIds)
+                .executeUpdate();
+
+        String hqlSystemDefs =
+                "update SnmpCollectionSystemDef sd " +
+                        "set sd.enabled = :enabled " +
+                        "where sd.collectionSource.id in (:ids)";
+
+        getSessionFactory().getCurrentSession()
+                .createQuery(hqlSystemDefs)
+                .setParameter("enabled", enabled)
+                .setParameterList("ids", snmpDataCollectionSourceIds)
+                .executeUpdate();
+
+        LOG.info("Set enabled={} for sources {} (cascaded to collectionSources, mibGroups, resourceTypes, systemDefs)",
+                enabled, snmpDataCollectionSourceIds);
+    }
+
 
 }
 

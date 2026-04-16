@@ -196,6 +196,26 @@ public class SnmpCollectionResourceTypeDaoHibernate extends AbstractDaoHibernate
     }
 
     @Override
+    public void updateResourceTypeEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
+        if (ids == null || ids.isEmpty()) {
+            LOG.warn("No ResourceType IDs provided for update. Skipping...");
+            return;
+        }
+
+        var session = getSessionFactory().getCurrentSession();
+        String hql = " update SnmpCollectionResourceType rt set rt.enabled = :enabled " +
+                " where rt.collectionSource.id = :sourceId and rt.id in (:ids)";
+
+        var query = session.createQuery(hql);
+        query.setParameter("enabled", enabled);
+        query.setParameter("sourceId", snmpDataCollectionSourceId);
+        query.setParameterList("ids", ids);
+
+        int updatedCount = query.executeUpdate();
+        LOG.info("Updated {} resource types (enabled={}) for snmpDataCollectionSourceId={}", updatedCount, enabled, snmpDataCollectionSourceId);
+    }
+
+    @Override
     public SnmpCollectionResourceType findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
         return findUnique("from SnmpCollectionResourceType t where t.collectionSource.id = ? AND t.id = ? ", snmpCollectionSourceId, id);
     }

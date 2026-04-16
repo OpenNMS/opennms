@@ -283,6 +283,24 @@ public class DataCollectionConfPersistenceService {
         );
     }
 
+    public void enableDisableSnmpDataCollectionSources(boolean enabled, List<Integer> ids) {
+
+        snmpCollectionSourceDao.updateEnabledFlag(ids, enabled);
+    }
+
+    public void enableDisableMibGroups(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
+
+        snmpCollectionMibGroupDao.updateMibGroupEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+    }
+
+    public void enableDisableResourceTypes(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
+      snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+    }
+
+    public void enableDisableSystemDefs(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
+      snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+    }
+
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
         if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
             throw new IllegalArgumentException("snmpDataCollectionSourceId must be a positive integer");

@@ -555,6 +555,170 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         );
     }
 
+    @Override
+    public Response enableDisableSnmpDataCollectionSources(final boolean enabled,
+                                                           final List<Integer> ids,
+                                                           final SecurityContext securityContext) throws Exception {
+
+        if (ids == null || ids.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("At least one id must be provided.")
+                    .build();
+        }
+
+        if (ids.stream().anyMatch(id -> id == null || id <= 0)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("All ids must be non-null positive integers.")
+                    .build();
+        }
+
+        try {
+
+            dataCollectionConfPersistenceService.enableDisableSnmpDataCollectionSources(enabled, ids);
+            return Response.ok().entity("SNMP data collection sources updated successfully.").build();
+
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response enableDisableSnmpMibGroups(final Integer snmpDataCollectionSourceId,
+                                               final boolean enabled,
+                                               final List<Integer> ids,
+                                               final SecurityContext securityContext) throws Exception {
+
+        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("snmpDataCollectionSourceId must be provided and must be a positive integer.")
+                    .build();
+        }
+
+        if (ids == null || ids.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("At least one id must be provided.")
+                    .build();
+        }
+
+        if (ids.stream().anyMatch(id -> id == null || id <= 0)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("All ids must be non-null positive integers.")
+                    .build();
+        }
+
+        try {
+            dataCollectionConfPersistenceService.enableDisableMibGroups(snmpDataCollectionSourceId, enabled, ids);
+
+            return Response.ok().entity("SNMP MIB groups updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Source or one/more ids were not found: " + ex.getMessage())
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response enableDisableSnmpResourceTypes(final Integer snmpDataCollectionSourceId,
+                                                   final boolean enabled,
+                                                   final List<Integer> ids,
+                                                   final SecurityContext securityContext) throws Exception {
+
+        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("snmpDataCollectionSourceId must be provided and must be a positive integer.")
+                    .build();
+        }
+
+        if (ids == null || ids.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("At least one id must be provided.")
+                    .build();
+        }
+
+        if (ids.stream().anyMatch(id -> id == null || id <= 0)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("All ids must be non-null positive integers.")
+                    .build();
+        }
+
+        try {
+            dataCollectionConfPersistenceService.enableDisableResourceTypes(snmpDataCollectionSourceId, enabled, ids);
+
+            return Response.ok().entity("SNMP resource types updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Source or one/more ids were not found: " + ex.getMessage())
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public Response enableDisableSnmpSystemDefs(final Integer snmpDataCollectionSourceId,
+                                                final boolean enabled,
+                                                final List<Integer> ids,
+                                                final SecurityContext securityContext) throws Exception {
+
+        if (snmpDataCollectionSourceId == null || snmpDataCollectionSourceId <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("snmpDataCollectionSourceId must be provided and must be a positive integer.")
+                    .build();
+        }
+
+        if (ids == null || ids.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("At least one id must be provided.")
+                    .build();
+        }
+
+        if (ids.stream().anyMatch(id -> id == null || id <= 0)) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("All ids must be non-null positive integers.")
+                    .build();
+        }
+
+        try {
+            dataCollectionConfPersistenceService.enableDisableSystemDefs(snmpDataCollectionSourceId, enabled, ids);
+            return Response.ok().entity("SNMP system defs updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Source or one/more ids were not found: " + ex.getMessage())
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid request: " + ex.getMessage())
+                    .build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred: " + ex.getMessage())
+                    .build();
+        }
+    }
+
     private Response handleDelete(final DeleteAction action, final String successMessage) {
         try {
             action.run();
