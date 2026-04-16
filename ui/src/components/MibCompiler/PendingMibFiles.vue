@@ -303,6 +303,10 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 }
 
 .modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
   .header {
     p {
       @include typography.headline1;
