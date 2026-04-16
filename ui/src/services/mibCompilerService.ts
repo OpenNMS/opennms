@@ -4,7 +4,8 @@ import {
   MibCompilerFileLocation,
   MibCompilerGenerateEventsRequest,
   MibFileListResponse,
-  MibUploadResponse
+  MibUploadResponse,
+  MibGenerateEventsResponse,
 } from '@/types/mibCompiler'
 import { rest } from './axiosInstances'
 
@@ -47,7 +48,8 @@ export const setFileText = async (fileName: string, content: ArrayBuffer): Promi
   })
 }
 
-export const generateEvents = async (request: MibCompilerGenerateEventsRequest): Promise<void> => {
-  await rest.post(`${endpoint}/generate-events`, request)
+export const generateEvents = async (request: MibCompilerGenerateEventsRequest): Promise<MibGenerateEventsResponse> => {
+  const response = await rest.post<MibGenerateEventsResponse>(`${endpoint}/generate-events`, request)
+  return response.data
 }
 

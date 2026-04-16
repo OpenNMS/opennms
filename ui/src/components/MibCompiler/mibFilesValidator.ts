@@ -49,3 +49,11 @@ export const getCompileErrorMessage = (error: unknown) => {
   return message
 }
 
+export const getGeneralErrorMessage = (error: unknown, fallbackMessage: string) => {
+  if (!axios.isAxiosError(error)) {
+    return fallbackMessage
+  }
+  const response = error.response?.data as { message?: string } | undefined
+  return response?.message || fallbackMessage
+}
+

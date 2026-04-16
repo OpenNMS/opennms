@@ -72,6 +72,13 @@ export interface MibCompileResponse {
   errors?: string
 }
 
+export interface MibGenerateEventsResponse {
+  success: boolean
+  message: string
+  mibFile: string
+  sourceId?: number
+}
+
 export interface MibCompilerFileContentResponse {
   contents: string
   location: string

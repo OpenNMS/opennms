@@ -57,8 +57,9 @@
             <td>
               <div class="action-container">
                 <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
+                  icon="Generate Events"
+                  data-test="generate-events-button"
+                  @click="onGenerateEventsClick(config)"
                 >
                   <FeatherIcon :icon="Generic" />
                 </FeatherButton>
@@ -128,9 +129,7 @@
             <p>View MIB contents</p>
           </div>
           <div class="content">
-            <pre
-              data-test="file-text"
-            >
+            <pre data-test="file-text">
             {{ fileText }}
           </pre
             >
@@ -138,15 +137,34 @@
         </div>
       </template>
     </FileText>
+    <ConfirmationDialog
+      @ok="onConfirmGenerateEvents"
+      @cancel="onCancelGenerateEvents"
+      title="Generate Events from MIB File"
+      :visible="generateEventsDialogVisible"
+    >
+      <template #content>
+        <div class="generate-modal-content">
+          <p class="heading">Enter the UEI Base for the events to be generated from the selected MIB file.</p>
+          <p class="subtitle">File name: {{ selectedFile?.fileName }}</p>
+          <FeatherInput
+            label="UEI Base"
+            v-model="uei"
+            :error="ueiError"
+          />
+        </div>
+      </template>
+    </ConfirmationDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteFile, getFileText } from '@/services/mibCompilerService'
+import { deleteFile, generateEvents, getFileText } from '@/services/mibCompilerService'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
+import axios from 'axios'
 import Delete from '@featherds/icon/action/Delete'
 import Search from '@featherds/icon/action/Search'
 import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
@@ -159,13 +177,16 @@ import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import FileText from './Drawer/FileText.vue'
-import { FOLDER_LOCATIONS } from './mibFilesValidator'
+import { FOLDER_LOCATIONS, getGeneralErrorMessage } from './mibFilesValidator'
 
 const store = useMibCompilerStore()
 const { showSnackBar } = useSnackbar()
 const deleteDialogVisible = ref(false)
 const textDrawerVisible = ref(false)
 const selectedFile = ref<MibCompilerFileInfo | null>(null)
+const generateEventsDialogVisible = ref(false)
+const uei = ref('')
+const ueiError = ref('')
 const fileText = ref('')
 const emptyListContent = {
   msg: 'No results found.'
@@ -174,6 +195,62 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
+
+const onGenerateEventsClick = (file: MibCompilerFileInfo) => {
+  selectedFile.value = file
+  uei.value = 'uei.opennms.org/'
+  ueiError.value = ''
+  generateEventsDialogVisible.value = true
+}
+
+const onConfirmGenerateEvents = async () => {
+  if (!selectedFile.value) {
+    showSnackBar({ msg: 'No file selected for generating events.', error: true })
+    return
+  }
+
+  if (!uei.value.trim()) {
+    ueiError.value = 'UEI Base is required.'
+    return
+  }
+
+  if (!uei.value.startsWith('uei.opennms.org/')) {
+    ueiError.value = 'UEI Base must start with "uei.opennms.org/".'
+    return
+  }
+
+  if (uei.value === 'uei.opennms.org/') {
+    ueiError.value = 'UEI Base must contain a path after "uei.opennms.org/".'
+    return
+  }
+
+  if (uei.value.endsWith('/')) {
+    ueiError.value = 'UEI Base should not end with a slash.'
+    return
+  }
+
+  try {
+    await generateEvents({
+      name: selectedFile.value.fileName,
+      ueiBase: uei.value
+    })
+    showSnackBar({ msg: 'Events generated successfully from the compiled MIB file.', error: false })
+  } catch (error) {
+    showSnackBar({ msg: getGeneralErrorMessage(error, 'Failed to generate events from the compiled MIB file.'), error: true })
+  } finally {
+    selectedFile.value = null
+    uei.value = ''
+    ueiError.value = ''
+    generateEventsDialogVisible.value = false
+  }
+}
+
+const onCancelGenerateEvents = () => {
+  selectedFile.value = null
+  uei.value = ''
+  ueiError.value = ''
+  generateEventsDialogVisible.value = false
+}
 
 const onDeleteClick = (file: MibCompilerFileInfo) => {
   selectedFile.value = file
@@ -337,6 +414,20 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
       white-space: pre-wrap;
       word-break: break-word;
     }
+  }
+}
+
+.generate-modal-content {
+  width: 35rem;
+
+  .heading {
+    @include typography.headline4;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    @include typography.subtitle1;
+    margin-bottom: 0.5rem;
   }
 }
 </style>
