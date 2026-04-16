@@ -77,6 +77,13 @@
                 >
                   <FeatherIcon :icon="Delete" />
                 </FeatherButton>
+                <FeatherButton
+                  icon="Download File"
+                  data-test="download-button"
+                  @click="onDownloadClick(config)"
+                >
+                  <FeatherIcon :icon="DownloadFile" />
+                </FeatherButton>
               </div>
             </td>
           </tr>
@@ -160,6 +167,7 @@ import Delete from '@featherds/icon/action/Delete'
 import Edit from "@featherds/icon/action/Edit"
 import MarkComplete from "@featherds/icon/action/MarkComplete"
 import Search from '@featherds/icon/action/Search'
+import DownloadFile from "@featherds/icon/action/DownloadFile";
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
@@ -185,6 +193,28 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
+
+const onDownloadClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for download.', error: true })
+    return
+  }
+
+  try {
+    const response = await getFileText(FOLDER_LOCATIONS.PENDING, file.fileName)
+    const blob = new Blob([response.contents], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to download pending MIB file.', error: true })
+  }
+}
 
 const onEditClick = async (file: MibCompilerFileInfo) => {
   if (!file.fileName) {

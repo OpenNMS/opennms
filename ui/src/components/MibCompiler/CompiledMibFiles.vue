@@ -76,6 +76,13 @@
                 >
                   <FeatherIcon :icon="Delete" />
                 </FeatherButton>
+                <FeatherButton
+                  icon="Download File"
+                  data-test="download-button"
+                  @click="onDownloadClick(config)"
+                >
+                  <FeatherIcon :icon="DownloadFile" />
+                </FeatherButton>
               </div>
             </td>
           </tr>
@@ -164,11 +171,11 @@ import { deleteFile, generateEvents, getFileText } from '@/services/mibCompilerS
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
-import axios from 'axios'
 import Delete from '@featherds/icon/action/Delete'
 import Search from '@featherds/icon/action/Search'
 import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
 import Generic from '@featherds/icon/file/Generic'
+import DownloadFile from "@featherds/icon/action/DownloadFile";
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
@@ -195,6 +202,28 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
+
+const onDownloadClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for download.', error: true })
+    return
+  }
+
+  try {
+    const response = await getFileText(FOLDER_LOCATIONS.COMPILED, file.fileName)
+    const blob = new Blob([response.contents], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to download compiled MIB file.', error: true })
+  }
+}
 
 const onGenerateEventsClick = (file: MibCompilerFileInfo) => {
   selectedFile.value = file
