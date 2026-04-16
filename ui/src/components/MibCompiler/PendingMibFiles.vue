@@ -60,20 +60,20 @@
                   icon="View Details"
                   data-test="view-button"
                 >
-                  <FeatherIcon :icon="Generic"> </FeatherIcon>
+                  <FeatherIcon :icon="Generic" />
                 </FeatherButton>
                 <FeatherButton
                   icon="View Details"
                   data-test="view-button"
                 >
-                  <FeatherIcon :icon="StackedBarChart"> </FeatherIcon>
+                  <FeatherIcon :icon="StackedBarChart" />
                 </FeatherButton>
                 <FeatherButton
                   icon="Delete"
                   data-test="delete-button"
                   @click="onDeleteClick(config)"
                 >
-                  <FeatherIcon :icon="Delete"> </FeatherIcon>
+                  <FeatherIcon :icon="Delete" />
                 </FeatherButton>
               </div>
             </td>
