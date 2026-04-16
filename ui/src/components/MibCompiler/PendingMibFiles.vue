@@ -64,16 +64,11 @@
                   <FeatherIcon :icon="Edit" />
                 </FeatherButton>
                 <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
+                  icon="Compile MIB"
+                  data-test="compile-button"
+                  @click="onCompileClick(config)"
                 >
-                  <FeatherIcon :icon="Generic" />
-                </FeatherButton>
-                <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
-                >
-                  <FeatherIcon :icon="StackedBarChart" />
+                  <FeatherIcon :icon="MarkComplete" />
                 </FeatherButton>
                 <FeatherButton
                   icon="Delete"
@@ -116,9 +111,7 @@
     >
       <template #content>
         Are you sure you want to delete this pending MIB file name:
-        <strong>{{ selectedFile?.fileName
-        }}</strong
-        >?
+        <strong>{{ selectedFile?.fileName }}</strong>?
       </template>
     </ConfirmationDialog>
     <FileText
@@ -143,20 +136,30 @@
         </div>
       </template>
     </FileText>
+    <ConfirmationDialog
+      @ok="onCompileConfirm"
+      @cancel="onCompileCancel"
+      title="Compile MIB File"
+      :visible="compileDialogVisible"
+    >
+      <template #content>
+        Are you sure you want to compile this MIB file:
+        <strong>{{ selectedFile?.fileName }}</strong>?
+      </template>
+    </ConfirmationDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { deleteFile, getFileText } from '@/services/mibCompilerService'
+import { compileMib, deleteFile, getFileText } from '@/services/mibCompilerService'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import Delete from '@featherds/icon/action/Delete'
 import Edit from "@featherds/icon/action/Edit"
+import MarkComplete from "@featherds/icon/action/MarkComplete"
 import Search from '@featherds/icon/action/Search'
-import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
-import Generic from '@featherds/icon/file/Generic'
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
@@ -165,13 +168,14 @@ import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import FileText from './Drawer/FileText.vue'
-import { FOLDER_LOCATIONS } from './mibFilesValidator'
+import { FOLDER_LOCATIONS, getCompileErrorMessage } from './mibFilesValidator'
 
 const router = useRouter()
 const store = useMibCompilerStore()
 const { showSnackBar } = useSnackbar()
 const deleteDialogVisible = ref(false)
 const textDrawerVisible = ref(false)
+const compileDialogVisible = ref(false)
 const selectedFile = ref<MibCompilerFileInfo | null>(null)
 const fileText = ref('')
 const emptyListContent = {
@@ -252,6 +256,34 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     property: sortObj.property as 'fileName' | 'location',
     value: sortObj.value
   })
+}
+
+const onCompileClick = (file: MibCompilerFileInfo) => {
+  selectedFile.value = file
+  compileDialogVisible.value = true
+}
+
+const onCompileConfirm = async () => {
+  if (!selectedFile.value) {
+    showSnackBar({ msg: 'No file selected for compilation.', error: true })
+    return
+  }
+
+  try {
+    const response = await compileMib(selectedFile.value.fileName)
+    showSnackBar({ msg: response.message || 'MIB file compiled successfully.' })
+    await store.fetchMibFiles()
+  } catch (error) {
+    showSnackBar({ msg: getCompileErrorMessage(error), error: true })
+  } finally {
+    selectedFile.value = null
+    compileDialogVisible.value = false
+  }
+}
+
+const onCompileCancel = () => {
+  selectedFile.value = null
+  compileDialogVisible.value = false
 }
 </script>
 

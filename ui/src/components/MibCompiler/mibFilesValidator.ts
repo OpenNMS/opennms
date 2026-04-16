@@ -1,4 +1,5 @@
-import { UploadMibFileType } from '@/types/mibCompiler'
+import { MibCompileResponse, UploadMibFileType } from '@/types/mibCompiler'
+import axios from 'axios';
 
 export const mibFilesValidator = async (file: File): Promise<{ isValid: boolean; errors: string[] }> => {
   const errors: string[] = []
@@ -25,4 +26,26 @@ export enum FOLDER_LOCATIONS {
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 export const VALID_FILE_EXTENSION = '.txt,.mib'
+
+export const getCompileErrorMessage = (error: unknown) => {
+  if (!axios.isAxiosError<MibCompileResponse>(error)) {
+    return 'Failed to compile MIB file.'
+  }
+
+  const response = error.response?.data
+  if (!response || typeof response !== 'object') {
+    return 'Failed to compile MIB file.'
+  }
+
+  const message = response.message || 'Failed to compile MIB file.'
+  if (Array.isArray(response.missingDependencies) && response.missingDependencies.length > 0) {
+    return `${message} Missing dependencies: ${response.missingDependencies.join(', ')}`
+  }
+
+  if (response.errors) {
+    return `${message} ${response.errors}`
+  }
+
+  return message
+}
 

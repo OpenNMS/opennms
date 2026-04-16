@@ -63,6 +63,15 @@ export interface MibUploadResponse {
   }>
 }
 
+export interface MibCompileResponse {
+  success: boolean
+  message: string
+  mibName: string
+  compiledFile?: string
+  missingDependencies?: string[]
+  errors?: string
+}
+
 export interface MibCompilerFileContentResponse {
   contents: string
   location: string

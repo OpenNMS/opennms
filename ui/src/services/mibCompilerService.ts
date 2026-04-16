@@ -1,4 +1,5 @@
 import {
+  MibCompileResponse,
   MibCompilerFileInfoWithContent,
   MibCompilerFileLocation,
   MibCompilerGenerateEventsRequest,
@@ -18,8 +19,9 @@ export const uploadMib = async (file: File, filename: string): Promise<MibUpload
   return response.data
 }
 
-export const compileMib = async (name: string): Promise<void> => {
-  await rest.post(`${endpoint}/compile`, null, { params: { name } })
+export const compileMib = async (name: string): Promise<MibCompileResponse> => {
+  const response = await rest.post<MibCompileResponse>(`${endpoint}/compile`, null, { params: { name } })
+  return response.data
 }
 
 export const listPendingAndCompiledFiles = async (): Promise<MibFileListResponse> => {
