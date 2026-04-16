@@ -191,6 +191,26 @@ public class SnmpCollectionMibGroupDaoHibernate extends AbstractDaoHibernate<Snm
     }
 
     @Override
+    public void updateMibGroupEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
+        if (ids == null || ids.isEmpty()) {
+            LOG.warn("No MIB Group IDs provided for update. Skipping...");
+            return;
+        }
+
+        var session = getSessionFactory().getCurrentSession();
+        String hql = " update SnmpCollectionMibGroup g set g.enabled = :enabled " +
+                " where g.collectionSource.id = :sourceId and g.id in (:ids)";
+
+        var query = session.createQuery(hql);
+        query.setParameter("enabled", enabled);
+        query.setParameter("sourceId", snmpDataCollectionSourceId);
+        query.setParameterList("ids", ids);
+
+        int updatedCount = query.executeUpdate();
+        LOG.info("Updated {} MIB groups (enabled={}) for snmpDataCollectionSourceId={}", updatedCount, enabled, snmpDataCollectionSourceId);
+    }
+
+    @Override
     public SnmpCollectionMibGroup findBySnmpSourceCollectionIdAndId(Integer snmpCollectionSourceId, Integer id) {
         return findUnique("from SnmpCollectionMibGroup g where g.collectionSource.id = ? AND g.id = ? ", snmpCollectionSourceId, id);
     }

@@ -183,4 +183,24 @@ public class SnmpCollectionSystemDefDaoHibernate extends AbstractDaoHibernate<Sn
         return findUnique("from SnmpCollectionSystemDef d where d.collectionSource.id = ? AND d.id = ? ", snmpCollectionSourceId, id);
     }
 
+    @Override
+    public void updateSystemDefEnabledFlag(Integer snmpDataCollectionSourceId, List<Integer> ids, boolean enabled) {
+        if (ids == null || ids.isEmpty()) {
+            LOG.warn("No SystemDef IDs provided for update. Skipping...");
+            return;
+        }
+
+        var session = getSessionFactory().getCurrentSession();
+        String hql = " update SnmpCollectionSystemDef sd set sd.enabled = :enabled " +
+                " where sd.collectionSource.id = :sourceId and sd.id in (:ids)";
+
+        var query = session.createQuery(hql);
+        query.setParameter("enabled", enabled);
+        query.setParameter("sourceId", snmpDataCollectionSourceId);
+        query.setParameterList("ids", ids);
+
+        int updatedCount = query.executeUpdate();
+        LOG.info("Updated {} system defs (enabled={}) for snmpDataCollectionSourceId={}", updatedCount, enabled, snmpDataCollectionSourceId);
+    }
+
 }
