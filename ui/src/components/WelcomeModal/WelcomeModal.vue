@@ -175,9 +175,9 @@
           </p>
           <p class="social-links">
             <a href="https://www.linkedin.com/company/the-opennms-group/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            · <a href="http://www.twitter.com/opennms" target="_blank" rel="noopener noreferrer">Twitter</a>
+            · <a href="https://www.twitter.com/opennms" target="_blank" rel="noopener noreferrer">Twitter</a>
             · <a href="https://www.facebook.com/OpenNMS/" target="_blank" rel="noopener noreferrer">Facebook</a>
-            · <a href="http://www.youtube.com/user/opennms" target="_blank" rel="noopener noreferrer">YouTube</a>
+            · <a href="https://www.youtube.com/user/opennms" target="_blank" rel="noopener noreferrer">YouTube</a>
             · <a href="https://chat.opennms.com/" target="_blank" rel="noopener noreferrer">Mattermost</a>
             · <a href="https://opennms.discourse.group/" target="_blank" rel="noopener noreferrer">Discourse</a>
           </p>
