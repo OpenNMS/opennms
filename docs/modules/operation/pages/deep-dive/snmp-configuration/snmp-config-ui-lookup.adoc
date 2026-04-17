@@ -3,7 +3,7 @@
 
 The SNMP Configuration Lookup feature allows you to quickly find the SNMP configuration for a specific IP address. This is useful when you want to verify the SNMP settings for a particular device or troubleshoot SNMP-related issues.
 
-Enter an IP address in the lookup field and choose a Monitoring Location, then click the "Lookup" button.
+Enter an IP address in the lookup field and choose a Monitoring Location, then click the *Lookup* button.
 If you are not using Minions, then the Monitoring Location is always `Default`. If you are using Minions, then the Monitoring Location is determined by the Minion that is responsible for monitoring the IP address.
 
 OpenNMS will then display the SNMP configuration that applies to that IP address.
@@ -19,11 +19,11 @@ NOTE: The same detail view is used whether you arrived via *Lookup by IP* or via
 
 In the case of a lookup, there will be only one badge for the specific IP address that was looked up. In the case of editing, either on this screen or the *Manage Definitions* screen, there may be multiple badges for the various IP addresses, IP ranges or IPLIKE expressions that are being edited.
 
-In the input fields below, you can add a single IP address, specify a first and last IP address of a range, or specify an IPLIKE expression. Then click `Add`, and a new badge will appear in the top section.
+In the input fields below, you can add a single IP address, specify a first and last IP address of a range, or specify an IPLIKE expression. Then click *Add*, and a new badge will appear in the top section.
 
-Click the `X` on a badge to remove it from the configuration.
+Click the *X* on a badge to remove it from the configuration.
 
-You may then edit all the other parameters as needed, and click `Save` to save the configuration, which will now apply to all the IP addresses specified in the badges.
+You may then edit all the other parameters as needed, and click *Save* to save the configuration, which will now apply to all the IP addresses specified in the badges.
 
 .Lookup Details: IP range badges
 image::snmp-configuration/snmp-config-lookup-detail-1.png["{page-component-title} web UI showing SNMP Configuration lookup, IP range badges."]
@@ -45,13 +45,13 @@ Selecting `v3` as the SNMP version will show additional fields for SNMP v3 param
 .SNMP Advanced Parameters (v3)
 image::snmp-configuration/snmp-config-details-v3.png["{page-component-title} web UI showing SNMP Configuration v3 parameters."]
 
-Finally, when you are done editing the configuration, click `Save Changes` to save your changes. If you want to discard your changes, or just wanted to view the configuration, click `Cancel` to return to the previous screen without saving.
+Finally, when you are done editing the configuration, click *Save Changes* to save your changes. If you want to discard your changes, or just wanted to view the configuration, click *Cancel* to return to the previous screen without saving.
 
 == Secure Credentials Vault (SCV) Support
 
 For secure parameters such as read/write community strings or SNMP v3 authentication and privacy credentials, you can choose to store these in the OpenNMS Secure Credentials Vault. This allows you to keep sensitive information secure while still allowing OpenNMS to access it when needed.
 
-Clicking on the SCV icon next to those fields will open the SCV drawer which allows you to select a credential from the vault. This will enter a reference to that credential in the field, which OpenNMS will resolve to the actual credential value when it needs to use it. A typical expression looks like `${scv:snmp-read-community}`, where `snmp-read-community` is the name of the credential stored in the vault. Note, you can also enter the reference expression directly into the field without using the SCV drawer, as long as you use the correct syntax.
+Click on the SCV icon next to those fields to open the SCV drawer which allows you to select a credential from the vault. This will enter a reference to that credential in the field, which OpenNMS will resolve to the actual credential value when it needs to use it. A typical expression looks like `${scv:snmp-read-community}`, where `snmp-read-community` is the name of the credential stored in the vault. Note, you can also enter the reference expression directly into the field without using the SCV drawer, as long as you use the correct syntax.
 
 See the xref:deep-dive/admin/configuration/scv-configuration.adoc[Secure Credentials Vault] page for more information.
 
