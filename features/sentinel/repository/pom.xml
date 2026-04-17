@@ -33,10 +33,10 @@
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                                 <!-- Add Sentinel features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</descriptor>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->

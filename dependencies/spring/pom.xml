@@ -123,11 +123,10 @@
       <artifactId>jackson1-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- Get the JMS spec (javax.jms.*) so that spring-jms can load in OSGi -->
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <version>1.1.1</version>
+      <groupId>javax.jms</groupId>
+      <artifactId>javax.jms-api</artifactId>
+      <version>${jmsApiVersion}</version>
     </dependency>
     <dependency>
        <groupId>org.javassist</groupId>

@@ -26,6 +26,11 @@
                 <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/internal</directory>
+                <targetPath>${project.build.directory}/internal</targetPath>
+            </resource>
         </resources>
 
         <plugins>
@@ -122,6 +127,7 @@
                         <library>mvn:org.opennms.container/org.opennms.container.branding/${project.version};type:=default;export:=true</library>
                     </libraries>
                     <javase>1.8</javase>
+                    <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                 </configuration>
             </plugin>
             <plugin>

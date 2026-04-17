@@ -4,6 +4,18 @@
     <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
     <!-- Spring legacy features -->
 
+    <feature name="activemq-client" description="ActiveMQ client libraries" version="${activemqVersion}">
+        <feature version="[4,6)">spring</feature>
+        <feature>aries-blueprint</feature>
+        <feature>activemq-combined-jms-spec</feature>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.3_spec/1.0</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+        <bundle dependency="true">mvn:org.jvnet.jaxb2_commons/jaxb2-basics-runtime/0.12.0</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-runtime/2.3.2_1</bundle>
+        <bundle>mvn:org.apache.commons/commons-pool2/2.13.1</bundle>
+        <bundle>mvn:org.apache.activemq/activemq-osgi/${activemqVersion}</bundle>
+    </feature>
+
     <feature name="spring-dm" description="Spring DM support" version="1.2.1">
         <feature version="[2.5.6,4)">spring</feature>
         <bundle dependency="true" start-level="30">

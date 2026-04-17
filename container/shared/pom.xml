@@ -27,6 +27,11 @@
                 <directory>src/main/filtered-resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/internal</directory>
+                <targetPath>${project.build.directory}/internal</targetPath>
+            </resource>
         </resources>
 
         <plugins>
@@ -140,6 +145,7 @@
                         <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
                     </libraries>
                     <javase>1.8</javase>
+                    <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                 </configuration>
             </plugin>
             <plugin>

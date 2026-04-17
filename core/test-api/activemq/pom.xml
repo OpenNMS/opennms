@@ -35,7 +35,7 @@
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-camel</artifactId>
-      <version>${activemqVersion}</version>
+      <version>${activemqCamelVersion}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -82,7 +82,20 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+      <version>${activemqVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.activemq</groupId>
