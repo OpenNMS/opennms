@@ -32,6 +32,7 @@
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
   <reference id="eventConfSourceDao" interface="org.opennms.netmgt.dao.api.EventConfSourceDao" availability="mandatory"/>
   <reference id="eventConfEventDao" interface="org.opennms.netmgt.dao.api.EventConfEventDao" availability="mandatory"/>
+  <reference id="eventConfGlobalSecurityDao" interface="org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao" availability="mandatory"/>
   <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
   <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
@@ -105,6 +106,7 @@
     <argument ref="eventConfDao"/>
     <argument ref="eventConfSourceDao"/>
     <argument ref="eventConfEventDao"/>
+    <argument ref="eventConfGlobalSecurityDao"/>
     <argument ref="sessionUtils"/>
   </bean>
   <reference-list interface="org.opennms.integration.api.v1.config.events.EventConfExtension" availability="optional">

@@ -70,9 +70,11 @@ const handleBackButtonClick = () => {
 }
 
 const onValidationError = (errors: SnmpConfigFormErrors) => {
-  if (errors.mixingRangeWithIpMatch) {
+  const invalidRange = errors.invalidRangeConfig || errors.mixingRangeWithIpMatch || errors.duplicateRangeItem
+
+  if (invalidRange) {
     snackbar.showSnackBar({
-      msg: 'You cannot mix range/specific with IP Match expressions in the same definition.',
+      msg: 'Cannot add range. ' + invalidRange,
       error: true
     })
 

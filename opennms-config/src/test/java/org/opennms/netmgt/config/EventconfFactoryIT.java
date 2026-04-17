@@ -56,6 +56,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -94,7 +95,8 @@ public class EventconfFactoryIT {
         Resource configResource = new ClassPathResource("etc/eventconf.xml");
         m_eventConfDao.setConfigResource(configResource);
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(configResource);
-        m_eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(configResource);
+        m_eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
     }
 
     @Test
@@ -443,7 +445,8 @@ public class EventconfFactoryIT {
 		//m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
 
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
-        m_eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+        m_eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         String newUEI="uei.opennms.org/custom/newTestUEI";
         List<Event> events=m_eventConfDao.getEvents(knownUEI1);
         Event event=(Event)events.get(0);
@@ -461,7 +464,8 @@ public class EventconfFactoryIT {
         try {
            // m_eventConfDao.reload();
             eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
-            m_eventConfDao.loadEventsFromDB(eventConfEventList);
+            eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+            m_eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         } catch (Throwable e) {
             e.printStackTrace();
             fail("Should not have had exception while reloading factory "+e.getMessage());
@@ -640,7 +644,8 @@ public class EventconfFactoryIT {
     public void testLoadStandardConfiguration() throws Exception {
         DefaultEventConfDao dao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
-        dao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(ConfigurationTestUtils.getFileForConfigFile("eventconf.xml")));
+        dao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
     }
 
     private DefaultEventConfDao loadConfiguration(String relativeResourcePath) throws DataAccessException, IOException {
@@ -650,14 +655,18 @@ public class EventconfFactoryIT {
     private DefaultEventConfDao loadConfiguration(String relativeResourcePath, boolean passFile) throws DataAccessException, IOException {
         DefaultEventConfDao dao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = new ArrayList<>();
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = new ArrayList<>();
         if (passFile) {
             URL url = getUrlForRelativeResourcePath(relativeResourcePath);
             eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new MockFileSystemResourceWithInputStream(new File(url.getFile()), getFilteredInputStreamForConfig(relativeResourcePath)));
         } else {
             eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
+            eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new InputStreamResource(getFilteredInputStreamForConfig(relativeResourcePath)));
         }
 
-        dao.loadEventsFromDB(eventConfEventList);
+
+        dao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         return dao;
     }
 

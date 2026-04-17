@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scriptd.helper.EventForwarder;
 import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
@@ -139,10 +140,10 @@ public class TrapdIT {
 
     @Before
     public void setUp() throws Exception {
-        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(
-                new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        List<EventConfEvent> events = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource("src/test/resources/org/opennms/netmgt/trapd/eventconf.xml"));
         // Load into DB
-        eventConfDao.loadEventsFromDB(events);
+        eventConfDao.loadEventsFromDB(events, eventConfGlobalSecurityList);
 
         m_mockEventIpcManager.setSynchronous(true);
         m_trapd.setSecureCredentialsVault(new MockSecureCredentialsVault());

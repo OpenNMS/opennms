@@ -62,7 +62,7 @@ for CONTAINER in \
   "confluentinc/cp-kafka:latest" \
   "docker.elastic.co/elasticsearch/elasticsearch:7.17.9" \
   "opennms/dummy-http-endpoint:0.0.2" \
-  "postgres:13-alpine" \
+  "postgres:14.22-alpine" \
   "postgres:latest" \
 ; do
   (docker pull "$CONTAINER" || true) &

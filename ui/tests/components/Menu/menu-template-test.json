@@ -101,7 +101,7 @@
         {
           "id": "snmpAgentConfiguration",
           "name": "SNMP Agent Configuration",
-          "url": "admin/snmpConfig",
+          "url": "ui/index.html#/snmp-config",
           "locationMatch": "",
           "roles": null
         },

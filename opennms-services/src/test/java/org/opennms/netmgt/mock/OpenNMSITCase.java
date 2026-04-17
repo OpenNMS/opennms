@@ -54,6 +54,7 @@ import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.test.mock.MockUtil;
@@ -168,7 +169,8 @@ public class OpenNMSITCase {
                 File configFile = ConfigurationTestUtils.getFileForResource(this, "/org/opennms/netmgt/mock/eventconf.xml");
                 DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
                 List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(configFile));
-                eventConfDao.loadEventsFromDB(eventConfEventList);
+                List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(configFile));
+                eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
                 
                 EventExpander eventExpander = new EventExpander(m_registry);
                 eventExpander.setEventConfDao(eventConfDao);

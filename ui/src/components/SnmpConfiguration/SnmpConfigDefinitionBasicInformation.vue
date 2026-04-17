@@ -76,6 +76,7 @@ import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig, SnmpDefinition, SnmpConfigFormErrors, IpAddressRange } from '@/types/snmpConfig'
 import SnmpConfigDetailsPanel from './SnmpConfigDetailsPanel.vue'
+import { checkForDuplicateDefinitionItems } from '@/lib/snmpValidator'
 
 const props = defineProps<{
   isCreate: boolean,
@@ -197,12 +198,28 @@ const removeChip = (item: DefinitionBadgeItem) => {
 }
 
 const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
-  if ((!firstIp && !lastIp && !ipMatch) || (ipMatch && (firstIp || lastIp))) {
+  // should not occur since the add range button in SnmpConfigDetailsPanel is disabled unless at least one of these fields has a value, but guard against it just in case
+  if (!firstIp && !lastIp && !ipMatch) {
+    errors.value = {
+      invalidRangeConfig: 'Cannot add an empty range.'
+    }
+
+    emit('validation-error', errors.value)
     return
   }
 
-  // SnmpConfigDetailsPanel already handles trying to add a range/specific if the definition already has an ipMatch.
-  // Here we handle trying to add an ipMatch when the definition already has ranges/specifics (or vice versa), which is also not allowed.
+  // should not occur since SnmpConfigDetailsPanel does not allow entering an ipMatch if there are already range/specific values (or vice versa), but guard against it just in case
+  if (ipMatch && (firstIp || lastIp)) {
+    errors.value = {
+      mixingRangeWithIpMatch: 'You cannot mix range/specific with IP Match expressions in the same definition.'
+    }
+
+    emit('validation-error', errors.value)
+    return
+  }
+
+  // SnmpConfigDetailsPanel already handles trying to add a range/specific if the definition input fields already have an ipMatch (or vice-versa).
+  // Here we handle trying to add an ipMatch when the existing definition already has ranges/specifics (or vice versa), which is also not allowed.
   const currentHasRangesOrSpecifics = Boolean(currentDefinition.value?.range?.length || currentDefinition.value?.specific?.length)
   const currentHasIpMatch = Boolean(currentDefinition.value?.ipMatch?.length)
   const isAddingIpMatch = Boolean(ipMatch)
@@ -210,7 +227,6 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
 
   if ((isAddingIpMatch && currentHasRangesOrSpecifics) || (isAddingRangeOrSpecific && currentHasIpMatch)) {
     errors.value = {
-      ...errors.value,
       mixingRangeWithIpMatch: 'You cannot mix range/specific with IP Match expressions in the same definition.'
     }
 
@@ -220,6 +236,17 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
 
   if (firstIp && lastIp) {
     const newRange = { begin: firstIp, end: lastIp } as IpAddressRange
+
+    const duplicateError = checkForDuplicateDefinitionItems(currentDefinition.value, newRange, undefined, undefined)
+
+    if (duplicateError) {
+      errors.value = {
+        duplicateRangeItem: duplicateError
+      }
+
+      emit('validation-error', errors.value)
+      return
+    }
 
     if (currentDefinition.value.range) {
       currentDefinition.value.range = [
@@ -232,6 +259,17 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
   }
 
   if (firstIp && !lastIp) {
+    const duplicateError = checkForDuplicateDefinitionItems(currentDefinition.value, undefined, firstIp, undefined)
+    
+    if (duplicateError) {
+      errors.value = {
+        duplicateRangeItem: duplicateError
+      }
+
+      emit('validation-error', errors.value)
+      return
+    }
+
     if (currentDefinition.value.specific) {
       currentDefinition.value.specific = [
         ...currentDefinition.value.specific,
@@ -243,6 +281,17 @@ const onAddRange = (firstIp: string, lastIp: string, ipMatch: string) => {
   }
 
   if (ipMatch) {
+    const duplicateError = checkForDuplicateDefinitionItems(currentDefinition.value, undefined, undefined, ipMatch)
+
+    if (duplicateError) {
+      errors.value = {
+        duplicateRangeItem: duplicateError
+      }
+
+      emit('validation-error', errors.value)
+      return
+    }
+
     if (currentDefinition.value.ipMatch) {
       currentDefinition.value.ipMatch = [
         ...currentDefinition.value.ipMatch,
