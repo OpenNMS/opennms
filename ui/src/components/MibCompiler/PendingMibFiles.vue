@@ -122,7 +122,7 @@
       </template>
     </ConfirmationDialog>
     <FileText
-      title="Compiled MIB File Details"
+      title="Pending MIB File Details"
       @hidden="onCloseTextDrawer"
       :visible="textDrawerVisible"
     >
@@ -135,10 +135,7 @@
             <p>View MIB contents</p>
           </div>
           <div class="content">
-            <pre data-test="file-text">
-            {{ fileText }}
-          </pre
-            >
+            <pre data-test="file-text">{{ fileText }}</pre>
           </div>
         </div>
       </template>
@@ -164,10 +161,10 @@ import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import Delete from '@featherds/icon/action/Delete'
+import DownloadFile from "@featherds/icon/action/DownloadFile"
 import Edit from "@featherds/icon/action/Edit"
 import MarkComplete from "@featherds/icon/action/MarkComplete"
 import Search from '@featherds/icon/action/Search'
-import DownloadFile from "@featherds/icon/action/DownloadFile";
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'

@@ -12,7 +12,7 @@
         </FeatherButton>
         <input
           type="file"
-          :accept="VALID_FILE_EXTENSION"
+          :accept="VALID_FILE_EXTENSION.join(',')"
           multiple
           @change="handleUpload"
           data-test="event-conf-upload-input"
@@ -25,7 +25,7 @@
           text
           data-test="clear-logs-button"
           @click="clear"
-          :disabled="isLoading|| mibFiles.length === 0 || logs.length === 0"
+          :disabled="isLoading || mibFiles.length === 0 || logs.length === 0"
         >
           Clear Logs
         </FeatherButton>
@@ -130,7 +130,7 @@ import Cancel from '@featherds/icon/navigation/Cancel'
 import Warning from '@featherds/icon/notification/Warning'
 import { FeatherTooltip } from '@featherds/tooltip'
 import { AxiosError } from 'axios'
-import { mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
+import { isValidMibExtension, mibFilesValidator, VALID_FILE_EXTENSION } from './mibFilesValidator'
 
 const isLoading = ref(false)
 const snackbar = useSnackbar()
@@ -200,10 +200,8 @@ const handleUpload = async (e: Event) => {
   }
 
   isLoading.value = true
-  const exts = VALID_FILE_EXTENSION.split(',').map(ext => ext.trim().toLowerCase())
   const files = Array.from(input.files).filter(f => {
-    const fileExt = f.name.split('.').pop()?.toLowerCase() || ''
-    const isValidExt = exts.includes(`.${fileExt}`)
+    const isValidExt = isValidMibExtension(f.name)
     if (!isValidExt) {
       addLog('error', `${f.name} - Invalid file type`)
     }
@@ -234,33 +232,34 @@ const handleUpload = async (e: Event) => {
         } else {
           addLog('success', `${file.name} - Valid and ready for upload`)
         }
+        if (isValid && !isDuplicate) {
+          addLog('info', `${file.name} - Uploading file...`)
+          try {
+            const uploadResponse: MibUploadResponse = await uploadMib(file, file.name)
 
-        addLog('info', `${file.name} - Uploading file...`)
-        try {
-          const uploadResponse: MibUploadResponse = await uploadMib(file, file.name)
-          
-          // Handle success cases
-          if (uploadResponse.success && uploadResponse.success.length > 0) {
-            for (const successItem of uploadResponse.success) {
-              addLog('success', `${successItem.filename} - Uploaded successfully as ${successItem.savedAs} (${(file.size / 1024).toFixed(2)} KB)`)
+            // Handle success cases
+            if (uploadResponse.success && uploadResponse.success.length > 0) {
+              for (const successItem of uploadResponse.success) {
+                addLog('success', `${successItem.filename} - Uploaded successfully as ${successItem.savedAs} (${(file.size / 1024).toFixed(2)} KB)`)
+              }
             }
-          }
-          
-          // Handle error cases
-          if (uploadResponse.errors && uploadResponse.errors.length > 0) {
-            for (const errorItem of uploadResponse.errors) {
-              addLog('error', `${errorItem.filename} - ${errorItem.error}`)
+
+            // Handle error cases
+            if (uploadResponse.errors && uploadResponse.errors.length > 0) {
+              for (const errorItem of uploadResponse.errors) {
+                addLog('error', `${errorItem.filename} - ${errorItem.error}`)
+              }
             }
+            await store.fetchMibFiles()
+          } catch (error: unknown) {
+            let errorMsg = 'Unknown error occurred'
+            if (error instanceof AxiosError) {
+              errorMsg = error.response?.data?.message || error.message || 'Server error'
+            } else if (error instanceof Error) {
+              errorMsg = error.message
+            }
+            addLog('error', `${file.name} - Upload failed: ${errorMsg}`)
           }
-          await store.fetchMibFiles()
-        } catch (error: unknown) {
-          let errorMsg = 'Unknown error occurred'
-          if (error instanceof AxiosError) {
-            errorMsg = error.response?.data?.message || error.message || 'Server error'
-          } else if (error instanceof Error) {
-            errorMsg = error.message
-          }
-          addLog('error', `${file.name} - Upload failed: ${errorMsg}`)
         }
         isLoading.value = false
       } catch (error: unknown) {

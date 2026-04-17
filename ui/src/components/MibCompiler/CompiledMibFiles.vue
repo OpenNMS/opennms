@@ -64,12 +64,6 @@
                   <FeatherIcon :icon="Generic" />
                 </FeatherButton>
                 <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
-                >
-                  <FeatherIcon :icon="StackedBarChart" />
-                </FeatherButton>
-                <FeatherButton
                   icon="Delete"
                   data-test="delete-button"
                   @click="onDeleteClick(config)"
@@ -117,9 +111,7 @@
     >
       <template #content>
         Are you sure you want to delete this compiled MIB file name:
-        <strong>{{ selectedFile?.fileName
-        }}</strong
-        >?
+        <strong>{{ selectedFile?.fileName }}</strong>?
       </template>
     </ConfirmationDialog>
     <FileText
@@ -136,10 +128,7 @@
             <p>View MIB contents</p>
           </div>
           <div class="content">
-            <pre data-test="file-text">
-            {{ fileText }}
-          </pre
-            >
+            <pre data-test="file-text">{{ fileText }}</pre>
           </div>
         </div>
       </template>
@@ -172,10 +161,10 @@ import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import Delete from '@featherds/icon/action/Delete'
+import DownloadFile from "@featherds/icon/action/DownloadFile"
 import Search from '@featherds/icon/action/Search'
 import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
 import Generic from '@featherds/icon/file/Generic'
-import DownloadFile from "@featherds/icon/action/DownloadFile";
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
