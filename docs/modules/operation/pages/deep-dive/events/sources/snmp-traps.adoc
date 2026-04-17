@@ -36,7 +36,7 @@ There are several ways to configure {page-component-title} to customize the even
 === Create event definition for an SNMP trap
 
 {page-component-title} includes event definitions for traps from many vendors' equipment.
-Use the `mask` tag to match SNMP traps in `eventconf.xml`.
+Use the `mask` tag to match SNMP traps in your event definitions.
 See xref:deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event[Anatomy of an event] for details on event structure.
 
 The following example shows a Cisco Systems event for their C3800 device.
@@ -120,7 +120,7 @@ For example, to match all Cisco events, you could use the following:
 </mask>
 ----
 
-The order in which events are listed in the `eventconf.xml` file is extremely important.
+The order in which events are defined is extremely important.
 The search stops with the first event definition that matches the given event (see xref:deep-dive/events/event-configuration.adoc[eventconf.xml]).
 As such, if the code with the wildcard is listed before the more specific `ciscoC3800SysAggregateStatusChange` event, the latter event will never be generated.
 

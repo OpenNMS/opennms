@@ -21,7 +21,7 @@
 ///
 
 import { isIP } from 'is-ip'
-import { SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpProfileFormErrors, SnmpSecurityLevel } from '@/types/snmpConfig'
+import { IpAddressRange, SnmpBaseConfiguration, SnmpConfigFormErrors, SnmpDefinition, SnmpProfileFormErrors, SnmpSecurityLevel } from '@/types/snmpConfig'
 import { DEFAULT_SNMP_V3_SECURITY_LEVEL } from './constants'
 import { SCV_PREFIX_REGEX, validateScvPattern } from './scvValidator'
 
@@ -130,6 +130,7 @@ export const validateDefinition = (
   firstIpAddress: string,
   lastIpAddress: string,
   ipMatch: string,
+  isSaving: boolean,
   scvEnabledKeys: Set<string> = new Set()
 ): SnmpConfigFormErrors => {
   const errors: SnmpConfigFormErrors = {}
@@ -142,37 +143,72 @@ export const validateDefinition = (
     errors.snmpVersion = 'SNMP Version must be one of: ' + SNMP_VERSIONS.join(', ')
   }
 
-  const isRange = firstIpAddress && lastIpAddress
-  const isSpecific = firstIpAddress && !lastIpAddress
-  const isIpMatch = !firstIpAddress && !lastIpAddress && ipMatch
-  const isRangeOrSpecific = isRange || isSpecific
+  // If we are saving, we do not want to validate the IP address form fields, since in that case they are being ignored 
+  // and the actual definition ranges are already in the badges
+  if (!isSaving) {
+    const isEmptyIps = !firstIpAddress && !lastIpAddress && !ipMatch
+    const isRange = firstIpAddress && lastIpAddress
+    const isSpecific = firstIpAddress && !lastIpAddress
+    const isLastIpRangeOnly = !firstIpAddress && lastIpAddress
+    const isIpMatch = ipMatch.length > 0
+    const isRangeOrSpecific = isRange || isSpecific
 
-  // error if neither range, specific or ipMatch is provided, or if ipMatch is provided along with range or specific
-  if ((!isRange && !isSpecific && !isIpMatch) || (isRangeOrSpecific && isIpMatch)) {
-    errors.invalidRangeConfig = 'You must specify either a range, specific or IP Match expression'
-  }
-
-  if (isRange || isSpecific) {
-    if (!isIP(firstIpAddress)) {
-      errors.firstIpAddress = 'First IP Address must be a valid IP address'
+    if ((isRangeOrSpecific || isLastIpRangeOnly) && isIpMatch) {
+      errors.invalidRangeConfig = 'You cannot specify an IP Match expression along with a range or specific IP address'
     }
-  }
 
-  if (isRange) {
-    if (!isIP(lastIpAddress)) {
-      errors.lastIpAddress = 'If provided, last IP Address must be a valid IP address'
-    }
-  }
+    if (!isEmptyIps) {
+      if (isRange || isSpecific) {
+        if (!isIP(firstIpAddress)) {
+          errors.firstIpAddress = 'First IP Address must be a valid IP address'
+        }
+      }
 
-  if (isIpMatch) {
-    if (!IPLIKE_REGEX.test(ipMatch)) {
-      errors.ipMatch = IP_MATCH_ERROR
+      if (isRange) {
+        if (!isIP(lastIpAddress)) {
+          errors.lastIpAddress = 'If provided, last IP Address must be a valid IP address'
+        }
+      }
+
+      if (isLastIpRangeOnly) {
+        errors.lastIpAddress = 'Last IP Address cannot be provided without a first IP address'
+      }
+
+      if (isIpMatch) {
+        if (!IPLIKE_REGEX.test(ipMatch)) {
+          errors.ipMatch = IP_MATCH_ERROR
+        }
+      }
     }
   }
 
   const snmpConfigErrors = validateSnmpConfiguration(config, snmpVersion, scvEnabledKeys)
 
   return { ...errors, ...snmpConfigErrors }
+}
+
+export const checkForDuplicateDefinitionItems = (existingDefinition: SnmpDefinition, newRange?: IpAddressRange, newSpecific?: string, newIpMatch?: string): string | null => {
+  if (newRange) {
+    for (const range of existingDefinition.range) {
+      if (range.begin === newRange.begin && range.end === newRange.end) {
+        return `Duplicate range: ${newRange.begin} - ${newRange.end}`
+      }
+    }
+  }
+
+  if (newSpecific) {
+    if (existingDefinition.specific.includes(newSpecific)) {
+      return `Duplicate specific IP address: ${newSpecific}`
+    }
+  }
+
+  if (newIpMatch) {
+    if (existingDefinition.ipMatch.includes(newIpMatch)) {
+      return `Duplicate IP Match expression: ${newIpMatch}`
+    }
+  }
+
+  return null
 }
 
 export const validateProfile = (

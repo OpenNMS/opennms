@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.dao.DataAccessException;
@@ -123,6 +124,6 @@ public interface EventConfDao {
      * Load event conf from DB, should replace loading of event conf from filesystem
      * @param dbEvents
      */
-    void loadEventsFromDB(List<EventConfEvent> dbEvents);
+    void loadEventsFromDB(List<EventConfEvent> dbEvents, List<EventConfGlobalSecurity> eventConfGlobalSecurities);
 
 }

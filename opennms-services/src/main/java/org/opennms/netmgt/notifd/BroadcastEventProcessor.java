@@ -407,7 +407,7 @@ public final class BroadcastEventProcessor implements EventListener {
             ));
 
             m_eventUtil.expandMapValues(parmMap,
-                    getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
+                    getNotificationManager().getEvent(Long.parseLong(parmMap.get("eventID"))));
 
             String queueID = getNotificationManager().getQueueForNotification(notifId);
 

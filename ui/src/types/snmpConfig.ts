@@ -140,6 +140,7 @@ export interface SnmpConfigFormErrors {
   snmpVersion?: string
   invalidRangeConfig?: string
   mixingRangeWithIpMatch?: string
+  duplicateRangeItem?: string
   firstIpAddress?: string
   lastIpAddress?: string
   ipMatch?: string

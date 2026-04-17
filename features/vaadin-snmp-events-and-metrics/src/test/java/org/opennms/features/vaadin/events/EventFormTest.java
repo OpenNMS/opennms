@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.EventConfTestUtil;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
 
@@ -36,6 +37,7 @@ import com.vaadin.v7.data.fieldgroup.FieldGroup;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * The Test Class for EventForm.
@@ -55,9 +57,9 @@ public class EventFormTest {
     @Before
     public void setUp() throws Exception {
         dao = new DefaultEventConfDao();
-        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(
-            new org.springframework.core.io.ClassPathResource("etc/events/MPLS.events.xml"));
-        dao.loadEventsFromDB(eventConfEventList);
+        List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new org.springframework.core.io.ClassPathResource("etc/events/MPLS.events.xml"));
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new org.springframework.core.io.ClassPathResource("etc/events/MPLS.events.xml"));
+        dao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
     }
 
     /**

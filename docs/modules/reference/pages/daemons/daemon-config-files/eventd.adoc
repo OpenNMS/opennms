@@ -18,16 +18,6 @@ Core {page-component-title} process that generates xref:operation:deep-dive/even
 | Configure generic behavior of eventd (for example, TCP and UDP port numbers with IP addresses to listen for events and socket timeouts).
 | no
 | yes
-
-| eventconf.xml
-| Main configuration file for eventd.
-| yes
-| no
-
-| events/*.xml
-| Files in this folder must be specified as an include directive in `eventconf.xml`.
-| yes
-| no
 |===
 
 .Eventd log file overview
