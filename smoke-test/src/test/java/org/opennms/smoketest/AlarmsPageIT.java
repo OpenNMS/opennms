@@ -74,7 +74,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testNMS16417() throws InterruptedException {
-        enterText(By.xpath("//form[@name='get_details_from_alarm_id_form']//input[@name='byalarmid_id']"), "1");
+        enterText(By.xpath("//form[@name='get_details_from_alarm_id_form']//input[@id='byalarmid_id']"), "1");
         clickElement(By.xpath("//form[@name='get_details_from_alarm_id_form']//button[@type='submit']"));
         wait.until(ExpectedConditions.urlMatches(".*id=1"));
     }

@@ -109,7 +109,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         clickMenuItem("monitoringMenu", "Alarms");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li/a[contains(text()[normalize-space()], 'Alarms')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='form-group']//a[text()='View all alarms']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//a[text()='View all alarms']")));
 
         clickMenuItem("monitoringMenu", "Outages");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Outage Menu']")));
