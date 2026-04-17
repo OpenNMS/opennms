@@ -35,13 +35,14 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLFilterImpl;
-import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -307,13 +308,14 @@ public class SnmpDataCollectionMigration {
     /**
      * Unmarshal an XML file to a JAXB object.
      * Uses a SAX filter to inject the expected namespace for XML files that omit it.
+     * External entities and DOCTYPE declarations are disabled to prevent XXE attacks.
      */
     <T> T unmarshal(final Class<T> clazz, final File file) throws SQLException {
         try (final FileInputStream fis = new FileInputStream(file)) {
             final JAXBContext ctx = JAXBContext.newInstance(clazz);
             final Unmarshaller unmarshaller = ctx.createUnmarshaller();
 
-            final XMLReader reader = XMLReaderFactory.createXMLReader();
+            final XMLReader reader = createHardenedXmlReader();
             final NamespaceFilter filter = new NamespaceFilter(DATACOLLECTION_NAMESPACE);
             filter.setParent(reader);
 
@@ -323,9 +325,24 @@ public class SnmpDataCollectionMigration {
             @SuppressWarnings("unchecked")
             final T result = (T) unmarshaller.unmarshal(source);
             return result;
-        } catch (JAXBException | SAXException | java.io.IOException e) {
+        } catch (JAXBException | SAXException | ParserConfigurationException | java.io.IOException e) {
             throw new SQLException("Failed to unmarshal " + file.getAbsolutePath(), e);
         }
+    }
+
+    /**
+     * Build a SAX XMLReader with XXE-related features disabled:
+     * no DOCTYPE, no external entities, no external DTD loading.
+     */
+    private static XMLReader createHardenedXmlReader() throws SAXException, ParserConfigurationException {
+        final SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
+        spf.setXIncludeAware(false);
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        return spf.newSAXParser().getXMLReader();
     }
 
     /**

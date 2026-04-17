@@ -73,6 +73,9 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     @Autowired
     private SnmpCollectionSourceDao snmpCollectionSourceDao;
 
+    @Autowired
+    private org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
+
     @Override
     public Response uploadSnmpDataCollectionConfFiles(List<Attachment> attachments, SecurityContext securityContext) throws Exception {
 
@@ -766,7 +769,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                     "No Snmp Collection Source found for ID: " + snmpDataCollectionId);
         }
 
-        DatacollectionGroup dcg = dataCollectionConfPersistenceService.buildDataCollectionGroupFromDb(collectionSource);
+        DatacollectionGroup dcg = snmpDataCollectionConfigLoader.buildDataCollectionGroupFromDb(collectionSource);
 
         // Default to XML if format is null/blank
         String normalizedFormat = (format == null || format.isBlank()) ? "xml" : format.trim();

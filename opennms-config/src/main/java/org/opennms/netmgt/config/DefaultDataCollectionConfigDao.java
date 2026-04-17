@@ -377,7 +377,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
 
     @Override
-    public void loadFromDatabase(final DatacollectionConfig config,
+    public synchronized void loadFromDatabase(final DatacollectionConfig config,
                                  final Map<String, ResourceType> configuredResourceTypes,
                                  final List<String> groups) {
         LOG.info("Loading SNMP data collection config from database ({} collections, {} resource types, {} groups)",

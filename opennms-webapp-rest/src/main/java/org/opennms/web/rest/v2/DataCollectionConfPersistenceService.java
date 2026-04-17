@@ -21,12 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.IpList;
 
@@ -35,6 +30,7 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
+import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
 import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
@@ -44,14 +40,7 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
-import org.opennms.netmgt.config.api.DataCollectionConfigLookupUtils;
 import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.datacollection.Groups;
-import org.opennms.netmgt.config.datacollection.Rrd;
-import org.opennms.netmgt.config.datacollection.SnmpCollection;
-import org.opennms.netmgt.config.datacollection.Systems;
 import org.opennms.netmgt.model.SnmpCollectionProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
@@ -90,111 +76,7 @@ public class DataCollectionConfPersistenceService {
     private  SnmpCollectionSystemDefDao snmpCollectionSystemDefDao;
 
     @Autowired
-    private DataCollectionConfigDao dataCollectionConfigDao;
-
-
-    @PostConstruct
-    public void init() {
-        try {
-            reloadDataCollectionConfigFromDb();
-        } catch (Exception e) {
-            LOG.error("Failed to load SNMP data collection config from DB — " +
-                    "collection will not work until config is loaded.", e);
-        }
-    }
-
-    /**
-     * Build the full DatacollectionConfig from DB and load it into the DAO.
-     * Safe to call multiple times — replaces the in-memory config each time.
-     */
-    public void reloadDataCollectionConfigFromDb() {
-        final List<SnmpCollectionProfile> profiles = snmpCollectionProfileDao.findAllEnabled();
-        if (profiles == null || profiles.isEmpty()) {
-            LOG.info("No SNMP collection profiles in database — keeping XML-based config.");
-            return;
-        }
-
-        LOG.info("Loading SNMP data collection config from database ({} profiles)...", profiles.size());
-
-        final DatacollectionConfig config = new DatacollectionConfig();
-        String rrdPath = dataCollectionConfigDao.getRrdPath();
-        if (!rrdPath.endsWith("/")) {
-            rrdPath = rrdPath + "/";
-        }
-        config.setRrdRepository(rrdPath);
-        final Map<String, ResourceType> allResourceTypes = new HashMap<>();
-        final List<String> allGroups = new ArrayList<>();
-
-        // Resource type holder collection
-        final SnmpCollection rtCollection = new SnmpCollection();
-        rtCollection.setName("__resource_type_collection");
-        rtCollection.setSnmpStorageFlag("select");
-        rtCollection.setGroups(new Groups());
-        rtCollection.setSystems(new Systems());
-        final Rrd rtRrd = new Rrd();
-        rtRrd.setStep(300);
-        rtCollection.setRrd(rtRrd);
-
-        for (final SnmpCollectionProfile profile : profiles) {
-            final SnmpCollection coll = new SnmpCollection();
-            coll.setName(profile.getName());
-            coll.setSnmpStorageFlag(profile.getStorageFlag());
-            coll.setMaxVarsPerPdu(profile.getMaxVarsPerPdu());
-
-            final Rrd rrd = new Rrd();
-            rrd.setStep(profile.getRrdStep());
-            final List<String> rras = DatacollectionJsonHelper.fromJson(
-                    profile.getRrdRras(), new TypeReference<List<String>>() {});
-            if (rras != null) rras.forEach(rrd::addRra);
-            coll.setRrd(rrd);
-
-            final Groups groups = new Groups();
-            final Systems systems = new Systems();
-            coll.setGroups(groups);
-            coll.setSystems(systems);
-
-            final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
-                    profile.getSourceNames(), new TypeReference<List<String>>() {});
-            if (sourceNames != null) {
-                for (final String sourceName : sourceNames) {
-                    final SnmpCollectionSource source = snmpCollectionSourceDao.findByName(sourceName);
-                    if (source == null) {
-                        LOG.warn("Profile '{}' references source '{}' not found — skipping.", profile.getName(), sourceName);
-                        continue;
-                    }
-                    if (!allGroups.contains(sourceName)) {
-                        allGroups.add(sourceName);
-                    }
-
-                    final DatacollectionGroup dcGroup = buildDataCollectionGroupFromDb(source);
-                    // Merge groups
-                    dcGroup.getGroups().forEach(groups::addGroup);
-                    // Merge systemDefs
-                    dcGroup.getSystemDefs().forEach(systems::addSystemDef);
-                    // Merge resource types
-                    for (final ResourceType rt : dcGroup.getResourceTypes()) {
-                        coll.addResourceType(rt);
-                        rtCollection.addResourceType(rt);
-                        allResourceTypes.put(rt.getName(), rt);
-                    }
-                }
-            }
-
-            config.addSnmpCollection(coll);
-        }
-
-        config.insertSnmpCollection(rtCollection);
-
-        try {
-            DataCollectionConfigLookupUtils.validateResourceTypes(config.getSnmpCollections(), allResourceTypes.keySet());
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Resource type validation warning during DB config load: {}", e.getMessage());
-        }
-
-        dataCollectionConfigDao.loadFromDatabase(config, allResourceTypes, allGroups);
-        LOG.info("Loaded SNMP data collection config from DB: {} profiles, {} resource types, {} sources",
-                profiles.size(), allResourceTypes.size(), allGroups.size());
-    }
+    private SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
 
     public Integer addDataCollectionConfig(final String fileName,
                                            final String userName,
@@ -220,7 +102,7 @@ public class DataCollectionConfPersistenceService {
         addSourceToDefaultProfile(source.getName());
 
         // Reload in-memory config so runtime picks up the change
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
         LOG.info("Added data collection config for source '{}'.", fileName);
         return source.getId();
@@ -270,7 +152,7 @@ public class DataCollectionConfPersistenceService {
         final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
         entity.setCollectionSource(snmpCollectionSource);
         final Integer id = snmpCollectionMibGroupDao.save(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
         return id;
     }
 
@@ -282,7 +164,7 @@ public class DataCollectionConfPersistenceService {
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
         entity.setCollectionSource(snmpCollectionSource);
         final Integer id = snmpCollectionResourceTypeDao.save(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
         return id;
     }
 
@@ -294,7 +176,7 @@ public class DataCollectionConfPersistenceService {
         final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
         entity.setCollectionSource(snmpCollectionSource);
         final Integer id = snmpCollectionSystemDefDao.save(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
         return id;
     }
 
@@ -312,7 +194,7 @@ public class DataCollectionConfPersistenceService {
         }
         final var entity = SnmpCollectionMibGroupDto.updateEntity(snmpCollectionMibGroupEntity, request);
         snmpCollectionMibGroupDao.saveOrUpdate(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -332,7 +214,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(snmpCollectionResourceTypeEntity, request);
         snmpCollectionResourceTypeDao.saveOrUpdate(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -352,7 +234,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -377,7 +259,7 @@ public class DataCollectionConfPersistenceService {
         }
 
         if (deleted) {
-            reloadDataCollectionConfigFromDb();
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
         }
     }
 
@@ -413,7 +295,7 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionMibGroupDao::delete,
                 "MibGroup"
         );
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -427,7 +309,7 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionResourceTypeDao::delete,
                 "ResourceType"
         );
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -441,27 +323,27 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionSystemDefDao::delete,
                 "SystemDef"
         );
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableSnmpDataCollectionSources(boolean enabled, List<Integer> ids) {
         snmpCollectionSourceDao.updateEnabledFlag(ids, enabled);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableMibGroups(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionMibGroupDao.updateMibGroupEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableResourceTypes(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableSystemDefs(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        reloadDataCollectionConfigFromDb();
+        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
@@ -497,98 +379,6 @@ public class DataCollectionConfPersistenceService {
             deleter.accept(entity);
         }
     }
-    public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource source) {
-        DatacollectionGroup group = new DatacollectionGroup();
-        group.setName(source.getName());
-
-        // Resource types
-        List<SnmpCollectionResourceType> rtEntities = snmpCollectionResourceTypeDao.findAllEnabledBySource(source.getId());
-        group.setResourceTypes(rtEntities.stream().map(e -> {
-            ResourceType rt = new ResourceType();
-            rt.setName(e.getName());
-            rt.setLabel(e.getLabel());
-            if (e.getResourceLabel() != null)
-               rt.setResourceLabel(e.getResourceLabel());
-
-            if (e.getStorageStrategy() != null) {
-                StorageStrategy ss = new StorageStrategy();
-                ss.setClazz(e.getStorageStrategy());
-                var ssParams = DatacollectionJsonHelper.fromJsonToParameters(e.getStorageStrategyParams());
-                if (ssParams != null) {
-                    ss.setParameters(ssParams);
-                }
-                rt.setStorageStrategy(ss);
-            }
-
-            if (e.getPersistenceSelectorStrategy() != null) {
-                PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
-                ps.setClazz(e.getPersistenceSelectorStrategy());
-                var psParams = DatacollectionJsonHelper.fromJsonToParameters(e.getPersistenceSelectorParams());
-                if (psParams != null) {
-                    ps.setParameters(psParams);
-                }
-                rt.setPersistenceSelectorStrategy(ps);
-            }
-            return rt;
-        }).toList());
-
-        // MIB groups
-        List<SnmpCollectionMibGroup> mgEntities = snmpCollectionMibGroupDao.findAllEnabledBySource(source.getId());
-        List<Group> mibGroups = mgEntities.stream().map(e -> {
-            Group g = new Group();
-            g.setName(e.getName());
-            g.setIfType(e.getIfType());
-            g.setMibObjs(DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects()));
-            g.setProperties(DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties()));
-            // Restore nested include-group references
-            List<String> includeGroups = DatacollectionJsonHelper.fromJson(
-                    e.getMibGroupNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
-            if (includeGroups != null) {
-                g.setIncludeGroups(includeGroups);
-            }
-            return g;
-        }).toList();
-        group.setGroups(mibGroups);
-
-
-        // System defs
-        List<SnmpCollectionSystemDef> sdEntities = snmpCollectionSystemDefDao.findAllEnabledBySource(source.getId());
-        group.setSystemDefs(sdEntities.stream().map(e -> {
-            SystemDef sd = new SystemDef();
-            sd.setName(e.getName());
-
-            // XSD requirement: one of these MUST be present before <collect>
-            if (e.getSysoid() != null && !e.getSysoid().isBlank()) {
-                sd.setSysoid(e.getSysoid());
-            } else if (e.getSysoidMask() != null && !e.getSysoidMask().isBlank()) {
-                sd.setSysoidMask(e.getSysoidMask());
-            } else {
-                // invalid configuration: fail fast
-                throw new IllegalStateException("SystemDef '" + e.getName()
-                        + "' has no sysoid or sysoidMask in DB; cannot generate valid XML.");
-            }
-
-            // now it is safe to set collect
-            List<String> includeGroups = DatacollectionJsonHelper.fromJson(
-                    e.getMibGroupNames(),
-                    new com.fasterxml.jackson.core.type.TypeReference<>() {
-                    }
-            );
-
-            Collect collect = new Collect();
-            collect.setIncludeGroups(includeGroups);
-            sd.setCollect(collect);
-
-            // ipList (optional)
-            sd.setIpList(DatacollectionJsonHelper.fromJsonToIpList(e.getIpAddresses()));
-
-            return sd;
-        }).toList());
-
-        return group;
-    }
-
-
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,
                                                                     final String userName,
