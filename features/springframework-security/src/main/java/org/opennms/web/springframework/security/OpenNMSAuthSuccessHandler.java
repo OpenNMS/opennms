@@ -44,24 +44,43 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public static final String PASSWORD_GATE_PASSWORD = "admin";
 
     //  attribute set when admin logs in with the default password.
-    // TheSessionu Vue WelcomeModal wizard reads this via GET /rest/account/requiresPasswordChange
+    // The Vue WelcomeModal wizard reads this via GET /rest/account/requiresPasswordChange
     // and clears it after the password is changed or dismissed.
     public static final String REQUIRES_PASSWORD_CHANGE_SESSION_ATTR = "requiresPasswordChange";
 
     protected final Logger logger = LoggerFactory.getLogger(OpenNMSAuthSuccessHandler.class);
     private final RequestCache requestCache = new HttpSessionRequestCache();
 
+    // URL of the Vue wizard app — used when any first-sign-in wizard step needs to be shown.
+    // Configured via <property name="wizardUrl"> in applicationContext-spring-security.xml.
+    private String wizardUrl = "/ui/index.html";
+
+    public void setWizardUrl(String wizardUrl) {
+        this.wizardUrl = wizardUrl;
+    }
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         // changing JSESSIONID to prevent Session Fixation attacks, see NMS-15310
         request.changeSessionId();
+
+        boolean requiresWizard = false;
 
         // If admin logged in with the default password, flag the session so the Vue
         // WelcomeModal wizard can prompt for a password change in-app instead of
         // interrupting the flow with a full-page JSP redirect.
         if (isDefaultAdminLogin(request.getParameter("j_username"), request.getParameter("j_password"))) {
             request.getSession(true).setAttribute(REQUIRES_PASSWORD_CHANGE_SESSION_ATTR, Boolean.TRUE);
+            requiresWizard = true;
             logger.debug("User logged in with default admin credentials. Setting '{}' session flag for Vue wizard.", REQUIRES_PASSWORD_CHANGE_SESSION_ATTR);
+        }
+
+        // If any wizard step is needed, bypass the saved-request logic and send the user
+        // directly to the Vue wizard. After the wizard completes it will redirect to index.jsp.
+        if (requiresWizard) {
+            super.clearAuthenticationAttributes(request);
+            this.getRedirectStrategy().sendRedirect(request, response, Util.calculateUrlBase(request, wizardUrl));
+            return;
         }
 
         final DefaultSavedRequest savedRequest = (DefaultSavedRequest) this.requestCache.getRequest(request, response);

@@ -19,29 +19,21 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.v1;
+package org.opennms.web.rest.v2;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.JSONObject;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.model.OnmsUser;
+import org.opennms.web.rest.v2.api.AccountRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +47,8 @@ import org.springframework.stereotype.Component;
  * show an in-app prompt rather than a full-page JSP redirect.
  */
 @Component("accountRestService")
-@Path("account")
-@Tag(name = "Account", description = "Current-user account operations")
 @SuppressWarnings("java:S2068")
-public class AccountRestService {
+public class AccountRestServiceImpl implements AccountRestService {
 
     // Must match OpenNMSAuthSuccessHandler.REQUIRES_PASSWORD_CHANGE_SESSION_ATTR
     static final String REQUIRES_PASSWORD_CHANGE_ATTR = "requiresPasswordChange";
@@ -69,54 +59,27 @@ public class AccountRestService {
     private static final Pattern SAME_CHAR_PATTERN =
         Pattern.compile("(.)\\1{5}");
 
-    private static final Logger LOG = LoggerFactory.getLogger(AccountRestService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AccountRestServiceImpl.class);
 
     @Autowired
     private UserManager userManager;
 
-    /**
-     * Returns whether the current session requires a password change.
-     * The Vue WelcomeModal polls this once after login.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/requiresPasswordChange")
-    public Response getRequiresPasswordChange(@Context HttpServletRequest request) {
+    @Override
+    public Response getRequiresPasswordChange(HttpServletRequest request) {
         final HttpSession session = request.getSession(false);
         final boolean required = session != null &&
             Boolean.TRUE.equals(session.getAttribute(REQUIRES_PASSWORD_CHANGE_ATTR));
         return Response.ok(new JSONObject().put("requiresPasswordChange", required).toString()).build();
     }
 
-    /**
-     * Clears the "requires password change" flag without changing the password.
-     * Called when the user clicks Skip in the WelcomeModal.
-     */
-    @DELETE
-    @Path("/requiresPasswordChange")
-    public Response dismissRequiresPasswordChange(@Context HttpServletRequest request) {
+    @Override
+    public Response dismissRequiresPasswordChange(HttpServletRequest request) {
         clearFlag(request);
         return Response.noContent().build();
     }
 
-    /**
-     * Changes the current user's password.
-     * Verifies the current password and enforces complexity requirements.
-     * Clears the session flag on success.
-     *
-     * <p>Request body (JSON):
-     * <pre>{ "currentPassword": "...", "newPassword": "..." }</pre>
-     *
-     * <p>Returns 204 on success, 400 on bad input, 500 on internal error.
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/changePassword")
-    public Response changePassword(
-            @Context HttpServletRequest request,
-            @Context SecurityContext securityContext,
-            final String body) {
-
+    @Override
+    public Response changePassword(HttpServletRequest request, SecurityContext securityContext, String body) {
         final String username = securityContext.getUserPrincipal().getName();
 
         final JSONObject json;
@@ -181,7 +144,7 @@ public class AccountRestService {
 
     private Response errorResponse(Status status, String message) {
         return Response.status(status)
-            .type(MediaType.APPLICATION_JSON)
+            .type("application/json")
             .entity(new JSONObject().put("error", message).toString())
             .build();
     }

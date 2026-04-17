@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { rest } from './axiosInstances'
+import { v2 } from './axiosInstances'
 
 const endpoint = '/account'
 
@@ -30,7 +30,7 @@ const endpoint = '/account'
  */
 const getRequiresPasswordChange = async (): Promise<boolean> => {
   try {
-    const resp = await rest.get(`${endpoint}/requiresPasswordChange`)
+    const resp = await v2.get(`${endpoint}/requiresPasswordChange`)
     return resp.data?.requiresPasswordChange === true
   } catch {
     return false
@@ -42,7 +42,7 @@ const getRequiresPasswordChange = async (): Promise<boolean> => {
  */
 const dismissPasswordChangePrompt = async (): Promise<void> => {
   try {
-    await rest.delete(`${endpoint}/requiresPasswordChange`)
+    await v2.delete(`${endpoint}/requiresPasswordChange`)
   } catch {
     // best-effort; flag will clear on session expiry anyway
   }
@@ -54,7 +54,7 @@ const dismissPasswordChangePrompt = async (): Promise<void> => {
  */
 const changePassword = async (currentPassword: string, newPassword: string): Promise<true | string> => {
   try {
-    await rest.post(`${endpoint}/changePassword`, { currentPassword, newPassword })
+    await v2.post(`${endpoint}/changePassword`, { currentPassword, newPassword })
     return true
   } catch (err: any) {
     const message = err?.response?.data?.error
