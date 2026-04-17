@@ -48,9 +48,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => ([
 ]))
 
 onMounted(async () => {
-  await Promise.all([
-    store.fetchMibFiles()
-  ])
+  await store.fetchMibFiles()
 })
 </script>
 
@@ -80,3 +78,4 @@ onMounted(async () => {
   }
 }
 </style>
+
