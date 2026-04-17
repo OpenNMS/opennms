@@ -82,14 +82,17 @@ public class SnmpDataCollectionMigration {
     private static final String MIGRATION_USER = "system-migration";
     private static final String INLINE_SOURCE_PREFIX = "__inline_";
 
+    private boolean migrated = false;
+
     /**
      * Run the migration using the given JDBC connection.
      * Safe to call multiple times — skips if data already exists.
+     * @return true if data was actually imported
      */
-    public void execute(final Connection conn) throws SQLException {
+    public boolean execute(final Connection conn) throws SQLException {
         if (!shouldRun(conn)) {
             LOG.info("SNMP data collection tables already populated or not yet created — skipping XML migration.");
-            return;
+            return false;
         }
 
         final File etcDir = resolveEtcDirectory();
@@ -98,7 +101,7 @@ public class SnmpDataCollectionMigration {
         if (!configFile.exists()) {
             LOG.info("No {} found at {} — fresh install, skipping SNMP data collection migration.",
                     DATACOLLECTION_CONFIG_FILE, configFile.getAbsolutePath());
-            return;
+            return false;
         }
 
         LOG.info("Starting SNMP data collection XML-to-database migration from {}", etcDir.getAbsolutePath());
@@ -151,6 +154,8 @@ public class SnmpDataCollectionMigration {
         } catch (Exception e) {
             throw new SQLException("SNMP data collection migration failed", e);
         }
+        migrated = true;
+        return true;
     }
 
     /**

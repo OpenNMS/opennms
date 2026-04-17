@@ -169,6 +169,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
                                 profile.getName(), sourceName);
                         continue;
                     }
+                    if (!source.getEnabled()) {
+                        LOG.debug("Profile '{}': source '{}' is disabled — skipping.",
+                                profile.getName(), sourceName);
+                        continue;
+                    }
                     if (!allGroups.contains(sourceName)) {
                         allGroups.add(sourceName);
                     }

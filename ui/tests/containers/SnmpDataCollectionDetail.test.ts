@@ -180,13 +180,13 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.find('.tab-container').exists()).toBe(true)
     })
 
-    it('renders two config rows with three fields each', async () => {
+    it('renders two config rows with two fields each', async () => {
       wrapper = await createWrapper()
 
       const configRows = wrapper.findAll('.config-row')
       expect(configRows.length).toBe(2)
       configRows.forEach((row) => {
-        expect(row.findAll('.config-field').length).toBe(3)
+        expect(row.findAll('.config-field').length).toBe(2)
       })
     })
 
@@ -196,7 +196,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       expect(wrapper.find('[data-test="back-button"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="delete-source"]').exists()).toBe(true)
       expect(wrapper.find('[data-test="config-box"]').exists()).toBe(true)
-      expect(wrapper.find('[data-test="vendor-tag"]').exists()).toBe(true)
+      expect(wrapper.find('[data-test="status-tag"]').exists()).toBe(true)
     })
 
     it('renders delete source button with correct text', async () => {
@@ -230,7 +230,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       }
     ])(
       'renders correct button, chip, and status when enabled=$enabled',
-      async ({ enabled, shownButton, hiddenButton, chipClass, hiddenChipClass, statusText, buttonText }) => {
+      async ({ enabled, shownButton, hiddenButton, chipClass, hiddenChipClass, buttonText }) => {
         const source = { ...mockCollectionSource, enabled }
         wrapper = await createWrapper(source)
 
@@ -242,10 +242,6 @@ describe('SnmpDataCollectionDetail.vue', () => {
         // Chip tag
         expect(wrapper.find(`.${chipClass}`).exists()).toBe(true)
         expect(wrapper.find(`.${hiddenChipClass}`).exists()).toBe(false)
-
-        // Status in config details
-        const configBox = wrapper.find('.config-details-box')
-        expect(configBox.text()).toContain(`Status:${statusText}`)
       }
     )
 
@@ -289,7 +285,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       const configBox = wrapper.find('.config-details-box')
 
       // Labels
-      const expectedLabels = ['Source:', 'Uploaded By:', 'Creation Date:', 'Vendor:', 'Status:', 'Last Modified Date:']
+      const expectedLabels = ['Source:', 'Uploaded By:', 'Creation Date:', 'Last Modified Date:']
       expectedLabels.forEach((label) => {
         expect(configBox.text()).toContain(label)
       })
@@ -297,8 +293,6 @@ describe('SnmpDataCollectionDetail.vue', () => {
       // Values
       expect(configBox.text()).toContain('Test Collection')
       expect(configBox.text()).toContain('test-user')
-      expect(configBox.text()).toContain('Test Vendor')
-      expect(configBox.text()).toContain('Enabled')
       expect(configBox.text()).toContain(format(mockCollectionSource.createdTime, 'MM/dd/yyyy'))
       expect(configBox.text()).toContain(format(mockCollectionSource.lastModified, 'MM/dd/yyyy'))
     })
@@ -315,14 +309,13 @@ describe('SnmpDataCollectionDetail.vue', () => {
     })
 
     it.each([
-      { name: 'Simple Collection', vendor: 'Vendor A', uploadedBy: 'user1' },
-      { name: 'Complex Collection Name', vendor: 'OpenNMS', uploadedBy: 'admin' }
-    ])('displays dynamic data: name=$name, vendor=$vendor', async ({ name, vendor, uploadedBy }) => {
-      const source = { ...mockCollectionSource, name, vendor, uploadedBy }
+      { name: 'Simple Collection', uploadedBy: 'user1' },
+      { name: 'Complex Collection Name', uploadedBy: 'admin' }
+    ])('displays dynamic data: name=$name', async ({ name, uploadedBy }) => {
+      const source = { ...mockCollectionSource, name, uploadedBy }
       wrapper = await createWrapper(source)
 
       expect(wrapper.text()).toContain(name)
-      expect(wrapper.text()).toContain(vendor)
       expect(wrapper.text()).toContain(uploadedBy)
     })
   })
@@ -453,12 +446,11 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('updates displayed data when store.selectedCollectionSource changes', async () => {
       wrapper = await createWrapper()
 
-      const newSource = { ...mockCollectionSource, name: 'Updated Collection', vendor: 'New Vendor' }
+      const newSource = { ...mockCollectionSource, name: 'Updated Collection' }
       store.selectedCollectionSource = newSource
       await wrapper.vm.$nextTick()
 
       expect(wrapper.text()).toContain('Updated Collection')
-      expect(wrapper.text()).toContain('New Vendor')
     })
 
     it('switches to not-found view when selectedCollectionSource becomes null', async () => {
@@ -490,11 +482,13 @@ describe('SnmpDataCollectionDetail.vue', () => {
 
     it('updates status display when enabled changes', async () => {
       wrapper = await createWrapper({ ...mockCollectionSource, enabled: true })
-      expect(wrapper.text()).toContain('Status:Enabled')
+      expect(wrapper.find('.enabled-tag').exists()).toBe(true)
+      expect(wrapper.find('.disabled-tag').exists()).toBe(false)
 
       store.selectedCollectionSource = { ...mockCollectionSource, enabled: false }
       await wrapper.vm.$nextTick()
-      expect(wrapper.text()).toContain('Status:Disabled')
+      expect(wrapper.find('.disabled-tag').exists()).toBe(true)
+      expect(wrapper.find('.enabled-tag').exists()).toBe(false)
     })
 
     it('maintains state consistency after multiple store updates', async () => {
@@ -508,9 +502,9 @@ describe('SnmpDataCollectionDetail.vue', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.text()).toContain('Updated Name')
 
-      store.selectedCollectionSource = { ...mockCollectionSource, vendor: 'New Vendor' }
+      store.selectedCollectionSource = { ...mockCollectionSource, uploadedBy: 'new-user' }
       await wrapper.vm.$nextTick()
-      expect(wrapper.text()).toContain('New Vendor')
+      expect(wrapper.text()).toContain('new-user')
     })
 
     it('updates heading capitalize when name changes', async () => {
@@ -1347,27 +1341,23 @@ describe('SnmpDataCollectionDetail.vue', () => {
     it('handles unicode/international characters', async () => {
       const source = {
         ...mockCollectionSource,
-        name: '测试集合 日本語 العربية',
-        vendor: 'Фактор 中文供应商'
+        name: '测试集合 日本語 العربية'
       }
       wrapper = await createWrapper(source)
 
       expect(wrapper.text()).toContain('测试集合 日本語 العربية')
-      expect(wrapper.text()).toContain('Фактор 中文供应商')
     })
 
     it('handles XSS strings safely via text interpolation', async () => {
       const source = {
         ...mockCollectionSource,
-        name: '<script>alert("xss")</script>',
-        vendor: 'onclick="alert(1)"'
+        name: '<script>alert("xss")</script>'
       }
       wrapper = await createWrapper(source)
 
       expect(wrapper.find('.snmp-data-collection-detail-container').exists()).toBe(true)
       // Vue {{ }} treats content as text, not HTML
       expect(wrapper.text()).toContain('<script>alert("xss")</script>')
-      expect(wrapper.text()).toContain('onclick="alert(1)"')
     })
 
     it('handles incomplete collection source data', async () => {
@@ -1520,7 +1510,7 @@ describe('SnmpDataCollectionDetail.vue', () => {
       wrapper = await createWrapper()
 
       const configFields = wrapper.findAll('.config-field')
-      expect(configFields.length).toBe(6)
+      expect(configFields.length).toBe(4)
       configFields.forEach((field) => {
         expect(field.find('.field-label').exists()).toBe(true)
         expect(field.find('.field-value').exists()).toBe(true)

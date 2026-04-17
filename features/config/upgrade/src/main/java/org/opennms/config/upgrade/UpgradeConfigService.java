@@ -78,10 +78,12 @@ public class UpgradeConfigService implements InitializingBean {
             connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             final SnmpDataCollectionMigration migration = new SnmpDataCollectionMigration();
-            migration.execute(connection);
+            final boolean imported = migration.execute(connection);
             connection.commit();
-            // Archive only after successful commit
-            migration.archiveFiles();
+            // Archive only if data was actually imported
+            if (imported) {
+                migration.archiveFiles();
+            }
         } catch (final Exception e) {
             if (connection != null) {
                 try { connection.rollback(); } catch (SQLException ignored) { }

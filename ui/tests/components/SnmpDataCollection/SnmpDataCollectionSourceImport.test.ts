@@ -1183,7 +1183,7 @@ describe('SnmpDataCollectionSourceImport.vue', () => {
     })
 
     it('should display instruction about XML format', () => {
-      expect(wrapper.text()).toContain('Event configuration files must be in XML format')
+      expect(wrapper.text()).toContain('SNMP data collection source files must be in XML format')
     })
 
     it('should display instruction about multiple file selection', () => {
