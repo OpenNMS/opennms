@@ -35,13 +35,14 @@ import * as Pinia from 'pinia'
 import * as VueRouter from 'vue-router'
 
 import '@featherds/styles'
-import '@featherds/styles/themes/open-light.css'
+import '@/styles/themes.scss'
 
 import 'vue-diff/dist/index.css'
 
 import dateFormatDirective from '../directives/v-date'
 import { externalComponent, getJSPath } from '../components/Plugin/utils'
 import { setupPrimeVue } from '../theme/primevue-setup'
+import { useAppStore } from '@/stores/appStore'
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
@@ -100,4 +101,7 @@ app
   .use(router)
   .use(createPinia())
   .directive('date', dateFormatDirective)
-  .mount('#app')
+
+useAppStore().initTheme()
+
+app.mount('#app')

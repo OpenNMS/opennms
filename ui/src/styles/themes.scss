@@ -20,37 +20,17 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
-import {
-  applyThemeClass,
-  DARK_THEME,
-  LIGHT_THEME,
-  loadTheme,
-  saveTheme,
-  Theme
-} from '@/services/themeService'
+@import "@featherds/styles/themes/open-mixins";
+@import "@featherds/styles/themes/variables";
 
-export const useAppStore = defineStore('appStore', () => {
-  const theme = ref<Theme>(loadTheme())
+.open-light {
+  @include open-light;
+}
 
-  const setTheme = (newTheme: Theme) => {
-    theme.value = newTheme
-    saveTheme(newTheme)
-    applyThemeClass(newTheme)
-  }
+.open-dark {
+  @include open-dark;
+}
 
-  const initTheme = () => {
-    applyThemeClass(theme.value)
-  }
-
-  const toggleTheme = () => {
-    setTheme(theme.value === LIGHT_THEME ? DARK_THEME : LIGHT_THEME)
-  }
-
-  return {
-    theme,
-    setTheme,
-    initTheme,
-    toggleTheme
-  }
-})
+body {
+  background: var($background);
+}

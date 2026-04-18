@@ -20,37 +20,28 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
-import {
-  applyThemeClass,
-  DARK_THEME,
-  LIGHT_THEME,
-  loadTheme,
-  saveTheme,
-  Theme
-} from '@/services/themeService'
+export type Theme = 'open-light' | 'open-dark'
 
-export const useAppStore = defineStore('appStore', () => {
-  const theme = ref<Theme>(loadTheme())
+export const LIGHT_THEME: Theme = 'open-light'
+export const DARK_THEME: Theme = 'open-dark'
+export const DEFAULT_THEME: Theme = LIGHT_THEME
 
-  const setTheme = (newTheme: Theme) => {
-    theme.value = newTheme
-    saveTheme(newTheme)
-    applyThemeClass(newTheme)
-  }
+const THEME_STORAGE_KEY = 'theme'
 
-  const initTheme = () => {
-    applyThemeClass(theme.value)
-  }
+const isTheme = (value: unknown): value is Theme =>
+  value === LIGHT_THEME || value === DARK_THEME
 
-  const toggleTheme = () => {
-    setTheme(theme.value === LIGHT_THEME ? DARK_THEME : LIGHT_THEME)
-  }
+export const loadTheme = (): Theme => {
+  const value = localStorage.getItem(THEME_STORAGE_KEY)
+  return isTheme(value) ? value : DEFAULT_THEME
+}
 
-  return {
-    theme,
-    setTheme,
-    initTheme,
-    toggleTheme
-  }
-})
+export const saveTheme = (theme: Theme): void => {
+  localStorage.setItem(THEME_STORAGE_KEY, theme)
+}
+
+export const applyThemeClass = (theme: Theme): void => {
+  const body = document.body
+  body.classList.remove(LIGHT_THEME, DARK_THEME)
+  body.classList.add(theme)
+}

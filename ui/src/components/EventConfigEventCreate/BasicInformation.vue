@@ -770,7 +770,7 @@ onMounted(async () => {
   margin: 30px;
 
   border-radius: 8px;
-  background-color: #ffffff;
+  background: var(variables.$surface);
 
   .title {
     display: flex;
@@ -813,11 +813,9 @@ onMounted(async () => {
     justify-content: flex-end;
     gap: 10px;
   }
-
 }
 
 .modal-body-form {
   width: 50rem;
 }
 </style>
-
