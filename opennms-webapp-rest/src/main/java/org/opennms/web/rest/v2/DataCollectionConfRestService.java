@@ -128,6 +128,9 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
             }
         }
 
+        if (!successList.isEmpty()) {
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
+        }
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
     }
@@ -336,6 +339,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
             final var id = dataCollectionConfPersistenceService
                     .addMibGroupToSnmpCollectionSources(snmpCollectionSource, request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.status(Response.Status.CREATED)
                     .entity(id)
@@ -383,6 +387,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
             final var id = dataCollectionConfPersistenceService
                     .addResourceTypeToSnmpCollectionSources(source, request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.status(Response.Status.CREATED)
                     .entity(id)
@@ -430,6 +435,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
             final var id = dataCollectionConfPersistenceService
                     .addSystemDefToSnmpCollectionSources(source, request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.status(Response.Status.CREATED)
                     .entity(id)
@@ -456,6 +462,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
         try {
             dataCollectionConfPersistenceService.updateMibGroup(mibGroupId,collectionSourceId,request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("MibGroup updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -472,6 +479,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
         try {
             dataCollectionConfPersistenceService.updateResourceType(resourceTypeId,collectionSourceId,request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("ResourceType updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -488,6 +496,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         }
         try {
             dataCollectionConfPersistenceService.updateSystemDef(systemDefId,collectionSourceId,request);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SystemDef updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -579,6 +588,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
         try {
 
             dataCollectionConfPersistenceService.enableDisableSnmpDataCollectionSources(enabled, ids);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SNMP data collection sources updated successfully.").build();
 
         } catch (IllegalArgumentException ex) {
@@ -618,6 +628,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
         try {
             dataCollectionConfPersistenceService.enableDisableMibGroups(snmpDataCollectionSourceId, enabled, ids);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.ok().entity("SNMP MIB groups updated successfully.").build();
 
@@ -662,6 +673,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
         try {
             dataCollectionConfPersistenceService.enableDisableResourceTypes(snmpDataCollectionSourceId, enabled, ids);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.ok().entity("SNMP resource types updated successfully.").build();
 
@@ -706,6 +718,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
 
         try {
             dataCollectionConfPersistenceService.enableDisableSystemDefs(snmpDataCollectionSourceId, enabled, ids);
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
             return Response.ok().entity("SNMP system defs updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {
@@ -726,6 +739,7 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
     private Response handleDelete(final DeleteAction action, final String successMessage) {
         try {
             action.run();
+            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
             return Response.ok()
                     .entity(successMessage)

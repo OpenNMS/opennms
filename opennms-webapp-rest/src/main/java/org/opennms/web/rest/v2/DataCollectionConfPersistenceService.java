@@ -30,7 +30,6 @@ import org.opennms.netmgt.dao.api.SnmpCollectionProfileDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionResourceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.dao.api.SnmpCollectionSystemDefDao;
-import org.opennms.netmgt.dao.support.SnmpDataCollectionConfigLoader;
 import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
 import org.opennms.netmgt.model.SnmpCollectionResourceType;
@@ -75,9 +74,6 @@ public class DataCollectionConfPersistenceService {
     @Autowired
     private  SnmpCollectionSystemDefDao snmpCollectionSystemDefDao;
 
-    @Autowired
-    private SnmpDataCollectionConfigLoader snmpDataCollectionConfigLoader;
-
     public Integer addDataCollectionConfig(final String fileName,
                                            final String userName,
                                            DatacollectionGroup dataCollectionGroup,
@@ -100,9 +96,6 @@ public class DataCollectionConfPersistenceService {
 
         // Add source to default profile's source_names if not already present
         addSourceToDefaultProfile(source.getName());
-
-        // Reload in-memory config so runtime picks up the change
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
 
         LOG.info("Added data collection config for source '{}'.", fileName);
         return source.getId();
@@ -151,9 +144,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionMibGroupDto.updateEntity(new SnmpCollectionMibGroup(), request);
         entity.setCollectionSource(snmpCollectionSource);
-        final Integer id = snmpCollectionMibGroupDao.save(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
-        return id;
+        return snmpCollectionMibGroupDao.save(entity);
     }
 
     @Transactional
@@ -163,9 +154,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
         entity.setCollectionSource(snmpCollectionSource);
-        final Integer id = snmpCollectionResourceTypeDao.save(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
-        return id;
+        return snmpCollectionResourceTypeDao.save(entity);
     }
 
     @Transactional
@@ -175,9 +164,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
         entity.setCollectionSource(snmpCollectionSource);
-        final Integer id = snmpCollectionSystemDefDao.save(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
-        return id;
+        return snmpCollectionSystemDefDao.save(entity);
     }
 
     @Transactional
@@ -194,7 +181,6 @@ public class DataCollectionConfPersistenceService {
         }
         final var entity = SnmpCollectionMibGroupDto.updateEntity(snmpCollectionMibGroupEntity, request);
         snmpCollectionMibGroupDao.saveOrUpdate(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -214,7 +200,6 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(snmpCollectionResourceTypeEntity, request);
         snmpCollectionResourceTypeDao.saveOrUpdate(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -234,7 +219,6 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(snmpCollectionSystemDefEntity, request);
         snmpCollectionSystemDefDao.saveOrUpdate(entity);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -243,7 +227,6 @@ public class DataCollectionConfPersistenceService {
             return;
         }
 
-        boolean deleted = false;
         for (final Integer id : ids) {
             if (id == null || id <= 0) {
                 continue;
@@ -255,11 +238,6 @@ public class DataCollectionConfPersistenceService {
             }
             removeSourceFromProfiles(source.getName());
             snmpCollectionSourceDao.delete(source);
-            deleted = true;
-        }
-
-        if (deleted) {
-            snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
         }
     }
 
@@ -295,7 +273,6 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionMibGroupDao::delete,
                 "MibGroup"
         );
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -309,7 +286,6 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionResourceTypeDao::delete,
                 "ResourceType"
         );
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     @Transactional
@@ -323,27 +299,22 @@ public class DataCollectionConfPersistenceService {
                 snmpCollectionSystemDefDao::delete,
                 "SystemDef"
         );
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableSnmpDataCollectionSources(boolean enabled, List<Integer> ids) {
         snmpCollectionSourceDao.updateEnabledFlag(ids, enabled);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableMibGroups(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionMibGroupDao.updateMibGroupEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableResourceTypes(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     public void enableDisableSystemDefs(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
         snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
-        snmpDataCollectionConfigLoader.scheduleDataCollectionConfigReload();
     }
 
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
