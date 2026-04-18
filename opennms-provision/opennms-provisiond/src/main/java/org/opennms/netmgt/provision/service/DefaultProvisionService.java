@@ -1400,7 +1400,19 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     /** {@inheritDoc} */
     public boolean updateRequisitionForNewSuspect(final String addrString, final OnmsNode node) {
-        return createUpdateRequistion(addrString, node, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node), node.getForeignSource());
+        final String foreignSource = node.getForeignSource();
+
+        try {
+            final Requisition requisition = foreignSource == null ? null : m_foreignSourceRepository.getRequisition(foreignSource);
+            final RequisitionNode requisitionNode = requisition == null ? null : requisition.getNode(node.getForeignId());
+            if (requisitionNode != null && !Objects.equals(requisitionNode.getNodeLabel(), node.getLabel())) {
+                return createUpdateRequistion(addrString, node, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node), node.getForeignSource());
+            }
+        } catch (ForeignSourceRepositoryException e) {
+            LOG.error("Couldn't check requistion for newSuspect " + addrString, e);
+            return false;
+        }
+        return false;
     }
 
     /** {@inheritDoc} */
