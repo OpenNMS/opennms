@@ -189,6 +189,14 @@ public class AddRequisitionedNode implements Action {
                 for (int i = 2; i < interfaceVals.length; i++) { // 2 ... N are MonitoredServices
                     thisInterface.insertMonitoredService(new RequisitionMonitoredService(interfaceVals[i]));
                 }
+                // if monitoredServices for all interfaces are defined and don't already exist, add them too
+                if (!monitoredServices.isEmpty()) {
+                    for (String service : monitoredServices) {
+                        if (thisInterface.getMonitoredService(service) == null) {
+                            thisInterface.insertMonitoredService(new RequisitionMonitoredService(service));
+                        }
+                    }
+                }
                 allTheseInterfaces.add(thisInterface);
             }
         }
