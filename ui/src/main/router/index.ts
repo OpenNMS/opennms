@@ -376,6 +376,11 @@ const router = createRouter({
       component: () => import('@/containers/MibCompiler.vue')
     },
     {
+      path: '/mib-compiler/edit',
+      name: 'Edit MIB File',
+      component: () => import('@/containers/EditMibFile.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

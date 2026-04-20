@@ -1,5 +1,5 @@
 import { listPendingAndCompiledFiles } from '@/services/mibCompilerService'
-import { MibCompilerFileInfo, MibCompilerStoreState } from '@/types/mibCompiler'
+import { MibCompilerFileInfo, MibCompilerFileInfoWithContent, MibCompilerStoreState } from '@/types/mibCompiler'
 import { SORT } from '@featherds/table'
 import { defineStore } from 'pinia'
 
@@ -7,6 +7,7 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
   state: (): MibCompilerStoreState => ({
     files: [],
     isLoading: false,
+    selectedMibFile: null,
     compiledMibFilesSearchTerm: '',
     pendingMibFilesSearchTerm: '',
     compiledMibFilesSort: {
@@ -155,6 +156,9 @@ export const useMibCompilerStore = defineStore('useMibCompilerStore', {
     onPendingMibFilesPageSizeChange(newPageSize: number) {
       this.pendingMibFilesPagination.pageSize = newPageSize
       this.pendingMibFilesPagination.page = 1 // Reset to first page when page size changes
+    },
+    setSelectedMibFile(file: MibCompilerFileInfoWithContent | null) {
+      this.selectedMibFile = file
     }
   }
 })
