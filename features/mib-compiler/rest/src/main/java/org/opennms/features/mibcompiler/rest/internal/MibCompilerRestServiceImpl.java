@@ -84,7 +84,25 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         final List<Map<String, Object>> successList = new ArrayList<>();
         final List<Map<String, Object>> errorList = new ArrayList<>();
 
+        if (filename == null || filename.trim().isEmpty()) {
+            final String originalFilename = safeFilename(filename);
+            final String baseName = MibCompilerServiceUtil.stripPathAndExtension(originalFilename);
+
+            LOG.warn("Skipping upload with missing/blank filename (rawFilename={})", filename);
+            errorList.add(error(originalFilename, baseName, "filename must not be null/blank."));
+            return buildResponse(Response.Status.BAD_REQUEST, successList, errorList);
+        }
+
         final String originalFilename = safeFilename(filename);
+
+        if (UNKNOWN_FILENAME.equals(originalFilename)) {
+            final String baseName = MibCompilerServiceUtil.stripPathAndExtension(originalFilename);
+
+            LOG.warn("Skipping upload with invalid filename: {}", filename);
+            errorList.add(error(originalFilename, baseName, "Invalid filename."));
+            return buildResponse(Response.Status.BAD_REQUEST, successList, errorList);
+        }
+
         final String baseName = MibCompilerServiceUtil.stripPathAndExtension(originalFilename);
 
         if (isBlank(baseName)) {
@@ -318,14 +336,24 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             MibCompilerServiceUtil.writeBinaryFile(location, fileName, mibContent);
 
             LOG.info("Set file text: updated successfully (location={}, fileName={})", location, fileName);
-
             return Response.ok("Text updated successfully").build();
 
         } catch (IllegalArgumentException e) {
-            LOG.warn("Set file text failed (bad request): location={}, fileName={}, msg={}", location, fileName, e.getMessage());
+            final String msg = e.getMessage();
+            final boolean isNotFound = msg != null && msg.toLowerCase().contains("file does not");
+
+            if (isNotFound) {
+                LOG.warn("Set file text failed (not found): location={}, fileName={}, msg={}", location, fileName, msg);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(msg)
+                        .build();
+            }
+
+            LOG.warn("Set file text failed (bad request): location={}, fileName={}, msg={}", location, fileName, msg);
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
+                    .entity(msg)
                     .build();
+
         } catch (IllegalStateException e) {
             LOG.warn("Set file text failed (conflict): location={}, fileName={}, msg={}", location, fileName, e.getMessage(), e);
             return Response.status(Response.Status.CONFLICT)
@@ -553,6 +581,12 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
         if (fileName == null || fileName.isBlank()) {
             LOG.warn("Request rejected: blank fileName (location={})", location);
             throw new IllegalArgumentException("fileName must not be blank.");
+        }
+
+        if (fileName.length() > MAX_FILENAME_LENGTH) {
+            LOG.warn("Request rejected: oversized fileName length={} (location={})",
+                    fileName.length(), location);
+            throw new IllegalArgumentException("fileName too long (max " + MAX_FILENAME_LENGTH + ").");
         }
 
         if (fileName.contains("/") || fileName.contains("\\") || fileName.contains("..")) {

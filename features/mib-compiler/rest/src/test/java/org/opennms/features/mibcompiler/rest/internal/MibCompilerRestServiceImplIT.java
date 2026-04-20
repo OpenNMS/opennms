@@ -33,6 +33,10 @@ import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequ
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.dao.support.EventConfServiceHelper;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.transaction.support.TransactionOperations;
 
 import javax.ws.rs.core.Response;
@@ -51,6 +55,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.mockito.MockedStatic;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class MibCompilerRestServiceImplIT {
 
@@ -183,7 +195,7 @@ public class MibCompilerRestServiceImplIT {
     }
 
     @Test
-    public void getFileText_shouldReturn404ForInvalidFileName() throws Exception {
+    public void getFileText_shouldReturn400ForInvalidFileName() throws Exception {
         Response r = service.getFileText("pending", "..\\evil.txt");
         assertEquals(400, r.getStatus());
     }
@@ -294,6 +306,98 @@ public class MibCompilerRestServiceImplIT {
         assertEquals(500, r.getStatus());
     }
 
+    @Test
+    public void compileMib_shouldReturn200AndMovePendingToCompiled() throws Exception {
+        Files.writeString(new File(pendingDir, "IF-MIB.mib").toPath(), "dummy mib", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(true);
+
+        Response r = service.compileMib("IF-MIB.mib");
+
+        assertEquals(200, r.getStatus());
+        assertNotNull(r.getEntity());
+        assertTrue(r.getEntity() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> payload = (Map<String, Object>) r.getEntity();
+
+        assertEquals(Boolean.TRUE, payload.get("success"));
+        assertEquals("MIB compiled successfully.", payload.get("message"));
+        assertEquals("IF-MIB.mib", payload.get("mibName"));
+        assertNotNull("compiledFile should be set", payload.get("compiledFile"));
+
+        File pendingFile = new File(pendingDir, "IF-MIB.mib");
+        assertFalse("pending file should be moved/deleted", pendingFile.exists());
+
+        File[] compiledFiles = compiledDir.listFiles();
+        assertNotNull(compiledFiles);
+        assertTrue("compiled dir should contain the compiled file", compiledFiles.length >= 1);
+
+        File compiledFileFromResponse = new File(compiledDir, String.valueOf(payload.get("compiledFile")));
+        assertTrue("compiledFile returned in payload should exist in compiled dir",
+                compiledFileFromResponse.exists());
+    }
+
+    @Test
+    public void compileMib_shouldReturn400WhenParseFailsWithErrors() throws Exception {
+        Files.writeString(new File(pendingDir, "E.mib").toPath(), "dummy", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(false);
+        when(parser.getMissingDependencies()).thenReturn(List.of()); // no missing deps
+        when(parser.getFormattedErrors()).thenReturn("parse error: unexpected token");
+
+        Response r = service.compileMib("E.mib");
+
+        assertEquals(400, r.getStatus());
+        assertNotNull(r.getEntity());
+        assertTrue(r.getEntity() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> payload = (Map<String, Object>) r.getEntity();
+
+        assertEquals(Boolean.FALSE, payload.get("success"));
+        assertEquals("MIB validation failed.", payload.get("message"));
+        assertEquals("E.mib", payload.get("mibName"));
+        assertEquals("parse error: unexpected token", payload.get("errors"));
+
+        assertTrue(new File(pendingDir, "E.mib").exists());
+        File[] compiledFiles = compiledDir.listFiles();
+        assertNotNull(compiledFiles);
+        assertEquals(0, compiledFiles.length);
+    }
+
+    @Test
+    public void compileMib_shouldReturn404WhenNoPendingFileFound() throws Exception {
+        Response r = service.compileMib("NO-SUCH-MIB.mib");
+
+        assertEquals(404, r.getStatus());
+        assertNotNull(r.getEntity());
+        assertTrue(r.getEntity() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> payload = (Map<String, Object>) r.getEntity();
+
+        assertEquals(Boolean.FALSE, payload.get("success"));
+        assertEquals("No pending file found with base name 'NO-SUCH-MIB'.", payload.get("message"));
+        assertEquals("NO-SUCH-MIB.mib", payload.get("mibName"));
+    }
+
+    @Test
+    public void compileMib_shouldReturn400WhenBaseNameBlank() throws Exception {
+        Response r = service.compileMib("   ");
+
+        assertEquals(400, r.getStatus());
+        assertNotNull(r.getEntity());
+        assertTrue(r.getEntity() instanceof Map);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> payload = (Map<String, Object>) r.getEntity();
+
+        assertEquals(Boolean.FALSE, payload.get("success"));
+        assertEquals("baseName must not be blank.", payload.get("message"));
+        assertEquals("   ", payload.get("mibName"));
+    }
+
     private static void deleteRecursively(File f) {
         if (f == null || !f.exists()) return;
         File[] kids = f.listFiles();
@@ -303,5 +407,68 @@ public class MibCompilerRestServiceImplIT {
             }
         }
         f.delete();
+    }
+
+    @Test
+    public void generateEvents_shouldReturn200AndExecuteTransactionalDbPath() throws Exception {
+        Files.writeString(new File(compiledDir, "D.mib").toPath(), "dummy", StandardCharsets.UTF_8);
+
+        when(parser.parseMib(any(File.class))).thenReturn(true);
+
+        Events events = mock(Events.class);
+        when(parser.getEvents(eq("uei.opennms.org/test"))).thenReturn(events);
+
+        when(operations.execute(any())).thenAnswer(inv -> {
+            @SuppressWarnings("unchecked")
+            TransactionCallback<Response> cb = (TransactionCallback<Response>) inv.getArgument(0);
+            TransactionStatus status = mock(TransactionStatus.class);
+            return cb.doInTransaction(status);
+        });
+
+        when(eventConfSourceDao.findMaxFileOrder()).thenReturn(7);
+
+        EventConfSource source = mock(EventConfSource.class);
+        when(source.getId()).thenReturn(123L);
+
+        try (MockedStatic<EventConfServiceHelper> helper = mockStatic(EventConfServiceHelper.class)) {
+            helper.when(() -> EventConfServiceHelper.createOrUpdateSource(eq(eventConfSourceDao), any(EventConfSourceMetadataDto.class)))
+                    .thenReturn(source);
+
+            helper.when(() -> EventConfServiceHelper.saveEvents(
+                            eq(eventConfEventDao),
+                            eq(source),
+                            eq(events),
+                            anyString(),
+                            any(java.util.Date.class)))
+                    .thenAnswer(x -> null);
+
+            helper.when(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any()))
+                    .thenAnswer(x -> null);
+
+            MibCompilerGenerateEventsRequest req = new MibCompilerGenerateEventsRequest();
+            req.setName("D.mib");
+            req.setUeiBase("uei.opennms.org/test");
+
+            Response r = service.generateEvents(req);
+
+            assertEquals(200, r.getStatus());
+            assertNotNull(r.getEntity());
+            assertTrue("entity should be a Map", r.getEntity() instanceof Map);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = (Map<String, Object>) r.getEntity();
+
+            assertEquals(Boolean.TRUE, payload.get("success"));
+            assertEquals("Events generated successfully.", payload.get("message"));
+            assertEquals("D.mib", payload.get("mibFile"));
+            assertEquals(123L, payload.get("sourceId"));
+
+            verify(eventConfSourceDao, times(1)).findMaxFileOrder();
+            verify(eventConfEventDao, times(1)).deleteBySourceId(123L);
+
+            helper.verify(() -> EventConfServiceHelper.createOrUpdateSource(eq(eventConfSourceDao), any(EventConfSourceMetadataDto.class)), times(1));
+            helper.verify(() -> EventConfServiceHelper.saveEvents(eq(eventConfEventDao), eq(source), eq(events), anyString(), any(java.util.Date.class)), times(1));
+            helper.verify(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any()), times(1));
+        }
     }
 }
