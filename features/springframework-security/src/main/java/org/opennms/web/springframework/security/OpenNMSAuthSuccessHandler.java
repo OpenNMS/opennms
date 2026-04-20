@@ -44,7 +44,7 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     public static final String PASSWORD_GATE_PASSWORD = "admin";
 
     //  attribute set when admin logs in with the default password.
-    // The Vue WelcomeModal wizard reads this via GET /rest/account/requiresPasswordChange
+    // The Vue WelcomeModal wizard reads this via GET /opennms/api/v2/account/requiresPasswordChange
     // and clears it after the password is changed or dismissed.
     public static final String REQUIRES_PASSWORD_CHANGE_SESSION_ATTR = "requiresPasswordChange";
 

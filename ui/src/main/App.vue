@@ -66,7 +66,7 @@ const router = useRouter()
 // from the current URL so it works regardless of deployment prefix.
 // e.g. '/opennms/ui/index.html' → '/opennms/index.jsp'
 const redirectToDashboard = () => {
-  const contextPath = window.location.pathname.replace(/\/ui\/.*$/, '')
+  const contextPath = window.location.pathname.replace(/\/ui(\/.*)?$/, '')
   window.location.assign(`${contextPath}/index.jsp`)
 }
 
