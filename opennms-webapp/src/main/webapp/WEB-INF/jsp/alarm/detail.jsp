@@ -117,7 +117,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Alarms")
-          .breadcrumb("Alarms", "alarm/index.htm")
+          .breadcrumb("Alarms", "alarm/list.htm")
           .breadcrumb((alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId())
           .build(request);
 %>

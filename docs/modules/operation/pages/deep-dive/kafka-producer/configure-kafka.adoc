@@ -53,6 +53,11 @@ Set this to an empty string to disable filtering, and forward all events.
 Set this to an empty string to disable filtering, and forward all alarms.
 | none
 
+| metricFilter
+| A Spring SpEL expression (see below) to filter metrics.
+Set this to an empty string to disable filtering, and forward all metrics.
+| none
+
 | forward.metrics
 | Set this value to `true` to enable forwarding of metrics.
 | false
@@ -119,6 +124,22 @@ admin@opennms()> config:update
 
 In the example above, the filter is configured such that only alarms that are associated with a ticket ID are forwarded.
 Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in your distribution for a complete list of available properties.
+
+=== Enable Metric Filtering
+
+To enable metric filtering, set the value of the `metricFilter` property to a valid SpEL expression.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set metricFilter 'getLocation() == "Raleigh"'
+admin@opennms()> config:update
+----
+
+In the example above, the filter is configured such that only metrics associated with the given location are forwarded.
+Available properties are nodeId, nodeLabel, foreignSource, foreignId, location, resourceTypeName, resourceName, resourceId, ifIndex and instance.
 
 == Enable metric forwarding
 
