@@ -45,26 +45,44 @@
             v-for="config in store.paginatedPendingMibFiles"
             :key="config.fileName"
           >
-            <td>{{ config.fileName }}</td>
+            <td>
+              <div
+                class="hyperlink"
+                @click="onViewDetailsClick(config)"
+                data-test="file-name"
+              >
+                {{ config.fileName }}
+              </div>
+            </td>
             <td>
               <div class="action-container">
                 <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
+                  icon="Edit"
+                  data-test="edit-button"
+                  @click="onEditClick(config)"
                 >
-                  <FeatherIcon :icon="Generic"> </FeatherIcon>
+                  <FeatherIcon :icon="Edit" />
                 </FeatherButton>
                 <FeatherButton
-                  icon="View Details"
-                  data-test="view-button"
+                  icon="Compile MIB"
+                  data-test="compile-button"
+                  @click="onCompileClick(config)"
                 >
-                  <FeatherIcon :icon="StackedBarChart"> </FeatherIcon>
+                  <FeatherIcon :icon="MarkComplete" />
                 </FeatherButton>
                 <FeatherButton
-                  icon="Download XML"
+                  icon="Delete"
+                  data-test="delete-button"
+                  @click="onDeleteClick(config)"
+                >
+                  <FeatherIcon :icon="Delete" />
+                </FeatherButton>
+                <FeatherButton
+                  icon="Download File"
                   data-test="download-button"
+                  @click="onDownloadClick(config)"
                 >
-                  <FeatherIcon :icon="Delete"> </FeatherIcon>
+                  <FeatherIcon :icon="DownloadFile" />
                 </FeatherButton>
               </div>
             </td>
@@ -92,24 +110,79 @@
         />
       </div>
     </div>
+    <ConfirmationDialog
+      @ok="onDeleteConfirm"
+      @cancel="onDeleteCancel"
+      title="Delete Pending MIB File"
+      :visible="deleteDialogVisible"
+    >
+      <template #content>
+        Are you sure you want to delete this pending MIB file name:
+        <strong>{{ selectedFile?.fileName }}</strong>?
+      </template>
+    </ConfirmationDialog>
+    <FileText
+      title="Pending MIB File Details"
+      @hidden="onCloseTextDrawer"
+      :visible="textDrawerVisible"
+    >
+      <template #content>
+        <div class="modal-content">
+          <div class="header">
+            <p>{{ selectedFile?.fileName }}</p>
+          </div>
+          <div class="subtitle">
+            <p>View MIB contents</p>
+          </div>
+          <div class="content">
+            <pre data-test="file-text">{{ fileText }}</pre>
+          </div>
+        </div>
+      </template>
+    </FileText>
+    <ConfirmationDialog
+      @ok="onCompileConfirm"
+      @cancel="onCompileCancel"
+      title="Compile MIB File"
+      :visible="compileDialogVisible"
+    >
+      <template #content>
+        Are you sure you want to compile this MIB file:
+        <strong>{{ selectedFile?.fileName }}</strong>?
+      </template>
+    </ConfirmationDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { compileMib, deleteFile, getFileText } from '@/services/mibCompilerService'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
+import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import Delete from '@featherds/icon/action/Delete'
+import DownloadFile from "@featherds/icon/action/DownloadFile"
+import Edit from "@featherds/icon/action/Edit"
+import MarkComplete from "@featherds/icon/action/MarkComplete"
 import Search from '@featherds/icon/action/Search'
-import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
-import Generic from '@featherds/icon/file/Generic'
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
+import FileText from './Drawer/FileText.vue'
+import { FOLDER_LOCATIONS, getCompileErrorMessage } from './mibFilesValidator'
 
+const router = useRouter()
 const store = useMibCompilerStore()
+const { showSnackBar } = useSnackbar()
+const deleteDialogVisible = ref(false)
+const textDrawerVisible = ref(false)
+const compileDialogVisible = ref(false)
+const selectedFile = ref<MibCompilerFileInfo | null>(null)
+const fileText = ref('')
 const emptyListContent = {
   msg: 'No results found.'
 }
@@ -118,11 +191,126 @@ const columns = computed(() => [
   { id: 'fileName', label: 'MIB File' }
 ])
 
+const onDownloadClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for download.', error: true })
+    return
+  }
+
+  try {
+    const response = await getFileText(FOLDER_LOCATIONS.PENDING, file.fileName)
+    const blob = new Blob([response.contents], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to download pending MIB file.', error: true })
+  }
+}
+
+const onEditClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for editing.', error: true })
+    return
+  }
+
+  try {
+    const response = await getFileText(FOLDER_LOCATIONS.PENDING, file.fileName)
+    store.setSelectedMibFile(response)
+    router.push('/mib-compiler/edit')
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to load pending MIB file details.', error: true })
+  }
+}
+
+const onDeleteClick = (file: MibCompilerFileInfo) => {
+  selectedFile.value = file
+  deleteDialogVisible.value = true
+}
+
+const onDeleteConfirm = async () => {
+  if (!selectedFile.value) {
+    showSnackBar({ msg: 'No file selected for deletion.', error: true })
+    return
+  }
+
+  try {
+    await deleteFile(FOLDER_LOCATIONS.PENDING, selectedFile.value.fileName)
+    await store.fetchMibFiles()
+    showSnackBar({ msg: 'Pending MIB file deleted successfully.' })
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to delete pending MIB file.', error: true })
+  } finally {
+    selectedFile.value = null
+    deleteDialogVisible.value = false
+  }
+}
+
+const onDeleteCancel = () => {
+  selectedFile.value = null
+  deleteDialogVisible.value = false
+}
+
+const onViewDetailsClick = async (file: MibCompilerFileInfo) => {
+  if (!file.fileName) {
+    showSnackBar({ msg: 'No file selected for viewing.', error: true })
+    return
+  }
+
+  try {
+    selectedFile.value = file
+    const response = await getFileText(FOLDER_LOCATIONS.PENDING, file.fileName)
+    fileText.value = response.contents
+    textDrawerVisible.value = true
+  } catch (error) {
+    showSnackBar({ msg: 'Failed to load pending MIB file details.', error: true })
+  }
+}
+
+const onCloseTextDrawer = () => {
+  fileText.value = ''
+  selectedFile.value = null
+  textDrawerVisible.value = false
+}
+
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   store.onPendingMibFilesSortChange({
     property: sortObj.property as 'fileName' | 'location',
     value: sortObj.value
   })
+}
+
+const onCompileClick = (file: MibCompilerFileInfo) => {
+  selectedFile.value = file
+  compileDialogVisible.value = true
+}
+
+const onCompileConfirm = async () => {
+  if (!selectedFile.value) {
+    showSnackBar({ msg: 'No file selected for compilation.', error: true })
+    return
+  }
+
+  try {
+    const response = await compileMib(selectedFile.value.fileName)
+    showSnackBar({ msg: response.message || 'MIB file compiled successfully.' })
+    await store.fetchMibFiles()
+  } catch (error) {
+    showSnackBar({ msg: getCompileErrorMessage(error), error: true })
+  } finally {
+    selectedFile.value = null
+    compileDialogVisible.value = false
+  }
+}
+
+const onCompileCancel = () => {
+  selectedFile.value = null
+  compileDialogVisible.value = false
 }
 </script>
 
@@ -180,6 +368,12 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
           padding: 0px 5px 0px 5px;
         }
 
+        .hyperlink {
+          @include typography.body-large;
+          color: var(variables.$primary);
+          cursor: pointer;
+        }
+
         .action-container {
           display: flex;
           align-items: center;
@@ -190,6 +384,39 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
           }
         }
       }
+    }
+  }
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .header {
+    p {
+      @include typography.headline1;
+      padding: 24px;
+      border-bottom: 1px solid var(--feather-border-on-surface);
+    }
+  }
+
+  .subtitle {
+    p {
+      @include typography.headline3;
+      padding: 24px;
+    }
+  }
+
+  .content {
+    flex: 1;
+    padding: 0px 24px 24px 24px;
+    background: var(variables.$background);
+    overflow-y: auto;
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
     }
   }
 }

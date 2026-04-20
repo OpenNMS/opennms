@@ -1,8 +1,11 @@
 import {
+  MibCompileResponse,
+  MibCompilerFileInfoWithContent,
   MibCompilerFileLocation,
   MibCompilerGenerateEventsRequest,
   MibFileListResponse,
-  MibUploadResponse
+  MibUploadResponse,
+  MibGenerateEventsResponse,
 } from '@/types/mibCompiler'
 import { rest } from './axiosInstances'
 
@@ -17,8 +20,9 @@ export const uploadMib = async (file: File, filename: string): Promise<MibUpload
   return response.data
 }
 
-export const compileMib = async (name: string): Promise<void> => {
-  await rest.post(`${endpoint}/compile`, null, { params: { name } })
+export const compileMib = async (name: string): Promise<MibCompileResponse> => {
+  const response = await rest.post<MibCompileResponse>(`${endpoint}/compile`, null, { params: { name } })
+  return response.data
 }
 
 export const listPendingAndCompiledFiles = async (): Promise<MibFileListResponse> => {
@@ -30,8 +34,8 @@ export const deleteFile = async (location: MibCompilerFileLocation, fileName: st
   await rest.delete(`${endpoint}/files/${encodeURIComponent(location)}/${encodeURIComponent(fileName)}`)
 }
 
-export const getFileText = async (location: MibCompilerFileLocation, fileName: string): Promise<string> => {
-  const response = await rest.get<string>(
+export const getFileText = async (location: MibCompilerFileLocation, fileName: string): Promise<MibCompilerFileInfoWithContent> => {
+  const response = await rest.get<MibCompilerFileInfoWithContent>(
     `${endpoint}/files/${encodeURIComponent(location)}/${encodeURIComponent(fileName)}/text`
   )
   return response.data
@@ -44,7 +48,8 @@ export const setFileText = async (fileName: string, content: ArrayBuffer): Promi
   })
 }
 
-export const generateEvents = async (request: MibCompilerGenerateEventsRequest): Promise<void> => {
-  await rest.post(`${endpoint}/generate-events`, request)
+export const generateEvents = async (request: MibCompilerGenerateEventsRequest): Promise<MibGenerateEventsResponse> => {
+  const response = await rest.post<MibGenerateEventsResponse>(`${endpoint}/generate-events`, request)
+  return response.data
 }
 

@@ -9,6 +9,8 @@ export interface MibCompilerFileInfo {
 
 export type MibFileListResponse = MibCompilerFileInfo[]
 
+export type MibCompilerFileInfoWithContent = MibCompilerFileContentResponse
+
 export interface MibCompilerGenerateEventsRequest {
   name: string
   ueiBase?: string
@@ -19,6 +21,7 @@ export interface MibCompilerStoreState {
   isLoading: boolean
   compiledMibFilesSearchTerm: string
   pendingMibFilesSearchTerm: string
+  selectedMibFile: MibCompilerFileInfoWithContent | null
   compiledMibFilesSort: {
     property: keyof MibCompilerFileInfo
     value: SORT
@@ -58,5 +61,27 @@ export interface MibUploadResponse {
     error: string
     exception?: string
   }>
+}
+
+export interface MibCompileResponse {
+  success: boolean
+  message: string
+  mibName: string
+  compiledFile?: string
+  missingDependencies?: string[]
+  errors?: string
+}
+
+export interface MibGenerateEventsResponse {
+  success: boolean
+  message: string
+  mibFile: string
+  sourceId?: number
+}
+
+export interface MibCompilerFileContentResponse {
+  contents: string
+  location: string
+  name: string
 }
 
