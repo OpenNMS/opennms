@@ -94,7 +94,7 @@ public class EventConfServiceHelper {
         source.setVendor(eventConfSourceMetadataDto.getVendor());
         source.setDescription(eventConfSourceMetadataDto.getDescription());
         eventConfSourceDao.saveOrUpdate(source);
-        return eventConfSourceDao.get(source.getId());
+        return source;
     }
 
     public static  void saveEvents(EventConfEventDao eventConfEventDao,EventConfSource source, Events events, String username, Date now) {
