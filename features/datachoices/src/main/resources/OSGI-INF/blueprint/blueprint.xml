@@ -121,6 +121,15 @@
         </service-properties>
     </service>
 
+    <bean id="wizardGateService" class="org.opennms.features.datachoices.web.internal.WizardGateServiceImpl">
+        <argument ref="stateManager"/>
+    </bean>
+    <service interface="org.opennms.web.api.WizardGateService" ref="wizardGateService">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
     <bean id="adminPageNavEntry" class="org.opennms.features.datachoices.web.internal.AdminPageNavEntry"/>
     <service interface="org.opennms.web.navigate.PageNavEntry" ref="adminPageNavEntry">
         <service-properties>

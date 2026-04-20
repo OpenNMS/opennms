@@ -98,7 +98,7 @@ const checkFirstSignInModals = async () => {
     showUsageStatistics.value = true
   }
 
-  if (productUpdateStatus && !productUpdateStatus.noticeAcknowledged) {
+  if (productUpdateStatus && productUpdateStatus.featureEnabled && !productUpdateStatus.noticeAcknowledged) {
     showCommunitySignup.value = true
   }
 

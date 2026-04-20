@@ -44,6 +44,7 @@ export interface UsageStatisticsMetadata {
 export interface ProductUpdateEnrollmentStatus {
   optedIn: boolean | null
   noticeAcknowledged: boolean | null
+  featureEnabled: boolean
 }
 
 export interface ProductUpdateEnrollmentFormData {

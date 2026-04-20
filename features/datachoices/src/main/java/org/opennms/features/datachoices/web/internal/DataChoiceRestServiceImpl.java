@@ -115,11 +115,18 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
         try {
             dto.setNoticeAcknowledged(m_stateManager.isProductUpdateEnrollmentNoticeAcknowledged());
             dto.setOptedIn(m_stateManager.isProductUpdateEnrollmentOptedIn());
+            dto.setFeatureEnabled(isProductEnrollmentEnabled());
         } catch (Exception e) {
             return getExceptionResponse("Error getting Product Update Enrollment status.", e);
         }
 
         return Response.ok(dto).build();
+    }
+
+    private static boolean isProductEnrollmentEnabled() {
+        return java.util.stream.Stream.of("opennms.productUpdateEnrollment.show", "opennms.userDataCollection.show")
+                .map(key -> System.getProperty(key, "true"))
+                .noneMatch(val -> val.equalsIgnoreCase("false"));
     }
 
     @Override
