@@ -234,7 +234,7 @@ public class MibCompilerServiceUtil {
         final Path target = new File(dir, fileName).toPath();
 
         if (!Files.exists(target)) {
-            throw new IllegalArgumentException("File does not exists: " + target);
+            throw new IllegalArgumentException("File does not exist: " + target);
         }
         if (!Files.isRegularFile(target)) {
             throw new IllegalArgumentException("Target is not a regular file: " + fileName);
