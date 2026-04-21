@@ -68,8 +68,6 @@
             :key="source.id"
           >
             <td>{{ source.name }}</td>
-            <td>{{ source.vendor }}</td>
-            <td>{{ source.uploadedBy }}</td>
             <td>
               <div class="tag">
                 <FeatherChip
@@ -88,12 +86,6 @@
                   @click="onSourceClick(source)"
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-                </FeatherButton>
-                <FeatherButton
-                  icon="Edit Source"
-                  data-test="edit-button"
-                >
-                  <FeatherIcon :icon="Edit"> </FeatherIcon>
                 </FeatherButton>
                 <FeatherDropdown>
                   <template v-slot:trigger="{ attrs, on }">
@@ -184,7 +176,6 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
@@ -210,15 +201,11 @@ const emptyListContent = {
 
 const columns = computed(() => [
   { id: 'name', label: 'Source' },
-  { id: 'vendor', label: 'Vendor' },
-  { id: 'uploadedBy', label: 'Uploaded By' },
   { id: 'enabled', label: 'Status' }
 ])
 
 const sort = reactive({
   name: SORT.NONE,
-  vendor: SORT.NONE,
-  uploadedBy: SORT.NONE,
   enabled: SORT.NONE
 }) as any
 

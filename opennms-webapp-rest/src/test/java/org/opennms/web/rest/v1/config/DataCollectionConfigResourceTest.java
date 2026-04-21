@@ -100,7 +100,7 @@ public class DataCollectionConfigResourceTest {
 
         @Override
         public DatacollectionConfig getRootDataCollection() {
-            throw new UnsupportedOperationException("Not yet implemented!");
+            return getContainer().getObject();
         }
 
         @Override

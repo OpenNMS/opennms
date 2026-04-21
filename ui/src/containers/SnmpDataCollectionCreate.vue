@@ -83,14 +83,6 @@
             data-test="source-name"
           />
         </div>
-        <div>
-          <FeatherInput
-            label="Vendor"
-            v-model="vendor"
-            :error="sourceCreationErrors?.vendor"
-            data-test="vendor"
-          />
-        </div>
       </div>
       <template v-slot:footer>
         <FeatherButton
@@ -134,7 +126,6 @@ const results = ref<Array<IAutocompleteItemType>>([])
 const store = useSnmpDataCollectionCreationStore()
 const selectedCollectionSource = ref<IAutocompleteItemType>()
 const configName = ref('')
-const vendor = ref('')
 const sourceCreationDialogState = ref(false)
 const labels = {
   title: 'Create New Data Collection Source'
@@ -168,31 +159,21 @@ const sourceCreationErrors = computed(() => {
   if (configName.value.trim() === '') {
     error.name = 'Configuration name is required.'
   }
-  if (vendor.value && vendor.value.length > 128) {
-    error.vendor = 'Vendor must be less than 128 characters.'
-  }
   return Object.keys(error).length > 0 ? error : null
 })
 
 const showSourceCreationDialog = () => {
   configName.value = ''
-  vendor.value = ''
   sourceCreationDialogState.value = true
 }
 
 const handleSourceCreationCancel = () => {
   sourceCreationDialogState.value = false
   configName.value = ''
-  vendor.value = ''
 }
 
 const handleSourceCreationSave = () => {
-  // store.createSource({ name: configName.value, vendor: vendor.value })
-  //   .then(() => {
-  //     sourceCreationDialogState.value = false
-  //     configName.value = ''
-  //     vendor.value = ''
-  //   })
+  // TODO: implement source creation
 }
 
 onMounted(async () => {

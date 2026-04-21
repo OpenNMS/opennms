@@ -211,7 +211,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         expect(result.errors).toContain('Missing <datacollection-group> root element')
       })
 
-      it('should reject file with missing namespace', async () => {
+      it('should allow file with missing namespace', async () => {
         const xml = `<?xml version="1.0"?>
 <datacollection-group name="test-group">
   <group name="testGroup" ifType="all">
@@ -221,8 +221,8 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         const file = createMockFile(xml)
         const result = await validateSnmpDataCollectionSourceFile(file)
 
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid OpenNMS namespace in <datacollection-group> element')
+        expect(result.isValid).toBe(true)
+        expect(result.errors).toHaveLength(0)
       })
 
       it('should reject file with invalid namespace', async () => {
@@ -236,7 +236,7 @@ describe('snmpDataCollectionSourceXmlValidator', () => {
         const result = await validateSnmpDataCollectionSourceFile(file)
 
         expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid OpenNMS namespace in <datacollection-group> element')
+        expect(result.errors).toContain('Invalid OpenNMS namespace in <datacollection-group> element')
       })
 
       it('should reject datacollection-group without name attribute', async () => {

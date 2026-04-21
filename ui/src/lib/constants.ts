@@ -67,6 +67,8 @@ export const KEY_PATTERN = /^[\w-]+$/
 
 export const OID_PATTERN = /^\.?\d+(\.\d+)*$/
 
+export const OID_MASK_PATTERN = /^\.?\d+(\.\d+)*\.?$/
+
 const IF_TYPE_ALL = 'all'
 const IF_TYPE_IGNORE = 'ignore'
 

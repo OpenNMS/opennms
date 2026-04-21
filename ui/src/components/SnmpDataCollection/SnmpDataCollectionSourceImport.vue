@@ -66,7 +66,7 @@
     <div class="container">
       <table
         class="data-table"
-        aria-label="Events Table"
+        aria-label="SNMP Data Collection Sources Table"
       >
         <thead>
           <tr>
@@ -153,7 +153,7 @@
     <div class="info-section">
       <h3>Instructions:</h3>
       <ul>
-        <li>Event configuration files must be in XML format with a .xml extension.</li>
+        <li>SNMP data collection source files must be in XML format with a .xml extension.</li>
         <li>When uploading using "Choose files to upload", you can select multiple files at once.</li>
         <li>When uploading using "Choose folder to upload", all files in the folder will be uploaded.</li>
         <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>

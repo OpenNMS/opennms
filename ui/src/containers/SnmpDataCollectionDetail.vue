@@ -20,14 +20,14 @@
           <FeatherChip
             v-if="store.selectedCollectionSource.enabled"
             class="enabled-tag"
-            data-test="vendor-tag"
+            data-test="status-tag"
           >
             Enabled
           </FeatherChip>
           <FeatherChip
             v-if="!store.selectedCollectionSource.enabled"
             class="disabled-tag"
-            data-test="vendor-tag"
+            data-test="status-tag"
           >
             Disabled
           </FeatherChip>
@@ -74,20 +74,12 @@
             <span class="field-label">Uploaded By:</span>
             <span class="field-value">{{ store.selectedCollectionSource.uploadedBy }}</span>
           </div>
+        </div>
+        <div class="config-row">
           <div class="config-field">
             <span class="field-label">Creation Date:</span>
             <span class="field-value">{{ store.selectedCollectionSource.createdTime &&
               format(store.selectedCollectionSource.createdTime, 'MM/dd/yyyy') }}</span>
-          </div>
-        </div>
-        <div class="config-row">
-          <div class="config-field">
-            <span class="field-label">Vendor:</span>
-            <span class="field-value">{{ store.selectedCollectionSource.vendor }}</span>
-          </div>
-          <div class="config-field">
-            <span class="field-label">Status:</span>
-            <span class="field-value">{{ store.selectedCollectionSource.enabled ? 'Enabled' : 'Disabled' }}</span>
           </div>
           <div class="config-field">
             <span class="field-label">Last Modified Date:</span>
@@ -99,18 +91,18 @@
       <div class="tab-container">
         <FeatherTabContainer v-model="store.activeTab">
           <template v-slot:tabs>
-            <FeatherTab>Resource Types</FeatherTab>
-            <FeatherTab>MIB Groups</FeatherTab>
             <FeatherTab>System Definitions</FeatherTab>
+            <FeatherTab>MIB Groups</FeatherTab>
+            <FeatherTab>Resource Types</FeatherTab>
           </template>
           <FeatherTabPanel>
-            <ResourceTypesTable />
+            <SystemDefinitionsTable />
           </FeatherTabPanel>
           <FeatherTabPanel>
             <MibGroupsTable />
           </FeatherTabPanel>
           <FeatherTabPanel>
-            <SystemDefinitionsTable />
+            <ResourceTypesTable />
           </FeatherTabPanel>
         </FeatherTabContainer>
       </div>

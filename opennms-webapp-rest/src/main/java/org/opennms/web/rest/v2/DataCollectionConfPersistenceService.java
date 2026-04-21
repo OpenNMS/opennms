@@ -21,12 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
-import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
-import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.IpList;
 
@@ -44,6 +39,8 @@ import org.opennms.netmgt.model.SnmpCollectionMibGroupDto;
 import org.opennms.netmgt.model.SnmpCollectionResourceTypeDto;
 import org.opennms.netmgt.model.SnmpCollectionSystemDefDto;
 
+import org.opennms.netmgt.config.api.DatacollectionJsonHelper;
+import org.opennms.netmgt.model.SnmpCollectionProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
@@ -76,7 +74,6 @@ public class DataCollectionConfPersistenceService {
     @Autowired
     private  SnmpCollectionSystemDefDao snmpCollectionSystemDefDao;
 
-
     public Integer addDataCollectionConfig(final String fileName,
                                            final String userName,
                                            DatacollectionGroup dataCollectionGroup,
@@ -96,6 +93,9 @@ public class DataCollectionConfPersistenceService {
         persistResourceTypes(source, dataCollectionGroup);
         persistMibGroups(source, dataCollectionGroup);
         persistSystemDefs(source, dataCollectionGroup);
+
+        // Add source to default profile's source_names if not already present
+        addSourceToDefaultProfile(source.getName());
 
         LOG.info("Added data collection config for source '{}'.", fileName);
         return source.getId();
@@ -154,9 +154,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionResourceTypeDto.updateEntity(new SnmpCollectionResourceType(), request);
         entity.setCollectionSource(snmpCollectionSource);
-
         return snmpCollectionResourceTypeDao.save(entity);
-
     }
 
     @Transactional
@@ -166,9 +164,7 @@ public class DataCollectionConfPersistenceService {
 
         final var entity = SnmpCollectionSystemDefDto.updateEntity(new SnmpCollectionSystemDef(), request);
         entity.setCollectionSource(snmpCollectionSource);
-
         return snmpCollectionSystemDefDao.save(entity);
-
     }
 
     @Transactional
@@ -240,7 +236,29 @@ public class DataCollectionConfPersistenceService {
             if (source == null) {
                 continue;
             }
+            removeSourceFromProfiles(source.getName());
             snmpCollectionSourceDao.delete(source);
+        }
+    }
+
+    /**
+     * Remove a source name from all profiles' source_names.
+     */
+    private void removeSourceFromProfiles(final String sourceName) {
+        final List<SnmpCollectionProfile> profiles = snmpCollectionProfileDao.findAll();
+        if (profiles == null) {
+            return;
+        }
+        for (final SnmpCollectionProfile profile : profiles) {
+            List<String> sourceNames = DatacollectionJsonHelper.fromJson(
+                    profile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+            if (sourceNames != null && sourceNames.contains(sourceName)) {
+                sourceNames = new ArrayList<>(sourceNames);
+                sourceNames.remove(sourceName);
+                profile.setSourceNames(DatacollectionJsonHelper.toJson(sourceNames));
+                snmpCollectionProfileDao.saveOrUpdate(profile);
+                LOG.info("Removed source '{}' from profile '{}'.", sourceName, profile.getName());
+            }
         }
     }
 
@@ -284,21 +302,19 @@ public class DataCollectionConfPersistenceService {
     }
 
     public void enableDisableSnmpDataCollectionSources(boolean enabled, List<Integer> ids) {
-
         snmpCollectionSourceDao.updateEnabledFlag(ids, enabled);
     }
 
     public void enableDisableMibGroups(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-
         snmpCollectionMibGroupDao.updateMibGroupEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
     }
 
     public void enableDisableResourceTypes(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-      snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        snmpCollectionResourceTypeDao.updateResourceTypeEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
     }
 
     public void enableDisableSystemDefs(final Integer snmpDataCollectionSourceId, boolean enabled, List<Integer> ids) {
-      snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
+        snmpCollectionSystemDefDao.updateSystemDefEnabledFlag(snmpDataCollectionSourceId, ids, enabled);
     }
 
     private SnmpCollectionSource requireSource(final Integer snmpDataCollectionSourceId) {
@@ -334,86 +350,6 @@ public class DataCollectionConfPersistenceService {
             deleter.accept(entity);
         }
     }
-    public DatacollectionGroup buildDataCollectionGroupFromDb(final SnmpCollectionSource source) {
-        DatacollectionGroup group = new DatacollectionGroup();
-        group.setName(source.getName());
-
-        // Resource types
-        List<SnmpCollectionResourceType> rtEntities = snmpCollectionResourceTypeDao.findAllEnabledBySource(source.getId());
-        group.setResourceTypes(rtEntities.stream().map(e -> {
-            ResourceType rt = new ResourceType();
-            rt.setName(e.getName());
-            rt.setLabel(e.getLabel());
-            if (e.getResourceLabel() != null)
-               rt.setResourceLabel(e.getResourceLabel());
-
-            if (e.getStorageStrategy() != null) {
-                StorageStrategy ss = new StorageStrategy();
-                ss.setClazz(e.getStorageStrategy());
-                ss.setParameters(DatacollectionJsonHelper.fromJsonToParameters(e.getStorageStrategyParams()));
-                rt.setStorageStrategy(ss);
-            }
-
-            if (e.getPersistenceSelectorStrategy() != null) {
-                PersistenceSelectorStrategy ps = new PersistenceSelectorStrategy();
-                ps.setClazz(e.getPersistenceSelectorStrategy());
-                ps.setParameters(DatacollectionJsonHelper.fromJsonToParameters(e.getPersistenceSelectorParams()));
-                rt.setPersistenceSelectorStrategy(ps);
-            }
-            return rt;
-        }).toList());
-
-        // MIB groups
-        List<SnmpCollectionMibGroup> mgEntities = snmpCollectionMibGroupDao.findAllEnabledBySource(source.getId());
-        List<Group> mibGroups = mgEntities.stream().map(e -> {
-            Group g = new Group();
-            g.setName(e.getName());
-            g.setIfType(e.getIfType());
-            g.setMibObjs(DatacollectionJsonHelper.fromJsonToMibObjs(e.getMibObjects()));
-            g.setProperties(DatacollectionJsonHelper.fromJsonToProperties(e.getMibObjProperties()));
-            return g;
-        }).toList();
-        group.setGroups(mibGroups);
-
-
-        // System defs
-        List<SnmpCollectionSystemDef> sdEntities = snmpCollectionSystemDefDao.findAllEnabledBySource(source.getId());
-        group.setSystemDefs(sdEntities.stream().map(e -> {
-            SystemDef sd = new SystemDef();
-            sd.setName(e.getName());
-
-            // XSD requirement: one of these MUST be present before <collect>
-            if (e.getSysoid() != null && !e.getSysoid().isBlank()) {
-                sd.setSysoid(e.getSysoid());
-            } else if (e.getSysoidMask() != null && !e.getSysoidMask().isBlank()) {
-                sd.setSysoidMask(e.getSysoidMask());
-            } else {
-                // invalid configuration: fail fast
-                throw new IllegalStateException("SystemDef '" + e.getName()
-                        + "' has no sysoid or sysoidMask in DB; cannot generate valid XML.");
-            }
-
-            // now it is safe to set collect
-            List<String> includeGroups = DatacollectionJsonHelper.fromJson(
-                    e.getMibGroupNames(),
-                    new com.fasterxml.jackson.core.type.TypeReference<>() {
-                    }
-            );
-
-            Collect collect = new Collect();
-            collect.setIncludeGroups(includeGroups);
-            sd.setCollect(collect);
-
-            // ipList (optional)
-            sd.setIpList(DatacollectionJsonHelper.fromJsonToIpList(e.getIpAddresses()));
-
-            return sd;
-        }).toList());
-
-        return group;
-    }
-
-
     private SnmpCollectionSource createOrUpdateDataCollectionSource(final String fileName,
                                                                     DatacollectionGroup datacollectionGroup,
                                                                     final String userName,
@@ -545,6 +481,33 @@ public class DataCollectionConfPersistenceService {
                         .collect(Collectors.toList());
 
         snmpCollectionSystemDefDao.saveAll(entities);
+    }
+
+    /**
+     * Add a source name to the default profile's source_names if not already present.
+     * This ensures newly uploaded sources are automatically included in SNMP collection.
+     */
+    private void addSourceToDefaultProfile(final String sourceName) {
+        final SnmpCollectionProfile defaultProfile = snmpCollectionProfileDao.findByName("default");
+        if (defaultProfile == null) {
+            LOG.warn("No 'default' profile found — source '{}' will not be added to any profile.", sourceName);
+            return;
+        }
+
+        List<String> sourceNames = DatacollectionJsonHelper.fromJson(
+                defaultProfile.getSourceNames(), new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+        if (sourceNames == null) {
+            sourceNames = new ArrayList<>();
+        } else {
+            sourceNames = new ArrayList<>(sourceNames);
+        }
+
+        if (!sourceNames.contains(sourceName)) {
+            sourceNames.add(sourceName);
+            defaultProfile.setSourceNames(DatacollectionJsonHelper.toJson(sourceNames));
+            snmpCollectionProfileDao.saveOrUpdate(defaultProfile);
+            LOG.info("Added source '{}' to default profile's source_names.", sourceName);
+        }
     }
 
 }

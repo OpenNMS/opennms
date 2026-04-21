@@ -47,8 +47,8 @@ export const validateSnmpDataCollectionSourceFile = async (file: File) => {
         return { isValid: false, errors: validationErrors }
       }
       const xmlns = datacollectionGroup.getAttribute('xmlns') || ''
-      if (xmlns !== 'http://xmlns.opennms.org/xsd/config/datacollection') {
-        validationErrors.push('Missing or invalid OpenNMS namespace in <datacollection-group> element')
+      if (xmlns && xmlns !== 'http://xmlns.opennms.org/xsd/config/datacollection') {
+        validationErrors.push('Invalid OpenNMS namespace in <datacollection-group> element')
         return { isValid: false, errors: validationErrors }
       }
 

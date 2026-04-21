@@ -230,12 +230,12 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(actionContainers).toHaveLength(1)
     })
 
-    it('renders action-container with view, edit, dropdown and nothing else', async () => {
+    it('renders action-container with view, dropdown and nothing else', async () => {
       const viewBtn = wrapper.find('[data-test="view-button"]')
       const editBtn = wrapper.find('[data-test="edit-button"]')
       const dropdown = wrapper.findComponent(FeatherDropdown)
       expect(viewBtn.exists()).toBe(true)
-      expect(editBtn.exists()).toBe(true)
+      expect(editBtn.exists()).toBe(false)
       expect(dropdown.exists()).toBe(true)
     })
 
@@ -412,11 +412,11 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     })
 
     it('resets other sort properties when sorting by a column', async () => {
-      wrapper.vm.sort.vendor = 'asc'
+      wrapper.vm.sort.enabled = 'asc'
       wrapper.vm.sortChanged({ property: 'name', value: 'desc' })
 
       expect(wrapper.vm.sort.name).toBe('desc')
-      expect(wrapper.vm.sort.vendor).toBe(SORT.NONE)
+      expect(wrapper.vm.sort.enabled).toBe(SORT.NONE)
     })
 
     it('clicks sort header and triggers onSourcesSortChange', async () => {
@@ -430,10 +430,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it.each([
       { property: 'name', sortOrder: 'asc' },
       { property: 'name', sortOrder: 'desc' },
-      { property: 'vendor', sortOrder: 'asc' },
-      { property: 'vendor', sortOrder: 'desc' },
-      { property: 'uploadedBy', sortOrder: 'asc' },
-      { property: 'uploadedBy', sortOrder: 'desc' },
       { property: 'enabled', sortOrder: 'asc' },
       { property: 'enabled', sortOrder: 'desc' }
     ])('handles sorting by $property with $sortOrder order', async ({ property, sortOrder }) => {
@@ -491,16 +487,12 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const columns = wrapper.vm.columns
       expect(columns).toEqual([
         { id: 'name', label: 'Source' },
-        { id: 'vendor', label: 'Vendor' },
-        { id: 'uploadedBy', label: 'Uploaded By' },
         { id: 'enabled', label: 'Status' }
       ])
     })
 
     it.each([
       { id: 'name', label: 'Source' },
-      { id: 'vendor', label: 'Vendor' },
-      { id: 'uploadedBy', label: 'Uploaded By' },
       { id: 'enabled', label: 'Status' }
     ])('has column with id "$id" and label "$label"', ({ id, label }) => {
       const columns = wrapper.vm.columns
@@ -515,9 +507,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
       expect(sortHeaders[0].props('property')).toBe('name')
-      expect(sortHeaders[1].props('property')).toBe('vendor')
-      expect(sortHeaders[2].props('property')).toBe('uploadedBy')
-      expect(sortHeaders[3].props('property')).toBe('enabled')
+      expect(sortHeaders[1].props('property')).toBe('enabled')
     })
 
     it('sort headers display correct label text', async () => {
@@ -526,9 +516,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
       expect(sortHeaders[0].text()).toContain('Source')
-      expect(sortHeaders[1].text()).toContain('Vendor')
-      expect(sortHeaders[2].text()).toContain('Uploaded By')
-      expect(sortHeaders[3].text()).toContain('Status')
+      expect(sortHeaders[1].text()).toContain('Status')
     })
   })
 
@@ -588,42 +576,38 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(rows[1].text()).toContain('Disabled')
     })
 
-    it('renders sources with all different vendors', async () => {
+    it('renders sources with all different names', async () => {
       store.sources = [mockSource, mockSource2, disabledMockSource]
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
       expect(rows).toHaveLength(3)
-      expect(rows[0].text()).toContain('Cisco')
-      expect(rows[1].text()).toContain('Juniper')
-      expect(rows[2].text()).toContain('HP')
+      expect(rows[0].text()).toContain('Test Source')
+      expect(rows[1].text()).toContain('Another Source')
+      expect(rows[2].text()).toContain('Disabled Source')
     })
   })
 
   describe('Sort State Management', () => {
     it('initializes sort state with NONE for all columns', () => {
       expect(wrapper.vm.sort.name).toBe(SORT.NONE)
-      expect(wrapper.vm.sort.vendor).toBe(SORT.NONE)
-      expect(wrapper.vm.sort.uploadedBy).toBe(SORT.NONE)
       expect(wrapper.vm.sort.enabled).toBe(SORT.NONE)
     })
 
     it('maintains sort state after sorting', () => {
-      wrapper.vm.sortChanged({ property: 'vendor', value: 'asc' })
+      wrapper.vm.sortChanged({ property: 'enabled', value: 'asc' })
 
       expect(wrapper.vm.sort.name).toBe(SORT.NONE)
-      expect(wrapper.vm.sort.vendor).toBe('asc')
-      expect(wrapper.vm.sort.uploadedBy).toBe(SORT.NONE)
-      expect(wrapper.vm.sort.enabled).toBe(SORT.NONE)
+      expect(wrapper.vm.sort.enabled).toBe('asc')
     })
 
     it('resets all sorts when changing sort column', () => {
       wrapper.vm.sortChanged({ property: 'name', value: 'asc' })
       expect(wrapper.vm.sort.name).toBe('asc')
 
-      wrapper.vm.sortChanged({ property: 'vendor', value: 'desc' })
+      wrapper.vm.sortChanged({ property: 'enabled', value: 'desc' })
       expect(wrapper.vm.sort.name).toBe(SORT.NONE)
-      expect(wrapper.vm.sort.vendor).toBe('desc')
+      expect(wrapper.vm.sort.enabled).toBe('desc')
     })
   })
 
@@ -631,22 +615,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('handles source with empty name', async () => {
       const sourceWithEmptyName = { ...mockSource, name: '' }
       store.sources = [sourceWithEmptyName]
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.find('.data-table').exists()).toBe(true)
-    })
-
-    it('handles source with empty vendor', async () => {
-      const sourceWithEmptyVendor = { ...mockSource, vendor: '' }
-      store.sources = [sourceWithEmptyVendor]
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.find('.data-table').exists()).toBe(true)
-    })
-
-    it('handles source with empty uploadedBy', async () => {
-      const sourceWithEmptyUploadedBy = { ...mockSource, uploadedBy: '' }
-      store.sources = [sourceWithEmptyUploadedBy]
       await wrapper.vm.$nextTick()
 
       expect(wrapper.find('.data-table').exists()).toBe(true)
@@ -678,9 +646,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
     it('handles unicode characters in source fields', async () => {
       const unicodeSource: SnmpCollectionSource = {
         ...mockSource,
-        name: 'ソース-テスト',
-        vendor: 'Étiquette-日本語',
-        uploadedBy: 'Ùser_名前'
+        name: 'ソース-テスト'
       }
       store.sources = [unicodeSource]
       store.sourcesPagination = { page: 1, pageSize: 10, total: 1 }
@@ -688,8 +654,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
 
       const rows = wrapper.findAll('transition-group-stub tr')
       expect(rows[0].text()).toContain('ソース-テスト')
-      expect(rows[0].text()).toContain('Étiquette-日本語')
-      expect(rows[0].text()).toContain('Ùser_名前')
     })
 
     it('handles large pagination total counts', async () => {
@@ -761,8 +725,6 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   describe('Parametrized Tests - Source Data Variations', () => {
     it.each([
       { field: 'name', value: 'Very Long Source Name That Might Overflow' },
-      { field: 'vendor', value: 'Vendor With Special Characters !@#$%' },
-      { field: 'uploadedBy', value: 'user@example.com' },
       { field: 'description', value: 'A very detailed description of this source' }
     ])('renders source with $field as "$value"', async ({ field, value }) => {
       const source = { ...mockSource, [field]: value }
@@ -1373,30 +1335,16 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       await wrapper.vm.$nextTick()
     })
 
-    it('renders edit button for each row', async () => {
-      expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(true)
+    it('does not render edit button', async () => {
+      expect(wrapper.find('[data-test="edit-button"]').exists()).toBe(false)
     })
 
-    it('renders edit buttons for multiple rows', async () => {
+    it('does not render edit buttons for multiple rows', async () => {
       store.sources = [mockSource, mockSource2]
       await wrapper.vm.$nextTick()
 
       const editButtons = wrapper.findAll('[data-test="edit-button"]')
-      expect(editButtons).toHaveLength(2)
-    })
-
-    it('edit button contains an icon element', async () => {
-      const editButton = wrapper.find('[data-test="edit-button"]')
-      expect(editButton.exists()).toBe(true)
-      // The button itself wraps a FeatherIcon
-      expect(editButton.html()).toContain('feather-icon')
-    })
-
-    it('edit button does not trigger navigation on click', async () => {
-      const editButton = wrapper.find('[data-test="edit-button"]')
-      await editButton.trigger('click')
-
-      expect(mockPush).not.toHaveBeenCalled()
+      expect(editButtons).toHaveLength(0)
     })
   })
 
@@ -1507,12 +1455,12 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       expect(actionsHeader).toBeDefined()
     })
 
-    it('renders 4 sort headers plus 1 Actions header', async () => {
+    it('renders 2 sort headers plus 1 Actions header', async () => {
       store.sources = [mockSource]
       await wrapper.vm.$nextTick()
 
       const sortHeaders = wrapper.findAllComponents(FeatherSortHeader)
-      expect(sortHeaders).toHaveLength(4)
+      expect(sortHeaders).toHaveLength(2)
 
       // "Actions" is a plain <th>, not a FeatherSortHeader
       const allTh = wrapper.findAll('thead th')
@@ -1670,14 +1618,14 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
   })
 
   describe('Row Data Correctness', () => {
-    it('renders all 4 data columns per row', async () => {
+    it('renders all 2 data columns per row', async () => {
       store.sources = [mockSource]
       await wrapper.vm.$nextTick()
 
       const rows = wrapper.findAll('transition-group-stub tr')
       const tds = rows[0].findAll('td')
-      // 4 data columns + 1 actions column
-      expect(tds).toHaveLength(5)
+      // 2 data columns + 1 actions column
+      expect(tds).toHaveLength(3)
     })
 
     it('renders data in correct column order', async () => {
@@ -1688,9 +1636,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const tds = rows[0].findAll('td')
 
       expect(tds[0].text()).toBe('Test Source')
-      expect(tds[1].text()).toBe('Cisco')
-      expect(tds[2].text()).toBe('TestUser')
-      expect(tds[3].text()).toBe('Enabled')
+      expect(tds[1].text()).toBe('Enabled')
     })
 
     it('renders disabled source data in correct column order', async () => {
@@ -1701,9 +1647,7 @@ describe('SnmpDataCollectionSourcesTable.vue', () => {
       const tds = rows[0].findAll('td')
 
       expect(tds[0].text()).toBe('Disabled Source')
-      expect(tds[1].text()).toBe('HP')
-      expect(tds[2].text()).toBe('DisabledUser')
-      expect(tds[3].text()).toBe('Disabled')
+      expect(tds[1].text()).toBe('Disabled')
     })
   })
 
