@@ -38,9 +38,9 @@ export enum SecurityLevel {
 export enum AuthProtocol {
   MD5 = 'MD5',
   SHA = 'SHA',
-  SHA224 = 'SHA224',
-  SHA256 = 'SHA256',
-  SHA512 = 'SHA512'
+  SHA224 = 'SHA-224',
+  SHA256 = 'SHA-256',
+  SHA512 = 'SHA-512'
 }
 
 export enum PrivacyProtocol {
@@ -115,11 +115,8 @@ export const getDefaultTrapdConfig = (): TrapConfig => ({
   snmpv3User: []
 })
 
-// XML auth-protocol values may use dashes (e.g. "SHA-256") — normalize before comparing
-const normalizeAuthProtocol = (value: string): string => value.replace(/-/g, '')
-
-// All valid auth protocol values in normalized form
-const VALID_AUTH_PROTOCOL_VALUES = new Set(AuthProtocols.map(normalizeAuthProtocol))
+// All valid auth protocol values. Keep these aligned with trapd-configuration.xsd.
+const VALID_AUTH_PROTOCOL_VALUES = new Set(AuthProtocols)
 
 // All valid privacy protocol values
 const VALID_PRIVACY_PROTOCOL_VALUES = new Set(PrivacyProtocols as string[])
@@ -154,7 +151,7 @@ const validateSnmpV3UserElement = (user: Element, index: number, errors: XmlVali
   const privacyPassphrase = user.getAttribute('privacy-passphrase')
 
   if (authProtocol !== null) {
-    if (!VALID_AUTH_PROTOCOL_VALUES.has(normalizeAuthProtocol(authProtocol))) {
+    if (!VALID_AUTH_PROTOCOL_VALUES.has(authProtocol as AuthProtocol)) {
       addError(
         errors,
         `${prefix}.auth-protocol`,
@@ -327,11 +324,9 @@ export const validateTrapdXml = (xmlString: string): XmlValidationResult => {
     addError(errors, 'xmlns', `Invalid xmlns '${xmlns ?? ''}': expected '${TRAPD_XML_NAMESPACE}'`)
   }
 
-  // snmp-trap-address: required; must be '*' or a valid IPv4 address
+  // snmp-trap-address: optional and defaults to '*' in trapd-configuration.xsd.
   const snmpTrapAddress = root.getAttribute('snmp-trap-address')
-  if (snmpTrapAddress === null) {
-    addError(errors, 'snmp-trap-address', 'snmp-trap-address attribute is required')
-  } else if (snmpTrapAddress !== '*' && !isValidIP(snmpTrapAddress)) {
+  if (snmpTrapAddress !== null && snmpTrapAddress !== '*' && !isValidIP(snmpTrapAddress)) {
     addError(
       errors,
       'snmp-trap-address',
@@ -372,4 +367,3 @@ export const validateTrapdXml = (xmlString: string): XmlValidationResult => {
 
   return { valid: errors.length === 0, errors }
 }
-

@@ -285,10 +285,7 @@ describe('AUTH_PROTOCOL_OPTIONS', () => {
 
   it('maps protocol values correctly', () => {
     const values = AUTH_PROTOCOL_OPTIONS.map((o) => o._value)
-    expect(values).toContain(AuthProtocol.MD5)
-    expect(values).toContain(AuthProtocol.SHA)
-    expect(values).toContain(AuthProtocol.SHA256)
-    expect(values).toContain(AuthProtocol.SHA512)
+    expect(values).toEqual(['MD5', 'SHA', 'SHA-224', 'SHA-256', 'SHA-512'])
   })
 })
 
@@ -351,10 +348,10 @@ describe('validateTrapdXml – XML structure', () => {
 })
 
 describe('validateTrapdXml – snmp-trap-address', () => {
-  it('returns error when snmp-trap-address is missing', () => {
+  it('accepts omitted snmp-trap-address because the XSD defaults it to "*"', () => {
     const result = validateTrapdXml(buildXml({ address: null }))
-    expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.field === 'snmp-trap-address')).toBe(true)
+    expect(result.valid).toBe(true)
+    expect(result.errors.some((e) => e.field === 'snmp-trap-address')).toBe(false)
   })
 
   it('accepts wildcard "*"', () => {
@@ -618,8 +615,8 @@ describe('validateTrapdXml – snmpv3-user: level 3 (AuthPriv)', () => {
   })
 })
 
-describe('validateTrapdXml – auth-protocol dash normalization', () => {
-  it('accepts "SHA-256" (dash form) as valid auth-protocol', () => {
+describe('validateTrapdXml – auth-protocol values', () => {
+  it('accepts dashed SHA-2 auth-protocol values', () => {
     const user = buildUser({
       'security-name': 'user1',
       'security-level': '2',
@@ -628,6 +625,17 @@ describe('validateTrapdXml – auth-protocol dash normalization', () => {
     })
     const result = validateTrapdXml(buildXml({ users: user }))
     expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(false)
+  })
+
+  it('rejects undashed SHA-2 auth-protocol values', () => {
+    const user = buildUser({
+      'security-name': 'user1',
+      'security-level': '2',
+      'auth-protocol': 'SHA256',
+      'auth-passphrase': 'secret'
+    })
+    const result = validateTrapdXml(buildXml({ users: user }))
+    expect(result.errors.some((e) => e.field.includes('auth-protocol'))).toBe(true)
   })
 
   it('rejects completely unknown auth-protocol value', () => {

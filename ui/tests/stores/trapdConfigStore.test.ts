@@ -28,7 +28,7 @@ describe('useTrapdConfigStore', () => {
         engineId: null,
         securityName: 'alpha-user',
         securityLevel: 2,
-        authProtocol: 'SHA256',
+        authProtocol: 'SHA-256',
         authPassphrase: 'masked-auth',
         privacyProtocol: null,
         privacyPassphrase: null
@@ -123,4 +123,3 @@ describe('useTrapdConfigStore', () => {
     })
   })
 })
-

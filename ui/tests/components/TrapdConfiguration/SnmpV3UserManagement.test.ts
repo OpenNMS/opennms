@@ -97,7 +97,7 @@ describe('SnmpV3UserManagement.vue', () => {
       engineId: null,
       securityName: 'user-two',
       securityLevel: 3,
-      authProtocol: 'SHA256',
+      authProtocol: 'SHA-256',
       authPassphrase: 'masked-a',
       privacyProtocol: 'AES256',
       privacyPassphrase: 'masked-b'
