@@ -264,7 +264,7 @@
                 <label for="byeventid_id" style="margin-top: 0.5em; margin-right: 0.5em">Get Details for Event ID</label>
                 <input type="number" class="form-control" name="id" id="byeventid_id" min="1" required/>
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
                 </div>
             </div>
         </div>
