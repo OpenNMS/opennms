@@ -34,6 +34,7 @@ import java.util.function.Consumer;
 
 public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfiguration> implements TrapdConfigDao {
     public static final String CONFIG_NAME = "trapd-config";
+    public static final String DAEMON_NAME = "trapd";
 
     @Autowired
     private EventForwarder eventForwarder;
@@ -54,7 +55,7 @@ public class DefaultTrapdConfigDao extends AbstractCmJaxbConfigDao<TrapdConfigur
 
     @Override
     public Consumer<ConfigUpdateInfo> getUpdateCallback(){
-        return new ConfigurationReloadEventCallback(eventForwarder, this);
+        return new ConfigurationReloadEventCallback(eventForwarder, this, DAEMON_NAME);
     }
 
     @Override
