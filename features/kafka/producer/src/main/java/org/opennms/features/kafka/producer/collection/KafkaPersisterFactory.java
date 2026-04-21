@@ -45,14 +45,13 @@ import java.util.Properties;
 import static org.opennms.features.kafka.producer.KafkaProducerManager.BOOTSTRAP_SERVER;
 
 public class KafkaPersisterFactory implements PersisterFactory {
-
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterFactory.class);
     private CollectionSetMapper collectionSetMapper;
-
     private Producer<String, byte[]> producer;
     private ConfigurationAdmin configAdmin;
     private String topicName;
     private boolean disableMetricsSplitting = false;
+    private String metricFilter;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
@@ -67,6 +66,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         persister.setProducer(producer);
         persister.setTopicName(topicName);
         persister.setDisableMetricsSplitting(disableMetricsSplitting);
+        persister.setMetricFilter(metricFilter);
         return persister;
     }
 
@@ -101,8 +101,6 @@ public class KafkaPersisterFactory implements PersisterFactory {
             producer = new NoOpProducer<String, byte[]>();
             LOG.warn("No Kafka configuration found for metrics. Using NoOpProducer.");
         }
-
-
     }
 
     private boolean hasValidConfiguration(Dictionary<String, Object> properties) {
@@ -134,5 +132,9 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     public void setDisableMetricsSplitting(boolean disableMetricsSplitting) {
         this.disableMetricsSplitting = disableMetricsSplitting;
+    }
+
+    public void setMetricFilter(String metricFilter) {
+        this.metricFilter = metricFilter;
     }
 }

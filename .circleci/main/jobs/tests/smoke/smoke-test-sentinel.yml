@@ -1,7 +1,7 @@
  jobs:
   smoke-test-sentinel:
     executor: smoke-test-executor
-    parallelism: 4
+    parallelism: 8
     resource_class: medium+
     steps:
       - cached-checkout

@@ -196,7 +196,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testEventConf() {
-        testConfigFile("eventconf.xml");
+        ignoreConfigFile("eventconf.xml");
     }
 
     @Test

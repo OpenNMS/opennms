@@ -106,12 +106,8 @@
     
     List<OnmsAcknowledgment> acks = (List<OnmsAcknowledgment>) request.getAttribute("acknowledgments");
 
-	String eventLocation = null;
 	String nodeLocation = null;
 
-	if (alarm.getLastEvent() != null && alarm.getLastEvent().getDistPoller() != null) {
-	    eventLocation = alarm.getLastEvent().getDistPoller().getLocation();
-	}
 	if (alarm.getNode() != null && alarm.getNode().getLocation() != null) {
 	    nodeLocation = alarm.getNode().getLocation().getLocationName();
 	}
@@ -121,7 +117,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Alarms")
-          .breadcrumb("Alarms", "alarm/index.htm")
+          .breadcrumb("Alarms", "alarm/list.htm")
           .breadcrumb((alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId())
           .build(request);
 %>
@@ -198,10 +194,11 @@
         </td>
     </tr> 
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
-        <th class="col-2">Event Source Location</th>
-        <td class="col-4"><%= eventLocation == null? "&nbsp;" : eventLocation %>
-        <th class="col-2">Node Location</th>
-        <td class="col-4"><%= nodeLocation == null? "&nbsp;" : nodeLocation %>
+        <th class="col-2">Monitoring Location</th>
+        <td class="col-4"><%= nodeLocation == null ? "&nbsp;" : nodeLocation %></td>
+
+        <th class="col-2">&nbsp;</th>
+        <td class="col-4">&nbsp;</td>
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%> d-flex">
         <th class="col-2">Count</th>

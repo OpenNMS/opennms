@@ -1,9 +1,9 @@
 
-= SNMP Configuration (Legacy)
+= SNMP Configuration (Legacy / Deprecated API)
 
 NOTE: {page-component-title} has been updated to move SNMP Configuration into the database.
-Please see xref:development:rest/snmp_configuration.adoc[SNMP Configuration] for the new REST API.
-Generally speaking you should avoid this API and use the new API instead, but if you have a use case that requires the legacy API, this page describes how to use it.
+Please see xref:development:rest/snmp_configuration.adoc[SNMP Configuration] for the new REST API (`api/v2/snmp-config`).
+The legacy API (`rest/snmpConfig`) has been deprecated and will be removed in a future release, and generally speaking you should avoid it and use the new API instead, but if you have a use case that requires the legacy API, this page describes how to use it.
 
 Use this interface to edit the community string, SNMP version, etc. for an IP address.
 If you make a change that would overlap with an existing `snmp-config.xml`, it will automatically create groups of `<definition />` entries as necessary.

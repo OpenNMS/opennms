@@ -73,9 +73,7 @@ const onItemOut = () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: '#e9ecef';
-    color: '#495057';
-    font-weight: 500;
+    font-weight: 550;
     white-space: break-spaces;
     padding: 0 3px;
 
@@ -89,6 +87,7 @@ const onItemOut = () => {
     }
 
     span {
+        margin-right: 1em;
         opacity: 0;
     }
 
@@ -106,26 +105,26 @@ const onItemOut = () => {
  */
 .search-result-button {
     background: transparent;
-    border:none;
+    border: none;
     appearance: none;
-    block-size:24px;
+    block-size: 24px;
     caret-color: rgb(10,12,27,0.7);
-    color: rgba(10, 12, 27, 0.7);
+    color: var(--feather-secondary-text-on-surface);
     column-rule-color: rgba(10, 12, 27, 0.7);
     cursor: pointer;
-    display:block;
+    display: block;
     font-family: OpenSans, Helvetica, Arial, sans-serif;
-    font-size:14px;
-    height:24px;
-    inline-size:266px;
-    letter-spacing:0.25px;
-    line-height:24px;
+    font-size: 14px;
+    height: 24px;
+    inline-size: 266px;
+    letter-spacing: 0.25px;
+    line-height: 24px;
     /* width for text in search result labels, so text does not get cut off */
     min-width: 30em;
-    outline-color:rgba(10, 12, 27, 0.7);
-    padding:0;
+    outline-color: rgba(10, 12, 27, 0.7);
+    padding: 0;
     perspective-origin: 133px 12px;
-    text-align:left;
+    text-align: left;
     text-decoration-color: rgba(10, 12, 27, 0.7);
     text-emphasis-color: rgba(10, 12, 27, 0.7);
     transform-origin: 133px 12px;
@@ -136,7 +135,7 @@ const onItemOut = () => {
 .search-item-details {
   margin-left: 1em;
   z-index: 1100;
-  color: black;
+  color: var(--feather-secondary-text-on-surface);
   padding: 0.25em;
 }
 </style>

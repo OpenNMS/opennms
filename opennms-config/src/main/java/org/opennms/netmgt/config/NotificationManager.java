@@ -674,7 +674,7 @@ public abstract class NotificationManager {
             ResultSet results = statement.executeQuery();
             dbUtils.watch(results);
             while (results.next()) {
-                int eventID = results.getInt(1);
+                long eventID = results.getLong(1);
                 notifIDs.addAll(doAcknowledgeNotificationsFromEvent(connection, dbUtils, eventID));
             }
         } finally {
@@ -901,9 +901,9 @@ public abstract class NotificationManager {
             // eventID field
             final String eventID = params.get("eventID");
             if (eventID != null && !eventID.trim().equals("") && !eventID.trim().equals("0") && !eventID.equalsIgnoreCase("null") && !eventID.equalsIgnoreCase("%eventid%")) {
-                statement.setInt(8, Integer.parseInt(eventID));
+                statement.setLong(8, Long.parseLong(eventID));
             } else {
-                statement.setNull(8, Types.INTEGER);
+                statement.setNull(8, Types.BIGINT);
             }
 
             statement.setString(9, params.get("eventUEI"));
@@ -1265,10 +1265,10 @@ public abstract class NotificationManager {
      * In the absence of DAOs and ORMs this creates an Event object from the persisted
      * record.
      *
-     * @param eventid a int.
+     * @param eventid a long.
      * @return a populated Event object
      */
-    public Event getEvent(final int eventid) {
+    public Event getEvent(final long eventid) {
         // don't switch using event builder since this event is read from the database
         final Event event = new Event();
         Querier querier = new Querier(m_dataSource, "select * from events where eventid = ?", new RowProcessor() {

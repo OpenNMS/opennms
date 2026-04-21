@@ -101,11 +101,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
             return null;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}, instanceId={}, eventId={}",
+        LOG.info("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}, instanceId={}, eventId={}",
                 event.getUei(), event.getNodeid(), event.getInterface(), event.getService(),
                 SystemInfoUtils.getInstanceId(), event.getDbid());
-        }
 
         // Lock both the reduction and clear keys (if set) using a fair striped lock
         // We do this to ensure that clears and triggers are processed in the same order
@@ -184,7 +182,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
+            LOG.info("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}, instanceId={}, alarmId={}",
                 reductionKey, alarm.getId(), SystemInfoUtils.getInstanceId(), alarm.getId());
             reduceEvent(persistedEvent, alarm, event);
 

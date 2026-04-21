@@ -29,6 +29,8 @@
         <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on\/1.7[56]\/?.*]</exclude>
         <exclude>**/commons-io/commons-io/2.8.0</exclude>
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
+        <exclude>**/commons-io/commons-io/2.11.0</exclude>
+        <exclude>**/commons-io/commons-io/2.11.0/*</exclude>
         <exclude>**/commons-io/commons-io/2.13.0</exclude>
         <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
         <exclude>**/zookeeper/3.4.14</exclude>
@@ -39,8 +41,14 @@
         <exclude>com/fasterxml/jackson/core/jackson-core/2.13.*/*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*</exclude>
         <exclude>com/fasterxml/jackson/core/jackson-core/2.14.*/*</exclude>
+        <exclude>io/netty/netty-*/4.1.22.Final</exclude>
+        <exclude>io/netty/netty-*/4.1.22.Final/*</exclude>
+        <exclude>org/ops4j/pax/logging/pax-logging-log4j2/1.10.2</exclude>
+        <exclude>org/ops4j/pax/logging/pax-logging-log4j2/1.10.2/*</exclude>
         <exclude>io/netty/netty-codec-http/4.1.22.Final</exclude>
+        <exclude>io/netty/netty-codec-http/4.1.22.Final/*</exclude>
       </excludes>
     </fileSet>
+
   </fileSets>
 </component>

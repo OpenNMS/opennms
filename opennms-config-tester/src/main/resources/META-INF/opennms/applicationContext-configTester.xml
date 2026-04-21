@@ -41,7 +41,6 @@
         <entry key="destinationPaths.xml" value="destinationPathFactory"/>
         <entry key="discovery-configuration.xml" value="discoveryConfigFactory"/>
         <entry key="drools-northbounder-configuration.xml" value="droolsNorthbounderConfigDao"/>
-        <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
         <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>

@@ -541,7 +541,7 @@ public class Poller extends AbstractServiceDaemon {
         } else {
             svc.updateStatus(PollStatus.down("Service has lost event : " + svcLostEventId));
 
-            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), svcLostUei, ifLostService);
+            PollEvent cause = new DbPollEvent(svcLostEventId.longValue(), svcLostUei, ifLostService);
 
             svc.setCause(cause);
 

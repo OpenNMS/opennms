@@ -31,6 +31,6 @@ public class Button extends UiElement {
     }
 
     public void click() {
-        execute(() -> driver.findElement(By.id(elementId))).click();
+        clickWithRetry(By.id(elementId));
     }
 }

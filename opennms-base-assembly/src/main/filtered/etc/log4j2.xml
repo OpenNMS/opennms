@@ -121,6 +121,16 @@
         <DenyAllFilter/>
       </Filters>
     </Console>
+
+    <!-- Web authentication audit log -->
+    <RollingFile name="WebAuditFile" fileName="\${logdir}/web-audit.log"
+                 filePattern="\${logdir}/web-audit.%i.log.gz">
+      <PatternLayout>
+        <pattern>%d %-5p %m%n</pattern>
+      </PatternLayout>
+      <SizeBasedTriggeringPolicy size="100MB" />
+      <DefaultRolloverStrategy max="4" fileIndex="min" />
+    </RollingFile>
   </appenders>
   <loggers>
     <!-- we always want this at info for the instrumentation log reader -->
@@ -254,6 +264,11 @@
       <appender-ref ref="\${console.daemon.output}"/>
     </logger>
 
+
+    <!-- Web authentication audit log -->
+    <logger name="web-audit" additivity="false" level="INFO">
+      <appender-ref ref="WebAuditFile"/>
+    </logger>
 
     <!-- Allow any message to pass through the root logger -->
     <root level="DEBUG">

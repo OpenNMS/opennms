@@ -18,7 +18,7 @@ The events collector can take the string values from event parameters and conver
 === Configure event definition for collection
 
 This is an example of event collection config.
-Put the file in the `$\{OPENNMS_HOME}/etc/events` directory and make sure it is registered in `eventconf.xml`.
+Use the Web-UI to upload your custom event definitions.
 If your event will keep firing a lot and you only want the performance data without overwhelming the event table, consider setting `<logmsg dest="donotpersist"></logmsg>`.
 
 [source, xml]

@@ -160,8 +160,13 @@ public class JmxDatacollectionConfiggeneratorTest {
 
         Assert.assertEquals(mbeanIds.size(), jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
         for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
-            Assert.assertEquals(eachMbean.getObjectname()+" Attribute Count", 2, eachMbean.getAttribList().size());
-            Assert.assertEquals(eachMbean.getObjectname()+" Composite Attribute Count", 1, eachMbean.getCompAttribList().size());
+            if (eachMbean.getObjectname().equals("java.lang:name=G1 Concurrent GC,type=GarbageCollector")) {
+                Assert.assertEquals(eachMbean.getObjectname()+" Attribute Count", 2, eachMbean.getAttribList().size());
+                Assert.assertEquals(eachMbean.getObjectname()+" Composite Attribute Count", 0, eachMbean.getCompAttribList().size());
+            } else {
+                Assert.assertEquals(eachMbean.getObjectname()+" Attribute Count", 2, eachMbean.getAttribList().size());
+                Assert.assertEquals(eachMbean.getObjectname()+" Composite Attribute Count", 1, eachMbean.getCompAttribList().size());
+            }
         }
     }
 

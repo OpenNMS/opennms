@@ -30,7 +30,7 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Advanced Search")
           .headTitle("Alarms")
-          .breadcrumb("Alarms", "alarm/index.htm")
+          .breadcrumb("Alarms", "alarm/list.htm")
           .breadcrumb("Advanced Alarm Search")
           .build(request);
 %>

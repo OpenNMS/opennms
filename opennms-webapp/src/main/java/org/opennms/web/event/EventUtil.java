@@ -184,7 +184,7 @@ public abstract class EventUtil {
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(EventIdFilter.TYPE)) {
-            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new EventIdFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             if (value.startsWith(NEGATION_PREFIX_SYMBOL)) {
                 filter = new NegativeIPAddrLikeFilter(value.substring(1));

@@ -67,6 +67,11 @@ import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore
 import { SnmpAgentConfig } from '@/types/snmpConfig'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 
+const props = defineProps<{
+  autoLookupIpAddress?: string
+  autoLookupLocation?: string
+}>()
+
 const snackbar = useSnackbar()
 const store = useSnmpConfigStore()
 const lookupIpAddress = ref('')
@@ -144,9 +149,32 @@ const onLookup = async () => {
   }
 }
 
-onMounted(() => {
+watch(() => props.autoLookupIpAddress, (ip) => {
   resetValues()
-})
+
+  // auto-lookup mode for url like '/snmp-config/lookup?ipAddress=X&location=Y'
+  if (ip) {
+    lookupIpAddress.value = ip
+    
+    const locationIsDefault = !props.autoLookupLocation || props.autoLookupLocation.localeCompare(DEFAULT_MONITORING_LOCATION, undefined, { sensitivity: 'base' }) === 0
+    const locationName = locationIsDefault ? DEFAULT_MONITORING_LOCATION : props.autoLookupLocation
+    const matched = monitoringLocations.value.find(loc => loc._value === locationName)
+    
+    // If non-default location is provided, check if it matches any of the available monitoring locations.
+    // Note, this could also happen if the monitoring locations are still loading and haven't been populated yet.
+    // User can then manually select the location and trigger lookup.
+    if (!locationIsDefault && !matched) {
+      snackbar.showSnackBar({
+        msg: `Monitoring location ${locationName} from URL is not valid. Please select a valid monitoring location.`,
+        error: true
+      })
+      return
+    }
+
+    lookupMonitoringLocation.value = matched ?? { _text: locationName, _value: locationName }
+    onLookup()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped lang="scss">

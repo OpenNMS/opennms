@@ -108,6 +108,13 @@
                         <feature>pax-jetty/9.4.43.v20210629</feature>
                         <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
+                    <blacklistedBundles>
+                        <!-- hawtio pulls in jackson 2.14.1 which has security vulnerabilities;
+                             overrides.properties redirects resolution to ${jackson2Version} at runtime -->
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.14.1</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.14.1</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.14.1</bundle>
+                    </blacklistedBundles>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>

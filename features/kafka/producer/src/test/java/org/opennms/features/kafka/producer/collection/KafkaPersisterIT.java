@@ -276,6 +276,198 @@ public class KafkaPersisterIT {
         );
     }
 
+    @Test
+    public void testMetricsFilterByNodeId() throws IOException {
+        // Setup persister with filter that only allows node 5
+        kafkaPersisterFactory.setMetricFilter("nodeId == 5");
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repository = new RrdRepository();
+        persister = kafkaPersisterFactory.createPersister(params, repository);
+
+        // Create collection sets for node 5 and node 6
+        OnmsNode node5 = databasePopulator.getNode5();
+        OnmsNode node6 = databasePopulator.getNode6();
+
+        CollectionAgent agent5 = new MockCollectionAgent(node5.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource5 = new NodeLevelResource(node5.getId());
+        CollectionSet collectionSet5 = new CollectionSetBuilder(agent5).withTimestamp(new Date(2))
+                .withNumericAttribute(nodeResource5, "group1", "node5", 105, AttributeType.GAUGE).build();
+
+        CollectionAgent agent6 = new MockCollectionAgent(node6.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource6 = new NodeLevelResource(node6.getId());
+        CollectionSet collectionSet6 = new CollectionSetBuilder(agent6).withTimestamp(new Date(3))
+                .withNumericAttribute(nodeResource6, "group1", "node6", 106, AttributeType.GAUGE).build();
+
+        // Persist both collection sets
+        persister.visitCollectionSet(collectionSet5);
+        persister.visitCollectionSet(collectionSet6);
+
+        // Only node 5 should be forwarded
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        assertThat(resources.size(), equalTo(1));
+        assertThat(resources.get(0).getNode().getNodeId(), equalTo(node5.getId().longValue()));
+    }
+
+    @Test
+    public void testMetricsFilterByForeignSource() throws IOException {
+        // Setup persister with filter for specific foreign source
+        kafkaPersisterFactory.setMetricFilter("foreignSource == 'imported:'");
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repository = new RrdRepository();
+        persister = kafkaPersisterFactory.createPersister(params, repository);
+
+        OnmsNode node1 = databasePopulator.getNode1(); // foreign source: imported:
+        OnmsNode node5 = databasePopulator.getNode5(); // no foreign source
+
+        CollectionAgent agent1 = new MockCollectionAgent(node1.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource1 = new NodeLevelResource(node1.getId());
+        CollectionSet collectionSet1 = new CollectionSetBuilder(agent1).withTimestamp(new Date(4))
+                .withNumericAttribute(nodeResource1, "group1", "node1", 101, AttributeType.GAUGE).build();
+
+        CollectionAgent agent5 = new MockCollectionAgent(node5.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource5 = new NodeLevelResource(node5.getId());
+        CollectionSet collectionSet5 = new CollectionSetBuilder(agent5).withTimestamp(new Date(5))
+                .withNumericAttribute(nodeResource5, "group1", "node5", 105, AttributeType.GAUGE).build();
+
+        persister.visitCollectionSet(collectionSet1);
+        persister.visitCollectionSet(collectionSet5);
+
+        // Only node1 with foreign source should be forwarded
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        assertThat(resources.size(), equalTo(1));
+        assertThat(resources.get(0).getNode().getNodeId(), equalTo(node1.getId().longValue()));
+    }
+
+    @Test
+    public void testMetricsFilterByResourceType() throws IOException {
+        // Setup persister with filter that only allows responseTime resources
+        kafkaPersisterFactory.setMetricFilter("getResourceTypeName() == 'responseTime'");
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repository = new RrdRepository();
+        persister = kafkaPersisterFactory.createPersister(params, repository);
+
+        // Create a node-level collection set
+        OnmsNode node5 = databasePopulator.getNode5();
+        CollectionAgent agent5 = new MockCollectionAgent(node5.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource5 = new NodeLevelResource(node5.getId());
+        CollectionSet collectionSetNode = new CollectionSetBuilder(agent5).withTimestamp(new Date(6))
+                .withNumericAttribute(nodeResource5, "group1", "node5", 105, AttributeType.GAUGE).build();
+
+        // Create a response time collection set
+        LatencyCollectionResource latencyCollectionResource = new LatencyCollectionResource("ICMP", IP_ADDRESS, LOCATION);
+        LatencyCollectionAttributeType attributeType = new LatencyCollectionAttributeType("ICMP", "ICMP");
+        latencyCollectionResource.addAttribute(new LatencyCollectionAttribute(latencyCollectionResource, attributeType, "ICMP", 204.0));
+        CollectionSet responseTimeCollectionSet = new SingleResourceCollectionSet(latencyCollectionResource, new Date());
+
+        persister.visitCollectionSet(collectionSetNode);
+        persister.visitCollectionSet(responseTimeCollectionSet);
+
+        // Only response time resource should be forwarded
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        assertThat(resources.size(), equalTo(1));
+        assertThat(resources.get(0).hasResponse(), equalTo(true));
+        assertThat(resources.get(0).getResponse().getInstance(), equalTo(IP_ADDRESS));
+    }
+
+    @Test
+    public void testMetricsFilterComplex() throws IOException {
+        // Setup persister with complex filter expression
+        kafkaPersisterFactory.setMetricFilter("getNodeId() == 1 || getNodeId() == 5");
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repository = new RrdRepository();
+        persister = kafkaPersisterFactory.createPersister(params, repository);
+
+        OnmsNode node1 = databasePopulator.getNode1();
+        OnmsNode node5 = databasePopulator.getNode5();
+        OnmsNode node6 = databasePopulator.getNode6();
+
+        CollectionAgent agent1 = new MockCollectionAgent(node1.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource1 = new NodeLevelResource(node1.getId());
+        CollectionSet collectionSet1 = new CollectionSetBuilder(agent1).withTimestamp(new Date(7))
+                .withNumericAttribute(nodeResource1, "group1", "node1", 101, AttributeType.GAUGE).build();
+
+        CollectionAgent agent5 = new MockCollectionAgent(node5.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource5 = new NodeLevelResource(node5.getId());
+        CollectionSet collectionSet5 = new CollectionSetBuilder(agent5).withTimestamp(new Date(8))
+                .withNumericAttribute(nodeResource5, "group1", "node5", 105, AttributeType.GAUGE).build();
+
+        CollectionAgent agent6 = new MockCollectionAgent(node6.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource6 = new NodeLevelResource(node6.getId());
+        CollectionSet collectionSet6 = new CollectionSetBuilder(agent6).withTimestamp(new Date(9))
+                .withNumericAttribute(nodeResource6, "group1", "node6", 106, AttributeType.GAUGE).build();
+
+        persister.visitCollectionSet(collectionSet1);
+        persister.visitCollectionSet(collectionSet5);
+        persister.visitCollectionSet(collectionSet6);
+
+        // Only node1 and node5 should be forwarded
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        assertThat(resources.size(), equalTo(2));
+        List<Long> nodeIds = resources.stream()
+                .map(r -> r.getNode().getNodeId())
+                .collect(Collectors.toList());
+        assertThat(nodeIds, Matchers.containsInAnyOrder(node1.getId().longValue(), node5.getId().longValue()));
+    }
+
+    @Test
+    public void testMetricsFilterDisabled() throws IOException {
+        // Setup persister with no filter (empty string)
+        kafkaPersisterFactory.setMetricFilter("");
+        ServiceParameters params = new ServiceParameters(Collections.emptyMap());
+        RrdRepository repository = new RrdRepository();
+        persister = kafkaPersisterFactory.createPersister(params, repository);
+
+        OnmsNode node5 = databasePopulator.getNode5();
+        OnmsNode node6 = databasePopulator.getNode6();
+
+        CollectionAgent agent5 = new MockCollectionAgent(node5.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource5 = new NodeLevelResource(node5.getId());
+        CollectionSet collectionSet5 = new CollectionSetBuilder(agent5).withTimestamp(new Date(10))
+                .withNumericAttribute(nodeResource5, "group1", "node5", 105, AttributeType.GAUGE).build();
+
+        CollectionAgent agent6 = new MockCollectionAgent(node6.getId(), "test", InetAddress.getLocalHost());
+        NodeLevelResource nodeResource6 = new NodeLevelResource(node6.getId());
+        CollectionSet collectionSet6 = new CollectionSetBuilder(agent6).withTimestamp(new Date(11))
+                .withNumericAttribute(nodeResource6, "group1", "node6", 106, AttributeType.GAUGE).build();
+
+        persister.visitCollectionSet(collectionSet5);
+        persister.visitCollectionSet(collectionSet6);
+
+        // Both should be forwarded when filter is disabled
+        await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS)
+                .until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(2));
+        List<CollectionSetProtos.CollectionSetResource> resources = kafkaConsumer.getCollectionSetValues().stream()
+                .map(CollectionSetProtos.CollectionSet::getResourceList)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        assertThat(resources.size(), equalTo(2));
+    }
+
     @After
     public void destroy() {
         kafkaConsumer.shutdown();
