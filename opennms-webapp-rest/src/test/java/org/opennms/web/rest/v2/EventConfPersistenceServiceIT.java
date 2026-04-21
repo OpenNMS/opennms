@@ -31,6 +31,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
@@ -81,6 +82,9 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfDao eventConfDao;
+
+    @Autowired
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -435,7 +439,8 @@ public class EventConfPersistenceServiceIT {
 
         // Call loadEventsFromDB directly
         var dbEvents = eventConfEventDao.findEnabledEvents();
-        eventConfDao.loadEventsFromDB(dbEvents);
+        var dbGlobalSecurities = eventConfGlobalSecurityDao.findAll();
+        eventConfDao.loadEventsFromDB(dbEvents, dbGlobalSecurities);
         var event = eventConfDao.findByUei("uei.opennms.org/circuitBreaker/stateChange");
         assertNotNull(event);
         // This is not unique uei so getEventByUeiOptimistic will exclude this.

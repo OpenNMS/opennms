@@ -21,16 +21,36 @@
 ///
 
 import { defineStore } from 'pinia'
+import {
+  applyThemeClass,
+  DARK_THEME,
+  LIGHT_THEME,
+  loadTheme,
+  saveTheme,
+  Theme
+} from '@/services/themeService'
 
 export const useAppStore = defineStore('appStore', () => {
-  const theme = ref(localStorage.getItem('theme') as string)
+  const theme = ref<Theme>(loadTheme())
 
-  const setTheme = async (newTheme: string) => {
+  const setTheme = (newTheme: Theme) => {
     theme.value = newTheme
+    saveTheme(newTheme)
+    applyThemeClass(newTheme)
+  }
+
+  const initTheme = () => {
+    applyThemeClass(theme.value)
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme.value === LIGHT_THEME ? DARK_THEME : LIGHT_THEME)
   }
 
   return {
     theme,
-    setTheme
+    setTheme,
+    initTheme,
+    toggleTheme
   }
 })

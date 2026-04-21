@@ -30,16 +30,17 @@ defineProps({
   width: 100%;
   display: flex;
   margin-bottom: 15px;
-  background: #e9ecef;
+  background-color: var(--feather-surface);
+  color: var(--feather-secondary-text-on-surface);
 
   .link {
-    color: #265A87;
+    color: var(--feather-clickable-normal);
     a {
       font-weight:400;
-      color: #265A87;
+      color: var(--feather-clickable-normal);
     }
     a:visited {
-      color: #265A87;
+      color: var(--feather-clickable-normal);
     }
 
     padding:8px 0;

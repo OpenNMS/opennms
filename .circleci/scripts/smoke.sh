@@ -62,7 +62,7 @@ for CONTAINER in \
   "confluentinc/cp-kafka:latest" \
   "docker.elastic.co/elasticsearch/elasticsearch:7.17.9" \
   "opennms/dummy-http-endpoint:0.0.2" \
-  "postgres:13-alpine" \
+  "postgres:14.22-alpine" \
   "postgres:latest" \
 ; do
   (docker pull "$CONTAINER" || true) &
@@ -89,7 +89,7 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
-sudo apt update && sudo apt -y install openjdk-17-jdk-headless
+sudo apt update && sudo apt -y install openjdk-21-jdk-headless
 
 # When retries are enabled, use --fail-at-end so all tests run before retrying
 FAILURE_MODE="--fail-fast"

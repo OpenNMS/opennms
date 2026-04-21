@@ -403,6 +403,11 @@ defineExpose({ invalidateSizeFn })
   }
 }
 
+.leaflet-popup-content-wrapper {
+  background: var($surface);
+  color: var(--feather-secondary-text-on-surface);
+}
+
 .leaflet-popup-content {
   min-width: 440px;
 }

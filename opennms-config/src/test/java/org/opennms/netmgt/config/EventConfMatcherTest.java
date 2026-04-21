@@ -34,8 +34,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.FileSystemResource;
@@ -49,7 +51,8 @@ public class EventConfMatcherTest {
         MockLogAppender.setupLogging();
         eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         Assert.assertEquals(9, eventConfDao.getAllEvents().size());
     }
 

@@ -43,7 +43,7 @@ public class NavBarControllerTest {
         // Build a simple menu
         LocationBasedNavBarEntry alarms = new LocationBasedNavBarEntry();
         alarms.setName("Alarms");
-        alarms.setUrl("alarm/index.htm");
+        alarms.setUrl("alarm/list.htm");
         alarms.setLocationMatch("alarm");
 
         MenuDropdownNavBarEntry menu = new MenuDropdownNavBarEntry();

@@ -140,7 +140,7 @@
         {
           "id": "alarms",
           "name": "Alarms",
-          "url": "alarm/index.htm",
+          "url": "alarm/list.htm",
           "locationMatch": "alarm",
           "roles": null
         },

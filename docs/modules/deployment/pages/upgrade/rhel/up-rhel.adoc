@@ -56,7 +56,7 @@ yum-config-manager --disable opennms-repo-stable-*
 +
 [source, console]
 ----
-yum -y install java-17-openjdk java-17-openjdk-devel
+yum -y install java-21-openjdk java-21-openjdk-devel
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:

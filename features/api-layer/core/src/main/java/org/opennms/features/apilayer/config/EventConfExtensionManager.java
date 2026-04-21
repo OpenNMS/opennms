@@ -38,6 +38,7 @@ import org.opennms.integration.api.v1.config.events.LogMsgDestType;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.support.EventConfServiceHelper;
@@ -66,15 +67,17 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
     private final EventConfDao eventConfDao;
     private final EventConfSourceDao eventConfSourceDao;
     private final EventConfEventDao eventConfEventDao;
+    private final EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private final SessionUtils sessionUtils;
     private final ExecutorService executor;
     private volatile EventConfSource pluginSource;
 
-    public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, SessionUtils sessionUtils) {
+    public EventConfExtensionManager(EventConfDao eventConfDao, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao, SessionUtils sessionUtils) {
         super(Events.class, new Events());
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
         this.eventConfSourceDao = Objects.requireNonNull(eventConfSourceDao);
         this.eventConfEventDao = Objects.requireNonNull(eventConfEventDao);
+        this.eventConfGlobalSecurityDao = Objects.requireNonNull(eventConfGlobalSecurityDao);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.executor = EventConfServiceHelper.createEventConfExecutor("integration-api-eventconf-%d");
         LOG.debug("EventConfExtensionManager initialized.");
@@ -98,7 +101,7 @@ public class EventConfExtensionManager extends ConfigExtensionManager<EventConfE
         LOG.debug("Event configuration changed. Syncing to database and triggering reload.");
         boolean changesApplied = syncEventsToDatabase();
         if (changesApplied) {
-            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, executor);
+            EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, executor);
         } else {
             LOG.debug("No changes to sync, skipping reload.");
         }

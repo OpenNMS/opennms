@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.FileSystemResource;
@@ -55,7 +56,8 @@ public class EventConfPriorityTest {
     @Test
     public void canFindHigherPriorityInFile() throws Exception {
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(new File("src/test/resources/priority/eventconf.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         Assert.assertEquals(3, eventConfDao.getAllEvents().size());
 
@@ -73,7 +75,8 @@ public class EventConfPriorityTest {
     @Test
     public void canFindHigherPriorityInLaterFile() throws Exception {
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(new File("src/test/resources/priority/eventconf2.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
         EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent", "JUnit");
@@ -90,7 +93,8 @@ public class EventConfPriorityTest {
     @Test
     public void canUseHighestPriorityDefnWhenInRoot() throws Exception {
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
         EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent", "JUnit");
@@ -107,7 +111,8 @@ public class EventConfPriorityTest {
     @Test
     public void doesNotDuplicateWhenGettingByUEI() throws Exception {
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(new File("src/test/resources/priority/eventconf3.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         Assert.assertEquals(4, eventConfDao.getAllEvents().size());
 
         EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent", "JUnit");
