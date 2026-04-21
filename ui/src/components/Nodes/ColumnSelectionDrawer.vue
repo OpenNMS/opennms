@@ -2,9 +2,9 @@
   <FeatherDrawer
     id="column-selection-drawer"
     data-test="column-selection-drawer"
+    @hidden="nodeStructureStore.columnsDrawerState.visible = false"
     v-model="nodeStructureStore.columnsDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
-    hide-close
     width="55em"
   >
     <div class="feather-drawer-custom-padding">
@@ -40,7 +40,13 @@
         </template>
       </Draggable>
       <div class="spacer-medium"></div>
-      <div class="button-column">
+      <div class="button-row">
+        <FeatherButton
+          primary
+          @click="customizeTable"
+        >
+          Save
+        </FeatherButton>
         <FeatherButton
           secondary
           :disabled="selectedColumns.length >= 10"
@@ -55,10 +61,10 @@
           Reset Columns
         </FeatherButton>
         <FeatherButton
-          primary
-          @click="customizeTable"
+          secondary
+          @click="nodeStructureStore.columnsDrawerState.visible = false"
         >
-          Customize Table
+          Close
         </FeatherButton>
       </div>
     </div>
@@ -196,15 +202,14 @@ button.primary {
     display: none;
 }
 
-.button-column{
+.button-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 1rem;
-  align-items:flex-start;
+  align-items: flex-start;
 
  :deep(.btn + .btn) {
     margin-left: 0 !important;
   }
 }
 </style>
-

@@ -47,17 +47,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * A controller that handles querying the event table by using filters to create an
- * event list and and then forwards that event list to a JSP for display.
+ * A controller that handles querying the alarm table by using filters to create an
+ * alarm list and then forwards that alarm list to a JSP for display.
  *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <a href="http://www.opennms.org/">OpenNMS </A>
  */
 public class AlarmFilterController extends MultiActionController implements InitializingBean {
 
@@ -100,13 +101,10 @@ public class AlarmFilterController extends MultiActionController implements Init
         return modelAndView;
     }
 
-    // index view
+    // index view - redirects to list
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.ALARM);
-        ModelAndView modelAndView = new ModelAndView("alarm/index");
-        modelAndView.addObject("favorites", userFilterList.toArray());
-        modelAndView.addObject("callback", getFilterCallback());
-        return modelAndView;
+        RedirectView redirectView = new RedirectView("list");
+        return new ModelAndView(redirectView);
     }
 
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -117,10 +115,11 @@ public class AlarmFilterController extends MultiActionController implements Init
                     request.getParameter("favoriteName"),
                     FilterUtil.toFilterURL(request.getParameterValues("filter")),
                     OnmsFilterFavorite.Page.ALARM);
+
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
-                //Commented out per request. Left it in, in case we wanted it back later
-                //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
+                // Commented out per request. Left it in, in case we wanted it back later
+                // AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
             error = "An error occurred while creating the favorite";
@@ -139,6 +138,7 @@ public class AlarmFilterController extends MultiActionController implements Init
 
         ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
         resultView.addObject("favorite", null); // we deleted the favorite
+
         if (!StringUtils.isEmpty(request.getParameter("redirect"))) {
             resultView.setViewName(request.getParameter("redirect")); // change to redirect View
         }
@@ -153,8 +153,9 @@ public class AlarmFilterController extends MultiActionController implements Init
 
     private String getDisplay(HttpServletRequest request) {
         // handle the display parameter
-        String displayString = request.getParameter("display");
+        final String displayString = request.getParameter("display");
         String display = null;
+
         if (displayString != null) {
             String temp = WebSecurityUtils.sanitizeString(displayString);
             if (temp != null) {
@@ -167,12 +168,14 @@ public class AlarmFilterController extends MultiActionController implements Init
     private int getLimit(HttpServletRequest request) {
         final String display = getDisplay(request);
         final String limitString = request.getParameter("limit");
+
         int limit = "long".equals(display) ? DEFAULT_LONG_LIMIT : DEFAULT_SHORT_LIMIT;
+
         if (limitString != null) {
             try {
-                int newlimit = WebSecurityUtils.safeParseInt(limitString);
-                if (newlimit > 0) {
-                    limit = newlimit;
+                int newLimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newLimit > 0) {
+                    limit = newLimit;
                 }
             } catch (NumberFormatException e) {
                 // do nothing, the default is already set
@@ -184,10 +187,11 @@ public class AlarmFilterController extends MultiActionController implements Init
     private int getMultiple(HttpServletRequest request) {
         final String multipleString = request.getParameter("multiple");
         int multiple = DEFAULT_MULTIPLE;
+
         if (multipleString != null) {
             try {
                 multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return multiple;
@@ -195,8 +199,9 @@ public class AlarmFilterController extends MultiActionController implements Init
 
     private SortStyle getSortStyle(HttpServletRequest request) {
         // handle the style sort parameter
-        String sortStyleString = request.getParameter("sortby");
+        final String sortStyleString = request.getParameter("sortby");
         SortStyle sortStyle = DEFAULT_SORT_STYLE;
+
         if (sortStyleString != null) {
             SortStyle temp = SortStyle.getSortStyle(sortStyleString);
             if (temp != null) {
@@ -208,13 +213,15 @@ public class AlarmFilterController extends MultiActionController implements Init
 
     private AcknowledgeType getAcknowledgeType(HttpServletRequest request) {
         // handle the acknowledgment type parameter
-        String ackTypeString = request.getParameter("acktype");
+        final String ackTypeString = request.getParameter("acktype");
         AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
 
         // set default ack type to both if alarm flashing enabled in opennms.properties
         String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
         boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
-        if (unAckFlash) ackType = AcknowledgeType.BOTH;
+        if (unAckFlash) {
+            ackType = AcknowledgeType.BOTH;
+        }
 
         if (ackTypeString != null) {
             AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
@@ -275,6 +282,7 @@ public class AlarmFilterController extends MultiActionController implements Init
         Assert.isTrue(DEFAULT_LONG_LIMIT > 0, "property defaultLongLimit must be set to a value greater than 0");
         Assert.notNull(m_webAlarmRepository, "webAlarmRepository must be set");
     }
+
     public void setWebAlarmRepository(AlarmRepository m_webAlarmRepository) {
         this.m_webAlarmRepository = m_webAlarmRepository;
     }

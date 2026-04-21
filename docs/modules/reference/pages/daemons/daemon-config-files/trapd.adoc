@@ -31,13 +31,9 @@ Otherwise, {page-component-title} tags the trap to the monitored node, broadcast
 | Configure generic behavior of trapd (for example, port numbers with IP addresses to listen for traps).
 | yes
 | no
-
-| events/*.xml
-| Defines mapping between OIDs and UEIs.
-Files in this folder must be specified as an include directive in `eventconf.xml`.
-| yes
-| no
 |===
+
+NOTE: The mappings between OIDs and UEIs are stored in the database and can be configured using the Web-UI.
 
 .Trapd log file overview
 [options="header"]

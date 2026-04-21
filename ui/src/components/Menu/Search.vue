@@ -22,6 +22,17 @@
       class="search-results-dropdown"
       @mousedown.prevent
     >
+      <div class="search-results-toolbar">
+        <FeatherIcon
+          :icon="CancelIcon"
+          class="search-results-close"
+          role="button"
+          tabindex="0"
+          title="Close"
+          @click="closeResults"
+          @keydown.enter.space.prevent="closeResults"
+        />
+      </div>
       <template
         v-for="(searchResultByContext, searchResultByContextKey) in filteredResults"
         :key="searchResultByContextKey"
@@ -62,6 +73,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
+import CancelIcon from '@featherds/icon/navigation/Cancel'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -217,6 +229,11 @@ const selectCurrentItem = () => {
   }
 }
 
+const closeResults = () => {
+  showResults.value = false
+  selectedIndex.value = -1
+}
+
 const onKeyDown = async (event: KeyboardEvent) => {
   if (!showResults.value || !hasResults.value) {
     return
@@ -252,8 +269,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
         break
         
       case 'Escape':
-        showResults.value = false
-        selectedIndex.value = -1
+        closeResults()
         break
     }
   }
@@ -275,7 +291,8 @@ const onKeyDown = async (event: KeyboardEvent) => {
   top: 100%;
   left: 0;
   width: 100%;
-  background: var($surface);
+  background: var($background);
+  color: var(--feather-secondary-text-on-surface);
   border: 1px solid var($secondary);
   border-radius: 4px;
   max-height: 400px;
@@ -284,24 +301,48 @@ const onKeyDown = async (event: KeyboardEvent) => {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
+  .search-results-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.25em 0.5em;
+    border-bottom: 1px solid var($border-on-surface);
+
+    .search-results-close {
+      cursor: pointer;
+      color: var($secondary-text-on-surface);
+      font-size: 1.25rem;
+
+      &:hover {
+        color: var($primary-text-on-surface);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var($primary);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+    }
+  }
+
   .search-category {
-    background-color: #f8f9fa;
+    background-color: var(--feather-background);
     padding: 0.5em 0.75em;
-    border-bottom: 1px solid #dee2e6;
-    font-weight: 500;
+    border-bottom: 1px solid var(--feather-surface);
+    font-weight: 800;
   }
 
   .search-result-item {
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 1px solid var(--feather-surface);
     transition: background-color 0.15s ease;
     padding-left: 0.5em;
+    color: var(--feather-secondary-text-on-surface);
 
     &:hover {
-      background-color: #f8f9fa;
+      background-color: var(--feather-surface);
     }
 
     &.keyboard-selected {
-      background-color: #e9ecef;
+      background-color: var(--feather-surface);
     }
 
     &:last-child {
@@ -315,18 +356,18 @@ const onKeyDown = async (event: KeyboardEvent) => {
   position: relative;
   align-items: center;
   width: 100%;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
+  background-color: var($surface);
+  border: 1px solid var($border-on-surface);
   border-radius: 4px;
-  
+
   .search-icon {
     position: absolute;
     left: 8px;
     z-index: 1;
-    color: #6c757d;
+    color: var($secondary-text-on-surface);
     pointer-events: none;
   }
-  
+
   .search-input {
     width: 100%;
     padding: 8px 12px 8px 36px;
@@ -334,10 +375,10 @@ const onKeyDown = async (event: KeyboardEvent) => {
     background: transparent;
     outline: none;
     font-size: 14px;
-    color: black;
+    color: var($primary-text-on-surface);
 
     &::placeholder {
-      color: #0c0d0e;
+      color: var($secondary-text-on-surface);
     }
     
     &:focus {

@@ -144,7 +144,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         }
         
         // We know the event is an alarm, pull the alarm and current ticket details from the database
-        AlarmState alarmState = getAlarmStateFromEvent(Integer.parseInt(eventID));
+        AlarmState alarmState = getAlarmStateFromEvent(Long.parseLong(eventID));
         if( alarmState.getAlarmID() == 0 ) {
 		LOG.error("There is no alarm-id associated with the event-id='{}'. Will not create ticket.", eventID);
         	return 1;
@@ -165,7 +165,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      *
      * @return 0 if alarmid is null
      */
-	protected AlarmState getAlarmStateFromEvent(int eventID) {
+	protected AlarmState getAlarmStateFromEvent(long eventID) {
 		AlarmStateRowCallbackHandler callbackHandler = new AlarmStateRowCallbackHandler();
 
         JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());

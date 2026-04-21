@@ -68,6 +68,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
         clickMenuItem("dashboardsMenu", "Heatmap");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/a[starts-with(text(), 'Alarm Heatmap')]")));
+        
 
         clickMenuItem("dashboardsMenu", "Trends");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
@@ -94,7 +95,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Inventory Menu
         // Note, some items are below under Vue UI checks
         clickMenuItem("inventoryMenu", "Nodes");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes' or text()='Availability']")));
 
         clickMenuItem("inventoryMenu", "Assets");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
@@ -107,7 +108,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li[text()='Application Status']")));
 
         clickMenuItem("monitoringMenu", "Alarms");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Alarm Queries']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']//li/a[contains(text()[normalize-space()], 'Alarms')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//a[text()='View all alarms']")));
 
         clickMenuItem("monitoringMenu", "Outages");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Outage Menu']")));
@@ -173,9 +175,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
 
         // Integrations Menu
-        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Configure SNMP by IP')]")));
-
         clickMenuItem("integrationsMenu", "Geocoding Services");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Geocoder Configuration')]")));
 
@@ -308,6 +307,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // clickMenuItem("toolsMenu", "File Editor");
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
         // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='File Editor']")));
+
+        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Manage SNMP Configuration']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='Manage SNMP Configuration']")));
 
         clickMenuItem("integrationsMenu", "External Requisitions");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='External Requisitions and Thread Pools']")));

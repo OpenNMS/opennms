@@ -38,8 +38,16 @@ public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdat
         this.eventForwarder = eventForwarder;
     }
 
+    public ConfigurationReloadEventCallback(EventForwarder eventForwarder, CmJaxbConfigDao<E> cmJaxbConfigDao) {
+        this.eventForwarder = eventForwarder;
+        this.cmJaxbConfigDao = cmJaxbConfigDao;
+    }
+
     @Override
     public void accept(ConfigUpdateInfo configUpdateInfo) {
+        if (cmJaxbConfigDao != null) {
+            cmJaxbConfigDao.loadConfig(configUpdateInfo.getConfigId());
+        }
         // Fire reload event
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
                 "config-rest");

@@ -120,7 +120,7 @@
       final String primaryIpAddress = InetAddressUtils.str(onmsIpInterface.getIpAddress());
       %>
         <p>
-          <a href="admin/snmpConfig?action=get&ipAddress=<%=primaryIpAddress%>#updateForm">Configure SNMP Community Strings</a>
+          <a href="ui/index.html#/snmp-config/lookup?ipAddress=<%=primaryIpAddress%>">Configure SNMP Community Strings</a>
         </p>
       <%
     }

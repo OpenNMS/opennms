@@ -108,7 +108,7 @@ public class NodeListPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes']");
+        findElementByXpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
         findElementByXpath("//ol[@class=\"breadcrumb\"]//li[text()='Node List']");
     }
 

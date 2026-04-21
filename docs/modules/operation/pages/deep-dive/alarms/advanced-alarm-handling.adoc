@@ -1,7 +1,7 @@
 = Advanced Alarm Handling
 :description: Advanced ways to handle alarms in {page-component-title}: advanced alarm handling.
 
-Advanced Alarm Handling using Drools.
+This section covers Advanced Alarm Handling using Drools. Drools is a Business Logic language that can enable {page-component-title} to handle advanced alarm handling scenarios that are specific to your business needs and the lifecycle of alarms in your environment.  Out of the box, {page-component-title} uses drools for basic alarm correlation but more advanced correlation and management is possible with customization.
 
 [[ga-Included-alarm-handling]]
 == Included Alarm handling
@@ -15,8 +15,77 @@ The `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` file contains th
 
 Additional examples are available in `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/`.
 
+[[ga-additional-alarm-handling]]
+== Additional Alarm Handling
+
+You can add custom alarm handling logic by creating new `.drl` files in the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/` directory.
+Any file ending in `.drl` in this directory is automatically loaded by the Alarmd Drools engine.
+There is no need to modify the existing `alarmd.drl` or `situations.drl` files — keeping custom rules in separate files makes upgrades easier, since the default files may be overwritten.
+
+=== Creating a Custom Rules File
+
+. Create a new file in `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/`, for example `custom-rules.drl`.
+. Add the required package declaration and imports at the top of the file:
++
+[source, drools]
+----
+package org.opennms.netmgt.alarmd.drools;
+
+import java.util.Date;
+import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.alarmd.drools.AlarmService;
+
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
+----
++
+. Add your rules after the imports.
+. Restart {page-component-title} for the new rules to take effect.
+
+=== Rule Ordering with Salience
+
+When multiple rules can match the same alarm, Drools uses *salience* to determine which rule fires first.
+Salience is an integer priority assigned to a rule — higher values fire first.
+If no salience is specified, the default is `0`.
+
+The built-in rules in `alarmd.drl` use salience values to ensure proper ordering of alarm lifecycle operations (cleanup, clearing, ticket handling).
+When writing custom rules, keep the following in mind:
+
+* Custom rules with the default salience (`0`) will fire *after* any built-in rules with positive salience.
+This is usually the desired behavior, since you want the standard alarm lifecycle to complete before custom logic runs.
+* If your custom rule must run *before* a built-in rule, assign it a higher salience:
++
+[source, drools]
+----
+rule "my-high-priority-rule"
+  salience 100
+  when
+    // conditions
+  then
+    // actions
+end
+----
++
+* If you have multiple custom rules that interact with each other, use relative salience values to control their ordering.
+* Use `no-loop true` on rules that modify alarm attributes (such as severity) to prevent the rule from re-firing on its own changes.
+
+=== Available Services and Objects
+
+Inside a Drools rule, the following are available:
+
+* `alarmService` — the global `AlarmService` instance, which provides methods to modify alarms:
+** `alarmService.setSeverity(alarm, severity, date)` — change an alarm's severity
+** `alarmService.escalateAlarm(alarm, date)` — escalate an alarm one severity level
+** `alarmService.clearAlarm(alarm, date)` — clear an alarm
+** `alarmService.acknowledgeAlarm(alarm, date)` — acknowledge an alarm
+** `alarmService.unacknowledgeAlarm(alarm, date)` — unacknowledge an alarm
+** `alarmService.debug(...)`, `alarmService.warn(...)` — log messages to the alarmd log
+* `SessionClock` — the Drools session clock, used to get the current time via `$sessionClock.getCurrentTime()`
+* `OnmsAlarm` — alarm facts in working memory, with access to all alarm properties including `node`, `severity`, `uei`, `alarmType`, and related objects
+
 [[ga-alarm-handling-drools-example-1]]
-== Alarm Handling Drools Example 1:
+== Example 1: Escalate Alarms by Node Category
 The following example drools rule will escalate an alarm for a node within a specific category for a NodeDown event.
 
 === Example:
@@ -44,5 +113,212 @@ rule "escalation"
     alarmService.warn("Node has category VMware8: {}",$alarm.getNode().hasCategory("VMware8"));
     /* escalate the alarm */
     alarmService.escalateAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+end
+----
+
+[[ga-alarm-handling-drools-example-2]]
+== Example 2: Parent-Child NodeDown Severity Adjustment
+
+These rules adjust alarm severities for nodeDown alarms based on parent-child relationships between nodes.
+Parent-child relationships are defined using the Path Outage configuration on each node in a provisioning requisition.
+In the requisition, each node can specify a single parent via the "Path Outage" tab by setting the Parent Foreign Source and either the Parent Foreign ID or Parent Node Label.
+This establishes a tree hierarchy where each node has at most one parent.
+The resulting parent-child tree is what these rules operate against via `node.getParent()`.
+
+=== Example:
+[source, drools]
+----
+// Parent-Child NodeDown Severity Rules
+//
+// When a node goes down and its parent node is also down, the child's
+// alarm is likely a symptom of the parent being down.  These rules
+// adjust alarm severities to reflect that:
+//
+//   - The topmost ancestor with a nodeDown alarm ->  MAJOR (root alarm)
+//   - All descendant nodeDown alarms below  ->  WARNING (symptom alarm)
+//
+// When the parent alarm clears, descendant alarms are restored to their
+// original severity (MAJOR, the default for nodeDown).
+//
+// Rule 1 - promoteRootAlarm
+//   If a nodeDown alarm's node has no parent with an active nodeDown
+//   alarm, but does have at least one child with an active nodeDown
+//   alarm, promote it to MAJOR.
+//
+// Rule 2 - demoteDescendant
+//   If a nodeDown alarm's node has a parent with an active nodeDown
+//   alarm, demote the child to WARNING.
+//
+// Rule 3 - restoreDescendant
+//   If a nodeDown alarm was previously demoted to WARNING but its
+//   parent no longer has an active nodeDown alarm, restore it to MAJOR.
+//
+// NOTE: All of these rules use the "no-loop true" option. This prevents
+// a rule from re-firing itself when its own actions modify a fact that
+// the rule is watching. Essentially, "this rule already fired for this
+// specific combination of facts" and won't re-trigger it from its own
+// modifications.
+
+package org.opennms.netmgt.alarmd.drools;
+
+import java.util.Date;
+
+import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.alarmd.drools.AlarmService;
+
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
+
+declare org.opennms.netmgt.model.OnmsAlarm
+    @role(event)
+    @timestamp(lastUpdateTime)
+end
+
+
+// Rule 1 - Promote the root alarm to MAJOR
+//
+// A nodeDown alarm is the "root alarm" when its node has no parent with
+// an active nodeDown alarm, but does have at least one child node that
+// is also down.
+//
+// The child check prevents us from touching standalone nodeDown alarms
+// that have no related alarms at all.
+//
+// This also handles re-promotion: if a grandparent clears and this node
+// becomes the new top of the chain, it gets bumped back up to MAJOR.
+
+rule "promoteRootAlarm"
+  enabled true
+  no-loop true
+  when
+    $sessionClock : SessionClock()
+
+    // A nodeDown alarm that is not cleared and not already MAJOR
+    $alarm : OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        severity != OnmsSeverity.MAJOR,
+        isSituation() == false,
+        node != null,
+        $nodeId : node.id
+    )
+
+    // This alarm's node does NOT have a parent with an active nodeDown alarm.
+    // Either the node has no parent, or the parent has no nodeDown alarm.
+    not OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        isSituation() == false,
+        node != null,
+        eval( $alarm.getNode().getParent() != null
+              && node.getId().equals($alarm.getNode().getParent().getId()) )
+    )
+
+    // This alarm's node DOES have at least one child with an active
+    // nodeDown alarm (so we only touch alarms involved in a relationship).
+    exists OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        isSituation() == false,
+        node != null,
+        node.parent != null,
+        node.getParent().getId() == $nodeId
+    )
+
+  then
+    Date now = new Date($sessionClock.getCurrentTime());
+    alarmService.debug("promoteRootAlarm: alarm id={}, nodeId={}, severity={} -> MAJOR",
+        $alarm.getId(), $nodeId, $alarm.getSeverity());
+    alarmService.setSeverity($alarm, OnmsSeverity.MAJOR, now);
+end
+
+
+// Rule 2 - Demote a descendant to WARNING
+//
+// A nodeDown alarm is a "descendant" (symptom) when its node's parent
+// also has an active nodeDown alarm.  Demote it to WARNING so operators
+// can focus on the root alarm.
+
+rule "demoteDescendant"
+  enabled true
+  no-loop true
+  when
+    $sessionClock : SessionClock()
+
+    // A nodeDown alarm that is not cleared and not already WARNING
+    $childAlarm : OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        severity != OnmsSeverity.WARNING,
+        isSituation() == false,
+        node != null,
+        node.parent != null,
+        $parentNodeId : node.getParent().getId()
+    )
+
+    // The parent node has an active nodeDown alarm
+    OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        isSituation() == false,
+        node != null,
+        node.id == $parentNodeId
+    )
+
+  then
+    Date now = new Date($sessionClock.getCurrentTime());
+    alarmService.debug("demoteDescendant: alarm id={}, nodeId={}, severity={} -> WARNING (parent nodeId={} is also down)",
+        $childAlarm.getId(), $childAlarm.getNode().getId(), $childAlarm.getSeverity(), $parentNodeId);
+    alarmService.setSeverity($childAlarm, OnmsSeverity.WARNING, now);
+end
+
+
+// Rule 3 - Restore a descendant when its parent clears
+//
+// If a nodeDown alarm is at WARNING (was previously demoted by Rule 2)
+// but its parent node no longer has an active nodeDown alarm, restore
+// it to MAJOR (the standard nodeDown severity).
+//
+// This fires when the parent comes back up (nodeUp clears the parent
+// alarm), so the child goes back to its normal severity.
+
+rule "restoreDescendant"
+  enabled true
+  no-loop true
+  when
+    $sessionClock : SessionClock()
+
+    // A nodeDown alarm currently at WARNING (was demoted)
+    $childAlarm : OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity == OnmsSeverity.WARNING,
+        isSituation() == false,
+        node != null,
+        node.parent != null,
+        $parentNodeId : node.getParent().getId()
+    )
+
+    // The parent node does NOT have an active nodeDown alarm
+    not OnmsAlarm(
+        uei == "uei.opennms.org/nodes/nodeDown",
+        alarmType == OnmsAlarm.PROBLEM_TYPE,
+        severity != OnmsSeverity.CLEARED,
+        isSituation() == false,
+        node != null,
+        node.id == $parentNodeId
+    )
+
+  then
+    Date now = new Date($sessionClock.getCurrentTime());
+    alarmService.debug("restoreDescendant: alarm id={}, nodeId={}, parent nodeId={} no longer down, severity WARNING -> MAJOR",
+        $childAlarm.getId(), $childAlarm.getNode().getId(), $parentNodeId);
+    alarmService.setSeverity($childAlarm, OnmsSeverity.MAJOR, now);
 end
 ----

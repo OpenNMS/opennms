@@ -415,6 +415,11 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
             // will be null for telemetry resources
             if (resource.getIfIndex() != null) {
                 bldr.addParam("ifIndex", resource.getIfIndex());
+                bldr.setIfIndex(Integer.parseInt(resource.getIfIndex()));
+            }
+            String ifAlias = resource.getIfInfoValue("snmpifalias");
+            if (ifAlias != null) {
+                bldr.addParam("ifAlias", ifAlias);
             }
             String ipaddr = resource.getIfInfoValue("ipaddr");
             if (ipaddr != null && !"0.0.0.0".equals(ipaddr)) {

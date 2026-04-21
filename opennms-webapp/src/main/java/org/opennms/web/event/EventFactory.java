@@ -1241,7 +1241,7 @@ public class EventFactory {
         while (rs.next()) {
             Event event = new Event();
 
-            event.id = rs.getInt("eventID");
+            event.id = rs.getLong("eventID");
             event.uei = rs.getString("eventUei");
             event.snmp = rs.getString("eventSnmp");
 

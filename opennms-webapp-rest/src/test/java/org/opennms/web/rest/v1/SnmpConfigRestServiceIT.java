@@ -49,6 +49,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 /**
  * TODO
  * 1. Need to figure it out how to create a Mock for EventProxy to validate events sent by RESTful service
+ *
+ * @deprecated This class is deprecated and will be removed in a future release.
+ * This is used by the v1 SNMP Rest API, which is being replaced by the new v2 SNMP Rest API.
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -68,6 +71,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 })
 @JUnitConfigurationEnvironment(systemProperties = "org.opennms.timeseries.strategy=integration")
 @JUnitTemporaryDatabase
+// TODO: Remove when v1 SNMP API is removed (Horizon 37)
 public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 	private static final int DEFAULT_PORT = 9161;

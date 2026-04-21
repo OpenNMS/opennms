@@ -40,6 +40,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
@@ -56,8 +57,8 @@ public class EventConfDataTest {
 
         eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
-
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
     }
 
 

@@ -60,9 +60,13 @@ import java.io.Serializable;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Objects;
@@ -110,6 +114,9 @@ public class EventConfRestService implements EventConfRestApi {
             fileMap.put(basename, attachment);
         }
 
+        // Detect and parse eventconf.xml for file ordering
+        Map<String, Integer> fileOrderMap = buildFileOrderFromEventConf(fileMap);
+
         List<String> orderedFiles = new ArrayList<>(fileMap.keySet());
 
         final List<Map<String, Object>> successList = new ArrayList<>();
@@ -132,9 +139,14 @@ public class EventConfRestService implements EventConfRestApi {
 
             try {
                 final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
-                final int fileOrder = (existingSource != null)
-                        ? existingSource.getFileOrder()
-                        : ++maxFileOrder;
+                final int fileOrder;
+                if (fileOrderMap != null && fileOrderMap.containsKey(fileName)) {
+                    fileOrder = fileOrderMap.get(fileName);
+                } else if (existingSource != null) {
+                    fileOrder = existingSource.getFileOrder();
+                } else {
+                    fileOrder = ++maxFileOrder;
+                }
 
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
@@ -144,12 +156,111 @@ public class EventConfRestService implements EventConfRestApi {
                 errorList.add(buildErrorResponse(fileName, e));
             }
         }
+
+        // Update fileOrder for existing DB sources not in this upload
+        if (fileOrderMap != null) {
+            for (Map.Entry<String, Integer> entry : fileOrderMap.entrySet()) {
+                if (!fileMap.containsKey(entry.getKey())) {
+                    eventConfPersistenceService.updateFileOrder(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
         final long dbEndTime = System.currentTimeMillis();
         LOG.info("Time to add {} files to DB: {} ms", orderedFiles.size(), (dbEndTime - dbStartTime));
 
         eventConfPersistenceService.reloadEventsIntoMemory();
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
+    }
+
+    /**
+     * If an eventconf.xml is present in the upload, parse its event-file entries
+     * and build a fileOrder map for all sources (uploaded + existing in DB).
+     * Referenced sources (explicitly listed in eventconf.xml) follow eventconf.xml order
+     * (first entry = searched first among referenced).
+     * Unreferenced sources (sources in DB but not in eventconf.xml, or files included in the
+     * upload but not explicitly listed in eventconf.xml) get higher fileOrder (searched before
+     * referenced), consistent with normal upload behavior where new files get highest priority.
+     * Returns null if no eventconf.xml is present or parsing fails.
+     */
+    private Map<String, Integer> buildFileOrderFromEventConf(final Map<String, Attachment> fileMap) {
+        final Attachment eventConfAttachment = fileMap.get("eventconf");
+        if (eventConfAttachment == null) {
+            return null;
+        }
+        // Remove eventconf from fileMap only after confirming it exists
+        fileMap.remove("eventconf");
+
+        try (InputStream stream = eventConfAttachment.getObject(InputStream.class)) {
+            final Events eventConfEvents = parseEventFile(new ByteArrayInputStream(stream.readAllBytes()));
+            final List<String> eventConfOrder = new ArrayList<>();
+            final Set<String> eventConfOrderSet = new HashSet<>();
+            for (String eventFile : eventConfEvents.getEventFiles()) {
+                String name = stripPathAndExtension(eventFile);
+                if (name != null && !name.isEmpty() && eventConfOrderSet.add(name)) {
+                    eventConfOrder.add(name);
+                }
+            }
+
+            if (eventConfOrder.isEmpty()) {
+                LOG.info("eventconf.xml contained no <event-file> entries, falling back to default ordering");
+                return null;
+            }
+
+            // Collect all known source names: uploaded files + existing DB sources
+            final Set<String> allSourceNames = new LinkedHashSet<>(fileMap.keySet());
+            allSourceNames.addAll(eventConfSourceDao.findAllNames());
+
+            // Unreferenced sources (sources in DB but not in eventconf.xml): preserve their existing DB order
+            final List<EventConfSource> existingByOrder = eventConfSourceDao.findAllByFileOrder();
+            final List<String> unreferencedSorted = new ArrayList<>();
+            final Set<String> unreferencedSet = new HashSet<>();
+            for (EventConfSource src : existingByOrder) {
+                if (!eventConfOrderSet.contains(src.getName())) {
+                    unreferencedSorted.add(src.getName());
+                    unreferencedSet.add(src.getName());
+                }
+            }
+            // Add any newly uploaded unreferenced files (not in eventconf.xml and not in DB yet) at the end
+            for (String name : fileMap.keySet()) {
+                if (!eventConfOrderSet.contains(name) && !unreferencedSet.contains(name)) {
+                    unreferencedSorted.add(name);
+                }
+            }
+
+            final Map<String, Integer> fileOrderMap = new HashMap<>();
+            // Reserve fileOrder 1 for catch-all (always searched last)
+            final String CATCH_ALL = "opennms.catch-all.events";
+            int nextOrder = 2;
+
+            // Referenced sources in eventconf.xml order: last entry gets lowest fileOrder (searched last)
+            // first entry gets highest fileOrder among referenced (searched first among referenced)
+            // catch-all is excluded — it stays pinned at fileOrder 1
+            for (int i = eventConfOrder.size() - 1; i >= 0; i--) {
+                String name = eventConfOrder.get(i);
+                if (!CATCH_ALL.equals(name) && allSourceNames.contains(name)) {
+                    fileOrderMap.put(name, nextOrder++);
+                }
+            }
+
+            // Unreferenced sources get higher fileOrder (searched first),
+            // consistent with uploads without eventconf.xml where new files get highest priority.
+            // Existing unreferenced preserve their relative order; newly uploaded ones go last (highest priority).
+            for (String name : unreferencedSorted) {
+                if (!CATCH_ALL.equals(name)) {
+                    fileOrderMap.put(name, nextOrder++);
+                }
+            }
+
+            LOG.info("Parsed eventconf.xml with {} event-file entries for ordering", eventConfOrder.size());
+            return fileOrderMap;
+        } catch (Exception e) {
+            LOG.warn("Failed to parse eventconf.xml for file ordering, falling back to default order: {}", e.getMessage());
+            // Re-add eventconf to fileMap so it appears in the error list
+            fileMap.put("eventconf", eventConfAttachment);
+            return null;
+        }
     }
 
     @Override

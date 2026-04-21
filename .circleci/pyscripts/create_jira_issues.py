@@ -55,7 +55,7 @@ BLOCKLIST = {
     "python-unversioned-command",
     "openssl-libs",
     "org.apache.camel:camel-core",
-    "java-17-openjdk-headless",
+    "java-21-openjdk-headless",
     "CVE-2022-41721",
     "CVE-2022-41723",
     "CVE-2022-0839",

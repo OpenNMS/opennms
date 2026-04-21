@@ -27,11 +27,12 @@ const useDownload = () => {
    * Download a file from a binary response
    *
    * @param   {AxiosResponse}  file  response from the server
+   * @param   {boolean}  forceBlob  force blob creation, do not stringify JSON. This is helpful when downloading JSON files that should be saved as-is.
    */
-  const downloadFile = (file: AxiosResponse): void => {
+  const downloadFile = (file: AxiosResponse, forceBlob = false): void => {
     const name = getNameFromHeaders(file.headers)
     const extension = name.split('.').pop() || ''
-    const blob = generateBlob(file, extension)
+    const blob = generateBlob(file, extension, forceBlob)
     generateDownload(blob, name)
   }
 
@@ -46,7 +47,7 @@ export default useDownload
  * @param   {Headers}  headers  headers from the server
  * @return  {string}            filename
  */
-const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
+const getNameFromHeaders = (headers: AxiosResponse['headers']): string => {
   let name = ''
   const disposition = headers['content-disposition']
 
@@ -66,13 +67,14 @@ const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
  *
  * @param   {Headers}  headers   response from the server
  * @param   {string}   extension filename extension
+ * @param   {boolean}  forceBlob  force blob creation, do not stringify JSON. This is helpful when downloading JSON files that should be saved as-is.
  * @return  {Blob}               file object
  */
-const generateBlob = (file: AxiosResponse, extension: string): Blob => {
-  const contentType = (<AxiosResponseHeaders>file.headers)['content-type']
+const generateBlob = (file: AxiosResponse, extension: string, forceBlob = false): Blob => {
+  const contentType = file.headers['content-type']
 
-  // stringify if it's a JSON file
-  if (extension.toLowerCase() === 'json') {
+  // stringify if it's a JSON file, unless forceBlob is true
+  if (!forceBlob && extension.toLowerCase() === 'json') {
     return new Blob([JSON.stringify(file.data)], { type: contentType })
   }
 

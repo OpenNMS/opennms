@@ -21,7 +21,9 @@
  */
 package org.opennms.web.outage;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -448,4 +450,20 @@ public abstract class OutageUtil extends Object {
         return html;
     }
 
+    public static String formatDuration(Date firstTime, Date lastTime) {
+        if (firstTime == null || lastTime == null) {
+            return "";
+        }
+
+        Duration duration = Duration.between(firstTime.toInstant(), lastTime.toInstant());
+
+        final long daysPart = duration.toDaysPart();
+
+        String days = daysPart > 0 ? String.format("%d %s, ", daysPart, daysPart == 1 ? "day" : "days") : "";
+
+        String result = String.format("%s%dh%dm%ds", days,
+                duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+
+        return result;
+    }
 }

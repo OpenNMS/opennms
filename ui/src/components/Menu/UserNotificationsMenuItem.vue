@@ -342,19 +342,30 @@ div.user-notification-badge-wrapper {
   padding: 10px;
 }
 
-.alarm-error {
-  background-color: var($error);
+// Notification-status colors stay on their light-theme Feather values so
+// the indicator meaning doesn't change with the active theme. We re-declare
+// the Feather CSS variables locally with their light-mode values and keep
+// the consuming rules pointing at the Feather variable names.
+.alarm-error,
+.alarm-ok,
+.alarm-unknown {
+  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
+}
+
+.alarm-error {
+  --feather-error: #a5021f;
+  background-color: var($error);
 }
 
 .alarm-ok {
+  --feather-success: #0b720c;
   background-color: var($success);
-  color: var($primary-text-on-color) !important;
 }
 
 .alarm-unknown {
+  --feather-indeterminate: #0092c7;
   background-color: var($indeterminate);
-  color: var($primary-text-on-color) !important;
 }
 
 .notice-status-display {

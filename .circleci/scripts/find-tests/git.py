@@ -14,6 +14,8 @@ def get_parent_branch(repo_path):
             match = re.match(r'parent_branch: (.*)$', line, re.M | re.I)
             if match:
                 parent_branch = match.group(1)
+    if parent_branch is None:
+        raise ValueError("Could not find 'parent_branch:' entry in .nightly file")
     return parent_branch.strip()
 
 

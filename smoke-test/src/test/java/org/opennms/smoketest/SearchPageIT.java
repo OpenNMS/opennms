@@ -76,7 +76,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("All nodes").click();
-        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes']");
+        findElementByXpath("//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
 
         searchPage();
         findElementByLink("All nodes and their interfaces").click();
@@ -94,6 +94,6 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
         maclike.sendKeys(Keys.ENTER);
 
         findElementByXpath("//div[@id='content']/nav/ol/li[text()='Node List']");
-        findElementByXpath("//div[@class='card-header']//div[@class='btn-toolbar']/span[text()='Nodes']");
+        findElementByXpath("//div[@class='card-header']//div[contains(@class, 'btn-toolbar')]/span[text()='Nodes']");
     }
 }

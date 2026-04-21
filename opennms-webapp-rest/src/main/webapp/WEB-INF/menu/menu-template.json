@@ -141,7 +141,7 @@
         {
           "id": "alarms",
           "name": "Alarms",
-          "url": "alarm/index.htm",
+          "url": "alarm/list.htm",
           "locationMatch": "alarm",
           "roles": null
         },
@@ -449,9 +449,9 @@
         {
           "id": "snmpAgentConfiguration",
           "name": "SNMP Agent Configuration",
-          "url": "admin/snmpConfig",
+          "url": "ui/index.html#/snmp-config",
           "locationMatch": "",
-          "roles": null
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
           "id": "externalRequisitions",
@@ -488,6 +488,10 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pluginsMenu",
+      "type": "plugins"
     },
     {
       "id": "toolsMenu",

@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteLocationNormalized } from 'vue-router'
 import { Plugin } from '@/types'
 import DeviceConfigBackup from '@/containers/DeviceConfigBackup.vue'
 import Home from '@/containers/Home.vue'
@@ -35,8 +35,9 @@ import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
 import { useMenuStore } from '@/stores/menuStore'
+import { ActiveTabs, SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 
-const { adminRole, filesystemEditorRole, dcbRole, rolesAreLoaded } = useRole()
+const { adminRole, filesystemEditorRole, dcbRole, snmpRole, rolesAreLoaded } = useRole()
 const menuStore = computed(() => useMenuStore())
 const { showSnackBar } = useSnackbar()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -66,6 +67,22 @@ const isLegacyPlugin = (plugin: Plugin) => {
 
 const zenithConnectEnabled = computed<boolean>(() => menuStore.value?.mainMenu?.zenithConnectEnabled ?? false)
 
+const checkSnmpRole = (from: RouteLocationNormalized, isLookup?: boolean) => {
+  if (!snmpRole.value) {
+    showSnackBar({ msg: 'Must have the proper SNMP role(s) to access SNMP Config.' })
+    router.push(from.path)
+    return
+  }
+
+  if (isLookup) {
+    // SNMP Config auto-lookup mode. This sets the store to ensure the lookup tab is active and in lookup mode.
+    // Then SnmpConfigLookupTab will get the 'ipAddress' and 'location' query params and perform the lookup.
+    const store = useSnmpConfigStore()
+    store.setActiveTab(ActiveTabs.Lookup)
+    store.setSnmpLookupEditMode(SnmpLookupEditMode.Lookup)
+  }
+}
+
 const router = createRouter({
   history: createWebHashHistory('/opennms/ui'),
   routes: [
@@ -94,8 +111,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -110,8 +130,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -126,8 +149,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -196,8 +222,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -212,8 +241,38 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
+      }
+    },
+    {
+      path: '/snmp-config',
+      name: 'SNMP Config',
+      component: () => import('@/containers/SnmpConfiguration.vue'),
+      beforeEnter: (to, from) => {
+        if (rolesAreLoaded.value) {
+          checkSnmpRole(from)
+        } else {
+          whenever(rolesAreLoaded, () => checkSnmpRole(from))
+        }
+      }
+    },
+    {
+      path: '/snmp-config/lookup',
+      name: 'SNMP Config Lookup',
+      component: () => import('@/containers/SnmpConfiguration.vue'),
+      beforeEnter: (to, from) => {
+        if (rolesAreLoaded.value) {
+          {
+          checkSnmpRole(from, true)
+        } } else {
+          {
+          whenever(rolesAreLoaded, () => checkSnmpRole(from, true))
+        }
+        }
       }
     },
     {
@@ -228,8 +287,11 @@ const router = createRouter({
           }
         }
 
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
+        if (rolesAreLoaded.value) {
+          checkRoles()
+        } else {
+          whenever(rolesAreLoaded, () => checkRoles())
+        }
       }
     },
     {
@@ -285,6 +347,21 @@ const router = createRouter({
       path: '/event-config/create',
       name: 'Event Configuration Create',
       component: () => import('@/containers/EventConfigEventCreate.vue')
+    },
+    {
+      path: '/primevue-test',
+      name: 'PrimeVueTest',
+      component: () => import('@/components/PrimeVueTest.vue')
+    },
+    {
+      path: '/mib-compiler',
+      name: 'MIB Compiler',
+      component: () => import('@/containers/MibCompiler.vue')
+    },
+    {
+      path: '/mib-compiler/edit',
+      name: 'Edit MIB File',
+      component: () => import('@/containers/EditMibFile.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

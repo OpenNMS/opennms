@@ -93,7 +93,6 @@
         "weekly-coverage": {
             "extends": [
                 "build",
-                "integration-test-with-coverage",
                 "trivy-scan",
                 "trivy-analyze"
             ]
@@ -244,6 +243,17 @@
             ]
         },
         "smoke-test-sentinel": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64",
+                "minion-image-single-arch-linux-amd64",
+                "sentinel-image-single-arch-linux-amd64"
+            ]
+        },
+        "smoke-test-flaky": {
             "context": [
                 "CircleCI",
                 "docker-publish-account"
@@ -429,7 +439,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -485,7 +498,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -503,7 +519,10 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
@@ -529,13 +548,15 @@
                 "horizon-image-single-arch",
                 "minion-image-single-arch",
                 "sentinel-image-single-arch",
-                "integration-test"
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ],
             "filters": {
                 "branches": {
                     "only": [
-                        "/^master-.*/",
-                        "/^release-.*/"
+                        "/^master-.*/"
                     ]
                 },
                 "user_overridable": false

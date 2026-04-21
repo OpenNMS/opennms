@@ -25,12 +25,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.Future;
-import java.util.function.BooleanSupplier;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.karaf.shell.api.action.Action;

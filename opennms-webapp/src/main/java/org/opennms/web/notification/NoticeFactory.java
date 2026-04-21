@@ -738,8 +738,7 @@ public class NoticeFactory {
             element = rs.getString("interfaceid");
             notice.m_interfaceID = (String) element;
 
-            element = Integer.valueOf(rs.getInt("eventid"));
-            notice.m_eventId = ((Integer) element).intValue();
+            notice.m_eventId = rs.getLong("eventid");
 
             element = Integer.valueOf(rs.getInt("serviceid"));
             if (element != null) {

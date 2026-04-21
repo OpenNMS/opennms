@@ -69,7 +69,11 @@
     <intercept-url pattern="/rest/foreignSources/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
     <intercept-url pattern="/rest/requisitions/**" access="ROLE_PROVISION,ROLE_REST,ROLE_ADMIN"/>
 
-    <!-- SNMP config is _only_ allowed for the provision or admin roles -->
+    <!--
+      SNMP config is _only_ allowed for the provision or admin roles.
+      Note that this v1 SNMP Config Rest API has been deprecated in favor of the v2 API under /api/v2/snmp-config
+      and will be removed in a future release.
+    -->
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN"/>
 
     <!-- Allow users to POST to the Measurements API, which is read-only -->
@@ -119,8 +123,7 @@
     <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
     <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
 
-
-      <!-- Allow certain actions for the ROLE_USER role -->
+    <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
     <!-- read-only calls should be allowed for any user -->
@@ -172,6 +175,12 @@
     <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
     <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
+
+    <!-- SNMP Config should be provision or admin-only -->
+    <intercept-url pattern="/api/v2/snmp-config/**" method="GET" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/snmp-config/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/snmp-config/**" method="POST" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>

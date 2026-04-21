@@ -22,8 +22,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,23 +39,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.common.io.Files;
 
 /**
  * A servlet that handles configuring SNMP.
- * 
+ *
+ * @deprecated This servlet is deprecated and will be removed in a future release. Please use the new SNMP Agent Configuration page instead.
+ *
  * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
- * @author <A HREF="mailto:gturner@newedgenetworks.com">Gerald Turner </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:gturner@newedgenetworks.com">Gerald Turner</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * @version $Id: $
  * @since 1.8.1
  */
+@Deprecated(forRemoval = true)
 public class SnmpConfigServlet extends HttpServlet {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigServlet.class);
-
 
 	public static enum SnmpConfigServletAction {
 		Default("default"), 
@@ -86,7 +85,10 @@ public class SnmpConfigServlet extends HttpServlet {
 	/** {@inheritDoc} */
         @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		process(request, response);
+		throw new ServletException("This page has been deprecated. Please use the new SNMP Agent Configuration page instead.");
+
+		// previous implementation:
+		// process(request, response);
 	}
 
 	/*
@@ -128,7 +130,6 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
-		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), StandardCharsets.UTF_8));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
 		dispatcher.forward(request, response);

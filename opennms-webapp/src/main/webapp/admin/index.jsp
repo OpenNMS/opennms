@@ -73,12 +73,6 @@
         document.manageSnmp.submit();
     }
 
-    function snmpConfigPost()
-    {
-        document.snmpConfig.action = "admin/snmpConfig?action=default";
-        document.snmpConfig.submit();
-    } 
-     
     function networkConnection()
     {
         document.networkConnection.submit();
@@ -112,11 +106,6 @@
     <input type="hidden"/>
 </form>
 
-<form method="post" name="snmpConfig" action="admin/snmpConfig">
-    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    <input type="hidden"/>
-</form>
-
 <div class="row">
   <div class="col-md-6">
     <div class="card">
@@ -147,10 +136,10 @@
             <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
             <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
             <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
-            <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
+            <li><a href="ui/index.html#/snmp-config">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
             <li><a href="javascript:deletePost()">Delete Nodes</a></li>
-            <li><a href="ui/index.html/#/configuration">Configure External Requisitions</a></li>
+            <li><a href="ui/index.html#/configuration">Configure External Requisitions</a></li>
             <li><a href="admin/geoservice/index.jsp">Configure Geocoder Service</a></li>
             <li><a href="/opennms/ui/index.html#/scv">Secure Credentials Vault</a></li>
         </ul>
@@ -333,10 +322,11 @@
             (or any combination of the four) for any interface/node for any time.  
         </p>
 
-        <P><B>Configure SNMP Community Names by IP Address</b>: Configure the Community String used in SNMP Data Collection and other SNMP operations. OpenNMS is shipped with a community string of "public".
+        <p><b>Configure SNMP Community Names by IP Address</b>: Configure the Community String used in SNMP Data Collection
+            and other SNMP operations. OpenNMS is shipped with a community string of "public".
             If you have set a different <em>read</em> community on your devices you must put it here to be able to collect data from
             these devices.
-        </P>
+        </p>
 
         <p><b>Manage and Unmanage Interfaces and Services</b>: <em>Managing</em> an interface or service means that
             OpenNMS performs tests on this interface or service. If you want to explicitly enable or disable testing you
@@ -349,12 +339,11 @@
         <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
             of the files for data collection groups.</p>
 
-        <P><B>Configure SNMP Data Collection per Interface</b>: This interface will allow you
+        <p><b>Configure SNMP Data Collection per Interface</b>: This interface will allow you
             to configure which IP and non-IP interfaces are used in SNMP Data Collection.
-        </P>
+        </p>
 
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
-
 
         <p><b>Manage Applications</b>: Configure and administer 
         the operation of perspective pollers that report back to this OpenNMS server to provide distributed

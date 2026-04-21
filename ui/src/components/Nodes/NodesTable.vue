@@ -273,6 +273,7 @@
     <FeatherPagination
       v-if="nodeStore.totalCount > 0"
       v-model="pageNumber"
+      :pageSize="pageSize"
       :pageSizes="[10, 20, 50, 100, 200]"
       :total="nodeStore.totalCount"
       @update:modelValue="updatePageNumber"
@@ -400,9 +401,10 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
-const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
+const tableCssClasses = computed<string[]>(() => [...getTableCssClasses(nodeStructureStore.columns), 'condensed'])
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
+const pageSize = ref(nodeStore.nodeQueryParameters.limit || 50)
 
 const isSelectedColumn = (column: NodeColumnSelectionItem, id: string) => {
   return column.selected && column.id === id
@@ -418,7 +420,9 @@ const updatePageNumber = (page: number) => {
 }
 
 const updatePageSize = (size: number) => {
-  queryParameters.value = { ...queryParameters.value, limit: size }
+  pageSize.value = size
+  pageNumber.value = 1
+  queryParameters.value = { ...queryParameters.value, limit: size, offset: 0 }
   nodeStore.setNodeQueryParameters(queryParameters.value)
 
   updateQuery()
@@ -548,10 +552,10 @@ watch([() => nodeStructureStore.queryFilter], () => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/table/scss/table";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
-@import "@featherds/styles/themes/variables";
+@use "@featherds/table/scss/table" as table;
+@use "@featherds/styles/mixins/elevation" as elevation;
+@use "@featherds/styles/mixins/typography" as typography;
+@use "@featherds/styles/themes/variables" as variables;
 
 .node-table {
   margin-top: 1rem;
@@ -563,16 +567,16 @@ watch([() => nodeStructureStore.queryFilter], () => {
 }
 
 .card {
-  @include elevation(2);
-  background: var($surface);
+  @include elevation.elevation(2);
+  background: var(variables.$surface);
   padding: 30px;
 }
 
 table {
-  @include table;
-  @include table-condensed;
-  @include row-select();
-  @include row-hover();
+  @include table.table;
+  @include table.table-condensed;
+  @include table.row-select();
+  @include table.row-hover();
 
   tbody {
     tr {
@@ -584,7 +588,7 @@ table {
 }
 
 .title {
-  @include headline1;
+  @include typography.headline1;
   display: block;
 }
 
@@ -608,7 +612,7 @@ table {
   }
 
   .btn.btn-icon{
-    border: 2px solid var($border-on-surface);
+    border: 2px solid var(variables.$border-on-surface);
     border-radius: 3px;
     padding: 0 0.5rem;
     height: 3rem;
@@ -668,4 +672,3 @@ table {
   }
 }
 </style>
-

@@ -2,6 +2,37 @@
 
 = Changelog
 
+[[releasenotes-changelog-35.0.5]]
+
+== Release 35.0.5
+
+=== Bug
+
+* Event Translator doesn't pickup changes on reload event (Issue https://issues.opennms.org/browse/NMS-19613[NMS-19613])
+* MetaTagDataLoader fails to resolve interface scope for streaming telemetry  resources (Issue https://issues.opennms.org/browse/NMS-19599[NMS-19599])
+* OpenNMS Twin Shell seems to require flows feature ( ipfix ) (Issue https://issues.opennms.org/browse/NMS-19598[NMS-19598])
+* Update com.hubspot.jinjava:jinjava library (Issue https://issues.opennms.org/browse/NMS-19526[NMS-19526])
+* Update expat library (Issues https://issues.opennms.org/browse/NMS-18885[NMS-18885], https://issues.opennms.org/browse/NMS-18906[NMS-18906], https://issues.opennms.org/browse/NMS-18940[NMS-18940])
+* Update java-21-openjdk-headless library (Issue https://issues.opennms.org/browse/NMS-19589[NMS-19589])
+* Update libbrotli library (Issue https://issues.opennms.org/browse/NMS-19524[NMS-19524])
+* When Minions are upgraded to 35.0.4 the location and Minion ID is overwritten (Issue https://issues.opennms.org/browse/NMS-19610[NMS-19610])
+
+=== Enhancement
+
+* Event Conf : Support order in which eventconf.xml assigns the order (Issue https://issues.opennms.org/browse/NMS-19603[NMS-19603])
+* Eventd parameter expansion only resolves ifAlias of associated ipInterface (Issue https://issues.opennms.org/browse/NMS-19631[NMS-19631])
+
+=== Story
+
+* FIPS Compliance : Fix usermanager exception : SHA1PRNG not available (Issue https://issues.opennms.org/browse/NMS-19519[NMS-19519])
+* Replace CSV-based user login tracking with a dedicated audit log file (Issue https://issues.opennms.org/browse/NMS-19638[NMS-19638])
+* Update outage list page column labels and usability improvements (Issue https://issues.opennms.org/browse/NMS-19548[NMS-19548])
+
+=== Task
+
+* CircleCI Investigate resource usage across our jobs (Issue https://issues.opennms.org/browse/NMS-19454[NMS-19454])
+* Fix the Sentinel Objective (Issue https://issues.opennms.org/browse/NMS-19554[NMS-19554])
+
 [[releasenotes-changelog-35.0.4]]
 
 == Release 35.0.4

@@ -24,6 +24,18 @@
         <div class="date-formatted-time">{{ formattedTime }}</div>
         <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
+
+       <span title="Toggle Light/Dark Mode">
+        <FeatherIcon
+            :icon="LightDarkMode"
+            title="Toggle Light/Dark Mode"
+            class="light-dark"
+            role="button"
+            tabindex="0"
+            @click="appStore.toggleTheme()"
+            @keydown.enter.space.prevent="appStore.toggleTheme()"
+          />
+        </span>
       <template v-if="mainMenu.username">
         <UserNotificationsMenuItem
           :expanded="currentDropdownMenu === DropdownMenuType.UserNotifications"
@@ -37,9 +49,6 @@
           @menuHide="() => onMenuHide(DropdownMenuType.SelfService)"
         />
       </template>
-
-      <!-- <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
-        @click="toggleDarkLightMode(null)" /> -->
     </template>
   </FeatherAppBar>
 </template>
@@ -48,6 +57,8 @@
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 
 // see vite.config.ts, resolve.alias for the actual logo file that is imported
 import IconLogo from './src/assets/ProductLogo.vue'
@@ -61,10 +72,7 @@ import UserSelfServiceMenuItem from './UserSelfServiceMenuItem.vue'
 
 const appStore = useAppStore()
 const menuStore = useMenuStore()
-const theme = ref('')
 const lastShift = reactive({ lastKey: '', timeSinceLastKey: 0 })
-const light = 'open-light'
-const dark = 'open-dark'
 const outsideClick = ref()
 const currentDropdownMenu = ref<DropdownMenuType>(DropdownMenuType.None)
 
@@ -95,30 +103,6 @@ const onMenuHide = (val: DropdownMenuType) => {
 const onAddNode = () => {
   const url = computeLink(mainMenu.value.provisionMenu?.url || '')
   window.location.assign(url)
-}
-
-const toggleDarkLightMode = (savedTheme: string | null) => {
-  const el = document.body
-  const newTheme = theme.value === light ? dark : light
-
-  if (savedTheme && (savedTheme === light || savedTheme === dark)) {
-    theme.value = savedTheme
-    el.classList.add(savedTheme)
-    return
-  }
-
-  // set the new theme on the body
-  el.classList.add(newTheme)
-
-  // remove the current theme
-  if (theme.value) {
-    el.classList.remove(theme.value)
-  }
-
-  // save the new theme in data and localStorage
-  theme.value = newTheme
-  localStorage.setItem('theme', theme.value)
-  appStore.setTheme(theme.value)
 }
 
 const computeLink = (url: string) => {
@@ -160,7 +144,7 @@ const shiftCheck = (e: KeyboardEvent) => {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
 
-        const elem: HTMLInputElement | null = document.querySelector('#opennms-sidemenu-container .onms-search-input-wrapper input.search-input')
+        const elem: HTMLInputElement | null = document.querySelector('.onms-search-input-wrapper input.search-input')
 
         if (elem) {
           elem.focus()
@@ -177,12 +161,12 @@ const shiftCheck = (e: KeyboardEvent) => {
   }
 }
 
-onMounted(async () => {
-  const savedTheme = localStorage.getItem('theme')
-  console.log('Got theme: ', savedTheme)
-
-  toggleDarkLightMode(savedTheme)
+onMounted(() => {
   window.addEventListener('keyup', shiftCheck)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keyup', shiftCheck)
 })
 </script>
 
@@ -193,19 +177,30 @@ onMounted(async () => {
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
 
-.alarm-error {
-  background-color: var($error);
+// Notification-status colors stay on their light-theme Feather values so
+// the indicator meaning doesn't change with the active theme. We re-declare
+// the Feather CSS variables locally with their light-mode values and keep
+// the consuming rules pointing at the Feather variable names.
+.alarm-error,
+.alarm-ok,
+.alarm-unknown {
+  --feather-primary-text-on-color: rgba(255, 255, 255, 1);
   color: var($primary-text-on-color) !important;
+}
+
+.alarm-error {
+  --feather-error: #a5021f;
+  background-color: var($error);
 }
 
 .alarm-ok {
+  --feather-success: #0b720c;
   background-color: var($success);
-  color: var($primary-text-on-color) !important;
 }
 
 .alarm-unknown {
+  --feather-indeterminate: #0092c7;
   background-color: var($indeterminate);
-  color: var($primary-text-on-color) !important;
 }
 
 .search-left-margin {
@@ -259,24 +254,23 @@ onMounted(async () => {
 </style>
 
 <style lang="scss">
-@import "@featherds/styles/themes/open-mixins";
-@import "@featherds/styles/themes/variables";
-
-body {
-  background: var($background);
-}
-
-.open-light {
-  @include open-light;
-}
-
-.open-dark {
-  @include open-dark;
-}
-
 .light-dark {
   font-size: 24px;
   margin-top: 2px;
+  margin-right: 0.5rem;
+  color: var(--feather-state-text-color-on-surface-dark);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--feather-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 .header .header-content {

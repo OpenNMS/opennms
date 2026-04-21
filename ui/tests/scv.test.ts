@@ -20,12 +20,23 @@
 /// License.
 ///
 
-import { mount } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-import { beforeEach, describe, expect, test } from 'vitest'
-import { GET_ALL_ALIAS, useScvStore } from '@/stores/scvStore'
-import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
+import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
+import { useScvStore } from '@/stores/scvStore'
+import { SCVCredentials } from '@/types/scv'
+import { createTestingPinia } from '@pinia/testing'
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+
+vi.mock('@/services', () => ({
+  default: {
+    getAliases: vi.fn(() => Promise.resolve([])),
+    getCredentialsByAlias: vi.fn(() => Promise.resolve(null)),
+    getAllCredentials: vi.fn(() => Promise.resolve([])),
+    addCredentials: vi.fn(() => Promise.resolve(true)),
+    updateCredentials: vi.fn(() => Promise.resolve(true))
+  }
+}))
 
 const mockCredentials: SCVCredentials = {
   alias: 'alias',
@@ -34,7 +45,7 @@ const mockCredentials: SCVCredentials = {
   attributes: {}
 }
 
-describe('scvStore test', () => {
+describe('scv test', () => {
   let wrapper: any
 
   beforeEach(() => {
@@ -87,8 +98,8 @@ describe('scvStore test', () => {
 
     // add alias1 to the list of current aliases
     scvStore.aliases = ['alias1']
-    // start to create new with GET_ALL_ALIAS
-    await aliasInput.setValue(GET_ALL_ALIAS)
+    // start to create new with SCV_GET_ALL_ALIAS
+    await aliasInput.setValue(SCV_GET_ALL_ALIAS)
     // expect add btn to remain disabled
     expect(addCredsBtn.attributes('aria-disabled')).toBe('true')
     // replace with alias2

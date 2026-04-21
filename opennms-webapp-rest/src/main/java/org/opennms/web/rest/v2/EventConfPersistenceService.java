@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -68,6 +69,9 @@ public class EventConfPersistenceService {
     private EventConfEventDao eventConfEventDao;
 
     @Autowired
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
+
+    @Autowired
     private EventConfDao eventConfDao;
 
     private final ExecutorService eventConfExecutor =
@@ -76,7 +80,7 @@ public class EventConfPersistenceService {
     @PostConstruct
     public void init() {
         // Asynchronously load events from DB in order to not to block startup
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -144,13 +148,22 @@ public class EventConfPersistenceService {
         return eventConfSourceDao.save(eventConfSource);
     }
 
+    @Transactional
+    public void updateFileOrder(final String sourceName, final int fileOrder) {
+        EventConfSource source = eventConfSourceDao.findByName(sourceName);
+        if (source != null) {
+            source.setFileOrder(fileOrder);
+            eventConfSourceDao.saveOrUpdate(source);
+        }
+    }
+
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = eventConfSourceDao.findByName(eventConfSourceMetadataDto.getFilename());
         if (source == null) {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
-            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         }
+        source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         source.setName(eventConfSourceMetadataDto.getFilename());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);
@@ -197,7 +210,7 @@ public class EventConfPersistenceService {
 
     public  void reloadEventsIntoMemory() {
         // Schedule reload only AFTER transaction commits
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
     }
 
     public Map<String, Object> filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,

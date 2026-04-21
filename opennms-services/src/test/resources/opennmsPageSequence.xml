@@ -5,7 +5,7 @@
     <parameter key="j_password" value="${adminPassword}"/>
   </page>
   <page virtual-host="${virtualHost}" path="/opennms/index.jsp" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/alarm/index.htm" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/index.htm" port="${port}" response-range="300-399"/>
 
   <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->
   <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" port="${port}" response-range="200"/>

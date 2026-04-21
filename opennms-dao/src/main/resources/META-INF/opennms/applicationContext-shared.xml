@@ -142,6 +142,11 @@
 
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventConfEventDao" ref="eventConfEventDao" />
 
+    <bean id="eventConfGlobalSecurityDao" class="org.opennms.netmgt.dao.hibernate.EventConfGlobalSecurityDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao" ref="eventConfGlobalSecurityDao" />
 
     <bean id="eventConfSourceDao" class="org.opennms.netmgt.dao.hibernate.EventConfSourceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />

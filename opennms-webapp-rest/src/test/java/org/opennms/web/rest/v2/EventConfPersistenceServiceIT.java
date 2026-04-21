@@ -31,6 +31,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
@@ -81,6 +82,9 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfDao eventConfDao;
+
+    @Autowired
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -160,13 +164,13 @@ public class EventConfPersistenceServiceIT {
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
 
         assertEquals(1, sources.size() - defaultEventConfSize);
-        EventConfSource source = sources.get(0);
-        assertEquals(filename, source.getName());
+        EventConfSource source = eventConfSourceDao.findByName(filename);
+        Assert.assertNotNull(source);
         Assert.assertEquals("existing-source", source.getName());
         Assert.assertEquals("updated entry", source.getDescription());
         Assert.assertEquals("updated-vendor", source.getVendor());
         Assert.assertEquals("updated_user", source.getUploadedBy());
-        Assert.assertEquals(0, (int) source.getFileOrder());
+        Assert.assertEquals(1, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(defaultEventConfEventSize);
@@ -435,7 +439,8 @@ public class EventConfPersistenceServiceIT {
 
         // Call loadEventsFromDB directly
         var dbEvents = eventConfEventDao.findEnabledEvents();
-        eventConfDao.loadEventsFromDB(dbEvents);
+        var dbGlobalSecurities = eventConfGlobalSecurityDao.findAll();
+        eventConfDao.loadEventsFromDB(dbEvents, dbGlobalSecurities);
         var event = eventConfDao.findByUei("uei.opennms.org/circuitBreaker/stateChange");
         assertNotNull(event);
         // This is not unique uei so getEventByUeiOptimistic will exclude this.

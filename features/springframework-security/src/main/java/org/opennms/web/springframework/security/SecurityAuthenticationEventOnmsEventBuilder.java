@@ -50,6 +50,8 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
  */
 public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationListener<ApplicationEvent>, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SecurityAuthenticationEventOnmsEventBuilder.class);
+    private static final Logger AUDIT = LoggerFactory.getLogger("web-audit");
+    private static final String RTC_USER = "rtc";
     /** Constant <code>SUCCESS_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
     public static final String SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
     /** Constant <code>FAILURE_UEI="uei.opennms.org/internal/authentication"{trunked}</code> */
@@ -70,11 +72,14 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             if (!"true".equalsIgnoreCase(System.getProperty("org.opennms.security.disableLoginSuccessEvent"))) {
                 sendEvent(builder.getEvent());
             }
+            if ("true".equalsIgnoreCase(System.getProperty("org.opennms.security.auditLog.apiAuth"))) {
+                auditLog("SUCCESS", authEvent, null);
+            }
         }
-        
+
         if (event instanceof AbstractAuthenticationFailureEvent) {
             AbstractAuthenticationFailureEvent authEvent = (AbstractAuthenticationFailureEvent) event;
-            
+
             LOG.debug("AbstractAuthenticationFailureEvent was received, exception message - {}", authEvent.getException().getMessage());
             EventBuilder builder = createEvent(FAILURE_UEI, authEvent);
             // Sync the timestamp
@@ -82,6 +87,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
             builder.addParam("exceptionName", authEvent.getException().getClass().getSimpleName());
             builder.addParam("exceptionMessage", authEvent.getException().getMessage());
             sendEvent(builder.getEvent());
+            auditLog("FAILURE", authEvent, authEvent.getException().getMessage());
         }
         
         if (event instanceof AuthorizedEvent) {
@@ -95,7 +101,7 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         if (event instanceof InteractiveAuthenticationSuccessEvent) {
             InteractiveAuthenticationSuccessEvent authEvent = (InteractiveAuthenticationSuccessEvent) event;
             LOG.debug("InteractiveAuthenticationSuccessEvent received - \n  Details - {}\n  Principal - {}", authEvent.getAuthentication().getDetails(), authEvent.getAuthentication().getPrincipal());
-            
+            auditLog("SUCCESS", authEvent, null);
         }
         if (event instanceof ServletRequestHandledEvent) {
             ServletRequestHandledEvent authEvent = (ServletRequestHandledEvent) event;
@@ -121,6 +127,28 @@ public class SecurityAuthenticationEventOnmsEventBuilder implements ApplicationL
         return builder;
     }
     
+    private void auditLog(String outcome, AbstractAuthenticationEvent authEvent, String reason) {
+        String user = null;
+        String ip = null;
+        if (authEvent.getAuthentication() != null) {
+            if (authEvent.getAuthentication().getName() != null) {
+                user = WebSecurityUtils.sanitizeString(authEvent.getAuthentication().getName());
+            }
+            if (authEvent.getAuthentication().getDetails() instanceof WebAuthenticationDetails) {
+                WebAuthenticationDetails webDetails = (WebAuthenticationDetails) authEvent.getAuthentication().getDetails();
+                ip = webDetails.getRemoteAddress();
+            }
+        }
+        if (RTC_USER.equals(user)) {
+            return;
+        }
+        if (reason != null) {
+            AUDIT.info("LOGIN {} user={} ip={} reason={}", outcome, user, ip, reason);
+        } else {
+            AUDIT.info("LOGIN {} user={} ip={}", outcome, user, ip);
+        }
+    }
+
     private void sendEvent(Event onmsEvent) {
         try {
             m_eventProxy.send(onmsEvent);
