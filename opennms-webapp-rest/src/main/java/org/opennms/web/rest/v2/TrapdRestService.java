@@ -68,6 +68,11 @@ public class TrapdRestService implements TrapdRestApi {
             return Response.status(Status.BAD_REQUEST).entity("Invalid trapd XML configuration.").build();
         }
 
+        String validationMessage = validateTrapdConfigRequest(TrapdConfigDto.toDto(config));
+        if (validationMessage != null) {
+            return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
+        }
+
         try {
             trapdConfigDao.replaceConfig(config);
             return Response.ok().build();
@@ -130,9 +135,16 @@ public class TrapdRestService implements TrapdRestApi {
      * @return an error message string, or {@code null} if the request is valid.
      */
     private String validateTrapdConfigRequest(final TrapdConfigDto configDto) {
-        // snmpTrapPort is the only required field (no default in TrapdConfiguration).
+        // snmpTrapPort is a required field (no default in TrapdConfiguration).
         if (configDto.getSnmpTrapPort() == null || configDto.getSnmpTrapPort() < 1 || configDto.getSnmpTrapPort() > 65535) {
             return "snmpTrapPort is required and must be between 1 and 65535.";
+        }
+
+        // newSuspectOnTrap is required by the XSD. Because this endpoint replaces the whole
+        // config, accepting a null here would silently disable new-suspect generation on
+        // configs that previously had it enabled.
+        if (configDto.getNewSuspectOnTrap() == null) {
+            return "newSuspectOnTrap is required.";
         }
 
         // Optional fields: only validate range when the client explicitly provides a value.

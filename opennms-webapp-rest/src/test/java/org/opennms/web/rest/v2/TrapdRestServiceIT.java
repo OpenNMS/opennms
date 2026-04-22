@@ -325,16 +325,19 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void updateShouldAcceptWhenNewSuspectOnTrapMissing() {
+    public void updateShouldRejectWhenNewSuspectOnTrapMissing() {
+        // Because this endpoint replaces the whole config, omitting newSuspectOnTrap would
+        // silently disable new-suspect generation on configs that previously had it enabled.
         TrapdConfigDto payload = new TrapdConfigDto();
         payload.setSnmpTrapAddress("127.0.0.1");
         payload.setSnmpTrapPort(10164);
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
-            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("newSuspectOnTrap is required.", response.getEntity());
         }
 
-        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
@@ -845,6 +848,26 @@ public class TrapdRestServiceIT {
         );
 
         trapdRestService.uploadTrapdConfiguration(attachment, null);
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void uploadShouldRejectXmlWhenLevel3MissingPrivacyCredentials() {
+        String xml = "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
+                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\">"
+                + "<snmpv3-user security-name=\"user\" security-level=\"3\" "
+                + "auth-protocol=\"SHA\" auth-passphrase=\"pass\"/>"
+                + "</trapd-configuration>";
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("securityLevel 3 requires both auth and privacy credentials."));
+        }
 
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
