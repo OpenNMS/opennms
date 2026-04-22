@@ -26,7 +26,11 @@ import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
 
 export const MIN_PORT = 1
 export const MAX_PORT = 65535
+export const MIN_PASSPHRASE_BYTES = 8
 export const TRAPD_XML_NAMESPACE = 'http://xmlns.opennms.org/xsd/config/trapd'
+
+export const passphraseByteLength = (value: string): number =>
+  new TextEncoder().encode(value).length
 
 export enum SecurityLevel {
   None = 0,
@@ -149,6 +153,23 @@ const validateSnmpV3UserElement = (user: Element, index: number, errors: XmlVali
   const authPassphrase = user.getAttribute('auth-passphrase')
   const privacyProtocol = user.getAttribute('privacy-protocol')
   const privacyPassphrase = user.getAttribute('privacy-passphrase')
+
+  if (authPassphrase && authPassphrase.trim() !== ''
+      && passphraseByteLength(authPassphrase) < MIN_PASSPHRASE_BYTES) {
+    addError(
+      errors,
+      `${prefix}.auth-passphrase`,
+      `${prefix}: auth-passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
+    )
+  }
+  if (privacyPassphrase && privacyPassphrase.trim() !== ''
+      && passphraseByteLength(privacyPassphrase) < MIN_PASSPHRASE_BYTES) {
+    addError(
+      errors,
+      `${prefix}.privacy-passphrase`,
+      `${prefix}: privacy-passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
+    )
+  }
 
   if (authProtocol !== null) {
     if (!VALID_AUTH_PROTOCOL_VALUES.has(authProtocol as AuthProtocol)) {

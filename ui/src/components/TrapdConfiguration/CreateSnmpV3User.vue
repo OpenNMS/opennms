@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_NAME } from '@/lib/constants'
-import { AUTH_PROTOCOL_OPTIONS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel } from '@/lib/trapdValidator'
+import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_BYTES, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'
@@ -296,6 +296,8 @@ const validateInputs = () => {
 
   if (authProtocolVisible.value && authProtocol.value && !authPassphrase.value) {
     newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
+  } else if (authPassphrase.value && passphraseByteLength(authPassphrase.value) < MIN_PASSPHRASE_BYTES) {
+    newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
   }
 
   // privacyProtocol and privacyPassphrase must be provided together (backend rule)
@@ -307,6 +309,8 @@ const validateInputs = () => {
 
   if (privacyProtocolVisible.value && privacyProtocol.value && !privacyPassphrase.value) {
     newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
+  } else if (privacyPassphrase.value && passphraseByteLength(privacyPassphrase.value) < MIN_PASSPHRASE_BYTES) {
+    newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
   }
   return newError
 }

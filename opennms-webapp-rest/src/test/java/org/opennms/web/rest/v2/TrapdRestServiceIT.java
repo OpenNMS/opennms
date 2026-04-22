@@ -577,6 +577,62 @@ public class TrapdRestServiceIT {
     }
 
     @Test
+    public void updateShouldRejectSnmpv3UserWhenAuthPassphraseTooShort() {
+        // SNMP4J rejects passphrases < 8 bytes at UsmUser construction; the REST layer
+        // catches this early so the trap daemon doesn't fail to restart after a reload.
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("short"); // 5 bytes
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("authPassphrase must be at least 8 bytes."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateShouldRejectSnmpv3UserWhenPrivacyPassphraseTooShort() {
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("authpass");
+        user.setPrivacyProtocol("AES");
+        user.setPrivacyPassphrase("tiny"); // 4 bytes
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertTrue(((String) response.getEntity()).contains("privacyPassphrase must be at least 8 bytes."));
+        }
+
+        verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
+    public void updateShouldAcceptScvPlaceholderPassphrase() {
+        // ${scv:alias:key} is always > 8 bytes; the literal length check passes trivially
+        // and the placeholder is resolved by the daemon at runtime via SecureCredentialsVault.
+        TrapdConfigDto payload = buildMinimalUpdatePayload();
+        Snmpv3UserDto user = new Snmpv3UserDto();
+        user.setSecurityName("user1");
+        user.setAuthProtocol("SHA");
+        user.setAuthPassphrase("${scv:a:k}"); // 10 bytes
+        payload.setSnmpv3User(java.util.List.of(user));
+
+        try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        verify(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    @Test
     public void updateShouldRejectSnmpv3UserWhenUnsupportedAuthProtocol() {
         TrapdConfigDto payload = buildMinimalUpdatePayload();
         Snmpv3UserDto user = new Snmpv3UserDto();
@@ -857,7 +913,7 @@ public class TrapdRestServiceIT {
         String xml = "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
                 + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\">"
                 + "<snmpv3-user security-name=\"user\" security-level=\"3\" "
-                + "auth-protocol=\"SHA\" auth-passphrase=\"pass\"/>"
+                + "auth-protocol=\"SHA\" auth-passphrase=\"authpass\"/>"
                 + "</trapd-configuration>";
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(

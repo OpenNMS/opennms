@@ -519,7 +519,7 @@ describe('validateTrapdXml – snmpv3-user: level 2 (AuthNoPriv)', () => {
       'security-name': 'user1',
       'security-level': '2',
       'auth-protocol': 'SHA',
-      'auth-passphrase': 'secret'
+      'auth-passphrase': 'authpass'
     })
     const result = validateTrapdXml(buildXml({ users: user }))
     expect(result.valid).toBe(true)
@@ -684,7 +684,7 @@ describe('validateTrapdXml – multiple snmpv3-user elements', () => {
       'security-name': 'userB',
       'security-level': '2',
       'auth-protocol': 'MD5',
-      'auth-passphrase': 'pass'
+      'auth-passphrase': 'authpass'
     })
     const result = validateTrapdXml(buildXml({ users: user1 + user2 }))
     expect(result.valid).toBe(true)

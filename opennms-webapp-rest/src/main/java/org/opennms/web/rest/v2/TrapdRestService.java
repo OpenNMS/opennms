@@ -22,6 +22,7 @@
 package org.opennms.web.rest.v2;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class TrapdRestService implements TrapdRestApi {
     private static final Logger LOG = LoggerFactory.getLogger(TrapdRestService.class);
     private static final Set<String> AUTH_PROTOCOLS = new HashSet<>(Arrays.asList("MD5", "SHA", "SHA-224", "SHA-256", "SHA-512"));
     private static final Set<String> PRIVACY_PROTOCOLS = new HashSet<>(Arrays.asList("DES", "AES", "AES192", "AES256"));
+    private static final int MIN_PASSPHRASE_BYTES = 8;
 
     @Autowired
     private TrapdConfigDao trapdConfigDao;
@@ -220,6 +222,16 @@ public class TrapdRestService implements TrapdRestApi {
         }
         if (hasPrivacyProtocol != hasPrivacyPassphrase) {
             return "privacyProtocol and privacyPassphrase must be provided together.";
+        }
+
+        // SNMP4J rejects short passphrases at UsmUser construction; catch it here so the trap
+        // daemon doesn't fail to restart on reload. A well-formed ${scv:...} placeholder
+        // trivially passes the length check; the resolved secret must also be long enough.
+        if (hasAuthPassphrase && user.getAuthPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
+            return "authPassphrase must be at least " + MIN_PASSPHRASE_BYTES + " bytes.";
+        }
+        if (hasPrivacyPassphrase && user.getPrivacyPassphrase().getBytes(StandardCharsets.UTF_8).length < MIN_PASSPHRASE_BYTES) {
+            return "privacyPassphrase must be at least " + MIN_PASSPHRASE_BYTES + " bytes.";
         }
 
         if (securityLevel != null && securityLevel == 1 && (hasAuthProtocol || hasPrivacyProtocol)) {
