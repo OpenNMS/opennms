@@ -22,7 +22,7 @@
       <div class="username-version-row">
         <div class="left">
           <FeatherInput
-            label="Secuirity Name"
+            label="Security Name"
             data-test="security-name-input"
             v-model="securityName"
             :error="error.securityName"
