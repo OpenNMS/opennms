@@ -1,19 +1,19 @@
-import CompiledMibFiles from '@/components/MibCompiler/CompiledMibFiles.vue'
-import { deleteFile, generateEvents, getFileText } from '@/services/mibCompilerService'
+import PendingMibFiles from '@/components/MibCompiler/PendingMibFiles.vue'
+import { compileMib, deleteFile, getFileText } from '@/services/mibCompilerService'
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import { SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/services/mibCompilerService', () => ({
+  compileMib: vi.fn(),
   deleteFile: vi.fn(),
-  generateEvents: vi.fn(),
   getFileText: vi.fn()
 }))
 
@@ -23,7 +23,14 @@ vi.mock('@/composables/useSnackbar', () => ({
   })
 }))
 
-describe('CompiledMibFiles.vue', () => {
+const mockPush = vi.fn()
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: mockPush
+  })
+}))
+
+describe('PendingMibFiles.vue', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useMibCompilerStore>
   let mockFile: MibCompilerFileInfo
@@ -74,6 +81,7 @@ describe('CompiledMibFiles.vue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    mockPush.mockClear()
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
@@ -83,21 +91,22 @@ describe('CompiledMibFiles.vue', () => {
     store = useMibCompilerStore(pinia)
 
     store.files = []
-    store.compiledMibFilesSearchTerm = ''
-    store.compiledMibFilesPagination = { page: 1, pageSize: 10, total: 0 }
-    store.compiledMibFilesSort = { property: 'fileName', value: SORT.NONE }
+    store.pendingMibFilesSearchTerm = ''
+    store.pendingMibFilesPagination = { page: 1, pageSize: 10, total: 0 }
+    store.pendingMibFilesSort = { property: 'fileName', value: SORT.NONE }
     store.fetchMibFiles = vi.fn().mockResolvedValue(undefined)
-    store.onCompiledMibFilesSearchChange = vi.fn()
-    store.onCompiledMibFilesPageChange = vi.fn()
-    store.onCompiledMibFilesPageSizeChange = vi.fn()
-    store.onCompiledMibFilesSortChange = vi.fn()
+    store.onPendingMibFilesSearchChange = vi.fn()
+    store.onPendingMibFilesPageChange = vi.fn()
+    store.onPendingMibFilesPageSizeChange = vi.fn()
+    store.onPendingMibFilesSortChange = vi.fn()
+    store.setSelectedMibFile = vi.fn()
 
     mockFile = {
       fileName: 'test-mib.mib',
-      location: 'COMPILED'
+      location: 'PENDING'
     }
 
-    wrapper = mount(CompiledMibFiles, {
+    wrapper = mount(PendingMibFiles, {
       ...globalConfig,
       global: {
         ...globalConfig.global,
@@ -128,7 +137,7 @@ describe('CompiledMibFiles.vue', () => {
     it('renders the header with correct title', () => {
       const header = wrapper.find('h3')
       expect(header.exists()).toBe(true)
-      expect(header.text()).toBe('Compiled MIB Files')
+      expect(header.text()).toBe('Pending MIB Files')
     })
 
     it('renders the search input', () => {
@@ -140,7 +149,7 @@ describe('CompiledMibFiles.vue', () => {
     it('renders the data table with correct aria-label', () => {
       const table = wrapper.find('table.data-table')
       expect(table.exists()).toBe(true)
-      expect(table.attributes('aria-label')).toBe('Compiled MIB Files Table')
+      expect(table.attributes('aria-label')).toBe('Pending MIB Files Table')
     })
 
     it('renders column headers', () => {
@@ -156,7 +165,7 @@ describe('CompiledMibFiles.vue', () => {
   })
 
   describe('Empty State', () => {
-    it('renders EmptyList when no compiled files exist', async () => {
+    it('renders EmptyList when no pending files exist', async () => {
       store.files = []
       await wrapper.vm.$nextTick()
 
@@ -185,15 +194,14 @@ describe('CompiledMibFiles.vue', () => {
     beforeEach(async () => {
       store.files = [
         mockFile,
-        { fileName: 'another-mib.mib', location: 'COMPILED' }
+        { fileName: 'another-mib.mib', location: 'PENDING' }
       ]
       await wrapper.vm.$nextTick()
     })
 
-    it('renders table rows for each compiled file', async () => {
-      // Need to trigger reactivity
+    it('renders table rows for each pending file', async () => {
       await flushPromises()
-      expect(store.filteredCompiledMibFiles.length).toBe(2)
+      expect(store.filteredPendingMibFiles.length).toBe(2)
     })
 
     it('renders file name in each row', async () => {
@@ -204,11 +212,13 @@ describe('CompiledMibFiles.vue', () => {
 
     it('renders action buttons for each row', async () => {
       await flushPromises()
-      const generateButtons = wrapper.findAll('[data-test="generate-events-button"]')
+      const editButtons = wrapper.findAll('[data-test="edit-button"]')
+      const compileButtons = wrapper.findAll('[data-test="compile-button"]')
       const deleteButtons = wrapper.findAll('[data-test="delete-button"]')
       const downloadButtons = wrapper.findAll('[data-test="download-button"]')
-      
-      expect(generateButtons.length).toBe(2)
+
+      expect(editButtons.length).toBe(2)
+      expect(compileButtons.length).toBe(2)
       expect(deleteButtons.length).toBe(2)
       expect(downloadButtons.length).toBe(2)
     })
@@ -222,7 +232,7 @@ describe('CompiledMibFiles.vue', () => {
 
   describe('Search Functionality', () => {
     it('binds search term to store value', async () => {
-      store.compiledMibFilesSearchTerm = 'test'
+      store.pendingMibFilesSearchTerm = 'test'
       await wrapper.vm.$nextTick()
 
       const searchInput = wrapper.findComponent(FeatherInput)
@@ -233,19 +243,19 @@ describe('CompiledMibFiles.vue', () => {
       const searchInput = wrapper.findComponent(FeatherInput)
       await searchInput.vm.$emit('update:modelValue', 'new-search')
 
-      expect(store.onCompiledMibFilesSearchChange).toHaveBeenCalledWith('new-search')
+      expect(store.onPendingMibFilesSearchChange).toHaveBeenCalledWith('new-search')
     })
 
     it('filters files based on search term', async () => {
       store.files = [
-        { fileName: 'network.mib', location: 'COMPILED' },
-        { fileName: 'system.mib', location: 'COMPILED' }
+        { fileName: 'network.mib', location: 'PENDING' },
+        { fileName: 'system.mib', location: 'PENDING' }
       ]
-      store.compiledMibFilesSearchTerm = 'network'
+      store.pendingMibFilesSearchTerm = 'network'
       await wrapper.vm.$nextTick()
 
-      expect(store.searchedCompiledMibFiles.length).toBe(1)
-      expect(store.searchedCompiledMibFiles[0].fileName).toBe('network.mib')
+      expect(store.searchedPendingMibFiles.length).toBe(1)
+      expect(store.searchedPendingMibFiles[0].fileName).toBe('network.mib')
     })
   })
 
@@ -253,16 +263,15 @@ describe('CompiledMibFiles.vue', () => {
     it('calls store sort method when sort changes', async () => {
       wrapper.vm.sortChanged({ property: 'fileName', value: SORT.ASCENDING })
 
-      expect(store.onCompiledMibFilesSortChange).toHaveBeenCalledWith({
+      expect(store.onPendingMibFilesSortChange).toHaveBeenCalledWith({
         property: 'fileName',
         value: SORT.ASCENDING
       })
     })
 
     it('passes current sort state to sort header', () => {
-      store.compiledMibFilesSort = { property: 'fileName', value: SORT.ASCENDING }
-      // The component should pass the sort value to FeatherSortHeader
-      expect(store.compiledMibFilesSort.value).toBe(SORT.ASCENDING)
+      store.pendingMibFilesSort = { property: 'fileName', value: SORT.ASCENDING }
+      expect(store.pendingMibFilesSort.value).toBe(SORT.ASCENDING)
     })
   })
 
@@ -270,10 +279,10 @@ describe('CompiledMibFiles.vue', () => {
     beforeEach(async () => {
       const files = []
       for (let i = 1; i <= 25; i++) {
-        files.push({ fileName: `file${i}.mib`, location: 'COMPILED' as const })
+        files.push({ fileName: `file${i}.mib`, location: 'PENDING' as const })
       }
       store.files = files
-      store.compiledMibFilesPagination = { page: 1, pageSize: 10, total: 25 }
+      store.pendingMibFilesPagination = { page: 1, pageSize: 10, total: 25 }
       await wrapper.vm.$nextTick()
     })
 
@@ -287,19 +296,19 @@ describe('CompiledMibFiles.vue', () => {
       const pagination = wrapper.findComponent(FeatherPagination)
       await pagination.vm.$emit('update:modelValue', 2)
 
-      expect(store.onCompiledMibFilesPageChange).toHaveBeenCalledWith(2)
+      expect(store.onPendingMibFilesPageChange).toHaveBeenCalledWith(2)
     })
 
     it('calls store method on page size change', async () => {
       const pagination = wrapper.findComponent(FeatherPagination)
       await pagination.vm.$emit('update:pageSize', 20)
 
-      expect(store.onCompiledMibFilesPageSizeChange).toHaveBeenCalledWith(20)
+      expect(store.onPendingMibFilesPageSizeChange).toHaveBeenCalledWith(20)
     })
 
     it('shows only first page of results', async () => {
       await flushPromises()
-      expect(store.paginatedCompiledMibFiles.length).toBe(10)
+      expect(store.paginatedPendingMibFiles.length).toBe(10)
     })
   })
 
@@ -312,21 +321,21 @@ describe('CompiledMibFiles.vue', () => {
     it('opens file text drawer on file name click', async () => {
       vi.mocked(getFileText).mockResolvedValue({
         name: mockFile.fileName,
-        location: 'COMPILED',
+        location: 'PENDING',
         contents: 'MIB file contents here'
       })
 
       await wrapper.vm.onViewDetailsClick(mockFile)
       await flushPromises()
 
-      expect(getFileText).toHaveBeenCalledWith('COMPILED', mockFile.fileName)
+      expect(getFileText).toHaveBeenCalledWith('PENDING', mockFile.fileName)
       expect(wrapper.vm.textDrawerVisible).toBe(true)
       expect(wrapper.vm.fileText).toBe('MIB file contents here')
     })
 
     it('does not open drawer when fileName is empty', async () => {
-      await wrapper.vm.onViewDetailsClick({ fileName: '', location: 'COMPILED' })
-      
+      await wrapper.vm.onViewDetailsClick({ fileName: '', location: 'PENDING' })
+
       expect(getFileText).not.toHaveBeenCalled()
       expect(wrapper.vm.textDrawerVisible).toBe(false)
     })
@@ -353,6 +362,45 @@ describe('CompiledMibFiles.vue', () => {
     })
   })
 
+  describe('Edit Functionality', () => {
+    beforeEach(async () => {
+      store.files = [mockFile]
+      await wrapper.vm.$nextTick()
+    })
+
+    it('navigates to edit page on edit button click', async () => {
+      const mockResponse = {
+        name: mockFile.fileName,
+        location: 'PENDING',
+        contents: 'MIB file contents'
+      }
+      vi.mocked(getFileText).mockResolvedValue(mockResponse)
+
+      await wrapper.vm.onEditClick(mockFile)
+      await flushPromises()
+
+      expect(getFileText).toHaveBeenCalledWith('PENDING', mockFile.fileName)
+      expect(store.setSelectedMibFile).toHaveBeenCalledWith(mockResponse)
+      expect(mockPush).toHaveBeenCalledWith('/mib-compiler/edit')
+    })
+
+    it('does not navigate when fileName is empty', async () => {
+      await wrapper.vm.onEditClick({ fileName: '', location: 'PENDING' })
+
+      expect(getFileText).not.toHaveBeenCalled()
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+
+    it('handles error when loading file for edit fails', async () => {
+      vi.mocked(getFileText).mockRejectedValue(new Error('Network error'))
+
+      await wrapper.vm.onEditClick(mockFile)
+      await flushPromises()
+
+      expect(mockPush).not.toHaveBeenCalled()
+    })
+  })
+
   describe('Delete Functionality', () => {
     beforeEach(async () => {
       store.files = [mockFile]
@@ -374,7 +422,7 @@ describe('CompiledMibFiles.vue', () => {
       await wrapper.vm.onDeleteConfirm()
       await flushPromises()
 
-      expect(deleteFile).toHaveBeenCalledWith('COMPILED', mockFile.fileName)
+      expect(deleteFile).toHaveBeenCalledWith('PENDING', mockFile.fileName)
       expect(store.fetchMibFiles).toHaveBeenCalled()
       expect(wrapper.vm.deleteDialogVisible).toBe(false)
       expect(wrapper.vm.selectedFile).toBeNull()
@@ -419,11 +467,10 @@ describe('CompiledMibFiles.vue', () => {
       const mockContents = 'MIB file contents'
       vi.mocked(getFileText).mockResolvedValue({
         name: mockFile.fileName,
-        location: 'COMPILED',
+        location: 'PENDING',
         contents: mockContents
       })
 
-      // Mock URL and document methods
       const mockUrl = 'blob:test-url'
       const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue(mockUrl)
       const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
@@ -439,7 +486,7 @@ describe('CompiledMibFiles.vue', () => {
       await wrapper.vm.onDownloadClick(mockFile)
       await flushPromises()
 
-      expect(getFileText).toHaveBeenCalledWith('COMPILED', mockFile.fileName)
+      expect(getFileText).toHaveBeenCalledWith('PENDING', mockFile.fileName)
       expect(createObjectURLSpy).toHaveBeenCalled()
       expect(mockLink.click).toHaveBeenCalled()
       expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockUrl)
@@ -452,7 +499,7 @@ describe('CompiledMibFiles.vue', () => {
     })
 
     it('does not download when fileName is empty', async () => {
-      await wrapper.vm.onDownloadClick({ fileName: '', location: 'COMPILED' })
+      await wrapper.vm.onDownloadClick({ fileName: '', location: 'PENDING' })
 
       expect(getFileText).not.toHaveBeenCalled()
     })
@@ -463,211 +510,182 @@ describe('CompiledMibFiles.vue', () => {
       await wrapper.vm.onDownloadClick(mockFile)
       await flushPromises()
 
-      // Should not throw, error is handled
       expect(getFileText).toHaveBeenCalled()
     })
   })
 
-  describe('Generate Events Functionality', () => {
+  describe('Compile Functionality', () => {
     beforeEach(async () => {
       store.files = [mockFile]
       await wrapper.vm.$nextTick()
     })
 
-    it('opens generate events dialog with default UEI', () => {
-      wrapper.vm.onGenerateEventsClick(mockFile)
+    it('opens compile confirmation dialog on compile button click', () => {
+      wrapper.vm.onCompileClick(mockFile)
 
-      expect(wrapper.vm.generateEventsDialogVisible).toBe(true)
+      expect(wrapper.vm.compileDialogVisible).toBe(true)
       expect(wrapper.vm.selectedFile).toEqual(mockFile)
-      expect(wrapper.vm.uei).toBe('uei.opennms.org/')
-      expect(wrapper.vm.ueiError).toBe('')
     })
 
-    it('validates empty UEI', async () => {
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = ''
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(wrapper.vm.ueiError).toBe('UEI Base is required.')
-      expect(generateEvents).not.toHaveBeenCalled()
-    })
-
-    it('validates UEI must start with uei.opennms.org/', async () => {
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'invalid-uei'
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(wrapper.vm.ueiError).toBe('UEI Base must start with "uei.opennms.org/".')
-      expect(generateEvents).not.toHaveBeenCalled()
-    })
-
-    it('validates UEI must have path after prefix', async () => {
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/'
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(wrapper.vm.ueiError).toBe('UEI Base must contain a path after "uei.opennms.org/".')
-      expect(generateEvents).not.toHaveBeenCalled()
-    })
-
-    it('validates UEI should not end with slash', async () => {
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/test/'
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(wrapper.vm.ueiError).toBe('UEI Base should not end with a slash.')
-      expect(generateEvents).not.toHaveBeenCalled()
-    })
-
-    it('generates events with valid UEI', async () => {
-      vi.mocked(generateEvents).mockResolvedValue({ success: true } as any)
-
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/vendor/test'
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
-      await flushPromises()
-
-      expect(generateEvents).toHaveBeenCalledWith({
-        name: mockFile.fileName,
-        ueiBase: 'uei.opennms.org/vendor/test'
+    it('compiles file on confirmation', async () => {
+      vi.mocked(compileMib).mockResolvedValue({
+        success: true,
+        message: 'MIB compiled successfully',
+        mibName: mockFile.fileName
       })
-      expect(wrapper.vm.generateEventsDialogVisible).toBe(false)
-      expect(wrapper.vm.selectedFile).toBeNull()
-      expect(wrapper.vm.uei).toBe('')
-    })
-
-    it('handles generate events error gracefully', async () => {
-      vi.mocked(generateEvents).mockRejectedValue(new Error('Generate failed'))
+      store.fetchMibFiles = vi.fn().mockResolvedValue(undefined)
 
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/vendor/test'
-      wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
+      await wrapper.vm.onCompileConfirm()
       await flushPromises()
 
-      expect(wrapper.vm.generateEventsDialogVisible).toBe(false)
+      expect(compileMib).toHaveBeenCalledWith(mockFile.fileName)
+      expect(store.fetchMibFiles).toHaveBeenCalled()
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
       expect(wrapper.vm.selectedFile).toBeNull()
     })
 
-    it('does not generate events when no file is selected', async () => {
-      wrapper.vm.selectedFile = null
-      wrapper.vm.uei = 'uei.opennms.org/vendor/test'
+    it('handles compile error gracefully', async () => {
+      vi.mocked(compileMib).mockRejectedValue(new Error('Compile failed'))
 
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(generateEvents).not.toHaveBeenCalled()
-    })
-
-    it('closes dialog on cancel and resets state', () => {
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/vendor/test'
-      wrapper.vm.ueiError = 'some error'
-      wrapper.vm.generateEventsDialogVisible = true
+      await wrapper.vm.onCompileConfirm()
+      await flushPromises()
 
-      wrapper.vm.onCancelGenerateEvents()
-
-      expect(wrapper.vm.generateEventsDialogVisible).toBe(false)
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
       expect(wrapper.vm.selectedFile).toBeNull()
-      expect(wrapper.vm.uei).toBe('')
-      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('does not compile when no file is selected', async () => {
+      wrapper.vm.selectedFile = null
+      await wrapper.vm.onCompileConfirm()
+
+      expect(compileMib).not.toHaveBeenCalled()
+    })
+
+    it('closes dialog on cancel', () => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.compileDialogVisible = true
+
+      wrapper.vm.onCompileCancel()
+
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
+      expect(wrapper.vm.selectedFile).toBeNull()
+    })
+
+    it('displays success message from response', async () => {
+      const successMessage = 'Custom success message'
+      vi.mocked(compileMib).mockResolvedValue({
+        success: true,
+        message: successMessage,
+        mibName: mockFile.fileName
+      })
+
+      wrapper.vm.selectedFile = mockFile
+      await wrapper.vm.onCompileConfirm()
+      await flushPromises()
+
+      expect(compileMib).toHaveBeenCalled()
+    })
+
+    it('uses default message when response message is empty', async () => {
+      vi.mocked(compileMib).mockResolvedValue({
+        success: true,
+        message: '',
+        mibName: mockFile.fileName
+      })
+
+      wrapper.vm.selectedFile = mockFile
+      await wrapper.vm.onCompileConfirm()
+      await flushPromises()
+
+      expect(compileMib).toHaveBeenCalled()
     })
   })
 
   describe('Store Integration', () => {
-    it('uses store filteredCompiledMibFiles getter', () => {
+    it('uses store filteredPendingMibFiles getter', () => {
       store.files = [
         { fileName: 'compiled.mib', location: 'COMPILED' },
         { fileName: 'pending.mib', location: 'PENDING' }
       ]
 
-      expect(store.filteredCompiledMibFiles.length).toBe(1)
-      expect(store.filteredCompiledMibFiles[0].fileName).toBe('compiled.mib')
+      expect(store.filteredPendingMibFiles.length).toBe(1)
+      expect(store.filteredPendingMibFiles[0].fileName).toBe('pending.mib')
     })
 
-    it('uses store searchedCompiledMibFiles getter', () => {
+    it('uses store searchedPendingMibFiles getter', () => {
       store.files = [
-        { fileName: 'network.mib', location: 'COMPILED' },
-        { fileName: 'system.mib', location: 'COMPILED' }
+        { fileName: 'network.mib', location: 'PENDING' },
+        { fileName: 'system.mib', location: 'PENDING' }
       ]
-      store.compiledMibFilesSearchTerm = 'network'
+      store.pendingMibFilesSearchTerm = 'network'
 
-      expect(store.searchedCompiledMibFiles.length).toBe(1)
+      expect(store.searchedPendingMibFiles.length).toBe(1)
     })
 
-    it('uses store paginatedCompiledMibFiles getter', () => {
+    it('uses store paginatedPendingMibFiles getter', () => {
       const files = []
       for (let i = 1; i <= 25; i++) {
-        files.push({ fileName: `file${i}.mib`, location: 'COMPILED' as const })
+        files.push({ fileName: `file${i}.mib`, location: 'PENDING' as const })
       }
       store.files = files
-      store.compiledMibFilesPagination = { page: 1, pageSize: 10, total: 25 }
+      store.pendingMibFilesPagination = { page: 1, pageSize: 10, total: 25 }
 
-      expect(store.paginatedCompiledMibFiles.length).toBe(10)
+      expect(store.paginatedPendingMibFiles.length).toBe(10)
     })
 
-    it('uses store sortedCompiledMibFiles getter', () => {
+    it('uses store sortedPendingMibFiles getter', () => {
       store.files = [
-        { fileName: 'zebra.mib', location: 'COMPILED' },
-        { fileName: 'alpha.mib', location: 'COMPILED' }
+        { fileName: 'zebra.mib', location: 'PENDING' },
+        { fileName: 'alpha.mib', location: 'PENDING' }
       ]
-      store.compiledMibFilesSort = { property: 'fileName', value: SORT.ASCENDING }
+      store.pendingMibFilesSort = { property: 'fileName', value: SORT.ASCENDING }
 
-      expect(store.sortedCompiledMibFiles[0].fileName).toBe('alpha.mib')
-      expect(store.sortedCompiledMibFiles[1].fileName).toBe('zebra.mib')
+      expect(store.sortedPendingMibFiles[0].fileName).toBe('alpha.mib')
+      expect(store.sortedPendingMibFiles[1].fileName).toBe('zebra.mib')
     })
   })
 
   describe('Edge Cases', () => {
     it('handles files with special characters in name', async () => {
-      store.files = [{ fileName: 'test-mib_v2.3 (copy).mib', location: 'COMPILED' }]
+      store.files = [{ fileName: 'test-mib_v2.3 (copy).mib', location: 'PENDING' }]
       await wrapper.vm.$nextTick()
 
-      expect(store.filteredCompiledMibFiles.length).toBe(1)
+      expect(store.filteredPendingMibFiles.length).toBe(1)
     })
 
     it('handles empty search term', async () => {
       store.files = [mockFile]
-      store.compiledMibFilesSearchTerm = ''
+      store.pendingMibFilesSearchTerm = ''
       await wrapper.vm.$nextTick()
 
-      expect(store.searchedCompiledMibFiles.length).toBe(1)
+      expect(store.searchedPendingMibFiles.length).toBe(1)
     })
 
     it('handles whitespace-only search term', async () => {
       store.files = [mockFile]
-      store.compiledMibFilesSearchTerm = '   '
+      store.pendingMibFilesSearchTerm = '   '
       await wrapper.vm.$nextTick()
 
-      // Store should trim whitespace and show all files
-      expect(store.searchedCompiledMibFiles.length).toBe(1)
+      expect(store.searchedPendingMibFiles.length).toBe(1)
     })
 
     it('handles case-insensitive search', async () => {
-      store.files = [{ fileName: 'NETWORK.mib', location: 'COMPILED' }]
-      store.compiledMibFilesSearchTerm = 'network'
+      store.files = [{ fileName: 'NETWORK.mib', location: 'PENDING' }]
+      store.pendingMibFilesSearchTerm = 'network'
       await wrapper.vm.$nextTick()
 
-      expect(store.searchedCompiledMibFiles.length).toBe(1)
+      expect(store.searchedPendingMibFiles.length).toBe(1)
     })
 
     it('handles rapid pagination changes', async () => {
       const files = []
       for (let i = 1; i <= 50; i++) {
-        files.push({ fileName: `file${i}.mib`, location: 'COMPILED' as const })
+        files.push({ fileName: `file${i}.mib`, location: 'PENDING' as const })
       }
       store.files = files
-      store.compiledMibFilesPagination = { page: 1, pageSize: 10, total: 50 }
+      store.pendingMibFilesPagination = { page: 1, pageSize: 10, total: 50 }
       await wrapper.vm.$nextTick()
 
       const pagination = wrapper.findComponent(FeatherPagination)
@@ -675,61 +693,23 @@ describe('CompiledMibFiles.vue', () => {
       await pagination.vm.$emit('update:modelValue', 3)
       await pagination.vm.$emit('update:modelValue', 1)
 
-      expect(store.onCompiledMibFilesPageChange).toHaveBeenCalledTimes(3)
+      expect(store.onPendingMibFilesPageChange).toHaveBeenCalledTimes(3)
     })
 
     it('handles file with very long name', async () => {
       const longName = 'a'.repeat(255) + '.mib'
-      store.files = [{ fileName: longName, location: 'COMPILED' }]
+      store.files = [{ fileName: longName, location: 'PENDING' }]
       await wrapper.vm.$nextTick()
 
-      expect(store.filteredCompiledMibFiles.length).toBe(1)
-      expect(store.filteredCompiledMibFiles[0].fileName).toBe(longName)
-    })
-  })
-
-  describe('UEI Validation Edge Cases', () => {
-    beforeEach(() => {
-      wrapper.vm.selectedFile = mockFile
-      wrapper.vm.generateEventsDialogVisible = true
-    })
-
-    it('validates whitespace-only UEI', async () => {
-      wrapper.vm.uei = '   '
-
-      await wrapper.vm.onConfirmGenerateEvents()
-
-      expect(wrapper.vm.ueiError).toBe('UEI Base is required.')
-    })
-
-    it('accepts valid UEI with multiple path segments', async () => {
-      vi.mocked(generateEvents).mockResolvedValue({ success: true } as any)
-      wrapper.vm.uei = 'uei.opennms.org/vendor/category/event'
-
-      await wrapper.vm.onConfirmGenerateEvents()
-      await flushPromises()
-
-      expect(generateEvents).toHaveBeenCalledWith({
-        name: mockFile.fileName,
-        ueiBase: 'uei.opennms.org/vendor/category/event'
-      })
-    })
-
-    it('accepts valid UEI with hyphens and underscores', async () => {
-      vi.mocked(generateEvents).mockResolvedValue({ success: true } as any)
-      wrapper.vm.uei = 'uei.opennms.org/vendor-name/event_type'
-
-      await wrapper.vm.onConfirmGenerateEvents()
-      await flushPromises()
-
-      expect(generateEvents).toHaveBeenCalled()
+      expect(store.filteredPendingMibFiles.length).toBe(1)
+      expect(store.filteredPendingMibFiles[0].fileName).toBe(longName)
     })
   })
 
   describe('Component Lifecycle', () => {
     it('mounts without errors', () => {
       expect(() => {
-        mount(CompiledMibFiles, {
+        mount(PendingMibFiles, {
           ...globalConfig,
           global: {
             ...globalConfig.global,
@@ -746,10 +726,8 @@ describe('CompiledMibFiles.vue', () => {
     it('initializes with correct default state', () => {
       expect(wrapper.vm.deleteDialogVisible).toBe(false)
       expect(wrapper.vm.textDrawerVisible).toBe(false)
-      expect(wrapper.vm.generateEventsDialogVisible).toBe(false)
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
       expect(wrapper.vm.selectedFile).toBeNull()
-      expect(wrapper.vm.uei).toBe('')
-      expect(wrapper.vm.ueiError).toBe('')
       expect(wrapper.vm.fileText).toBe('')
     })
   })
@@ -771,7 +749,7 @@ describe('CompiledMibFiles.vue', () => {
   describe('Accessibility', () => {
     it('table has proper aria-label', () => {
       const table = wrapper.find('table')
-      expect(table.attributes('aria-label')).toBe('Compiled MIB Files Table')
+      expect(table.attributes('aria-label')).toBe('Pending MIB Files Table')
     })
 
     it('file names are clickable with hyperlink class', async () => {
@@ -786,14 +764,80 @@ describe('CompiledMibFiles.vue', () => {
 
   describe('CSS Classes', () => {
     it('applies correct container class', () => {
-      expect(wrapper.find('.compiled-mib-files-container').exists() || 
-             wrapper.find('.table-card-stub').exists()).toBe(true)
+      expect(
+        wrapper.find('.pending-mib-files-container').exists() ||
+          wrapper.find('.table-card-stub').exists()
+      ).toBe(true)
     })
 
     it('has header with sections', () => {
       expect(wrapper.find('.header').exists()).toBe(true)
       expect(wrapper.find('.section-left').exists()).toBe(true)
       expect(wrapper.find('.section-right').exists()).toBe(true)
+    })
+  })
+
+  describe('Compile Error Handling', () => {
+    beforeEach(() => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.compileDialogVisible = true
+    })
+
+    it('handles compile error with missing dependencies', async () => {
+      const error = {
+        isAxiosError: true,
+        response: {
+          data: {
+            success: false,
+            message: 'Compilation failed',
+            missingDependencies: ['DEP1-MIB', 'DEP2-MIB']
+          }
+        }
+      }
+      vi.mocked(compileMib).mockRejectedValue(error)
+
+      await wrapper.vm.onCompileConfirm()
+      await flushPromises()
+
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
+    })
+
+    it('handles compile error with generic error message', async () => {
+      vi.mocked(compileMib).mockRejectedValue(new Error('Network error'))
+
+      await wrapper.vm.onCompileConfirm()
+      await flushPromises()
+
+      expect(wrapper.vm.compileDialogVisible).toBe(false)
+    })
+  })
+
+  describe('Router Navigation', () => {
+    it('uses router to navigate to edit page', async () => {
+      vi.mocked(getFileText).mockResolvedValue({
+        name: mockFile.fileName,
+        location: 'PENDING',
+        contents: 'content'
+      })
+
+      await wrapper.vm.onEditClick(mockFile)
+      await flushPromises()
+
+      expect(mockPush).toHaveBeenCalledWith('/mib-compiler/edit')
+    })
+
+    it('sets selected file in store before navigation', async () => {
+      const mockResponse = {
+        name: mockFile.fileName,
+        location: 'PENDING',
+        contents: 'content'
+      }
+      vi.mocked(getFileText).mockResolvedValue(mockResponse)
+
+      await wrapper.vm.onEditClick(mockFile)
+      await flushPromises()
+
+      expect(store.setSelectedMibFile).toHaveBeenCalledWith(mockResponse)
     })
   })
 })
