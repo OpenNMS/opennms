@@ -38,9 +38,6 @@
     <property name="trapListenerMetrics" ref="trapListenerMetrics" />
   </bean>
 
-  <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.TrapdConfigDao" ref="trapdConfigDao"/>
-
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
     <property name="staticMethod">
       <value>org.opennms.netmgt.config.TrapdConfigFactory.init</value>
