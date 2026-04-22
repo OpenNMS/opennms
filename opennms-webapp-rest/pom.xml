@@ -618,5 +618,10 @@
       <artifactId>org.opennms.features.notifications.api</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.api-tokens.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

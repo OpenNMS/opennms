@@ -127,6 +127,11 @@
       <artifactId>org.opennms.features.enlinkd.persistence.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.api-tokens.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
     </dependency>

@@ -34,6 +34,7 @@
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter before="BASIC_AUTH_FILTER" ref="apiTokenAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -139,6 +140,7 @@
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter before="BASIC_AUTH_FILTER" ref="apiTokenAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -157,6 +159,7 @@
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter before="BASIC_AUTH_FILTER" ref="apiTokenAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -169,6 +172,13 @@
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <!-- Allow users to POST to the Graph API, which is read-only -->
     <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <!-- Allow authenticated users to manage their own API tokens -->
+    <intercept-url pattern="/api/v2/apiTokens" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/apiTokens" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/apiTokens" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/apiTokens/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/apiTokens/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <!-- Only allow privileged users to access geocoding API -->
     <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
@@ -198,6 +208,7 @@
 
     <custom-filter position="PRE_AUTH_FILTER" ref="attributePreAuthFilter"/>
     <custom-filter after="PRE_AUTH_FILTER" ref="headerPreAuthFilter"/>
+    <custom-filter before="BASIC_AUTH_FILTER" ref="apiTokenAuthFilter"/>
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
 
@@ -482,6 +493,14 @@
   <beans:bean id="hybridAuthenticationProvider" class="org.opennms.web.springframework.security.HybridOpenNMSUserAuthenticationProvider">
     <beans:property name="userDao" ref="userDao" />
     <beans:property name="userManager" ref="userManager" />
+  </beans:bean>
+
+  <!-- API Token Authentication Filter -->
+  <beans:bean id="apiTokenAuthFilter" class="org.opennms.web.springframework.security.ApiTokenAuthenticationFilter">
+    <beans:property name="userDao" ref="userDao"/>
+    <beans:property name="apiTokenService">
+      <onmsgi:reference interface="org.opennms.features.apitokens.ApiTokenService"/>
+    </beans:property>
   </beans:bean>
 
   <!--  this is used to send events on login success and failure -->

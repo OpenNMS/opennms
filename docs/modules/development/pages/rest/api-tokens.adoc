@@ -1,0 +1,121 @@
+
+= API Tokens
+
+API tokens provide long-lived bearer token authentication for programmatic REST API access.
+Tokens are generated once, displayed once at creation, and stored as SHA-256 hashes.
+Token authentication inherits the user's full role set, matching existing basic auth behavior.
+
+== Authentication
+
+Include the token in the `Authorization` header:
+
+[source,bash]
+----
+curl -H "Authorization: Bearer onms_<token>" http://localhost:8980/opennms/api/v2/apiTokens
+----
+
+== GETs (reading data)
+
+[caption=]
+.API Tokens GET functions
+[cols="1,3"]
+|===
+| Resource | Description
+
+| /api/v2/apiTokens
+| List the authenticated user's tokens.
+Returns id, description, createdAt, expiresAt, and lastUsedAt for each token.
+The token hash is never included in responses.
+
+| /api/v2/apiTokens?username=\{user}
+| List another user's tokens (requires ROLE_ADMIN).
+|===
+
+== POSTs (creating data)
+
+[caption=]
+.API Tokens POST functions
+[cols="1,3"]
+|===
+| Resource | Description
+
+| /api/v2/apiTokens
+| Create a token for the authenticated user.
+Accepts JSON body with optional `description` (string, max 256 chars) and `expiresInDays` (integer).
+Returns 201 with the plaintext token, which is shown only once.
+
+| /api/v2/apiTokens?username=\{user}
+| Create a token for another user (requires ROLE_ADMIN).
+The admin must transmit the plaintext token to the target user out-of-band.
+|===
+
+.Example create request
+[source,json]
+----
+{
+  "description": "grafana integration",
+  "expiresInDays": 90
+}
+----
+
+.Example create response
+[source,json]
+----
+{
+  "id": 1,
+  "token": "onms_a1b2c3d4...",
+  "description": "grafana integration",
+  "createdAt": "2026-03-22T10:00:00.000Z",
+  "expiresAt": "2026-06-20T10:00:00.000Z"
+}
+----
+
+== DELETEs (removing data)
+
+[caption=]
+.API Tokens DELETE functions
+[cols="1,3"]
+|===
+| Resource | Description
+
+| /api/v2/apiTokens/\{id}
+| Revoke a specific token.
+Users can revoke their own tokens; admins can revoke any token.
+Returns 204 on success, 404 if not found or not authorized.
+
+| /api/v2/apiTokens?username=\{user}
+| Revoke all tokens for a user.
+Users can revoke their own; admins can revoke any user's tokens (requires ROLE_ADMIN for other users).
+Returns 204 on success.
+|===
+
+== Karaf Shell Commands
+
+[cols="1,3"]
+|===
+| Command | Description
+
+| `opennms:api-token-generate [-d description] [-e days] <username>`
+| Generate a new token. Prints the plaintext token once.
+
+| `opennms:api-token-list <username>`
+| List all tokens for a user.
+
+| `opennms:api-token-revoke <token-id>`
+| Revoke a specific token by ID.
+
+| `opennms:api-token-revoke-all <username>`
+| Revoke all tokens for a user.
+|===
+
+NOTE: In the Karaf shell, options (`-d`, `-e`) must come before the positional argument.
+
+== Configuration
+
+See xref:reference:configuration/system-properties.adoc[System Properties] for configurable limits:
+
+* `org.opennms.api.tokens.max-expiry-days` (default: 365)
+* `org.opennms.api.tokens.default-expiry-days` (default: 365)
+* `org.opennms.api.tokens.max-tokens-per-user` (default: 50)
+
+These can be set in `$\{OPENNMS_HOME}/etc/opennms.properties.d/api-tokens.properties`.
