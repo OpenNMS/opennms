@@ -41,6 +41,6 @@ If you run on Debian or Ubuntu, the tool is part of the `snmp-utils` package.
 To verify your configuration, look for an SNMP trap event in the {page-component-title} web UI:
 
 . Sign in to the web UI.
-. Click menu:Status[Events].
-. Under Event Queries, select *All Events*.
-. Search the list for a `uei.opennms.org/generic/traps/EnterpriseDefault` event from your test host.
+. Click menu:Monitoring[Events].
+. Click *Advanced Search*.
+. Under *Exact Event UEI*, enter `uei.opennms.org/generic/traps/EnterpriseDefault`. You can also specify *TCP/IP Address Like* or *Node Label Contains* to further narrow your search.

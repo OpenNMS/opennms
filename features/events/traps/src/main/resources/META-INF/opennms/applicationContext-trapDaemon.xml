@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:onms-osgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
 
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <onms-osgi:reference interface="org.opennms.features.scv.api.SecureCredentialsVault" id="jceksSecureCredentialsVault"/>
+  <onmsgi:reference interface="org.opennms.features.scv.api.SecureCredentialsVault" id="jceksSecureCredentialsVault"/>
 
-  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd" depends-on="trapdConfig-init">
     <property name="secureCredentialsVault" ref="jceksSecureCredentialsVault" />
   </bean>
 
@@ -35,4 +37,19 @@
     <constructor-arg ref="trapdConfig" />
     <property name="trapListenerMetrics" ref="trapListenerMetrics" />
   </bean>
+
+  <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.config.TrapdConfigFactory.init</value>
+    </property>
+    <property name="arguments">
+      <list>
+        <ref bean="trapdConfigDao"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="trapdConfig" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfig-init" lazy-init="true" factory-method="getInstance"/>
+  <onmsgi:service interface="org.opennms.netmgt.config.TrapdConfig" ref="trapdConfig"/>
+
 </beans>

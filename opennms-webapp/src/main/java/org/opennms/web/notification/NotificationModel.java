@@ -179,7 +179,7 @@ public class NotificationModel extends Object {
                 nbean.m_nodeID = rs.getInt(NODE);
                 nbean.m_interfaceID = rs.getString(INTERFACE);
                 nbean.m_serviceId = rs.getInt(SERVICE);
-                nbean.m_eventId = rs.getInt(EVENTID);
+                nbean.m_eventId = rs.getLong(EVENTID);
                 nbean.m_serviceName = getServiceName(conn, nbean.m_serviceId);
                 vector.add(nbean);
             }

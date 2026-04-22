@@ -25,13 +25,18 @@ import { createPinia } from 'pinia'
 import '@featherds/styles'
 import '@featherds/styles/themes/open-light.css'
 import '../styles/opennms-feather-styles.scss'
+import { setupPrimeVue } from '../theme/primevue-setup'
 import App from './App.vue'
 
 // id of div to mount this Vue app onto, expected to exist in the embedding web application
 const appMountId = import.meta.env.VITE_MENU_APP_MOUNT_ID?.toString() || 'opennms-sidemenu-container'
 
-createApp({
+const app = createApp({
   render: () => h(App)
 })
+
+setupPrimeVue(app)
+
+app
   .use(createPinia())
   .mount(`#${appMountId}`)

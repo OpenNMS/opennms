@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.concurrent.ExecutorService;
 
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -48,6 +49,7 @@ public class EventConfProgrammaticService {
 
     private EventConfSourceDao eventConfSourceDao;
     private EventConfEventDao eventConfEventDao;
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private EventConfDao eventConfDao;
 
     private final ExecutorService eventConfExecutor =
@@ -71,7 +73,7 @@ public class EventConfProgrammaticService {
     }
 
     public void reloadEventsFromDB() {
-        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
+        EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, eventConfExecutor);
     }
 
     /**
@@ -119,6 +121,14 @@ public class EventConfProgrammaticService {
      */
     public void setEventConfEventDao(EventConfEventDao eventConfEventDao) {
         this.eventConfEventDao = eventConfEventDao;
+    }
+
+    public EventConfGlobalSecurityDao getEventConfGlobalSecurityDao() {
+        return eventConfGlobalSecurityDao;
+    }
+
+    public void setEventConfGlobalSecurityDao(EventConfGlobalSecurityDao eventConfGlobalSecurityDao) {
+        this.eventConfGlobalSecurityDao = eventConfGlobalSecurityDao;
     }
 
     /**

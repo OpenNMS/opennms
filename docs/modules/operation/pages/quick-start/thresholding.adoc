@@ -84,9 +84,8 @@ If left blank, it defaults to the standard thresholding UEIs.
 To test the threshold that you just created, follow these steps:
 
 . SSH to the monitored node and log in to it using two different user accounts.
-. In the main menu, choose menu:Status[Events].
-. Under Event Queries, click *All Events*.
-You should see an event that indicates that your threshold triggered when more than one user logged in.
+. In the main menu, choose menu:Monitoring[Events].
+. You should see an event that indicates that your threshold triggered when more than one user logged in.
 . Log one user out of the node.
 The Events List page should indicate that the system has re-armed.
 

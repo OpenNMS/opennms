@@ -34,6 +34,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
+import org.opennms.netmgt.dao.api.TrapdConfigDao;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.springframework.core.io.FileSystemResource;
 
@@ -65,26 +66,20 @@ public final class TrapdConfigFactory implements TrapdConfig {
      */
     private static boolean m_loaded = false;
 
+    private static TrapdConfigDao trapdConfigDao;
+
     /**
      * Private constructor
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
      */
-    private TrapdConfigFactory(String configFile) throws IOException {
-        m_config = JaxbUtils.unmarshal(TrapdConfiguration.class, new FileSystemResource(configFile));
+    private TrapdConfigFactory() {
+        m_config = trapdConfigDao.getConfig();
     }
-    
-    /**
-     * <p>Constructor for TrapdConfigFactory.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException 
-     */
-    public TrapdConfigFactory(InputStream stream) throws IOException {
-        try(final Reader reader = new InputStreamReader(stream)) {
-            m_config = JaxbUtils.unmarshal(TrapdConfiguration.class, reader);
-        }
+
+    public static void setTrapdConfigDao(final TrapdConfigDao trapdConfigDao) {
+        TrapdConfigFactory.trapdConfigDao = trapdConfigDao;
     }
 
     /**
@@ -95,15 +90,15 @@ public final class TrapdConfigFactory implements TrapdConfig {
      *                Thrown if the specified config file cannot be read
      * @throws java.io.IOException if any.
      */
-    public static synchronized void init() throws IOException {
+    public static synchronized void init(TrapdConfigDao trapdConfigDao) throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRAPD_CONFIG_FILE_NAME);
 
-        m_singleton = new TrapdConfigFactory(cfgFile.getPath());
+        setTrapdConfigDao(trapdConfigDao);
+        m_singleton = new TrapdConfigFactory();
 
         m_loaded = true;
     }
@@ -119,7 +114,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_singleton = null;
         m_loaded = false;
 
-        init();
+        init(trapdConfigDao);
     }
 
     /**
@@ -226,6 +221,7 @@ public final class TrapdConfigFactory implements TrapdConfig {
         m_config.setSnmpTrapAddress(config.getSnmpTrapAddress());
         m_config.setSnmpTrapPort(config.getSnmpTrapPort());
         m_config.setNewSuspectOnTrap(config.getNewSuspectOnTrap());
+        m_config.setUseAddressFromVarbind(config.shouldUseAddressFromVarbind());
         m_config.setQueueSize(config.getQueueSize());
         m_config.setBatchSize(config.getBatchSize());
         m_config.setBatchInterval(config.getBatchIntervalMs());

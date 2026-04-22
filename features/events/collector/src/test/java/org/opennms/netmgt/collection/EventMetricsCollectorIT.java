@@ -45,12 +45,14 @@ import org.opennms.netmgt.events.api.model.ImmutableParm;
 import org.opennms.netmgt.events.api.model.ImmutableValue;
 import org.opennms.netmgt.mock.MockPersister;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -92,7 +94,8 @@ public class EventMetricsCollectorIT {
         // load testing eventconf
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource("src/test/resources/events/collection.events.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource("src/test/resources/events/collection.events.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // fake interface info
         OnmsNode node = new OnmsNode();

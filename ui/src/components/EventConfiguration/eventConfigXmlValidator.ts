@@ -4,6 +4,37 @@ import { XMLValidator } from 'fast-xml-parser'
 export const MAX_FILES_UPLOAD = 10
 
 export const validateEventConfigFile = async (file: File) => {
+  // eventconf.xml is a special ordering file — validate XML and presence of <event-file> entries
+  if (file.name.toLowerCase() === 'eventconf.xml') {
+    try {
+      const text = await file.text()
+      if (text.trim().length === 0) {
+        return { isValid: false, errors: ['File is empty'] }
+      }
+      const result = XMLValidator.validate(text)
+      if (result !== true) {
+        return { isValid: false, errors: ['Invalid XML format - file contains syntax errors'] }
+      }
+      let parser: any
+      try {
+        parser = new (DOMParser as any)()
+      } catch (e) {
+        parser = (DOMParser as any)()
+      }
+      const xmlDoc = parser.parseFromString(text, 'application/xml')
+      if (xmlDoc.querySelector('parsererror')) {
+        return { isValid: false, errors: ['Invalid XML format - file contains syntax errors'] }
+      }
+      const eventFileElements = xmlDoc.querySelectorAll('event-file')
+      if (eventFileElements.length === 0) {
+        return { isValid: false, errors: ['No <event-file> entries found in eventconf.xml'] }
+      }
+      return { isValid: true, errors: [] }
+    } catch (error) {
+      return { isValid: false, errors: [`Error reading eventconf.xml: ${error instanceof Error ? error.message : 'Unknown error'}`] }
+    }
+  }
+
   const validationErrors: string[] = []
 
   try {

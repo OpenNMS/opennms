@@ -25,7 +25,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -81,10 +83,11 @@ public class EventConfServiceHelper {
      * @param eventConfEventDao The DAO for retrieving EventConfEvent entities
      * @param eventConfDao      The DAO for loading events into memory
      */
-    public static void reloadEventsFromDB(EventConfEventDao eventConfEventDao, EventConfDao eventConfDao) {
+    public static void reloadEventsFromDB(EventConfEventDao eventConfEventDao, EventConfDao eventConfDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao) {
         final long startTime = System.currentTimeMillis();
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        eventConfDao.loadEventsFromDB(dbEvents);
+        List<EventConfGlobalSecurity> globalSecurities = eventConfGlobalSecurityDao.findAll();
+        eventConfDao.loadEventsFromDB(dbEvents, globalSecurities);
         final long endTime = System.currentTimeMillis();
         LOG.info("Time to reload {} events from DB: {} ms", dbEvents.size(), (endTime - startTime));
     }
@@ -98,8 +101,9 @@ public class EventConfServiceHelper {
      */
     public static void reloadEventsFromDBAsync(EventConfEventDao eventConfEventDao,
                                                  EventConfDao eventConfDao,
+                                                 EventConfGlobalSecurityDao eventConfGlobalSecurityDao,
                                                  ExecutorService executor) {
-        executor.execute(() -> reloadEventsFromDB(eventConfEventDao, eventConfDao));
+        executor.execute(() -> reloadEventsFromDB(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao));
     }
 
     /**

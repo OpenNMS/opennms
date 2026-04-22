@@ -46,7 +46,7 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 public class FakeXsdForTest implements Serializable {
     private static final long serialVersionUID = 2;
 
-    public static final boolean DEFAULT_USE_ADDESS_FROM_VARBIND = false;
+    public static final boolean DEFAULT_USE_ADDRESS_FROM_VARBIND = false;
 
     /**
      * The IP address on which trapd listens for connections.
@@ -127,7 +127,7 @@ public class FakeXsdForTest implements Serializable {
      * SNMPv2 traps.
      */
     @XmlAttribute(name = "use-address-from-varbind", required = false)
-    private Boolean _useAddessFromVarbind;
+    private Boolean _useAddressFromVarbind;
 
     public FakeXsdForTest() {
         super();
@@ -198,7 +198,7 @@ public class FakeXsdForTest implements Serializable {
 
     public int hashCode() {
         return Objects.hash(_snmpTrapAddress, _snmpTrapPort, _has_snmpTrapPort, _newSuspectOnTrap, _snmpv3UserList,
-                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval, _useAddessFromVarbind);
+                _includeRawMessage, _threads, _queueSize, _batchSize, _batchInterval, _useAddressFromVarbind);
     }
 
     @Override()
@@ -218,7 +218,7 @@ public class FakeXsdForTest implements Serializable {
                     && Objects.equals(_queueSize, other._queueSize)
                     && Objects.equals(_batchSize, other._batchSize)
                     && Objects.equals(_batchInterval, other._batchInterval)
-                    && Objects.equals(_useAddessFromVarbind, other._useAddessFromVarbind);
+                    && Objects.equals(_useAddressFromVarbind, other._useAddressFromVarbind);
             return equals;
         }
         return false;
@@ -355,11 +355,11 @@ public class FakeXsdForTest implements Serializable {
     }
 
     public boolean shouldUseAddressFromVarbind() {
-        return _useAddessFromVarbind != null ? _useAddessFromVarbind : DEFAULT_USE_ADDESS_FROM_VARBIND;
+        return _useAddressFromVarbind != null ? _useAddressFromVarbind : DEFAULT_USE_ADDRESS_FROM_VARBIND;
     }
 
-    public void setUseAddressFromVarbind(Boolean useAddessFromVarbind) {
-        _useAddessFromVarbind = useAddessFromVarbind;
+    public void setUseAddressFromVarbind(Boolean useAddressFromVarbind) {
+        _useAddressFromVarbind = useAddressFromVarbind;
     }
 
     /**

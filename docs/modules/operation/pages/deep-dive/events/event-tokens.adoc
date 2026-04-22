@@ -156,9 +156,9 @@ You can access event parameters using the `%parm%` token, which can take several
 | Name of parameter number `<num>` (1-indexed).
 |===
 
-== eventconf.xml elements
+== Event configuration elements (former `eventconf.xml`file)
 
-The following elements in `eventconf.xml` accept replacement tokens:
+The following elements in event definitions accept replacement tokens:
 
 * `descr`
 * `logmsg`

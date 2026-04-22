@@ -8,7 +8,7 @@ import { FeatherSelect } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 vi.mock('./AlarmDataInfo.vue', () => ({
@@ -150,6 +150,10 @@ const router = createRouter({
 describe('BasicInformation Component', () => {
   let wrapper: any
   let store: any
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
   beforeEach(async () => {
     setActivePinia(createPinia())
@@ -647,58 +651,62 @@ describe('BasicInformation Component', () => {
   describe('Search functionality', () => {
     it('should filter sources based on search query', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('Test')
 
-      wrapper.vm.search('Test')
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.results.length).toBeGreaterThan(0)
-      expect(wrapper.vm.results[0]._text).toBe('Test Source')
-
-      vi.useRealTimers()
+        expect(wrapper.vm.results.length).toBeGreaterThan(0)
+        expect(wrapper.vm.results[0]._text).toBe('Test Source')
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('should return empty results when no match found', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('NonExistent')
 
-      wrapper.vm.search('NonExistent')
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.results).toHaveLength(0)
-
-      vi.useRealTimers()
+        expect(wrapper.vm.results).toHaveLength(0)
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('should return exact match when source name matches', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('Test Source')
 
-      wrapper.vm.search('Test Source')
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.results).toHaveLength(1)
-      expect(wrapper.vm.results[0]._text).toBe('Test Source')
-      expect(wrapper.vm.results[0]._value).toBe(1)
-
-      vi.useRealTimers()
+        expect(wrapper.vm.results).toHaveLength(1)
+        expect(wrapper.vm.results[0]._text).toBe('Test Source')
+        expect(wrapper.vm.results[0]._value).toBe(1)
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('should perform case-insensitive search', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('test source')
 
-      wrapper.vm.search('test source')
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.results).toHaveLength(1)
-      expect(wrapper.vm.results[0]._value).toBe(1)
-
-      vi.useRealTimers()
+        expect(wrapper.vm.results).toHaveLength(1)
+        expect(wrapper.vm.results[0]._value).toBe(1)
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('should set selectedSource when item is provided', () => {
@@ -716,31 +724,33 @@ describe('BasicInformation Component', () => {
 
     it('should clear previous timeout when search is called multiple times', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('First')
+        wrapper.vm.search('Second')
 
-      wrapper.vm.search('First')
-      wrapper.vm.search('Second')
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      // Only 'Second' search should have been executed
-      expect(wrapper.vm.results.length).toBe(0) // No match for 'Second'
-
-      vi.useRealTimers()
+        // Only 'Second' search should have been executed
+        expect(wrapper.vm.results.length).toBe(0) // No match for 'Second'
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('should set loading to true when search starts and false when complete', async () => {
       vi.useFakeTimers()
+      try {
+        wrapper.vm.search('Test')
+        expect(wrapper.vm.loading).toBe(true)
 
-      wrapper.vm.search('Test')
-      expect(wrapper.vm.loading).toBe(true)
+        vi.advanceTimersByTime(500)
+        await wrapper.vm.$nextTick()
 
-      vi.advanceTimersByTime(500)
-      await wrapper.vm.$nextTick()
-
-      expect(wrapper.vm.loading).toBe(false)
-
-      vi.useRealTimers()
+        expect(wrapper.vm.loading).toBe(false)
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 

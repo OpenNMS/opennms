@@ -21,14 +21,20 @@
  */
 package org.opennms.smoketest.ui.framework;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
+import org.opennms.smoketest.selenium.ElementClickGuards;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,5 +91,33 @@ public abstract class Element {
         } finally {
             driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
+    }
+
+    protected void clickWithRetry(final By by) {
+        driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+        try {
+            final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10), Duration.ofMillis(200));
+            wait.ignoring(StaleElementReferenceException.class).until(webDriver -> {
+                final WebElement element = webDriver.findElement(by);
+                ((JavascriptExecutor)webDriver).executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
+
+                if (isCenterPointObscured(element)) {
+                    return false;
+                }
+
+                try {
+                    element.click();
+                    return true;
+                } catch (final ElementClickInterceptedException e) {
+                    return false;
+                }
+            });
+        } finally {
+            driver.manage().timeouts().implicitlyWait(AbstractOpenNMSSeleniumHelper.LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private boolean isCenterPointObscured(final WebElement element) {
+        return ElementClickGuards.isCenterPointObscured((JavascriptExecutor) driver, element);
     }
 }

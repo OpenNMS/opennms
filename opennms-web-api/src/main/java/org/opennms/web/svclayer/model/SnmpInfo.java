@@ -283,6 +283,7 @@ public class SnmpInfo {
 
 	public void setSecurityLevel(Integer securityLevel) {
 		m_securityLevel = securityLevel;
+		fixSecurityLevel();
 	}
 
 	public String getAuthPassPhrase() {
@@ -419,7 +420,16 @@ public class SnmpInfo {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
-	
+
+	/**
+	 * Security level needs either to be null or between 1-3. See org.opennms.netmgt.snmp.SnmpConfiguration for valid values.
+	 * This sets it to null if it is an invalid value such as 0.
+	 */
+	public void fixSecurityLevel() {
+		if (m_securityLevel != null && (m_securityLevel < 1 || m_securityLevel > 3)) {
+			m_securityLevel = null;
+		}
+	}
 
 	/**
 	 * Creates a {@link SnmpEventInfo} object from <code>this</code>.
