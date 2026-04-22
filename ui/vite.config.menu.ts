@@ -44,7 +44,7 @@ export default defineConfig({
       '~@featherds': '@featherds',
       './src/assets/ProductLogo.vue': `./src/assets/${process.env.VITE_APP_LOGO_NAME}.vue`
     },
-    dedupe: ['vue']
+    dedupe: ['vue', 'primevue']
   },
   plugins: [
     vue(),

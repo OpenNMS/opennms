@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.Unsafe;
 
 @SuppressWarnings({"deprecation","rawtypes","unchecked","java:S3011"})
 public abstract class LocaleProviderUtils {
@@ -49,7 +50,7 @@ public abstract class LocaleProviderUtils {
         makeAccessible(adapterPreference);
 
         if (defaultAdapters == null) {
-            defaultAdapters = (List)adapterPreference.get(provider);
+            defaultAdapters = (List) unsafeGet(adapterPreference);
         }
 
         final Class<Enum> type = (Class<Enum>) Class.forName("sun.util.locale.provider.LocaleProviderAdapter$Type");
@@ -57,7 +58,25 @@ public abstract class LocaleProviderUtils {
 
         final List adapters = new ArrayList();
         adapters.add(compat);
-        adapterPreference.set(null, Collections.unmodifiableList(adapters));
+        unsafeSet(adapterPreference, Collections.unmodifiableList(adapters));
+    }
+
+    public static Object unsafeGet(final Field field) throws ReflectiveOperationException, IllegalArgumentException {
+        final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+        unsafeField.setAccessible(true);
+        final Unsafe unsafe = (Unsafe) unsafeField.get(null);
+        final Object staticFieldBase = unsafe.staticFieldBase(field);
+        final long staticFieldOffset = unsafe.staticFieldOffset(field);
+        return unsafe.getObject(staticFieldBase, staticFieldOffset);
+    }
+
+    public static void unsafeSet(final Field field, Object object) throws ReflectiveOperationException, IllegalArgumentException {
+        final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+        unsafeField.setAccessible(true);
+        final Unsafe unsafe = (Unsafe) unsafeField.get(null);
+        final Object staticFieldBase = unsafe.staticFieldBase(field);
+        final long staticFieldOffset = unsafe.staticFieldOffset(field);
+        unsafe.putObject(staticFieldBase, staticFieldOffset, object);
     }
 
     public static void reset() throws ReflectiveOperationException, IllegalArgumentException {
@@ -76,6 +95,7 @@ public abstract class LocaleProviderUtils {
         final Field modifiersField = getModifiersField();
         modifiersField.setAccessible(true);
         modifiersField.setInt(adapterPreference, adapterPreference.getModifiers() & ~Modifier.FINAL);
+        unsafeSet(adapterPreference, defaultAdapters);
     }
 
     public static Field getModifiersField() throws IllegalAccessException, NoSuchFieldException {

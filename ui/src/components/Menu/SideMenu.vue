@@ -73,10 +73,15 @@ const topPanels = computed<MenuListEntry[]>(() => {
 
   #opennms-sidebar-control {
     --feather-dock-header-offset: 3.75rem;
-  
+
     // tighten spacing between toggle button and top of menu items
     --feather-dock-content-padding-top: 3em;
     --feather-dock-toggle-top: 2em;
+
+    // Pin the side menu to dark regardless of active theme so that the
+    // side menu and top menubar stay visually consistent with one another.
+    --feather-dock-background-color: var(--feather-surface-dark);
+    --feather-dock-color: var(--feather-state-text-color-on-surface-dark);
   }
 
   // fix Sidenav toggle button placement

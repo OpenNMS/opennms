@@ -82,7 +82,7 @@ public class TicketNotificationStrategyTest {
     	}
     	
     	@Override
-    	protected AlarmState getAlarmStateFromEvent(int eventID) {
+    	protected AlarmState getAlarmStateFromEvent(long eventID) {
     		return m_alarmState;
     	}
     	

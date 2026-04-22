@@ -33,6 +33,10 @@ public class EventTextFilter extends OrFilter {
         this.value = substring;
     }
 
+    public String getValue() {
+        return value;
+    }
+
     @Override
     public String getTextDescription() {
         return ("Event text containing \"" + value + "\"");

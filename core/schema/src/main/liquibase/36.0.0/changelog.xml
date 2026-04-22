@@ -253,4 +253,49 @@
         </createTable>
     </changeSet>
 
+    <!-- Update nodeLostService event to include failure reason in logmsg
+         and enable description update-on-reduction so alarm reflects
+         the current poll failure reason -->
+    <changeSet author="mmassengill" id="36.0.0-update-nodeLostService-reason-tracking">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="eventconf_events"/>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM eventconf_events
+                    WHERE uei = 'uei.opennms.org/nodes/nodeLostService'
+                    AND xml_content NOT LIKE '%update-on-reduction%'
+                </sqlCheck>
+            </and>
+        </preConditions>
+
+        <comment>Add failure reason to nodeLostService logmsg and enable alarm description update on reduction</comment>
+
+        <!-- Update logmsg to include the reason parameter -->
+        <sql>
+            UPDATE eventconf_events
+            SET xml_content = REPLACE(
+                xml_content,
+                '%service% outage identified on interface %interface%.',
+                '%service% outage identified on interface %interface%. Reason: %parm[eventReason]%'
+            ),
+            last_modified = NOW()
+            WHERE uei = 'uei.opennms.org/nodes/nodeLostService'
+            AND xml_content NOT LIKE '%update-on-reduction%';
+        </sql>
+
+        <!-- Add update-field for description on reduction -->
+        <sql>
+            UPDATE eventconf_events
+            SET xml_content = REPLACE(
+                xml_content,
+                'auto-clean="false"/>',
+                'auto-clean="false">&lt;update-field field-name="descr" update-on-reduction="true"/>&lt;/alarm-data>'
+            ),
+            last_modified = NOW()
+            WHERE uei = 'uei.opennms.org/nodes/nodeLostService'
+            AND xml_content LIKE '%auto-clean="false"/>%'
+            AND xml_content NOT LIKE '%update-on-reduction%';
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

@@ -194,6 +194,10 @@
 <div id="advancedSearchModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
+      <div class="modal-header">
+       <h5 class="modal-title">Advanced Search</h5>
+       <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
       <div class="modal-body">
         <jsp:include page="/includes/event-advquerypanel.jsp" flush="false" />
       </div>
@@ -209,14 +213,21 @@
   </div>
 </div>
 
+<div id="helpModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog" style="max-width: 50em;">
+    <div class="modal-content">
+        <jsp:include page="/event/eventhelp.jsp" flush="false" />
+    </div>
+  </div>
+</div>
 
 <div class="row">
 <div class="col-md-12">
 <div class="form-group">
   <!-- start menu -->
   <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>">View all events</a>
-  <button type="button" class="btn btn-secondary" onClick="$('#advancedSearchModal').modal()">Search</button>
-  <button type="button" class="btn btn-secondary" onClick="$('#severityLegendModal').modal()">Severity Legend</button>
+  <button type="button" class="btn btn-secondary" onclick="$('#advancedSearchModal').modal()">Advanced Search</button>
+  <button type="button" class="btn btn-secondary" onclick="$('#severityLegendModal').modal()">Severity Legend</button>
         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
           <% if ( eventCount > 0 ) { %>
               <!-- hidden form for acknowledging the result set -->
@@ -234,13 +245,30 @@
               <% } %>
           <% } %>
         <% } %>
-      <!-- end menu -->
+
+  <button type="button" class="btn btn-secondary" onclick="$('#helpModal').modal()">Help</button>
+  <!-- end menu -->
 </div>
 </div>
 </div>
 <div class="row">
-    <div class="col form-group">
+    <div class="col-md-4">
         <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
+    </div>
+
+    <div class="col-md-4">
+      <form action="event/detail.jsp" method="post" role="form" class="form float-right">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <div class="form-group">
+            <div class="input-group">
+                <label for="byeventid_id" style="margin-top: 0.5em; margin-right: 0.5em">Get Details for Event ID</label>
+                <input type="number" class="form-control" name="id" id="byeventid_id" min="1" required/>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+      </form>
     </div>
 </div>
 
@@ -525,13 +553,13 @@
           <% 
           if( (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY )) && "true".equals(acknowledgeEvent)) { %>
             <% if( AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-              <input class="btn btn-sm btn-primary" type="button" value="Acknowledge Events" onClick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
-              <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-              <input class="btn btn-sm btn-secondary" TYPE="reset" />
+              <input class="btn btn-sm btn-primary" type="button" value="Acknowledge Events" onclick="submitForm('<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>')"/>
+              <input class="btn btn-sm btn-secondary" type="button" value="Select All" onclick="checkAllCheckboxes()"/>
+              <input class="btn btn-sm btn-secondary" type="reset" />
             <% } else if( AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-              <input class="btn btn-sm btn-primary" type="button" value="Unacknowledge Events" onClick="submitForm('<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>')"/>
-              <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-              <input class="btn btn-sm btn-secondary" TYPE="reset" />
+              <input class="btn btn-sm btn-primary" type="button" value="Unacknowledge Events" onclick="submitForm('<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>')"/>
+              <input class="btn btn-sm btn-secondary" type="button" value="Select All" onclick="checkAllCheckboxes()"/>
+              <input class="btn btn-sm btn-secondary" type="reset" />
             <% } %>
           <% } %>
         </p>

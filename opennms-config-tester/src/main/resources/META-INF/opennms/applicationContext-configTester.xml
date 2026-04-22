@@ -93,7 +93,6 @@
         <entry key="thresholds.xml" value="thresholdingDao"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
-        <entry key="trapd-configuration.xml" value="trapdConfigFactory"/>
         <entry key="users.xml" value="userFactory"/>
         <entry key="vacuumd-configuration.xml" value="vacuumdConfigFactory"/>
         <entry key="viewsdisplay.xml" value="viewsDisplayFactory"/>
@@ -479,12 +478,8 @@
   </bean>
 
   <bean id="eventTranslatorConfigFactory" class="org.opennms.netmgt.config.EventTranslatorConfigFactory" depends-on="eventTranslatorConfigFactory-init" factory-method="getInstance"/>
-  
-  <bean id="trapdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="trapdConfigFactory" class="org.opennms.netmgt.config.TrapdConfigFactory" depends-on="trapdConfigFactory-init" factory-method="getInstance"/>
+  <bean id="trapdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultTrapdConfigDao"/>
 
   <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>

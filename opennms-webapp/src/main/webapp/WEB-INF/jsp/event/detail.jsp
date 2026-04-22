@@ -100,8 +100,8 @@
 <% Bootstrap.with(pageContext)
           .headTitle("Detail")
           .headTitle("Events")
-          .breadcrumb("Events", "event/index")
-          .breadcrumb("Event " + (event == null? "Not Found" : event.getId()))
+          .breadcrumb("Events", "event/list")
+          .breadcrumb("Event " + (event == null ? "Not Found" : event.getId()))
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />

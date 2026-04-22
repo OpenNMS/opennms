@@ -48,49 +48,22 @@ public class AlarmsPageIT extends OpenNMSSeleniumIT {
 
     @Before
     public void setUp() throws Exception {
-        alarmsPage();
+        alarmsListPage();
     }
 
-    protected void alarmsPage() {
-        driver.get(getBaseUrlInternal() + "opennms/alarm/index.htm");
+    protected void alarmsListPage() {
+        driver.get(getBaseUrlInternal() + "opennms/alarm/list.htm");
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("div.card-header"));
-        findElementByXpath("//span[text()='Alarm Queries']");
-        findElementByXpath("//span[text()='Alarm Filter Favorites']");
-        findElementByXpath("//span[text()='Outstanding and acknowledged alarms']");
+        findElementByXpath("//div[@id='content']//div[@id='advancedSearchModal']");
+        findElementByXpath("//div[@id='content']//div[@id='severityLegendModal']");
+        findElementByXpath("//div[@id='content']//div[@id='helpModal']");
 
-        findElementByXpath("//form//input[@name='id']");
-        findElementByXpath("//form//button[@type='submit']");
-    }
-
-    @Test
-    public void testAllLinks() throws InterruptedException{
-        findElementByLink("All alarms (summary)").click();
-        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
-        assertElementDoesNotExist(By.cssSelector("//table//th//a[text()='First Event Time']"));
-
-        alarmsPage();
-        findElementByLink("All alarms (detail)").click();
-        findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
-        findElementByLink("First Event Time");
-
-        alarmsPage();
-        findElementByLink("Advanced Search").click();
-        findElementByName("alarmtext");
-        findElementByName("iplike");
-    }
-
-    @Test
-    public void testAlarmLink() throws Exception {
-        findElementByLink("All alarms (summary)").click();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[contains(@href,'alarm/detail.htm')]")));
-
-        findElementByXpath("//a[contains(@href,'alarm/detail.htm')]").click();
-        findElementByXpath("//tr[@class]//th[text()='Severity']");
+        findElementByXpath("//div[@id='content']//a[text()='Advanced Search']");
+        findElementByXpath("//div[@id='content']//a[text()='Severity Legend']");
+        findElementByXpath("//div[@id='content']//a[text()='Help']");
     }
 
     @Test
@@ -101,8 +74,8 @@ public class AlarmsPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testNMS16417() throws InterruptedException {
-        enterText(By.xpath("//form//input[@name='id']"), "1");
-        clickElement(By.xpath("//form//button[@type='submit']"));
+        enterText(By.xpath("//form[@name='get_details_from_alarm_id_form']//input[@id='byalarmid_id']"), "1");
+        clickElement(By.xpath("//form[@name='get_details_from_alarm_id_form']//button[@type='submit']"));
         wait.until(ExpectedConditions.urlMatches(".*id=1"));
     }
 }

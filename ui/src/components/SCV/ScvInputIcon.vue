@@ -1,15 +1,16 @@
 <template>
   <FeatherTooltip
     :title="title ?? tooltipTitle"
-    v-slot="{ attrs, on }">
-
+    v-slot="{ attrs, on }"
+  >
     <FeatherButton
       icon="SCV"
       class="scv-edit-icon"
       @click="$emit('click')"
     >
       <FeatherIcon
-        v-bind="attrs" v-on="on"
+        v-bind="attrs"
+        v-on="on"
         :icon="IconSecurity"
         class="scv-icon"
       />
@@ -32,7 +33,6 @@ defineEmits<{
 }>()
 
 const tooltipTitle = 'Use SCV to populate this field'
-
 </script>
 
 <style scoped lang="scss">
@@ -58,3 +58,4 @@ const tooltipTitle = 'Use SCV to populate this field'
   }
 }
 </style>
+

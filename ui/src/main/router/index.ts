@@ -361,6 +361,16 @@ const router = createRouter({
       component: () => import('@/containers/SnmpDataCollectionCreate.vue')
     },
     {
+      path: '/trapd-config',
+      name: 'Trapd Configuration',
+      component: () => import('@/containers/TrapdConfiguration.vue')
+    },
+    {
+      path: '/primevue-test',
+      name: 'PrimeVueTest',
+      component: () => import('@/components/PrimeVueTest.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

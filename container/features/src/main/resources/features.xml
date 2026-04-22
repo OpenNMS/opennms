@@ -16,6 +16,15 @@
     <repository>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</repository>
     <feature name="opennms-camel-amqp" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Camel Wrapper">
         <!-- start this early so camel-amqp doesn't use its old version -->
+        <bundle start-level="60">mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-codec-http/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle start-level="60">mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:org.apache.qpid/proton-j/0.34.0</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-common/${netty4Version}</bundle>
@@ -37,6 +46,9 @@
         <feature>camel-amqp</feature>
     </feature>
     <feature name="opennms-amqp-event-forwarder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Forwarder">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
@@ -45,6 +57,9 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-forwarder/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-event-receiver" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Event Receiver">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-core-camel</feature>
@@ -53,6 +68,9 @@
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-receiver/${project.version}</bundle>
     </feature>
     <feature name="opennms-amqp-alarm-northbounder" version="${project.version}" description="OpenNMS :: Features :: AMQP :: Alarm Northbounder">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-http</feature>
         <feature>opennms-camel-amqp</feature>
         <feature>opennms-core-camel</feature>
         <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
@@ -320,6 +338,8 @@
         <bundle start-level="${earlyStartLevel}">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
+        <!-- netty-transport-classes-epoll must be loaded before camel-netty4 resolves io.netty.channel.epoll -->
+        <bundle dependency="true">mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
         <feature>camel-netty4</feature>
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
@@ -1726,6 +1746,19 @@
         <bundle>mvn:io.github.resilience4j/resilience4j-retry/${resilience4jVersion}</bundle>
     </feature>
 
+    <feature name="netty4" version="${netty4Version}" description="Netty">
+        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+    </feature>
     <feature name="opennms-blobstore-shell" description="OpenNMS :: Features :: Distributed :: Key Value Store :: Blob :: Shell" version="${project.version}">
         <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.blob.shell/${project.version}</bundle>

@@ -288,6 +288,15 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @After
     public void tearDown() {
+        getScanExecutor().resume();
+        getScheduledExecutor().resume();
+        getImportExecutor().resume();
+        getWriteExecutor().resume();
+        try {
+            m_provisioner.destroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         // remove property set during tests
         System.getProperties().remove("org.opennms.provisiond.enableDeletionOfRequisitionedEntities");
         m_eventAnticipator.reset();

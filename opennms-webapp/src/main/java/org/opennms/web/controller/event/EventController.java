@@ -58,10 +58,10 @@ import java.util.List;
  * A controller that handles all event actions (e.g. querying the event table by using filters to create an
  * event list and and then forwards that event list to a JSP for display).
  *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <a href="http://www.opennms.org/">OpenNMS</A>
+ * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <a href="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  * @since 1.8.1
  */
@@ -109,7 +109,7 @@ public class EventController extends MultiActionController implements Initializi
      *
      * <p>
      * Sets the <em>events</em> and <em>parms</em> request attributes for
-     * the forwardee JSP (or whatever gets called).
+     * the forwarded JSP (or whatever gets called).
      * </p>
      */
     public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -131,6 +131,7 @@ public class EventController extends MultiActionController implements Initializi
 
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
+
     	// asking for a specific ID; only filter should be event ID
         final long eventId;
         try {
@@ -138,6 +139,7 @@ public class EventController extends MultiActionController implements Initializi
         } catch (NumberFormatException e) {
             throw new EventIdNotFoundException("Could not parse event ID '" + idString + "' to integer.", idString);
         }
+
     	ModelAndView modelAndView = createModelAndView(request, new EventIdFilter(eventId));
     	modelAndView.setViewName("event/detail");
         modelAndView.addObject("eventId", idString);
@@ -145,33 +147,33 @@ public class EventController extends MultiActionController implements Initializi
         return modelAndView;
     }
 
-    // index view
+    // index view - redirects to list
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	List<OnmsFilterFavorite> userFilterList = favoriteService.getFavorites(request.getRemoteUser(), OnmsFilterFavorite.Page.EVENT);
-        ModelAndView modelAndView = new ModelAndView("event/index");
-        modelAndView.addObject("favorites", userFilterList.toArray());
-        modelAndView.addObject("callback", getFilterCallback());
-        return modelAndView;
+        RedirectView redirectView = new RedirectView("list");
+        return new ModelAndView(redirectView);
     }
 
     public ModelAndView createFavorite(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String error = null;
+
         try {
             OnmsFilterFavorite favorite = favoriteService.createFavorite(
                     request.getRemoteUser(),
                     request.getParameter("favoriteName"),
                     FilterUtil.toFilterURL(request.getParameterValues("filter")),
                     OnmsFilterFavorite.Page.EVENT);
+
             if (favorite != null) {
                 ModelAndView successView = list(request, favorite); // success
                 //Comment out as per request
                 //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
-            error = "An error occured while creating the favorite";
+            error = "An error occurred while creating the favorite";
         } catch (FilterFavoriteService.FilterFavoriteException ex) {
             error = ex.getMessage();
         }
+
         ModelAndView errorView = list(request, (OnmsFilterFavorite) null);
         AlertTag.addAlertToRequest(errorView, error, AlertType.ERROR);
         return errorView;
@@ -184,6 +186,7 @@ public class EventController extends MultiActionController implements Initializi
 
         ModelAndView resultView = list(request, (OnmsFilterFavorite) null);
         resultView.addObject("favorite", null); // we deleted the favorite
+
         if (!StringUtils.isEmpty(request.getParameter("redirect"))) {
             resultView.setViewName(request.getParameter("redirect")); // change to redirect View
         }
@@ -201,7 +204,6 @@ public class EventController extends MultiActionController implements Initializi
      * to an appropriate URL for display.
      */
     public ModelAndView acknowledge(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         // required parameter
         String[] eventIdStrings = request.getParameterValues("event");
         String action = request.getParameter("actionCode");
@@ -219,6 +221,7 @@ public class EventController extends MultiActionController implements Initializi
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
         LOG.debug("criteria = {}, action = {}", criteria, action);
+
         if (action.equals(AcknowledgeType.ACKNOWLEDGED.getShortName())) {
             m_webEventRepository.acknowledgeMatchingEvents(request.getRemoteUser(), new Date(), criteria);
         } else if (action.equals(AcknowledgeType.UNACKNOWLEDGED.getShortName())) {
@@ -249,8 +252,10 @@ public class EventController extends MultiActionController implements Initializi
 
         // handle the filter parameters
         ArrayList<Filter> filterArray = new ArrayList<>();
+
         for (String filterString : filterStrings) {
             Filter filter = EventUtil.getFilter(filterString, getServletContext());
+
             if (filter != null) {
                 filterArray.add(filter);
             }
@@ -271,9 +276,10 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     private ModelAndView getRedirectView(HttpServletRequest request) {
-        String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
-        String viewName;
+        final String redirectParms = request.getParameter("redirectParms");
+        final String redirect = request.getParameter("redirect");
+        final String viewName;
+
         if (redirect != null) {
             viewName = redirect;
         } else {
@@ -291,11 +297,12 @@ public class EventController extends MultiActionController implements Initializi
     	final String display = getDisplay(request);
         String limitString = getQueryParameter(request, "limit");
     	int limit = "long".equals(display) ? DEFAULT_LONG_LIMIT : DEFAULT_SHORT_LIMIT;
+
         if (limitString != null) {
             try {
-                int newlimit = WebSecurityUtils.safeParseInt(limitString);
-                if (newlimit > 0) {
-                    limit = newlimit;
+                int newLimit = WebSecurityUtils.safeParseInt(limitString);
+                if (newLimit > 0) {
+                    limit = newLimit;
                 }
             } catch (NumberFormatException e) {
                 // do nothing, the default is already set
@@ -307,6 +314,7 @@ public class EventController extends MultiActionController implements Initializi
     private int getMultiple(HttpServletRequest request) {
     	final String multipleString = getQueryParameter(request, "multiple");
     	int multiple = DEFAULT_MULTIPLE;
+
         if (multipleString != null) {
             try {
                 multiple = Math.max(0, WebSecurityUtils.safeParseInt(multipleString));
@@ -320,6 +328,7 @@ public class EventController extends MultiActionController implements Initializi
     private SortStyle getSortStyle(HttpServletRequest request) {
     	final String sortStyleString = getQueryParameter(request, "sortby");
     	SortStyle sortStyle = DEFAULT_SORT_STYLE;
+
         if (sortStyleString != null) {
             SortStyle temp = SortStyle.getSortStyle(sortStyleString);
             if (temp != null) {
@@ -332,6 +341,7 @@ public class EventController extends MultiActionController implements Initializi
     private AcknowledgeType getAcknowledgeType(HttpServletRequest request) {
     	 String ackTypeString = getQueryParameter(request, "acktype");
     	 AcknowledgeType ackType = DEFAULT_ACKNOWLEDGE_TYPE;
+
     	 // otherwise, apply filters/acktype/etc.
          if (ackTypeString != null) {
              AcknowledgeType temp = AcknowledgeType.getAcknowledgeType(ackTypeString);
@@ -343,8 +353,8 @@ public class EventController extends MultiActionController implements Initializi
     }
 
     /**
-     * This is required as when the advanced search gets called there is a difference in the query parameters.
-     * Sometimes they are delimited with '&amp;' and sometimes its delimited with '&' This method handles both cases.
+     * This is required since when the advanced search gets called there is a difference in the query parameters.
+     * Sometimes they are delimited with '&amp;' and sometimes they are delimited with '&' This method handles both cases.
      *
      * @param request the HttpServletRequest
      * @param key     the string key of the parameter
@@ -352,11 +362,14 @@ public class EventController extends MultiActionController implements Initializi
      */
     private String getQueryParameter(HttpServletRequest request, String key) {
         String queryParams = request.getQueryString();
+
         if (StringUtils.isNotEmpty(queryParams)) {
             if (queryParams.contains("&amp;")) {
                 String[] querySplit = queryParams.split("&amp;");
+
                 for (String queryParam : querySplit) {
                     String[] queryParamSplit = queryParam.split("=");
+
                     if (queryParamSplit[0].equalsIgnoreCase(key)) {
                         return queryParamSplit[1];
                     }

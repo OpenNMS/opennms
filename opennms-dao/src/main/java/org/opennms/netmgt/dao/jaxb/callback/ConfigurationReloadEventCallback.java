@@ -33,14 +33,20 @@ import java.util.function.Consumer;
 public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdateInfo> {
     private EventForwarder eventForwarder;
     private CmJaxbConfigDao<E> cmJaxbConfigDao;
+    private String daemonName;
 
     public ConfigurationReloadEventCallback(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
+        this(eventForwarder, null, null);
     }
 
     public ConfigurationReloadEventCallback(EventForwarder eventForwarder, CmJaxbConfigDao<E> cmJaxbConfigDao) {
+        this(eventForwarder, cmJaxbConfigDao, null);
+    }
+
+    public ConfigurationReloadEventCallback(EventForwarder eventForwarder, CmJaxbConfigDao<E> cmJaxbConfigDao, String daemonName) {
         this.eventForwarder = eventForwarder;
         this.cmJaxbConfigDao = cmJaxbConfigDao;
+        this.daemonName = daemonName;
     }
 
     @Override
@@ -51,7 +57,7 @@ public class ConfigurationReloadEventCallback<E> implements Consumer<ConfigUpdat
         // Fire reload event
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI,
                 "config-rest");
-        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, configUpdateInfo.getConfigName());
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, daemonName != null ? daemonName : configUpdateInfo.getConfigName());
         eventForwarder.sendNow(eventBuilder.getEvent());
     }
 }

@@ -173,7 +173,7 @@ onMounted(async () => {
     border: 1px solid var($primary);
     border-radius: 4px;
     padding: 20px;
-    background: white;
+    background: var($surface);
     margin-bottom: 30px;
 
     .config-row {
@@ -189,12 +189,12 @@ onMounted(async () => {
         .field-label {
           font-weight: bold;
           margin-right: 10px;
-          color: #555;
+          color: var(--feather-secondary-text-on-surface);
           min-width: 80px;
         }
 
         .field-value {
-          color: #333;
+          color: var(--feather-secondary-text-on-surface);
         }
       }
 

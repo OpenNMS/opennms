@@ -20,7 +20,7 @@
 /// License.
 ///
 
-import { AxiosResponse } from 'axios'
+import { AxiosResponse, AxiosResponseHeaders } from 'axios'
 
 const useDownload = () => {
   /**

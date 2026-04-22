@@ -20,10 +20,10 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
-import API from '@/services'
 import { SCV_GET_ALL_ALIAS } from '@/lib/constants'
+import API from '@/services'
 import { SCVCredentials, ScvSearchItem } from '@/types/scv'
+import { defineStore } from 'pinia'
 
 export const useScvStore = defineStore('scvStore', () => {
   const aliases = ref([] as string[])
@@ -211,3 +211,4 @@ export const useScvStore = defineStore('scvStore', () => {
     updateCredentials
   }
 })
+

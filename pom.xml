@@ -1098,7 +1098,7 @@
           <licenseSets>
             <licenseSet>
               <header>src/main/resources/license-header.txt</header>
-              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics -->
               <excludes>
                 <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
                 <exclude>**/*.css</exclude>
@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[17,18)</version>
+                 <version>[21,22)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1374,8 +1374,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <source>21</source>
+          <target>21</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1402,6 +1402,7 @@
           <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <!-- Turn off queuing in the RRD output -->
+              <java.security.manager>allow</java.security.manager>
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
@@ -1745,6 +1746,7 @@
     <bouncyCastleVersion>1.83</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
+    <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.21.5</camelVersion>
     <!-- Match (or beat) Newts version -->
@@ -1921,7 +1923,7 @@
     <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.128.Final</netty4Version>
+    <netty4Version>4.1.132.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
@@ -1957,6 +1959,7 @@
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
+    <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>

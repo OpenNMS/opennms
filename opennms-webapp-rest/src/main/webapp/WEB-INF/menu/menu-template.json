@@ -141,14 +141,14 @@
         {
           "id": "alarms",
           "name": "Alarms",
-          "url": "alarm/index.htm",
+          "url": "alarm/list.htm",
           "locationMatch": "alarm",
           "roles": null
         },
         {
           "id": "events",
           "name": "Events",
-          "url": "event/index",
+          "url": "event/list",
           "locationMatch": "event",
           "roles": null
         },
@@ -450,6 +450,13 @@
           "id": "snmpAgentConfiguration",
           "name": "SNMP Agent Configuration",
           "url": "ui/index.html#/snmp-config",
+          "locationMatch": "",
+          "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+        },
+        {
+          "id": "trapListenerConfiguration",
+          "name": "Trap Listener Configuration",
+          "url": "ui/index.html#/trapd-config",
           "locationMatch": "",
           "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },

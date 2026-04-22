@@ -30,8 +30,10 @@
           aria-label="SCV Search Results Table"
         >
           <thead>
-            <th>Alias</th>
-            <th>Key</th>
+            <tr>
+              <th>Alias</th>
+              <th>Key</th>
+            </tr>
           </thead>
           <tbody v-if="filteredResults.length > 0">
             <tr
@@ -40,18 +42,20 @@
               style="cursor: pointer;"
             >
               <td>
-                {{ item.type === 'alias' ? item.alias : ''}}
+                {{ item.type === 'alias' ? item.alias : '' }}
               </td>
               <td v-if="item.type === 'key' && item.key">
                 <a @click.prevent="onItemSelected(item)">{{ item.type === 'key' ? item.key : '' }}</a>
               </td>
-              <td v-else>
-              </td>
+              <td v-else></td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td colspan="2" style="text-align: center; font-style: italic;">
+              <td
+                colspan="2"
+                style="text-align: center; font-style: italic;"
+              >
                 No results found.
               </td>
             </tr>
@@ -65,7 +69,8 @@
           :disabled="credentialsLoading"
           data-test="scv-drawer-cancel-button"
           @click="drawerOpen = false"
-        >Cancel</FeatherButton>
+          >Cancel</FeatherButton
+        >
       </div>
     </div>
   </FeatherDrawer>
@@ -108,7 +113,7 @@ const onItemSelected = (item: ScvSearchItem) => {
   emit('item-selected', item)
 }
 
-watch (() => props.isOpen, (newVal) => {
+watch(() => props.isOpen, (newVal) => {
   drawerOpen.value = newVal
 })
 </script>
@@ -138,7 +143,7 @@ watch (() => props.isOpen, (newVal) => {
       @include table.table-condensed;
       border: 1px solid var(variables.$border-on-surface);
 
-      > thead {
+      >thead {
         background-color: var(variables.$border-on-surface);
         padding: 1em;
         text-transform: uppercase;
@@ -163,3 +168,4 @@ watch (() => props.isOpen, (newVal) => {
   }
 }
 </style>
+

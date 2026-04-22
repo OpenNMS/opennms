@@ -182,6 +182,12 @@
     <intercept-url pattern="/api/v2/snmp-config/**" method="POST" access="ROLE_ADMIN,ROLE_PROVISION" />
     <intercept-url pattern="/api/v2/snmp-config/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
 
+    <!-- Trapd Config exposes SNMPv3 credentials; restrict to admin or provision -->
+    <intercept-url pattern="/api/v2/trapd/**" method="GET" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/trapd/**" method="DELETE" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/trapd/**" method="POST" access="ROLE_ADMIN,ROLE_PROVISION" />
+    <intercept-url pattern="/api/v2/trapd/**" method="PUT" access="ROLE_ADMIN,ROLE_PROVISION" />
+
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 

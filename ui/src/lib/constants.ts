@@ -109,3 +109,15 @@ export const STORAGE_STRATEGY_OPTIONS: string[] = [
   'org.opennms.netmgt.collection.support.IndexStorageStrategy',
   'org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy'
 ]
+
+// Trapd Defaults
+export const DEFAULT_TRAPD_PORT = 10162
+export const DEFAULT_TRAPD_BIND_ADDRESS = '*'
+export const DEFAULT_TRAPD_THREADS = 0
+export const DEFAULT_TRAPD_QUEUE_SIZE = 10000
+export const DEFAULT_TRAPD_BATCH_SIZE = 1000
+export const DEFAULT_TRAPD_BATCH_INTERVAL = 500
+export const DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND = false
+export const DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE = false
+export const DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP = false
+
