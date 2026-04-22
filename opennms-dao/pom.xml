@@ -80,6 +80,11 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.config.service</groupId>
       <artifactId>org.opennms.features.config.service.api</artifactId>
       <version>${project.version}</version>
@@ -161,6 +166,11 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.encrypt-util</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <!-- Non-OpenNMS dependencies, sorted by groupId, artifactId -->
     <dependency>
