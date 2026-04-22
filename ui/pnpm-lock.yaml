@@ -325,8 +325,8 @@ importers:
         specifier: ^9.22.0
         version: 9.33.0(eslint@9.39.4)
       happy-dom:
-        specifier: ^9.20.3
-        version: 9.20.3
+        specifier: ^20.8.9
+        version: 20.8.9
       prettier:
         specifier: ^3.2.5
         version: 3.8.3
@@ -344,10 +344,10 @@ importers:
         version: 6.4.2(@types/node@25.6.0)(sass@1.99.0)
       vitest:
         specifier: ^4.1.0
-        version: 4.1.4(@types/node@25.6.0)(happy-dom@9.20.3)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))
+        version: 4.1.4(@types/node@25.6.0)(happy-dom@20.8.9)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))
       vitest-mock-extended:
         specifier: ^1.3.1
-        version: 1.3.2(typescript@5.4.5)(vitest@4.1.4(@types/node@25.6.0)(happy-dom@9.20.3)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0)))
+        version: 1.3.2(typescript@5.4.5)(vitest@4.1.4(@types/node@25.6.0)(happy-dom@20.8.9)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0)))
       vue-eslint-parser:
         specifier: ^9.3.1
         version: 9.4.3(eslint@9.39.4)
@@ -1336,6 +1336,12 @@ packages:
   '@types/web-bluetooth@0.0.16':
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
 
+  '@types/whatwg-mimetype@3.0.2':
+    resolution: {integrity: sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+
   '@typescript-eslint/eslint-plugin@6.21.0':
     resolution: {integrity: sha512-oy9+hTPCUFpngkEZUSzbf9MxI65wbKFoQYsgPdILTfbUldp5ovUuphZVe4i30emU9M/kP+T64Di0mxl7dSw3MA==}
     engines: {node: ^16.0.0 || >=18.0.0}
@@ -1737,9 +1743,6 @@ packages:
   css-what@6.2.2:
     resolution: {integrity: sha512-u/O3vwbptzhMs3L1fQE82ZSLHQQfto5gyZzwteVIEyeaY5Fc7R4dapF/BvRoSYFeqfBk4m0V1Vafq5Pjv25wvA==}
     engines: {node: '>= 6'}
-
-  css.escape@1.5.1:
-    resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
   cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}
@@ -2222,8 +2225,9 @@ packages:
     resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
     engines: {node: '>=0.8.0'}
 
-  happy-dom@9.20.3:
-    resolution: {integrity: sha512-eBsgauT435fXFvQDNcmm5QbGtYzxEzOaX35Ia+h6yP/wwa4xSWZh1CfP+mGby8Hk6Xu59mTkpyf72rUXHNxY7A==}
+  happy-dom@20.8.9:
+    resolution: {integrity: sha512-Tz23LR9T9jOGVZm2x1EPdXqwA37G/owYMxRwU0E4miurAtFsPMQ1d2Jc2okUaSjZqAFz2oEn3FLXC5a0a+siyA==}
+    engines: {node: '>=20.0.0'}
 
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
@@ -3150,17 +3154,8 @@ packages:
   web-tree-sitter@0.24.5:
     resolution: {integrity: sha512-+J/2VSHN8J47gQUAvF8KDadrfz6uFYVjxoxbKWDoXVsH2u7yLdarCnIURnrMA6uSRkgX3SdmqM5BOoQjPdSh5w==}
 
-  webidl-conversions@7.0.0:
-    resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
-    engines: {node: '>=12'}
-
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
-
-  whatwg-encoding@2.0.0:
-    resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
-    engines: {node: '>=12'}
-    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@3.0.0:
     resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
@@ -3187,6 +3182,18 @@ packages:
   wrap-ansi@8.1.0:
     resolution: {integrity: sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==}
     engines: {node: '>=12'}
+
+  ws@8.20.0:
+    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   xml-but-prettier@1.0.1:
     resolution: {integrity: sha512-C2CJaadHrZTqESlH03WOyw0oZTtoy2uEg6dSDF6YRg+9GnYNub53RRemLpnvtbHDFelxMx4LajiFsYeR6XJHgQ==}
@@ -4600,6 +4607,12 @@ snapshots:
 
   '@types/web-bluetooth@0.0.16': {}
 
+  '@types/whatwg-mimetype@3.0.2': {}
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 25.6.0
+
   '@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@9.39.4)(typescript@5.4.5))(eslint@9.39.4)(typescript@5.4.5)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -5073,8 +5086,6 @@ snapshots:
       source-map-js: 1.2.1
 
   css-what@6.2.2: {}
-
-  css.escape@1.5.1: {}
 
   cssesc@3.0.0: {}
 
@@ -5610,14 +5621,17 @@ snapshots:
 
   hammerjs@2.0.8: {}
 
-  happy-dom@9.20.3:
+  happy-dom@20.8.9:
     dependencies:
-      css.escape: 1.5.1
-      entities: 4.5.0
-      iconv-lite: 0.6.3
-      webidl-conversions: 7.0.0
-      whatwg-encoding: 2.0.0
+      '@types/node': 25.6.0
+      '@types/whatwg-mimetype': 3.0.2
+      '@types/ws': 8.18.1
+      entities: 7.0.1
       whatwg-mimetype: 3.0.0
+      ws: 8.20.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   has-flag@4.0.0: {}
 
@@ -6364,13 +6378,13 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.99.0
 
-  vitest-mock-extended@1.3.2(typescript@5.4.5)(vitest@4.1.4(@types/node@25.6.0)(happy-dom@9.20.3)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))):
+  vitest-mock-extended@1.3.2(typescript@5.4.5)(vitest@4.1.4(@types/node@25.6.0)(happy-dom@20.8.9)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))):
     dependencies:
       ts-essentials: 10.1.1(typescript@5.4.5)
       typescript: 5.4.5
-      vitest: 4.1.4(@types/node@25.6.0)(happy-dom@9.20.3)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))
+      vitest: 4.1.4(@types/node@25.6.0)(happy-dom@20.8.9)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))
 
-  vitest@4.1.4(@types/node@25.6.0)(happy-dom@9.20.3)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0)):
+  vitest@4.1.4(@types/node@25.6.0)(happy-dom@20.8.9)(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0)):
     dependencies:
       '@vitest/expect': 4.1.4
       '@vitest/mocker': 4.1.4(vite@6.4.2(@types/node@25.6.0)(sass@1.99.0))
@@ -6394,7 +6408,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.6.0
-      happy-dom: 9.20.3
+      happy-dom: 20.8.9
     transitivePeerDependencies:
       - msw
 
@@ -6472,13 +6486,7 @@ snapshots:
   web-tree-sitter@0.24.5:
     optional: true
 
-  webidl-conversions@7.0.0: {}
-
   webpack-virtual-modules@0.6.2: {}
-
-  whatwg-encoding@2.0.0:
-    dependencies:
-      iconv-lite: 0.6.3
 
   whatwg-mimetype@3.0.0: {}
 
@@ -6504,6 +6512,8 @@ snapshots:
       ansi-styles: 6.2.3
       string-width: 5.1.2
       strip-ansi: 7.2.0
+
+  ws@8.20.0: {}
 
   xml-but-prettier@1.0.1:
     dependencies:
