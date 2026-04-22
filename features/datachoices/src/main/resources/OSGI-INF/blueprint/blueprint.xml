@@ -121,12 +121,12 @@
         </service-properties>
     </service>
 
-    <bean id="modalInjector" class="org.opennms.features.datachoices.web.internal.ModalInjector">
-        <property name="stateManager" ref="stateManager"/>
+    <bean id="wizardGateService" class="org.opennms.features.datachoices.web.internal.WizardGateServiceImpl">
+        <argument ref="stateManager"/>
     </bean>
-    <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
+    <service interface="org.opennms.web.api.WizardGateService" ref="wizardGateService">
         <service-properties>
-          <entry key="registration.export" value="true" />
+            <entry key="registration.export" value="true"/>
         </service-properties>
     </service>
 

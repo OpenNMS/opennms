@@ -70,12 +70,21 @@ import {
   getUsageStatistics,
   getUsageStatisticsMetadata,
   getUsageStatisticsStatus,
-  setUsageStatisticsStatus
+  setUsageStatisticsStatus,
+  acknowledgeUsageStatisticsNotice,
+  getProductUpdateEnrollmentStatus,
+  setProductUpdateEnrollmentStatus,
+  submitProductUpdateEnrollmentForm
 } from './usageStatisticsService'
 import {
   addZenithRegistration,
   getZenithRegistrations
 } from './zenithConnectService'
+import {
+  getRequiresPasswordChange,
+  dismissPasswordChangePrompt,
+  changePassword
+} from './accountService'
 
 export default {
   search,
@@ -131,10 +140,17 @@ export default {
   addCredentials,
   updateCredentials,
   getUsageStatistics,
-  getUsageStatisticsMetadata, 
+  getUsageStatisticsMetadata,
   getUsageStatisticsStatus,
   setUsageStatisticsStatus,
+  acknowledgeUsageStatisticsNotice,
+  getProductUpdateEnrollmentStatus,
+  setProductUpdateEnrollmentStatus,
+  submitProductUpdateEnrollmentForm,
   addZenithRegistration,
   getZenithRegistrations,
+  getRequiresPasswordChange,
+  dismissPasswordChangePrompt,
+  changePassword,
   performLogout
 }

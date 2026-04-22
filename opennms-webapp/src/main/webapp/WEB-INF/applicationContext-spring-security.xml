@@ -407,6 +407,7 @@
 
   <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
     <beans:property name="defaultTargetUrl" value="/index.jsp"/>
+    <beans:property name="wizardUrl" value="/ui/index.html"/>
   </beans:bean>
   <beans:bean id="failureHandler" class="org.opennms.web.springframework.security.OpenNMSAuthFailureHandler">
     <beans:property name="defaultFailureUrl" value="/login.jsp?login_error=1"/>

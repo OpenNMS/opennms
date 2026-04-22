@@ -40,3 +40,17 @@ export interface UsageStatisticsMetadataItem {
 export interface UsageStatisticsMetadata {
   metadata: UsageStatisticsMetadataItem[]
 }
+
+export interface ProductUpdateEnrollmentStatus {
+  optedIn: boolean | null
+  noticeAcknowledged: boolean | null
+  featureEnabled: boolean
+}
+
+export interface ProductUpdateEnrollmentFormData {
+  firstName: string
+  lastName: string
+  email: string
+  company: string
+  consent: boolean
+}

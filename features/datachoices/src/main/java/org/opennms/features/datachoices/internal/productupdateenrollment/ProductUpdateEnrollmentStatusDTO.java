@@ -27,6 +27,9 @@ public class ProductUpdateEnrollmentStatusDTO {
 
     private Boolean noticeAcknowledged;
 
+    // false when disabled by opennms.productUpdateEnrollment.show / opennms.userDataCollection.show
+    private boolean featureEnabled = true;
+
     public Boolean getOptedIn() {
         return optedIn;
     }
@@ -41,5 +44,13 @@ public class ProductUpdateEnrollmentStatusDTO {
 
     public void setNoticeAcknowledged(Boolean status) {
         this.noticeAcknowledged = status;
+    }
+
+    public boolean isFeatureEnabled() {
+        return featureEnabled;
+    }
+
+    public void setFeatureEnabled(boolean featureEnabled) {
+        this.featureEnabled = featureEnabled;
     }
 }
