@@ -102,7 +102,7 @@
         "bootstrap": "~4.6.2",
         "c3": "^0.4.24",
         "cron-parser": "^4.2.1",
-        "cross-env": "^7.0.3",
+        "cross-env": "^10.1.0",
         "d3": "^3.5.17",
         "flot": "https://github.com/flot/flot.git#v0.8.3",
         "flot-datatable": "https://github.com/RangerRick/flot-datatable.git#master",
