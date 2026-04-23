@@ -3,8 +3,15 @@
     <div class="title-container">
       <h3>Lookup by IP</h3>
     </div>
-    <div>
-      <p>Find the SNMP configuration that exists for a particular IP address.</p>
+    
+    <div class="info-section">
+      <span>Find the SNMP configuration that exists for a particular IP address.</span>
+      <FeatherIcon
+        :icon="InfoIcon"
+        class="info-icon"
+        @click="isMessageDialogVisible = true"
+        data-test="snmp-config-lookup-info-icon"
+      />
     </div>
     <div class="large-spacer"></div>
 
@@ -55,13 +62,32 @@
         </div>
       </div>
     </div>
+    <MessageDialog
+      :visible="isMessageDialogVisible"
+      maxHeight="22em"
+      maxWidth="50em"
+      title="SNMP Lookup"
+      @close="isMessageDialogVisible = false"
+    >
+      <template #content>
+        <div>
+          <p>The SNMP Configuration Lookup feature allows you to quickly find the SNMP configuration for a specific IP address.</p>
+          <p>Enter an IP address in the lookup field and choose a Monitoring Location, then click the *Lookup* button.
+          If you are not using Minions, then the Monitoring Location is always `Default`. If you are using Minions, then the Monitoring Location is determined by the Minion that is responsible for monitoring the IP address.</p>
+          <p>The SNMP configuration that applies to that IP address will then be displayed.</p>
+        </div>
+      </template>
+    </MessageDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
+import { FeatherIcon } from '@featherds/icon'
+import InfoIcon from '@featherds/icon/action/Info'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import MessageDialog from '../Common/MessageDialog.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import { SnmpLookupEditMode, useSnmpConfigStore } from '@/stores/snmpConfigStore'
 import { SnmpAgentConfig } from '@/types/snmpConfig'
@@ -78,6 +104,7 @@ const lookupIpAddress = ref('')
 const lookupConfig = ref<SnmpAgentConfig>()
 const lookupMonitoringLocation = ref<ISelectItemType>({ _text: DEFAULT_MONITORING_LOCATION, _value: DEFAULT_MONITORING_LOCATION })
 const isLoading = ref(false)
+const isMessageDialogVisible = ref(false)
 
 // lookup config response individual parameters to edit
 const ipAddress = ref('')
@@ -194,6 +221,25 @@ watch(() => props.autoLookupIpAddress, (ip) => {
 
     .title {
       @include typography.headline3;
+    }
+  }
+
+  .info-section {
+    margin-bottom: 1em;
+
+    .label {
+      color: var(variables.$primary-text-on-surface);
+    }
+
+    .info-icon {
+      cursor: pointer;
+      font-size: 1.5em;
+      margin-left: 0.5em;
+      color: var(variables.$primary);
+
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 

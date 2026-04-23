@@ -6,7 +6,7 @@
       hide-close
       @hidden="onClose"
     >
-      <div class="modal-body">
+      <div class="modal-body" :style="{ maxWidth: props.maxWidth, maxHeight: props.maxHeight }">
         <slot name="content"></slot>
       </div>
       <template v-slot:footer>
@@ -25,6 +25,8 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const props = defineProps({
+  maxHeight: { type: String, default: '20em' },
+  maxWidth: { type: String, default: '50em' },
   title: { required: false, type: String },
   visible: { required: true, type: Boolean }
 })
@@ -50,4 +52,8 @@ watch ([() => props.visible], ([newVal]) => {
 </script>
 
 <style scoped lang="scss">
+  .modal-body {
+    overflow: auto;
+    word-break: break-word;
+  }
 </style>

@@ -4,7 +4,8 @@
         <h3>SNMP Configuration Upload/Download</h3>
         <div class="feather-row">
           <div class="feather-col-12">
-            <span class="label">You can both download and upload the entire SNMP configuration in both XML and Json formats.</span>
+            <span class="label">You can both download and upload the entire SNMP configuration in both XML and Json formats.
+              <strong>Use caution</strong> when uploading SNMP configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
         <div class="feather-row">

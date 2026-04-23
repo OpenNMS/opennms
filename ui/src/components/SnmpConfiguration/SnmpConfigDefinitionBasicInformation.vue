@@ -14,6 +14,12 @@
           {{ isCreate ? 'Create New SNMP Definition' : 'Edit SNMP Definition Details' }}
         </h3>
       </div>
+      <FeatherIcon
+        :icon="InfoIcon"
+        class="info-icon"
+        @click="isMessageDialogVisible = true"
+        data-test="snmp-config-lookup-info-icon"
+      />
     </div>
     <div class="spacer"></div>
     <div class="basic-info">
@@ -63,6 +69,40 @@
         />
       </div>
     </div>
+    <MessageDialog
+      :visible="isMessageDialogVisible"
+      maxHeight="22em"
+      maxWidth="50em"
+      title="SNMP Definition Details"
+      @close="isMessageDialogVisible = false"
+    >
+      <template #content>
+        <div class="snmp-definition-message-dialog-help-body">
+          <p>The SNMP Configuration UI allows you to manage SNMP definitions. SNMP definitions are used to specify the SNMP settings that should be applied to nodes based on their IP address or other criteria.</p>
+
+          <p>The top section, <strong>Configuration applies to these IP Ranges</strong>, shows badges with each specific IP, IP range or IPLIKE expression that is being viewed or edited.</p>
+
+          <p><strong>NOTE:</strong> The same detail view is used whether you arrived via <strong>Lookup by IP</strong> or via <strong>Manage Definitions</strong>.</p>
+
+          <p>In the case of a lookup, there will be only one badge for the specific IP address that was looked up. In the case of editing, either on this screen or the <strong>Manage Definitions</strong> screen, there may be multiple badges for the various IP addresses, IP ranges or IPLIKE expressions that are being edited.</p>
+
+          <p>In the input fields below, you can add a single IP address, specify a first and last IP address of a range, or specify an IPLIKE expression. Then click <strong>Add</strong>, and a new badge will appear in the top section.</p>
+
+          <p>Click the <strong>X</strong> on a badge to remove that item from the configuration being edited.</p>
+
+          <p>You may then edit all the other parameters as needed, and click <strong>Save</strong> to save the configuration, which will now apply to all the IP addresses, ranges or IPLIKE expressions specified in the badges.</p>
+
+          <p><strong>NOTE:</strong> OpenNMS will optimize the application of these configurations to the specified IP addresses, ranges, or IPLIKE expressions, for 
+          example by consolidating overlapping ranges.</p>
+
+          <h4>Secure Credentials Vault (SCV) Support</h4>
+
+          <p>For secure parameters such as read/write community strings or SNMP v3 authentication and privacy credentials, you can choose to store these in the OpenNMS Secure Credentials Vault. This allows you to keep sensitive information secure while still allowing OpenNMS to access it when needed.</p>
+
+          <p>Click on the SCV icon next to those fields to open the SCV drawer which allows you to select a credential from the vault. This will enter a reference to that credential in the field, which OpenNMS will resolve to the actual credential value when it needs to use it. A typical expression looks like <code>${scv:snmp-read-community}</code>, where <code>snmp-read-community</code> is the name of the credential stored in the vault. Note, you can also enter the reference expression directly into the field without using the SCV drawer, as long as you use the correct syntax.</p>
+        </div>
+      </template>
+    </MessageDialog>
   </div>
 </template>
 
@@ -70,7 +110,9 @@
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherIcon } from '@featherds/icon'
+import InfoIcon from '@featherds/icon/action/Info'
 import IconCancel from '@featherds/icon/navigation/Cancel'
+import MessageDialog from '../Common/MessageDialog.vue'
 import { DEFAULT_MONITORING_LOCATION } from '@/lib/constants'
 import { convertSnmpVersionToString } from '@/services/snmpConfigService'
 import { getDefaultSnmpDefinition } from '@/stores/snmpConfigStore'
@@ -96,6 +138,7 @@ interface DefinitionBadgeItem {
   ipMatch?: string
 }
 
+const isMessageDialogVisible = ref(false)
 const isValid = ref(false)
 const errors = ref<SnmpConfigFormErrors>({})
 const currentDefinition = ref<SnmpDefinition>(getDefaultSnmpDefinition())
@@ -379,6 +422,24 @@ onMounted(() => {
 @use '@featherds/styles/mixins/typography';
 @use "@featherds/table/scss/table";
 
+
+.snmp-definition-message-dialog-help-body {
+  p {
+    margin: 0.5em 0;
+  }
+
+  h4 {
+    margin-top: 1em;
+  }
+
+  code {
+    background-color: var(variables.$background);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+}
+
 .main-content {
   padding: 0.2em;
   margin: 0.2em;
@@ -389,6 +450,17 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 20px;
+  }
+
+  .info-icon {
+    cursor: pointer;
+    font-size: 1.5em;
+    margin-left: 0.5em;
+    color: var(variables.$primary);
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
 
   .basic-info {
