@@ -62,12 +62,14 @@
       </table>
     </div>
   </div>
-  <UsageStatisticsModal
-    @close="showValueModalVisible = false"
-    :subtitle="showValueModalSubtitle"
+  <MessageDialog
     :visible="showValueModalVisible"
+    :title="showValueModalSubtitle ? `Usage Statistics: ${showValueModalSubtitle}` : 'Usage Statistics'"
+    max-height="500px"
+    max-width="550px"
+    @close="showValueModalVisible = false"
   >
-    <template v-slot:content>
+    <template #content>
       <div v-if="showValueModalVisible">
         <div class="full-value-wrapper">
           <div class="full-value-contents">
@@ -76,7 +78,7 @@
         </div>
       </div>
     </template>
-  </UsageStatisticsModal>
+  </MessageDialog>
 </template>
 
 <script setup lang="ts">
@@ -89,7 +91,7 @@ import {
   UsageStatisticsMetadataItem
 } from '@/types/usageStatistics'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import UsageStatisticsModal from './UsageStatisticsModal.vue'
+import MessageDialog from '@/components/Common/MessageDialog.vue'
 
 interface StatisticsItem {
   // this is just for sorting

@@ -37,16 +37,26 @@
       </div>
     </div>
   </div>
-  <ConfirmDialog />
+  <ConfirmationDialog
+    :visible="Boolean(fileEditorStore.fileToDelete)"
+    title="Delete confirmation"
+    action-button-text="Confirm"
+    @cancel="fileEditorStore.setFileToDelete(null)"
+    @ok="fileEditorStore.deleteFile(fileEditorStore.fileToDelete?.fullPath || '')"
+  >
+    <template #content>
+      <p>Delete {{ fileEditorStore.fileToDelete?.name }}?</p>
+    </template>
+  </ConfirmationDialog>
 </template>
 
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
+import ConfirmationDialog from '@/components/Common/ConfirmationDialog.vue'
 import Editor from '@/components/FileEditor/Editor.vue'
 import FileSidebar from '@/components/FileEditor/FileSidebar.vue'
 import Help from '@/components/FileEditor/Help.vue'
 import TopBar from '@/components/FileEditor/TopBar.vue'
-import ConfirmDialog from '@/components/FileEditor/ConfirmDialog.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { useMenuStore } from '@/stores/menuStore'

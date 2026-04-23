@@ -101,33 +101,25 @@
     </div>
   </TableCard>
 
-  <FeatherDialog
-    v-model="displayDeleteDialog"
-    :labels="deleteDialogLabels"
-    hide-close
+  <ConfirmationDialog
+    :visible="displayDeleteDialog"
+    title="Delete SNMP Configuration Profile"
+    action-button-text="Delete"
+    @cancel="onCancelProfileDelete"                                                                                                              
+    @ok="onProfileDelete"
   >
-    <div class="modal-body">
+    <template v-slot:content>
       <p>
         Do you want to delete the SNMP configuration profile:
         <strong>{{ selectedProfileLabel }}</strong>
       </p>
-    </div>
-    <template v-slot:footer>
-      <FeatherButton @click="onCancelProfileDelete"> Cancel </FeatherButton>
-      <FeatherButton
-        primary
-        @click="onProfileDelete"
-      >
-        Delete
-      </FeatherButton>
     </template>
-  </FeatherDialog>
+  </ConfirmationDialog>
 </template>
 
 <script lang="ts" setup>
 import { debounce } from 'lodash'
 import { FeatherButton } from '@featherds/button'
-import { FeatherDialog } from '@featherds/dialog'
 import { FeatherIcon } from '@featherds/icon'
 import IconAdd from '@featherds/icon/action/Add'
 import IconDelete from '@featherds/icon/action/Delete'
@@ -136,6 +128,7 @@ import IconSearch from '@featherds/icon/action/Search'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import ConfirmationDialog from '../Common/ConfirmationDialog.vue'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 

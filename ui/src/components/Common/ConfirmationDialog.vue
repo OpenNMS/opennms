@@ -4,19 +4,19 @@
       v-model="isVisible"
       :labels="labels"
       hide-close
-      @hidden="onClose"
+      @hidden="onCancel"
     >
-      <div class="modal-body">
+      <div class="modal-body" :style="{ maxWidth: props.maxWidth, maxHeight: props.maxHeight }">
         <slot name="content"></slot>
       </div>
       <template v-slot:footer>
-        <FeatherButton @click="onClose">Cancel</FeatherButton>
         <FeatherButton
           primary
           @click="onAction"
         >
           {{ props.actionButtonText || 'OK' }}
         </FeatherButton>
+        <FeatherButton @click="onCancel">{{ props.cancelButtonText || 'Cancel' }}</FeatherButton>
       </template>
     </FeatherDialog>
   </div>
@@ -27,8 +27,11 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const props = defineProps({
+  maxHeight: { type: String, default: '20em' },
+  maxWidth: { type: String, default: '50em' },
   title: { required: false, type: String },
   actionButtonText: { required: false, type: String },
+  cancelButtonText: { required: false, type: String },
   visible: { required: true, type: Boolean }
 })
 
@@ -42,14 +45,14 @@ const labels = computed(() => {
   }
 })
 
-const onClose = () => {
+const onCancel = () => {
   isVisible.value = false
   emit('cancel')
 }
 
 const onAction = () => {
   isVisible.value = false
-  emit('ok' )
+  emit('ok')
 }
 
 watch ([() => props.visible], ([newVal]) => {
@@ -58,4 +61,8 @@ watch ([() => props.visible], ([newVal]) => {
 </script>
 
 <style scoped lang="scss">
+  .modal-body {
+    overflow: auto;
+    word-break: break-word;
+  }
 </style>

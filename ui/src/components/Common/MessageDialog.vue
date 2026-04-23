@@ -13,7 +13,7 @@
         <FeatherButton
           primary
           @click="onClose">
-          Close
+          {{ props.actionButtonText || 'Close' }}
         </FeatherButton>
       </template>
     </FeatherDialog>
@@ -27,6 +27,7 @@ import { FeatherDialog } from '@featherds/dialog'
 const props = defineProps({
   maxHeight: { type: String, default: '20em' },
   maxWidth: { type: String, default: '50em' },
+  actionButtonText: { required: false, type: String },
   title: { required: false, type: String },
   visible: { required: true, type: Boolean }
 })
