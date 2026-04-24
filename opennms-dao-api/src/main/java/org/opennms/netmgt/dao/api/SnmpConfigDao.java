@@ -28,4 +28,12 @@ public interface SnmpConfigDao {
     SnmpConfig getConfig();
     /** Update and save the configuration to the backing store. This should also refresh the cache. */
     void updateConfig(SnmpConfig config);
+
+    /**
+     * Update and save the configuration to the backing store. This should also refresh the cache.
+     * When isReplace is true, null values in config clear existing values rather than being ignored.
+     */
+    default void updateConfig(SnmpConfig config, boolean isReplace) {
+        updateConfig(config);
+    }
 }

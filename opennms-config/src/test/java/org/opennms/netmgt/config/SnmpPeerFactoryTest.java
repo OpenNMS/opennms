@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.mockito.Mockito;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 
@@ -1524,9 +1525,18 @@ public class SnmpPeerFactoryTest extends TestCase {
         assertEquals(originalConfig, updatedConfig1); // config should not have changed
     }
 
-    // NOTE: There is no test for saveDefaultOverrides when it receives a configuration that does not pass
-    // schema validation because it is overly complex to mock SnmpPeerFactory.snmpConfigDao just for testing,
-    // since we would have to add additional logic to SnmpPeerFactory.setResource() to allow injecting a mock dao that
-    // throws a fake ValidationException.
-    // However, this functionality *is* covered by the SnmpPeerFactoryTest.testSaveDefaultOverrides_InvalidConfig test.
+    public void testSaveDefaultOverrides_UsesReplaceFlag() {
+        SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
+        SnmpPeerFactory.snmpConfigDao = Mockito.spy(SnmpPeerFactory.snmpConfigDao);
+
+        Configuration config = new Configuration(
+            161, 3, 3000, "public", "private",
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
+
+        Mockito.verify(SnmpPeerFactory.snmpConfigDao).updateConfig(
+            Mockito.any(SnmpConfig.class), Mockito.eq(true)
+        );
+    }
 }

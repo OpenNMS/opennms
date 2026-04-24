@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.jaxb;
 
 import org.opennms.features.config.service.api.ConfigUpdateInfo;
 import org.opennms.features.config.service.impl.AbstractCmJaxbConfigDao;
+import org.opennms.features.config.service.util.ConfigConvertUtil;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.dao.jaxb.callback.ConfigurationReloadEventCallback;
@@ -62,4 +63,11 @@ public class DefaultSnmpConfigDao extends AbstractCmJaxbConfigDao<SnmpConfig> im
         return new SnmpConfigConfigurationValidationCallback();
     }
 
+    /**
+     * Override to allow use of isReplace flag.
+     */
+    @Override
+    public void updateConfig(SnmpConfig config, boolean isReplace) {
+        this.updateConfig(this.getDefaultConfigId(), ConfigConvertUtil.objectToJson(config), isReplace);
+    }
 }

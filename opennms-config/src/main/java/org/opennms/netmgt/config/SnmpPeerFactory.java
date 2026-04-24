@@ -233,13 +233,17 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
+    /**
+     * Update and save the config, replacing any existing config.
+     * Also gets the config from the store afterward, ensuring that the in-memory config is in sync with the store.
+     */
     @Override
     public void setAndSaveConfig(SnmpConfig snmpConfig) throws IOException {
         getWriteLock().lock();
 
         try {
             encryptSnmpConfig(snmpConfig);
-            getSnmpConfigDao().updateConfig(snmpConfig);
+            getSnmpConfigDao().updateConfig(snmpConfig, true);
 
             // repopulate m_config from the DAO to make sure it is in sync with what is saved
             this.m_config = getSnmpConfigDao().getConfig();
@@ -753,11 +757,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             SnmpConfig clonedConfig = SnmpPeerFactory.cloneConfig(getSnmpConfig());
             setConfigurationParams(clonedConfig, config);
 
-            // call these directly since we are already in a write lock
-
             try {
-                getSnmpConfigDao().updateConfig(clonedConfig);
-                m_config = clonedConfig;
+                setAndSaveConfig(clonedConfig);
             } catch (Exception e) {
                 LOG.error("Failed to save default overrides to config, failed schema validation.", e);
                 // m_config remains untouched
