@@ -291,10 +291,6 @@
         if (_svcJs.length() > 0) _svcJs.append(",");
         _svcJs.append(_id);
     }
-    String afterFirstAmPmJs = (afterFirstAmPm.equals("AM") || afterFirstAmPm.equals("Midnight")) ? "am" : "pm";
-    String beforeFirstAmPmJs = (beforeFirstAmPm.equals("AM") || beforeFirstAmPm.equals("Midnight")) ? "am" : "pm";
-    String afterLastAmPmJs = (afterLastAmPm.equals("AM") || afterLastAmPm.equals("Midnight")) ? "am" : "pm";
-    String beforeLastAmPmJs = (beforeLastAmPm.equals("AM") || beforeLastAmPm.equals("Midnight")) ? "am" : "pm";
 %>
 <script type="text/javascript">
 (function() {
@@ -312,28 +308,28 @@
         useAfterFirst: <%= useAfterFirstEventTime %>,
         afterFirstHour: '<%= afterFirstHour %>',
         afterFirstMinute: '<%= afterFirstMinute %>',
-        afterFirstAmPm: '<%= afterFirstAmPmJs %>',
+        afterFirstAmPm: '<%= Encode.forJavaScript(afterFirstAmPm) %>',
         afterFirstMonthIdx: '<%= afterFirstMonthCount - 1 %>',
         afterFirstDay: '<%= afterFirstDay %>',
         afterFirstYear: '<%= afterFirstYear %>',
         useBeforeFirst: <%= useBeforeFirstEventTime %>,
         beforeFirstHour: '<%= beforeFirstHour %>',
         beforeFirstMinute: '<%= beforeFirstMinute %>',
-        beforeFirstAmPm: '<%= beforeFirstAmPmJs %>',
+        beforeFirstAmPm: '<%= Encode.forJavaScript(beforeFirstAmPm) %>',
         beforeFirstMonthIdx: '<%= beforeFirstMonthCount - 1 %>',
         beforeFirstDay: '<%= beforeFirstDay %>',
         beforeFirstYear: '<%= beforeFirstYear %>',
         useAfterLast: <%= useAfterLastEventTime %>,
         afterLastHour: '<%= afterLastHour %>',
         afterLastMinute: '<%= afterLastMinute %>',
-        afterLastAmPm: '<%= afterLastAmPmJs %>',
+        afterLastAmPm: '<%= Encode.forJavaScript(afterLastAmPm) %>',
         afterLastMonthIdx: '<%= afterLastMonthCount - 1 %>',
         afterLastDay: '<%= afterLastDay %>',
         afterLastYear: '<%= afterLastYear %>',
         useBeforeLast: <%= useBeforeLastEventTime %>,
         beforeLastHour: '<%= beforeLastHour %>',
         beforeLastMinute: '<%= beforeLastMinute %>',
-        beforeLastAmPm: '<%= beforeLastAmPmJs %>',
+        beforeLastAmPm: '<%= Encode.forJavaScript(beforeLastAmPm) %>',
         beforeLastMonthIdx: '<%= beforeLastMonthCount - 1 %>',
         beforeLastDay: '<%= beforeLastDay %>',
         beforeLastYear: '<%= beforeLastYear %>'
@@ -388,7 +384,7 @@
 
     var _nowHour = '${nowHour}';
     var _nowMin = '${formattedNowMinute}';
-    var _nowAmpm = '${nowAmPm}' === 'AM' ? 'am' : 'pm';
+    var _nowAmpm = '${amPmText}';
     var _nowMonthIdx = parseInt('${nowMonth}', 10) - 1;
     var _nowDay = '${nowDate}';
     var _nowYear = '${nowYear}';
@@ -535,7 +531,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterfirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==afterFirstAmPm}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==afterFirstAmPm}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -578,7 +574,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforefirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==beforeFirstAmPm}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==beforeFirstAmPm}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -621,7 +617,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterlasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==afterLastAmPm}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==afterLastAmPm}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -664,7 +660,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforelasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==beforeLastAmPm}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==beforeLastAmPm}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>

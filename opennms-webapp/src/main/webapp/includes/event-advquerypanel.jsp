@@ -204,8 +204,6 @@
         if (_evtSvcJs.length() > 0) _evtSvcJs.append(",");
         _evtSvcJs.append(_id);
     }
-    String afterAmPmJs = (afterAmPmText.equals("AM") || afterAmPmText.equals("Midnight")) ? "am" : "pm";
-    String beforeAmPmJs = (beforeAmPmText.equals("AM") || beforeAmPmText.equals("Midnight")) ? "am" : "pm";
 %>
 <script type="text/javascript">
 (function() {
@@ -224,14 +222,14 @@
         useAfterTime: <%= useAfterTime %>,
         afterHour: '<%= afterHourVal %>',
         afterMinute: '<%= afterFormattedMinute %>',
-        afterAmPm: '<%= afterAmPmJs %>',
+        afterAmPm: '<%= Encode.forJavaScript(afterAmPmText) %>',
         afterMonthIdx: '<%= afterMonthCount - 1 %>',
         afterDay: '<%= afterDayVal %>',
         afterYear: '<%= afterYearVal %>',
         useBeforeTime: <%= useBeforeTime %>,
         beforeHour: '<%= beforeHourVal %>',
         beforeMinute: '<%= beforeFormattedMinute %>',
-        beforeAmPm: '<%= beforeAmPmJs %>',
+        beforeAmPm: '<%= Encode.forJavaScript(beforeAmPmText) %>',
         beforeMonthIdx: '<%= beforeMonthCount - 1 %>',
         beforeDay: '<%= beforeDayVal %>',
         beforeYear: '<%= beforeYearVal %>'
@@ -282,7 +280,7 @@
 
     var _nowHour = '${nowHour}';
     var _nowMin = '${formattedNowMinute}';
-    var _nowAmpm = '${nowAmPm}' === 'AM' ? 'am' : 'pm';
+    var _nowAmpm = '${amPmText}';
     var _nowMonthIdx = parseInt('${nowMonth}', 10) - 1;
     var _nowDay = '${nowDate}';
     var _nowYear = '${nowYear}';
@@ -464,7 +462,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="afterampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==afterAmPmText}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==afterAmPmText}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
@@ -509,7 +507,7 @@
 			<div class="col-xs-4 col-sm-4 col-md-3">
 				<select class="form-control custom-select" name="beforeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
-						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==beforeAmPmText}">${dayTime}</form:option>
+						<form:option value="${dayTime}" selected="${dayTime==beforeAmPmText}">${dayTime}</form:option>
 					</c:forEach>
 				</select>
 			</div>
