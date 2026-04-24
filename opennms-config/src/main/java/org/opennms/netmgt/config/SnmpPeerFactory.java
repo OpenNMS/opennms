@@ -760,7 +760,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             try {
                 setAndSaveConfig(clonedConfig);
             } catch (Exception e) {
-                LOG.error("Failed to save default overrides to config, failed schema validation.", e);
+                LOG.error("Failed to save default overrides to config.", e);
                 // m_config remains untouched
             }
         } finally {
