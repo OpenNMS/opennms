@@ -425,17 +425,17 @@
 
 	<div class="form-group col-sm-6">
 		<label for="alarmtext">Alarm Text Contains</label>
-		<input class="form-control" type="text" name="alarmtext" value="<%= prefillAlarmText %>" />
+		<input class="form-control" type="text" name="alarmtext" value="<%= Encode.forHtmlAttribute(prefillAlarmText) %>" />
 	</div>
 
 	<div class="form-group col-sm-6">
 		<label for="iplike">TCP/IP Address Like</label>
-		<input class="form-control" type="text" name="iplike" value="<%= prefillIpLike %>" />
+		<input class="form-control" type="text" name="iplike" value="<%= Encode.forHtmlAttribute(prefillIpLike) %>" />
 	</div>
 
 	<div class="form-group col-sm-6">
 		<label for="nodenamelike">Node Label Contains</label>
-		<input class="form-control" type="text" name="nodenamelike" value="<%= prefillNodeName %>" />
+		<input class="form-control" type="text" name="nodenamelike" value="<%= Encode.forHtmlAttribute(prefillNodeName) %>" />
 	</div>
 
     <div class="form-group col-sm-6">
@@ -444,7 +444,7 @@
             <div>
                 <label>
                     <input type="checkbox" name="severity-<%=severity.getId()%>" value="1"
-                           <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%=severity.getLabel()%>
+                           <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%= Encode.forHtml(severity.getLabel()) %>
                 </label>
             </div>
         <% } %>
@@ -457,7 +457,7 @@
             <div>
                 <label>
                     <input type="checkbox" name="service-<%=serviceNameMap.get(name)%>" value="1"
-                           <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%=name%>
+                           <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%= Encode.forHtml(name) %>
                 </label>
             </div>
         <% } %>
@@ -507,7 +507,7 @@
 		<select class="form-control custom-select" name="category">
 			<option value="" <%= prefillCategory.isEmpty() ? "selected" : "" %>>Do not filter by category</option>
 			<% for (final String category: categories) { %>
-			<option value="<%=category%>" <%= category.equals(prefillCategory) ? "selected" : "" %>><%=category%></option>
+			<option value="<%= Encode.forHtmlAttribute(category) %>" <%= category.equals(prefillCategory) ? "selected" : "" %>><%= Encode.forHtml(category) %></option>
 			<% } %>
 		</select>
 

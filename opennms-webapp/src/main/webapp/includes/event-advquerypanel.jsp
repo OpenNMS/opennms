@@ -318,19 +318,19 @@
 	</div>
 	<div class="form-group col-sm-6">
 		<label for="nodenamelike">Node Label Contains</label>
-		<input class="form-control" type="text" name="nodenamelike" value="<%= prefillNodeName %>" />
+		<input class="form-control" type="text" name="nodenamelike" value="<%= Encode.forHtmlAttribute(prefillNodeName) %>" />
 	</div>
 	</div>
 
 	<div class="row">
 	<div class="form-group col-sm-6">
 		<label for="eventtext">Event Text Contains</label>
-		<input class="form-control" type="text" name="eventtext" value="<%= prefillEventText %>" />
+		<input class="form-control" type="text" name="eventtext" value="<%= Encode.forHtmlAttribute(prefillEventText) %>" />
 	</div>
 
 	<div class="form-group col-sm-6">
 		<label for="iplike">TCP/IP Address Like</label>
-		<input class="form-control" type="text" name="iplike" value="<%= prefillIpLike %>" />
+		<input class="form-control" type="text" name="iplike" value="<%= Encode.forHtmlAttribute(prefillIpLike) %>" />
 	</div>
 	</div>
 
@@ -340,9 +340,9 @@
 			<select class="form-control custom-select" name="nodelocation">
 				<option <%= prefillNodeLocation.isEmpty() ? "selected=\"selected\"" : "" %>>Any</option>
 				<% for (OnmsMonitoringLocation onmsMonitoringLocation : monitoringLocations ) { %>
-				<option value="<%= onmsMonitoringLocation.getLocationName() %>"
+				<option value="<%= Encode.forHtmlAttribute(onmsMonitoringLocation.getLocationName()) %>"
 				        <%= onmsMonitoringLocation.getLocationName().equals(prefillNodeLocation) ? "selected=\"selected\"" : "" %>>
-					<%= onmsMonitoringLocation.getLocationName() %>
+					<%= Encode.forHtml(onmsMonitoringLocation.getLocationName()) %>
 				</option>
 				<% } %>
 			</select>
@@ -353,9 +353,9 @@
 			<select class="form-control custom-select" name="systemId">
 				<option <%= prefillSystemId.isEmpty() ? "selected" : "" %>>Any</option>
 				<% for (OnmsMonitoringSystem onmsMonitoringSystem : monitoringSystems ) { %>
-				<option value="<%= onmsMonitoringSystem.getId() %>"
+				<option value="<%= Encode.forHtmlAttribute(onmsMonitoringSystem.getId()) %>"
 				        <%= onmsMonitoringSystem.getId().equals(prefillSystemId) ? "selected" : "" %>>
-					<%= onmsMonitoringSystem.getId() %>
+					<%= Encode.forHtml(onmsMonitoringSystem.getId()) %>
 				</option>
 				<% } %>
 			</select>
@@ -369,7 +369,7 @@
                 <div>
                     <label>
                         <input type="checkbox" name="severity-<%=severity.getId()%>" value="1"
-                               <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%=severity.getLabel()%>
+                               <%=checkedSeverities.contains(severity.getId()) ? "checked" : ""%> /> <%= Encode.forHtml(severity.getLabel()) %>
                     </label>
                 </div>
             <% } %>
@@ -381,7 +381,7 @@
                 <div>
                     <label>
                         <input type="checkbox" name="service-<%=serviceNameMap.get(name)%>" value="1"
-                               <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%=name%>
+                               <%=checkedServices.contains(serviceNameMap.get(name)) ? "checked" : ""%> /> <%= Encode.forHtml(name) %>
                     </label>
                 </div>
             <% } %>
@@ -391,7 +391,7 @@
 	<div class="row">
 	<div class="form-group col-sm-12">
 		<label for="exactuei">Exact Event UEI</label>
-		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" value="<%= prefillExactUei %>" />
+		<input class="form-control" type="text" name="exactuei" size="64" maxsize="128" value="<%= Encode.forHtmlAttribute(prefillExactUei) %>" />
 	</div>
 	</div>
 
