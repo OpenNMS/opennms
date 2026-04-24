@@ -356,14 +356,27 @@
             cb.checked = s.services.indexOf(parseInt(cb.name.split('-')[1], 10)) >= 0;
         });
 
+        function setCollapseExpanded(collapseId, expanded) {
+            var colEl = document.getElementById(collapseId);
+            if (!colEl) return;
+
+            if (expanded) { colEl.classList.add('show'); }
+            else { colEl.classList.remove('show'); }
+
+            var targetSelector = '#' + collapseId;
+            document.querySelectorAll(
+                '[href="' + targetSelector + '"], ' +
+                '[data-target="' + targetSelector + '"], ' +
+                '[data-bs-target="' + targetSelector + '"]'
+            ).forEach(function(toggleEl) {
+                toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            });
+        }
+
         function applyTime(prefix, collapseId, useTime, hour, minute, ampm, monthIdx, day, year) {
             var cb = form.querySelector('[name="use' + prefix + '"]');
             if (cb) cb.checked = useTime;
-            var colEl = document.getElementById(collapseId);
-            if (colEl) {
-                if (useTime) { colEl.classList.add('show'); }
-                else { colEl.classList.remove('show'); }
-            }
+            setCollapseExpanded(collapseId, useTime);
             form.querySelector('[name="' + prefix + 'hour"]').value = hour;
             form.querySelector('[name="' + prefix + 'minute"]').value = minute;
             form.querySelector('[name="' + prefix + 'ampm"]').value = ampm;
