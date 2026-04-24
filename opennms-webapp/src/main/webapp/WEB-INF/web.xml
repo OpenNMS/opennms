@@ -1090,12 +1090,6 @@
     <servlet-name>snmpManageNodes</servlet-name>
     <url-pattern>/admin/changeCollectStatus</url-pattern>
   </servlet-mapping>
-  <!--
-  <servlet-mapping>
-    <servlet-name>snmpConfig</servlet-name>
-    <url-pattern>/admin/snmpConfig</url-pattern>
-  </servlet-mapping>
-  -->
 
   <servlet-mapping>
         <servlet-name>updateServiceNotify</servlet-name>
