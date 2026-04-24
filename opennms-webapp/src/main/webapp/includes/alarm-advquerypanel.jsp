@@ -354,10 +354,10 @@
         if (ncat) ncat.checked = s.nestedCategoryNot;
 
         form.querySelectorAll('[name^="severity-"]').forEach(function(cb) {
-            cb.checked = s.severities.indexOf(parseInt(cb.name.split('-')[1])) >= 0;
+            cb.checked = s.severities.indexOf(parseInt(cb.name.split('-')[1], 10)) >= 0;
         });
         form.querySelectorAll('[name^="service-"]').forEach(function(cb) {
-            cb.checked = s.services.indexOf(parseInt(cb.name.split('-')[1])) >= 0;
+            cb.checked = s.services.indexOf(parseInt(cb.name.split('-')[1], 10)) >= 0;
         });
 
         function applyTime(prefix, collapseId, useTime, hour, minute, ampm, monthIdx, day, year) {
@@ -389,7 +389,7 @@
     var _nowHour = '${nowHour}';
     var _nowMin = '${formattedNowMinute}';
     var _nowAmpm = '${nowAmPm}' === 'AM' ? 'am' : 'pm';
-    var _nowMonthIdx = parseInt('${nowMonth}') - 1;
+    var _nowMonthIdx = parseInt('${nowMonth}', 10) - 1;
     var _nowDay = '${nowDate}';
     var _nowYear = '${nowYear}';
 
