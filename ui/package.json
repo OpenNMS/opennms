@@ -94,7 +94,7 @@
     "sass": "^1.75.0",
     "sass-loader": "^14.1.1",
     "splitpanes": "^3.1.5",
-    "uuid": "^10.0.0",
+    "uuid": "^14.0.0",
     "vite-svg-loader": "^4.0.0",
     "vkbeautify": "^0.99.3",
     "vue": "^3.5.33",
