@@ -1527,16 +1527,20 @@ public class SnmpPeerFactoryTest extends TestCase {
 
     public void testSaveDefaultOverrides_UsesReplaceFlag() {
         SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
-        SnmpPeerFactory.snmpConfigDao = Mockito.spy(SnmpPeerFactory.snmpConfigDao);
+        final SnmpConfigDao originalSnmpConfigDao = SnmpPeerFactory.snmpConfigDao;
+        SnmpPeerFactory.snmpConfigDao = Mockito.spy(originalSnmpConfigDao);
+        try {
+            Configuration config = new Configuration(
+                161, 3, 3000, "public", "private",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+            );
+            SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
 
-        Configuration config = new Configuration(
-            161, 3, 3000, "public", "private",
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
-        );
-        SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
-
-        Mockito.verify(SnmpPeerFactory.snmpConfigDao).updateConfig(
-            Mockito.any(SnmpConfig.class), Mockito.eq(true)
-        );
+            Mockito.verify(SnmpPeerFactory.snmpConfigDao).updateConfig(
+                Mockito.any(SnmpConfig.class), Mockito.eq(true)
+            );
+        } finally {
+            SnmpPeerFactory.snmpConfigDao = originalSnmpConfigDao;
+        }
     }
 }
