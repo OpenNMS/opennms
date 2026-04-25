@@ -49,6 +49,7 @@ import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
+import org.opennms.netmgt.dao.api.SnmpConfigDao;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.mockito.Mockito;
 import org.springframework.core.io.ByteArrayResource;
@@ -1527,20 +1528,20 @@ public class SnmpPeerFactoryTest extends TestCase {
 
     public void testSaveDefaultOverrides_UsesReplaceFlag() {
         SnmpPeerFactory.setResource(new ByteArrayResource(getSnmpConfig().getBytes()));
-        final SnmpConfigDao originalSnmpConfigDao = SnmpPeerFactory.snmpConfigDao;
-        SnmpPeerFactory.snmpConfigDao = Mockito.spy(originalSnmpConfigDao);
-        try {
-            Configuration config = new Configuration(
-                161, 3, 3000, "public", "private",
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
-            );
-            SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
+        SnmpConfig currentConfig = SnmpPeerFactory.snmpConfigDao.getConfig();
 
-            Mockito.verify(SnmpPeerFactory.snmpConfigDao).updateConfig(
-                Mockito.any(SnmpConfig.class), Mockito.eq(true)
-            );
-        } finally {
-            SnmpPeerFactory.snmpConfigDao = originalSnmpConfigDao;
-        }
+        SnmpConfigDao mockDao = Mockito.mock(SnmpConfigDao.class);
+        Mockito.when(mockDao.getConfig()).thenReturn(currentConfig);
+        SnmpPeerFactory.snmpConfigDao = mockDao;
+
+        Configuration config = new Configuration(
+            161, 3, 3000, "public", "private",
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+        );
+        SnmpPeerFactory.getInstance().saveDefaultOverrides(config);
+
+        Mockito.verify(mockDao).updateConfig(
+            Mockito.any(SnmpConfig.class), Mockito.eq(true)
+        );
     }
 }
