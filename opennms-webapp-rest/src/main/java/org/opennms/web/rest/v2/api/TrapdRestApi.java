@@ -27,11 +27,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
@@ -45,22 +47,80 @@ import org.opennms.web.rest.v2.model.TrapdConfigDto;
 @Tag(name = "Trapd", description = "Trapd API V2")
 public interface TrapdRestApi {
 
+
+
+
+
     @POST
     @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
-            summary = "Upload trapd configuration",
-            description = "Upload trapd-configuration XML and persist it to DB.",
+            summary = "Upload Trap configuration in JSON format.",
+            description = "Upload Trap configuration in JSON format and apply the changes.",
             operationId = "uploadTrapdConfiguration"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Configuration updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid trapd XML or missing upload field"),
-            @ApiResponse(responseCode = "500", description = "Failed to persist trapd configuration")
+            @ApiResponse(responseCode = "200", description = "Trap configuration uploaded and applied successfully",
+                content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "Failed to persist Trap configuration.",
+                content = @Content)
     })
     Response uploadTrapdConfiguration(@Multipart("upload") Attachment attachment, @Context SecurityContext securityContext);
-    
+
+    @POST
+    @Path("upload/xml")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Upload Trap configuration in XML format.",
+            description = "Upload Trap configuration in XML format and apply the changes.",
+            operationId = "uploadTrapdConfigurationXml"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Trap configuration uploaded and applied successfully",
+                content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing configuration.",
+                content = @Content),
+            @ApiResponse(responseCode = "500", description = "Failed to persist Trap configuration.",
+                content = @Content)
+    })
+    Response uploadTrapdConfigurationXml(@Multipart("upload") Attachment attachment, @Context SecurityContext securityContext);
+
+//    @POST
+//    @Path("upload")
+//    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Operation(
+//            summary = "Upload trapd configuration",
+//            description = "Upload trapd-configuration XML and persist it to DB.",
+//            operationId = "uploadTrapdConfiguration"
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Configuration updated successfully"),
+//            @ApiResponse(responseCode = "400", description = "Invalid trapd XML or missing upload field"),
+//            @ApiResponse(responseCode = "500", description = "Failed to persist trapd configuration")
+//    })
+//    Response uploadTrapdConfiguration(@Multipart("upload") Attachment attachment, @Context SecurityContext securityContext);
+
+    @GET
+    @Path("download")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Download trapd configuration",
+            description = "Download trapd configuration in JSON or XML format.",
+            operationId = "downloadConfig"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Trapd configuration in download format retrieved successfully",
+                    content = { @Content(mediaType = "application/json"), @Content(mediaType = "application/xml") }),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content)
+    })
+    Response downloadTrapdConfig(@QueryParam("format") String format);
+
     @GET
     @Path("config")
     @Produces(MediaType.APPLICATION_JSON)

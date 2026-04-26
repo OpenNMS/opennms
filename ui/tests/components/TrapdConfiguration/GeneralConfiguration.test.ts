@@ -95,7 +95,7 @@ describe('GeneralConfiguration.vue', () => {
     expect(wrapper.text()).toContain('Update Changes')
     expect((wrapper.vm as any).port).toBe(162)
     expect((wrapper.vm as any).bindAddress).toBe('192.168.1.10')
-    expect((wrapper.vm as any).status).toBe(true)
+    expect((wrapper.vm as any).newSuspectOnTrap).toBe(true)
     expect((wrapper.vm as any).trapMessageStatus).toBe(false)
     expect((wrapper.vm as any).trapSourceAddressStatus).toBe(true)
     expect((wrapper.vm as any).threads).toBe(4)
@@ -126,7 +126,7 @@ describe('GeneralConfiguration.vue', () => {
 
     expect((wrapper.vm as any).port).toBe(10162)
     expect((wrapper.vm as any).bindAddress).toBe('*')
-    expect((wrapper.vm as any).status).toBe(false)
+    expect((wrapper.vm as any).newSuspectOnTrap).toBe(false)
     expect((wrapper.vm as any).trapMessageStatus).toBe(true)
     expect((wrapper.vm as any).trapSourceAddressStatus).toBe(false)
     expect((wrapper.vm as any).threads).toBe(0)
@@ -149,11 +149,11 @@ describe('GeneralConfiguration.vue', () => {
   it('toggles all switch values through the component handlers', () => {
     const wrapper = mountComponent()
 
-    ;(wrapper.vm as any).onChangeStatus()
+    ;(wrapper.vm as any).onChangeNewSuspectOnTrap()
     ;(wrapper.vm as any).onChangeTrapMessageStatus()
     ;(wrapper.vm as any).onChangeTrapSourceAddressStatus()
 
-    expect((wrapper.vm as any).status).toBe(false)
+    expect((wrapper.vm as any).newSuspectOnTrap).toBe(false)
     expect((wrapper.vm as any).trapMessageStatus).toBe(true)
     expect((wrapper.vm as any).trapSourceAddressStatus).toBe(false)
   })
@@ -163,7 +163,7 @@ describe('GeneralConfiguration.vue', () => {
 
     await setBindingValue(wrapper, 'port', '10162')
     await setBindingValue(wrapper, 'bindAddress', '*')
-    await setBindingValue(wrapper, 'status', false)
+    await setBindingValue(wrapper, 'newSuspectOnTrap', false)
     await setBindingValue(wrapper, 'trapMessageStatus', true)
     await setBindingValue(wrapper, 'trapSourceAddressStatus', false)
     await setBindingValue(wrapper, 'threads', '2')

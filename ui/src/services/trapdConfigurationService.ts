@@ -40,20 +40,31 @@ const throwTrapdServiceError = (error: unknown, fallbackMessage: string): never 
   throw new Error(getTrapdServiceErrorMessage(error, fallbackMessage))
 }
 
-export const uploadTrapdConfiguration = async (file: File): Promise<void> => {
-  const formData = new FormData()
-  formData.append('upload', file)
+export const uploadTrapdConfiguration = async (file: File, isXml: boolean): Promise<void> => {
+  const fullEndpoint = isXml ? `${endpoint}/upload/xml` : `${endpoint}/upload`
 
   try {
-    const response = await v2.post(`${endpoint}/upload`, formData)
+    const formData = new FormData()
+    formData.append('upload', file)
 
-    if (response.status === 200) {
-      return
+    const response = await v2.post(fullEndpoint, formData)
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to upload file: ${response.statusText}`)
     }
-
-    throw new Error(`Unexpected response status: ${response.status}`)
   } catch (error) {
     return throwTrapdServiceError(error, 'Failed to upload trapd configuration.')
+  }
+}
+
+export const downloadTrapdConfig = async (isXml: boolean) => {
+  const fullEndpoint = `${endpoint}/download?format=${isXml ? 'xml' : 'json'}`
+
+  try {
+    return await v2.get(fullEndpoint, { responseType: 'blob' })
+  } catch (err) {
+    console.error('Error downloading Trap config file:', err)
+    return false
   }
 }
 

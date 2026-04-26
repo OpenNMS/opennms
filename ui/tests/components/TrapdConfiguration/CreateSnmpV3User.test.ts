@@ -2,7 +2,6 @@ import CreateSnmpV3User from '@/components/TrapdConfiguration/CreateSnmpV3User.v
 import {
   DEFAULT_SNMP_V3_AUTH_PROTOCOL,
   DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
-  DEFAULT_SNMP_V3_SECURITY_NAME
 } from '@/lib/constants'
 import {
   AUTH_PROTOCOL_OPTIONS,
@@ -194,7 +193,7 @@ describe('CreateSnmpV3User.vue', () => {
   it('renders create mode with heading and action buttons', () => {
     const wrapper = mountComponent()
 
-    expect(wrapper.find('h3').text()).toBe('New SNMPv3 User Management')
+    expect(wrapper.find('h3').text()).toBe('New SNMPv3 User')
     expect(wrapper.find('[data-test="create-user-button"]').text()).toContain('Create User')
     expect(wrapper.find('[data-test="cancel-button"]').exists()).toBe(true)
   })
@@ -357,7 +356,7 @@ describe('CreateSnmpV3User.vue', () => {
     await nextTick()
 
     expect((wrapper.vm as any).securityLevel).toEqual(SECURITY_LEVEL_OPTIONS[0])
-    expect((wrapper.vm as any).securityName).toBe(DEFAULT_SNMP_V3_SECURITY_NAME)
+    expect((wrapper.vm as any).securityName).toBe('')
     expect((wrapper.vm as any).engineId).toBe('')
   })
 

@@ -5,6 +5,15 @@
         <h3>Trap Listener Settings</h3>
       </div>
     </div>
+    <div class="info-section">
+      <span>Configure trap listener settings.</span>
+      <FeatherIcon
+        :icon="InfoIcon"
+        class="info-icon"
+        @click="isMessageDialogVisible = true"
+        data-test="trap-config-general-info-icon"
+      />
+    </div>
     <div class="section">
       <FeatherInput
         label="Port"
@@ -28,11 +37,11 @@
     <div class="spacer"></div>
     <div class="switch-row">
       <SwitchRender
-        :checked="status"
-        @click="onChangeStatus"
+        :checked="newSuspectOnTrap"
+        @click="onChangeNewSuspectOnTrap"
         data-test="unknown-devices-input"
       />
-      <label class="switch-label">Auto-discover unknown devices</label>
+      <label class="switch-label">Create new nodes when receiving an SNMP trap with an unknown source IP address?</label>
     </div>
     <div class="spacer"></div>
     <div class="spacer"></div>
@@ -95,13 +104,13 @@
           <div class="spacer"></div>
           <div class="spacer"></div>
           <FeatherInput
-            label="Batch Interval"
-            placeholder="Enter batch interval"
+            label="Batch Interval ms"
+            placeholder="Enter batch interval in ms"
             v-model="batchInterval"
             :min="0"
             :error="trapConfigError.batchInterval"
             type="number"
-            :hint="'Default: 500'"
+            :hint="'Default: 500ms'"
           />
           <div class="spacer"></div>
           <div class="spacer"></div>
@@ -120,24 +129,40 @@
         Update Changes
       </FeatherButton>
     </div>
+    <MessageDialog
+      :visible="isMessageDialogVisible"
+      maxHeight="22em"
+      maxWidth="50em"
+      title="Trap Configuration"
+      @close="isMessageDialogVisible = false"
+    >
+      <template #content>
+        <div>
+          <p>Configuration Trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
+        </div>
+      </template>
+    </MessageDialog>
   </TableCard>
 </template>
 
 <script setup lang="ts">
+import { isEqual } from 'lodash'
+import { FeatherButton } from '@featherds/button'
+import { FeatherExpansionPanel } from '@featherds/expansion'
+import { FeatherIcon } from '@featherds/icon'
+import InfoIcon from '@featherds/icon/action/Info'
+import { FeatherInput } from '@featherds/input'
+import { SwitchRender } from '@featherds/switch'
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_TRAPD_BATCH_INTERVAL, DEFAULT_TRAPD_BATCH_SIZE, DEFAULT_TRAPD_BIND_ADDRESS, DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE, DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP, DEFAULT_TRAPD_PORT, DEFAULT_TRAPD_QUEUE_SIZE, DEFAULT_TRAPD_THREADS, DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND } from '@/lib/constants'
 import { isValidIP, isValidPort, MAX_PORT, MIN_PORT } from '@/lib/trapdValidator'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useTrapdConfigStore } from '@/stores/trapdConfigStore'
 import { TrapConfig, TrapdConfigurationError } from '@/types/trapConfig'
-import { FeatherButton } from '@featherds/button'
-import { FeatherExpansionPanel } from '@featherds/expansion'
-import { FeatherInput } from '@featherds/input'
-import { SwitchRender } from '@featherds/switch'
-import { isEqual } from 'lodash'
+import MessageDialog from '../Common/MessageDialog.vue'
 import TableCard from '../Common/TableCard.vue'
 
-const status = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
+const newSuspectOnTrap = ref(DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP)
 const port = ref<number>(DEFAULT_TRAPD_PORT)
 const bindAddress = ref(DEFAULT_TRAPD_BIND_ADDRESS)
 const trapMessageStatus = ref(DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE)
@@ -151,9 +176,10 @@ const isSaveDisabled = ref(true)
 const isSaving = ref(false)
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
+const isMessageDialogVisible = ref(false)
 
-const onChangeStatus = () => {
-  status.value = !status.value
+const onChangeNewSuspectOnTrap = () => {
+  newSuspectOnTrap.value = !newSuspectOnTrap.value
 }
 
 const onChangeTrapMessageStatus = () => {
@@ -205,7 +231,7 @@ const updateConfig = async () => {
   const newConfig: TrapConfig = {
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
-    newSuspectOnTrap: status.value,
+    newSuspectOnTrap: newSuspectOnTrap.value,
     useAddressFromVarbind: trapSourceAddressStatus.value,
     includeRawMessage: trapMessageStatus.value,
     threads: Number(threads.value),
@@ -233,7 +259,7 @@ const loadInitialConfig = () => {
   if (store.trapdConfig) {
     port.value = store.trapdConfig.snmpTrapPort || DEFAULT_TRAPD_PORT
     bindAddress.value = store.trapdConfig.snmpTrapAddress || DEFAULT_TRAPD_BIND_ADDRESS
-    status.value = store.trapdConfig.newSuspectOnTrap || DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
+    newSuspectOnTrap.value = store.trapdConfig.newSuspectOnTrap || DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
     trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
     trapMessageStatus.value = store.trapdConfig.includeRawMessage || DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
     threads.value = store.trapdConfig.threads || DEFAULT_TRAPD_THREADS
@@ -248,7 +274,7 @@ watchEffect(() => {
   isSaveDisabled.value = Object.keys(trapConfigError.value).length > 0 || isEqual({
     snmpTrapPort: Number(port.value),
     snmpTrapAddress: bindAddress.value,
-    newSuspectOnTrap: status.value,
+    newSuspectOnTrap: newSuspectOnTrap.value,
     useAddressFromVarbind: trapSourceAddressStatus.value,
     includeRawMessage: trapMessageStatus.value,
     threads: Number(threads.value),
@@ -302,6 +328,25 @@ watch(() => store.trapdConfig, () => {
 
   .spacer {
     height: 0.5em;
+  }
+
+  .info-section {
+    margin-bottom: 1em;
+
+    .label {
+      color: var(variables.$primary-text-on-surface);
+    }
+
+    .info-icon {
+      cursor: pointer;
+      font-size: 1.5em;
+      margin-left: 0.5em;
+      color: var(variables.$primary);
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
 
   .switch-row {

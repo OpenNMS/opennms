@@ -28,7 +28,6 @@ import {
   DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE,
   DEFAULT_SNMP_V3_PRIVACY_PROTOCOL,
   DEFAULT_SNMP_V3_SECURITY_LEVEL,
-  DEFAULT_SNMP_V3_SECURITY_NAME,
   DEFAULT_SNMP_VERSION,
   DEFAULT_SNMP_WRITE_COMMUNITY_STRING
 } from '@/lib/constants'
@@ -706,7 +705,7 @@ describe('useSnmpConfigStore', () => {
       expect(defaults.maxRepetitions).toBe(DEFAULT_SNMP_MAX_REPETITIONS)
       expect(defaults.ttl).toBe(DEFAULT_SNMP_TTL)
       expect(defaults.version).toBe(DEFAULT_SNMP_VERSION)
-      expect(defaults.securityName).toBe(DEFAULT_SNMP_V3_SECURITY_NAME)
+      expect(defaults.securityName).toBe('')
       expect(defaults.securityLevel).toBe(DEFAULT_SNMP_V3_SECURITY_LEVEL)
       expect(defaults.authPassphrase).toBe(DEFAULT_SNMP_V3_AUTH_PASSPHRASE)
       expect(defaults.authProtocol).toBe(DEFAULT_SNMP_V3_AUTH_PROTOCOL)

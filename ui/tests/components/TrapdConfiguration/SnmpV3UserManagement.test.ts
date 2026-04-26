@@ -178,9 +178,8 @@ describe('SnmpV3UserManagement.vue', () => {
     const wrapper = mountComponent()
 
     expect(wrapper.text()).toContain('SNMPv3 User Management')
-    expect(wrapper.text()).toContain('List SNMPv3 users credentials')
     expect(wrapper.find('[data-test="add-user-button"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('SnmpV3 Username')
+    expect(wrapper.text()).toContain('Security Name')
     expect(wrapper.text()).toContain('Security Level')
     expect(wrapper.text()).toContain('Authentication Protocol')
     expect(wrapper.text()).toContain('Privacy Protocol')
@@ -377,7 +376,7 @@ describe('SnmpV3UserManagement.vue', () => {
     })
     await nextTick()
 
-    expect((wrapper.vm as any).sort.username).toBe(SORT.NONE)
+    expect((wrapper.vm as any).sort.securityName).toBe(SORT.NONE)
     expect((wrapper.vm as any).sort.securityLevel).toBe(SORT.ASCENDING)
     expect((wrapper.vm as any).sort.authenticationProtocol).toBe(SORT.NONE)
     expect((wrapper.vm as any).sort.privacyProtocol).toBe(SORT.NONE)
@@ -386,14 +385,14 @@ describe('SnmpV3UserManagement.vue', () => {
   it('sortChanged resets previous sort values before applying the next property', () => {
     const wrapper = mountComponent()
 
-    ;(wrapper.vm as any).sort.username = SORT.DESCENDING
+    ;(wrapper.vm as any).sort.securityName = SORT.DESCENDING
     ;(wrapper.vm as any).sort.securityLevel = SORT.ASCENDING
     ;(wrapper.vm as any).sortChanged({
       property: 'privacyProtocol',
       value: SORT.ASCENDING
     })
 
-    expect((wrapper.vm as any).sort.username).toBe(SORT.NONE)
+    expect((wrapper.vm as any).sort.securityName).toBe(SORT.NONE)
     expect((wrapper.vm as any).sort.securityLevel).toBe(SORT.NONE)
     expect((wrapper.vm as any).sort.authenticationProtocol).toBe(SORT.NONE)
     expect((wrapper.vm as any).sort.privacyProtocol).toBe(SORT.ASCENDING)

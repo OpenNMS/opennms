@@ -454,8 +454,8 @@
           "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
         },
         {
-          "id": "trapListenerConfiguration",
-          "name": "Trap Listener Configuration",
+          "id": "trapConfiguration",
+          "name": "Trap Configuration",
           "url": "ui/index.html#/trapd-config",
           "locationMatch": "",
           "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]

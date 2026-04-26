@@ -33,6 +33,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.config.exception.ValidationException;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
@@ -52,25 +53,46 @@ public class TrapdRestService implements TrapdRestApi {
     private static final Set<String> AUTH_PROTOCOLS = new HashSet<>(Arrays.asList("MD5", "SHA", "SHA-224", "SHA-256", "SHA-512"));
     private static final Set<String> PRIVACY_PROTOCOLS = new HashSet<>(Arrays.asList("DES", "AES", "AES192", "AES256"));
     private static final int MIN_PASSPHRASE_BYTES = 8;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private TrapdConfigDao trapdConfigDao;
 
     @Override
     public Response uploadTrapdConfiguration(final Attachment attachment, final SecurityContext securityContext) {
+        return uploadTrapdConfigurationInternal(attachment, securityContext, false);
+    }
+
+    @Override
+    public Response uploadTrapdConfigurationXml(final Attachment attachment, final SecurityContext securityContext) {
+        return uploadTrapdConfigurationInternal(attachment, securityContext, true);
+    }
+
+    private Response uploadTrapdConfigurationInternal(final Attachment attachment, final SecurityContext securityContext, boolean isXml) {
+        final String fileType = isXml ? "XML" : "JSON";
+
         if (attachment == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Missing uploaded file for trapd file upload.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Missing uploaded file for Trap Configuration " + fileType + " file upload.").build();
         }
 
-        final TrapdConfiguration config;
+        TrapdConfiguration config;
+        TrapdConfigDto dto;
+
         try (InputStream inputStream = attachment.getObject(InputStream.class)) {
-            config = JaxbUtils.unmarshal(TrapdConfiguration.class, inputStream);
+            if (isXml) {
+                config = JaxbUtils.unmarshal(TrapdConfiguration.class, inputStream);
+                dto = TrapdConfigDto.toDto(config);
+            } else {
+                dto = objectMapper.readValue(inputStream, TrapdConfigDto.class);
+                config = dto.toEntity();
+            }
         } catch (Exception e) {
-            LOG.warn("Failed to parse uploaded trapd configuration.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid trapd XML configuration.").build();
+            LOG.warn("Failed to parse uploaded Trapd configuration.", e);
+            return Response.status(Status.BAD_REQUEST).entity("Invalid Trapd XML configuration.").build();
         }
 
-        String validationMessage = validateTrapdConfigRequest(TrapdConfigDto.toDto(config));
+        String validationMessage = validateTrapdConfigRequest(dto);
+
         if (validationMessage != null) {
             return Response.status(Status.BAD_REQUEST).entity(validationMessage).build();
         }
@@ -79,12 +101,49 @@ public class TrapdRestService implements TrapdRestApi {
             trapdConfigDao.replaceConfig(config);
             return Response.ok().build();
         } catch (ValidationException e) {
-            LOG.warn("Uploaded trapd configuration failed schema validation.", e);
+            LOG.warn("Uploaded Trapd configuration failed schema validation.", e);
             return Response.status(Status.BAD_REQUEST).entity(e.getMessage()).build();
         } catch (Exception e) {
-            LOG.error("Failed to persist uploaded trapd configuration.", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd configuration.").build();
+            LOG.error("Failed to persist uploaded Trapd configuration.", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist Trapd configuration.").build();
         }
+    }
+
+    @Override
+    public Response downloadTrapdConfig(final String format) {
+        final boolean isXml = format != null && format.equalsIgnoreCase("xml");
+        final String fileName = isXml ? "trapd-config.xml" : "trapd-config.json";
+        byte[] byteArray = null;
+
+        try {
+            final TrapdConfiguration trapdConfiguration = trapdConfigDao.getConfig();
+
+            if (isXml) {
+                String xml = JaxbUtils.marshal(trapdConfiguration);
+                byteArray = xml.getBytes(StandardCharsets.UTF_8);
+            } else {
+                // Need to use old codehaus.jackson mapper so that @JsonProperty annotations are followed
+                // We have to use codehaus annotations because Rest services are configured in
+                // applicationContext-cxf-common.xml and applicationContext-cxf-rest-v2.xml to use
+                // the codehaus.jackson JsonProvider
+                // The codehaus.jackson DefaultPrettyPrinter doesn't have the best output,
+                // it adds extra whitespace, but it'll do for now
+                TrapdConfigDto dto = TrapdConfigDto.toDto(trapdConfiguration);
+                String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dto);
+                byteArray = json.getBytes(StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            LOG.error("Error serializing Trapd JSON: {}", e.getMessage(), e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error retrieving Trapd config.").build();
+        }
+
+        final String contentType = isXml ? "application/xml" : "application/json";
+
+        return Response.ok().type(contentType + ";charset=" + StandardCharsets.UTF_8)
+                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .header("Pragma", "public")
+                .header("Cache-Control", "no-cache, must-revalidate")
+                .entity(byteArray).build();
     }
 
     @Override
@@ -96,15 +155,15 @@ public class TrapdRestService implements TrapdRestApi {
             }
             return Response.ok(TrapdConfigDto.toDto(config)).build();
         } catch (Exception e) {
-            LOG.error("Failed to retrieve trapd configuration.", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve trapd configuration.").build();
+            LOG.error("Failed to retrieve Trapd configuration.", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to retrieve Trapd configuration.").build();
         }
     }
 
     @Override
     public Response updateTrapdConfiguration(TrapdConfigDto configDto, SecurityContext securityContext) {
         if (configDto == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Missing trapd configuration in request body.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Missing Trapd configuration in request body.").build();
         }
 
         String validationMessage = validateTrapdConfigRequest(configDto);
@@ -117,11 +176,11 @@ public class TrapdRestService implements TrapdRestApi {
             trapdConfigDao.replaceConfig(payload);
             return Response.ok().build();
         } catch (ValidationException e) {
-            LOG.warn("Provided trapd configuration failed schema validation.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Provided trapd configuration failed schema validation.").build();
+            LOG.warn("Provided Trapd configuration failed schema validation.", e);
+            return Response.status(Status.BAD_REQUEST).entity("Provided Trapd configuration failed schema validation.").build();
         } catch (Exception e) {
-            LOG.error("Failed to persist provided trapd configuration.", e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist trapd configuration.").build();
+            LOG.error("Failed to persist provided Trapd configuration.", e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to persist Trapd configuration.").build();
         }
     }
 
@@ -246,5 +305,4 @@ public class TrapdRestService implements TrapdRestApi {
 
         return null;
     }
-
 }

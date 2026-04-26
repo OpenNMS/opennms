@@ -21,7 +21,7 @@
 ///
 
 import { defineStore } from 'pinia'
-import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_MAX_REPETITIONS, DEFAULT_SNMP_MAX_REQUEST_SIZE, DEFAULT_SNMP_MAX_VARS_PER_PDU, DEFAULT_SNMP_PORT, DEFAULT_SNMP_READ_COMMUNITY_STRING, DEFAULT_SNMP_RETRIES, DEFAULT_SNMP_TIMEOUT, DEFAULT_SNMP_TTL, DEFAULT_SNMP_V3_AUTH_PASSPHRASE, DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_LEVEL, DEFAULT_SNMP_V3_SECURITY_NAME, DEFAULT_SNMP_VERSION, DEFAULT_SNMP_WRITE_COMMUNITY_STRING } from '@/lib/constants'
+import { DEFAULT_MONITORING_LOCATION, DEFAULT_SNMP_MAX_REPETITIONS, DEFAULT_SNMP_MAX_REQUEST_SIZE, DEFAULT_SNMP_MAX_VARS_PER_PDU, DEFAULT_SNMP_PORT, DEFAULT_SNMP_READ_COMMUNITY_STRING, DEFAULT_SNMP_RETRIES, DEFAULT_SNMP_TIMEOUT, DEFAULT_SNMP_TTL, DEFAULT_SNMP_V3_AUTH_PASSPHRASE, DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PASSPHRASE, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_LEVEL, DEFAULT_SNMP_VERSION, DEFAULT_SNMP_WRITE_COMMUNITY_STRING } from '@/lib/constants'
 import { getDefaultSnmpSecurityLevel, isValidSnmpSecurityLevel } from '@/lib/snmpValidator'
 import { getMonitoringLocations } from '@/services/monitoringLocationService'
 import { deleteSnmpDefinition, deleteSnmpProfile, getSnmpConfig, lookupSnmpConfig, saveSnmpDefinition, saveSnmpProfile } from '@/services/snmpConfigService'
@@ -67,7 +67,7 @@ export const getDefaultSnmpBaseConfiguration = () => {
     port: DEFAULT_SNMP_PORT,
     ttl: DEFAULT_SNMP_TTL,
     encrypted: false,
-    securityName: DEFAULT_SNMP_V3_SECURITY_NAME,
+    securityName: '',
     securityLevel: DEFAULT_SNMP_V3_SECURITY_LEVEL,
     authPassphrase: DEFAULT_SNMP_V3_AUTH_PASSPHRASE,
     authProtocol: DEFAULT_SNMP_V3_AUTH_PROTOCOL,
@@ -302,7 +302,7 @@ export const useSnmpConfigStore = defineStore('useSnmpConfigStore', () => {
     maxRepetitions: config.value.maxRepetitions ?? DEFAULT_SNMP_MAX_REPETITIONS,
     ttl: config.value.ttl ?? DEFAULT_SNMP_TTL,
     version: config.value.version ?? DEFAULT_SNMP_VERSION,
-    securityName: config.value.securityName ?? DEFAULT_SNMP_V3_SECURITY_NAME,
+    securityName: config.value.securityName ?? '',
     securityLevel: config.value.securityLevel ?? DEFAULT_SNMP_V3_SECURITY_LEVEL,
     authPassphrase: config.value.authPassphrase ?? DEFAULT_SNMP_V3_AUTH_PASSPHRASE,
     authProtocol: config.value.authProtocol ?? DEFAULT_SNMP_V3_AUTH_PROTOCOL,

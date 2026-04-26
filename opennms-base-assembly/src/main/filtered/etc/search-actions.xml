@@ -186,6 +186,13 @@
         </roles>
     </action>
     <action>
+        <label>Configure SNMP Traps</label>
+        <url>ui/index.html#/trapd-config</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
         <label>Configure Thresholds</label>
         <url>admin/thresholds/index.htm</url>
         <roles>

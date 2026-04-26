@@ -14,7 +14,7 @@
           >
             <FeatherIcon :icon="ChevronLeft"> </FeatherIcon>
           </FeatherButton>
-          <h3>New SNMPv3 User Management</h3>
+          <h3>New SNMPv3 User</h3>
         </div>
       </div>
     </div>
@@ -135,8 +135,8 @@
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
-import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL, DEFAULT_SNMP_V3_SECURITY_NAME } from '@/lib/constants'
-import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_BYTES, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
+import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL } from '@/lib/constants'
+import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_CHARACTERS as MIN_PASSPHRASE_CHARACTERS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'
@@ -296,8 +296,8 @@ const validateInputs = () => {
 
   if (authProtocolVisible.value && authProtocol.value && !authPassphrase.value) {
     newError.authPassphrase = 'Auth Passphrase is required for selected auth protocol'
-  } else if (authPassphrase.value && passphraseByteLength(authPassphrase.value) < MIN_PASSPHRASE_BYTES) {
-    newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
+  } else if (authPassphrase.value && passphraseByteLength(authPassphrase.value) < MIN_PASSPHRASE_CHARACTERS) {
+    newError.authPassphrase = `Auth Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
   }
 
   // privacyProtocol and privacyPassphrase must be provided together (backend rule)
@@ -309,8 +309,8 @@ const validateInputs = () => {
 
   if (privacyProtocolVisible.value && privacyProtocol.value && !privacyPassphrase.value) {
     newError.privacyPassphrase = 'Privacy Passphrase is required for selected privacy protocol'
-  } else if (privacyPassphrase.value && passphraseByteLength(privacyPassphrase.value) < MIN_PASSPHRASE_BYTES) {
-    newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_BYTES} bytes`
+  } else if (privacyPassphrase.value && passphraseByteLength(privacyPassphrase.value) < MIN_PASSPHRASE_CHARACTERS) {
+    newError.privacyPassphrase = `Privacy Passphrase must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`
   }
   return newError
 }
@@ -338,7 +338,7 @@ const loadUserData = async (drawerState: typeof store.createUserDrawerState) => 
     securityLevel.value = SECURITY_LEVEL_OPTIONS.find(option => option._value === String(SecurityLevel.NoAuthNoPriv)) ?? createEmptySelectItem()
     authProtocol.value = createEmptySelectItem()
     privacyProtocol.value = createEmptySelectItem()
-    securityName.value = DEFAULT_SNMP_V3_SECURITY_NAME
+    securityName.value = ''
     engineId.value = ''
     authPassphrase.value = ''
     privacyPassphrase.value = ''

@@ -81,13 +81,12 @@ export interface SnmpV3UserError {
   privacyPassphrase?: string
 }
 
-export interface XmlValidationError {
+export interface TrapdValidationError {
   field: string
   message: string
 }
 
-export interface XmlValidationResult {
+export interface TrapdValidationResult {
   valid: boolean
-  errors: XmlValidationError[]
+  errors: TrapdValidationError[]
 }
-
