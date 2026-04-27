@@ -46,11 +46,6 @@ import org.opennms.web.rest.v2.model.TrapdConfigDto;
 @Path("trapd")
 @Tag(name = "Trapd", description = "Trapd API V2")
 public interface TrapdRestApi {
-
-
-
-
-
     @POST
     @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -88,22 +83,6 @@ public interface TrapdRestApi {
                 content = @Content)
     })
     Response uploadTrapdConfigurationXml(@Multipart("upload") Attachment attachment, @Context SecurityContext securityContext);
-
-//    @POST
-//    @Path("upload")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Operation(
-//            summary = "Upload trapd configuration",
-//            description = "Upload trapd-configuration XML and persist it to DB.",
-//            operationId = "uploadTrapdConfiguration"
-//    )
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Configuration updated successfully"),
-//            @ApiResponse(responseCode = "400", description = "Invalid trapd XML or missing upload field"),
-//            @ApiResponse(responseCode = "500", description = "Failed to persist trapd configuration")
-//    })
-//    Response uploadTrapdConfiguration(@Multipart("upload") Attachment attachment, @Context SecurityContext securityContext);
 
     @GET
     @Path("download")
@@ -152,4 +131,3 @@ public interface TrapdRestApi {
     })
     Response updateTrapdConfiguration(TrapdConfigDto payload, @Context SecurityContext securityContext);
 }
-
