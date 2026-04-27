@@ -240,8 +240,12 @@ public class EventConstantsTest {
     }
 
     @AfterClass
-    public static void afterClass() throws Exception {
-        LocaleProviderUtils.reset();
+    public static void afterClass() {
+        try {
+            LocaleProviderUtils.reset();
+        } catch (Exception e) {
+            LOG.debug("reset() returned exception: ", e);
+        }
     }
 
     @Before

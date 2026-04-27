@@ -44,6 +44,7 @@ import org.opennms.integration.api.v1.config.events.EventConfExtension;
 import org.opennms.integration.api.v1.config.events.EventDefinition;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -77,6 +78,9 @@ public class EventConfExtensionManagerIT implements InitializingBean {
     private EventConfEventDao eventConfEventDao;
 
     @Autowired
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
+
+    @Autowired
     private SessionUtils sessionUtils;
 
     private EventConfExtensionManager manager;
@@ -103,7 +107,7 @@ public class EventConfExtensionManagerIT implements InitializingBean {
         assertThat(testEvents.getEvents(), hasSize(2));
 
         // Create manager instance
-        manager = new EventConfExtensionManager(eventConfDao, eventConfSourceDao, eventConfEventDao, sessionUtils);
+        manager = new EventConfExtensionManager(eventConfDao, eventConfSourceDao, eventConfEventDao, eventConfGlobalSecurityDao, sessionUtils);
     }
 
     @After

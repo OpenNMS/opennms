@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-import { useEventConfigStore } from '@/stores/eventConfigStore'
+import DeleteEventConfigSourceDialog from '@/components/EventConfiguration/Dialog/DeleteEventConfigSourceDialog.vue'
 import * as eventConfigService from '@/services/eventConfigService'
+import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
-import DeleteEventConfigSourceDialog from '@/components/EventConfiguration/Dialog/DeleteEventConfigSourceDialog.vue'
+import { createTestingPinia } from '@pinia/testing'
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@featherds/dialog', () => ({
   FeatherDialog: {
@@ -50,7 +50,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
       isLoading: false,
       activeTab: 0,
-      uploadedSourceNames: [],
+      uploadedSources: [],
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }
@@ -84,7 +84,7 @@ describe('DeleteEventConfigSourceDialog', () => {
   })
 
   it('calls hideDeleteEventConfigSourceModal when Cancel button is clicked', async () => {
-    const cancelButton = wrapper.findAllComponents(FeatherButton).at(0)
+    const cancelButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Cancel'))
     expect(cancelButton.exists()).toBe(true)
     await cancelButton.trigger('click')
     expect(store.hideDeleteEventConfigSourceModal).toHaveBeenCalled()
@@ -92,7 +92,12 @@ describe('DeleteEventConfigSourceDialog', () => {
 
   it('calls deleteEventConfigSourceById and handles success when Delete button is clicked', async () => {
     vi.spyOn(eventConfigService, 'deleteEventConfigSourceById').mockResolvedValue(true)
-    const deleteButton = wrapper.findAllComponents(FeatherButton).at(1)
+    vi.spyOn(eventConfigService, 'filterEventConfigSources').mockResolvedValue({
+      sources: [],
+      totalRecords: 0
+    })
+    vi.spyOn(eventConfigService, 'getAllSourceNames').mockResolvedValue([])
+    const deleteButton = wrapper.findAllComponents(FeatherButton).find((b: VueWrapper) => b.text().includes('Delete'))
     expect(deleteButton.exists()).toBe(true)
     await deleteButton.trigger('click')
     await flushPromises()
@@ -107,7 +112,7 @@ describe('DeleteEventConfigSourceDialog', () => {
 
     const pinia = createTestingPinia({
       createSpy: vi.fn,
-      stubActions: false
+      stubActions: true
     })
 
     const localStore = useEventConfigStore()
@@ -122,7 +127,7 @@ describe('DeleteEventConfigSourceDialog', () => {
       sourcesSorting: { sortOrder: 'desc', sortKey: 'createdTime' },
       isLoading: false,
       activeTab: 0,
-      uploadedSourceNames: [],
+      uploadedSources: [],
       uploadedEventConfigFilesReportDialogState: { visible: false },
       changeEventConfigSourceStatusDialogState: { visible: false, eventConfigSource: null },
       createEventConfigSourceDialogState: { visible: false }

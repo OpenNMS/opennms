@@ -34,6 +34,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated This class is deprecated and will be removed in a future release. This is used by the v1 SNMP Rest API,
+ * which is being replaced by the new v2 SNMP Rest API.
+ */
+@Deprecated(forRemoval = true)
 public class SnmpConfigAccessService {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpConfigAccessService.class);
 

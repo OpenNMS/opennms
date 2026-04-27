@@ -8,6 +8,10 @@ import EventConfigUploadFilesTab from '@/components/EventConfiguration/EventConf
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import { FeatherButton } from '@featherds/button'
 
+vi.mock('vue-router', () => ({
+  useRouter: () => vi.fn()
+}))
+
 describe('EventConfigTabContainer', () => {
   let wrapper: VueWrapper<any>
   let store: ReturnType<typeof useEventConfigStore>
@@ -16,10 +20,6 @@ describe('EventConfigTabContainer', () => {
     const pinia = createTestingPinia({
       createSpy: vi.fn
     })
-
-    vi.mock('vue-router', () => ({
-      useRouter: () => vi.fn()
-    }))
 
     store = useEventConfigStore(pinia)
     store.activeTab = 0
@@ -97,7 +97,7 @@ describe('EventConfigTabContainer', () => {
     expect(panels[1].attributes('aria-expanded')).toBe('true')
   })
 
-  it('renders with activeTab set to 1 initially (second tab active)', async () => {
+  it('renders with activeTab set to 0 initially (first tab active)', async () => {
     store.activeTab = 0
     await wrapper.vm.$nextTick()
 
@@ -122,7 +122,10 @@ describe('EventConfigTabContainer', () => {
         global: {
           plugins: [createTestingPinia({ createSpy: vi.fn })],
           stubs: {
-            /* ... same as before */
+            FeatherButton,
+            FeatherTab,
+            FeatherTabContainer,
+            FeatherTabPanel
           }
         }
       })
@@ -135,7 +138,10 @@ describe('EventConfigTabContainer', () => {
       global: {
         // No plugins: [pinia] provided
         stubs: {
-          /* ... same as before */
+          FeatherButton,
+          FeatherTab,
+          FeatherTabContainer,
+          FeatherTabPanel
         }
       }
     })

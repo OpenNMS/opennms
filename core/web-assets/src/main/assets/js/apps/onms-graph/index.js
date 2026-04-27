@@ -130,6 +130,13 @@ const drawBackshiftGraph = (el, def, dim) => {
     });
     const graphModel = rrdGraphConverter.model;
 
+    // Graph commands can include --slope-mode to opt into backshift's
+    // step-line rendering. The flag name is borrowed from rrdtool so the
+    // command stays rrdtool-compatible on the PNG render path, but note
+    // rrdtool's own interpretation of --slope-mode is the opposite (it
+    // enables sloped lines in PNG output).
+    const stepMode = /(^|\s)--slope-mode(\s|$)/.test(graphDef.command || '');
+
     // Build the data-source
     const ds = new Backshift.DataSource.OpenNMS({
       url: window.onmsGraphContainers.baseHref + 'rest/measurements',
@@ -147,7 +154,8 @@ const drawBackshiftGraph = (el, def, dim) => {
       model: graphModel,
       printStatements: graphModel.printStatements,
       title: graphModel.title,
-      verticalLabel: graphModel.verticalLabel
+      verticalLabel: graphModel.verticalLabel,
+      step: stepMode
     });
     graph.render();
   }).fail((jqXHR, textStatus) => {

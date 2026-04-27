@@ -77,8 +77,7 @@ public class SnmpEncryptionIT {
             definition.setWriteCommunity("Alec");
             definition.setAuthPassphrase("OpenNMS");
             definition.setPrivacyPassphrase("Minion");
-            snmpPeerFactory.saveDefinition(definition);
-            snmpPeerFactory.saveCurrent();
+            snmpPeerFactory.saveDefinition(definition, true);
             String configAsString = snmpPeerFactory.getSnmpConfigAsString();
             SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, configAsString);
             // Verify that marshalled strings are different from actual

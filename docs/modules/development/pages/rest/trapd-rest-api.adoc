@@ -1,0 +1,179 @@
+[[ga-events-sources-trapd-rest-api]]
+= Trapd REST API (v2)
+:description: Manage trapd configuration through the OpenNMS REST v2 API.
+
+You can view and update trapd configuration over REST.
+These endpoints are useful for automation and external configuration tooling.
+
+The Trapd REST API base path is `/api/v2/trapd`.
+
+== Endpoint overview
+
+[options="header"]
+|===
+| Method | Path | Content type | Description
+
+| `GET`
+| `/api/v2/trapd/config`
+| `application/json`
+| Get the current trapd configuration.
+
+| `PUT`
+| `/api/v2/trapd/config`
+| `application/json`
+| Replace trapd configuration using JSON payload.
+
+| `POST`
+| `/api/v2/trapd/upload`
+| `multipart/form-data`
+| Upload `trapd-configuration.xml` content as XML.
+|===
+
+== Get configuration
+
+[source, bash]
+----
+curl -u admin:admin "http://localhost:8980/opennms/api/v2/trapd/config"
+----
+
+.Example response
+[source, json]
+----
+{
+  "snmpTrapAddress": "*",
+  "snmpTrapPort": 1162,
+  "newSuspectOnTrap": false,
+  "includeRawMessage": false,
+  "threads": 0,
+  "queueSize": 10000,
+  "batchSize": 1000,
+  "batchInterval": 500,
+  "useAddressFromVarbind": true,
+  "snmpv3User": [
+    {
+      "engineId": "0x8000000001020304",
+      "securityName": "opennms",
+      "securityLevel": 3,
+      "authProtocol": "SHA",
+      "authPassphrase": "my-auth-secret",
+      "privacyProtocol": "AES",
+      "privacyPassphrase": "my-privacy-secret"
+    }
+  ]
+}
+----
+
+WARNING: The current implementation returns SNMPv3 passphrases as stored values when they are present.
+They are not masked in `GET /api/v2/trapd/config` responses.
+
+== Update configuration with JSON
+
+[source, bash]
+----
+curl -u admin:admin \
+  -H "Content-Type: application/json" \
+  -X PUT "http://localhost:8980/opennms/api/v2/trapd/config" \
+  -d '{
+    "snmpTrapAddress": "*",
+    "snmpTrapPort": 1162,
+    "newSuspectOnTrap": false,
+    "includeRawMessage": true,
+    "threads": 4,
+    "queueSize": 10000,
+    "batchSize": 1000,
+    "batchInterval": 500,
+    "useAddressFromVarbind": true,
+    "snmpv3User": [
+      {
+        "securityName": "opennms",
+        "securityLevel": 3,
+        "authProtocol": "SHA",
+        "authPassphrase": "my-auth-secret",
+        "privacyProtocol": "AES",
+        "privacyPassphrase": "my-privacy-secret"
+      }
+    ]
+  }'
+----
+
+== Upload trapd XML
+
+The multipart form field name must be `upload`.
+
+.Sample `trapd-configuration.xml` for upload
+[source, xml]
+----
+<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
+    snmp-trap-address="*"
+    snmp-trap-port="1162"
+    new-suspect-on-trap="false"
+    include-raw-message="true"
+    queue-size="10000"
+    batch-size="1000"
+    batch-interval="500"
+    use-address-from-varbind="true">
+  <snmpv3-user security-name="opennms"
+      security-level="3"
+      auth-protocol="SHA"
+      auth-passphrase="${scv:trapd-v3-user:authPassphrase}"
+      privacy-protocol="AES"
+      privacy-passphrase="${scv:trapd-v3-user:privacyPassphrase}"/>
+</trapd-configuration>
+----
+
+You can use SCV metadata expressions for passphrases in uploaded XML (`${scv:<alias>:<attribute>}`).
+
+[source, bash]
+----
+curl -u admin:admin \
+  -X POST "http://localhost:8980/opennms/api/v2/trapd/upload" \
+  -F "upload=@/opt/opennms/etc/trapd-configuration.xml;type=application/xml"
+----
+
+== Validation rules
+
+The API validates both top-level trapd fields and SNMPv3 user definitions.
+
+.PUT pre-validation (service layer)
+* `snmpTrapAddress` is required for `PUT /api/v2/trapd/config`.
+* `snmpTrapPort` is required and must be between `1` and `65535`.
+* `newSuspectOnTrap` is required.
+* `threads`, `queueSize`, `batchSize`, and `batchInterval` must be `>= 0` when provided.
+
+.Additional schema validation (DAO layer, applies on persist)
+* `queueSize` must be `>= 1`.
+* `batchSize` must be `>= 1`.
+* In XML uploads, `snmp-trap-address` is optional and defaults to `*` when omitted.
+
+.SNMPv3 user fields
+* `securityName` is required.
+* `securityLevel` is required and must be `1`, `2`, or `3`.
+* Supported `authProtocol`: `MD5`, `SHA`, `SHA-224`, `SHA-256`, `SHA-512`.
+* Supported `privacyProtocol`: `DES`, `AES`, `AES192`, `AES256`.
+* `authProtocol` and `authPassphrase` must be provided together.
+* `privacyProtocol` and `privacyPassphrase` must be provided together.
+* `securityLevel=1`: no auth or privacy credentials allowed.
+* `securityLevel=2`: auth credentials required, privacy credentials not allowed.
+* `securityLevel=3`: both auth and privacy credentials are required.
+
+== Response codes
+
+[options="header"]
+|===
+| Endpoint | Success | Error responses
+
+| `GET /api/v2/trapd/config`
+| `200 OK`
+| `404 Not Found` (`Trapd configuration not found.`), `500 Internal Server Error` (`Failed to retrieve trapd configuration.`)
+
+| `PUT /api/v2/trapd/config`
+| `200 OK`
+| `400 Bad Request` (validation errors), `500 Internal Server Error` (`Failed to persist trapd configuration.`)
+
+| `POST /api/v2/trapd/upload`
+| `200 OK`
+| `400 Bad Request` (missing `upload`, invalid XML, schema validation errors), `500 Internal Server Error` (`Failed to persist trapd configuration.`)
+|===
+
+For XML-based upload, schema validation errors are returned as the response body text.
+

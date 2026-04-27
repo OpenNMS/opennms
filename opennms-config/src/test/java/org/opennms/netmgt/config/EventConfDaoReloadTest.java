@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.springframework.core.io.ClassPathResource;
@@ -66,12 +67,14 @@ public class EventConfDaoReloadTest {
         // Load
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
     }
 
@@ -93,12 +96,14 @@ public class EventConfDaoReloadTest {
         // Load
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
     }
 
@@ -125,7 +130,8 @@ public class EventConfDaoReloadTest {
         // Load
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         // Replace the eventconf.xml with one that doesn't reference any files
@@ -135,7 +141,8 @@ public class EventConfDaoReloadTest {
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(1, eventConfDao.getAllEvents().size());
 
         // Put the original eventconf.xml back
@@ -144,7 +151,8 @@ public class EventConfDaoReloadTest {
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         // Replace the BGP4.events.xml with another that has a few more events
@@ -154,7 +162,8 @@ public class EventConfDaoReloadTest {
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(5, eventConfDao.getAllEvents().size());
     }
 
@@ -170,7 +179,8 @@ public class EventConfDaoReloadTest {
         // Load
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(0, eventConfDao.getAllEvents().size());
 
         EventBuilder eb = new EventBuilder("uei.opennms.org/test/order", "JUnit");
@@ -184,7 +194,8 @@ public class EventConfDaoReloadTest {
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(1, eventConfDao.getAllEvents().size());
 
         event = eventConfDao.findByEvent(eb.getEvent());
@@ -197,7 +208,8 @@ public class EventConfDaoReloadTest {
 
         // Reload
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(new FileSystemResource(eventconfXml));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(new FileSystemResource(eventconfXml));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
         assertEquals(2, eventConfDao.getAllEvents().size());
 
         event = eventConfDao.findByEvent(eb.getEvent());
@@ -218,12 +230,14 @@ public class EventConfDaoReloadTest {
     public void NMS15289_working() throws IOException {
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("NMS-15289/working-eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("NMS-15289/working-eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // reload should work
         assertEquals(1, eventConfDao.getAllEvents().size());
@@ -233,12 +247,14 @@ public class EventConfDaoReloadTest {
     public void NMS15289_notFound() throws IOException {
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("NMS-15289/broken0-eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("NMS-15289/broken0-eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // reload should be skipped
         assertEquals(3, eventConfDao.getAllEvents().size());
@@ -248,12 +264,14 @@ public class EventConfDaoReloadTest {
     public void NMS15289_brokenRoot() throws IOException {
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("NMS-15289/broken1-eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("NMS-15289/broken1-eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // reload should be skipped
         assertEquals(3, eventConfDao.getAllEvents().size());
@@ -263,12 +281,14 @@ public class EventConfDaoReloadTest {
     public void NMS15289_brokenChild() throws IOException {
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
         List<EventConfEvent> eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("reloaded/eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        List<EventConfGlobalSecurity> eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("reloaded/eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         assertEquals(3, eventConfDao.getAllEvents().size());
 
         eventConfEventList = EventConfTestUtil.parseResourcesAsEventConfEvents(getResourceForRelativePath("NMS-15289/broken2-eventconf.xml"));
-        eventConfDao.loadEventsFromDB(eventConfEventList);
+        eventConfGlobalSecurityList = EventConfTestUtil.parseResourcesAsEventConfGlobalSecurities(getResourceForRelativePath("NMS-15289/broken2-eventconf.xml"));
+        eventConfDao.loadEventsFromDB(eventConfEventList, eventConfGlobalSecurityList);
 
         // reload should be skipped
         assertEquals(3, eventConfDao.getAllEvents().size());

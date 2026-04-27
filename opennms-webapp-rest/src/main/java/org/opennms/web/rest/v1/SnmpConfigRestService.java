@@ -87,7 +87,9 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * curl -v -X GET -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
  * </pre>
- * 
+ *
+ * @deprecated This v1 SNMP Config Rest API is deprecated as it is being replaced by the new v2 Rest API.
+ * It will be removed in a future release.
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  * @since 1.8.1
@@ -96,6 +98,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("snmpConfig")
 @Tag(name = "SnmpConfig", description = "SNMP Config API")
 @Transactional
+@Deprecated(forRemoval = true)
 public class SnmpConfigRestService extends OnmsRestService {
 
     @Autowired

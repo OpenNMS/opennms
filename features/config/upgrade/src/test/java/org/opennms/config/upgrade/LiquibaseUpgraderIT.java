@@ -234,6 +234,49 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
         }
     }
 
+    /**
+     * NMS-19556: After dropdb + install -dis, OpenNMS should start successfully by finding
+     * config files in etc_archive/. The first startup imports config files from etc/ into CM
+     * and moves them to etc_archive/. After a DB reset, the CM Liquibase changelogs re-run
+     * during startup and should fall back to etc_archive/ for validation and re-import.
+     */
+    @Test
+    public void shouldSucceedAfterDatabaseReset() throws LiquibaseException, ValidationException, SQLException {
+        try {
+            final String changelog = "org/opennms/config/upgrade/LiquibaseUpgraderIT-changelog-reimport.xml";
+
+            LiquibaseUpgrader liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog(changelog, dataSource.getConnection());
+
+            // verify first run succeeded and files are in archive
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isPresent());
+            assertFalse(Files.exists(Path.of(this.opennmsHome + "/etc/" + SCHEMA_NAME_PROVISIOND + "-configuration.xml")));
+            assertTrue(checkFileWithDateTimeSuffix(this.opennmsHome + "/etc_archive", SCHEMA_NAME_PROVISIOND + "-configuration.xml"));
+
+            // simulate dropdb: drop liquibase tables and unregister schemas
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + TABLE_NAME_DATABASECHANGELOG);
+            statement.execute();
+            statement = connection.prepareStatement("DROP TABLE IF EXISTS " + LiquibaseUpgrader.TABLE_NAME_DATABASECHANGELOGLOCK);
+            statement.execute();
+            this.cm.unregisterSchema(SCHEMA_NAME_PROVISIOND);
+            this.cm.unregisterSchema(SCHEMA_NAME_EVENTD);
+
+            // re-run changelog — should succeed by finding config files in etc_archive/
+            cmSpy = spy(cm);
+            liqui = new LiquibaseUpgrader(cmSpy);
+            liqui.runChangelog(changelog, dataSource.getConnection());
+
+            // verify re-import succeeded
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_PROVISIOND).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_PROVISIOND, DEFAULT_CONFIG_ID).isPresent());
+            assertTrue(this.cm.getRegisteredConfigDefinition(SCHEMA_NAME_EVENTD).isPresent());
+            assertTrue(this.cm.getJSONConfiguration(SCHEMA_NAME_EVENTD, DEFAULT_CONFIG_ID).isPresent());
+        } finally {
+            this.db.cleanUp();
+        }
+    }
+
     @Test
     public void shouldAbortInCaseOfValidationError() {
         try {

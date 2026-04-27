@@ -175,9 +175,9 @@ public class EventQueryServlet extends HttpServlet {
 
         String eventId = WebSecurityUtils.sanitizeString(request.getParameter("eventid"));
         if (eventId != null && !"".equals(eventId)) {
-            int eventIdInt = WebSecurityUtils.safeParseInt(eventId);
-            if (eventIdInt > 0) {
-                filterArray.add(new EventIdFilter(eventIdInt));
+            long eventIdLong = WebSecurityUtils.safeParseLong(eventId);
+            if (eventIdLong > 0) {
+                filterArray.add(new EventIdFilter(eventIdLong));
             }
         }
 

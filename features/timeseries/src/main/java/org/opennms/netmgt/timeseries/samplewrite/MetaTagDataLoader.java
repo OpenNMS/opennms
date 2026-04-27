@@ -94,12 +94,14 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                 OnmsNode node = nodeOptional.get();
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
-                    // We expect #getInstance to return the ifIndex for interface-level resources
-                    try {
-                        int ifIndex = Integer.parseInt(resource.getInstance());
-                        scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), ifIndex));
-                    } catch(NumberFormatException nfe) {
-                        // pass
+                    String instance = resource.getInstance();
+                    if (instance != null && !instance.isEmpty()) {
+                        if (checkNumeric(instance)) {
+                            scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), Integer.parseInt(instance)));
+                        } else {
+                            // Streaming telemetry resources use interface name instead of ifIndex
+                            scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfName(node.getId(), instance));
+                        }
                     }
                 }
 

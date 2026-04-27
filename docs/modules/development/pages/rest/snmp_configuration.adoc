@@ -1,192 +1,133 @@
 
 = SNMP Configuration
 
-Use this interface to edit the community string, SNMP version, etc. for an IP address.
-If you make a change that would overlap with an existing `snmp-config.xml`, it will automatically create groups of `<definition />` entries as necessary.
-If no `<definition />` entry is created it matches the defaults.
+NOTE: {page-component-title} has been updated to move SNMP Configuration into the database.
+Please see xref:development:rest/snmp_configuration_legacy.adoc[SNMP Configuration (Legacy)] for the legacy REST API.
+Generally speaking you should avoid that legacy API and use the new API instead, but if you have a use case that requires the legacy API, that page describes how to use it.
 
-There are different versions of the interface (see below).
-The following operations are supported:
+This is the new REST API for SNMP configuration.
+It is used by the SNMP Configuration UI in the OpenNMS web interface, but it can also be used by external applications to manage SNMP configuration in OpenNMS directly.
+
+You can use this API to manage SNMP configuration for individual IP addresses, for example to edit the community string, SNMP version, etc. for an IP address or range.
+If you make a change that would overlap with any existing configurations, the system will automatically create groups of `definition` entries as necessary.
+If a configuration matches the defaults, then no `definition` entry is created.
+
+The following operations are supported.
+
+The base URL for the API is http://localhost:8980/opennms/api/v2 (substitute your protocol, OpenNMS host and port as necessary).
+
 
 == GETs (reading data)
 
 [caption=]
 .SNMP Configuration API GET functions
-[options="autowidth"]
+[cols="40%,60%"]
 |===
 | Parameter | Description
 
-| /snmpConfig/\{ipaddress}
-| Get the SNMP configuration for a given IP address.
+| /snmp-config
+| Get the entire SNMP configuration in JSON format.
 
-| /snmpConfig/\{ipaddress}?location=\{location}
-| Get the SNMP configuration for a given IP address at a given location.
+| /snmp-config/lookup?ipAddress=\{ipaddress}&location=\{location}
+| Get the SNMP configuration for a given IP address at a given monitoring location.
+If `location` is omitted, the system will use the Default location.
+
+*Example:* `http://localhost:8980/opennms/api/v2/snmp-config/lookup?ipAddress=10.0.0.1&location=datacenter1`
+| /snmp-config/download?format=\{format}
+| Download the entire SNMP configuration in JSON or XML format as a file.
+`format` can be either `json` or `xml`, or omitted for `json`.
+
+*Example:* `http://localhost:8980/opennms/api/v2/snmp-config/download?format=xml`
 |===
+
 
 == PUT (modifying data)
 
 [caption=]
-.SNMP Configuration API PUT function
-[options="autowidth"]
+.SNMP Configuration API PUT functions
+[cols="40%,60%"]
 |===
 | Parameter | Description
 
-| /snmpConfig/\{ipaddress}
-| Add or update the SNMP configuration for a given IP address.
+| /snmp-config/definition
+| Add or update an SNMP configuration definition, in JSON format. See below for the SNMP Definition schema.
+This can be used to apply configurations to individual IP addresses or ranges, or use `IPLIKE` expressions.
+The system will automatically reconfigure SNMP configuration as necessary, and create groups of `definition` entries if there are overlapping configurations.
 |===
 
-== Determine API version
 
-To determine the version of the API running in your {page-component-title} type http://localhost:8980/opennms/rest/snmpConfig/1.1.1.1 in your browser and look at the output:
+== POST (modifying data)
 
-- *Version 1:* If the output only has attributes `community`, `port`, `retries`, `timeout`, and `version`.
-- *Version 2:* If there are more attributes than those listed in Version 1 (for example, max Repetitions).
-
-== API version 1
-
-Version 1 supports only a few attributes defined in `snmp-info.xsd`.
-
-[source, xml]
-----
-<xs:schema
-    xmlns:tns="http://xmlns.opennms.org/xsd/config/snmp-info"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    elementFormDefault="qualified"
-    version="1.0"
-    targetNamespace="http://xmlns.opennms.org/xsd/config/snmp-info">
-  <xs:element name="snmp-info" type="tns:snmpInfo"/>
-  <xs:complexType name="snmpInfo">
-    <xs:sequence>
-      <xs:element name="community" type="xs:string" minOccurs="0"/>
-      <xs:element name="port" type="xs:int"/>
-      <xs:element name="retries" type="xs:int"/>
-      <xs:element name="timeout" type="xs:int"/>
-      <xs:element name="version" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:schema>
-----
-
-The following table shows all supported attributes, optional restrictions, and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
-All parameters can be set regardless of the version:
-
-[cols="1,1,1,2"]
+[caption=]
+.SNMP Configuration API POST functions
+[cols="40%,60%"]
 |===
-| Attribute `snmp-info.xml` | Attribute `snmp-config.xml` | Default Value | Restriction
+| Parameter | Description
 
-| version
-| version
-| v1
-| `v1`, `v2c`, or `v3` are valid arguments.
-If an invalid or empty argument is provided, `v1` is used.
+| /snmp-config/defaults
+| Save SNMP default override configuration, in JSON format. See below for the SNMP Configuration schema.
+For each configuration item, the system has some default values.
+However, you can use this API to override those defaults with your own values.
+For example, if you want to change the default SNMP read community string from `public` to something else, you can use this API to do that.
 
-| port
-| port
-| 161
-| Integer > `0`
 
-| retries
-| retry
-| 1
-| Integer > `0`
+| /snmp-config/profile
+| Add or update an SNMP configuration profile, in JSON format. See below for the SNMP Profile schema.
 
-| timeout
-| timeout
-| 3000
-| Integer > `0`
+| /snmp-config/upload
+| Upload an entire SNMP configuration, in JSON format. See below for the schema.
 
-| community
-| read-community
-| public
-| Any string with a length >= `1`
+| /snmp-config/upload/xml
+| Upload an entire SNMP configuration, in XML format. See below for the schema.
+
 |===
 
-.Example 1:
-[source, bash]
-----
-curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" \
-     -H "Accept: application/xml" \
-     -d "<snmp-info>
-             <community>yRuSonoZ</community>
-             <port>161</port>
-             <retries>1</retries>
-             <timeout>2000</timeout>
-             <version>v2c</version>
-          </snmp-info>" \
-     http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
-----
 
-Creates or updates a `<definition/>` entry for IP address 10.1.1.1 in `snmp-config.xml`.
+== DELETE (removing data)
 
-.Example 2:
-[source, bash]
-----
-curl -v -u admin:admin -X GET ://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
-----
+[caption=]
+.SNMP Configuration API DELETE functions
+[cols="40%,60%"]
+|===
+| Parameter | Description
 
-Returns the SNMP configuration for IP address 10.1.1.1 as defined in example 1.
+| /snmp-config/definition?specifics=\{specifics}&ranges=\{ranges}&ipmatches=\{ipLike}&location=\{location}
+| Remove an SNMP configuration definition.
+This in effect resets the SNMP configuration for the specified IP address(es) and/or range(s) and/or `IPLIKE` expression(s) at the specified monitoring location back to the defaults.
 
-== API version 2
+You can supply any combination of the following parameters to specify which definition(s) to remove.
 
-Since version 2, you can set or get all attributes of a `<definition />` entry defined in `snmp-config.xsd` (http://xmlns.opennms.org/xsd/config/snmp) can be set or get via the interface, however it is only possible to set the configuration for one IP address per request and not for a range of IP addresses at a time.
-This may change in the future.
+You can use commas to separate individual values for each parameter.
 
-The interface uses `SnmpInfo` objects for communication.
-Therefore it is possible to set, for example, v1 and v3 parameters in one request (for example, `readCommunity` string and `privProtocol` string).
-However, {page-component-title} does not allow this.
-It lets you set only attributes that have no version restriction (for example, timeout value) or the attributes that are limited to the version (for example, `readCommunity` string if version is v1/v2c).
-The same is true for getting data from the API, even if it is possible to store v1 and v3 parameters in one definition block in the `snmp-config.xml` manually, the REST API will return only the parameters that match the version.
-If no version is defined, the default is assumed (both in PUT and GET requests).
+*Example:* `http://localhost:8980/opennms/api/v2/snmp-config/definition?specifics=10.0.0.1&location=datacenter1`
 
-The SnmpInfo schema is defined as follows:
+would remove the definition for IP address 10.0.0.1.
 
-[source, xml]
-----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<xs:schema
-  elementFormDefault="qualified"
-  version="1.0"
-  targetNamespace="http://xmlns.opennms.org/xsd/config/snmp-info"
-  xmlns:tns="http://xmlns.opennms.org/xsd/config/snmp-info"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="snmp-info" type="tns:snmpInfo"/>
-  <xs:complexType name="snmpInfo">
-    <xs:sequence>
-      <xs:element name="authPassPhrase" type="xs:string" minOccurs="0"/>
-      <xs:element name="authProtocol" type="xs:string" minOccurs="0"/>
-      <xs:element name="community" type="xs:string" minOccurs="0"/>
-      <xs:element name="contextEngineId" type="xs:string" minOccurs="0"/>
-      <xs:element name="contextName" type="xs:string" minOccurs="0"/>
-      <xs:element name="engineId" type="xs:string" minOccurs="0"/>
-      <xs:element name="enterpriseId" type="xs:string" minOccurs="0"/>
-      <xs:element name="maxRepetitions" type="xs:int" minOccurs="0"/>
-      <xs:element name="maxRequestSize" type="xs:int" minOccurs="0"/>
-      <xs:element name="maxVarsPerPdu" type="xs:int" minOccurs="0"/>
-      <xs:element name="port" type="xs:int" minOccurs="0"/>
-      <xs:element name="privPassPhrase" type="xs:string" minOccurs="0"/>
-      <xs:element name="privProtocol" type="xs:string" minOccurs="0"/>
-      <xs:element name="proxyHost" type="xs:string" minOccurs="0"/>
-      <xs:element name="readCommunity" type="xs:string" minOccurs="0"/>
-      <xs:element name="retries" type="xs:int" minOccurs="0"/>
-      <xs:element name="securityLevel" type="xs:int" minOccurs="0"/>
-      <xs:element name="securityName" type="xs:string" minOccurs="0"/>
-      <xs:element name="timeout" type="xs:int" minOccurs="0"/>
-      <xs:element name="version" type="xs:string" minOccurs="0"/>
-      <xs:element name="writeCommunity" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:schema>
-----
+*Example:* `http://localhost:8980/opennms/api/v2/snmp-config/definition?ranges=10.0.0.1-10.0.0.10,10.2.0.0-10.2.3.10&location=datacenter1`
 
-The following table shows all supported attributes and the mapping between `snmp-info.xsd` and `snmp-config.xsd`.
+would remove both ranges.
+
+The system will automatically reconfigure SNMP configuration as necessary.
+
+| /snmp-config/profile?label=\{label}
+| Remove an SNMP configuration profile with the given `label`.
+|===
+
+
+
+== API Schema
+
+While the older XML configuration format is still supported, we recommend using the new JSON format for SNMP configuration, as it is more flexible and easier to work with.
+
+
+The following table shows all supported attributes for SNMP Configuration.
 It also shows the version limitations, default values, and the restrictions, if any:
 
-[cols="1,1,1,1,2"]
+[cols="1,1,1,1"]
 |===
-| Attribute `snmp-info.xml` | Attribute `snmp-config.xml` | Default Value | Restricted to Version | Restriction
+| Attribute | Default Value | Restricted to SNMP Version | Restrictions
 
-| version
 | version
 | v1
 | _None_
@@ -194,116 +135,102 @@ It also shows the version limitations, default values, and the restrictions, if 
 If an invalid or empty argument is provided, `v1` is used.
 
 | port
-| port
 | 161
 | _None_
 | Integer > `0`
 
 | retries
-| retry
 | 1
 | _None_
 | Integer > `0`
 
-| timeout
 | timeout
 | 3000
 | _None_
 | Integer > `0`
 
 | maxVarsPerPdu
-| max-vars-per-pdu
 | 10
 | _None_
 | Integer > `0`
 
 | maxRepetitions
-| max-repetitions
 | 2
 | _None_
 | Integer > `0`
 
 | maxRequestSize
-| max-request-size
 | 65535
 | _None_
-| Integer > `0`
+| Integer > `0`. Must be at least `484`.
+
+| ttl
+| _Blank_
+| _None_
+| Integer > `0`. Time to live in milliseconds.
 
 | proxyHost
-| proxy-host
 | _Blank_
 | _None_
 | _None_
 
 | readCommunity
-| read-community
 | public
 | v1, v2c
 | _None_
 
 | writeCommunity
-| write-community
 | private
 | v1, v2c
 | _None_
 
 | securityName
-| security-name
 | opennmsUser
 | v3
 | _None_
 
 | securityLevel
-| security-level
 | noAuthNoPriv
 | v3
 | Integer value, which can be `null`, `1`, `2`, or `3`.
 See note below table for an explanation of these values.
 
 | authPassPhrase
-| auth-passphrase
 | 0p3nNMSv3
 | v3
 | _None_
 
 | authProtocol
-| auth-protocol
 | MD5
 | v3
 | Only `MD5`, `SHA`, `SHA-224`, `SHA-256`, `SHA-512` are valid arguments.
 
 | privPassPhrase
-| privacy-passphrase
 | 0p3nNMSv3
 | v3
 | _None_
 
 | privProtocol
-| privacy-protocol
 | DES
 | v3
 | Only `DES`, `AES`, `AES192`, or `AES256` are valid arguments.
 
 | engineId
-| engine-id
 | _Blank_
 | v3
 | _None_
 
 | contextEngineId
-| context-engine-id
 | _Blank_
 | v3
 | _None_
 
 | contextName
-| context-name
 | _Blank_
 | v3
 | _None_
 
 | enterpriseId
-| enterprise-id
 | _Blank_
 | v3
 | _None_
@@ -324,65 +251,156 @@ If you do not set the security level manually it is determined automatically:
 * If both a `authPassPhrase` and a `privPassPhrase` are set, the securityLevel is 3.
 ****
 
-.Example 1:
+NOTE: In the JSON examples below, the commented sections are explanatory only and are not part of the actual JSON body that you would send in a request.
+
+
+.Example: Full JSON Configuration for GET, Upload and Download
+[source,json]
+----
+{
+  "maxRepetitions": 2, <1>
+  "maxRequestSize": 65535,
+  "readCommunity": "public123",
+  "definition": [
+    {
+      "range": [
+        {
+          "begin": "10.0.0.0",
+          "end": "10.0.0.9"
+        }
+      ],
+      "readCommunity": "myReadCommunityFor10Net" <2>
+    },
+    {
+      "specific": [
+        "10.9.9.9", "10.11.12.13"
+      ]
+      <2>
+    },
+    {
+      "ipMatch": [
+        "10.0.0.*", "192.168.*.*"
+      ]
+      <2>
+    }
+  ],
+  "profiles": {
+    "profile": [
+      {
+        "label": "datacenter1",
+        "filter": "filter expression 1"
+        <3>
+      },
+      {
+        "label": "datacenter2",
+        "filter": "filter expression 2"
+        <3>
+      }
+    ]
+  }
+}
+----
+<1> Any fields from the table above can go here, these are the default overrides, if any.
+They can be omitted or `null` to use the system defaults
+<2> Any fields from the table above can go here, to override the defaults for this definition, specific or ipMatch.
+<3> Any fields from the table above can go here, to override the defaults for this profile.
+
+
+When updating a Definition or Profile, use the JSON body that's inside the `definition` or `profile` array, respectively.
+
+.Example: PUT Definition, JSON Configuration
+[source,json]
+----
+{
+  "maxRepetitions": 2, <1>
+  "maxRequestSize": 65535,
+  "readCommunity": "public123",
+  "range": [
+    {
+      "begin": "10.0.0.0",
+      "end": "10.0.0.9"
+    }
+  ]
+}
+----
+<1> Any fields from the table above can go here, these are the overrides for this definition.
+
+
+.Example: POST Profile, JSON Configuration
+[source,json]
+----
+{
+  "maxRepetitions": 2, <1>
+  "maxRequestSize": 65535,
+  "readCommunity": "public123",
+  "label": "myProfileLabel",
+  "filter": "myFilterExpression"
+}
+----
+<1> Any fields from the table above can go here, these are the overrides for this profile.
+
+
+== curl Examples
+
+.Example: Add a Definition
 [source, bash]
 ----
-curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" \
-     -H "Accept: application/xml" \
-     -d "<snmp-info>
-             <readCommunity>yRuSonoZ</readCommunity>
-             <port>161</port>
-             <retries>1</retries>
-             <timeout>2000</timeout>
-             <version>v2c</version>
-          </snmp-info>" \
-     http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+curl -v -u admin:admin -X PUT -H "Content-Type: application/json" \
+     -d @./your-data-file.json \
+     http://localhost:8980/opennms/api/v2/snmp-config/definition
 ----
 
-Creates or updates a `<definition/>` entry for IP address 10.1.1.1 in `snmp-config.xml`.
+Creates or updates a `definition` entry, with configuration in the given local JSON file.
 
-.Example 2:
+
+
+.Example: Add a Definition (inline)
 [source, bash]
 ----
-curl -v -u admin:admin -X GET http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+curl -v -u admin:admin -X PUT \
+   -H "Content-Type: application/json" \
+   -d \
+'{
+  "readCommunity": "public-123",
+  "timeout": 2000,
+  "range": [
+    {
+      "begin": "10.0.0.0",
+      "end": "10.0.0.9"
+    }
+  ],
+  "ipMatch": ["10.9.9.9"]
+}' \
+ 'http://localhost:8980/opennms/api/v2/snmp-config/definition'
 ----
 
-Returns the SNMP configuration for IP address 10.1.1.1 as defined in example 1.
+Creates or updates a `definition` entry, with configuration inline.
 
-.Example 3:
+
+.Example: Get entire SNMP Configuration in JSON Format
 [source, bash]
 ----
-curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" \
-     -H "Accept: application/xml" \
-     -d "<snmp-info>
-             <readCommunity>yRuSonoZ</readCommunity>
-             <port>161</port>
-             <retries>1</retries>
-             <timeout>2000</timeout>
-             <version>v1</version>
-             <securityName>secret-stuff</securityName>
-             <engineId>engineId</engineId>
-          </snmp-info>" \
-     http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+curl -v -u admin:admin http://localhost:8980/opennms/api/v2/snmp-config
 ----
 
-Creates or updates a `<definition/>` entry for IP address 10.1.1.1 in `snmp-config.xml`, ignoring attributes `securityName` and `engineId`.
 
-.Example 4:
+.Example: Download entire SNMP Configuration in JSON Format
 [source, bash]
 ----
-curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" \
-     -H "Accept: application/xml" \
-     -d "<snmp-info>
-             <readCommunity>yRuSonoZ</readCommunity>
-             <port>161</port>
-             <retries>1</retries>
-             <timeout>2000</timeout>
-             <version>v3</version>
-             <securityName>secret-stuff</securityName>
-             <engineId>engineId</engineId>
-          </snmp-info>" \
-     http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+curl -v -u admin:admin http://localhost:8980/opennms/api/v2/snmp-config/download
 ----
 
-Creates or updates a `<definition/>` entry for IP address 10.1.1.1 in `snmp-config.xml`, ignoring attribute `readCommunity`.
+
+.Example: Download entire SNMP Configuration in XML Format
+[source, bash]
+----
+curl -v -u admin:admin http://localhost:8980/opennms/api/v2/snmp-config/download?format=xml
+----
+
+
+.Example: Look up configuration for IP address
+[source, bash]
+----
+curl -v -u admin:admin \
+ 'http://localhost:8980/opennms/api/v2/snmp-config/lookup?ipAddress=10.0.0.2&location=Default'
+----

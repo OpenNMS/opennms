@@ -368,21 +368,21 @@ intended to imply that hosts should support those protocols."
 To monitor only local routes, apply the test only on entries in the ipRouteProto table with value `2`.
 The number of entries in the whole ipRouteProto table has to be counted and the boundaries on the number has to be applied.
 
-.Example SnmpMonitor used to test if the number of local static route entries is between 3 and 10
+== Example SnmpMonitor used to test if the number of local static route entries is between 3 and 10
 
 Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
-<service name="All-Static-Routes" interval="300000" user-defined="false" status="on">
- <parameter key="oid" value=".1.3.6.1.2.1.4.21.1.9" /><1>
- <parameter key="walk" value="true" /><2>
- <parameter key="operator" value="=" /><3>
- <parameter key="operand" value="2" /><4>
- <parameter key="match-all" value="count" /><5>
- <parameter key="minimum" value="3" /><6>
- <parameter key="maximum" value="10" /><7>
-</service>
+   <service name="All-Static-Routes" interval="300000" user-defined="false" status="on">
+       <parameter key="oid" value=".1.3.6.1.2.1.4.21.1.9" /><1>
+       <parameter key="walk" value="true" /><2>
+       <parameter key="operator" value="=" /><3>
+       <parameter key="operand" value="2" /><4>
+       <parameter key="match-all" value="count" /><5>
+       <parameter key="minimum" value="3" /><6>
+       <parameter key="maximum" value="10" /><7>
+   </service>
 
 <monitor service="All-Static-Routes" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
 ----
@@ -393,3 +393,25 @@ Note that you must include the `monitor` section for each service in your defini
 <5> Test in walk mode is set to `count` to get the number of entries in the table regarding operator and operand.
 <6> Lower count boundary set to `3`.
 <7> High count boundary is set to `10`.
+
+== Example: Matching multiple values with a regular expression
+
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+   <service name="C9358-PSU-Monitor" interval="60000" user-defined="true" status="on">
+       <parameter key="oid" value=".1.3.6.1.4.1.9.9.13.1.5.1.3"/><1>
+       <parameter key="walk" value="true"/><2>
+       <parameter key="operator" value="~"/><3>
+       <parameter key="operand" value="(?:[15]+)"/><4>
+       <parameter key="match-all" value="true"/><5>
+       <parameter key="reason-template" value="Cisco PSU fault detected. The state should be normal (${operand}) but the current value is ${observedValue}. States: normal(1), warning(2), critical(3), shutdown(4), notPresent(5), notFunctioning(6)"/><6>
+   </service>
+----
+<1> OID for `ciscoEnvMonSupplyStatusEntry`
+<2> Enable walk mode to test every entry in the table against the test criteria.
+<3> `~` specifies that the operand is a regular expression 
+<4> The regular expression `(?:[15]+)` is "Any character of: '1', '5' (1 or more times, matching the most amount possible)"
+<5> Test in walk mode has to pass for every entry in the table.
+<6> Encode MIB status in the reason code to give more detailed information if the service goes down.

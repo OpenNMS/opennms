@@ -63,6 +63,7 @@
       <excludes>
         <exclude>**/*log4j*.jar</exclude>
         <exclude>**/*slf4j*.jar</exclude>
+        <exclude>**/commons-io-*.jar</exclude>
       </excludes>
     </fileSet>
   </fileSets>

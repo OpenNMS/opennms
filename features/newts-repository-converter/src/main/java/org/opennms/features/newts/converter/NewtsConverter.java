@@ -154,6 +154,12 @@ public class NewtsConverter implements AutoCloseable {
 
     private final ExecutorService executor;
 
+    public static void run(final String... args) {
+        try (final NewtsConverter converter = new NewtsConverter(args)) {
+            converter.execute();
+        }
+    }
+
     /**
      * The main method.
      *
@@ -161,11 +167,9 @@ public class NewtsConverter implements AutoCloseable {
      */
     public static void main(final String... args) {
         final long start;
-        try (final NewtsConverter converter = new NewtsConverter(args)) {
+        try {
             start = System.currentTimeMillis();
-
-            converter.execute();
-
+            run(args);
         } catch (final NewtsConverterError e) {
             LOG.error(e.getMessage(), e);
             System.exit(1);
@@ -219,8 +223,7 @@ public class NewtsConverter implements AutoCloseable {
 
         } catch (ParseException e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: %s%n", e.getMessage()), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Failed to parse arguments: {}", e.getMessage());
         }
 
         // Processing Options
@@ -234,8 +237,7 @@ public class NewtsConverter implements AutoCloseable {
                         : Paths.get("/opt/opennms");
         if (!Files.exists(this.onmsHome) || !Files.isDirectory(this.onmsHome)) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.onmsHome.toAbsolutePath()), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("Directory {} doesn't exist", this.onmsHome.toAbsolutePath());
         }
         System.setProperty("opennms.home", onmsHome.toAbsolutePath().toString());
 
@@ -244,14 +246,12 @@ public class NewtsConverter implements AutoCloseable {
                       : this.onmsHome.resolve("share").resolve("rrd");
         if (!Files.exists(this.rrdDir) || !Files.isDirectory(this.rrdDir)) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.rrdDir.toAbsolutePath()), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("Directory {} doesn't exist", this.rrdDir.toAbsolutePath());
         }
 
         if (!cmd.hasOption('s')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Option for storage-strategy must be spcified%n"), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("Option for storage-strategy must be specified");
         }
 
         switch (cmd.getOptionValue('s').toLowerCase()) {
@@ -269,14 +269,12 @@ public class NewtsConverter implements AutoCloseable {
 
             default:
                 new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for storage-strategy%n"), options, null);
-                System.exit(1);
-                throw null;
+                throw NewtsConverterError.create("Invalid value for storage-strategy: {}", cmd.getOptionValue('s'));
         }
 
         if (!cmd.hasOption('t')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Option rrd-tool must be specified%n"), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("Option rrd-tool must be specified");
         }
 
         switch (cmd.getOptionValue('t').toLowerCase()) {
@@ -294,8 +292,7 @@ public class NewtsConverter implements AutoCloseable {
 
             default:
                 new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for rrd-tool%n"), options, null);
-                System.exit(1);
-                throw null;
+                throw NewtsConverterError.create("Invalid value for rrd-tool: {}", cmd.getOptionValue('t'));
         }
 
         this.rrdBinary = cmd.hasOption('T')
@@ -307,8 +304,7 @@ public class NewtsConverter implements AutoCloseable {
                                           String.format("ERROR: RRDtool command %s doesn't exist%n", this.rrdBinary.toAbsolutePath()),
                                           options,
                                           null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("RRDtool command {} doesn't exist", this.rrdBinary.toAbsolutePath());
         }
         System.setProperty("rrd.binary", this.rrdBinary.toString());
 
@@ -324,8 +320,7 @@ public class NewtsConverter implements AutoCloseable {
 
         } catch (Exception e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid number of threads: %s%n", e.getMessage()), options, null);
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Invalid number of threads: {}", e.getMessage());
         }
 
         // Initialize OpenNMS
@@ -597,7 +592,10 @@ public class NewtsConverter implements AutoCloseable {
                 }
 
                 if (batch.size() >= this.batchSize) {
-                    this.repository.insert(batch, true);
+                    synchronized (this.repository) {
+                        this.repository.insert(batch, true);
+                    }
+
                     this.processedSamples.getAndAdd(batch.size());
 
                     batch = new ArrayList<>(this.batchSize);

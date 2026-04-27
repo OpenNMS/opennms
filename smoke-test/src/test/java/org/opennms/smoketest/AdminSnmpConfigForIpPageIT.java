@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.smoketest.selenium.ResponseData;
@@ -39,6 +40,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
+// TODO: Remove when legacy SNMP UI is removed (Horizon 37)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
 
@@ -52,7 +54,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
         findElementByLink("Configure SNMP Community Names by IP Address").click();
     }
 
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void verifyLocationDropdown() throws IOException, InterruptedException {
         boolean created = false;
         try {
@@ -87,7 +89,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
     /**
      * Tests if getting the current snmp configuration for a specific ip address works.
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testGetIpInformation() throws Exception {
         // v2c
         new Select(findElementByName("version")).selectByVisibleText("v2c");
@@ -130,7 +132,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
     /**
      * Tests that only one "version specifics" area is visible at the time. 
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testVersionHandling() {
         new Select(findElementByName("version")).selectByVisibleText("v1");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='v1/v2c specific parameters']")));
@@ -149,7 +151,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
     /**
      * Tests if the validation of the integer fields in the "saveConfig" form works fine.
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testIntegerValidation() {
         final String defaultValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than 0 or leave it empty.";
         final String geZeroValidationErrorTemplate = "%s is not a valid %s. Please enter a number greater than or equal to 0, or leave it empty.";
@@ -218,7 +220,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
      * Tests if the ip address validation in the "saveConfig" form works fine.
      * @throws Exception
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testIpValidation() throws Exception {
         //invalid first and empty last ip
         gotoPage();
@@ -262,7 +264,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
     /**
      * Tests that the cancel button works as expected.
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testCancelButton() {
         findElementByName("cancelButton").click();
         // this takes you to the admin page
@@ -273,7 +275,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
     /**
      * Tests that one or both save options can be selected, but that there must be at least one selection.
      */
-    @Test
+    @Ignore("The legacy SNMP Config UI pages have been deprecated and hidden.")
     public void testSaveOptions() {
         // OK
         enterText(By.name("firstIPAddress"), "1.1.1.1");
@@ -328,5 +330,4 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumIT {
             assertEquals("Expected a failure on field '" + fieldLabel + "' with value " + fieldValue, String.format(errorMessageTemplate, fieldValue, fieldLabel), alertText);
         }
     }
-
 }

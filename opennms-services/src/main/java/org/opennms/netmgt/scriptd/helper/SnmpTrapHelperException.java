@@ -23,9 +23,8 @@ package org.opennms.netmgt.scriptd.helper;
 
 /**
  * This class describes an exception associated with the SnmpTrapHelper class.
- * If the described exception was caused by some other exception (e.g. an
- * exception associated with the JoeSNMP library), that exception will be
- * included as the "cause". The getMessage and printStackTrace methods are
+ * If the described exception was caused by some other exception, that exception
+ * will be included as the "cause". The getMessage and printStackTrace methods are
  * overridden, in order to describe the "cause" exception, where present.
  *
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>

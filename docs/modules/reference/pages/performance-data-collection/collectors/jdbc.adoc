@@ -5,7 +5,7 @@
 The JDBCCollector collects performance data via JDBC drivers.
 Attributes are retrieved using SQL queries.
 The JDBC driver for PostgreSQL is included with {page-component-title}.
-Any other JDBC drivers must be manually loaded to collect from other types of database servers (see xref:reference:configuration/install-jdbc-driver.adoc[] and xref:deployment:minion/installing-jdbc-driver.adoc[]).
+Any other JDBC drivers must be manually loaded to collect from other types of database servers (see xref:deployment:core/installing-jdbc-driver.adoc[] and xref:deployment:minion/installing-jdbc-driver.adoc[]).
 
 == Collector facts
 
@@ -21,7 +21,7 @@ Any other JDBC drivers must be manually loaded to collect from other types of da
 === Limitations on Minion
 
 No JDBC drivers are included with Minion.
-To install a JDBC driver, follow the steps in the xref:deployment:minion/installing-jdbc-driver.adoc[Install JDBC driver on Minion] page.
+To install a JDBC driver, follow the steps in the xref:deployment:minion/installing-jdbc-driver.adoc[Installation JDBC driver on the Minion] page.
 
 When running on Minion, you also cannot reference the data sources in `opennms-datasources.xml`.
 Instead, you must use the service parameters to set the JDBC connection settings.

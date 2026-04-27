@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.joda.time.Duration;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +61,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -87,6 +91,9 @@ import org.springframework.transaction.annotation.Transactional;
 @DirtiesContext
 public class ProvisionerRescanExistingFalseIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ProvisionerRescanExistingFalseIT.class);
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private MockEventIpcManager m_mockEventIpcManager;
@@ -127,12 +134,12 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
 
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
-        
+
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
-        
+
         //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
-        
+
         m_foreignSource = new ForeignSource();
         m_foreignSource.setName("noRescanOnImport");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
@@ -145,15 +152,26 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         final PluginConfig snmpDetector = new PluginConfig("SNMP", SnmpDetector.class.getName());
         snmpDetector.addParameter("timeout", "500");
         snmpDetector.addParameter("retries", "0");
-		m_foreignSource.addDetector(snmpDetector);
+        m_foreignSource.addDetector(snmpDetector);
 
         m_foreignSourceRepository = new MockForeignSourceRepository();
         m_foreignSourceRepository.save(m_foreignSource);
         m_foreignSourceRepository.flush();
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
-        
+
         m_scheduledExecutor.pause();
+    }
+
+    @After
+    public void after() {
+        m_scheduledExecutor.resume();
+        m_eventAnticipator.reset();
+        try {
+            m_provisioner.destroy();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     
     private void setupLogging(final String logLevel) {
@@ -196,12 +214,11 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         System.err.println("Import Part 2");
         System.err.println("-------------------------------------------------------------------------");
 
-        setupLogging("DEBUG");
+        setupLogging("TRACE");
         m_eventAnticipator.reset();
         anticipateNoRescanSecondNodeEvents();
         importFromResource("classpath:/testNoRescanOnImport-part2.xml", rescanExistingFlag);
         m_eventAnticipator.verifyAnticipated();
-        setupLogging("INFO");
 
         //Verify node count
         assertEquals(2, getNodeDao().countAll());
@@ -212,8 +229,6 @@ public class ProvisionerRescanExistingFalseIT implements InitializingBean {
         		LOG.info("  interface: {}", iface);
         	}
         }
-        
-        setupLogging("ERROR");
     }
 
     protected void anticipateNoRescanSecondNodeEvents() {

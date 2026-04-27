@@ -140,8 +140,7 @@ public abstract class AbstractSnmpCollector extends AbstractServiceCollector {
     /* -------------------------------------------------------------- */
 
     /**
-     * Interface attribute key used to store the interface's JoeSNMP SnmpPeer
-     * object.
+     * Interface attribute key used to store the interface's SnmpPeer object.
      */
     static final String SNMP_PEER_KEY = "org.opennms.netmgt.collectd.SnmpCollector.SnmpPeer";
 

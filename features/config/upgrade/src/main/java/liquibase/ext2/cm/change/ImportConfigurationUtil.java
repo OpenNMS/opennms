@@ -67,7 +67,13 @@ public class ImportConfigurationUtil {
                 throw new IllegalArgumentException(String.format("For the '%s' only one configuration can be provided (configId='%s')",
                         configurationIdentifier.getConfigName(), ConfigDefinition.DEFAULT_CONFIG_ID));
             }
-            String fileType = FilenameUtils.getExtension(configResource.getFilename());
+            String fileName = configResource.getFilename();
+            String fileType = FilenameUtils.getExtension(fileName);
+            // Strip timestamp suffix from archived files (format: yyyyMMddHHmmss = 14 digits)
+            if (fileType.matches("\\d{14}")) {
+                fileName = FilenameUtils.removeExtension(fileName);
+                fileType = FilenameUtils.getExtension(fileName);
+            }
             JsonAsString configObject;
             if("xml".equalsIgnoreCase(fileType)) {
                 configObject = new XmlToJson(asString(configResource), configDefinition).getJson();

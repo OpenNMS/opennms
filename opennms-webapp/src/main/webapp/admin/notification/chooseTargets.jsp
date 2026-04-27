@@ -318,7 +318,11 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
 
         try {
             for (Target target : targets) {
-                if (target.getCommands().size() == 1 && "email".equals(target.getCommands().get(0))) {
+                boolean isEmailCommand = target.getCommands().size() == 1 &&
+                    ("email".equals(target.getCommands().get(0)) || "javaEmail".equals(target.getCommands().get(0)));
+                boolean isEmailAddress = target.getName().contains("@");
+
+                if (isEmailCommand && isEmailAddress) {
                     emails.put(target.getName(), target.getName());
                 }
             }
@@ -333,10 +337,13 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
     public Collection<String> getTargetNames(Collection<Target> targets) {
         Collection<String> targetNames = new ArrayList<>();
         for (Target target : targets) {
-            if (target.getCommands().size() == 1 && "email".equals(target.getCommands().get(0))) {
-                continue;
+            boolean isEmailCommand = target.getCommands().size() == 1 &&
+                ("email".equals(target.getCommands().get(0)) || "javaEmail".equals(target.getCommands().get(0)));
+
+            if (!isEmailCommand) {
+                targetNames.add(target.getName());
             }
-            targetNames.add(target.getName());
         }
         return targetNames;
-    }%>
+    }
+%>

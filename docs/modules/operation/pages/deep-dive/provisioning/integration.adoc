@@ -56,15 +56,32 @@ curl -v -u admin:admin -X POST -H 'Content-type: application/xml' -d '@customer-
 
 === Step 2 - Update the SNMP configuration
 
-The xref:development:rest/snmp_configuration.adoc[snmpConfig endpoint] only supports a PUT request because it is an implied "update" of the configuration since it requires an IP address, and all IPs have a default configuration.
-This request is is passed to the SNMP configuration factory in {page-component-title} for optimization of the configuration store `snmp-config.xml`.
-This example changes the community string for the IP address 10.1.1.1 to `yRuSonoZ`.
+Update the community string or other data for this IP address.
 
-NOTE: Community string is the only required element.
+See the xref:development:rest/snmp_configuration.adoc[SNMP Configuration documentation] for more information.
 
-[source, console]
+This example changes the read community string for the IP address 10.1.1.1 to `yRuSonoZ`.
+
+NOTE: `readCommunity` is the only required element, other than `specific`.
+See the SNMP documentation for a full list of available elements and their descriptions.
+
+.Example: Update the SNMP Community string via curl (one-liner)
+[source, bash, console]
 ----
-curl -v -u admin:admin -X PUT -H "Content-Type: application/xml" -H "Accept: application/xml" -d "<snmp-info><community>yRuSonoZ</community><port>161</port><retries>1</retries><timeout>2000</timeout><version>v2c</version></snmp-info>" http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+curl -v -u admin:admin -X PUT -H "Content-Type: application/json" -d '{ "readCommunity": "yRuSonoZ", "specific": ["10.1.1.1"] }' http://localhost:8980/opennms/api/v2/snmp-config/definition
+----
+
+.Example: Update the SNMP Community string via curl (formatted)
+[source, bash, console]
+----
+curl -v -u admin:admin -X PUT \
+   -H "Content-Type: application/json" \
+   -d \
+'{
+  "readCommunity": "yRuSonoZ",
+  "specific": ["10.1.1.1"]
+}' \
+ 'http://localhost:8980/opennms/api/v2/snmp-config/definition'
 ----
 
 === Step 3 - Create/Update the Requisition

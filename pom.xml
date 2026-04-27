@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>36.0.0-SNAPSHOT</version>
+  <version>37.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1098,7 +1098,7 @@
           <licenseSets>
             <licenseSet>
               <header>src/main/resources/license-header.txt</header>
-              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics -->
               <excludes>
                 <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
                 <exclude>**/*.css</exclude>
@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[17,18)</version>
+                 <version>[21,22)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1269,6 +1269,7 @@
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
                    <exclude>org.springframework.security:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
                    <exclude>org.springframework.security.kerberos:*</exclude> <!-- use: org.apache.servicemix.bundles.spring-security-* -->
+                   <exclude>org.lz4:lz4-java</exclude>
                  </excludes>
                </bannedDependencies>
              </rules>
@@ -1373,8 +1374,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <source>21</source>
+          <target>21</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1401,6 +1402,7 @@
           <skip>${skipSurefire}</skip>
           <systemPropertyVariables>
             <!-- Turn off queuing in the RRD output -->
+              <java.security.manager>allow</java.security.manager>
             <org.opennms.rrd.usequeue>false</org.opennms.rrd.usequeue>
             <java.awt.headless>true</java.awt.headless>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
@@ -1670,11 +1672,11 @@
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <product.name>horizon</product.name>
-    <docs.product.version>33</docs.product.version>
+    <docs.product.version>37</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>36.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>37.0.0.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1741,9 +1743,10 @@
     <activemqVersion>5.16.8</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
+    <bouncyCastleVersion>1.83</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
+    <byteBuddyVersion>1.14.9</byteBuddyVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.21.5</camelVersion>
     <!-- Match (or beat) Newts version -->
@@ -1777,7 +1780,7 @@
     <commonsValidatorVersion>1.8.0</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
-    <c3p0Version>0.9.5.5</c3p0Version>
+    <c3p0Version>0.12.0</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
     <cxfVersion>3.6.8</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
@@ -1866,6 +1869,7 @@
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
+    <jose4jVersion>0.9.6</jose4jVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
     <jrrdVersion>1.1.0</jrrdVersion>
     <jrrd2Version>2.0.3</jrrd2Version>
@@ -1883,10 +1887,10 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.10</karafVersion>
+    <karafVersion>4.4.9</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
-    <eclipseOsgiVersion>3.17.200</eclipseOsgiVersion>
-    <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
+    <eclipseOsgiVersion>3.18.0</eclipseOsgiVersion>
+    <felixCmJsonVersion>1.0.8</felixCmJsonVersion>
     <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
     <felixConfigadminPluginInterpolationVersion>1.2.8</felixConfigadminPluginInterpolationVersion>
     <felixCoordinatorVersion>1.0.2</felixCoordinatorVersion>
@@ -1895,13 +1899,15 @@
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
     <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
-    <jansiVersion>2.4.0</jansiVersion>
-    <jlineVersion>3.21.0</jlineVersion>
-    <osgiUtilVersion>1.2.0</osgiUtilVersion>
-    <paxLoggingVersion>2.0.19</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
-    <paxUrlAetherVersion>2.6.14</paxUrlAetherVersion>
-    <paxWebVersion>7.3.29</paxWebVersion>
+    <jansiVersion>2.4.2</jansiVersion>
+    <jlineVersion>3.30.6</jlineVersion>
+    <osgiUtilFunctionVersion>1.2.0</osgiUtilFunctionVersion>
+    <osgiUtilPromiseVersion>1.3.0</osgiUtilPromiseVersion>
+    <paxLoggingVersion>2.3.0</paxLoggingVersion>
+    <paxSwissboxVersion>1.9.0</paxSwissboxVersion>
+    <paxSwissboxOptionalJclVersion>1.8.5</paxSwissboxOptionalJclVersion>
+    <paxUrlAetherVersion>2.6.17</paxUrlAetherVersion>
+    <paxWebVersion>8.0.34</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
@@ -1910,31 +1916,31 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.21.1</log4j2Version>
-    <logbackClassicVersion>1.2.13</logbackClassicVersion>
+    <logbackClassicVersion>1.5.32</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
     <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.128.Final</netty4Version>
+    <netty4Version>4.1.132.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.25.5</protobufVersion>
-    <postgresqlVersion>42.5.5</postgresqlVersion>
+    <postgresqlVersion>42.7.10</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>4.9.2</okhttp3Version>
     <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
-    <opennmsApiVersion>1.6.1</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
-    <osgiVersion>7.0.0</osgiVersion>
-    <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
+    <opennmsApiVersion>2.0.0</opennmsApiVersion>
+    <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
+    <osgiVersion>8.0.0</osgiVersion>
+    <osgiAnnotationVersion>8.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
@@ -1946,13 +1952,14 @@
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
-    <lz4JavaVersion>1.8.0</lz4JavaVersion>
+    <lz4JavaVersion>1.10.2</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
     <rateLimitedLoggerVersion>2.0.2</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>8.5.4</rocksdbjniVersion>
     <scalaLibraryVersion>2.13.12</scalaLibraryVersion>
+    <scala11LibraryVersion>2.11.12</scala11LibraryVersion>
     <scalaLoggingVersion>3.9.5</scalaLoggingVersion>
     <scalaVersion>2.13</scalaVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
@@ -1988,7 +1995,7 @@
     <wsmanVersion>1.3.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.12.1</minaSshdVersion>
+    <minaSshdVersion>2.15.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
@@ -2015,7 +2022,7 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
-    <nodeVersion>v18.20.2</nodeVersion>
+    <nodeVersion>v22.22.2</nodeVersion>
     <pnpmVersion>10.24.0</pnpmVersion>
 
     <!-- configuration manager -->

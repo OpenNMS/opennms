@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>36.0.0-SNAPSHOT</version>
+        <version>37.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -108,6 +108,13 @@
                         <feature>pax-jetty/9.4.43.v20210629</feature>
                         <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
+                    <blacklistedBundles>
+                        <!-- hawtio pulls in jackson 2.14.1 which has security vulnerabilities;
+                             overrides.properties redirects resolution to ${jackson2Version} at runtime -->
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.14.1</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.14.1</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.14.1</bundle>
+                    </blacklistedBundles>
                     <installedBundles>
                         <!-- override for security (see etc/overrides.properties) -->
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
@@ -132,7 +139,7 @@
                         <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
                         <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
                     </libraries>
-                    <javase>1.8</javase>
+                    <javase>11</javase>
                 </configuration>
             </plugin>
             <plugin>

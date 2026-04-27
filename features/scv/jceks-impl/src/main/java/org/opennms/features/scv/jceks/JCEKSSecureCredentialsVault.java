@@ -42,11 +42,11 @@ import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.Properties;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -117,6 +117,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         m_keyLength = keyLength;
         m_keyStoreType = getValidKeyStoreType(keyStoreType);
         m_keystoreFile = new File(getKeyStoreFileName(keystoreFile));
+
         try {
             m_keystore = KeyStore.getInstance(m_keyStoreType);
             if (!m_keystoreFile.isFile()) {
@@ -128,6 +129,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
                     m_keystore.load(is, m_password);
                 }
             }
+
             // Enable watcher to load changes to keystore file that happens outside OpenNMS
             if (useWatcher) {
                 createFileUpdateWatcher();
@@ -139,8 +141,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private String getKeyStoreFileName(String keystoreFile) {
-
         String fileName = keystoreFile;
+
         if (KeyStoreType.PKCS12.toString().equals(m_keyStoreType)) {
             fileName = keystoreFile.replaceAll(".jce",".pk12");
         }
@@ -163,10 +165,12 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
             if (!m_credentialsCache.isEmpty() && !m_fileUpdated.get()) {
                 return;
             }
+
             if (m_fileUpdated.get()) {
                 m_fileUpdated.set(false);
                 m_credentialsCache.clear();
             }
+
             try {
                 KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
                 SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
@@ -185,19 +189,36 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         }
     }
 
-
     @Override
     public Credentials getCredentials(String alias) {
         loadCredentials();
+
         synchronized (m_credentialsCache) {
             return m_credentialsCache.get(alias);
         }
     }
 
     @Override
+    public Map<String, Credentials> getAllCredentials() {
+        loadCredentials();
+
+        synchronized (m_credentialsCache) {
+            return Collections.unmodifiableMap(m_credentialsCache);
+        }
+    }
+
+    @Override
     public void setCredentials(String alias, Credentials credentials) {
+        Objects.requireNonNull(alias);
+        Objects.requireNonNull(credentials);
+
+        if (alias.equalsIgnoreCase(Credentials.GET_ALL_ALIAS)) {
+            throw new IllegalArgumentException("Cannot set credentials using alias '" + Credentials.GET_ALL_ALIAS + "'.");
+        }
+
         try {
             loadCredentials();
+
             byte[] credentialBytes = toBase64EncodedByteArray(credentials);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
             SecretKey generatedSecret = factory.generateSecret(
@@ -205,6 +226,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             m_keystore.setEntry(alias, new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
+
             synchronized (m_credentialsCache) {
                 writeKeystoreToDisk();
                 m_credentialsCache.put(alias, credentials);
@@ -222,8 +244,6 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
                 m_credentialsCache.remove(alias);
                 writeKeystoreToDisk();
             }
-
-
         } catch (final KeyStoreException e) {
             throw Throwables.propagate(e);
         }
@@ -249,6 +269,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(o);
         out.close();
+
         return Base64.encodeBase64(baos.toByteArray());
     }
 
@@ -256,6 +277,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         byte decodedBytes[] = Base64.decodeBase64(bytes);
         ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
         ObjectInputStream in = new ObjectInputStream(bais);
+
         @SuppressWarnings("unchecked")
         T o = (T) in.readObject();
         in.close();
@@ -273,6 +295,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
     private static String getKeystoreFilename() {
         String opennmsHome = System.getProperty("opennms.home");
+
         if (opennmsHome == null) {
             try {
                 System.err.println("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
@@ -305,6 +328,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
             if (m_keystoreFile.lastModified() == m_lastModified) {
                 return;
             }
+
             // Reload the keystore file when file gets updated.
             try (InputStream is = new FileInputStream(m_keystoreFile)) {
                 m_keystore.load(is, m_password);
@@ -334,5 +358,4 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
             return KeyStoreType.JCEKS.toString();
         }
     }
-
 }

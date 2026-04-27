@@ -28,7 +28,6 @@
 <%@page import="org.opennms.core.resource.Vault"%>
 <%@page import="org.opennms.core.spring.BeanUtils"%>
 <%@page import="org.opennms.netmgt.config.SyslogdConfigFactory"%>
-<%@page import="org.opennms.netmgt.config.TrapdConfigFactory"%>
 <%@page import="java.time.Instant"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 <%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
@@ -76,14 +75,6 @@
 </script>
 
 <%
-   String trapPort = "Unknown";
-   try {
-       TrapdConfigFactory.init();
-       trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
-   } catch (Throwable e) {
-       // if factory can't be initialized, status is already 'Unknown'
-   }
-
    String syslogPort = "Unknown";
    try {
        SyslogdConfigFactory syslogdConfig = BeanUtils.getBean("commonContext", "syslogdConfigFactory", SyslogdConfigFactory.class);
@@ -135,10 +126,6 @@
         <tr>
           <th>Jetty HTTPS port:</th>
           <td><%=Vault.getProperty("org.opennms.netmgt.jetty.https-port") == null ? "<i>Unspecified</i>" : Vault.getProperty("org.opennms.netmgt.jetty.https-port")%></td>
-        </tr>
-        <tr>
-          <th>SNMP trap port:</th>
-          <td><%=trapPort%></td>
         </tr>
         <tr>
           <th>Syslog port:</th>

@@ -4,6 +4,37 @@ import { XMLValidator } from 'fast-xml-parser'
 export const MAX_FILES_UPLOAD = 10
 
 export const validateEventConfigFile = async (file: File) => {
+  // eventconf.xml is a special ordering file — validate XML and presence of <event-file> entries
+  if (file.name.toLowerCase() === 'eventconf.xml') {
+    try {
+      const text = await file.text()
+      if (text.trim().length === 0) {
+        return { isValid: false, errors: ['File is empty'] }
+      }
+      const result = XMLValidator.validate(text)
+      if (result !== true) {
+        return { isValid: false, errors: ['Invalid XML format - file contains syntax errors'] }
+      }
+      let parser: any
+      try {
+        parser = new (DOMParser as any)()
+      } catch (e) {
+        parser = (DOMParser as any)()
+      }
+      const xmlDoc = parser.parseFromString(text, 'application/xml')
+      if (xmlDoc.querySelector('parsererror')) {
+        return { isValid: false, errors: ['Invalid XML format - file contains syntax errors'] }
+      }
+      const eventFileElements = xmlDoc.querySelectorAll('event-file')
+      if (eventFileElements.length === 0) {
+        return { isValid: false, errors: ['No <event-file> entries found in eventconf.xml'] }
+      }
+      return { isValid: true, errors: [] }
+    } catch (error) {
+      return { isValid: false, errors: [`Error reading eventconf.xml: ${error instanceof Error ? error.message : 'Unknown error'}`] }
+    }
+  }
+
   const validationErrors: string[] = []
 
   try {
@@ -14,8 +45,8 @@ export const validateEventConfigFile = async (file: File) => {
       return { isValid: false, errors: validationErrors }
     }
 
-    if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-      validationErrors.push('File does not appear to be an event configuration file (expected .events.xml extension)')
+    if (!file.name.endsWith('.xml') && !file.name.includes('event')) {
+      validationErrors.push('File does not appear to be an event configuration file (expected .xml extension)')
       return { isValid: false, errors: validationErrors }
     }
 
@@ -87,50 +118,27 @@ export const validateEventConfigFile = async (file: File) => {
   }
 }
 
-export const validateEventElement = (event: Element | any, eventNumber: number): string => {
-  if (!event || typeof event.querySelector !== 'function') {
-    return `Event ${eventNumber}: missing <uei>`
-  }
+// Helper function to extract inner text from XML element
+const getInnerText = (el: Element, tag: string): string => {
+  if (!el) return ''
+  const node = el.querySelector(tag) || el.getElementsByTagName(tag)[0]
+  return node?.textContent?.trim() || ''
+}
 
-  const getInnerText = (el: any, tag: string): string => {
-    if (!el) return ''
-    let node: any = null
-    try {
-      if (typeof el.querySelector === 'function') node = el.querySelector(tag)
-    } catch (e) {
-      // Re-throw Error objects as these are unexpected errors
-      if (e instanceof Error) throw e
-      node = null
+export const validateEventElement = (event: Element, eventNumber: number): string => {
+  // Define required fields for validation
+  const requiredFields = [
+    { tag: 'uei', name: '<uei>' },
+    { tag: 'event-label', name: '<event-label>' },
+    { tag: 'severity', name: '<severity>' },
+    { tag: 'descr', name: '<descr>' }
+  ] as const
+
+  // Validate each required field
+  for (const field of requiredFields) {
+    if (!getInnerText(event, field.tag)) {
+      return `Event ${eventNumber}: missing ${field.name}`
     }
-    if (!node) {
-      try {
-        if (typeof el.getElementsByTagName === 'function') node = el.getElementsByTagName(tag)[0]
-      } catch (e) {
-        // Re-throw Error objects as these are unexpected errors
-        if (e instanceof Error) throw e
-        node = null
-      }
-    }
-    const text = node?.textContent
-    return typeof text === 'string' ? text.trim() : ''
-  }
-
-  const uei = getInnerText(event, 'uei')
-  const label = getInnerText(event, 'event-label')
-  const severity = getInnerText(event, 'severity')
-  const description = getInnerText(event, 'descr')
-
-  if (!uei) {
-    return `Event ${eventNumber}: missing <uei>`
-  }
-  if (!label) {
-    return `Event ${eventNumber}: missing <event-label>`
-  }
-  if (!severity) {
-    return `Event ${eventNumber}: missing <severity>`
-  }
-  if (!description) {
-    return `Event ${eventNumber}: missing <descr>`
   }
 
   return ''
@@ -139,4 +147,3 @@ export const validateEventElement = (event: Element | any, eventNumber: number):
 export const isDuplicateFile = (fileName: string, existingFiles: UploadEventFileType[]): boolean => {
   return !!existingFiles?.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
 }
-

@@ -60,85 +60,91 @@
 --%>
 
 <%
-    // We have to use the absolute URL as in IE the relative URL or partial URL is not working
-    // See NMS-12379 for more details
-	urlBase = Util.calculateUrlBase(request);
-	urlBase += (String) request.getAttribute("relativeRequestPath");
+  // We have to use the absolute URL as in IE the relative URL or partial URL is not working
+  // See NMS-12379 for more details
+  urlBase = Util.calculateUrlBase(request);
+  urlBase += (String) request.getAttribute("relativeRequestPath");
 
-    XssRequestWrapper req = new XssRequestWrapper(request);
+  XssRequestWrapper req = new XssRequestWrapper(request);
 
-    //required attributes
-    OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
-    long alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Long)req.getAttribute("alarmCount");
-    NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+  // required attributes
+  OnmsAlarm[] alarms = (OnmsAlarm[])req.getAttribute( "alarms" );
+  long alarmCount = req.getAttribute("alarmCount") == null ? -1 : (Long)req.getAttribute("alarmCount");
+  NormalizedQueryParameters parms = (NormalizedQueryParameters)req.getAttribute( "parms" );
+
+  // show unacknowledged alarms as flashing alarms
+  String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
+  boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
+
+  if (unAckFlash) {
+    parms.setAckType(NormalizedAcknowledgeType.BOTH);
+  }
     
-    // show unacknowledged alarms as flashing alarms
-    String unAckFlashStr = System.getProperty("opennms.alarmlist.unackflash");
-	boolean unAckFlash = (unAckFlashStr == null) ? false : "true".equals(unAckFlashStr.trim());
-	if(unAckFlash) parms.setAckType(NormalizedAcknowledgeType.BOTH);
-    
-    FilterCallback callback = (AlarmFilterCallback) req.getAttribute("callback");
+  FilterCallback callback = (AlarmFilterCallback) req.getAttribute("callback");
 
-    if( alarms == null || parms == null ) {
-        throw new ServletException( "Missing either the alarms or parms request attribute." );
-    }
-  
-    //Make 'action' the opposite of the current acknowledgement state
-    String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
-    if (parms.getAckType() != null && parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType())) {
-        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
-    }
+  if (alarms == null || parms == null) {
+      throw new ServletException( "Missing either the alarms or parms request attribute." );
+  }
 
-    // optional bookmark
-    final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
+  // Make 'action' the opposite of the current acknowledgement state
+  String action = AcknowledgeType.ACKNOWLEDGED.getShortName();
+  if (parms.getAckType() != null && parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType())) {
+      action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
+  }
 
-    pageContext.setAttribute("addPositiveFilter", "<i class=\"far fa-square-plus\"></i>");
-    pageContext.setAttribute("addNegativeFilter", "<i class=\"far fa-square-minus\"></i>");
-    pageContext.setAttribute("addBeforeFilter", "<i class=\"fas fa-square-caret-right\"></i>");
-    pageContext.setAttribute("addAfterFilter", "<i class=\"fas fa-square-caret-left\"></i>");
+  // optional bookmark
+  final OnmsFilterFavorite favorite = (OnmsFilterFavorite) req.getAttribute("favorite");
+
+    pageContext.setAttribute("addPositiveFilter", "<i class=\"fa fa-plus-square-o\"></i>");
+    pageContext.setAttribute("addNegativeFilter", "<i class=\"fa fa-minus-square-o\"></i>");
+    pageContext.setAttribute("addBeforeFilter", "<i class=\"fa fa-toggle-right\"></i>");
+    pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
     pageContext.setAttribute("filterFavoriteSelectTagHandler", new FilterFavoriteSelectTagHandler("All Alarms"));
     
     // get sound constants from session, request or opennms.properties
-	String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
-	boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
+	  String soundEnabledStr = System.getProperty("opennms.alarmlist.sound.enable");
+	  boolean soundEnabled = (soundEnabledStr == null) ? false : "true".equals(soundEnabledStr.trim());
 
-	boolean soundOn = false;
-	boolean soundOnEvent = false;
+  boolean soundOn = false;
+  boolean soundOnEvent = false;
 
-	String alarmSoundStatusStr = null; // newalarm,newalarmcount,off
-	if (soundEnabled) {
-		// get request parameter if present, or session parameter if present or system property
-		String sessionStatus = (String) session.getAttribute("opennms.alarmlist.STATUS");
-		alarmSoundStatusStr = request.getParameter("alarmSoundStatus");
-		if (alarmSoundStatusStr != null) {
-			if(!alarmSoundStatusStr.equals(sessionStatus)){
-			   session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
-			   session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(0));
-			}
-		} else {
-			alarmSoundStatusStr = (String) session.getAttribute("opennms.alarmlist.STATUS");
-			if (alarmSoundStatusStr == null) {
-				alarmSoundStatusStr = System.getProperty("opennms.alarmlist.sound.status");
-				if (alarmSoundStatusStr == null) alarmSoundStatusStr = "off";
-				session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
-			}
-		}
-		switch (alarmSoundStatusStr) {
-		case "newalarm": {
-			soundOn = true;
-			soundOnEvent = false;
-			break;
-		}
-		case "newalarmcount": {
-			soundOn = true;
-			soundOnEvent = true;
-			break;
-		}
-		default: { //off 
-			break;
-		}
-		}
-	}
+  String alarmSoundStatusStr = null; // newalarm,newalarmcount,off
+
+  if (soundEnabled) {
+    // get request parameter if present, or session parameter if present or system property
+    String sessionStatus = (String) session.getAttribute("opennms.alarmlist.STATUS");
+    alarmSoundStatusStr = request.getParameter("alarmSoundStatus");
+    if (alarmSoundStatusStr != null) {
+      if (!alarmSoundStatusStr.equals(sessionStatus)) {
+         session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+         session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(0));
+      }
+    } else {
+      alarmSoundStatusStr = (String) session.getAttribute("opennms.alarmlist.STATUS");
+      if (alarmSoundStatusStr == null) {
+        alarmSoundStatusStr = System.getProperty("opennms.alarmlist.sound.status");
+        if (alarmSoundStatusStr == null) {
+          alarmSoundStatusStr = "off";
+        }
+        session.setAttribute("opennms.alarmlist.STATUS",alarmSoundStatusStr);
+      }
+    }
+    switch (alarmSoundStatusStr) {
+      case "newalarm": {
+        soundOn = true;
+        soundOnEvent = false;
+        break;
+      }
+      case "newalarmcount": {
+        soundOn = true;
+        soundOnEvent = true;
+        break;
+      }
+      default: { //off
+        break;
+      }
+    }
+  }
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
@@ -158,134 +164,131 @@
 
 <% if(unAckFlash){ //style to make unacknowledged alarms flash %>
 <style media="screen" type="text/css">
-.blink_text {
+  .blink_text {
     animation:1s blinker linear infinite;
     -webkit-animation:1s blinker linear infinite;
     -moz-animation:1s blinker linear infinite;
-    }
-    @-moz-keyframes blinker {  
+  }
+  @-moz-keyframes blinker {
      0% { opacity: 1.0; }
      50% { opacity: 0.0; }
      100% { opacity: 1.0; }
-     }
-    @-webkit-keyframes blinker {  
+  }
+  @-webkit-keyframes blinker {
      0% { opacity: 1.0; }
      50% { opacity: 0.0; }
      100% { opacity: 1.0; }
-     }
-    @keyframes blinker {  
+  }
+  @keyframes blinker {
      0% { opacity: 1.0; }
      50% { opacity: 0.0; }
      100% { opacity: 1.0; }
-     }
+  }
 </style>
 <% } %>
 
-  <script type="text/javascript">
-    function checkAllCheckboxes() {
-       if( document.alarm_action_form.alarm.length ) {  
-         for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) {
-           document.alarm_action_form.alarm[i].checked = true
-         }
+<script type="text/javascript">
+  function checkAllCheckboxes() {
+     if (document.alarm_action_form.alarm.length) {
+       for (i = 0; i < document.alarm_action_form.alarm.length; i++ ) {
+         document.alarm_action_form.alarm[i].checked = true
        }
-       else {
-         document.alarm_action_form.alarm.checked = true
-       }
-         
-    }
-    
-    function submitForm(anAction)
-    {
-        var isChecked = false
-        var numChecked = 0;
-        
-        // Decide to which servlet we will submit
-        if (anAction == "clear" || anAction == "escalate") {
-        	document.alarm_action_form.action = "alarm/changeSeverity";
-        } else if (anAction == "acknowledge" || anAction == "unacknowledge") {
-        	document.alarm_action_form.action = "alarm/acknowledge";
+     }
+     else {
+       document.alarm_action_form.alarm.checked = true
+     }
+  }
+
+  function submitForm(anAction) {
+      var isChecked = false
+      var numChecked = 0;
+
+      // Decide to which servlet we will submit
+      if (anAction == "clear" || anAction == "escalate") {
+        document.alarm_action_form.action = "alarm/changeSeverity";
+      } else if (anAction == "acknowledge" || anAction == "unacknowledge") {
+        document.alarm_action_form.action = "alarm/acknowledge";
+      }
+
+      // Decide what our action should be
+      if (anAction == "escalate") {
+        document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.ESCALATE_ACTION%>";
+      } else if (anAction == "clear") {
+        document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
+      } else if (anAction == "acknowledge") {
+        document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>";
+      } else if (anAction == "unacknowledge") {
+        document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>";
+      }
+
+      if (document.alarm_action_form.alarm.length) {
+        for (i = 0; i < document.alarm_action_form.alarm.length; i++) {
+          // make sure something is checked before proceeding
+          if (document.alarm_action_form.alarm[i].checked) {
+            isChecked = true;
+            numChecked+=1;
+          }
         }
-        
-        // Decide what our action should be
-        if (anAction == "escalate") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.ESCALATE_ACTION%>";
-        } else if (anAction == "clear") {
-        	document.alarm_action_form.actionCode.value = "<%=AlarmSeverityChangeController.CLEAR_ACTION%>";
-        } else if (anAction == "acknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.ACKNOWLEDGED.getShortName() %>";
-        } else if (anAction == "unacknowledge") {
-        	document.alarm_action_form.actionCode.value = "<%= AcknowledgeType.UNACKNOWLEDGED.getShortName() %>";
+
+        if (isChecked && document.alarm_action_form.multiple) {
+          if (numChecked == parseInt(document.alarm_action_form.alarm.length)) {
+            var newPageNum = parseInt(document.alarm_action_form.multiple.value) - 1;
+            var findVal = "multiple=" + document.alarm_action_form.multiple.value;
+            var replaceWith = "multiple=" + newPageNum;
+            var tmpRedirect = document.alarm_action_form.redirectParms.value;
+            document.alarm_action_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
+            document.alarm_action_form.submit();
+          } else {
+            document.alarm_action_form.submit();
+          }
         }
- 
-        if (document.alarm_action_form.alarm.length)
-        {
-            for( i = 0; i < document.alarm_action_form.alarm.length; i++ ) 
-            {
-              //make sure something is checked before proceeding
-              if (document.alarm_action_form.alarm[i].checked)
-              {
-                isChecked=true;
-                numChecked+=1;
-              }
-            }
-            
-            if (isChecked && document.alarm_action_form.multiple)
-            {
-              if (numChecked == parseInt(document.alarm_action_form.alarm.length)) 
-              { 
-                var newPageNum = parseInt(document.alarm_action_form.multiple.value) - 1;
-                var findVal = "multiple=" + document.alarm_action_form.multiple.value;
-                var replaceWith = "multiple=" + newPageNum;
-                var tmpRedirect = document.alarm_action_form.redirectParms.value;
-                document.alarm_action_form.redirectParms.value = tmpRedirect.replace(findVal, replaceWith);
-                document.alarm_action_form.submit();
-              } 
-              else 
-              {
-                document.alarm_action_form.submit();
-              }
-            }
-            else if (isChecked)
-            {
+        else if (isChecked) {
+          document.alarm_action_form.submit();
+        } else {
+            alert("Please check the alarms that you would like to " + anAction + ".");
+        }
+      }
+      else {
+          if (document.alarm_action_form.alarm.checked) {
               document.alarm_action_form.submit();
-            }
-            else
-            {
-                alert("Please check the alarms that you would like to " + anAction + ".");
-            }
-        }
-        else
-        {
-            if (document.alarm_action_form.alarm.checked)
-            {
-                document.alarm_action_form.submit();
-            }
-            else
-            {
-                alert("Please check the alarms that you would like to " + anAction + ".");
-            }
-        }
-    }
+          } else {
+              alert("Please check the alarms that you would like to " + anAction + ".");
+          }
+      }
+  }
 
-    function changeFavorite(selectElement) {
-        var selectedOption = selectElement.options[selectElement.selectedIndex];
-        var favoriteId = selectedOption.value.split(';')[0];
-        var filter = selectedOption.value.split(';')[1];
-        changeFavorite(favoriteId, filter);
-    }
+  function changeFavorite(selectElement) {
+      var selectedOption = selectElement.options[selectElement.selectedIndex];
+      var favoriteId = selectedOption.value.split(';')[0];
+      var filter = selectedOption.value.split(';')[1];
+      changeFavorite(favoriteId, filter);
+  }
 
-    function changeFavorite(favoriteId, filter) {
-        window.location.href = "<%=req.getContextPath()%>/${alarmListLink}&favoriteId=" + favoriteId + '&' + filter;
-    }
-    
-    // function to play sound
-    var snd = new Audio("sounds/alert.wav"); // loads automatically
-    function playSound(){
-    	snd.play();
-    }
+  function changeFavorite(favoriteId, filter) {
+      window.location.href = "<%=req.getContextPath()%>/${alarmListLink}&favoriteId=" + favoriteId + '&' + filter;
+  }
 
-  </script>
-  
+  // function to play sound
+  var snd = new Audio("sounds/alert.wav"); // loads automatically
+  function playSound(){
+    snd.play();
+  }
+</script>
+
+<div id="advancedSearchModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+       <h5 class="modal-title">Advanced Search</h5>
+       <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <jsp:include page="/includes/alarm-advquerypanel.jsp" flush="false" />
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="severityLegendModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -294,64 +297,98 @@
   </div>
 </div>
 
-      <!-- menu -->
-      <div class="row form-inline">
-      <div class="col-md-12">
-      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
-      <a class="btn btn-secondary" href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>
-      <c:choose>
-        <c:when test="${param.display == 'long'}">
-      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
-        </c:when>
-        <c:otherwise>
-      <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
-        </c:otherwise>
-      </c:choose>
-      <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
-      
-      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-        <% if ( alarmCount > 0 ) { %>
-            <!-- hidden form for acknowledging the result set -->
-            <form style="display:inline" method="post" action="<%= Util.calculateUrlBase(req, "alarm/acknowledgeByFilter") %>" name="acknowledge_by_filter_form">
-              <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-              <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
-              <input type="hidden" name="actionCode" value="<%=action%>" />
-              <%=Util.makeHiddenTags(req)%>
-            </form>
-         <% if (!unAckFlash) { // global ack or unack only displayed if flashing disabled %>
-            <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-              <a class="btn btn-secondary" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
-            <% } else { %>
-              <a class="btn btn-secondary" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
-            <% } %>
-         <% } %>
-        <% } %>
+<div id="helpModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog" style="max-width: 50em;">
+    <div class="modal-content">
+        <jsp:include page="/alarm/alarmhelp.jsp" flush="false" />
+    </div>
+  </div>
+</div>
+
+<!-- menu -->
+<div class="row form-inline">
+  <div class="col-md-12">
+    <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, new ArrayList<Filter>(), favorite)%>" title="Remove all search constraints" >View all alarms</a>
+    <a class="btn btn-secondary" onclick="$('#advancedSearchModal').modal()" title="More advanced searching and sorting options">Advanced Search</a>
+
+    <c:choose>
+      <c:when test="${param.display == 'long'}">
+    <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "short", favorite)%>" title="Summary List of Alarms">Short Listing</a>
+      </c:when>
+      <c:otherwise>
+    <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
+      </c:otherwise>
+    </c:choose>
+    <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
+    <a class="btn btn-secondary text-white" onclick="$('#helpModal').modal()">Help</a>
+
+    <% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY)) { %>
+      <% if ( alarmCount > 0 ) { %>
+          <!-- hidden form for acknowledging the result set -->
+          <form style="display:inline" method="post" action="<%= Util.calculateUrlBase(req, "alarm/acknowledgeByFilter") %>" name="acknowledge_by_filter_form">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
+            <input type="hidden" name="actionCode" value="<%=action%>" />
+            <%=Util.makeHiddenTags(req)%>
+          </form>
+       <% if (!unAckFlash) { // global ack or unack only displayed if flashing disabled %>
+          <% if( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+            <a class="btn btn-secondary" href="javascript:void()" onclick="if (confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+          <% } else { %>
+            <a class="btn btn-secondary" href="#javascript:void()" onclick="if (confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')) { document.acknowledge_by_filter_form.submit(); }" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+          <% } %>
+       <% } %>
       <% } %>
+    <% } %>
 
-      <select class="form-control custom-select pull-right" onchange="location = this.value;">
-          <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
-          <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
-      </select>
-      
-<% if(soundEnabled){ %>
-      <select class="form-control custom-select pull-right" onchange="location = this.value;">
-          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
-          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
-          <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
-      </select>
-<% 
-}
-%>
+    <select class="form-control custom-select pull-right" onchange="location = this.value;">
+        <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
+        <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
+        <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
+        <option value="<%= makeLimitLink(callback, parms, favorite, 100) %>" ${(parms.getLimit() == 100) ? 'selected' : ''}>100</option>
+        <option value="<%= makeLimitLink(callback, parms, favorite, 500) %>" ${(parms.getLimit() == 500) ? 'selected' : ''}>500</option>
+    </select>
 
-      </div>
-      </div>
-      <!-- end menu -->
+    <% if (soundEnabled) { %>
+          <select class="form-control custom-select pull-right" onchange="location = this.value;">
+              <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
+              <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
+              <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
+          </select>
+    <%
+    }
+    %>
+  </div>
+</div>
+<!-- end menu -->
 
+<br />
+
+<%--
 <div class="form-group mt-2">
   <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+</div>
+--%>
+
+<div class="row">
+    <div class="col-md-4">
+        <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
+    </div>
+
+    <div class="col-md-4">
+     <form action="alarm/detail.htm" method="post" role="form" name="get_details_from_alarm_id_form" class="pull-right">
+       <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+       <div class="form-group">
+         <div class="input-group">
+           <label for="byalarmid_id" style="margin-top: 0.5em; margin-right: 0.5em">Get Details for Alarm ID</label>
+           <input type="number" class="form-control" name="id" id="byalarmid_id" min="1" required/>
+           <div class="input-group-append">
+               <button type="submit" class="btn btn-secondary"><i class="fas fa-magnifying-glass"></i></button>
+           </div>
+         </div>
+       </div>
+     </form>
+    </div>
 </div>
 
 <%-- This tag writes out the createFavorite(), deleteFavorite(), and clearFilters() methods --%>
@@ -410,149 +447,149 @@
   </div>
   </div>
 
-            <% if( parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) ) { %>
-                <div class="col-sm-6 col-md-9">
-                    <onms:filters
-                            context="/alarm/list"
-                            favorite="${favorite}"
-                            parameters="${parms}"
-                            showRemoveLink="true"
-                            showAcknowledgeFilter="true"
-                            acknowledgeFilterPrefix="Alarm(s)"
-                            acknowledgeFilterSuffix="alarm(s)"
-                            callback="${callback}" />
-                </div>
-            <% } %>
+  <% if (parms.getFilters().size() > 0 || AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType()) || AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType().equals(parms.getAckType())) { %>
+    <div class="col-sm-6 col-md-9">
+      <onms:filters
+            context="/alarm/list"
+            favorite="${favorite}"
+            parameters="${parms}"
+            showRemoveLink="true"
+            showAcknowledgeFilter="true"
+            acknowledgeFilterPrefix="Alarm(s)"
+            acknowledgeFilterSuffix="alarm(s)"
+            callback="${callback}" />
+    </div>
+  <% } %>
 </div>
 
 <div class="row">
   <br/>
 </div>
 
-<onms:alert/>
+<onms:alert />
 
-            <% if( alarmCount > 0 ) { %>
-              <% String baseUrl = this.makeLink(callback, parms, favorite); %>
-              <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
-                <jsp:param name="count"    value="<%=alarmCount%>" />
-                <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-                <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
-                <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
-              </jsp:include>
-            <% } %>
+<% if (alarmCount > 0) { %>
+  <% String baseUrl = this.makeLink(callback, parms, favorite); %>
+  <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+    <jsp:param name="count"    value="<%=alarmCount%>" />
+    <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+    <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
+    <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
+  </jsp:include>
+<% } %>
+
+<% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY)) { %>
+    <form class="form-inline" action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
+    <input type="hidden" name="actionCode" value="<%=action%>" />
+    <%=Util.makeHiddenTags(req)%>
+<% } %>
+
+<table class="table table-sm severity">
+  <thead>
+    <tr>
+      <% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+          <% if ( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+          <th width="1%">Ack</th>
+          <% } else if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+          <th width="1%">UnAck</th>
+          <% } else if ( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
+          <th width="1%">Ack?</th>
+          <% } %>
+      <% } else { %>
+          <th width="1%">&nbsp;</th>
+      <% } %>
+
+      <th width="2%">
+            <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
+      </th>
+      <th width="4%">
+        <%=this.makeSortLink(callback, parms, SortStyle.SITUATION, SortStyle.REVERSE_SITUATION, "situation", "Situation", favorite )%>
+      </th>
+      <th width="6%">
+        <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity",  favorite )%>
+      </th>
+      <th>
+        <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node",      favorite )%>
+        <c:if test="${param.display == 'long'}">
+        /
+        <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
+        </th>
+        <th>
+        <%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node Location", favorite )%>
+        </th>
+        <th>
+        <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service",   favorite )%>
+        </c:if>
+      </th>
+      <th width="3%">
+        <%=this.makeSortLink(callback, parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count", favorite  )%>
+      </th>
+      <th <% if ("long".equals(request.getParameter("display"))) { %>width="13%"<% } %>>
+        <%=this.makeSortLink(callback, parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last", favorite  )%>
+        <c:if test="${param.display == 'long'}">
+        /
+        <%=this.makeSortLink(callback, parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time", favorite  )%>
+        </th>
+        <th>
+        <%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Event Source Location", favorite  )%>
+        <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+        </th>
+        <th>
+        <%=this.makeSortLink(callback, parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By", favorite  )%>
+        <% } %>
+        </c:if>
+      </th>
+      <c:if test="${param.display != 'long'}">
+        <th width="52%">Log Msg</th>
+      </c:if>
+    </tr>
+  </thead>
+
+  <% for( int i=0; i < alarms.length; i++ ) {
+    pageContext.setAttribute("alarm", alarms[i]);
+  %>
+
+  <% if (unAckFlash) { // flash unacknowledged alarms %>
+    <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> <%=alarms[i].isAcknowledged() ? "" : "blink_text"%>">
 
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <form class="form-inline" action="<%= Util.calculateUrlBase(request, "alarm/acknowledge") %>" method="post" name="alarm_action_form">
-          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-          <input type="hidden" name="redirectParms" value="<c:out value="<%=req.getQueryString()%>"/>" />
-          <input type="hidden" name="actionCode" value="<%=action%>" />
-          <%=Util.makeHiddenTags(req)%>
-      <% } %>
-
-      <table class="table table-sm severity">
-				<thead>
-					<tr>
-                        <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-						<% if ( parms.getAckType().equals(AcknowledgeType.UNACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-						<th width="1%">Ack</th>
-						<% } else if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-						<th width="1%">UnAck</th>
-						<% } else if ( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
-						<th width="1%">Ack?</th>
-						<% } %>
-                    <% } else { %>
-                        <th width="1%">&nbsp;</th>
-                    <% } %>
-
-			<th width="2%">
-              <%=this.makeSortLink(callback, parms, SortStyle.ID,        SortStyle.REVERSE_ID,        "id",        "ID" ,       favorite )%>
-            </th>
-            <th width="4%">
-              <%=this.makeSortLink(callback, parms, SortStyle.SITUATION, SortStyle.REVERSE_SITUATION, "situation", "Situation", favorite )%>
-            </th>
-            <th width="6%">
-              <%=this.makeSortLink(callback, parms, SortStyle.SEVERITY,  SortStyle.REVERSE_SEVERITY,  "severity",  "Severity",  favorite )%>
-            </th>
-			<th>
-              <%=this.makeSortLink(callback, parms, SortStyle.NODE,      SortStyle.REVERSE_NODE,      "node",      "Node",      favorite )%>
-              <c:if test="${param.display == 'long'}">
-              /
-              <%=this.makeSortLink(callback, parms, SortStyle.INTERFACE, SortStyle.REVERSE_INTERFACE, "interface", "Interface", favorite )%>
-              </th>
-              <th>
-              <%=this.makeSortLink(callback, parms, SortStyle.NODE_LOCATION, SortStyle.REVERSE_NODE_LOCATION, "nodelocation", "Node Location", favorite )%>
-              </th>
-              <th>
-              <%=this.makeSortLink(callback, parms, SortStyle.SERVICE,   SortStyle.REVERSE_SERVICE,   "service",   "Service",   favorite )%>
-              </c:if>
-            </th>
-			<th width="3%">
-              <%=this.makeSortLink(callback, parms, SortStyle.COUNT,  SortStyle.REVERSE_COUNT,  "count",  "Count", favorite  )%>
-            </th>
-			<th <% if ("long".equals(request.getParameter("display"))) { %>width="13%"<% } %>>
-              <%=this.makeSortLink(callback, parms, SortStyle.LASTEVENTTIME,  SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last", favorite  )%>
-              <c:if test="${param.display == 'long'}">
-              /
-              <%=this.makeSortLink(callback, parms, SortStyle.FIRSTEVENTTIME,  SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time", favorite  )%>
-              </th>
-              <th>
-              <%=this.makeSortLink(callback, parms, SortStyle.LOCATION,  SortStyle.REVERSE_LOCATION,  "location",  "Event Source Location", favorite  )%>
-              <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-              </th>
-              <th>
-              <%=this.makeSortLink(callback, parms, SortStyle.ACKUSER,  SortStyle.REVERSE_ACKUSER,  "ackuser",  "Acknowledged By", favorite  )%>
-              <% } %>
-              </c:if>
-            </th>
-            <c:if test="${param.display != 'long'}">
-			<th width="52%">Log Msg</th>
-			</c:if>
-		</tr>
-	</thead>
-
-      <% for( int i=0; i < alarms.length; i++ ) { 
-      	pageContext.setAttribute("alarm", alarms[i]);
-      %>
-
-      <% if(unAckFlash){ // flash unacknowledged alarms %>
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> <%=alarms[i].isAcknowledged() ? "" : "blink_text"%>">
-        
-          <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
-                <nobr>
-                  <input  type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
-                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
-                  &#10004;
-                  <% } %>
-                </nobr>
-          <% } else { %>
-            <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">
-                  <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
-                  &#10004;
-                  <% } %>
-          <% } %>
-          </td>
-        
-      <% } else { // normal behaviour %>
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> ">
-
-          <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
-              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
-                <nobr>
-                  <input type="checkbox" name="alarm" disabled="disabled" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> /> 
-                </nobr>
-          <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-              <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
-                <nobr>
-                  <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
-                </nobr>
-          <% } else { %>
-            <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">&nbsp;
-          <% } %>
-          </td>
-      <% } %>
-
           <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+            <nobr>
+              <input  type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" />
+              <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+              &#10004;
+              <% } %>
+            </nobr>
+      <% } else { %>
+        <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">
+              <% if(unAckFlash && alarms[i].isAcknowledged() ){ // tick char %>
+              &#10004;
+              <% } %>
+      <% } %>
+      </td>
+
+  <% } else { // normal behaviour %>
+    <tr class="severity-<%=alarms[i].getSeverity().getLabel()%> ">
+
+      <% if( parms.getAckType().equals(AcknowledgeType.BOTH.toNormalizedAcknowledgeType()) ) { %>
+          <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+            <nobr>
+              <input type="checkbox" name="alarm" disabled="disabled" <%=alarms[i].isAcknowledged() ? "checked='true'" : ""%> />
+            </nobr>
+      <% } else if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+          <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
+            <nobr>
+              <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" />
+            </nobr>
+      <% } else { %>
+        <td valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>" class="divider">&nbsp;
+      <% } %>
+      </td>
+  <% } %>
+
+      <td class="divider" valign="middle" rowspan="<%= ("long".equals(request.getParameter("display"))? 2:1) %>">
 
             <a style="vertical-align:middle" href="<%= Util.calculateUrlBase(request, "alarm/detail.htm?id=" + alarms[i].getId()) %>"><%=alarms[i].getId()%></a>
             <c:if test="<%= (alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null) && (alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null) %>">
@@ -580,7 +617,7 @@
             </nobr>
             <% Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>
             <% if( !parms.getFilters().contains( severityFilter )) { %>
-		<br />Sev.
+		          <br />Sev.
               <nobr>
                 <a href="<%=this.makeLink(callback, parms, severityFilter, true, favorite)%>" class="filterLink" title="Show only alarms with this severity">${addPositiveFilter}</a>
                 <a href="<%=this.makeLink(callback, parms, new NegativeSeverityFilter(alarms[i].getSeverity()), true, favorite)%>" class="filterLink" title="Do not show alarms with this severity">${addNegativeFilter}</a>
@@ -594,21 +631,21 @@
                   if (alarms[i].isSituation()) {
                       if(parms.getFilters().contains(new SituationFilter(true))) {
               %>
-              <i class="far fa-square-check"></i>
+              <i class="fa fa-check-square-o"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="far fa-square-check"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(true), true, favorite)%>" class="filterLink" title="Show only situations"><i class="fa fa-check-square-o"></i></a>
               <%
                   }
               } else {
                   if(parms.getFilters().contains(new SituationFilter(false))) {
               %>
-              <i class="far fa-square"></i>
+              <i class="fa fa-square-o"></i>
               <%
               } else {
               %>
-              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="far fa-square"></i></a>
+              <a href="<%=this.makeLink(callback, parms, new SituationFilter(false), true, favorite)%>" class="filterLink" title="Show only alarms"><i class="fa fa-square-o"></i></a>
               <%
                       }
                   }
@@ -640,7 +677,7 @@
               &nbsp;
             <% } %>
           <c:if test="${param.display == 'long'}">
-		    <br />
+            <br />
             <% if(alarms[i].getIpAddr() != null ) { %>
               <% Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddr()); %>
               <% if( alarms[i].getNodeId() != null ) { %>
@@ -660,69 +697,69 @@
               <% } %>
             <% } else { %>
               &nbsp;
-            <% } %>
-            </td>
-            <td>
-            <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
-              <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
-              <% Filter locationFilter = new NodeLocationFilter(location); %>
-              <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
-              <% if( !parms.getFilters().contains(locationFilter) ) { %>
-                <nobr>
-                  <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this node location">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>
-            <% } %>
-            </td>
-            <td>
-            <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
-              <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId(), getServletContext()); %>
-              <% if( alarms[i].getNodeId() != null && alarms[i].getIpAddr() != null ) { %>
-                <c:url var="serviceLink" value="element/service.jsp">
-                  <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
-                  <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
-                  <c:param name="service" value="<%=String.valueOf(alarms[i].getServiceType().getId())%>"/>
-                </c:url>
-                <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=alarms[i].getServiceType().getName()%>"/></a>
-              <% } else { %>
-                <c:out value="<%=alarms[i].getServiceType().getName()%>"/>
-              <% } %>
-              <% if( !parms.getFilters().contains( serviceFilter )) { %>
-                <nobr>
-                  <a href="<%=this.makeLink(callback, parms, serviceFilter, true, favorite)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
-                  <a href="<%=this.makeLink(callback, parms, new NegativeServiceFilter(alarms[i].getServiceType().getId(), getServletContext()), true, favorite)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
-                </nobr>
-              <% } %>                            
-            <% } %>
-            </c:if>
-          </td>          
-          <td valign="middle">
-	    <% if(alarms[i].getId() > 0 ) { %>           
+          <% } %>
+      </td>
+      <td>
+        <% if (alarms[i].getNodeId() != null && alarms[i].getNode() != null && alarms[i].getNode().getLocation() != null) { %>
+          <% String location = alarms[i].getNode().getLocation().getLocationName(); %>
+          <% Filter locationFilter = new NodeLocationFilter(location); %>
+          <a href="element/node.jsp?node=<%=alarms[i].getNodeId()%>"><%= location %></a>
+          <% if( !parms.getFilters().contains(locationFilter) ) { %>
+            <nobr>
+              <a href="<%=this.makeLink(callback, parms, locationFilter, true, favorite)%>" class="filterLink" title="Show only alarms for this node location">${addPositiveFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new NegativeNodeLocationFilter(location), true, favorite)%>" class="filterLink" title="Do not show alarms for this node location">${addNegativeFilter}</a>
+            </nobr>
+          <% } %>
+        <% } %>
+      </td>
+      <td>
+        <% if(alarms[i].getServiceType() != null && !"".equals(alarms[i].getServiceType().getName())) { %>
+          <% Filter serviceFilter = new ServiceFilter(alarms[i].getServiceType().getId(), getServletContext()); %>
+          <% if( alarms[i].getNodeId() != null && alarms[i].getIpAddr() != null ) { %>
+            <c:url var="serviceLink" value="element/service.jsp">
+              <c:param name="node" value="<%=String.valueOf(alarms[i].getNodeId())%>"/>
+              <c:param name="intf" value="<%=InetAddressUtils.str(alarms[i].getIpAddr())%>"/>
+              <c:param name="service" value="<%=String.valueOf(alarms[i].getServiceType().getId())%>"/>
+            </c:url>
+            <a href="<c:out value="${serviceLink}"/>" title="More info on this service"><c:out value="<%=alarms[i].getServiceType().getName()%>"/></a>
+          <% } else { %>
+            <c:out value="<%=alarms[i].getServiceType().getName()%>"/>
+          <% } %>
+          <% if( !parms.getFilters().contains( serviceFilter )) { %>
+            <nobr>
+              <a href="<%=this.makeLink(callback, parms, serviceFilter, true, favorite)%>" class="filterLink" title="Show only alarms with this service type">${addPositiveFilter}</a>
+              <a href="<%=this.makeLink(callback, parms, new NegativeServiceFilter(alarms[i].getServiceType().getId(), getServletContext()), true, favorite)%>" class="filterLink" title="Do not show alarms for this service">${addNegativeFilter}</a>
+            </nobr>
+          <% } %>
+        <% } %>
+        </c:if>
+      </td>
+      <td valign="middle">
+        <% if(alarms[i].getId() > 0 ) { %>
                 <nobr>
                   <a href="event/list.htm?sortby=id&amp;acktype=unack&amp;filter=alarm%3d<%=alarms[i].getId()%>"><%=alarms[i].getCounter()%></a>
                 </nobr>
             <% } else { %>
             <%=alarms[i].getCounter()%>
             <% } %>
-          </td>
-          <td>
-            <nobr>
-              <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
-                <onms:datetime date="${alarm.lastEventTime}" />
-              <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
-              <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
-              <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
-            </nobr>
-          <c:if test="${param.display == 'long'}">
-          <br />
-            <nobr>
-              <onms:datetime date="${alarm.firstEventTime}" />
-              <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
-              <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
-            </nobr>
-          </td>
-          <td>
+      </td>
+      <td>
+        <nobr>
+          <% if(alarms[i].getLastEvent() != null) { %><span title="Event <%= alarms[i].getLastEvent().getId()%>"><a href="event/detail.htm?id=<%= alarms[i].getLastEvent().getId()%>"><% } %>
+            <onms:datetime date="${alarm.lastEventTime}" />
+          <% if(alarms[i].getLastEvent() != null) { %></a></span><% } %>
+          <a href="<%=this.makeLink(callback, parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
+          <a href="<%=this.makeLink(callback, parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
+        </nobr>
+        <c:if test="${param.display == 'long'}">
+        <br />
+        <nobr>
+          <onms:datetime date="${alarm.firstEventTime}" />
+          <a href="<%=this.makeLink(callback, parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>
+          <a href="<%=this.makeLink(callback, parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true, favorite)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
+        </nobr>
+      </td>
+      <td>
             <% if (alarms[i].getDistPoller() != null && alarms[i].getLastEvent() != null) { %>
               <% String location = alarms[i].getDistPoller().getLocation(); %>
               <% Filter locationFilter = new LocationFilter(location); %>
@@ -736,40 +773,43 @@
                 </nobr>
               <% } %>
             <% } %>
-              <% if ( parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
-          </td>
-          <td>
-			<nobr><%=alarms[i].getAckUser()%></nobr>          
-            <nobr>
-              <a href="<%=this.makeLink(callback, parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>
-              <a href="<%=this.makeLink(callback, parms, new NegativeAcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>
-            </nobr>
-			<% }%>
-          </c:if>
+            <% if (parms.getAckType().equals(AcknowledgeType.ACKNOWLEDGED.toNormalizedAcknowledgeType()) ) { %>
+              </td>
+              <td>
+                <nobr><%=alarms[i].getAckUser()%></nobr>
+                  <nobr>
+                    <a href="<%=this.makeLink(callback, parms, new AcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>"  class="filterLink" title="Only show alarms ack by this user">${addPositiveFilter}</a>
+                    <a href="<%=this.makeLink(callback, parms, new NegativeAcknowledgedByFilter(alarms[i].getAckUser()), true, favorite)%>" class="filterLink" title="Only show alarms ack by other users">${addNegativeFilter}</a>
+                  </nobr>
+              <% } %>
+            </c:if>
 
           <%-- if sound enabled, write java script to play sound --%>
           <%
-          if (soundOn) out.write(this.alarmSound(alarms[i], session, soundOnEvent));
+          if (soundOn) {
+            out.write(this.alarmSound(alarms[i], session, soundOnEvent));
+          }
           %>
+      </td>
 
-          </td>
-          <c:if test="${param.display != 'long'}">
-          <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
-          </c:if>
-        </tr>
-        <c:if test="${param.display == 'long'}">
-        <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
-          <td colspan="7" class="divider" style="border-top: none"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
-        </tr> 
+        <c:if test="${param.display != 'long'}">
+        <td class="divider"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
         </c:if>
-      <% } /*end for*/%>
+   </tr>
 
-      </table>
-			<hr />
-			 <p><%=alarms.length%> alarms &nbsp;
-      <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <input class="btn btn-sm btn-secondary" TYPE="reset" />
-          <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+    <c:if test="${param.display == 'long'}">
+    <tr class="severity-<%=alarms[i].getSeverity().getLabel()%>">
+      <td colspan="7" class="divider" style="border-top: none"><%=WebSecurityUtils.sanitizeString(alarms[i].getLogMsg(), true)%></td>
+    </tr>
+    </c:if>
+<% } /* end for */ %>
+
+</table>
+<hr />
+<p><%=alarms.length%> alarms &nbsp;
+      <% if (req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
+          <input class="btn btn-sm btn-secondary" type="reset" />
+          <input class="btn btn-sm btn-secondary" type="button" value="Select All" onclick="checkAllCheckboxes()"/>
           <select class="form-control custom-select input-sm" name="alarmAction">
           <% if(unAckFlash){ // allow alarms to be acked and unacked %>
               <option value="acknowledge">Acknowledge Alarms</option>
@@ -784,24 +824,22 @@
               <option value="clear">Clear Alarms</option>
               <option value="escalate">Escalate Alarms</option>
           </select>
-          <input class="btn btn-sm btn-secondary" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
+          <input class="btn btn-sm btn-secondary" type="button" value="Go" onclick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
-        </p>
-      </form>
+</p>
+</form>
 
-
-        <% if( alarmCount > 0 ) { %>
-          <% String baseUrl = this.makeLink(callback, parms, favorite); %>
-          <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
-            <jsp:param name="count"    value="<%=alarmCount%>" />
-            <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
-            <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
-            <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
-          </jsp:include>
-        <% } %>
+<% if (alarmCount > 0 ) { %>
+  <% String baseUrl = this.makeLink(callback, parms, favorite); %>
+  <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+    <jsp:param name="count"    value="<%=alarmCount%>" />
+    <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+    <jsp:param name="limit"    value="<%=parms.getLimit()%>"      />
+    <jsp:param name="multiple" value="<%=parms.getMultiple()%>"   />
+  </jsp:include>
+<% } %>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
 
 <%!
     String urlBase;
@@ -865,13 +903,11 @@
         return makeLink(callback, newParms, favorite);
     }
 
-
     public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, AcknowledgeType ackType, OnmsFilterFavorite favorite ) {
         NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms);
         newParms.setAckType(ackType.toNormalizedAcknowledgeType());
         return makeLink(callback, newParms, favorite);
     }
-
 
     public String makeLink(FilterCallback callback, NormalizedQueryParameters parms, List<Filter> filters, OnmsFilterFavorite favorite ) {
         NormalizedQueryParameters newParms = new NormalizedQueryParameters(parms); // clone;
@@ -912,13 +948,11 @@
         return urlStr;
     }
 
-    
-    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent ){
-
+    public String alarmSound(OnmsAlarm onmsAlarm, HttpSession session, boolean soundOnEvent) {
         // added this section to fire when a new alarm arrives
         // This maintains the highest alarmId or eventId received in the session variable "opennms.alarmlist.HIGHEST"
         // If a new alarm is received the variable is updated
-        String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
+        String soundStr = "<script type=\"text/javascript\"> playSound(); </script>";
 
         Long highest = (Long) session.getAttribute("opennms.alarmlist.HIGHEST");
         Long latest = 0L;
@@ -926,15 +960,17 @@
 
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
-        if(soundOnEvent){
-            OnmsEvent lastEvent=onmsAlarm.getLastEvent();
-            if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
+        if (soundOnEvent) {
+            OnmsEvent lastEvent = onmsAlarm.getLastEvent();
+            if (lastEvent != null && lastEvent.getId() != null) {
+              lastId = lastEvent.getId();
+            }
         } else {
             lastId = (long) onmsAlarm.getId();
         }
 
-        if(highest==null) {
-            if (lastId!=null) {
+        if (highest == null) {
+            if (lastId != null) {
                 highest = lastId;
                 session.setAttribute("opennms.alarmlist.HIGHEST", highest);
                 return soundStr;
@@ -949,7 +985,5 @@
         }
 
         return "<!-- no sound -->";
-
     }
-
 %>

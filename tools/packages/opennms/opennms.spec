@@ -26,7 +26,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-17-openjdk-devel}
+%{!?jdk:%define jdk java-21-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -36,14 +36,14 @@
 # keep RPM from making an empty debug package
 %define debug_package %{nil}
 # don't do a bunch of weird redhat post-stuff  :)
-%define _use_internal_dependency_generator 0
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
-%define _source_filedigest_algorithm 0
-%define _binary_filedigest_algorithm 0
+%define _source_filedigest_algorithm 8
+%define _binary_filedigest_algorithm 8
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
+%define __requires_exclude ^libstdc++-libc6.2.*$
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -102,6 +102,8 @@ Requires(pre):	jrrd2 >= 2.0.0
 Requires:	jrrd2 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
+Provides:   user(opennms)
+Provides:   group(opennms)
 Obsoletes:	opennms < 1.3.11
 Provides:	opennms-plugin-api = %{opa_version}
 Provides:	%{name}-contrib = %{version}-%{release}
@@ -666,11 +668,15 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
-# Put the agent, bin, etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/licenses ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(644,opennms,opennms) |" | \
+	sort >> %{_tmppath}/files.main
+# Put the agent, bin, etc, lib, licenses, and system subdirectories into the package
 find %{buildroot}%{instprefix}/agent \
 	%{buildroot}%{instprefix}/bin \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
+	%{buildroot}%{instprefix}/licenses \
 	%{buildroot}%{instprefix}/system \
 	-type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -943,6 +949,11 @@ fi
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}-core"
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /opt/opennms/bin/ensure-user-ping.sh manually."
+
+# Clean up obsolete THIRD-PARTY.txt left behind from older installations
+if [ -f "${ROOT_INST}/etc/THIRD-PARTY.txt" ]; then
+    rm -f "${ROOT_INST}/etc/THIRD-PARTY.txt"
+fi
 
 echo ""
 echo " *** Thanks for using OpenNMS!”

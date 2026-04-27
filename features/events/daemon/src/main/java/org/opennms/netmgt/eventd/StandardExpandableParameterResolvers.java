@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -245,7 +246,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     return eventUtil.getPrimaryInterface(event.getNodeid());
                 } catch (SQLException ex) {
                     // do nothing
-                    LOG.info("primary interface ipaddr unavailable for node with id: {}", event.getNodeid(), ex);
+                    LOG.info("primary interface ipaddr unavailable for node with id: {}, instanceId={}, eventId={}", event.getNodeid(), SystemInfoUtils.getInstanceId(), event.getDbid(), ex);
                 }
             }
 
@@ -666,7 +667,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     nodeLabel = eventUtil.getNodeLabel(event.getNodeid());
                 } catch (SQLException e) {
                     // do nothing
-                    LOG.info("Node Label unavailable for node with id: {}", event.getNodeid(), e);
+                    LOG.info("Node Label unavailable for node with id: {}, instanceId={}, eventId={}", event.getNodeid(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
                 }
             }
             if (nodeLabel != null) {
@@ -698,7 +699,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     nodeLocation = eventUtil.getNodeLocation(event.getNodeid());
                 } catch (SQLException e) {
                     // do nothing
-                    LOG.info("Node Location unavailable for node with id: {}", event.getNodeid(), e);
+                    LOG.info("Node Location unavailable for node with id: {}, instanceId={}, eventId={}", event.getNodeid(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
                 }
             }
             if (nodeLocation != null) {
@@ -732,7 +733,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     }
                 } catch (SQLException ex) {
                     // do nothing
-                    LOG.info("ForeignSource unavailable for node with id: {}", event.getNodeid(), ex);
+                    LOG.info("ForeignSource unavailable for node with id: {}, instanceId={}, eventId={}", event.getNodeid(), SystemInfoUtils.getInstanceId(), event.getDbid(), ex);
                 }
             }
             return "";
@@ -761,7 +762,7 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
                     }
                 } catch (SQLException ex) {
                     // do nothing
-                    LOG.info("ForeignId unavailable for node with id: {}", event.getNodeid(), ex);
+                    LOG.info("ForeignId unavailable for node with id: {}, instanceId={}, eventId={}", event.getNodeid(), SystemInfoUtils.getInstanceId(), event.getDbid(), ex);
                 }
             }
             return "";
@@ -784,10 +785,14 @@ public enum StandardExpandableParameterResolvers implements ExpandableParameterR
         public String getValue(String parm, String parsedParm, Event event, EventUtil eventUtil) {
             if (event.getNodeid() > 0 && event.getInterface() != null) {
                 try {
-                    return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
+                    if (event.hasIfIndex()) {
+                        return eventUtil.getIfAliasByNodeAndIfIndex(event.getNodeid(), event.getIfIndex());
+                    } else {
+                        return eventUtil.getIfAlias(event.getNodeid(), event.getInterface());
+                    }
                 } catch (SQLException e) {
                     // do nothing
-                    LOG.info("ifAlias Unavailable for {}:{}", event.getNodeid(), event.getInterface(), e);
+                    LOG.info("ifAlias Unavailable for {}:{}, instanceId={}, eventId={}", event.getNodeid(), event.getInterface(), SystemInfoUtils.getInstanceId(), event.getDbid(), e);
                 }
             }
             return event.getInterface();

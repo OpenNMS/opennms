@@ -8,6 +8,8 @@ Based around traditional UDP-based SNMP traps, it receives traps that remote dev
 It enables OpenNMS to receive SNMP traps and convert them into events and, if configured accordingly, convert those events into alarms and notifications.
 Its functionality is similar to how xref:reference:daemons/daemon-config-files/syslogd.adoc[syslogd] handles syslog entries.
 
+You can also manage trapd configuration over REST; see xref:development:rest/trapd-rest-api.adoc[Trapd REST API (v2)].
+
 Trapd supports V1 traps, V2 traps and notifications, and V3 traps and notifications.
 It also accepts traps with any community name (V1, V2c).
 You can use that community name in event definitions as part of a mask.
@@ -31,13 +33,9 @@ Otherwise, {page-component-title} tags the trap to the monitored node, broadcast
 | Configure generic behavior of trapd (for example, port numbers with IP addresses to listen for traps).
 | yes
 | no
-
-| events/*.xml
-| Defines mapping between OIDs and UEIs.
-Files in this folder must be specified as an include directive in `eventconf.xml`.
-| yes
-| no
 |===
+
+NOTE: The mappings between OIDs and UEIs are stored in the database and can be configured using the Web-UI.
 
 .Trapd log file overview
 [options="header"]
@@ -69,8 +67,196 @@ Note that for V3, you must specify the SNMPv3 credentials used to authenticate a
       privacy-passphrase="super-secret" privacy-protocol="DES"/>
 </trapd-configuration>
 ----
-For `privacy-protocol`, the available options are `DES`, `AES`, `AES192`, and `AES256`
-For `auth-protocol`, the available options are  `MD5`, `SHA`, `SHA-224`, `SHA-256`, and `SHA-512`
+For `privacy-protocol`, the available options are `DES`, `AES`, `AES192`, and `AES256`.
+For `auth-protocol`, the available options are `MD5`, `SHA`, `SHA-224`, `SHA-256`, and `SHA-512`.
 
 NOTE: Metadata expressions can also be used in attributes of the `trapd-configuration.xml` configuration file.
-This lets the user to also reference credentials stored in the secure credentials.
+This lets you reference credentials from the Secure Credentials Vault (SCV), including SNMPv3 passphrases.
+
+.Example using SCV metadata for SNMPv3 passphrases
+[source, xml]
+----
+<trapd-configuration snmp-trap-port="162" new-suspect-on-trap="true">
+  <snmpv3-user security-name="opennms"
+      auth-protocol="SHA"
+      auth-passphrase="${scv:trapd-v3-user:authPassphrase}"
+      privacy-protocol="AES"
+      privacy-passphrase="${scv:trapd-v3-user:privacyPassphrase}"/>
+</trapd-configuration>
+----
+
+The SCV expression format is `${scv:<alias>:<attribute>}`.
+For SCV setup and management, see xref:operation:deep-dive/admin/configuration/scv-configuration.adoc[SCV configuration] and xref:operation:deep-dive/meta-data.adoc#ga-metadata-scv[secure credentials vault metadata].
+
+== Trap metrics
+
+Trapd exposes metrics via JMX for monitoring trap processing performance.
+Metrics are available at two levels: global metrics that are always enabled, and per-device metrics that can be optionally enabled.
+
+=== Global metrics
+
+Global trap metrics are always available and provide an overview of trap processing across all devices.
+
+==== Core (OpenNMS:Name=Trapd)
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| RawTrapsReceived
+| Counter
+| Total raw SNMP traps received at the listener before any processing
+
+| TrapsReceived
+| Counter
+| Total traps received at the consumer after dispatch
+
+| V1TrapsReceived
+| Counter
+| SNMPv1 traps received
+
+| V2cTrapsReceived
+| Counter
+| SNMPv2c traps received
+
+| V3TrapsReceived
+| Counter
+| SNMPv3 traps received
+
+| VUnknownTrapsReceived
+| Counter
+| Traps with unknown SNMP version received
+
+| TrapsDiscarded
+| Counter
+| Traps discarded by user configuration
+
+| TrapsErrored
+| Counter
+| Traps that encountered processing errors
+
+| CurrentQueueSize
+| Gauge
+| Current number of messages in the dispatch queue
+
+| MaxQueueSize
+| Gauge
+| Configured maximum queue size
+
+| BatchSize
+| Gauge
+| Configured batch size for trap aggregation
+|===
+
+==== Minion (org.opennms.netmgt.trapd)
+
+On Minion, global metrics are exposed as Dropwizard metrics under the `org.opennms.netmgt.trapd` JMX domain.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| rawTrapsReceived
+| Counter
+| Total raw SNMP traps received at the listener
+
+| trapsErrored
+| Counter
+| Traps that failed during dispatch
+
+| currentQueueSize
+| Gauge
+| Current number of messages in the dispatch queue
+
+| maxQueueSize
+| Gauge
+| Configured maximum queue size
+
+| batchSize
+| Gauge
+| Configured batch size for trap aggregation
+|===
+
+=== Per-device metrics
+
+Per-device metrics allow tracking trap activity for individual devices, identified by IP address and location.
+This feature is disabled by default and must be explicitly enabled.
+
+==== Enabling device metrics
+
+For Core, add the following system property to `$\{OPENNMS_HOME}/etc/opennms.properties.d/trapd.properties`:
+
+[source, properties]
+----
+org.opennms.netmgt.trapd.enableDeviceMetrics=true
+----
+
+For Minion, add the following to `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`:
+
+[source, properties]
+----
+trapd.enableDeviceMetrics=true
+----
+
+==== Listener-side metrics (Minion)
+
+Each device that sends traps gets a JMX MBean registered under `org.opennms.netmgt.trapd.device` with `type=listener`.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| RawTrapsReceived
+| Counter
+| Raw SNMP traps received from this device
+
+| TrapsErrored
+| Counter
+| Traps from this device that failed during dispatch
+|===
+
+==== Consumer-side metrics (Core)
+
+Each device that sends traps gets a JMX MBean registered under `org.opennms.netmgt.trapd.device` with `type=consumer`.
+
+[cols="1,1,2"]
+|===
+| Metric | Type | Description
+
+| TrapsReceived
+| Counter
+| Traps received from this device at the consumer
+
+| TrapsDiscarded
+| Counter
+| Traps from this device discarded by user configuration
+
+| TrapsErrored
+| Counter
+| Traps from this device that encountered processing errors
+|===
+
+==== Prometheus integration
+
+When using the JMX Prometheus Exporter, device metrics can be scraped with the following rule:
+
+[source, yaml]
+----
+- pattern: 'org\.opennms\.netmgt\.trapd\.device<location=(.+),ip=(.+),type=(.+)><>(\w+)'
+  name: trapd_device_$4
+  type: COUNTER
+  labels:
+    location: "$1"
+    ip: "$2"
+    type: "$3"
+----
+
+This produces Prometheus metrics such as:
+
+[source]
+----
+trapd_device_rawtrapsreceived{location="Default",ip="10.0.0.1",type="listener"} 1024
+trapd_device_trapserrored{location="Default",ip="10.0.0.1",type="consumer"} 3
+----
+
+NOTE: This rule is included by default in the container-based JMX Prometheus Exporter configuration for both Core and Minion.

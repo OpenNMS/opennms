@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 import argparse
 import os
 import re
@@ -55,7 +55,6 @@ def generate_test_lists(maven_project_root, changes_only=True, unit_test_output=
         for file_changed in other_files_changed:
             print(file_changed)
 
-        print(list(test_files_changed))
         modules_with_test_changes = project.get_modules_related_to(test_files_changed)
         print("Modules with test changes:")
         for test_module_with_changes in modules_with_test_changes:

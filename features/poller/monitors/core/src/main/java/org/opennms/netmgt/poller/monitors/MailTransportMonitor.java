@@ -96,7 +96,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
             }
 
             parseJavaMailProperties(mailParms);
-            status = doMailTest(mailParms);
+            status = doMailTest(mailParms, svc.getNodeId());
         } catch (final IllegalStateException ise) {
             //ignore this because we don't have to have both a send and read
 
@@ -134,10 +134,10 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
      * 
      * @param mailParms
      */
-    private PollStatus doMailTest(final MailTransportParameters mailParms) {
+    private PollStatus doMailTest(final MailTransportParameters mailParms, final int nodeId) {
         final long beginPoll = System.currentTimeMillis();
         PollStatus status = PollStatus.unknown("Beginning poll.");
-        mailParms.setTestSubjectSuffix(Long.toString(beginPoll));
+        mailParms.setTestSubjectSuffix(Integer.toString(nodeId) + ": " + Long.toString(beginPoll));
 
         /*
          * If both a send and receive test are configured, then were testing the
@@ -151,19 +151,19 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
              * matching.
              */
             mailParms.setEnd2EndTestInProgress(true);
-            status = sendTestMessage(mailParms);
+            status = sendTestMessage(mailParms, nodeId);
 
             if (status.isAvailable()) {
                 LOG.debug("doMailTest: send test successful.");
-                status = readTestMessage(mailParms);
+                status = readTestMessage(mailParms, nodeId);
             } else {
                 LOG.info("doMailTest: send test unsuccessful... skipping read portion of test.");
             }
 
         } else if (mailParms.getReadTest() != null) {
-            status = readTestMessage(mailParms);
+            status = readTestMessage(mailParms, nodeId);
         } else if (mailParms.getSendTest() != null) {
-            status = sendTestMessage(mailParms);
+            status = sendTestMessage(mailParms, nodeId);
         } else {
             throw new IllegalArgumentException("MailTransportMonitor requires either send-host or read-host parameters");
         }
@@ -175,7 +175,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
         return status;
     }
 
-    private PollStatus readTestMessage(final MailTransportParameters mailParms) {
+    private PollStatus readTestMessage(final MailTransportParameters mailParms, final int nodeId) {
         LOG.debug("readTestMessage: Beginning read mail test.");
         PollStatus status = PollStatus.unavailable("Test not completed.");
 
@@ -221,7 +221,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
                     }
                 }
                 if (mailFolder.isOpen() && (mailParms.getReadTest().getSubjectMatch() != null || mailParms.isEnd2EndTestInProgress())) {
-                    status = processMailSubject(mailParms, mailFolder);
+                    status = processMailSubject(mailParms, mailFolder, nodeId);
                     if (status.getStatusCode() == PollStatus.SERVICE_AVAILABLE) {
                         break;
                     }
@@ -268,14 +268,14 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
      * @return a PollStatus indicative of the success of matching a subject or just retieving
      *         mail folder contents... dependent on configuration.
      */
-    private PollStatus processMailSubject(final MailTransportParameters mailParms, final Folder mailFolder) {
+    private PollStatus processMailSubject(final MailTransportParameters mailParms, final Folder mailFolder, final int nodeId) {
         PollStatus status = PollStatus.unknown();
         try {
             final String subject = computeMatchingSubject(mailParms);
             if (mailFolder.isOpen() && subject != null) {
                 final Message[] mailMessages = mailFolder.getMessages();
                 final SearchTerm searchTerm = new SubjectTerm(subject);
-                final SearchTerm deleteTerm = new HeaderTerm(MTM_HEADER_KEY, m_headerValue);
+                final SearchTerm deleteTerm = new HeaderTerm(MTM_HEADER_KEY, m_headerValue + "-" + nodeId);
 
                 LOG.debug("searchMailSubject: searching {} message(s) for subject '{}'", mailMessages.length, subject);
 
@@ -298,18 +298,20 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
 
                     final boolean deleteAllMail = mailParms.getReadTest().getDeleteAllMail();
                     final boolean foundMTMHeader = mailMessage.match(deleteTerm);
-                    LOG.debug("searchMailSubject: deleteAllMail = {}, MTM header found = {}", Boolean.toString(deleteAllMail), Boolean.toString(foundMTMHeader));
+                    LOG.debug("searchMailSubject: deleteAllMail = {}, MTM header found = {}, delete = {}", deleteAllMail, foundMTMHeader, delete);
 
                     if (deleteAllMail) {
                         if (!delete) LOG.debug("searchMailSubject: flagging message with subject '{}' for deletion because deleteAllMail is set.", subject);
                         delete = true;
                     } else if (foundMTMHeader) {
-                        if (!delete) LOG.debug("searchMailSubject: flagging message with subject '{}' for deletion because we sent it (found header {}={})", subject, MTM_HEADER_KEY, m_headerValue);
+                        if (!delete) LOG.debug("searchMailSubject: flagging message with subject '{}' for deletion because we sent it (found header {}={})", subject, MTM_HEADER_KEY, m_headerValue + "-" + nodeId);
                         delete = true;
                     }
 
                     if (delete) {
+                        LOG.debug("searchMailSubject: Deleting message {} of {}", i, mailMessages.length);
                         mailMessage.setFlag(Flag.DELETED, true);
+                        delete = false;
                     }
 
                     // since we want to delete old messages matchin MTM_HEADER_KEY, we can't break early
@@ -397,7 +399,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
      * @param mailParms
      * @return a PollStatus
      */
-    private PollStatus sendTestMessage(final MailTransportParameters mailParms) {
+    private PollStatus sendTestMessage(final MailTransportParameters mailParms, final int nodeId) {
         PollStatus status = PollStatus.unavailable("Test not completed.");
 
         final long interval = mailParms.getSendTestAttemptInterval();
@@ -407,7 +409,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
             tracker.startAttempt();
             LOG.debug("sendTestMessage: sending mail attempt: {}, elapsed time: {}ms", (tracker.getAttempt() + 1), String.format("%.2f", tracker.elapsedTimeInMillis()));
             try {
-                final JavaMailer sendMailer = createMailer(mailParms);
+                final JavaMailer sendMailer = createMailer(mailParms, nodeId);
                 overRideDefaultProperties(mailParms, sendMailer);
                 sendMailer.mailSend();
                 status = PollStatus.available();
@@ -471,7 +473,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
         sendMailer.setUseJMTA(mailParms.isSendTestUseJmta());
     }
 
-    private JavaMailer createMailer(final MailTransportParameters mailParms) throws JavaMailerException {
+    private JavaMailer createMailer(final MailTransportParameters mailParms, final int nodeId) throws JavaMailerException {
         final JavaMailer sendMailer = new JavaMailer(mailParms.getJavamailProperties());
         final String mailPropsPrefix = new StringBuilder("mail.").append(mailParms.getSendTestTransport()).append('.').toString();
         final Properties props = sendMailer.getSession().getProperties();
@@ -529,7 +531,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
         //starttls.enable
         props.setProperty(mailPropsPrefix+"starttls.enable", String.valueOf(mailParms.isSendTestStartTls()));
         sendMailer.setStartTlsEnabled(mailParms.isSendTestStartTls());
-        sendMailer.addExtraHeader(MTM_HEADER_KEY, m_headerValue);
+        sendMailer.addExtraHeader(MTM_HEADER_KEY, m_headerValue+ "-" + nodeId);
 
         sendMailer.setSession(Session.getInstance(props, sendMailer.createAuthenticator()));
 

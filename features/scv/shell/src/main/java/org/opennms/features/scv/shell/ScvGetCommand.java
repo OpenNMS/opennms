@@ -44,12 +44,14 @@ public class ScvGetCommand implements Action {
     @Override
     public Object execute() throws Exception {
         final Credentials credentials = secureCredentialsVault.getCredentials(alias);
+
         if (credentials == null) {
             System.out.println("No credentials found for alias '" + alias + "'.");
         } else {
             System.out.printf("Credentials for %s:\n", alias);
             System.out.printf("\tUsername: %s\n", credentials.getUsername());
             System.out.printf("\tPassword: *********\n");
+
             for (String attributeKey : credentials.getAttributeKeys()) {
                 System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
             }

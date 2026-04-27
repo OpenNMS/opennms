@@ -23,6 +23,8 @@ package org.opennms.netmgt.trapd;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.net.InetAddress;
+
 import javax.annotation.PostConstruct;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -114,26 +116,29 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
 		final Events events = new Events();
 		log.setEvents(events);
 
+		final String location = messageLog.getLocation();
+		final InetAddress trapAddress = messageLog.getTrapAddress();
+
 		for (TrapDTO eachMessage : messageLog.getMessages()) {
 			try {
 				final Event event = eventCreator.createEventFrom(
 						eachMessage,
 						messageLog.getSystemId(),
-						messageLog.getLocation(),
-						messageLog.getTrapAddress()
+						location,
+						trapAddress
 				);
 				if (!shouldDiscard(event)) {
 					if (event.getSnmp() != null) {
-						trapdInstrumentation.incTrapsReceivedCount(event.getSnmp().getVersion());
+						trapdInstrumentation.incTrapsReceivedCount(event.getSnmp().getVersion(), location, trapAddress);
 					}
 					events.addEvent(event);
 				} else {
 					LOG.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
-					trapdInstrumentation.incDiscardCount();
+					trapdInstrumentation.incDiscardCount(location, trapAddress);
 				}
 			} catch (Throwable e) {
 				LOG.error("Unexpected error processing trap: {}", eachMessage, e);
-				trapdInstrumentation.incErrorCount();
+				trapdInstrumentation.incErrorCount(location, trapAddress);
 			}
 		}
 		return log;

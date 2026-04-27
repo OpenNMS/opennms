@@ -35,8 +35,12 @@ import java.util.stream.Collectors;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
+import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfGlobalSecurity;
 import org.opennms.netmgt.xml.eventconf.Global;
+import org.opennms.netmgt.xml.eventconf.Security;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -189,7 +193,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	}
 
 	@Override
-	public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+	public void loadEventsFromDB(List<EventConfEvent> dbEvents, List<EventConfGlobalSecurity> eventConfGlobalSecurities) {
 
 		// Group events by source and sort by source fileOrder
 		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
@@ -204,9 +208,20 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 		Events rootEvents = new Events();
 
-		// Load global settings from eventconf.xml
-		Global global = loadGlobalFromEventConfXml();
-		if (global != null) {
+		if (eventConfGlobalSecurities != null) {
+			final Security security = new Security();
+
+            final List<String> doNotOverrides = eventConfGlobalSecurities.stream()
+					.map(EventConfGlobalSecurity::getDoNotOverride)
+					.toList();
+
+			if (!doNotOverrides.isEmpty()) {
+				security.setDoNotOverride(doNotOverrides);
+			}
+
+			final Global global = new Global();
+			global.setSecurity(security);
+
 			rootEvents.setGlobal(global);
 		}
 
@@ -221,28 +236,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			rootEvents.initialize(m_partition, new EventOrdering());
 			m_events = rootEvents;
 		}
-	}
-
-	/**
-	 * Load global settings (including security/doNotOverride tags) from the eventconf.xml file.
-	 * These settings are not stored in the database and must be loaded from the XML file.
-	 */
-	private Global loadGlobalFromEventConfXml() {
-		try {
-			Resource resource = m_configResource;
-			if (resource == null) {
-				File eventConfFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-				resource = new FileSystemResource(eventConfFile);
-			}
-			Events events = JaxbUtils.unmarshal(Events.class, resource);
-			if (events != null) {
-				return events.getGlobal();
-			}
-		} catch (IOException e) {
-			// Use DEBUG level since this is expected in test environments where opennms.home is not set
-			LOG.debug("Failed to load global settings from eventconf.xml: {}", e.getMessage());
-		}
-		return null;
 	}
 
 	private List<Map.Entry<String, List<EventConfEvent>>> sortSourcesByFileOrder(Map<String, List<EventConfEvent>> eventsBySource) {
