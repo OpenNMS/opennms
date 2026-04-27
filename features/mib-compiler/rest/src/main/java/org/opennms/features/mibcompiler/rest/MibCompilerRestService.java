@@ -21,11 +21,16 @@
  */
 package org.opennms.features.mibcompiler.rest;
 
+import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequest;
+
+import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -36,10 +41,45 @@ public interface MibCompilerRestService {
     @POST
     @Path("/upload")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    Response uploadMib(byte[] mibContent, @QueryParam("filename") String filename);
+    @Produces(MediaType.APPLICATION_JSON)
+    Response uploadMib(byte[] mibContent, @QueryParam("filename") String filename) throws Exception;
 
     @POST
     @Path("/compile")
     @Consumes(MediaType.APPLICATION_JSON)
-    Response compileMib(@QueryParam("name") String name);
+    @Produces(MediaType.APPLICATION_JSON)
+    Response compileMib(@QueryParam("name") String name) throws Exception;
+
+    @GET
+    @Path("/files")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response listPendingAndCompiledFiles() throws Exception;
+
+    @DELETE
+    @Path("/files/{location}/{fileName:.+}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response deleteFile(@PathParam("location") String location,
+                        @PathParam("fileName") String fileName) throws Exception;
+
+    @GET
+    @Path("/files/{location}/{fileName:.+}/text")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getFileText(@PathParam("location") String location,
+                                @PathParam("fileName") String fileName) throws Exception;
+
+    @POST
+    @Path("/files/pending/text")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response setFileText(@QueryParam("fileName") String fileName,
+                         byte[] mibContent) throws Exception;
+
+    @POST
+    @Path("/generate-events")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    Response generateEvents(MibCompilerGenerateEventsRequest request) throws Exception;
 }
