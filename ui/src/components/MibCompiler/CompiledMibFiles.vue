@@ -133,13 +133,13 @@
         </div>
       </template>
     </FileText>
-    <ConfirmationDialog
-      @ok="onConfirmGenerateEvents"
-      @cancel="onCancelGenerateEvents"
-      title="Generate Events from MIB File"
-      :visible="generateEventsDialogVisible"
-    >
-      <template #content>
+    <div class="confirmation-dialog">
+      <FeatherDialog
+        v-model="generateEventsDialogVisible"
+        :labels="{ title: 'Generate Events from MIB File' }"
+        hide-close
+        @hidden="onCancelGenerateEvents"
+      >
         <div class="generate-modal-content">
           <p class="heading">Enter the UEI Base for the events to be generated from the selected MIB file.</p>
           <p class="subtitle">File name: {{ selectedFile?.fileName }}</p>
@@ -149,8 +149,18 @@
             :error="ueiError"
           />
         </div>
-      </template>
-    </ConfirmationDialog>
+        <template v-slot:footer>
+          <FeatherButton @click="onCancelGenerateEvents">Cancel</FeatherButton>
+          <FeatherButton
+            :disabled="isGenerateEventDisabled"
+            primary
+            @click="onConfirmGenerateEvents"
+          >
+            OK
+          </FeatherButton>
+        </template>
+      </FeatherDialog>
+    </div>
   </TableCard>
 </template>
 
@@ -160,10 +170,10 @@ import { deleteFile, generateEvents, getFileText } from '@/services/mibCompilerS
 import { useMibCompilerStore } from '@/stores/mibCompilerStore'
 import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDialog } from '@featherds/dialog'
 import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from "@featherds/icon/action/DownloadFile"
 import Search from '@featherds/icon/action/Search'
-import StackedBarChart from '@featherds/icon/datavis/StackedBarChart'
 import Generic from '@featherds/icon/file/Generic'
 import FeatherIcon from '@featherds/icon/src/components/FeatherIcon.vue'
 import { FeatherInput } from '@featherds/input'
@@ -181,6 +191,9 @@ const deleteDialogVisible = ref(false)
 const textDrawerVisible = ref(false)
 const selectedFile = ref<MibCompilerFileInfo | null>(null)
 const generateEventsDialogVisible = ref(false)
+const isGenerateEventDisabled = computed(() => {
+  return !selectedFile.value || !uei.value || !!ueiError.value
+})
 const uei = ref('')
 const ueiError = ref('')
 const fileText = ref('')
@@ -227,6 +240,23 @@ const onConfirmGenerateEvents = async () => {
     return
   }
 
+  try {
+    await generateEvents({
+      name: selectedFile.value.fileName,
+      ueiBase: uei.value
+    })
+    showSnackBar({ msg: 'Events generated successfully from the compiled MIB file.', error: false })
+  } catch (error) {
+    showSnackBar({ msg: getGeneralErrorMessage(error, 'Failed to generate events from the compiled MIB file.'), error: true })
+  } finally {
+    selectedFile.value = null
+    uei.value = ''
+    ueiError.value = ''
+    generateEventsDialogVisible.value = false
+  }
+}
+
+const validateUei = () => {
   if (!uei.value.trim()) {
     ueiError.value = 'UEI Base is required.'
     return
@@ -247,20 +277,8 @@ const onConfirmGenerateEvents = async () => {
     return
   }
 
-  try {
-    await generateEvents({
-      name: selectedFile.value.fileName,
-      ueiBase: uei.value
-    })
-    showSnackBar({ msg: 'Events generated successfully from the compiled MIB file.', error: false })
-  } catch (error) {
-    showSnackBar({ msg: getGeneralErrorMessage(error, 'Failed to generate events from the compiled MIB file.'), error: true })
-  } finally {
-    selectedFile.value = null
-    uei.value = ''
-    ueiError.value = ''
-    generateEventsDialogVisible.value = false
-  }
+  ueiError.value = ''
+  return
 }
 
 const onCancelGenerateEvents = () => {
@@ -326,6 +344,15 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     value: sortObj.value
   })
 }
+
+watch(
+  () => uei.value,
+  () => {
+    if (generateEventsDialogVisible.value && uei.value) {
+      validateUei()
+    }
+  }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -445,7 +472,7 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
 
   .subtitle {
     @include typography.subtitle1;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
   }
 }
 </style>

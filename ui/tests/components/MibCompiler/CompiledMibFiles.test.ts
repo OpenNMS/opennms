@@ -5,11 +5,11 @@ import { MibCompilerFileInfo } from '@/types/mibCompiler'
 import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
+import { SORT } from '@featherds/table'
 import { createTestingPinia } from '@pinia/testing'
 import { flushPromises, mount, VueWrapper } from '@vue/test-utils'
-import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 vi.mock('@/services/mibCompilerService', () => ({
   deleteFile: vi.fn(),
@@ -36,6 +36,12 @@ describe('CompiledMibFiles.vue', () => {
           template: '<div class="confirmation-dialog-stub"><slot name="content" /></div>',
           props: ['visible', 'title'],
           emits: ['ok', 'cancel']
+        },
+        FeatherDialog: {
+          name: 'FeatherDialog',
+          template: '<div class="feather-dialog-stub"><slot /><slot name="footer" /></div>',
+          props: ['modelValue', 'labels', 'hideClose'],
+          emits: ['update:modelValue', 'hidden']
         },
         FileText: {
           name: 'FileText',
@@ -183,10 +189,7 @@ describe('CompiledMibFiles.vue', () => {
 
   describe('Table with Data', () => {
     beforeEach(async () => {
-      store.files = [
-        mockFile,
-        { fileName: 'another-mib.mib', location: 'COMPILED' }
-      ]
+      store.files = [mockFile, { fileName: 'another-mib.mib', location: 'COMPILED' }]
       await wrapper.vm.$nextTick()
     })
 
@@ -207,7 +210,7 @@ describe('CompiledMibFiles.vue', () => {
       const generateButtons = wrapper.findAll('[data-test="generate-events-button"]')
       const deleteButtons = wrapper.findAll('[data-test="delete-button"]')
       const downloadButtons = wrapper.findAll('[data-test="download-button"]')
-      
+
       expect(generateButtons.length).toBe(2)
       expect(deleteButtons.length).toBe(2)
       expect(downloadButtons.length).toBe(2)
@@ -326,7 +329,7 @@ describe('CompiledMibFiles.vue', () => {
 
     it('does not open drawer when fileName is empty', async () => {
       await wrapper.vm.onViewDetailsClick({ fileName: '', location: 'COMPILED' })
-      
+
       expect(getFileText).not.toHaveBeenCalled()
       expect(wrapper.vm.textDrawerVisible).toBe(false)
     })
@@ -483,48 +486,59 @@ describe('CompiledMibFiles.vue', () => {
       expect(wrapper.vm.ueiError).toBe('')
     })
 
-    it('validates empty UEI', async () => {
+    it('validates empty UEI via watcher', async () => {
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = ''
       wrapper.vm.generateEventsDialogVisible = true
+      wrapper.vm.uei = ''
+      await wrapper.vm.$nextTick()
 
-      await wrapper.vm.onConfirmGenerateEvents()
+      // Trigger validation by setting uei to a value then clearing it
+      wrapper.vm.uei = 'test'
+      await wrapper.vm.$nextTick()
+      wrapper.vm.uei = '   '
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.ueiError).toBe('UEI Base is required.')
-      expect(generateEvents).not.toHaveBeenCalled()
     })
 
-    it('validates UEI must start with uei.opennms.org/', async () => {
+    it('validates UEI must start with uei.opennms.org/ via watcher', async () => {
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'invalid-uei'
       wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
+      wrapper.vm.uei = 'invalid-uei'
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.ueiError).toBe('UEI Base must start with "uei.opennms.org/".')
-      expect(generateEvents).not.toHaveBeenCalled()
     })
 
-    it('validates UEI must have path after prefix', async () => {
+    it('validates UEI must have path after prefix via watcher', async () => {
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/'
       wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
+      wrapper.vm.uei = 'uei.opennms.org/'
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.ueiError).toBe('UEI Base must contain a path after "uei.opennms.org/".')
-      expect(generateEvents).not.toHaveBeenCalled()
     })
 
-    it('validates UEI should not end with slash', async () => {
+    it('validates UEI should not end with slash via watcher', async () => {
       wrapper.vm.selectedFile = mockFile
-      wrapper.vm.uei = 'uei.opennms.org/test/'
       wrapper.vm.generateEventsDialogVisible = true
-
-      await wrapper.vm.onConfirmGenerateEvents()
+      wrapper.vm.uei = 'uei.opennms.org/test/'
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.ueiError).toBe('UEI Base should not end with a slash.')
-      expect(generateEvents).not.toHaveBeenCalled()
+    })
+
+    it('clears error for valid UEI via watcher', async () => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.generateEventsDialogVisible = true
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).toBeTruthy()
+
+      wrapper.vm.uei = 'uei.opennms.org/vendor/test'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.ueiError).toBe('')
     })
 
     it('generates events with valid UEI', async () => {
@@ -532,6 +546,7 @@ describe('CompiledMibFiles.vue', () => {
 
       wrapper.vm.selectedFile = mockFile
       wrapper.vm.uei = 'uei.opennms.org/vendor/test'
+      wrapper.vm.ueiError = ''
       wrapper.vm.generateEventsDialogVisible = true
 
       await wrapper.vm.onConfirmGenerateEvents()
@@ -551,6 +566,7 @@ describe('CompiledMibFiles.vue', () => {
 
       wrapper.vm.selectedFile = mockFile
       wrapper.vm.uei = 'uei.opennms.org/vendor/test'
+      wrapper.vm.ueiError = ''
       wrapper.vm.generateEventsDialogVisible = true
 
       await wrapper.vm.onConfirmGenerateEvents()
@@ -581,6 +597,38 @@ describe('CompiledMibFiles.vue', () => {
       expect(wrapper.vm.selectedFile).toBeNull()
       expect(wrapper.vm.uei).toBe('')
       expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('computes isGenerateEventDisabled correctly when no file selected', () => {
+      wrapper.vm.selectedFile = null
+      wrapper.vm.uei = 'uei.opennms.org/test'
+      wrapper.vm.ueiError = ''
+
+      expect(wrapper.vm.isGenerateEventDisabled).toBe(true)
+    })
+
+    it('computes isGenerateEventDisabled correctly when uei is empty', () => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.uei = ''
+      wrapper.vm.ueiError = ''
+
+      expect(wrapper.vm.isGenerateEventDisabled).toBe(true)
+    })
+
+    it('computes isGenerateEventDisabled correctly when there is an error', () => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.uei = 'uei.opennms.org/test'
+      wrapper.vm.ueiError = 'Some error'
+
+      expect(wrapper.vm.isGenerateEventDisabled).toBe(true)
+    })
+
+    it('computes isGenerateEventDisabled correctly when all valid', () => {
+      wrapper.vm.selectedFile = mockFile
+      wrapper.vm.uei = 'uei.opennms.org/test'
+      wrapper.vm.ueiError = ''
+
+      expect(wrapper.vm.isGenerateEventDisabled).toBe(false)
     })
   })
 
@@ -696,8 +744,7 @@ describe('CompiledMibFiles.vue', () => {
 
     it('validates whitespace-only UEI', async () => {
       wrapper.vm.uei = '   '
-
-      await wrapper.vm.onConfirmGenerateEvents()
+      await wrapper.vm.$nextTick()
 
       expect(wrapper.vm.ueiError).toBe('UEI Base is required.')
     })
@@ -705,6 +752,7 @@ describe('CompiledMibFiles.vue', () => {
     it('accepts valid UEI with multiple path segments', async () => {
       vi.mocked(generateEvents).mockResolvedValue({ success: true } as any)
       wrapper.vm.uei = 'uei.opennms.org/vendor/category/event'
+      wrapper.vm.ueiError = ''
 
       await wrapper.vm.onConfirmGenerateEvents()
       await flushPromises()
@@ -718,11 +766,30 @@ describe('CompiledMibFiles.vue', () => {
     it('accepts valid UEI with hyphens and underscores', async () => {
       vi.mocked(generateEvents).mockResolvedValue({ success: true } as any)
       wrapper.vm.uei = 'uei.opennms.org/vendor-name/event_type'
+      wrapper.vm.ueiError = ''
 
       await wrapper.vm.onConfirmGenerateEvents()
       await flushPromises()
 
       expect(generateEvents).toHaveBeenCalled()
+    })
+
+    it('does not validate when dialog is not visible', async () => {
+      wrapper.vm.generateEventsDialogVisible = false
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('does not validate when uei is empty initially', async () => {
+      wrapper.vm.generateEventsDialogVisible = true
+      wrapper.vm.uei = ''
+      await wrapper.vm.$nextTick()
+
+      // Watcher condition: generateEventsDialogVisible.value && uei.value
+      // Empty string is falsy, so validateUei is not called
+      expect(wrapper.vm.ueiError).toBe('')
     })
   })
 
@@ -786,8 +853,9 @@ describe('CompiledMibFiles.vue', () => {
 
   describe('CSS Classes', () => {
     it('applies correct container class', () => {
-      expect(wrapper.find('.compiled-mib-files-container').exists() || 
-             wrapper.find('.table-card-stub').exists()).toBe(true)
+      expect(wrapper.find('.compiled-mib-files-container').exists() || wrapper.find('.table-card-stub').exists()).toBe(
+        true
+      )
     })
 
     it('has header with sections', () => {
@@ -796,4 +864,95 @@ describe('CompiledMibFiles.vue', () => {
       expect(wrapper.find('.section-right').exists()).toBe(true)
     })
   })
+
+  describe('validateUei Function', () => {
+    it('sets error for empty trimmed uei', () => {
+      wrapper.vm.uei = '   '
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('UEI Base is required.')
+    })
+
+    it('sets error for uei not starting with uei.opennms.org/', () => {
+      wrapper.vm.uei = 'http://example.com/test'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('UEI Base must start with "uei.opennms.org/".')
+    })
+
+    it('sets error for uei equal to just uei.opennms.org/', () => {
+      wrapper.vm.uei = 'uei.opennms.org/'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('UEI Base must contain a path after "uei.opennms.org/".')
+    })
+
+    it('sets error for uei ending with slash', () => {
+      wrapper.vm.uei = 'uei.opennms.org/vendor/'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('UEI Base should not end with a slash.')
+    })
+
+    it('clears error for valid uei', () => {
+      wrapper.vm.ueiError = 'some existing error'
+      wrapper.vm.uei = 'uei.opennms.org/vendor/event'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('validates uei with numbers in path', () => {
+      wrapper.vm.uei = 'uei.opennms.org/vendor123/event456'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('validates uei with special characters', () => {
+      wrapper.vm.uei = 'uei.opennms.org/vendor-name_v2/event.type'
+      wrapper.vm.validateUei()
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+  })
+
+  describe('Watcher Behavior', () => {
+    it('triggers validation when uei changes while dialog is visible', async () => {
+      wrapper.vm.generateEventsDialogVisible = true
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.ueiError).toBe('UEI Base must start with "uei.opennms.org/".')
+    })
+
+    it('does not trigger validation when dialog is closed', async () => {
+      wrapper.vm.generateEventsDialogVisible = false
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('clears error when valid uei is entered', async () => {
+      wrapper.vm.generateEventsDialogVisible = true
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).not.toBe('')
+
+      wrapper.vm.uei = 'uei.opennms.org/valid/path'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).toBe('')
+    })
+
+    it('updates error when uei changes from one invalid to another', async () => {
+      wrapper.vm.generateEventsDialogVisible = true
+
+      wrapper.vm.uei = 'invalid'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).toBe('UEI Base must start with "uei.opennms.org/".')
+
+      wrapper.vm.uei = 'uei.opennms.org/'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).toBe('UEI Base must contain a path after "uei.opennms.org/".')
+
+      wrapper.vm.uei = 'uei.opennms.org/test/'
+      await wrapper.vm.$nextTick()
+      expect(wrapper.vm.ueiError).toBe('UEI Base should not end with a slash.')
+    })
+  })
 })
+
