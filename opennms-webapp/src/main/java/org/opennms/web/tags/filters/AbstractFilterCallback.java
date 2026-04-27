@@ -29,6 +29,7 @@ import org.opennms.web.filter.QueryParameters;
 
 import javax.servlet.ServletContext;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.opennms.web.filter.FilterUtil.getFilterParameters;
@@ -67,12 +68,15 @@ public abstract class AbstractFilterCallback implements FilterCallback {
     @Override
     public List<Filter> parse(String filterString) {
         String[] filterParameter = getFilterParameters(filterString);
-        for (int i=0; i< filterParameter.length; i++) {
+
+        for (int i = 0; i < filterParameter.length; i++) {
             if (filterParameter[i].startsWith("filter=")) {
                 filterParameter[i] = filterParameter[i].replaceFirst("filter=", "");
                 filterParameter[i] = URLDecoder.decode(filterParameter[i]);
             }
         }
+
+        // Note, filters are deduped in the following call to 'parse()'
         return parse(filterParameter);
     }
 
@@ -87,10 +91,11 @@ public abstract class AbstractFilterCallback implements FilterCallback {
             }
         }
         */
-        return getIndividualFilterList(filters, servletContext);
+
+        String[] dedupedFilters = Arrays.stream(filters).distinct().toArray(String[]::new);
+
+        return getIndividualFilterList(dedupedFilters, servletContext);
     }
-
-
 
     @Override
     public String createLink(String urlBase, QueryParameters parameters, OnmsFilterFavorite favorite) {

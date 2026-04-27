@@ -38,7 +38,6 @@ import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
-import org.opennms.web.filter.FilterUtil;
 import org.opennms.web.services.FilterFavoriteService;
 import org.opennms.web.tags.filters.AlarmFilterCallback;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -48,7 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Tests for {@link AlarmFilterController} query string handling, focused on
- * verifying that {@link FilterUtil#parse(String)} correctly extracts filter
+ * verifying that {@link AlarmFilterController#parse(String)} correctly extracts filter
  * parameters and ignores non-filter parameters (limit, sortby, acktype, etc.).
  */
 public class AlarmFilterControllerTest {
@@ -140,13 +139,13 @@ public class AlarmFilterControllerTest {
     }
 
     // -------------------------------------------------------------------------
-    // Filter parsing tests: verify FilterUtil.parse() + AlarmFilterCallback
+    // Filter parsing tests: verify AlarmFilterCallback.parse
     // correctly extracts filters and ignores non-filter query parameters.
-    // This is the exact expression used at AlarmFilterController line 98.
+    // This is the exact expression used at AlarmFilterController.list(), line 98.
     // -------------------------------------------------------------------------
 
     private List<Filter> parseFiltersFromQueryString(String queryString) {
-        return filterCallback.parse(FilterUtil.parse(queryString == null ? "" : queryString));
+        return filterCallback.parse(queryString == null ? "" : queryString);
     }
 
     @Test
@@ -209,7 +208,6 @@ public class AlarmFilterControllerTest {
 
     @Test
     public void testFilterParsing_duplicateFiltersAreDeduped() {
-        // FilterUtil.parse() applies .distinct(), so duplicate filter values yield one filter
         List<Filter> filters = parseFiltersFromQueryString(
                 "filter=alarmtext%3Dtest&filter=alarmtext%3Dtest");
 
@@ -253,8 +251,7 @@ public class AlarmFilterControllerTest {
      * the advanced search form when "Any" situation is selected) has the same key as
      * {@link SituationFilter#TYPE}, so it is parsed as {@code SituationFilter(false)}.
      *
-     * <p>This behavior existed before the introduction of {@link FilterUtil#parse(String)} in
-     * the controller. It is noted here so that any future fix to suppress spurious
+     * <p>It is noted here so that any future fix to suppress spurious
      * situation/nodelocation filters can be verified by updating this test.</p>
      */
     @Test
@@ -265,5 +262,16 @@ public class AlarmFilterControllerTest {
 
         assertEquals("situation=any currently creates a SituationFilter(false) due to key collision", 1, filters.size());
         assertTrue(filters.get(0) instanceof SituationFilter);
+    }
+
+    @Test
+    public void testFilterParsing_alarmTextWithAmpersand_isNotTruncated() {
+        // alarmtext = "ping & dns" → filter=alarmtext%3Dping+%26+dns
+        List<Filter> filters = parseFiltersFromQueryString("filter=alarmtext%3Dping+%26+dns");
+
+        assertEquals(1, filters.size());
+        assertTrue(filters.get(0) instanceof AlarmTextFilter);
+        // Will fail: AlarmTextFilter#getValue() returns "ping " instead of "ping & dns"
+        assertEquals("ping & dns", ((AlarmTextFilter) filters.get(0)).getValue());
     }
 }
