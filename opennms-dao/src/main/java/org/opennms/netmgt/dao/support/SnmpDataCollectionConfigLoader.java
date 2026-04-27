@@ -159,6 +159,11 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
             coll.setGroups(groups);
             coll.setSystems(systems);
 
+            // Dedupe by name as we merge content from multiple sources into this collection.
+            // Mirrors DataCollectionConfigParser.addSystemDef's contains-check behavior.
+            final java.util.Set<String> addedGroupNames = new java.util.HashSet<>();
+            final java.util.Set<String> addedSystemDefNames = new java.util.HashSet<>();
+
             final List<String> sourceNames = DatacollectionJsonHelper.fromJson(
                     profile.getSourceNames(), new TypeReference<List<String>>() {});
             if (sourceNames != null) {
@@ -179,8 +184,16 @@ public class SnmpDataCollectionConfigLoader implements InitializingBean {
                     }
 
                     final DatacollectionGroup dcGroup = buildDataCollectionGroupFromDb(source);
-                    dcGroup.getGroups().forEach(groups::addGroup);
-                    dcGroup.getSystemDefs().forEach(systems::addSystemDef);
+                    for (final Group g : dcGroup.getGroups()) {
+                        if (g.getName() != null && addedGroupNames.add(g.getName())) {
+                            groups.addGroup(g);
+                        }
+                    }
+                    for (final SystemDef sd : dcGroup.getSystemDefs()) {
+                        if (sd.getName() != null && addedSystemDefNames.add(sd.getName())) {
+                            systems.addSystemDef(sd);
+                        }
+                    }
                     for (final ResourceType rt : dcGroup.getResourceTypes()) {
                         coll.addResourceType(rt);
                         rtCollection.addResourceType(rt);

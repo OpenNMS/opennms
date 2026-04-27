@@ -26,6 +26,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLFilterImpl;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 import org.opennms.netmgt.dao.api.SnmpCollectionSourceDao;
 import org.opennms.netmgt.model.PageResponse;
 import org.opennms.netmgt.model.SnmpCollectionMibGroup;
@@ -830,8 +841,66 @@ public class DataCollectionConfRestService  implements DataCollectionConfRestApi
                 "Invalid format: " + format + ". Supported values: xml, json");
     }
 
-    private DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
-        return JaxbUtils.unmarshal(DatacollectionGroup.class, inputStream);
+    private static final String DATACOLLECTION_NAMESPACE = "http://xmlns.opennms.org/xsd/config/datacollection";
+
+    /**
+     * Parse a user-uploaded datacollection-group XML file. Tolerates XML that
+     * omits the OpenNMS datacollection namespace (matching the client-side
+     * validator's permissive behavior) by injecting the expected namespace on
+     * elements that have none. XXE-related SAX features are disabled.
+     */
+    /** Package-private for testing. */
+    DatacollectionGroup parseDataCollectionFile(final InputStream inputStream) throws Exception {
+        final JAXBContext ctx = JAXBContext.newInstance(DatacollectionGroup.class);
+        final Unmarshaller unmarshaller = ctx.createUnmarshaller();
+
+        final XMLReader reader = createHardenedXmlReader();
+        final DefaultNamespaceFilter filter = new DefaultNamespaceFilter(DATACOLLECTION_NAMESPACE);
+        filter.setParent(reader);
+
+        final SAXSource source = new SAXSource(filter, new InputSource(inputStream));
+        return (DatacollectionGroup) unmarshaller.unmarshal(source);
+    }
+
+    private static XMLReader createHardenedXmlReader() throws SAXException, ParserConfigurationException {
+        final SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setNamespaceAware(true);
+        spf.setXIncludeAware(false);
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        return spf.newSAXParser().getXMLReader();
+    }
+
+    /**
+     * Injects a default namespace only on elements that have no namespace.
+     * Elements that already declare a namespace pass through unchanged, so
+     * an XML file that declares the wrong namespace will still fail JAXB
+     * validation.
+     */
+    private static final class DefaultNamespaceFilter extends XMLFilterImpl {
+        private final String defaultNamespace;
+
+        DefaultNamespaceFilter(final String defaultNamespace) {
+            this.defaultNamespace = defaultNamespace;
+        }
+
+        @Override
+        public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+            if (uri == null || uri.isEmpty()) {
+                uri = defaultNamespace;
+            }
+            super.startElement(uri, localName, qName, atts);
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (uri == null || uri.isEmpty()) {
+                uri = defaultNamespace;
+            }
+            super.endElement(uri, localName, qName);
+        }
     }
 
     private String getUsername(final SecurityContext context) {
