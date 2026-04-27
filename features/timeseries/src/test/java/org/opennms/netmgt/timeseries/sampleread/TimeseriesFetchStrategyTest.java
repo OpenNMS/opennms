@@ -212,6 +212,54 @@ public class TimeseriesFetchStrategyTest {
     }
 
     @Test
+    public void alignsMismatchedColumnLengthsFromPrometheusBackend() throws StorageException {
+        // Real data captured from a Mimir-backed OpenNMS lab on 2026-04-21
+        // (strafeping, resource response/10.0.0.8/strafeping). Across the
+        // preceding 24h, ping1 returned 283 points while median returned 289;
+        // the 1776718420 scrape interval was missing from ping1 but present
+        // for median. This 11-step window is the smallest slice that
+        // reproduces the mismatch and exercises the alignment path.
+        final long start = 1776716620_000L;
+        final long end   = 1776720220_000L;
+        final long step  = 300_000L;
+
+        final long[] ping1Ts = {
+            1776716920_000L, 1776717220_000L, 1776717520_000L, 1776717820_000L, 1776718120_000L,
+            1776718720_000L, 1776719020_000L, 1776719320_000L, 1776719620_000L, 1776719920_000L
+        };
+        final double[] ping1Vals = { 22836, 20839, 23181, 20798, 21221, 27297, 21164, 24010, 21308, 24148 };
+        final long[] medianTs = {
+            1776716920_000L, 1776717220_000L, 1776717520_000L, 1776717820_000L, 1776718120_000L,
+            1776718420_000L, 1776718720_000L, 1776719020_000L, 1776719320_000L, 1776719620_000L, 1776719920_000L
+        };
+        final double[] medianVals = { 58679, 52510.5, 50458, 44218.5, 49612.5, 39041, 41454, 46290.5, 50208.5, 56781, 49488 };
+
+        Source ping1 = createMockResourceWithDataPoints("ping1", "strafeping", "ping1", "10.0.0.8", start, end, step, ping1Ts, ping1Vals);
+        Source median = createMockResourceWithDataPoints("median", "strafeping", "median", "10.0.0.8", start, end, step, medianTs, medianVals);
+        replay();
+
+        FetchResults results = fetchStrategy.fetch(start, end, step, 0, null, null, Lists.newArrayList(ping1, median), false);
+
+        assertEquals(11, results.getTimestamps().length);
+        assertEquals(1776716920_000L, results.getTimestamps()[0]);
+        assertEquals(1776718420_000L, results.getTimestamps()[5]);
+        assertEquals(1776719920_000L, results.getTimestamps()[10]);
+
+        double[] p1 = results.getColumns().get("ping1");
+        double[] med = results.getColumns().get("median");
+        assertEquals(11, p1.length);
+        assertEquals(11, med.length);
+        assertEquals(22836.0, p1[0], 0.0);
+        assertEquals(21221.0, p1[4], 0.0);
+        assertTrue("ping1 should be NaN at the gap timestamp", Double.isNaN(p1[5]));
+        assertEquals(27297.0, p1[6], 0.0);
+        assertEquals(24148.0, p1[10], 0.0);
+        assertEquals(39041.0, med[5], 0.0);
+
+        verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+    }
+
+    @Test
     public void canRetrieveValuesByDatasource() throws StorageException {
         List<Source> sources = Collections.singletonList(
                 createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
@@ -222,6 +270,73 @@ public class TimeseriesFetchStrategyTest {
         assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
 
         verify(resourceDao, atLeastOnce()).getResourceById(any(ResourceId.class));
+    }
+
+    public Source createMockResourceWithDataPoints(
+            final String label, final String attr, final String ds, final String node,
+            final long startMillis, final long endMillis, final long stepMillis,
+            final long[] timestampsMillis, final double[] values) throws StorageException {
+        OnmsResourceType nodeType = mock(OnmsResourceType.class);
+        when(nodeType.getName()).thenReturn("nodeSource");
+        when(nodeType.getLabel()).thenReturn("nodeSourceTypeLabel");
+
+        OnmsResourceType type = mock(OnmsResourceType.class);
+        when(type.getName()).thenReturn("newtsTypeName");
+        when(type.getLabel()).thenReturn("newtsTypeLabel");
+
+        final int nodeId = node.hashCode();
+        final String newtsResourceId = "response:" + node + ":" + attr;
+        final ResourceId parentId = ResourceId.get("nodeSource", "NODES:" + nodeId);
+        final ResourceId resourceId = parentId.resolve("responseTime", node);
+        OnmsResource parent = resources.get(parentId);
+        if (parent == null) {
+            parent = new OnmsResource("NODES:" + nodeId, "" + nodeId, nodeType, Sets.newHashSet(), ResourcePath.get("foo"));
+            final OnmsNode entity = new OnmsNode();
+            entity.setId(nodeId);
+            entity.setForeignSource("NODES");
+            entity.setForeignId("" + nodeId);
+            entity.setLabel("" + nodeId);
+            parent.setEntity(entity);
+            resources.put(parentId, parent);
+        }
+        OnmsResource resource = resources.get(resourceId);
+        if (resource == null) {
+            resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
+            resource.setParent(parent);
+            resources.put(resourceId, resource);
+        }
+        resource.getAttributes().add(new RrdGraphAttribute(attr, "", newtsResourceId));
+
+        final String metricName = ds != null ? ds : attr;
+        ImmutableMetric metric = ImmutableMetric.builder()
+                .intrinsicTag(IntrinsicTagNames.resourceId, newtsResourceId)
+                .intrinsicTag(IntrinsicTagNames.name, metricName)
+                .build();
+        ImmutableTimeSeriesData.ImmutableTimeSeriesDataBuilder data = ImmutableTimeSeriesData.builder().metric(metric);
+        for (int i = 0; i < timestampsMillis.length; i++) {
+            data.dataPoint(ImmutableDataPoint.builder()
+                    .time(Instant.ofEpochMilli(timestampsMillis[i]))
+                    .value(values[i])
+                    .build());
+        }
+
+        TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
+                .metric(metric)
+                .aggregation(Aggregation.AVERAGE)
+                .start(Instant.ofEpochMilli(startMillis))
+                .end(Instant.ofEpochMilli(endMillis))
+                .step(Duration.ofMillis(stepMillis))
+                .build();
+        when(timeSeriesStorage.getTimeSeriesData(request)).thenReturn(data.build());
+
+        Source source = new Source();
+        source.setAggregation("AVERAGE");
+        source.setAttribute(attr);
+        source.setDataSource(ds);
+        source.setLabel(label);
+        source.setResourceId(resourceId.toString());
+        source.setTransient(false);
+        return source;
     }
 
     public Source createMockResource(final String label, final String attr, final String node) throws StorageException {

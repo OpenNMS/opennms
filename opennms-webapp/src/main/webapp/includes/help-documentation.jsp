@@ -74,7 +74,7 @@
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
-                            href="https://docs.opennms.com/<%=Vault.getProperty("opennms.product")%>/<%=Vault.getProperty("opennms.docs.version")%>/development/overview/overview.html#overview"
+                            href="https://docs.opennms.com/<%=Vault.getProperty("opennms.product")%>/<%=Vault.getProperty("opennms.docs.version")%>/development/development.html"
                             target="_blank" class="btn btn-secondary" role="button"
                             style="width: 100%">Development Guide</a></td>
                     <td style="border-top: none;">For developers who want to extend and improve the OpenNMS platform and use the ReST APIs for integration. Learn how to set up a development environment and get started with writing features for OpenNMS.</td>

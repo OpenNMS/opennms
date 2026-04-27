@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -181,28 +183,36 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         threadPool.submit(() -> getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
             }
 
-            // Create timestamps
-            long[] timestamps;
-            if(measurementsByNewtsResourceId.entrySet().isEmpty()) {
-                timestamps = new long[0];
-            } else {
-                timestamps = toSampleList(measurementsByNewtsResourceId.entrySet().iterator().next())
-                        .values()
-                        .iterator().next().stream()
-                        .map(DataPoint::getTime)
-                        .mapToLong(Instant::toEpochMilli).toArray();
+            // Build a unified timestamp grid from every source so that columns
+            // returned by Prometheus-based backends, which don't guarantee
+            // identical timestamps across metrics, can still be aligned into
+            // equal-length arrays.
+            SortedSet<Long> allTimestamps = new TreeSet<>();
+            Map<String, Map<Long, Double>> valuesByLabel = new HashMap<>();
+            for (Entry<String, Future<Map<Source, List<DataPoint>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+                Map<Source, List<DataPoint>> sampleList = toSampleList(entry);
+                for (Entry<Source, List<DataPoint>> column : sampleList.entrySet()) {
+                    Map<Long, Double> valuesByTimestamp = new HashMap<>();
+                    for (DataPoint dp : column.getValue()) {
+                        long ts = dp.getTime().toEpochMilli();
+                        allTimestamps.add(ts);
+                        valuesByTimestamp.put(ts, dp.getValue());
+                    }
+                    valuesByLabel.put(column.getKey().getLabel(), valuesByTimestamp);
+                }
             }
 
-            // Create columns
-            Map<String, double[]> columns = Maps.newHashMap();
-            for (Entry<String, Future<Map<Source, List<DataPoint>>>> entry : measurementsByNewtsResourceId.entrySet()) {
-                Map<Source, List<DataPoint>> sampleList;
-                sampleList = toSampleList(entry);
+            long[] timestamps = allTimestamps.stream().mapToLong(Long::longValue).toArray();
 
-                for (Entry<Source, List<DataPoint>> column : sampleList.entrySet()) {
-                    double[] values = column.getValue().stream().mapToDouble(DataPoint::getValue).toArray();
-                    columns.put(column.getKey().getLabel(), values);
+            Map<String, double[]> columns = Maps.newHashMap();
+            for (Entry<String, Map<Long, Double>> entry : valuesByLabel.entrySet()) {
+                Map<Long, Double> valuesByTimestamp = entry.getValue();
+                double[] values = new double[timestamps.length];
+                for (int i = 0; i < timestamps.length; i++) {
+                    Double v = valuesByTimestamp.get(timestamps[i]);
+                    values[i] = (v != null) ? v : Double.NaN;
                 }
+                columns.put(entry.getKey(), values);
             }
 
             // Create FetchResults
