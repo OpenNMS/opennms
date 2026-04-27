@@ -9,6 +9,7 @@
     <reference id="eventConfSourceDao" interface="org.opennms.netmgt.dao.api.EventConfSourceDao" availability="mandatory"/>
     <reference id="eventConfEventDao" interface="org.opennms.netmgt.dao.api.EventConfEventDao" availability="mandatory"/>
     <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+    <reference id="eventConfGlobalSecurityDao" interface="org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao" availability="mandatory"/>
     <reference id="operations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
 
@@ -17,6 +18,7 @@
         <argument ref="eventConfSourceDao"/>
         <argument ref="eventConfEventDao"/>
         <argument ref="eventConfDao"/>
+        <argument ref="eventConfGlobalSecurityDao"/>
         <argument ref="operations"/>
     </bean>
 

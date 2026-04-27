@@ -28,6 +28,7 @@ import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequest;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfSource;
@@ -62,6 +63,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
     private final MibParser mibParser;
     private final EventConfSourceDao eventConfSourceDao;
     private final EventConfEventDao eventConfEventDao;
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private final EventConfDao eventConfDao;
     private final TransactionOperations operations;
 
@@ -69,11 +71,12 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
             EventConfServiceHelper.createEventConfExecutor("load-eventConf-%d");
 
     public MibCompilerRestServiceImpl(
-            final MibParser mibParser, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfDao eventConfDao, TransactionOperations operations) {
+            final MibParser mibParser, EventConfSourceDao eventConfSourceDao, EventConfEventDao eventConfEventDao, EventConfDao eventConfDao, EventConfGlobalSecurityDao eventConfGlobalSecurityDao,  TransactionOperations operations) {
         this.mibParser = Objects.requireNonNull(mibParser, "mibParser must not be null");
         this.eventConfSourceDao = eventConfSourceDao;
         this.eventConfEventDao = eventConfEventDao;
         this.eventConfDao = eventConfDao;
+        this.eventConfGlobalSecurityDao = eventConfGlobalSecurityDao;
         this.operations = operations;
 
         this.mibParser.setMibDirectory(MibCompilerServiceUtil.getCompiledDir());
@@ -445,7 +448,7 @@ public class MibCompilerRestServiceImpl implements MibCompilerRestService {
 
                     eventConfEventDao.deleteBySourceId(source.getId());
                     EventConfServiceHelper.saveEvents(eventConfEventDao, source, events, meta.getUsername(), meta.getNow());
-                    EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfExecutor);
+                    EventConfServiceHelper.reloadEventsFromDBAsync(eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao,eventConfExecutor);
 
                     final Map<String, Object> resp = new LinkedHashMap<>();
                     resp.put("success", true);

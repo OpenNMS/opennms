@@ -32,6 +32,7 @@ import org.opennms.features.mibcompiler.rest.model.MibCompilerFileText;
 import org.opennms.features.mibcompiler.rest.model.MibCompilerGenerateEventsRequest;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfGlobalSecurityDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.dao.support.EventConfServiceHelper;
 import org.opennms.netmgt.model.EventConfSource;
@@ -74,7 +75,9 @@ public class MibCompilerRestServiceImplIT {
     private EventConfSourceDao eventConfSourceDao;
     private EventConfEventDao eventConfEventDao;
     private EventConfDao eventConfDao;
+    private EventConfGlobalSecurityDao eventConfGlobalSecurityDao;
     private TransactionOperations operations;
+
 
     private MibCompilerRestServiceImpl service;
 
@@ -107,9 +110,10 @@ public class MibCompilerRestServiceImplIT {
         eventConfSourceDao = mock(EventConfSourceDao.class);
         eventConfEventDao = mock(EventConfEventDao.class);
         eventConfDao = mock(EventConfDao.class);
+        eventConfGlobalSecurityDao = mock(EventConfGlobalSecurityDao.class);
         operations = mock(TransactionOperations.class);
 
-        service = new MibCompilerRestServiceImpl(parser, eventConfSourceDao, eventConfEventDao, eventConfDao, operations);
+        service = new MibCompilerRestServiceImpl(parser, eventConfSourceDao, eventConfEventDao, eventConfDao, eventConfGlobalSecurityDao, operations);
     }
 
     @After
@@ -442,7 +446,7 @@ public class MibCompilerRestServiceImplIT {
                             any(java.util.Date.class)))
                     .thenAnswer(x -> null);
 
-            helper.when(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any()))
+            helper.when(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any(), any()))
                     .thenAnswer(x -> null);
 
             MibCompilerGenerateEventsRequest req = new MibCompilerGenerateEventsRequest();
@@ -468,7 +472,7 @@ public class MibCompilerRestServiceImplIT {
 
             helper.verify(() -> EventConfServiceHelper.createOrUpdateSource(eq(eventConfSourceDao), any(EventConfSourceMetadataDto.class)), times(1));
             helper.verify(() -> EventConfServiceHelper.saveEvents(eq(eventConfEventDao), eq(source), eq(events), anyString(), any(java.util.Date.class)), times(1));
-            helper.verify(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any()), times(1));
+            helper.verify(() -> EventConfServiceHelper.reloadEventsFromDBAsync(eq(eventConfEventDao), eq(eventConfDao), any(), any()), times(1));
         }
     }
 }
