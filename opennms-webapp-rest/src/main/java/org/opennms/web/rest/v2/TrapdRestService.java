@@ -87,8 +87,8 @@ public class TrapdRestService implements TrapdRestApi {
                 config = dto.toEntity();
             }
         } catch (Exception e) {
-            LOG.warn("Failed to parse uploaded Trapd configuration.", e);
-            return Response.status(Status.BAD_REQUEST).entity("Invalid Trapd XML configuration.").build();
+            LOG.warn("Failed to parse uploaded Trapd " + fileType + " configuration.", e);
+            return Response.status(Status.BAD_REQUEST).entity("Invalid Trapd " + fileType + " configuration.").build();
         }
 
         String validationMessage = validateTrapdConfigRequest(dto);
@@ -112,6 +112,11 @@ public class TrapdRestService implements TrapdRestApi {
     @Override
     public Response downloadTrapdConfig(final String format) {
         final boolean isXml = format != null && format.equalsIgnoreCase("xml");
+
+        if (!isXml && format != null && !format.equalsIgnoreCase("json")) {
+            return Response.status(Status.BAD_REQUEST).entity("Invalid format parameter. Supported values are 'json' and 'xml'.").build();
+        }
+
         final String fileName = isXml ? "trapd-config.xml" : "trapd-config.json";
         byte[] byteArray = null;
 

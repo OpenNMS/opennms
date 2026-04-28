@@ -23,6 +23,7 @@
 import { TrapConfig, TrapdValidationError, TrapdValidationResult } from '@/types/trapConfig'
 import { ISelectItemType } from '@featherds/select'
 import { DEFAULT_TRAPD_BIND_ADDRESS } from './constants'
+import { isConvertibleToInteger } from './utils'
 
 export const MIN_PORT = 1
 export const MAX_PORT = 65535
@@ -142,6 +143,12 @@ const validateSnmpTrapPort = (value: string | number | null | undefined, isXml: 
     addError(errors, field, `${field} is required`)
     return
   }
+
+  if (!isConvertibleToInteger(value)) {
+    addError(errors, field, `Invalid ${field} '${value}': must be an integer`)
+    return
+  }
+
   const port = typeof value === 'string' ? parseInt(value, 10) : value
   if (!isValidPort(port)) {
     addError(errors, field, `Invalid ${field} '${value}': must be an integer between ${MIN_PORT} and ${MAX_PORT}`)
@@ -149,7 +156,10 @@ const validateSnmpTrapPort = (value: string | number | null | undefined, isXml: 
 }
 
 const validateNewSuspectOnTrap = (value: string | boolean | null | undefined, isXml: boolean, errors: TrapdValidationError[]): void => {
-  if (!isXml) return
+  if (!isXml) {
+    return
+  }
+
   const field = 'new-suspect-on-trap'
   if (value !== null && value !== undefined && value !== 'true' && value !== 'false') {
     addError(errors, field, `Invalid ${field} '${value}': must be 'true' or 'false'`)
@@ -210,10 +220,10 @@ const validateSnmpV3UserValues = (
   const privacyPassphraseVal = privacyPassphrase ?? null
 
   if (authPassphraseVal && authPassphraseVal.trim() !== '' && passphraseByteLength(authPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
-    addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} must be at least ${MIN_PASSPHRASE_CHARACTERS} bytes`)
+    addError(errors, `${prefix}.${appField}`, `${prefix}: ${appField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
   }
   if (privacyPassphraseVal && privacyPassphraseVal.trim() !== '' && passphraseByteLength(privacyPassphraseVal) < MIN_PASSPHRASE_CHARACTERS) {
-    addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must be at least ${MIN_PASSPHRASE_CHARACTERS} bytes`)
+    addError(errors, `${prefix}.${pppField}`, `${prefix}: ${pppField} must be at least ${MIN_PASSPHRASE_CHARACTERS} characters`)
   }
 
   if (authProtocolVal !== null) {
@@ -386,8 +396,8 @@ export const validateTrapdJson = (jsonString: string): TrapdValidationResult => 
   const raw = parsed as Record<string, unknown>
   const config = {
     ...raw,
-    newSuspectOnTrap: raw['newSuspectOnTrap'] ?? false,
     includeRawMessage: raw['includeRawMessage'] ?? false,
+    newSuspectOnTrap: raw['newSuspectOnTrap'] ?? false,
     useAddressFromVarbind: raw['useAddressFromVarbind'] ?? false,
   } as TrapConfig
 
@@ -413,4 +423,3 @@ export const validateTrapdJson = (jsonString: string): TrapdValidationResult => 
 
   return { valid: errors.length === 0, errors }
 }
-

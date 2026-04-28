@@ -81,12 +81,13 @@ public class TrapdRestServiceIT {
         setField(trapdRestService, "trapdConfigDao", trapdConfigDao);
     }
 
+    // --- Upload XML Tests ---
 
     @Test
-    public void uploadShouldReturnBadRequestWhenAttachmentMissing() {
-        try (Response response = trapdRestService.uploadTrapdConfiguration(null, null)) {
+    public void uploadShouldReturnBadRequestWhenAttachmentMissingXml() {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Missing uploaded file for trapd file upload.", response.getEntity());
+            assertEquals("Missing uploaded file for Trap Configuration XML file upload.", response.getEntity());
         }
     }
 
@@ -97,9 +98,9 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Invalid trapd XML configuration.", response.getEntity());
+            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
         }
     }
 
@@ -110,7 +111,7 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertNull(response.getEntity());
         }
@@ -127,6 +128,104 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream(validTrapdConfigXmlWithUseAddressFromVarbind().getBytes(StandardCharsets.UTF_8))
         );
 
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertNull(response.getEntity());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertTrue(captor.getValue().shouldUseAddressFromVarbind());
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenValidationFailsXml() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
+        );
+        whenValidationFailsOnUpdate("Invalid Trapd XML configuration.");
+
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnServerErrorWhenPersistenceFailsXml() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
+        );
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
+        }
+    }
+
+    // --- Upload JSON Tests ---
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenAttachmentMissingJson() {
+        try (Response response = trapdRestService.uploadTrapdConfiguration(null, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Missing uploaded file for Trap Configuration JSON file upload.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenXmlPassedInsteadOfJsonIsInvalid() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldReturnBadRequestWhenJsonIsInvalid() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream("{ \"something }".getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void uploadShouldPersistValidJsonAndReturnOk() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
+        );
+
+        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertNull(response.getEntity());
+        }
+
+        ArgumentCaptor<TrapdConfiguration> captor = ArgumentCaptor.forClass(TrapdConfiguration.class);
+        verify(trapdConfigDao).replaceConfig(captor.capture());
+        assertEquals(10163, captor.getValue().getSnmpTrapPort());
+    }
+
+    @Test
+    public void uploadShouldPersistUseAddressFromVarbindWhenProvidedInJson() {
+        Attachment attachment = mock(Attachment.class);
+        when(attachment.getObject(InputStream.class)).thenReturn(
+                new ByteArrayInputStream(validTrapdConfigJsonWithUseAddressFromVarbind().getBytes(StandardCharsets.UTF_8))
+        );
+
         try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             assertNull(response.getEntity());
@@ -138,32 +237,34 @@ public class TrapdRestServiceIT {
     }
 
     @Test
-    public void uploadShouldReturnBadRequestWhenValidationFails() {
+    public void uploadShouldReturnBadRequestWhenValidationFailsJson() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
-                new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
         );
-        whenValidationFailsOnUpdate("schema error");
+        whenValidationFailsOnUpdate("Invalid Trapd XML configuration.");
 
         try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("schema error", response.getEntity());
+            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
         }
     }
 
     @Test
-    public void uploadShouldReturnServerErrorWhenPersistenceFails() {
+    public void uploadShouldReturnServerErrorWhenPersistenceFailsJson() {
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
-                new ByteArrayInputStream(validTrapdConfigXml().getBytes(StandardCharsets.UTF_8))
+                new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
         );
         org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
 
         try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to persist trapd configuration.", response.getEntity());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
         }
     }
+
+    // --- Get Config Tests ---
 
     @Test
     public void getShouldReturnOkWithConfigWhenExists() {
@@ -198,7 +299,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.getTrapdConfiguration(null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to retrieve trapd configuration.", response.getEntity());
+            assertEquals("Failed to retrieve Trapd configuration.", response.getEntity());
         }
     }
 
@@ -289,11 +390,13 @@ public class TrapdRestServiceIT {
         return payload;
     }
 
+    // --- Update Config Tests ---
+
     @Test
     public void updateShouldReturnBadRequestWhenPayloadMissing() {
         try (Response response = trapdRestService.updateTrapdConfiguration(null, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Missing trapd configuration in request body.", response.getEntity());
+            assertEquals("Missing Trapd configuration in request body.", response.getEntity());
         }
     }
 
@@ -393,7 +496,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Provided trapd configuration failed schema validation.", response.getEntity());
+            assertEquals("Provided Trapd configuration failed schema validation.", response.getEntity());
         }
     }
 
@@ -409,7 +512,7 @@ public class TrapdRestServiceIT {
 
         try (Response response = trapdRestService.updateTrapdConfiguration(payload, null)) {
             assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-            assertEquals("Failed to persist trapd configuration.", response.getEntity());
+            assertEquals("Failed to persist Trapd configuration.", response.getEntity());
         }
     }
 
@@ -771,6 +874,7 @@ public class TrapdRestServiceIT {
     }
 
     // --- Boundary Value Tests ---
+
     @Test
     public void updateShouldAcceptSnmpTrapPortAtLowerAndUpperBound() {
         TrapdConfigDto payload = new TrapdConfigDto();
@@ -872,30 +976,6 @@ public class TrapdRestServiceIT {
         }
     }
 
-    private void whenValidationFailsOnUpdate(final String message) {
-        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
-    }
-
-    private static void setField(final Object target, final String fieldName, final Object value) throws Exception {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
-    }
-
-    private static String validTrapdConfigXml() {
-        return "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
-                + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
-                + "batch-size=\"1000\" batch-interval=\"500\"/>";
-    }
-
-    private static String validTrapdConfigXmlWithUseAddressFromVarbind() {
-        return "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\" "
-                + "include-raw-message=\"false\" threads=\"0\" queue-size=\"10000\" "
-                + "batch-size=\"1000\" batch-interval=\"500\" use-address-from-varbind=\"true\"/>";
-    }
-
     @Test
     public void uploadShouldNotCallReplaceConfigWhenXmlParsingFails() {
         Attachment attachment = mock(Attachment.class);
@@ -903,24 +983,25 @@ public class TrapdRestServiceIT {
                 new ByteArrayInputStream("<trapd-configuration".getBytes(StandardCharsets.UTF_8))
         );
 
-        trapdRestService.uploadTrapdConfiguration(attachment, null);
+        trapdRestService.uploadTrapdConfigurationXml(attachment, null);
 
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
     }
 
     @Test
     public void uploadShouldRejectXmlWhenLevel3MissingPrivacyCredentials() {
-        String xml = "<trapd-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/trapd\" "
-                + "snmp-trap-address=\"*\" snmp-trap-port=\"10163\" new-suspect-on-trap=\"false\">"
-                + "<snmpv3-user security-name=\"user\" security-level=\"3\" "
-                + "auth-protocol=\"SHA\" auth-passphrase=\"authpass\"/>"
-                + "</trapd-configuration>";
+        final String xml = """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false"> \
+                <snmpv3-user security-name="user" security-level="3" \
+                auth-protocol="SHA" auth-passphrase="authpass"/> \
+                </trapd-configuration>""";
         Attachment attachment = mock(Attachment.class);
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))
         );
 
-        try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
+        try (Response response = trapdRestService.uploadTrapdConfigurationXml(attachment, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
             assertTrue(((String) response.getEntity()).contains("securityLevel 3 requires both auth and privacy credentials."));
         }
@@ -1042,5 +1123,60 @@ public class TrapdRestServiceIT {
         }
 
         verify(trapdConfigDao, never()).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    private void whenValidationFailsOnUpdate(final String message) {
+        org.mockito.Mockito.doThrow(new ValidationException(message)).when(trapdConfigDao).replaceConfig(org.mockito.Mockito.any(TrapdConfiguration.class));
+    }
+
+    private static void setField(final Object target, final String fieldName, final Object value) throws Exception {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static String validTrapdConfigXml() {
+        return """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false" \
+                include-raw-message="false" threads="0" queue-size="10000" \
+                batch-size="1000" batch-interval="500"/>""";
+    }
+
+    private static String validTrapdConfigXmlWithUseAddressFromVarbind() {
+        return """
+                <trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" \
+                snmp-trap-address="*" snmp-trap-port="10163" new-suspect-on-trap="false" \
+                include-raw-message="false" threads="0" queue-size="10000" \
+                batch-size="1000" batch-interval="500" use-address-from-varbind="true"/>""";
+    }
+
+    private static String validTrapdConfigJson() {
+        return """
+                {
+                "snmpTrapAddress": "*", \
+                "snmpTrapPort": 10163, \
+                "newSuspectOnTrap": false, \
+                "includeRawMessage": false, \
+                "threads": 0, \
+                "queueSize": 10000, \
+                "batchSize": 1000, \
+                "batchInterval": 500 \
+                }""";
+    }
+
+    private static String validTrapdConfigJsonWithUseAddressFromVarbind() {
+        return """
+                {
+                "snmpTrapAddress": "*", \
+                "snmpTrapPort": 10163, \
+                "newSuspectOnTrap": false, \
+                "includeRawMessage": false, \
+                "threads": 0, \
+                "queueSize": 10000, \
+                "batchSize": 1000, \
+                "batchInterval": 500, \
+                "useAddressFromVarbind": true \
+                }""";
     }
 }

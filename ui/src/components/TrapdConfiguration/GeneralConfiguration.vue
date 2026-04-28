@@ -138,7 +138,7 @@
     >
       <template #content>
         <div>
-          <p>Configuration Trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
+          <p>Configure trap listener settings. <strong>Note</strong> that the settings here only apply to the OpenNMS core system, not to any Minions or other distributed components.</p>
         </div>
       </template>
     </MessageDialog>
@@ -259,9 +259,9 @@ const loadInitialConfig = () => {
   if (store.trapdConfig) {
     port.value = store.trapdConfig.snmpTrapPort || DEFAULT_TRAPD_PORT
     bindAddress.value = store.trapdConfig.snmpTrapAddress || DEFAULT_TRAPD_BIND_ADDRESS
-    newSuspectOnTrap.value = store.trapdConfig.newSuspectOnTrap || DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
-    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind || DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
-    trapMessageStatus.value = store.trapdConfig.includeRawMessage || DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
+    newSuspectOnTrap.value = store.trapdConfig.newSuspectOnTrap ?? DEFAULT_TRAPD_NEW_SUSPECT_ON_TRAP
+    trapSourceAddressStatus.value = store.trapdConfig.useAddressFromVarbind ?? DEFAULT_TRAPD_USE_ADDRESS_FROM_VARBIND
+    trapMessageStatus.value = store.trapdConfig.includeRawMessage ?? DEFAULT_TRAPD_INCLUDE_RAW_MESSAGE
     threads.value = store.trapdConfig.threads || DEFAULT_TRAPD_THREADS
     queueSize.value = store.trapdConfig.queueSize || DEFAULT_TRAPD_QUEUE_SIZE
     batchSize.value = store.trapdConfig.batchSize || DEFAULT_TRAPD_BATCH_SIZE

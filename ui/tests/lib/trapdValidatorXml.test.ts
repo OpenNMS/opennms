@@ -411,6 +411,12 @@ describe('validateTrapdXml – snmp-trap-port', () => {
     expect(result.valid).toBe(false)
     expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
   })
+
+  it('returns error for partially-numeric port', () => {
+    const result = validateTrapdXml(buildXml({ port: '162abc' }))
+    expect(result.valid).toBe(false)
+    expect(result.errors.some((e) => e.field === 'snmp-trap-port')).toBe(true)
+  })
 })
 
 describe('validateTrapdXml – new-suspect-on-trap', () => {

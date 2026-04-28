@@ -4,7 +4,7 @@
         <h3>Trap Configuration Upload/Download</h3>
         <div class="feather-row">
           <div class="feather-col-12">
-            <span class="label">You can both download and upload the entire Trap configuration in both XML and Json formats.
+            <span class="label">You can both download and upload the entire Trap configuration in both XML and JSON formats.
               <strong>Use caution</strong> when uploading Trap configuration files, as this will overwrite the existing configuration and may impact device monitoring if the uploaded configuration is not correct.</span>
           </div>
         </div>
@@ -173,6 +173,7 @@ const initiateUpload = async (isXml: boolean) => {
 const onUploadCancel = () => {
   confirmationDialogVisible.value = false
   uploadType.value = null
+  uploadFile.value = null
 }
 
 const onUploadConfirm = async () => {
