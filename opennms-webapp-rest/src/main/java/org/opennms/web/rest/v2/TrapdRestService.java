@@ -112,6 +112,7 @@ public class TrapdRestService implements TrapdRestApi {
     @Override
     public Response downloadTrapdConfig(final String format) {
         final boolean isXml = format != null && format.equalsIgnoreCase("xml");
+        final String fileType = isXml ? "XML" : "JSON";
 
         if (!isXml && format != null && !format.equalsIgnoreCase("json")) {
             return Response.status(Status.BAD_REQUEST).entity("Invalid format parameter. Supported values are 'json' and 'xml'.").build();
@@ -138,7 +139,7 @@ public class TrapdRestService implements TrapdRestApi {
                 byteArray = json.getBytes(StandardCharsets.UTF_8);
             }
         } catch (Exception e) {
-            LOG.error("Error serializing Trapd JSON: {}", e.getMessage(), e);
+            LOG.error("Error serializing Trapd {}: {}", fileType, e.getMessage(), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Error retrieving Trapd config.").build();
         }
 

@@ -242,11 +242,11 @@ public class TrapdRestServiceIT {
         when(attachment.getObject(InputStream.class)).thenReturn(
                 new ByteArrayInputStream(validTrapdConfigJson().getBytes(StandardCharsets.UTF_8))
         );
-        whenValidationFailsOnUpdate("Invalid Trapd XML configuration.");
+        whenValidationFailsOnUpdate("Invalid Trapd JSON configuration.");
 
         try (Response response = trapdRestService.uploadTrapdConfiguration(attachment, null)) {
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-            assertEquals("Invalid Trapd XML configuration.", response.getEntity());
+            assertEquals("Invalid Trapd JSON configuration.", response.getEntity());
         }
     }
 
