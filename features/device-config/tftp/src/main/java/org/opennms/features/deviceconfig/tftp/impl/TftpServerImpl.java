@@ -181,9 +181,13 @@ public class TftpServerImpl implements TftpServer, Runnable, AutoCloseable {
                     }
 
                     if (dataPacket instanceof TFTPWriteRequestPacket) {
-                        // it must have missed our initial ack. Send another.
-                        LOG.debug("Resending WRQ ack to '{}'", twrp.getAddress());
-                        lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
+                        // It must have missed our initial response. Resend the
+                        // same packet we sent before so option negotiation state
+                        // is preserved (for example, OACK vs ACK(0)).
+                        LOG.debug("Resending WRQ response to '{}'", twrp.getAddress());
+                        if (lastSentAck == null) {
+                            lastSentAck = new TFTPAckPacket(twrp.getAddress(), twrp.getPort(), 0);
+                        }
                         transferTftp_.bufferedSend(lastSentAck);
                     } else if (dataPacket == null || !(dataPacket instanceof TFTPDataPacket)) {
                         if (!shutdownTransfer) {
