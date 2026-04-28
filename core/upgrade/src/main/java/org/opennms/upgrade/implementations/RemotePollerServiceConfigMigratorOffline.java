@@ -44,6 +44,8 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
     private File configFile;
 
+    private boolean skipMe = false;
+
     public static final String DEPRECATED_REMOTE_POLLER_SERVICENAME = "OpenNMS:Name=PollerBackEnd";
     public static final String PERSPECTIVE_POLLER_SERVICENAME = "OpenNMS:Name=PerspectivePoller";
 
@@ -68,6 +70,11 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (isInstalledVersionGreaterOrEqual(27, 0, 0)) {
+            log("This upgrade procedure should only run against systems older than 27.0.0; the current version is " + getOpennmsVersion() + "\n");
+            skipMe = true;
+            return;
+        }
         try {
             log("Creating backup of %s\n", configFile);
             zipFile(configFile);
@@ -79,6 +86,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
     @Override
     public void postExecute() throws OnmsUpgradeException {
+        if (skipMe) return;
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
@@ -88,6 +96,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
     @Override
     public void rollback() throws OnmsUpgradeException {
+        if (skipMe) return;
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -96,6 +105,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
 
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (skipMe) return;
         try {
             final ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
             boolean skipRemovePollerNgEntryCreation = false;

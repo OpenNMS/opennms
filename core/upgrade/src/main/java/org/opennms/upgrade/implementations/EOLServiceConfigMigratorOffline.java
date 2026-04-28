@@ -51,6 +51,11 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
     private File configFile;
 
     /**
+     * Flag to skip the upgrade if the installed version is 18.0.0 or higher.
+     */
+    private boolean skipMe = false;
+
+    /**
      * Instantiates a new Service Configuration migrator offline.
      *
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
@@ -93,6 +98,11 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (isInstalledVersionGreaterOrEqual(18, 0, 0)) {
+            log("This upgrade procedure should only run against systems older than 18.0.0; the current version is " + getOpennmsVersion() + "\n");
+            skipMe = true;
+            return;
+        }
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
@@ -106,6 +116,7 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
+        if (skipMe) return;
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
@@ -118,6 +129,7 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
+        if (skipMe) return;
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -129,6 +141,7 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (skipMe) return;
         final String[] eol = {
                 "OpenNMS:Name=Linkd",
                 "OpenNMS:Name=Xmlrpcd",
