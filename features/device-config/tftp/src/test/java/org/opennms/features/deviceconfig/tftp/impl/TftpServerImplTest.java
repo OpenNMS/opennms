@@ -113,9 +113,34 @@ public class TftpServerImplTest {
                 var resp = new DatagramPacket(new byte[512], 512);
                 socket.receive(resp);
                 var respData = resp.getData();
+                var respLength = resp.getLength();
                 // opcode 6 = OACK
                 assertThat((int) respData[0] << 8 | (respData[1] & 0xFF), is(TFTPPacket.OACK));
 
+                var oackBlksize = null;
+                var idx = 2;
+                while (idx < respLength) {
+                    var optionStart = idx;
+                    while (idx < respLength && respData[idx] != 0) {
+                        idx++;
+                    }
+                    var option = new String(respData, optionStart, idx - optionStart, StandardCharsets.US_ASCII);
+                    idx++;
+
+                    var valueStart = idx;
+                    while (idx < respLength && respData[idx] != 0) {
+                        idx++;
+                    }
+                    var value = new String(respData, valueStart, idx - valueStart, StandardCharsets.US_ASCII);
+                    idx++;
+
+                    if ("blksize".equalsIgnoreCase(option)) {
+                        oackBlksize = value;
+                        break;
+                    }
+                }
+                assertThat(oackBlksize != null, is(true));
+                assertThat(oackBlksize, is(String.valueOf(blksize)));
                 // The server's transfer thread replies from its own port - use that for the rest
                 var srvAddr = resp.getAddress();
                 var srvPort = resp.getPort();
