@@ -81,6 +81,144 @@ public class TrapdRestServiceIT {
         setField(trapdRestService, "trapdConfigDao", trapdConfigDao);
     }
 
+    // --- Download XML Tests ---
+
+    @Test
+    public void downloadXmlShouldReturnOkWithCorrectHeaders() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertTrue(response.getMediaType().toString().contains("application/xml"));
+            assertEquals("attachment; filename=trapd-config.xml", response.getHeaderString("Content-Disposition"));
+            assertEquals("public", response.getHeaderString("Pragma"));
+            assertEquals("no-cache, must-revalidate", response.getHeaderString("Cache-Control"));
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnBodyWithConfigData() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            String xml = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
+            assertTrue(xml.contains("snmp-trap-port=\"162\""));
+            assertTrue(xml.contains("snmp-trap-address=\"*\""));
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnNotFoundWhenConfigMissing() {
+        when(trapdConfigDao.getConfig()).thenReturn(null);
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldReturnServerErrorWhenExceptionThrown() {
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getConfig();
+
+        try (Response response = trapdRestService.downloadTrapdConfig("xml")) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Error retrieving Trapd config.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadXmlShouldBeCaseInsensitiveForFormatParam() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        for (String format : new String[]{"XML", "Xml", "xMl"}) {
+            try (Response response = trapdRestService.downloadTrapdConfig(format)) {
+                assertEquals("Expected XML response for format=" + format,
+                        Response.Status.OK.getStatusCode(), response.getStatus());
+                assertEquals("attachment; filename=trapd-config.xml", response.getHeaderString("Content-Disposition"));
+            }
+        }
+    }
+
+    // --- Download JSON Tests ---
+
+    @Test
+    public void downloadJsonShouldReturnOkWithCorrectHeaders() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertTrue(response.getMediaType().toString().contains("application/json"));
+            assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+            assertEquals("public", response.getHeaderString("Pragma"));
+            assertEquals("no-cache, must-revalidate", response.getHeaderString("Cache-Control"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnBodyWithConfigData() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json")) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            String json = new String((byte[]) response.getEntity(), StandardCharsets.UTF_8);
+            assertTrue(json.contains("snmpTrapPort"));
+            assertTrue(json.contains("162"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldDefaultToJsonWhenFormatIsNull() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        try (Response response = trapdRestService.downloadTrapdConfig(null)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnNotFoundWhenConfigMissing() {
+        when(trapdConfigDao.getConfig()).thenReturn(null);
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json")) {
+            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals("Trapd configuration not found.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldReturnServerErrorWhenExceptionThrown() {
+        org.mockito.Mockito.doThrow(new RuntimeException("db down")).when(trapdConfigDao).getConfig();
+
+        try (Response response = trapdRestService.downloadTrapdConfig("json")) {
+            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertEquals("Error retrieving Trapd config.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadShouldReturnBadRequestForUnsupportedFormat() {
+        try (Response response = trapdRestService.downloadTrapdConfig("csv")) {
+            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals("Invalid format parameter. Supported values are 'json' and 'xml'.", response.getEntity());
+        }
+    }
+
+    @Test
+    public void downloadJsonShouldBeCaseInsensitiveForFormatParam() {
+        when(trapdConfigDao.getConfig()).thenReturn(buildMinimalConfig());
+
+        for (String format : new String[]{"JSON", "Json", "jSoN"}) {
+            try (Response response = trapdRestService.downloadTrapdConfig(format)) {
+                assertEquals("Expected JSON response for format=" + format,
+                        Response.Status.OK.getStatusCode(), response.getStatus());
+                assertEquals("attachment; filename=trapd-config.json", response.getHeaderString("Content-Disposition"));
+            }
+        }
+    }
+
     // --- Upload XML Tests ---
 
     @Test
