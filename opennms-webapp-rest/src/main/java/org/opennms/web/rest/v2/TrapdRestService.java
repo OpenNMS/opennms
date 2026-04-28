@@ -124,6 +124,10 @@ public class TrapdRestService implements TrapdRestApi {
         try {
             final TrapdConfiguration trapdConfiguration = trapdConfigDao.getConfig();
 
+            if (trapdConfiguration == null) {
+                return Response.status(Status.NOT_FOUND).entity("Trapd configuration not found.").build();
+            }
+
             if (isXml) {
                 String xml = JaxbUtils.marshal(trapdConfiguration);
                 byteArray = xml.getBytes(StandardCharsets.UTF_8);

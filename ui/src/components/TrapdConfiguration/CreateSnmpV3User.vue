@@ -136,7 +136,7 @@
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
 import { DEFAULT_SNMP_V3_AUTH_PROTOCOL, DEFAULT_SNMP_V3_PRIVACY_PROTOCOL } from '@/lib/constants'
-import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_CHARACTERS as MIN_PASSPHRASE_CHARACTERS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
+import { AUTH_PROTOCOL_OPTIONS, MIN_PASSPHRASE_CHARACTERS, PRIVACY_PROTOCOL_OPTIONS, SECURITY_LEVEL_OPTIONS, SecurityLevel, passphraseByteLength } from '@/lib/trapdValidator'
 import { mapUserToServer } from '@/mappers/trapdConfig.mapper'
 import { updateTrapdConfiguration } from '@/services/trapdConfigurationService'
 import { useScvStore } from '@/stores/scvStore'

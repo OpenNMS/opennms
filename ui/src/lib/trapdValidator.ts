@@ -191,26 +191,24 @@ const validateSnmpV3UserValues = (
   }
 
   let securityLevel: number | undefined
+
   if (typeof securityLevelInput === 'number') {
     securityLevel = securityLevelInput
     if (!isValidSnmpSecurityLevel(securityLevel)) {
-      addError(
-        errors,
-        `${prefix}.${slField}`,
-        `${prefix}: invalid ${slField} '${securityLevelInput}'. Valid values: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)`
-      )
       securityLevel = undefined
     }
-  } else if (securityLevelInput != null && securityLevelInput !== '') {
+  } else if (securityLevelInput != null && securityLevelInput !== '' && isConvertibleToInteger(securityLevelInput)) {
     securityLevel = parseInt(securityLevelInput, 10)
     if (!isValidSnmpSecurityLevel(securityLevel)) {
-      addError(
-        errors,
-        `${prefix}.${slField}`,
-        `${prefix}: invalid ${slField} '${securityLevelInput}'. Valid values: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)`
-      )
       securityLevel = undefined
     }
+  }
+
+  if (securityLevel === undefined) {
+    addError(errors,
+      `${prefix}.${slField}`,
+      `${prefix}: invalid ${slField} '${securityLevelInput}'. Valid values: 1 (NoAuthNoPriv), 2 (AuthNoPriv), 3 (AuthPriv)`
+    )
   }
 
   // Normalize undefined → null for consistent presence checks

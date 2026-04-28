@@ -149,11 +149,11 @@ describe('validateTrapdJson – snmpv3User: securityName and securityLevel', () 
     expect(result.errors.some((e) => e.field.includes('securityName'))).toBe(true)
   })
 
-  it('allows missing securityLevel (optional)', () => {
+  it('returns error for missing securityLevel', () => {
     const user = buildUser({ securityName: 'user1' })
     const result = validateTrapdJson(buildJson({ users: [user] }))
-    expect(result.valid).toBe(true)
-    expect(result.errors.some((e) => e.field.includes('securityLevel'))).toBe(false)
+    expect(result.valid).toBe(false)
+    expect(result.errors.some((e) => e.field.includes('securityLevel'))).toBe(true)
   })
 
   it('returns error for securityLevel 0 (None)', () => {

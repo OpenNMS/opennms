@@ -23,7 +23,10 @@
       <FeatherIcon
         :icon="InfoIcon"
         class="info-icon"
+        role="button"
+        tabindex="0"
         @click="isMessageDialogVisible = true"
+        @keydown.enter.space.prevent="isMessageDialogVisible = true"
         data-test="trap-config-snmpv3-users-info-icon"
       />
     </div>

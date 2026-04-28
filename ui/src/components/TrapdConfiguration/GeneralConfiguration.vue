@@ -10,7 +10,10 @@
       <FeatherIcon
         :icon="InfoIcon"
         class="info-icon"
+        role="button"
+        tabindex="0"
         @click="isMessageDialogVisible = true"
+        @keydown.enter.space.prevent="isMessageDialogVisible = true"
         data-test="trap-config-general-info-icon"
       />
     </div>
