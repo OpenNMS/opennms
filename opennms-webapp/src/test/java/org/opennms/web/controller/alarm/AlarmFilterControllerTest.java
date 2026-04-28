@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -72,6 +73,7 @@ public class AlarmFilterControllerTest {
 
         when(alarmRepository.getMatchingAlarms(any())).thenReturn(new OnmsAlarm[0]);
         when(alarmRepository.countMatchingAlarms(any())).thenReturn(0);
+        when(favoriteService.getFavorites(any(), any())).thenReturn(new ArrayList<>());
     }
 
     // -------------------------------------------------------------------------
@@ -271,7 +273,6 @@ public class AlarmFilterControllerTest {
 
         assertEquals(1, filters.size());
         assertTrue(filters.get(0) instanceof AlarmTextFilter);
-        // Will fail: AlarmTextFilter#getValue() returns "ping " instead of "ping & dns"
         assertEquals("ping & dns", ((AlarmTextFilter) filters.get(0)).getValue());
     }
 }
