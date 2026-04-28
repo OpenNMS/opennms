@@ -847,15 +847,6 @@
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
     </feature>
-    <feature name="wmi-integration" version="${project.version}" description="OpenNMS :: Features :: WMI Integration">
-        <feature>commons-cli</feature>
-        <feature>opennms-collection-api</feature>
-        <feature>opennms-provisioning-api</feature>
-        <feature>jcifs</feature>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng&amp;Bundle-Version=${jinteropVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng.deps&amp;Bundle-Version=${jinteropVersion}</bundle>
-        <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
-    </feature>
     <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
         <feature>opennms-core-web</feature>
         <feature>opennms-collection-api</feature>
@@ -890,7 +881,6 @@
         <feature>opennms-icmp-api</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>wsman-integration</feature>
-        <feature>wmi-integration</feature>
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-detector-bsf/${project.version}</bundle>

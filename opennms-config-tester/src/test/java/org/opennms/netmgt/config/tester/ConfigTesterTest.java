@@ -520,16 +520,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testWmiConfig() {
-        testConfigFile("wmi-config.xml");
-    }
-
-    @Test
-    public void testWmiDatacollectionConfig() {
-        testConfigFile("wmi-datacollection-config.xml");
-    }
-
-    @Test
     public void testVMwareCimDatacollectionConfig() {
         testConfigFile("vmware-cim-datacollection-config.xml");
     }

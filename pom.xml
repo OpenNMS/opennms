@@ -130,7 +130,6 @@
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-rest</module>
-    <module>opennms-wmi</module>
     <module>opennms-asterisk</module>
     <module>opennms-config-dao</module>
   </modules>
@@ -3692,11 +3691,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-webapp-ng</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-wmi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

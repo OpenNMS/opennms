@@ -634,7 +634,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.addMonitor("MSExchangeFDS", "org.opennms.netmgt.poller.monitors.Win32ServiceMonitor");
         config.addMonitor("MSExchangeServiceHost", "org.opennms.netmgt.poller.monitors.Win32ServiceMonitor");
         config.addMonitor("MSExchangeTransport", "org.opennms.netmgt.poller.monitors.Win32ServiceMonitor");
-        config.addMonitor("WMI", "org.opennms.netmgt.poller.monitors.WmiMonitor");
         config.addMonitor("DHCP", "org.opennms.netmgt.poller.monitors.DhcpMonitor");
         config.addMonitor("NSClient", "org.opennms.protocols.nsclient.monitor.NsclientMonitor");
         config.addMonitor("NSClientpp", "org.opennms.protocols.nsclient.monitor.NsclientMonitor");

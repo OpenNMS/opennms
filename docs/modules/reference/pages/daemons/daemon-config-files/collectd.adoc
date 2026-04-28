@@ -70,16 +70,6 @@ Attributes are extracted from the HTTP responses using a regular expression.
 | no
 | no
 
-| wmi-config.xml
-| Defines per-host security settings for WMI communication.
-| no
-| no
-
-| wmi-datacollection-config.xml
-| Defines data collections via WMI.
-| no
-| yes
-
 | wsman-config.xml
 | Defines per-host security settings for WSMAN communication.
 | no
