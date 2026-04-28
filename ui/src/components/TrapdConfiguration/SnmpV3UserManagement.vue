@@ -59,7 +59,7 @@
             :key="index"
           >
             <td>{{ user.securityName }}</td>
-            <td>{{ user.securityLevel }}</td>
+            <td>{{ displaySecurityLevel(user.securityLevel) }}</td>
             <td>{{ user.authProtocol }}</td>
             <td>{{ user.privacyProtocol }}</td>
             <td>
@@ -126,6 +126,7 @@ import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import DeleteUserConfirmationDialog from './Dialog/DeleteUserConfirmationDialog.vue'
 import MessageDialog from '../Common/MessageDialog.vue'
+import { SECURITY_LEVEL_OPTIONS } from '@/lib/trapdValidator'
 
 const store = useTrapdConfigStore()
 const { showSnackBar } = useSnackbar()
@@ -164,6 +165,16 @@ const openDeleteUserDialog = (index: number) => {
 const cancelDeleteUser = () => {
   deleteUserIndex.value = null
   deleteDialogVisible.value = false
+}
+
+const displaySecurityLevel = (level: number) => {
+  const index = level - 1
+
+  if (index < 0 || index > 2) {
+    return '--'
+  }
+
+  return SECURITY_LEVEL_OPTIONS[index]._text
 }
 
 const confirmDeleteUser = async () => {
