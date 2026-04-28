@@ -117,7 +117,7 @@ public class TftpServerImplTest {
                 // opcode 6 = OACK
                 assertThat((int) respData[0] << 8 | (respData[1] & 0xFF), is(TFTPPacket.OACK));
 
-                var oackBlksize = 0;
+                var oackBlksize = "";
                 var idx = 2;
                 while (idx < respLength) {
                     var optionStart = idx;
@@ -139,7 +139,7 @@ public class TftpServerImplTest {
                         break;
                     }
                 }
-                assertThat(oackBlksize > 0, is(true));
+                assertThat(oackBlksize != "", is(true));
                 assertThat(oackBlksize, is(String.valueOf(blksize)));
                 // The server's transfer thread replies from its own port - use that for the rest
                 var srvAddr = resp.getAddress();
